@@ -1,12 +1,41 @@
 Interchange 4.6.2
 
+* [loop list=`$Scratch->{ary}`] now accepts a prebuilt array reference to
+  loop over. Must be in the form returned by $db->query(), i.e. the list
+  array (of arrays), an optional field hash ref giving the field name to
+  index pointers, and an optional array ref giving the field names in
+  order. Thanks to Kaare Rasmussen for the suggestion.
+
+* Fixed bug in ui_date_widget, generated month name for "Feb 30" which turned
+  into March.
+
+* Patch supplied by Hans-Joachim Leidinger <jojo@buchonline.net> prevents
+  blank credit card info from being encrypted.
+
+* Fixed bug #106, hang at install time if specified Interchange user ID
+  doesn't exist.
+
 * Fixed problem in Search.pm where coordinated search of op=rm would not
   match on words only.
+
+* Fixed recent bug that prevented cached DBI connections.
 
 * Fixed a couple of hard-coded mv_metadata references in admin pages
   preventing renaming of __UI_META_TABLE__.
 
 * Improved makecat error message when problems occur reading config file.
+
+* Made NoAbsolute default to Yes in interchange.cfg, which gives better
+  default security for newly-built catalogs.
+
+* Various minor HTML corrections. Thanks to Paul <porl@namee.com.au> and
+  Mediabang.
+
+* Fix problem with ProductFiles resolution in loops. The Vend::OnlyProducts
+  setting was confused after the on-the-fly update.
+
+* RPM only: Fixed logrotate.d file to prevent cascading log rotation like
+  error.log.1.gz.1.gz etc. Thanks to Murray Gibbins for diagnosis & fix.
 
 
 Interchange 4.6.1
