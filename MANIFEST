@@ -185,6 +185,7 @@ code/UserTag/email.tag
 code/UserTag/email_raw.tag
 code/UserTag/env.tag
 code/UserTag/fedex_query.tag
+code/UserTag/find.tag
 code/UserTag/formel.tag
 code/UserTag/fortune.tag
 code/UserTag/forum.tag

@@ -323,6 +323,8 @@ UserTags
 * Removed some code that caused table-organize to write the td.x attributes
   twice. 
 
+* find - New usertag in spirit of the Unix command with the same name.
+
 Jobs
 ----
 
