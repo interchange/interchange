@@ -20,7 +20,7 @@
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Interchange version
 	</TH>
-	<td rowspan=12> &nbsp; </td>
+	<td rowspan=40> &nbsp; &nbsp; </td>
 	<TD> [version]</A></TD>
 </TR>
 
@@ -88,6 +88,13 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
+	<A HREF="[area __UI_BASE__/env_vars]">Environment</A> variables passed
+	</TH>
+	<TD>[version extended=1 env=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
 	Active sessions
 	</TH>
 	<TD>[loop list="[dump-session find=1]"]<A HREF="[area
@@ -128,6 +135,12 @@
 	<TD> [version extended=1 modules=1]</A></TD>
 </TR>
 
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Safe operations untrapped
+	</TH>
+	<TD>[version extended=1 safe=1]</TD>
+</TR>
 
 </TABLE>
 
