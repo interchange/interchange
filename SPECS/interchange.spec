@@ -134,9 +134,6 @@ cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-# Handle /usr/local
-#PATH=\$PATH:/usr/local/bin
-
 # See how we were called.
 case "\$1" in
 	start)
@@ -294,13 +291,6 @@ fi
 
 # Make Interchange start/stop automatically with the operating system.
 /sbin/chkconfig --add interchange
-
-# Give interch user ownership of all files the Interchange daemon will
-# need read/write access to
-#chown -R %{ic_user}.%ic_group \
-#	/var/lib/interchange \
-#	/var/log/interchange \
-#	/var/run/interchange
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
