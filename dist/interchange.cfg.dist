@@ -38,12 +38,28 @@ Environment  MOD_PERL
 # Prevent arbitrary [file ...] and [include ...] among other things.
 NoAbsolute Yes
 
+#========================================================================#
+
 ifdef @DEBUG
+
 Message Sending debug to /tmp/icdebug.
 DebugFile /tmp/icdebug
+
+# A few simple tests ...
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
 Variable  TEST_VARIABLE  Test of global variable OK.
+
+# Dump global and catalog data structures to a text file at startup time.
+# See {ConfDir}/interchange.structure and {CatRoot}/{CatName}.structure.
+DumpStructure Yes
+
+# This logs DBI calls to your DebugFile.
+# It's commented out by default because it generates a lot of messages.
+#DataTrace 1
+
 endif
+
+#========================================================================#
 
 ifdef TRAFFIC =~ /low/i
 Message Low traffic settings.
@@ -67,6 +83,8 @@ MaxRequestsPerChild 100
 HouseKeeping        2
 PIDcheck            120
 endif
+
+#========================================================================#
 
 # Set this so cookies are issued only for the current catalog, not for
 # the whole base domain.
