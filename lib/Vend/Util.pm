@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.11 2001-12-28 17:18:39 mheins Exp $
+# $Id: Util.pm,v 2.12 2002-01-16 01:54:09 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -53,6 +53,7 @@ require Exporter;
 	logDebug
 	logError
 	logGlobal
+	logOnce
 	logtime
 	random_string
 	readfile
@@ -80,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 BEGIN {
 	eval {
@@ -1707,6 +1708,26 @@ sub logError {
 				);
     }
 }
+
+
+# Front-end to log routines that ignores repeated identical
+# log messages after the first occurrence
+my %logOnce_cache;
+my %log_sub_map = (
+	data	=> \&logData,
+	debug	=> \&logDebug,
+	error	=> \&logError,
+	global	=> \&logGlobal,
+);
+
+# First argument should be log type (see above map).
+# Rest of arguments are same as if calling log routine directly.
+sub logOnce {
+	return if exists $logOnce_cache{"@_"};
+	my $log_sub = $log_sub_map{ lc(shift) } || $log_sub_map{error};
+	$log_sub->(@_) and ++$logOnce_cache{"@_"};
+}
+
 
 # Here for convenience in calls
 sub set_cookie {
