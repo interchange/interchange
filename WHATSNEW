@@ -106,6 +106,13 @@ Core
 
 * Remove Vend::ECML, move to extensions/ directory.
 
+* Allow customization of links in more-list, like this:
+  [link-template]<a href="$URL$" target="_top">$ANCHOR$</a>[/link-template]
+
+* Add utility functions Vend::Data::product_row and product_row_hash,
+  which do the same thing as product_field, but return the whole row
+  instead of just one field.
+
 
 UI
 --
