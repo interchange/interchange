@@ -53,32 +53,61 @@ sub {
 	my $ref = {
 		upload => { 
 						img => '@_UI_IMG_@admin/up.gif',
-						url => "$url/upload_file?mv_arg=" .
-								$froot->(join "/",
-											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
-											$Config->{Database}{$tab}{file}
-										)
-								. '&ui_return_to=@@MV_PAGE@@',
-					},
-		download => { 
-						img => '@_UI_IMG_@admin/down.gif',
-						url => "$Config->{VendURL}/ui_download/" .
-								$froot->(join "/",
+						url => $Tag->area(
+									'__UI_BASE__/upload_file',
+									$froot->(join "/",
 											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
 											$Config->{Database}{$tab}{file}
 										),
+									{
+										form => 'ui_return_to=@@MV_PAGE@@'
+									}
+								),
+									
+					},
+		download => { 
+						img => '@_UI_IMG_@admin/down.gif',
+						url => $Tag->area( 
+									{
+										href => 'ui_download/' .
+										  $froot->(
+										  	join "/",
+												(	$Config->{Database}{$tab}{dir}
+													||
+													$Config->{ProductDir}
+												),
+												$Config->{Database}{$tab}{file}
+											 ),
+										 form => 'filler=1',
+									},
+								),
 					},
 		import => { 
 						img => '@_UI_IMG_@admin/left.gif',
-						url => "$url/import_table?mv_data_table=$tab",
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/import_table',
+										form => "mv_data_table=$tab",
+									}
+									),
 					},
 		export => { 
 						img => '@_UI_IMG_@admin/right.gif',
-						url => "$url/export_table?mv_data_table=$tab",
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/export_table',
+										form => "mv_data_table=$tab",
+									}
+									),
 					},
 		edit => { 
 						img => '@_UI_IMG_@admin/layout.gif',
-						url => "$url/flex_select?mv_data_table=$tab",
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/flex_select',
+										form => "mv_data_table=$tab",
+									}
+									),
 					},
 	};
 	my $out = '';
@@ -93,7 +122,7 @@ sub {
 	for(qw/edit import export upload download /) {  # Add "report"
 		my $line = $ref->{$_};
 		$out .= <<EOF;
-<td ALIGN=center><A HREF="$line->{url}&id=$Session->{id}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
+<td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
 EOF
 	}
 	$out .= qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT>};
