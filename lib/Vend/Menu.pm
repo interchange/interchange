@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.32 2003-08-20 16:22:31 mheins Exp $
+# $Id: Menu.pm,v 2.33 2003-08-25 19:56:30 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 use Vend::Util;
 use strict;
@@ -829,7 +829,7 @@ EOF
 	}
 
 	for my $row (@$rows) {
-		next if $_->{deleted};
+		next if $row->{deleted};
 		extra_value($opt->{extra_value}, $row)
 			if $opt->{extra_value};
 		push @out, Vend::Tags->uc_attr_list($row, $template);
