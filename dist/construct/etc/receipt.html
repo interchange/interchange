@@ -145,10 +145,7 @@ __RECEIPT_SPECIALS__
 
 
 [seti mail_receipt]
-[perl global=1 interpolate=1]
-my $mail_prog = "/usr/lib/sendmail"; 
-open (MAIL, "|$mail_prog -t"); 
-print MAIL <<'end_html_email';
+[email-raw]
 To: [value email] <[value email]>
 Reply-to: __ORDERS_TO__ <__ORDERS_TO__>
 From: __COMPANY__ Customer Service <__ORDERS_TO__>
@@ -300,11 +297,6 @@ __RECEIPT_SPECIALS__
 </div>
 </body>
 </html>
-
-
-
-end_html_email
-close(MAIL);
-[/perl]
+[/email-raw]
 [/seti]
 

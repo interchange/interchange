@@ -47,14 +47,7 @@ __LEFT__
                     <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
                       <tr> 
                         <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[data
-		table=cat
-		col=banner_text
-		key=`
-			$tmp = q{[item-field category]};
-			$tmp =~ s/[ ,].*//;
-			$tmp
-		`]</font></i></b></font></td>
+                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[either][value banner_text][or][item-field category][/either]</font></i></b></font></td>
                         <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
                       </tr>
                     </table>
@@ -69,7 +62,7 @@ __LEFT__
                                 <td valign="top" align="center"> 
                                   <table width="25%" border="0" cellspacing="0" cellpadding="0">
                                     <tr> 
-                                      <td>[if-item-field image]<IMG SRC="[item-field image]" ALT="[item-field title]" BORDER="0">[/if-item-field]</td>
+                                      <td>[if-item-field image]<IMG SRC="items/[item-field image]" ALT="[item-field title]" BORDER="0">[/if-item-field]</td>
                                     </tr>
                                   </table>
                                 </td>

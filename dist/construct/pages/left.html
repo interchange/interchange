@@ -25,16 +25,37 @@
                         <td width="119"><img src="navigation/whitey.gif" width="126" height="4"></td>
                       </tr>
 					  
-[loop search="
-	fi=area.txt
-	tf=sort
-	ra=yes
-	rf=selector,name
-	un=yes
-" prefix=box]
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+			op=eq
+	[if scratch left_bar]
+		se=[scratch left_bar][set left_bar][/set]
+	[else]
+		se=left
+	[/else]
+	[/if]
+
+		sf=which_page
+			op=rm
+	[if scratch page_class]
+		se=all|[scratch page_class][set page_class][/set]
+	[else]
+		se=all|@@MV_PAGE@@
+	[/else]
+	[/if]
+"]
                       <tr> 
                         <td>&nbsp;</td>
-                        <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><B>[box-param name]</B></font></td>
+                        <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><B>[box-exec bar_link]area[/box-exec]</B></font></td>
                       </tr>
                       <tr> 
                         <td> 
@@ -43,21 +64,19 @@
                         </td>
                         <td width="119" valign="top">
 						<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
+[set found_cat][/set]
 [loop prefix=cat
 	search="
-		fi=cat.txt
-		un=yes
+		fi=cat
+		st=db
+		tf=sort
 		tf=name
-		sf=area
+		rf=code,name
+		sf=sel
 		se=[box-code]
 	"
 	]
-<A HREF="[if-cat-data cat url][cat-data cat url][else][area href=scan
-		arg=|
-		se=[cat-data cat selector]
-		sf=category
-		ml=3
-		|][/else][/if-cat-data]" ALT="[cat-data cat name]"><font color="#FFFFFF">[cat-data cat name]</font></A><BR>
+[cat-exec bar_link]cat[/cat-exec]<BR>
 [/loop]
                             <br>
                             </font></p>

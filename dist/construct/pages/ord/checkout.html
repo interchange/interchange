@@ -383,11 +383,30 @@ return;
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
                                   </font></b></td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+							  <tr>
                                 <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=state std_label="State/Province" required=1]</font></td>
                                 <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                  <INPUT onChange="check_tax(this.form)"
-				TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+								  [loop search="
+								  			fi=state.txt
+											sf=country
+											se=[default country US]
+											rf=state,name
+											ml=100
+										"
+										option=state]
+                                  [on-match]<SELECT onChange="check_tax(this.form)" NAME=state>[/on-match]
+								  [list]
+								  <OPTION VALUE="[loop-code]">[loop-pos 1]
+								  [/list]
+                                  [on-match]</SELECT>[/on-match]
+                                  [no-match]<INPUT NAME=state VALUE="[value state]" SIZE=20>[/no-match]
+								  [/loop]
                                   </font></b></td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td> 
@@ -404,7 +423,7 @@ return;
                                   <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=email std_label="Email Address" required=1]</font></div>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                  <INPUT TYPE=text NAME=email VALUE="[value email]" size="20">
+                                  <INPUT TYPE=text NAME=email VALUE="[value email]" size="30">
                                   </font></b></td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
@@ -422,9 +441,10 @@ return;
 		</SELECT>
 		[else]
 			<SELECT onChange="this.form.submit()" NAME=country>
-[loop search="
+[loop option=country search="
  ra=yes
  fi=country
+ st=db
  rf=code,name
  ml=1000
  tf=name
@@ -443,14 +463,14 @@ return;
                                   <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font></div>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="10" maxlength="20">
+                                  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
                                   </font></b></td>
                                 <td> 
                                   <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Evening 
                                     Phone</font></div>
                                 </td>
                                 <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="10" maxlength="20">
+                                  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
                                   </font></b></td>
                               </tr>
 [if session ship_message]							  

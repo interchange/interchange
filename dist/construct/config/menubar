@@ -15,7 +15,7 @@
 	<!-- hardcoded version of what should be in the demo -->
 	<tr>
 		<td bgcolor="#006600" valign="top" colspan="4">
-		<img src="leftside.gif"><A HREF="[area index]"><img src="home.gif" border="0"></a><a href="[area __ORDER_STYLE__/basket]"><img src="shoppingcart.gif" border="0"></a><a href="[area account]"><img src="customer.gif" border="0"></a><a href="[area help]"><img src="help.gif" border="0"></a><a href="[area contact]"><img src="contactus.gif" border="0"></a><img src="space.gif" width="7" height="1"><img src="rightside.gif"></td>
+		<img src="leftside.gif"><A HREF="[area index]"><img src="home.gif" border="0"></a><a href="[area ord/basket]"><img src="shoppingcart.gif" border="0"></a><a href="[area account]"><img src="customer.gif" border="0"></a><a href="[area help]"><img src="help.gif" border="0"></a><a href="[area contact]"><img src="contactus.gif" border="0"></a><img src="space.gif" width="7" height="1"><img src="rightside.gif"></td>
 	</tr>
 	[/comment]
 

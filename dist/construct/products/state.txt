@@ -120,9 +120,9 @@ code	country	state	name
 	EI	CO FERMANAgh	County Fermanagh
 	EI	CO DERRY	County Londonderry
 	EI	CO TYRONE	County Tyrone
-	US	AA	Armed Forces Americas        
-	US	AE	Armed Forces Europe, Middle East, & Canada 
-	US	AP	Armed Forces Pacific                          
+	US	AA	Military Americas        
+	US	AE	Military Europe/ME/Canada
+	US	AP	Military Pacific                          
 	US	AK	Alaska  
 	US	AL	Alabama  
 	US	AR	Arkansas     
@@ -131,10 +131,10 @@ code	country	state	name
 	US	CA	California         
 	US	CO	Colorado     
 	US	CT	Connecticut           
-	US	DC	District of Columbia     
+	US	DC	D.C.
 	US	DE	Delaware     
 	US	FL	Florida  
-	US	FM	Federated States of Micronesia  
+	US	FM	Micronesia  
 	US	GA	Georgia  
 	US	GU	Guam  
 	US	HI	Hawaii  
@@ -152,7 +152,7 @@ code	country	state	name
 	US	MI	Michigan                           
 	US	MN	Minnesota
 	US	MO	Missouri
-	US	MP	Northern Mariana Islands
+	US	MP	Marianas
 	US	MS	Mississippi
 	US	MT	Montana
 	US	NC	North Carolina

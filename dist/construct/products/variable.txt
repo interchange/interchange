@@ -1,11 +1,12 @@
 code	Variable	pref_group
 ADDRESS	123 Any St.	Company
+BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink"><FONT COLOR="#FFFFFF">$ANCHOR$</FONT></A>	Admin colors
 CATALOG_STATIC	No	Static pages
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECK_ACCEPTED	1	Payment
 CITY	Anytown, USA 45056	Company
 COD_ACCEPTED	0	Payment
-COMPANY	Construct Something	Company
+COMPANY	__MVC_COMPANY__	Company
 CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 ENCRYPTOR	none	Payment
@@ -14,20 +15,20 @@ IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO		Template
 MULTIORDER		Order
-MYSQL	1	Database
+MYSQL	__MVC_MYSQL__	Database
 ORDERS_TO	__MVC_MAILORDERTO__	Order
 ORDER_ROUTES	log main copy_user	Order
-PGSQL		Database
+PGSQL	__MVC_PGSQL__	Database
 PHONE	(555) 555-5555	Company
-PO_ACCEPTED	0	Payment
+PO_ACCEPTED	1	Payment
 SAMPLEHTML	__MVC_SAMPLEHTML__	Directories and Paths
 SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
 SECURE_SERVER	http://__MVC_SERVERNAME__	Directories and Paths
 SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
 SMLOGO		Template
-SOMESQL	1	Database
-SQLPASS		Database
-SQLUSER		Database
+SOMESQL	__MVC_MYSQL____MVC_PGSQL__	Database
+SQLPASS	__MVC_SQLPASS__	Database
+SQLUSER	__MVC_SQLUSER__	Database
 TAXAREA	OH	Tax
 TAXFIELD	state	Tax
 TAXRATE	OH=6.75	Tax
@@ -37,20 +38,23 @@ UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_C_ALINK	#000000	Admin colors
 UI_C_BG	#FFFFFF	Admin colors
 UI_C_HEADERTXT	#333333	Admin colors
-UI_C_INTBLOCKBAR	#999966	Admin colors
-UI_C_INTBLOCK	#CCCC99	Admin colors
+UI_C_INTBLOCK	#EEEEEE	Admin colors
+UI_C_INTBLOCKBAR	#73f2d9	Admin colors
 UI_C_LINK	#000000	Admin colors
-UI_C_TITLEBARBG	#336699	Admin colors
-UI_C_TITLEBARTXT	#CCCCCC	Admin colors
+UI_C_TITLEBARBG	#6699FF	Admin colors
+UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#336699	Admin colors
 UI_C_VLINK	#000000	Admin colors
+UI_HELP_BASE_URL	http://www.akopia.com/help/4.5.6/	Admin control
 UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
 UI_LEFT_WIDTH	150	Admin layout
 UI_META_LINK	1	Admin control
 UI_OVERALL_WIDTH	750	Admin layout
 UI_RIGHT_WIDTH	450	Admin layout
-UI_T_BG	beige	Admin colors
+UI_SZ_LIST_CUSTOMER	25	Customer display
+UI_SZ_LIST_ORDER	50	Order display
 UI_TRAFFIC_STATS	__MVC_CATROOT__/logs/usertrack	Directories and Paths
+UI_T_BG	beige	Admin colors
 UPS_COUNTRY_FIELD	country	Shipping
 UPS_ORIGIN	45056	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping
