@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.1 2000-12-21 12:11:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -106,8 +106,8 @@ my %optctl = (
 							return unless $arg =~ /=/;
 							my ($opt, $val) = split /=/, $arg, 2;
 							die "Can't set \U$opt\E twice.\n$USAGE\n"
-								if defined $::Self->{$opt};
-							$::Self->{$opt} = $val;
+								if defined $Self->{$opt};
+							$Self->{$opt} = $val;
 							return;
 							},
 );
@@ -129,7 +129,7 @@ DOIT: {
 
 sub doit {
 	my ($self, $orig, $template, $preamble, $key, $postamble) = @_;
-	my $replace =  $::Self->{$key} || $Config{$key};
+	my $replace =  $Self->{$key} || $Config{$key};
 #warn <<EOF;
 #orig=$orig
 #template=$template
@@ -149,9 +149,9 @@ if($Output) {
 	select OUT;
 }
 
-	s{(~@~(\w+)~@~)}{doit($::Self, $1, '', '', $2, '')}eg;
-	s{(.*)(\n[ 	]*#(.*)~_~(\w+)~_~(.*))}{doit($::Self, $1, $2, $3, $4, $5)}eg;
-	s{(.*)(\n[ 	]*/\*(.*)~_~(\w+)~_~(.*)\*/)}{doit($::Self, $1, $2, $3, $4, $5)}eg;
+	s{(~@~(\w+)~@~)}{doit($Self, $1, '', '', $2, '')}eg;
+	s{(.*)(\n[ 	]*#(.*)~_~(\w+)~_~(.*))}{doit($Self, $1, $2, $3, $4, $5)}eg;
+	s{(.*)(\n[ 	]*/\*(.*)~_~(\w+)~_~(.*)\*/)}{doit($Self, $1, $2, $3, $4, $5)}eg;
 	print;
 
 =head1 NAME
@@ -160,7 +160,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.6.2.1 2000-12-05 19:35:43 zarko Exp $
+$Id: config_prog.PL,v 1.6.2.1.2.1 2000-12-21 12:11:54 heins Exp $
 
 =head1 DESCRIPTION
 
