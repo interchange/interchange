@@ -13,19 +13,19 @@ UserTag summary Order amount
 UserTag summary PosNumber 1
 UserTag summary addAttr
 UserTag summary Routine <<EOF
-use vars qw/%summary_hash/;
 sub {
     my ($amount, $opt) = @_;
+	my $summary_hash = $::Instance->{tag_summary_hash} ||= {};
 	my $name;
 	unless ($name = $opt->{name} ) {
 		$name = 'ONLY0000';
-		%summary_hash = () if Vend::Util::is_yes($opt->{reset});
+		%$summary_hash = () if Vend::Util::is_yes($opt->{reset});
 	}
 	else {
-		$summary_hash{$name} = 0 if Vend::Util::is_yes($opt->{reset});
+		$summary_hash->{$name} = 0 if Vend::Util::is_yes($opt->{reset});
 	}
-	$summary_hash{$name} += $amount if length $amount;
-	$amount = $summary_hash{$name} if Vend::Util::is_yes($opt->{total});
+	$summary_hash->{$name} += $amount if length $amount;
+	$amount = $summary_hash->{$name} if Vend::Util::is_yes($opt->{total});
 	return '' if $opt->{hide};
 	return sprintf($opt->{format}, $amount) if $opt->{format};
     return Vend::Util::currency($amount) if $opt->{currency};
