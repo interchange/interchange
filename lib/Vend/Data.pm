@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.9 2001-01-28 08:35:01 heins Exp $
+# $Id: Data.pm,v 1.17.2.10 2001-02-05 13:20:42 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1593,6 +1593,16 @@ sub item_price {
 
 #::logDebug("price for item before chain $item->{code}=$price PriceField=$Vend::Cfg->{PriceField}");
 		$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
+		if($Vend::Cfg->{PriceDivide} == 0) {
+			my $msg = "Locale %s PriceDivide non-numeric or zero [%s].";
+			$msg .= " Possibly bad locale data.",
+			::logError(
+				$msg,
+				$::Scratch->{mv_currency} || $::Scratch->{mv_locale},
+				$Vend::Cfg->{PriceDivide},
+			);
+			$Vend::Cfg->{PriceDivide} = 1;
+		}
 		$price = $price / $Vend::Cfg->{PriceDivide};
 
 		$item->{mv_cache_price} = $price
