@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.18 2002-06-27 22:24:10 jon Exp $
+# $Id: Form.pm,v 2.19 2002-10-14 20:05:33 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 @EXPORT = qw (
 	display
@@ -499,6 +499,8 @@ sub option_widget {
 	my @opts = split /\s*,\s*/, $val;
 	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
 	my $done;
+	my $height = $opt->{height} || 5;
+	$height -= 2;
 	for(@opts) {
 		my ($v,$l) = split /\s*=\s*/, $_, 2;
 		next unless $l || length($v);
@@ -508,7 +510,7 @@ sub option_widget {
 			and $default = 1;
 		$out .= option_widget_box($name, $v, $l, $default, $width);
 	}
-	while($done++ < 3) {
+	while($done++ < $height) {
 		$out .= option_widget_box($name, '', '', '', $width);
 	}
 	$out .= option_widget_box($name, '', '', '', $width);
