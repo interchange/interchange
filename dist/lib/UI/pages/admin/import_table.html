@@ -67,6 +67,7 @@
 	[elsif cgi ui_upload_ext eq add]
 	[import-fields
 					add=1
+					autonumber="[cgi ui_autonumber]"
 					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
 					dir=backup
@@ -115,7 +116,8 @@
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> Add new items if present
 	<OPTION VALUE=update> Ignore new items
-</SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> Autonumber if no key</SMALL>
 <BR><select NAME=ui_import_convert>
 		<OPTION VALUE=0> Single table
 		<OPTION VALUE=1> Gnumeric simple tex
