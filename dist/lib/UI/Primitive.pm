@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.19 2002-08-18 15:11:32 mheins Exp $
+# $Id: Primitive.pm,v 2.20 2002-09-12 15:56:32 mheins Exp $
 
 # Copyright (C) 1998-2002 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 $DEBUG = 0;
 
@@ -94,76 +94,6 @@ sub is_logged {
 
 my %wrap_dest;
 my $compdb;
-
-sub ui_wrap {
-	my $path = shift;
-	if($CGI::values{ui_destination}) {
-		my $sub = $wrap_dest{$CGI::values{ui_destination}} || return 1;
-		return $sub->($path);
-	}
-	$Vend::Cfg->{VendURL} .= '/ui_wrap';
-	$UI::Editing = \&resolve_var;
-	$compdb = ::database_exists_ref($::Variable->{UI_COMPONENT_TABLE} ||= 'component');
-	$path =~ s:([^/]+)::;
-	$Vend::RedoAction = 1;
-	my $snoop = $1;
-	return $snoop;
-}
-
-sub wrap_edit {
-	package Vend::Interpolate;
-	my $name = shift;
-#::logGlobal("entering wrap_edit $name");
-	my $ref;
-	if ($compdb->record_exists($name)) {
-		$ref = $compdb->row_hash($name);
-	}
-	else {
-		return $::Variable->{$name} if ! $::Variable->{$name};
-		$ref = { variable => $::Variable->{$name} };
-	}
-	if ($ref->{variable} =~ s/^(\s*\[)include(\s+)/$1 . 'file' . $2/e) {
-		$ref->{variable} = ::interpolate_html($ref->{variable});
-	}
-	my $edit_link;
-	my $url = $Vend::Cfg->{VendURL};
-	$url =~ s!/ui_wrap$!$::Variable->{UI_BASE} || $Global::Variable->{UI_BASE} || 'admin'!e;
-	$url .= "/";
-	if(not $edit_link = $::Variable->{UI_EDIT_LINK}) {
-		my $url = Vend::Interpolate::tag_area(
-						"$::Variable->{UI_BASE}/compedit",
-						$name,
-						);
-		$url =~ s:/ui_wrap/:/:;
-		$edit_link = <<EOF;
-<A HREF="$url" target="_blank"><u>edit</u></A>
-EOF
-		chop $edit_link;
-	}
-	my $out = <<EOF;
-[calc] \$C_stack = [] unless \$C_stack;
-		push \@\$C_stack, \$Scratch->{ui_component} || '';
-		\$Scratch->{ui_component} = q{$name}; return; [/calc]
-EOF
-	chop $out;
-
-	for( qw/preedit preamble variable postamble postedit/ ) {
-		$out .= $ref->{$_};
-	}
-	$out .= qq{[calc] \$Scratch->{ui_component} = pop \@\$C_stack; return; [/calc]};
-	$out =~ s:\[comment\]\s*\$EDIT_LINK\$\s*\[/comment\]:$edit_link:;
-#::logGlobal("returning wrap_edit $out");
-	return $out;
-}
-
-sub resolve_var {
-	my ($name, $ref) = @_;
-	if ($compdb) {
-		return wrap_edit($name);
-	}
-	return $ref->{$name} if $ref and defined $ref->{$name};
-	return $::Variable->{$name};
-}
 
 sub ui_acl_enabled {
 	my $try = shift;
@@ -518,8 +448,10 @@ sub list_pages {
 	my ($keep, $suf, $base) = @_;
 	$suf = $Vend::Cfg->{StaticSuffix} if ! $suf;
 	$base = Vend::Util::catfile($Vend::Cfg->{VendRoot}, $base) if $base;
-	$base = $Vend::Cfg->{PageDir} if ! $base;
+	$base ||= $Vend::Cfg->{PageDir};
 	my @names;
+	$suf = quotemeta($suf);
+#::logDebug("Finding, ext=$suf base=$base");
 	my $wanted = sub {
 					return undef unless -f $_;
 					return undef unless /$suf$/;
@@ -529,6 +461,7 @@ sub list_pages {
 					push(@names, $n);
 				};
 	find($wanted, $base);
+#::logDebug("Found files: " . join (",", @names));
 	return sort @names;
 }
 

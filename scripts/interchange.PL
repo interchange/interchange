@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.57 2002-09-12 05:33:29 mheins Exp $
+# $Id: interchange.PL,v 2.58 2002-09-12 15:56:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -1902,7 +1902,6 @@ sub url_history {
 
 my %action = (
     process	=> \&do_process,
-	ui_wrap => \&UI::Primitive::ui_wrap,
 	ui		=> sub { 
 					&UI::Primitive::ui_acl_global();
 					&do_process(@_);
@@ -2457,19 +2456,9 @@ EOF
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
 			if ! defined $CGI::values{mv_todo}
 			and ! defined $CGI::values{mv_doit};
-		if($path[0] eq 'ui_wrap') {
-			$Vend::Action = 'ui_wrap';
-			delete $CGI::values{mv_action};
-			shift(@path);
-			$CGI::values{mv_nextpage} = $path[0]
-				if ! defined $CGI::values{mv_nextpage};
-			$path[0] = "process/$path[0]";
-		}
-		else {
-			$Vend::Action = 'process';
-			$CGI::values{mv_nextpage} = $Vend::FinalPath
-				if ! defined $CGI::values{mv_nextpage};
-		}
+		$Vend::Action = 'process';
+		$CGI::values{mv_nextpage} = $Vend::FinalPath
+			if ! defined $CGI::values{mv_nextpage};
 	}
 	else {
 		$Vend::Action = shift @path;
