@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 4.8.0
+Interchange 4.8.1
 
 Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -80,8 +80,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-4.7.?.tar.gz | tar xvf -
-cd interchange-4.7.?
+gzip -dc interchange-4.8.?.tar.gz | tar xvf -
+cd interchange-4.8.?
 ./configure
 
 Then you will need to make your first Interchange catalog, as described in
@@ -91,12 +91,12 @@ the next section.
 
                                  D E M O
 
-There is a demo catalog included called 'foundation'.
+There is a demo catalog skeleton included called 'foundation'.
 
-To install the demo, go to the directory where you installed Interchange
-(default is "interchange" in your home directory, /usr/local/interchange
-for root installations, or /usr/lib/interchange for RPM installations)
-and run:
+To build your own catalog from the demo, go to the directory where you
+installed Interchange (default is "interchange" in your home directory,
+/usr/local/interchange for root installations, or /usr/lib/interchange
+for RPM installations) and run:
 
 bin/makecat
 

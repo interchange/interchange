@@ -50,12 +50,12 @@ to make a distribution tar file:
 	Writing Makefile for Interchange
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
-	-e "manicopy(maniread(),'interchange-4.7.x', 'best');"
-	mkdir interchange-4.7.x
-	mkdir interchange-4.7.x/dist
+	-e "manicopy(maniread(),'interchange-4.8.x', 'best');"
+	mkdir interchange-4.8.x
+	mkdir interchange-4.8.x/dist
 	....
 	$ ls interch*
-	interchange-4.7.x.tar.gz
+	interchange-4.8.x.tar.gz
 
 
 Unpack and install
