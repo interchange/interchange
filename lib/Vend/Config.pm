@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.27 2001-03-14 23:20:37 jon Exp $
+# $Id: Config.pm,v 1.25.2.28 2001-03-15 00:40:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.27 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.28 $, 10);
 
 my %CDname;
 
@@ -1780,7 +1780,6 @@ my $Have_set_global_defaults;
 # Error out if not SubCatalog and can't find a setting.
 #
 sub set_default_search {
-	shift;
 	my $setting = $C->{ProductFiles};
 
 	if(! $setting) {
@@ -1801,6 +1800,7 @@ sub set_default_search {
 		$nofile = 1;
 		for(@fout) {
 			next if /\./;
+			next unless exists $C->{Database}{$_};
 			$_ = $C->{Database}{$_}{file};
 		}
 	}
@@ -1820,7 +1820,7 @@ sub set_default_search {
 		push @fout, $C->{Database}{$_}{file}
 			unless $nofile;
 	}
-	unless (scalar @tout) {
+	unless (scalar @fout) {
 		return 1 if $C->{BaseCatalog};
 		return (undef, errmsg("No default search file!") );
 	}
@@ -1871,6 +1871,17 @@ my %Default = (
 					$Global::TcpMap->{7786} = '-';
 					return 1;
 				},
+		Database => sub {
+			my @del;
+			for ( keys %{$C->{Database}}) {
+				push @del, $_ unless defined $C->{Database}{$_}{type};
+			}
+			for(@del) {
+#::logDebug("deleted non-existent db $_");
+				delete $C->{Database}{$_};
+			}
+			return 1;
+		},
 		ProductFiles => \&set_default_search,
 );
 
