@@ -81,6 +81,8 @@ Admin UI
 * Fix spurious "backup" error message in page_edit caused by search without
   backup database.
 
+* Added mv_session_id to the forms in the layout page.
+
 Payment
 -------
 
