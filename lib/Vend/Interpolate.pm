@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.45 2001-02-28 17:15:09 heins Exp $
+# $Id: Interpolate.pm,v 1.46 2001-03-07 15:07:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.45 $, 10);
+$VERSION = substr(q$Revision: 1.46 $, 10);
 
 @EXPORT = qw (
 
@@ -2061,7 +2061,7 @@ sub tag_cgi {
 
 	local($^W) = 0;
 	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
-	$value = $CGI::values{$var} || '';
+	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
     if ($value) {
 		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
