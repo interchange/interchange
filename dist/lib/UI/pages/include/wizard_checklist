@@ -54,7 +54,7 @@
 <tr>
 	<td bgcolor="$bgcolor" width="1%">&nbsp;</td>
 	<td bgcolor="$bgcolor"><img src="$imgbase$img" width="15" height="15" alt="" border="0"></td>
-	<td bgcolor="$bgcolor" width="98%"><a href="$url" class="flowchart">$name</a></td>
+	<td bgcolor="$bgcolor" width="98%"><a href="$url" class="flowchart"><font size=-1>$name</a></td>
 </tr>
 EOF
 	}
@@ -62,7 +62,7 @@ EOF
 		return <<EOF;
 <tr>
 	<td bgcolor="$bgcolor"><img src="$imgbase$img" width="15" height="15" alt="" border="0"></td>
-	<td bgcolor="$bgcolor" width="98%" colspan=2><a href="$url" class="flowchart">$name</a></td>
+	<td bgcolor="$bgcolor" width="98%" colspan=2><a href="$url" class="flowchart"><font size=-1>$name</a></td>
 </tr>
 EOF
 	}
