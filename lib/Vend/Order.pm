@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.12 2002-11-26 03:21:10 jon Exp $
+# $Id: Order.pm,v 2.6.2.13 2003-01-24 03:26:55 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.12 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.13 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -58,16 +58,34 @@ use strict;
 
 use autouse 'Vend::Error' => qw/do_lockout/;
 
-my @Errors = ();
-my $Fatal = 0;
-my $And;
-my $Final = 0;
-my $Success;
-my $Profile;
-my $Tables;
-my $Fail_page;
-my $Success_page;
-my $No_error;
+my (
+	@Errors,
+	$Update,
+	$Fatal,
+	$And,
+	$Final,
+	$Success,
+	$Profile,
+	$Tables,
+	$Fail_page,
+	$Success_page,
+	$No_error,
+);
+
+sub reset_order_vars {
+	@Errors = ();
+	$Update = 0;
+	$Fatal = 0;
+	undef $And;
+	$Final = 0;
+	undef $Success;
+	undef $Profile;
+	undef $Tables;
+	undef $Fail_page;
+	undef $Success_page;
+	undef $No_error;
+	return;
+}
 
 my %Parse = (
 
@@ -846,6 +864,8 @@ sub do_check {
 
 sub check_order {
 	my ($profile, $vref) = @_;
+	reset_order_vars();
+
 	my($codere) = '[-\w_#/.]+';
 	my $params;
 	$Profile = $profile;
@@ -868,7 +888,6 @@ sub check_order {
 	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
 	$params =~ s/\\\n//g;
-	@Errors = ();
 	$And = 1;
 	$Fatal = $Final = 0;
 	$Fail_page = $Success_page = '';
