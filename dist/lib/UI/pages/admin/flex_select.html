@@ -389,19 +389,26 @@ EOF
 				]">[loop-code]</TH>
 [/loop]
 </tr>
+[tmp tmp_url]
+	mv_data_table=[cgi mv_data_table]
+	ui_page_title=[cgi ui_page_title]
+	ui_page_title=[cgi ui_page_banner]
+	ui_meta_specific=[cgi ui_meta_specific]
+	[if cgi ui_return_to]
+	[return-to formlink]
+	[else]
+		ui_return_to=@@MV_PAGE@@
+		ui_return_to=mv_data_table=[cgi mv_data_table]
+		ui_return_to=ui_limit_fields=[cgi ui_limit_fields]
+	[/else]
+	[/if][/tmp]
 [search-region more=1 arg="[scratch sparams]"]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 
 <TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/flex_editor form=|
-									mv_data_table=[cgi mv_data_table]
-									ui_page_title=[cgi ui_page_title]
-									ui_page_title=[cgi ui_page_banner]
-									ui_meta_specific=[cgi ui_meta_specific]
-									ui_return_to=@@MV_PAGE@@
-									ui_return_to=mv_data_table=[cgi mv_data_table]
-									ui_return_to=ui_limit_fields=[cgi ui_limit_fields]
-									item_id=[item-code]
+							[scratch tmp_url]
+							item_id=[item-code]
 						|][item-code]</A></TD>
 [item-sub show_line]
 sub {
