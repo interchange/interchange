@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.93 2002-07-28 05:44:24 mheins Exp $
+# $Id: Interpolate.pm,v 2.94 2002-08-01 16:45:02 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.93 $, 10);
+$VERSION = substr(q$Revision: 2.94 $, 10);
 
 @EXPORT = qw (
 
@@ -4080,8 +4080,8 @@ sub tag_attr_list {
 			  !eg;
 	$body =~ s!\{($Codere)\|($Some)\}!$hash->{$1} || $2!eg;
 	$body =~ s!\{($Codere)\s+($Some)\}! $hash->{$1} ? $2 : ''!eg;
-	$body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{$1} ? $2 : ''!eg;
-	$body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{$1} ? '' : $2!eg;
+	1 while $body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{$1} ? $2 : ''!eg;
+	1 while $body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{$1} ? '' : $2!eg;
 	$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
 	return $body;
 }
