@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.8 2001-01-20 20:02:28 heins Exp $
+# $Id: Util.pm,v 1.14.2.9 2001-01-28 08:42:01 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.9 $, 10);
 
 BEGIN {
 	eval {
@@ -924,7 +924,7 @@ sub readfile_db {
 	my ($tab, $col) = split /:+/, $Vend::Cfg->{FileDatabase};
 	my $db = $Vend::Interpolate::Db{$tab} || ::database_exists_ref($tab)
 		or return undef;
-::logDebug("tab=$tab exists, db=$db");
+#::logDebug("tab=$tab exists, db=$db");
 
 	# I guess this is the best test
 	if($col) {
@@ -938,9 +938,9 @@ sub readfile_db {
 		return undef unless $db->column_exists($col);
 	}
 
-::logDebug("col=$col exists, db=$db");
+#::logDebug("col=$col exists, db=$db");
 	return undef unless $db->record_exists($name);
-::logDebug("ifile=$name exists, db=$db");
+#::logDebug("ifile=$name exists, db=$db");
 	return $db->field($name, $col);
 }
 
