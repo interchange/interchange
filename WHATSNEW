@@ -5,6 +5,257 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.7.5 released 2001-07-03.
+
+Core
+----
+* Allow GlobalSub session autoloads.
+
+* Introduce use of AutoVariable for global.
+
+* Overhaul encryption just a bit. We now recognize natively three
+  encryption programs, gpg, pgp, and pgpe. Each has argument strings
+  automatically generated, and the catalog.cfg directive EncryptKey
+  is used by default for encryption. If you pass a directive value
+  which is only (/usr/local/bin/)?gpg, it uses these default argument
+  values. The defaults:
+
+    gpg      gpg --batch --always-trust -e -a -t -r '%s'
+    pgp      pgp -fat - '%s'
+    pgpe     pgpe -fat -r '%s'
+
+  These have all been tested with the exception of pgpe, but that
+  should be good.
+
+* Route encrypt_program value may not be overridden by expansion from
+  variables or by extended. This is for security -- otherwise a change
+  in route or variable could allow an arbitrary program to be run.
+
+* Add refinement to bar_link and the area.txt databases where you
+  can specify the sort field (or other additional parameters) by entering
+  in "search" column. Will make top-category stuff ordered in category
+  order instead of random based on prod_group.
+
+* Remove explicit setting of order routes in ValuesDefault, use
+  the "cascade" setting of the master route instead.
+
+* Refuse access for empty passwords or "anything" passwords (empty in DB).
+
+* Make username and password minimum lengths customizable (defaults 2, 4).
+
+* When creating UserDB object, use Vend::username instead of session
+  username for better security.
+
+* Allow AdminUser superuser access to all catalogs; no access DB required.
+
+* Log attempts by anyone other than superusers to change another user's
+  password (e.g. by munging form variable mv_username).
+
+* Make reconfig tags reference RunDir vice ConfDir, resolving bug #207.
+
+* Fix configuration parsing for simple 'Locale xx_XX' directives (for
+  pulling locale info from system).
+
+* Enable use of Net::SMTP for systems without sendmail. All are
+  likely to have it, as Bundle::libnet is part of Bundle::Interchange.
+
+* Change the Vend::Config::parse_executable check to allow use of a Perl
+  module as an option, doing a require for it.
+
+* Change sql_statement error handling to always die upon parse
+  error. This will allow the calling routines to trap errors better.
+
+* Order single-widget matrix options by o_sort, as suggested by Ton Verhagen.
+
+* Add matrix option widget and handling so that you can select the
+  variants based on individual widgets instead of one. Uses the
+  methodology of taking multiple settins of mv_skuN, where N is the cart
+  line. Each is joined with a - character, and
+  $::Variable->{MV_VARIANT_FILLER}|| 0 is inserted if it is blank.
+
+* Method to tell if the individual widget method is used is to have both
+  o_matrix and o_modular set. This is less than ideal, and a better method
+  is needed. Will not document this until the method is set.
+
+* Change handling of option updates so that if an illegal variant
+  is selected from the database the code and mv_ib refuse to change.
+
+* Fix problem with quoting wrong entity setup in textarea.
+
+* Change add_items() quantity handling to strip letters and fractionals
+  (unless FractionalItems).
+
+* Change default order routes so that it comes from $Values instead of
+  $CGI. This allows the FormIgnore to block form-entered order routes.
+
+* Change route code so that an empty route will never be emailed.
+
+* change_url function needed with resolve_links() had bug in adding
+  arguments. Discovered by Taylor Mitchell and Erik Wichern.
+
+(User)Tags
+----------
+* Add random saying component and usertag [fortune], based on
+  /usr/games/fortune.
+
+* Make [reconfigure] tag use RunDir instead of ConfDir.
+
+* Add run=1 option to file-info tag.
+
+* Return nothing from tag [table-organize] if there are not <td> elements.
+
+* Add [if pragma ...] conditional.
+
+* Add [if global VARIABLE] for testing on globals.
+
+* Added new core [msg] tag for doing parse-time locale substitutions.
+
+* Change the [mail] routine in Vend::Interpolate to use
+  Vend::Util::send_mail so that it can use Net::SMTP.
+
+* Fix [options] so that SKU on multiple-widget will always be
+  set even if not previously.
+
+* Fix [record ...] tag to work with all DB types.
+
+* Fix [catch] tag so that you can put ITL inside the error evals;
+  all errors are now delimited by [/pattern/] [/(?pattern/)?]
+
+* Add new [warnings] tag to eliminate the problem with overwriting
+  and fragmentation of [data session failure], [data session error], [data
+  session ui_failure], [data session ui_error], etc. Will add separate
+  namespaces in next iteration so that we can use different ones for UI.
+
+* Add ranges option to [loop list="A..Z" ranges=1] to allow alpha-numeric
+  lists. Limit number of produced options to
+  $Vend::Cfg->{Limit}{option_list}.
+
+* Add auto=1 option to [timed-build ...]. Makes an MD5 digest of the
+  contained text, then auto-builds using that go generate a filename.
+  Demonstrated in latest templates/components/category_vertical.
+
+Admin UI
+--------
+* Multi-locale UI (selectable at login time) improved.
+
+* New admin context-sensitive help topics added.
+
+* Fixed images/products combined upload problem (Bugzilla #251).
+
+* Add re-routing map capability to wizard maps so that the
+  same pages can be used when only the mv_nextpage/mv_prevpage
+  stuff changes. We set up the map in pages/include/wizard_profiles.
+
+* Go to password change page after new user is created, so admins won't
+  forget to set a password for new users.
+
+* Build categories even if sampleproducts not selected, give
+  chance to turn off on preview page.
+
+* Change so that the save will set the pref_group on the
+  Variable, which allows it to be later edited logically under
+  Administration->Preferences.
+
+* Fix uploadhelper mv_click so that preceding path will be stripped.
+
+* Refine guess_info to work with either standard wizard or CommerceLauncher.
+
+* Change shipping wizard a bit to allow the user to select their default
+  country and shipmode in all cases.
+
+* Add ability to pass form params in via the checklist menus.
+
+* Sort item options when producing matrix options, so new matrix
+  separate mode will work.
+
+* Fix target page for login errors.
+
+* Rework password changing in admin UI to always use UserDB functions
+  instead of directly writing to database.
+
+Foundation catalog
+------------------
+* Break out different order methods in different checkout profiles.
+  Eliminate the fax_order variable. Retain old checkout_profile for
+  compatibility.
+
+* Move default category_vertical component to second instead of
+  third slot to prevent duplicate category lists on some of the
+  default foundation pages.
+
+* Finished the advanced search (searching by category now works, as well
+  as searching by item field).
+
+* Move default category_vertical component to second instead of
+  third slot to prevent duplicate category lists on some of the default
+  foundation pages.
+
+* Add timed-build capability to category_vertical.
+
+* Fixed merch components so that if an image doesn't exist, it will not
+  display a broken one.
+
+* Change item_option.html to use [record ...] tag instead of separate
+  [data ...]. Add Matrix options with separate IDs, still need JS logic
+  to insert -0- on empty option.
+
+* Fix item_options in matrix form, removing silly overload of o_modular
+  bit. o_matrix now can have two values, 1 (one widget) and 2 (separate
+  widgets). The item-option tag can override the separate/single display type
+  with a display-type=separate or display-type=one (default) option.
+
+* Add o_enable to variant creation form, which enables the option for
+  display.
+
+* Default table/area/category to some reasonable defaults.
+
+* Trailing blanks were causing problems in admin/order.html when displaying
+  archived/pending orders. Made all definitions consistent at char(1).
+
+* Fix "nullsellect" typo in mv_metadata.
+
+Various
+-------
+* Added file UPGRADING, rudimentary help on updating Interchange, to
+  complement icupgrade(8) docs.
+
+* Support running Interchange under Cygwin for testing purposes.
+
+* Fixed the small search box components - substring matching was not working,
+  only whole word matching.
+
+* Add companion page to qb_getord.pl (get_orders.html), which allows
+  you to download orders and move the file to a new location so that
+  future orders will start a new file.
+
+* Add widget key selector for GnuPG keys.
+
+* Added flat-file table editor utility (eg/te).
+
+* Removing eg/make_gnumeric.sh tool, since Gnumeric dropped support for
+  the flat-file table format.
+
+* Silly workaround to make Perl 5.6.1 compatible with File::Copy under Safe.
+
+* Fix host and port changes in makecat.PL when selecting INET mode.
+
+* Place STDIN in binmode so tlink.pl will work with Cygwin/Apache.
+
+* Added mv_session_id hidden form value in a few places it was missing to make
+  cookie-free browsing work everywhere.
+
+* Fix the intro script so it will build even if not run from Makefile.PL,
+  given an Interchange Root. This will allow a "update_cvs_limited" script
+  that updates bin / lib / selected_other_files.
+
+* Minor HTML and CSS fixes.
+
+* Removed unused images.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.7.4 released 2001-06-16.
 
 Core
