@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.51 2003-04-11 00:00:52 mheins Exp $
+# $Id: Order.pm,v 2.52 2003-04-11 02:35:38 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.52 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1167,7 +1167,7 @@ sub check_order_each {
 	return $status;
 }
 
-use vars qw/ %state_template %state_error /;
+use vars qw/ %state_template %state_error %zip_routine %zip_error /;
 $state_error{US} = "'%s' not a two-letter state code";
 $state_error{CA} = "'%s' not a two-letter province code";
 $state_template{US} = <<EOF;
@@ -1179,6 +1179,17 @@ EOF
 $state_template{CA} = <<EOF;
 | AB BC MB NB NF NS NT ON PE QC SK YT YK |
 EOF
+
+$zip_error{US} = "'%s' not a US zip code";
+$zip_routine{US} = sub { $_[0] =~ /^\s*\d\d\d\d\d(?:-?\d\d\d\d)?$/ };
+
+$zip_error{CA} = "'%s' not a Canadian postal code";
+$zip_routine{CA} = sub {
+	my $val = shift;
+	return undef unless defined $val;
+	$val =~ s/[_\W]+//g;
+	$val =~ /^[ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy]\d[A-Za-z]\d[A-Za-z]\d$/;
+};
 
 sub _state_province {
 	my($ref,$var,$val) = @_;
@@ -1235,23 +1246,54 @@ sub _province {
 	}
 }
 
-sub _multistate {
-	my($ref,$var,$val) = @_;
-
-	my $error;
-
+sub _get_cval {
+	my ($ref, $var) = @_;
 	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
 	my $cval = $ref->{$cfield} || $::Values->{$cfield};
 
 	if($var =~ /^b_/ and $ref->{"b_$cfield"} || $::Values->{"b_$cfield"}) {
 		$cval = $ref->{"b_$cfield"} || $::Values->{"b_$cfield"};
 	}
+	return $cval;
+}
 
-	if (length($val) < 2) {
-		$error = 1;
+sub _multizip {
+	my($ref,$var,$val) = @_;
+
+	$val =~ s/^\s+//;
+	my $error;
+	my $cval = _get_cval($ref, $var);
+
+	if (my $sub = $zip_routine{$cval}) {
+		$sub->($val) or $error = 1;
 	}
-	elsif(my $sval = $state_template{$cval}) {
+	elsif($::Variable->{MV_ZIP_REQUIRED}) {
+	    " $::Variable->{MV_ZIP_REQUIRED} " =~ /\s$cval\s/
+			and
+		length($val) < 4 and $error = 1;
+	}
+
+	if($error) {
+		my $tpl = $zip_error{$cval} || "'%s' not a valid post code for country '%s'";
+		my $msg = errmsg( $tpl, $val, $cval );
+		return (undef, $var, $msg );
+	}
+	return (1, $var, '');
+}
+
+sub _multistate {
+	my($ref,$var,$val) = @_;
+
+	my $error;
+	my $cval = _get_cval($ref, $var);
+
+	if(my $sval = $state_template{$cval}) {
 		$error = 1 unless $sval =~ /\s$val\s/;
+	}
+	elsif($::Variable->{MV_STATE_REQUIRED}) {
+	    " $::Variable->{MV_STATE_REQUIRED} " =~ /\s$cval\s/
+			and
+		length($val) < 2 and $error = 1;
 	}
 
 	if($error) {
