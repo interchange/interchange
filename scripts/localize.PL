@@ -24,7 +24,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+# $Id: localize.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -65,8 +65,6 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 $Global::ErrorFile = "$Global::VendRoot/error.log";
 
 ### END CONFIGURABLE VARIABLES
-
-sub dontwarn { $FindBin::RealBin; }
 
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
@@ -353,7 +351,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+$Id: localize.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 
 =head1 SYNOPSIS
 

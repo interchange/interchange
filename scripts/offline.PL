@@ -25,7 +25,7 @@ DOIT: {
 #
 # offline - Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.4 2000-09-20 19:58:01 zarko Exp $
+# $Id: offline.PL,v 1.5 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -69,11 +69,25 @@ BEGIN {
 
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	
+}
 }
 
 ### END CONFIGURABLE VARIABLES
 
-$Global::ConfigFile = 'minivend.cfg';
 $Global::ErrorFile = "$Global::VendRoot/error.log";
 $Vend::ExternalProgram = 1;
 
@@ -263,7 +277,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.4 2000-09-20 19:58:01 zarko Exp $
+$Id: offline.PL,v 1.5 2000-09-23 18:49:30 heins Exp $
 
 =head1 DESCRIPTION
 

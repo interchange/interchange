@@ -25,7 +25,7 @@ DOIT: {
 #
 # update - Interchange database updater
 #
-# $Id: update.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+# $Id: update.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,12 +61,24 @@ BEGIN {
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
 }
 ### END CONFIGURABLE VARIABLES
 
 sub dontwarn { $FindBin::RealBin; }
 
-$Global::ConfigFile = 'minivend.cfg';
 $Global::ErrorFile = "$Global::VendRoot/error.log";
 $Vend::ExternalProgram = 1;
 
@@ -123,7 +135,7 @@ usage: update -c catalog -i inputfile [-n name]
 
 Options:
 
-  -c catalog    Catalog name as defined in minivend.cfg.
+  -c catalog    Catalog name as defined in interchange.cfg.
   -f field      Field name(s) in database. If multiple fields are specified,
                 multiple corresponding values must be supplied.  Use '' to
                 set to the empty string.

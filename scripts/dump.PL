@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+# $Id: dump.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -69,14 +69,25 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		if -f "$Global::VendRoot/_session_storable";
 	$ENV{MINIVEND_STORABLE_DB} = 1
 		if -f "$Global::VendRoot/_db_storable";
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
 }
 
 ### END CONFIGURABLE VARIABLES
 
 sub debug { return undef }
-sub dontwarn { $FindBin::RealBin; }
 
-$Global::ConfigFile = 'minivend.cfg';
 $Global::HammerLock = 20;
 $Vend::ExternalProgram = 1;
 
@@ -239,7 +250,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+$Id: dump.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 
 =head1 SEE ALSO
 

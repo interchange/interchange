@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: interchange.PL,v 1.2 2000-09-20 19:58:01 zarko Exp $
+# $Id: interchange.PL,v 1.3 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -67,7 +67,20 @@ BEGIN {
 	
 $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
-$Global::ConfigFile = 'minivend.cfg';
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+
 $Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
 if($^O =~ /win32/i) {
@@ -222,7 +235,7 @@ use autouse 'Vend::Control' => qw/
 											signal_reconfig
 											signal_add
 											signal_remove
-											control_minivend
+											control_interchange
 											change_catalog_directive
 											change_global_directive
 											remove_catalog
@@ -1937,7 +1950,6 @@ sub dontwarn {
 	$File::Find::prune +
 	<DATA> + 
 # END STATICPAGE
-	$FindBin::RealBin +
 	$Global::AdminSub +
 	$Global::DomainTail +
 	$Global::FullUrl +
@@ -2030,7 +2042,7 @@ Exclude catalog from this startup.
 
 =item -f file, --config=file
 
-Configuration file to use (default is minivend.cfg in VendRoot).
+Configuration file to use (default is interchange.cfg in VendRoot).
 
 =item --files spec
 
@@ -2106,7 +2118,7 @@ Set a Interchange global directive upon start (or --restart). Example:
 	interchange SocketPerms=0666
 
 This will start the server and override the default of SocketPerms or the
-value set in minivend.cfg for this instance only. Any --restarts must
+value set in interchange.cfg for this instance only. Any --restarts must
 re-specify the directive if it is still to have that value.
 
 =item name:Directive=value
@@ -2137,11 +2149,11 @@ Command line options (first letter will usually work):
                            from the standard input
      -b catalog
         --build=catalog    build static page tree for catalog
-     -d dir, --dir=dir     directory for VendRoot (minivend.cfg, error.log, etc.)
+     -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
      -f file,
-        --config=file      configuration file (default minivend.cfg)
+        --config=file      configuration file (default interchange.cfg)
      --files spec          filespec (perl regexp OK) for static page tree
      -h, --help            display this message
      -i, --inetmode        run with Internet-domain socket (TCP)
@@ -2252,15 +2264,15 @@ sub parse_options {
 		test			=> $modesub,
 		unixmode        => \$Global::Unix_Mode,
 		version         => sub { version(); exit 0 },
-		stop			=> \&control_minivend,
+		stop			=> \&control_interchange,
 		add				=> \&signal_add,
 		remove			=> \&signal_remove,
-		kill			=> \&control_minivend,
+		kill			=> \&control_interchange,
 		Ignore 			=> \$ignore,
 		restart			=> sub {
 								return if $ignore;
 								$ignore = 1;
-								control_minivend('stop', 'TERM', 1);
+								control_interchange('stop', 'TERM', 1);
 								sleep 3;
 								exec $0, '--Ignore', @args;
 							},
@@ -2344,7 +2356,7 @@ sub parse_options {
 #   --- seed random generator
 #   --- set up a couple of preloaded arrays
 #   --- parse command-line options
-#   --- read global configuration file minivend.cfg and
+#   --- read global configuration file interchange.cfg and
 #       get catalog definitions
 #   --- configure each catalog and store its configuration
 #       in a reference mapped to the SCRIPT_NAME or catalog name
@@ -2367,9 +2379,9 @@ sub main_loop {
 	setup_escape_chars();
 
 	# These are only starting values, can be changed by command-line
-	# options or the minivend.cfg file
+	# options or the interchange.cfg file
 	$Global::ConfDir = "$Global::VendRoot/etc";
-	$Global::PIDfile = "$Global::ConfDir/minivend.pid";
+	$Global::PIDfile = "$Global::ConfDir/$Global::ExeName.pid";
 
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
 
@@ -2415,7 +2427,6 @@ sub main_loop {
 	$Vend::CyberCash = $Vend::CyberCash || ! $@;
 
 	# These modules no longer necessary, why take up memory?
-	delete $INC{'FindBin.pm'};
 	delete $INC{'Getopt/Long.pm'};
 
 	$Global::ErrorFile = "$Global::VendRoot/error.log"
@@ -2424,7 +2435,7 @@ sub main_loop {
 
 	chdir($Global::VendRoot) 
 		or die "Couldn't change directory to $Global::VendRoot: $!\n";
-	$Global::ConfigFile = "$Global::VendRoot/minivend.cfg"
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ExeName.cfg"
 		if ! $Global::ConfigFile;
 
 	die "Interchange not configured, no $Global::ConfigFile.\n"
@@ -2439,7 +2450,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	# Restrictive file permissions to begin with
 	umask 077;
 
-	# Read minivend.cfg (or whatever its name is set to be)
+	# Read interchange.cfg (or whatever its name is set to be)
 	global_config();
 
 #::logDebug(::uneval(\%Global::Catalog));

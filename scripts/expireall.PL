@@ -33,14 +33,27 @@ use lib '/usr/local/interchange';
 
 use Getopt::Std;
 
-$VendRoot = $VendRoot || '/usr/local/interchange';
-#$VendRoot = $VendRoot || '~_~INSTALLARCHLIB~_~';
+$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
 ## END CONFIGURABLE VARIABLES
 
 BEGIN {
-    ($VendRoot = $ENV{MINIVEND_ROOT})
+    ($Global::VendRoot = $ENV{MINIVEND_ROOT})
         if defined $ENV{MINIVEND_ROOT};
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
 }
 
 my $query;
@@ -49,11 +62,11 @@ $USAGE = <<EOF;
 Expire all listed Interchange catalogs. Will read information from
 either the file passed with -f or:
 
-	$VendRoot/minivend.cfg
+	$Global::VendRoot/interchange.cfg
 
 usage: expireall [-r] [-f file]
 
-	-f    Alternate minivend.cfg file
+	-f    Alternate interchange.cfg file
 	-r    Use reorganize parameter in command
 
 EOF
@@ -61,7 +74,7 @@ EOF
 use vars qw/$opt_e $opt_f $opt_n $opt_r/; 
 getopts('e:f:rn') or die "$@\n$USAGE\n";
 
-my $Configfile = $opt_f || "$VendRoot/minivend.cfg";
+my $Configfile = $opt_f || $Global::ConfigFile;
 
 my $flag = '';
 
@@ -77,7 +90,7 @@ unless ($opt_n) {
 	$flag .= " -u";
 }
 
-# Parse the minivend.cfg file to look for script/catalog info
+# Parse the interchange.cfg file to look for script/catalog info
 PARSECFG: {
 	my $file;
 	my @cfglines;
@@ -97,7 +110,7 @@ PARSECFG: {
 }
 
 for(@cats) {
-	system "$VendRoot/bin/expire $flag -c $_";
+	system "$Global::VendRoot/bin/expire $flag -c $_";
 }
 
 =head1 NAME
@@ -106,7 +119,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+$Id: expireall.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 
 =head1 DESCRIPTION
 

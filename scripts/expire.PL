@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
+# $Id: expire.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -67,12 +67,24 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		if -f "$Global::VendRoot/_session_storable";
 	$ENV{MINIVEND_STORABLE_DB} = 1
 		if -f "$Global::VendRoot/_db_storable";
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
 	
 }
 
 ### END CONFIGURABLE VARIABLES
 
-$Global::ConfigFile = 'minivend.cfg';
 $Global::HammerLock = 20;
 $Global::ErrorFile = 'error.log';
 
@@ -129,7 +141,7 @@ usage: expire [-r|-u] -c catalog [-e 'SessionExpire']
        expire [-r|-u] [-e 'SessionExpire'] sessionfile [sessionfile.lock]
 
  OPTIONS
-      -c catalog  specify a catalog from minivend.cfg
+      -c catalog  specify a catalog from interchange.cfg
 
       -e time     vary expire time from default in catalog.cfg.
                   time is a string like '4 hours' or '2 days'
