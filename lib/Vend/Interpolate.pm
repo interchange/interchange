@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.175 2003-07-01 10:46:32 racke Exp $
+# $Id: Interpolate.pm,v 2.176 2003-07-03 23:16:03 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.175 $, 10);
+$VERSION = substr(q$Revision: 2.176 $, 10);
 
 @EXPORT = qw (
 
@@ -88,7 +88,6 @@ BEGIN {
 		$hole = new Safe::Hole;
 	};
 }
-my $tag_wrapped;
 
 use strict;
 use Vend::Util;
@@ -1836,7 +1835,7 @@ sub tag_perl {
 		}
 	}
 
-	$Tag = $hole->wrap($Tag) if $hole and ! $tag_wrapped++;
+	$Tag = $hole->wrap($Tag) if $hole and ! $Vend::TagWrapped++;
 
 	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
