@@ -3,7 +3,7 @@ Variable UI_STD_FILE_NAV <<EONav
 <table cellpadding=3 cellspacing=0 width=__UI_MAIN_WIDTH__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 <tr>
@@ -26,7 +26,7 @@ Variable UI_STD_FILE_NAV <<EONav
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 <tr>
@@ -44,7 +44,7 @@ Variable UI_STD_FILE_NAV <<EONav
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 </table>
