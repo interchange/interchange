@@ -1,0 +1,43 @@
+UserTag accounting Order function
+UserTag accounting addAttr
+UserTag accounting Routine <<EOR
+sub {
+	my ($func, $opt) = @_;
+
+	die "Accounting not enabled!"
+		unless $Vend::Cfg->{Accounting};
+
+	if(my $sys = $opt->{system}) {
+		my $former = $Vend::Cfg->{Accounting};
+		$Vend::Cfg->{Accounting} = $Vend::Cfg->{Accounting_repository}{$sys}
+			or do {
+				logError(
+					"Failed to change accounting system to %s, returning to %s.",
+					$opt->{system},
+					$former->{Class},
+				);
+				$Vend::Cfg->{Accounting} = $former;
+				return undef;
+			};
+	}
+
+	my $a = $Vend::Cfg->{Accounting} 
+		or do {
+			logError("No accounting system present. Aborting.");
+			return undef;
+		};
+	
+	my $class = $a->{Class};
+	my $self = new $class;
+	unless( $self->can($func) ) {
+		logError(
+			"No function '%s' in accounting system %s. Aborting.",
+			$func,
+			$class,
+		);
+		return undef;
+	}
+
+	return $self->$func($opt);
+}
+EOR

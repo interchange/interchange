@@ -23,34 +23,14 @@ package Vend::Accounting::SQL_Ledger;
 
 use strict;
 use warnings;
-use HTML::TokeParser;
 use Vend::Util;
 use Vend::Accounting;
+use Text::ParseWords;
 
 use vars qw/$VERSION @ISA/;
 @ISA = qw/ Vend::Accounting /;
 
-# HARD-CODED GLOBALS.
-# >>>>> Here are some globals that you might want to adjust <<<<<<
-
-    # The current SQL-Ledger install directory
-    our $SL_DIR = '/usr/local/sql-ledger/'; 
-
-    # The SQL-Ledger path to use for transactions
-    #our $SL_PATH = Vend::Util::escape_chars_url('bin/mozilla'); 
-    our $SL_PATH = 'bin/mozilla'; 
-
-    # The SQL-Ledger user-id to use for transactions
-    our $SL_USER = 'mike'; 
-
-    # The SQL-Ledger password to use for transactions
-    our $SL_PASS = 'flange'; 
-
-    # The SQL-Ledger service item name to use for transactions
-    our $SL_ITEM_NAME = 'test-service'; 
-
-    # The SQL-Ledger service item id to use for transactions
-    our $SL_ITEM_ID = '10073'; 
+my $Tag = new Vend::Tags;
 
 sub new {
     my $class = shift;
@@ -63,14 +43,18 @@ sub new {
 
 	my $self = new Vend::Accounting;
 
-	$self->{Config} = {};
+	my $cfg = $self->{Config} = {};
 	while (my ($k, $v) = each %{$Vend::Cfg->{Accounting}}) {
-		$self->{Config}{$k} = $v;
+		$cfg->{$k} = $v;
 	}
 	while (my ($k, $v) = each %$opt) {
-		$self->{Config}{$k} = $v;
+		$cfg->{$k} = $v;
 	}
 
+	if(! $cfg->{counter}) {
+		my $tab = $cfg->{link_table} || 'customer';
+		$cfg->{counter} = "$tab:id";
+	}
     bless $self, $class;
 #::logDebug("Accounting self=" . ::uneval($self) );
 	return $self;
@@ -78,229 +62,144 @@ sub new {
 
 # ------------------ START OF THE LIBRARY ------------
 
-sub push_parms {
-	my($k, $v, $ary) = @_;
-	if( ref($v) eq 'ARRAY') {
-		my $ary = $v;
-		for(@$ary) {
-			push @$ary, "$k=" . Vend::Util::escape_chars_url($_);
+my %Def_filter = (
+
+);
+
+my %Def_map = (
+
+customer => <<EOF,
+    name            "{company?}{b_company?b_company:company}{/company?}{company:}{b_address1?b_lname:lname}{/company:}"
+    addr1           {b_address1?b_address1:address1}
+    addr2           {b_address1?b_address2:address2}
+    addr3           "{b_address1?}{b_city}, {b_state}  {b_zip}{/b_address1?}{b_address1:}{city}, {state}  {zip}{/b_address1:}"
+    addr4           "{b_address1?}{b_country}--{country:name:{b_country}}{/b_address1?}{b_address1:}{country}--{country:name:{country}}{/b_address1:}"
+    contact         "{b_fname|{fname}} {b_lname|{lname}}"
+    phone           "{b_phone|{phone_day}}"
+    email			email
+    shiptoname      "{company?}{company}{/company?}{company:}{lname}{/company:}"
+    shiptoaddr1     address1
+    shiptoaddr2     address2
+    shiptoaddr3     "{city}, {state}  {zip}"
+    shiptoaddr4     "{country} - {country:name:{country}}"
+    shiptocontact   "{fname} {lname}"
+    shiptophone     phone_day
+    shiptofax       fax
+    shiptoemail     email
+EOF
+
+	oe =>		q(
+					ordnumber	order_number
+					vendor_id   vendor_id
+					customer_id username
+					amount		total_cost
+					reqdate		require_date
+					curr		currency_code
+				),
+
+);
+
+my %Include_map = (
+	customer =>	[qw/
+					name
+					addr1
+					addr2
+					addr3
+					addr4
+					contact
+					phone
+					email
+					shiptoname
+					shiptoaddr1
+					shiptoaddr2
+					shiptoaddr3
+					shiptoaddr4
+					shiptocontact
+					shiptophone
+					shiptofax
+					shiptoemail
+				/],
+	oe =>		[qw/
+					ordnumber
+					transdate
+					vendor_id
+					customer_id 
+					amount
+					netamount
+					reqdate
+					taxincluded
+					shippingpoint
+					notes
+					curr
+				/],
+	);
+
+sub map_data {
+	my ($s, $type, $ref, $record) = @_;
+	$record ||= {};
+	$ref    ||= $::Values;
+
+	my $keys = $s->{Config}{"include_$type"}	|| $Include_map{$type};
+	my $map  = $s->{Config}{"map_$type"}		|| $Def_map{$type};
+	my $filt = $s->{Config}{"filter_$type"}		|| $Def_filter{$type};
+	$map =~ s/\r?\n/ /g;
+	$map =~ s/^\s+//;
+	$map =~ s/\s+$//;
+	my %map  = Text::ParseWords::shellwords($map);
+	my %filt;
+	%filt = Text::ParseWords::shellwords($filt) if $filt;
+
+	my @keys;
+	if(ref($keys)) {
+		@keys = @$keys;
+	}
+	else {
+		$keys =~ s/^\s+//;
+		$keys =~ s/\s+$//;
+		@keys = split /[\s,\0]+/, $keys;
+	}
+
+	for my $k (@keys) {
+		my $filt = $filt{$k};
+		my $v = $map{$k};
+		$filt = 'strip mac' unless defined $filt;
+		my $val;
+		if($v =~ /^(\w+)\:(\w+)$/) {
+			$val = length($ref->{$1}) ? $ref->{$1} : $ref->{$2};	
 		}
-		return;
-	}
-	$v = Vend::Util::escape_chars_url($v);
-	push @$ary, "$k=$v";
-	return;
-}
-
-sub split_name_value_pairs {
-
-    my $htmlstring = shift;
-    my $obj = HTML::TokeParser->new(doc => "$htmlstring");
-    my ($token, $urlstring, $pair, @pairs, $name, $value, $data, %data);
-
-    while ($token = $obj->get_tag("a")) {
-
-        $urlstring = $token->[1]{href};
-
-	#Split the name-value pairs
-	@pairs = split(/&/, $urlstring);
-
-	#Loop through each pair
-		foreach $pair (@pairs) {
-
-			#Create a Name/Value pair set
-			($name, $value) = split(/=/, $pair);
-
-			#Assign the value to an associative array using the name as its hash
-			$data{$name} = Vend::Util::unescape_full($value);
+		elsif ( $v =~ /{/) {
+			$val = Vend::Interpolate::tag_attr_list($v, $ref);
 		}
-    }
-    return %data;
-}
-
-sub call_sl_script {
-	my ($sname, $opt) = @_;
-	my $dir = $Vend::Cfg->{SQL_Ledger}{dir} || $SL_DIR;
-	$dir =~ s:/+$::;
-	my $cmd = "$dir/$sname";
-	local($ENV{PERL5LIB});
-	$ENV{PERL5LIB} = $dir;
-#	if($opt->{path} !~ m:^/:) {
-#		$opt->{path} = "$dir/$opt->{path}";
-#	}
-	if(! -f $cmd) {
-		logError(
-			"SQL-Ledger script '%s' does not exist in SL_DIR '%s'",
-			$sname,
-			$dir,
-			);
-		return undef;
-	}
-
-	# Build the option string. Keys beginning with sl_* override other
-	# passed parameters, meaning that even if the function parameter
-	# is needed in a standard opt string a 'function' parameter can
-	# be passed with sl_function=something.
-
-	my @parms;
-	my @override;
-
-	for my $k (keys %$opt) {
-		if($k =~ /^sl_/) {
-			push @override, $_;
-			next;
+		elsif(length($v)) {
+			$val = $ref->{$v};
 		}
-
-		my $v = $opt->{$k};
-		push_parms($k, $v, \@parms);
-	}
-
-	for my $k (@override) {
-		my $v = $opt->{$k};
-		push_parms($k, $v, \@parms);
-	}
-
-	my $arg = join "&", @parms;
-	logDebug("calling $cmd with arg=$arg");
-	my $result = `$cmd "$arg"`;
-	chomp($result);
-	if($? != 0) {
-		my $err = $? >> 8;
-		logError(
-			"SQL-Ledger error status '%s' returned on call to '%s': %s",
-			$err,
-			$sname,
-			$!,
-		);
-	}
-	return $result;
-}
-
-sub hash_line_params {
-	my $body = shift
-		or return undef;
-	my $o;
-	if($body =~ /=/) {
-		$o = {};
-		$body =~ s/^\s+//;
-		$body =~ s/\s+$//;
-		$body =~ s/^\s+//mg;
-		$body =~ s/\s+$//mg;
-		my @in = grep /=/, split /\n/, $body;
-		for(@in) {
-			my ($k, $v) = split /\s*=\s*/, $_;
-
-			if($o->{$k}) {
-				my $val = delete $o->{$k};
-				if ( ref($val) eq 'ARRAY' ) {
-					push @$val, $v;
-				}
-				else {
-					$val = [ $val ];
-				}
-				$v = $val;
-			}
-
-			$o->{$k} = $v;
+		else {
+			$val = $ref->{$k};
 		}
+		$record->{$k} = Vend::Interpolate::filter_value($filt, $val);
 	}
-	return $o;
-}
-
-sub assign_customer_number {
-
-    my ($self, $opt) = @_;
-    my $result;
-
-	my $call = {
-		path		=> $self->{Config}{path} || $SL_PATH,
-		login		=> $self->{Config}{login} || $SL_USER,
-		password	=> $self->{Config}{password} || $SL_PASS,
-	};
-
-    $call->{action} = "Save Customer";
-    $call->{db}			= "customer";
-    $call->{name}		= $opt->{username} || $::Values->{email};
-    $call->{contact}	= $opt->{email} || $::Values->{email};
-    $call->{email}		= $opt->{email} || $::Values->{email};
-
-	call_sl_script('ct.pl', $call);
-
-    $call->{action} = "Search for Customer";
-    $call->{l_contact} = "Y";
-    $call->{l_name} = "Y";
-
-    $result = call_sl_script('ct.pl', $call);
-	logDebug("call_sl_script result was: $result");
-
-    my %data = split_name_value_pairs($result);
-
-	my $datastuff = ::uneval(\@_);
-	logDebug("This is a assign_customer_number test(result '$data{id}') ... $datastuff");
-
-    return $data{id};
+	return $record;
 }
 
 sub save_customer_data {
 
     my ($self, $userid, $hashdata) = @_;
 
-	my $datastuff = uneval(\$self);
-#::logDebug( "This is a save_customer_data self... $datastuff");
-	$datastuff = uneval($hashdata);
-#::logDebug("This is a save_customer_data fnv... $datastuff");
-	$datastuff = uneval(\$userid);
-#::logDebug("This is a save_customer_data userid .. $datastuff");
-	`echo "This is a save_customer_data userid... $datastuff" >> testlog.txt`;
-
     my $result;
 
-    my %fnv = %$hashdata;
-    my $name;
+	my $record = $self->map_data('customer');
+	$userid =~ s/\D+//g;
+    $record->{id} = $userid;
+	my $tab = $self->{Config}{customer_table} || 'customer';
 
-	my $call = {
-		path		=> $self->{Config}{path} || $SL_PATH,
-		login		=> $self->{Config}{login} || $SL_USER,
-		password	=> $self->{Config}{password} || $SL_PASS,
-	};
+	my $db = ::database_exists_ref($tab)
+		or die errmsg("Customer table database '%s' inaccessible.", $tab);
+	return $db->set_slice($userid, $record);
+}
 
-
-    $call->{action} = "Save Customer";
-    $call->{db} = "customer";
-    $call->{id} = $userid;
-    $call->{name} = $fnv{company} || "$fnv{lname}, $fnv{fname}";
-    $call->{addr1} = $fnv{b_address1} || $fnv{address1};
-    $call->{addr2} = $fnv{b_address2} || $fnv{address2};
-    $call->{addr3} = $fnv{b_address3} || $fnv{address3};
-    if($fnv{b_city}) {
-		$call->{addr4} = "$fnv{b_city}, $fnv{b_state} $fnv{b_zip} $fnv{b_country}";
-	}
-	else {
-		$call->{addr4} = "$fnv{city}, $fnv{state} $fnv{zip} $fnv{country}";
-	}
-    if($fnv{b_lname}) {
-		$call->{contact} = "$fnv{b_lname}, $fnv{b_fname}";
-	}
-	else {
-		$call->{contact} = "$fnv{lname}, $fnv{fname}";
-	}
-    $call->{phone} = $fnv{phone_night} || $fnv{phone_day};
-    $call->{fax} = $fnv{fax};
-    $call->{email} = $fnv{email};
-    $call->{shiptoname} = $fnv{company} || "$fnv{lname}, $fnv{fname}";
-    $call->{shiptoaddr1} = $fnv{address1};
-    $call->{shiptoaddr2} = $fnv{address2};
-    $call->{shiptoaddr3} = $fnv{address3};
-    $call->{shiptoaddr4} = "$fnv{city} $fnv{state} $fnv{zip} $fnv{country}";
-    $call->{shiptocontact} = "$fnv{lname}, $fnv{fname}";
-    $call->{shiptophone} = $fnv{phone_day};
-    $call->{shiptofax} = $fnv{fax};
-    $call->{shiptoemail} = $fnv{email};
-    $call->{creditlimit} = $fnv{credit_limit};
-
-    $result = call_sl_script('ct.pl', $call);
-
-    return 1;
+sub assign_customer_number {
+	my $s = shift || { Config => { counter => 'customer:id' } };
+	return $Tag->counter( { sql => $s->{Config}{counter} } );
 }
 
 sub create_vendor_purchase_order {
@@ -308,66 +207,215 @@ sub create_vendor_purchase_order {
     return $string;
 }
 
-
 sub create_order_entry {
 
-    my $self = shift;
-    my $order = shift;
+	## For syntax check
+	# use vars qw($Tag);
 
-	unless(ref $order) {
-		my $ary = { $order, @_ };
-		$order = $ary;
+    my $self = shift;
+    my $opt = shift;
+
+	my $cfg = $self->{Config} || {};
+
+	my $cart = delete $opt->{cart};
+
+	## Allow a cart name, a cart reference, or default to current cart
+	if($cart and ! ref($cart)) {
+		$cart = $Vend::Session->{carts}{$cart};
 	}
 
-    my $result;
+	$cart ||= $Vend::Items;
 
-    my $lineitem;
-    
-	my $call = {
-		path		=> $self->{Config}{path} || $SL_PATH,
-		login		=> $self->{Config}{login} || $SL_USER,
-		password	=> $self->{Config}{password} || $SL_PASS,
-	};
+	my @charges;
+	my $salestax = delete $opt->{salestax};
+	my $salestax_desc = delete($opt->{salestax_desc}) || $cfg->{salestax_desc};
+	my $salestax_part = delete($opt->{salestax_part}) || $cfg->{salestax_part};
+	$salestax_part ||= 'SALESTAX';
+	if(not length $salestax) {
+		$salestax = $Tag->salestax( { noformat => 1 } );
+	}
+	$salestax_desc ||= "$::Values->{state} Sales Tax";
+	push @charges, {
+					code => $salestax_part,
+					description => $salestax_desc,
+					mv_price => $salestax,
+				};
 
+	if($::Values->{mv_handling}) {
+		my @handling = split /\0+/, $::Values->{mv_handling};
+		my $part	= delete ($opt->{handling_part})
+					|| $cfg->{handling_part}
+					|| 'HANDLING';
+		for (@handling) {
+			my $desc = $Tag->shipping_desc($_);
+			my $cost = $Tag->shipping( { mode => $_, noformat => 1 });
+			push @charges, {
+							code => $part,
+							description => $desc,
+							mv_price => $cost,
+						};
+		}
+	}
 
-    $call->{action} = "Save Order";
-    $call->{type} = "sales_order";
+	my $shipping = delete $opt->{shipping};
+	my $shipping_desc = delete($opt->{shipping_desc});
+	my $shipping_part = delete($opt->{shipping_part}) || $cfg->{shipping_part};
+	$shipping_part ||= 'SHIPPING';
+	if(not length $shipping) {
+		$shipping = $Tag->shipping( { noformat => 1 } );
+	}
+	$shipping_desc ||= $Tag->shipping_desc();
+	push @charges, {
+					code => $shipping_part,
+					description => $shipping_desc,
+					mv_price => $shipping,
+				};
 
-    $call->{new_form} = "1";
-    $call->{vc} = "customer";
-    $call->{title} = "Add Sales Order";
+	my $tab = $cfg->{link_table} || 'customer';
+	my $db = ::database_exists_ref($tab)
+				or die errmsg("No database '%s' for SQL-Ledger link!J", $tab);
+	my $dbh = $db->dbh()
+				or die errmsg("No database handle for table '%s'.", $tab);
 
-    $call->{customer_id} = $order->{username};
-    $call->{discount}  = "0";
-    $call->{customer}  = $order->{compuser};
-    $call->{ordnumber} = $order->{orderno};
-    $call->{shippingpoint} = $order->{shipping};
-    $call->{currency} = "USD";
-    $call->{orddate} = $order->{date};
-    $call->{reqdate} = $order->{date};
+	my $cq = 'select id from parts where partnumber = ?';
+	my $sth = $dbh->prepare('select id from parts where partnumber = ?')
+				or die errmsg("Prepare '%s' failed.", $cq);
 
-    $lineitem = 1;
+	my @oe;
 
-    for ( my $ln = 1; $ln <= $order->{lineitems}; $ln++ ) {
+	my $olq = q{
+				INSERT INTO orderitems 
+					   (trans_id, parts_id, description, qty, sellprice, discount)
+						VALUES (?, ?, ?, ?, ?, ?)
+				};
+	my $ol_sth = $dbh->prepare($olq)
+		or die errmsg("Prepare '%s' failed.", $olq, $tab);
 
-		my $ref = $order->{orderitem}{$ln};
-        $call->{"qty_$ln"}				= $ref->{quantity};
-        $call->{"unit_$ln"}				= $ref->{uom} || 'each';
-        $call->{"partnumber_$ln"}		= $ref->{part_number} || $SL_ITEM_NAME;
-        $call->{"description_$ln"}		= $ref->{description};
-        $call->{"sellprice_$ln"}		= $ref->{price};
-        $call->{"id_$ln"}				= $ref->{part_id} || $SL_ITEM_ID;
-        $call->{"income_accno_$ln"}		= $ref->{income_accno} || '4020';
-        $call->{"expense_accno_$ln"}	= $ref->{expense_accno} || '5020';
-        $call->{"listprice_$ln"}		= $ref->{price};
-        $call->{"assembly_$ln"}			= 0;
-    }
+	my @items;
+	foreach my $item (@$cart) {
+		my $code = $item->{code};
+		my $desc = $item->{description} || Vend::Data::item_description($item);
+		my $price = Vend::Data::item_price($item);
+		my $qty = $item->{quantity};
+		my $sub = $qty * $price;
+		my $discsub = Vend::Interpolate::discount_price($item, $sub, $qty);
+		my $discount = 0;
+		if($discsub != $sub) {
+			$discount = 100 * (1 - $discsub / $sub);
+		}
+		$sth->execute($code)
+			or die errmsg("Statement '%s' failed for '%s'.", $cq, $code);
+		my ($pid) = $sth->fetchrow_array;
+		if(! $pid) {
+			my $iacc = $cfg->{inventory_accno_id}	|| 1520;
+			my $sacc = $cfg->{income_accno_id}		|| 4020;
+			my $eacc = $cfg->{expense_accno_id}		|| 5010;
+			my @add;
+			my $addq = <<EOF;
+INSERT INTO parts (
+	partnumber,
+	description,
+	unit,
+	listprice,
+	sellprice,
+	lastcost,
+	weight,
+	notes,
+	rop,
+	inventory_accno_id,
+	income_accno_id,
+	expense_accno_id
+) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+EOF
+			my $sh = $dbh->prepare($addq)
+				or die errmsg("Prepare add part '%s' failed.", $addq);
 
-    $call->{notes} = $order->{notes} || "Notes";
-    $call->{rowcount} = $order->{lineitem};
+			# partnumber
+			push @add, $code;
+			# description
+			push @add, $desc;
+			# unit
+			push @add, $Tag->field('uom', $code) || 'ea';
+			# listprice
+			push @add, $price;
+			# sellprice
+			push @add, $price;
+			# lastcost
+			push @add, 0;
+			# weight
+			push @add, $Tag->field('weight', $code) || 0;
+			# notes
+			push @add, '';
+			# rop
+			push @add, 0;
+			# inventory_accno_id
+			push @add, $iacc;
+			# income_accno_id
+			push @add, $sacc;
+			# expense_accno_id
+			push @add, $eacc;
+			$sh->execute(@add) 
+				or die errmsg("Execute add part '%s' failed.", $addq);
+				
+		}
+		$sth->execute($code)
+			or die errmsg("Statement '%s' failed for '%s'.", $cq, $code);
+		my ($newpid) = $sth->fetchrow_array;
+		push @items, [$newpid, $desc, $qty, $price, $discount];
+	}
 
-    $result = call_sl_script('oe.pl', $call);
+#(trans_id, parts_id, description, qty, sellprice, discount)
 
+	for my $c (@charges) {
+		$sth->execute($c->{code})
+			or die errmsg("Statement '%s' failed.", $cq);
+		my ($pid) = $sth->fetchrow_array;
+		push @items, [$pid, $c->{description}, 1, $c->{mv_price}, 0]; 
+	}
+
+	my ($tid) = $Tag->counter({ sql => "$tab:id" });
+
+	my $tq = q{
+		INSERT INTO oe VALUES (
+			?,
+			?,
+			date('now'::text),
+			0,
+			?,
+			?,
+			?,
+			date('now'::text),
+			'f',
+			'',
+			?,
+			?)
+		};
+
+	my $total = $Tag->total_cost({ noformat => 1 });
+
+	my $tsth = $dbh->prepare($tq)
+		or die errmsg("Statement '%s' failed.", $tq);
+
+	my $customer_id = $opt->{customer_id} || $Vend::Session->{username};
+	$customer_id =~ s/\D+//g;
+	my @vals = (
+				$tid,
+				$opt->{order_number} || $::Values->{mv_order_number},
+				$customer_id,
+				$total,
+				$total,
+				$opt->{notes} || $::Values->{gift_note},
+				$cfg->{currency_code} || 'usd',
+				);
+	
+	$tsth->execute(@vals) 
+		or die errmsg("Statement '%s' failed.", $tq);
+
+	for(@items) {
+		$ol_sth->execute($tid, @$_);
+	}
+		
+#::logDebug("past accounting, ready to return 1");
     return 1;
 }
 
@@ -383,6 +431,227 @@ return 1;
 
 
 =head
+
+CREATE SEQUENCE "id" start 1 increment 1 maxvalue 2147483647 minvalue 1  cache 1 ;
+
+CREATE TABLE "makemodel" (
+	"id" integer,
+	"parts_id" integer,
+	"name" text
+);
+CREATE TABLE "gl" (
+	"id" integer DEFAULT nextval('id'::text),
+	"source" text,
+	"description" text,
+	"transdate" date DEFAULT date('now'::text)
+);
+
+CREATE TABLE "chart" (
+	"id" integer DEFAULT nextval('id'::text),
+	"accno" integer,
+	"description" text,
+	"charttype" character(1) DEFAULT 'A',
+	"gifi" integer,
+	"category" character(1),
+	"link" text
+);
+
+CREATE TABLE "defaults" (
+	"inventory_accno_id" integer,
+	"income_accno_id" integer,
+	"expense_accno_id" integer,
+	"fxgain_accno_id" integer,
+	"fxloss_accno_id" integer,
+	"invnumber" text,
+	"ordnumber" text,
+	"yearend" character varying(5),
+	"curr" text,
+	"weightunit" character varying(5),
+	"businessnumber" text,
+	"version" character varying(8)
+);
+
+CREATE TABLE "acc_trans" (
+	"trans_id" integer,
+	"chart_id" integer,
+	"amount" double precision,
+	"transdate" date DEFAULT date('now'::text),
+	"source" text,
+	"cleared" boolean DEFAULT 'f',
+	"fx_transaction" boolean DEFAULT 'f'
+);
+
+CREATE TABLE "invoice" (
+	"id" integer DEFAULT nextval('id'::text),
+	"trans_id" integer,
+	"parts_id" integer,
+	"description" text,
+	"qty" real,
+	"allocated" real,
+	"sellprice" double precision,
+	"fxsellprice" double precision,
+	"discount" real,
+	"assemblyitem" boolean DEFAULT 'f'
+);
+
+CREATE TABLE "vendor" (
+	"id" integer DEFAULT nextval('id'::text),
+	"name" character varying(35),
+	"addr1" character varying(35),
+	"addr2" character varying(35),
+	"addr3" character varying(35),
+	"addr4" character varying(35),
+	"contact" character varying(35),
+	"phone" character varying(20),
+	"fax" character varying(20),
+	"email" text,
+	"notes" text,
+	"terms" smallint DEFAULT 0,
+	"taxincluded" boolean
+);
+
+CREATE TABLE "customer" (
+	"id" integer DEFAULT nextval('id'::text),
+	"name" character varying(35),
+	"addr1" character varying(35),
+	"addr2" character varying(35),
+	"addr3" character varying(35),
+	"addr4" character varying(35),
+	"contact" character varying(35),
+	"phone" character varying(20),
+	"fax" character varying(20),
+	"email" text,
+	"notes" text,
+	"discount" real,
+	"taxincluded" boolean,
+	"creditlimit" double precision DEFAULT 0,
+	"terms" smallint DEFAULT 0,
+	"shiptoname" character varying(35),
+	"shiptoaddr1" character varying(35),
+	"shiptoaddr2" character varying(35),
+	"shiptoaddr3" character varying(35),
+	"shiptoaddr4" character varying(35),
+	"shiptocontact" character varying(20),
+	"shiptophone" character varying(20),
+	"shiptofax" character varying(20),
+	"shiptoemail" text
+);
+
+CREATE TABLE "parts" (
+	"id" integer DEFAULT nextval('id'::text),
+	"partnumber" text,
+	"description" text,
+	"bin" text,
+	"unit" character varying(5),
+	"listprice" double precision,
+	"sellprice" double precision,
+	"lastcost" double precision,
+	"priceupdate" date DEFAULT date('now'::text),
+	"weight" real,
+	"onhand" real DEFAULT 0,
+	"notes" text,
+	"makemodel" boolean DEFAULT 'f',
+	"assembly" boolean DEFAULT 'f',
+	"alternate" boolean DEFAULT 'f',
+	"rop" real,
+	"inventory_accno_id" integer,
+	"income_accno_id" integer,
+	"expense_accno_id" integer,
+	"obsolete" boolean DEFAULT 'f'
+);
+
+CREATE TABLE "assembly" (
+	"id" integer,
+	"parts_id" integer,
+	"qty" double precision
+);
+
+CREATE TABLE "ar" (
+	"id" integer DEFAULT nextval('id'::text),
+	"invnumber" text,
+	"ordnumber" text,
+	"transdate" date DEFAULT date('now'::text),
+	"customer_id" integer,
+	"taxincluded" boolean,
+	"amount" double precision,
+	"netamount" double precision,
+	"paid" double precision,
+	"datepaid" date,
+	"duedate" date,
+	"invoice" boolean DEFAULT 'f',
+	"shippingpoint" text,
+	"terms" smallint DEFAULT 0,
+	"notes" text,
+	"curr" character(3)
+);
+
+CREATE TABLE "ap" (
+	"id" integer DEFAULT nextval('id'::text),
+	"invnumber" text,
+	"transdate" date DEFAULT date('now'::text),
+	"vendor_id" integer,
+	"taxincluded" boolean,
+	"amount" double precision,
+	"netamount" double precision,
+	"paid" double precision,
+	"datepaid" date,
+	"duedate" date,
+	"invoice" boolean DEFAULT 'f',
+	"ordnumber" text,
+	"curr" character(3)
+);
+
+CREATE TABLE "partstax" (
+	"parts_id" integer,
+	"chart_id" integer
+);
+
+CREATE TABLE "tax" (
+	"chart_id" integer,
+	"rate" double precision,
+	"taxnumber" text
+);
+
+CREATE TABLE "customertax" (
+	"customer_id" integer,
+	"chart_id" integer
+);
+
+CREATE TABLE "vendortax" (
+	"vendor_id" integer,
+	"chart_id" integer
+);
+
+CREATE TABLE "oe" (
+	"id" integer DEFAULT nextval('id'::text),
+	"ordnumber" text,
+	"transdate" date DEFAULT date('now'::text),
+	"vendor_id" integer,
+	"customer_id" integer,
+	"amount" double precision,
+	"netamount" double precision,
+	"reqdate" date,
+	"taxincluded" boolean,
+	"shippingpoint" text,
+	"notes" text,
+	"curr" character(3)
+);
+
+CREATE TABLE "orderitems" (
+	"trans_id" integer,
+	"parts_id" integer,
+	"description" text,
+	"qty" real,
+	"sellprice" double precision,
+	"discount" real
+);
+
+CREATE TABLE "exchangerate" (
+	"curr" character(3),
+	"transdate" date,
+	"buy" double precision,
+	"sell" double precision
+);
 
 SLInterface
 
