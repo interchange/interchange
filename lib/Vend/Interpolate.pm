@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.108 2002-09-01 13:13:43 mheins Exp $
+# $Id: Interpolate.pm,v 2.109 2002-09-07 18:45:41 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.108 $, 10);
+$VERSION = substr(q$Revision: 2.109 $, 10);
 
 @EXPORT = qw (
 
@@ -583,7 +583,9 @@ sub vars_and_comments {
 	1 while $$html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/
 		$::Pragma->{$1} = (length($2) ? $2 : 1), ''/ige;
 
-	if($::Pragma->{init_page}) {
+	undef $Vend::PageInit unless $::Pragma->{init_page};
+
+	if(defined $Vend::PageInit and ! $Vend::PageInit++) {
 		::run_macro($::Pragma->{init_page}, $html);
 	}
 
