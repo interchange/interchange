@@ -1,5 +1,5 @@
 [set page_perm]gentable[/set]
-[set page_title]Table Manager[/set]
+[set page_title][L]Table Manager[/L][/set]
 [set ui_class]Admin[/set]
 [set help_name]genconfig.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
@@ -13,7 +13,7 @@
 <TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
 <TD VALIGN="top" width="20%">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-Database tables
+[L]Database tables[/L]
 </font>
 </td></tr>
 <tr bgcolor="#000000" height=1><td></td></tr>
@@ -84,7 +84,7 @@ sub {
 	my $out = '';
 	if(! $dblist_done_one++) {
 		$out .= '<tr>';
-		for(qw/edit import export upload download /, "Table name (description)") {  # Add "report"
+		for('[L]edit[/L]', '[L]import[/L]', '[L]export[/L]', '[L]upload[/L]', '[L]download[/L]', '[L]Table name[/L] ([L]description[/L])') {  # Add "report"
 			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
 		}
 		$out .= "</tr>";
@@ -115,7 +115,7 @@ EOF
 </center>
 [if-mm super]
 <blockquote>
-	Hidden admin tables:
+	[L]Hidden admin tables[/L]:
 <blockquote>
 	[loop list="[scratch ui_tmp_admin]"]
 	[page href=__UI_BASE__/flex_select form="mv_data_table=[loop-code]"][loop-code]</A>, 
