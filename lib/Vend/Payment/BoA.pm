@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.6 2003-03-31 20:34:15 ramoore Exp $
+# $Id: BoA.pm,v 1.7 2003-06-06 01:50:43 danb Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.6 $
+Vend::Payment::BoA $Revision: 1.7 $
 
 =head1 SYNOPSIS
 
@@ -366,6 +366,10 @@ sub boa {
 #::logDebug("transtype: $transtype");
 
     $opt->{script} = '/payment.mart';
+	 
+    # Phone less than 17 chars, and country must be US, not USA.
+    $actual->{ 'phone_day' } = $Tag->filter( { op => '16' }, $actual->{ 'phone_day' } );
+    $actual->{ 'b_country' } = 'US' if $actual->{ 'b_country' } eq 'USA';
 
     $actual->{mv_credit_card_exp_month} =~ s/\D//g;
     $actual->{mv_credit_card_exp_month} =~ s/^0+//;
