@@ -187,6 +187,10 @@ sub signio {
 
         $Vend::Session->{cybercash_error}   =
             $Vend::Session->{payment_error} = $result{RESPMSG};
+
+		my $msg = errmsg("Signio error: " . $result{RESULT} . " " . $result{RESPMSG} . ". Please call in your order or try again.");
+
+		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
     }
     else {
         $result{'pop.status'} =
