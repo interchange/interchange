@@ -1,4 +1,12 @@
 #### begin [value mv_order_number] #####
+[calc]
+	if (! $Values->{separate_addresses} ) {
+		foreach (@{$Carts->{main}}) {
+			$_->{mv_ad} = '';
+		}
+	}
+	return;
+[/calc]
 [tmpn auto_create][/tmpn]
 [loop list="transactions orderline inventory userdb"]
 [flag type=write table="[loop-code]"]
