@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.27 2000-09-30 14:56:33 heins Exp $
+# $Id: Interpolate.pm,v 1.28 2000-10-02 11:03:43 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.27 $, 10);
+$VERSION = substr(q$Revision: 1.28 $, 10);
 
 @EXPORT = qw (
 
@@ -880,6 +880,18 @@ sub tag_data {
 	'sql'		=> sub {
 					my $val = shift;
 					$val =~ s:':'':g; # '
+					return $val;
+				},
+	'textarea_put' => sub {
+					my $val = shift;
+					$val =~ s/\&/\&amp;/g;
+					$val =~ s/\[/&#91;/g;
+					$val =~ s/</&lt;/g;
+					return $val;
+				},
+	'textarea_get' => sub {
+					my $val = shift;
+					$val =~ s/\&amp;/\&/g;
 					return $val;
 				},
 	'text2html' => sub {
@@ -1741,7 +1753,6 @@ sub flag {
 		@status = ("Set build flag: %s name=%s", $value, $Vend::ScanName);
 	}
 	elsif($flag eq 'checkhtml') {
-		$value = $text if ! defined $opt->{value};
 		$Vend::CheckHTML = $value;
 		@status = ("Set CheckHTML flag: %s", $value);
 	}
