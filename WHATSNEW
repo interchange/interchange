@@ -12,6 +12,9 @@ Core
 * Fixed cgi and value filters which were completely broken (Bug #380).
   Thanks to Jonathan Clark <jonc@webmaint.net> for reporting.
 
+* Allow output of '0' from [if]...[else]0[/else][/if].
+  Thanks to Murahashi <murahashi@ayayu.com> for finding this bug.
+
 * Fixed bug in [if-item-param field eq string] which would now work due
   to improper field pointer type.
 
