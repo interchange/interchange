@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.4
 #
-# $Id: interchange.PL,v 2.7.2.7 2002-01-24 05:07:04 jon Exp $
+# $Id: interchange.PL,v 2.7.2.8 2002-02-02 16:27:53 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2758,9 +2758,10 @@ sub main_loop {
 
 	# Parse command line options, getting mode if not -serve
 	# May actually exit in some situations
-	parse_options()
-		or die usage() . "\n";
-
+	unless (parse_options()) {
+		usage ();
+		exit 1;
+	}
 	# Cannot run as root unless in 'make test'
 	if($> == 0 and ! $Global::Windows) {
 		die errmsg("The Interchange server must not be run as root.\n")
