@@ -34,7 +34,7 @@ sub regen_build {
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
 	};
-$::Scratch->{mv_no_session_id} = 1;
+
 	my ($key, $value);
 	while (($key, $value) = each (%{$Vend::Cfg->{StaticSessionDefault}})) {
         $Vend::Session->{$key} = $value;
