@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.8 2001-12-07 00:20:28 jon Exp $
+# $Id: DBI.pm,v 2.9 2002-01-11 08:48:06 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use strict;
 
@@ -1722,7 +1722,7 @@ eval {
 	}
 	return $rc
 		if $opt->{row_count};
-	return Vend::Interpolate::tag_sql_list($text, $ref, \%nh, $opt)
+	return Vend::Interpolate::tag_sql_list($text, $ref, \%nh, $opt, \@na)
 		if $opt->{list};
 	return Vend::Interpolate::html_table($opt, $ref, \@na)
 		if $opt->{html};
