@@ -1,9 +1,9 @@
 # Vend::Payment::Signio - Interchange Signio support
 #
-# $Id: Signio.pm,v 2.0.2.3 2002-11-26 03:21:12 jon Exp $
+# $Id: Signio.pm,v 2.0.2.4 2003-01-23 14:11:25 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. and
-# Interchange Development Group, http://www.icdevgroup.org/ and others
+# Copyright (C) 1999-2003 Red Hat, Inc., Interchange Development Group,
+# and others.
 #
 # Written by Cameron Prince <cameronbprince@yahoo.com>,
 # Mark Johnson <mark@endpoint.com>,
@@ -28,7 +28,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 2.0.2.3 $
+Vend::Payment::Signio $Revision: 2.0.2.4 $
 
 =head1 SYNOPSIS
 
@@ -228,7 +228,7 @@ sub signio {
 
     my $exe;
 
-	my @try = split /:/, $ENV{PATH};
+	my @try = split /:/, (charge_param('bin_path') || $ENV{PATH});
 	unshift @try,
 			"$Global::VendRoot/lib",
 			"$Global::VendRoot/bin",
@@ -237,13 +237,13 @@ sub signio {
 
 	my $stdin;
 	for(@try) {
-		if(-f "$_/pfpro-file" and -x _) {
-			$exe = "$_/pfpro-file";
-			$stdin = 1;
+		if(-f "$_/pfpro" and -x _) {
+			$exe = "$_/pfpro";
 			last;
 		}
-		next unless -f "$_/pfpro" and -x _;
-		$exe = "$_/pfpro";
+		next unless -f "$_/pfpro-file" and -x _;
+		$exe = "$_/pfpro-file";
+		$stdin = 1;
 		last;
 	}
 
@@ -260,6 +260,7 @@ sub signio {
 			"$Global::VendRoot/lib",
 			"$Global::VendRoot/bin",
 			"$Global::VendRoot",
+			charge_param('bin_path') . "/../lib",
 			;
 	$ENV{LD_LIBRARY_PATH} = join ':', @try;
 
@@ -271,6 +272,7 @@ sub signio {
 					"$Global::VendRoot/lib",
 					'/usr/local/ssl',
 					'/usr/lib/ssl',
+					charge_param('bin_path') . "/..",
 				);
 		for(@try) {
 			next unless  -d "$_/certs";
@@ -358,7 +360,7 @@ sub signio {
 			);
 	
 
-	my $orderID = $opt->{order_id} || gen_order_id($opt);
+	my $orderID = $opt->{order_id};
 	$amount = $opt->{total_cost} if ! $amount;
 
     if(! $amount) {
@@ -379,7 +381,6 @@ sub signio {
                     SHIPTOZIP   => $actual{zip},
                     EXPDATE     => $exp,
                     TENDER      => 'C',
-                    ORIGID      => $orderID,
                     PWD         => $secret,
                     USER        => $user,
 					TRXTYPE		=> $transtype,
@@ -387,6 +388,9 @@ sub signio {
 
 	$query{PARTNER} = $opt->{partner} || charge_param('partner');
 	$query{VENDOR}  = $opt->{vendor}  || charge_param('vendor');
+	$query{ORIGID} = $orderID if $orderID;
+
+	$orderID ||= gen_order_id($opt);
 
     for (keys %varmap) {
         $query{$_} = $actual{$varmap{$_}};
@@ -439,6 +443,8 @@ sub signio {
     
     my $result = join "", <CONNECT>;
     close CONNECT;
+
+    unlink $tempfile;
 
 #::logDebug(qq{signio decline=$decline result: $result});
 
