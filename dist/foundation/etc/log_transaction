@@ -23,7 +23,7 @@
 			mv_username=[data session username]
 			mv_password=[value zip]
 		[/seti]
-		Auto-created user [data session username].
+		Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
 	[else]
 	Auto-create of user failed.
 	[perl] die errmsg("Auto-create of user failed."); [/perl]
@@ -160,7 +160,7 @@ There was an error adding to the transaction log.
 [userdb save]
 
 [if scratch auto_create]
-	Logout auto-created user: [seti auto_username show=1][userdb function=logout clear=0 clear_cart=0][/seti][scratch auto_username]
+	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]
 [/if]
 
 [comment]Past add data entry.[/comment]
