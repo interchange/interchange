@@ -1,35 +1,41 @@
 %define interchange_version		4.6.1
+%define interchange_rpm_release	3
 %define interchange_package		interchange
 %define interchange_user		interch
 %define build_cats				construct
 
-# relevant differences between Red Hat 6 and Red Hat 7 file layout:
+# Relevant differences between Red Hat 6 and Red Hat 7 file layout:
 # /home/httpd -> /var/www
-# /usr/man -> /usr/share/man
-# /usr/doc -> /usr/share/doc
+# /usr/man    -> /usr/share/man
+# /usr/doc    -> /usr/share/doc
 
 %define webdir %( if [ -d /var/www ]; then echo -n '/var/www' ; else echo -n '/home/httpd' ; fi )
-%define rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
 
-Name: interchange
-Version: 4.6.1
-Release: 2.%rpm_subrelease
+# This is obviously a terrible oversimplification of whether a system
+# is Red Hat 7 or not, but it's worked so far.
+%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
+
+Name: %interchange_package
+Version: %interchange_version
+Release: %{interchange_rpm_release}.%interchange_rpm_subrelease
 Summary: Interchange is a powerful database access and HTML templating daemon focused on ecommerce.
 Vendor: Akopia, Inc.
 Copyright: GNU General Public License
 URL: http://developer.akopia.com/
 Packager: Akopia <info@akopia.com>
-Source: http://ftp.minivend.com/interchange/interchange-4.6.1.tar.gz
+Source: http://ftp.minivend.com/interchange/interchange-%{interchange_version}.tar.gz
 Group: Applications/Internet
 Distribution: Red Hat Linux Applications CD
-Provides: interchange
-Obsoletes: interchange
+Provides: %interchange_package
+Obsoletes: %interchange_package
 
 BuildRoot: /var/tmp/interchange
 
 %description
 Interchange is the most powerful free ecommerce system available today.
 Its features and power rival costly commercial systems.
+
+%define warning_file %{_docdir}/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
 
 
 %prep
@@ -47,15 +53,6 @@ then
 fi
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT
-
-HASICUSER=`grep '^%{interchange_user}:' /etc/passwd`
-if test -n "$RPM_BUILD_ROOT"
-then
-	echo
-elif test -z "$HASICUSER"
-then
-	adduser -d $LIBBASE/interchange -c "Interchange daemon" -r %interchange_user
-fi
 
 if test -n "$RPM_RUN_BASE"
 then
@@ -85,6 +82,18 @@ else
 	ETCBASE=/etc
 fi
 
+# Create an interch user if one doesn't already exist (on build machine).
+if [ -n "$RPM_BUILD_ROOT" ] && [ -z "`grep '^%{interchange_user}:' /etc/passwd`" ]
+then
+	if [ -n "`grep ^%{interchange_user}: /etc/group`" ]
+	then
+		GROUPOPT='-g %{interchange_user}'
+	else
+		GROUPOPT=
+	fi
+	useradd -M -r -d $LIBBASE/interchange -s /bin/bash -c "Interchange server" $GROUPOPT %interchange_user
+fi
+
 perl Makefile.PL \
 	rpmbuilddir=$RPM_BUILD_ROOT \
 	INTERCHANGE_USER=%interchange_user \
@@ -96,10 +105,11 @@ make > /dev/null
 make test
 make install
 gzip $RPM_BUILD_ROOT%{_mandir}/man*/* 2>/dev/null
+mkdir -p $RPM_BUILD_ROOT/%{_prefix}/lib/interchange/build
 cp extra/HTML/Entities.pm $RPM_BUILD_ROOT/%{_prefix}/lib/interchange/build
 cp extra/IniConf.pm $RPM_BUILD_ROOT/%{_prefix}/lib/interchange/build
-chown -R root.root $RPM_BUILD_ROOT
 cp -a eg extensions $RPM_BUILD_ROOT/%{_prefix}/lib/interchange
+chown -R root.root $RPM_BUILD_ROOT
 cd $RPM_BUILD_ROOT/%{_prefix}/lib/interchange
 export PERL5LIB=$RPM_BUILD_ROOT/%{_prefix}/lib/interchange/lib
 export MINIVEND_ROOT=$RPM_BUILD_ROOT/%{_prefix}/lib/interchange
@@ -126,7 +136,7 @@ do
 	mkdir -p $i
 	if test -z "$RPM_BUILD_DIR"
 	then
-		chown interch.interch $i
+		chown %{interchange_user}.%interchange_user $i
 		chmod 751 $i
 	fi
 done
@@ -141,8 +151,7 @@ cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
 # http://developer.akopia.com/
 #
 # chkconfig: 345 96 4
-# description: Interchange is a database access and HTML templating system \
-#	       focused on ecommerce
+# description: Interchange is a database access and HTML templating system focused on ecommerce
 # processname: interchange
 # pidfile: $RUNBASE/interchange/interchange.pid
 # config: $ETCBASE/interchange.cfg
@@ -208,7 +217,7 @@ RUNSTRING="/usr/lib/interchange/bin/interchange -q \\
 USER=\`whoami\`
 if test \$USER = "root"
 then 
-	exec su interch -c "\$RUNSTRING \$*"
+	exec su %interchange_user -c "\$RUNSTRING \$*"
 else
 	exec \$RUNSTRING \$*
 fi
@@ -221,39 +230,39 @@ CGIDIR=%{webdir}/cgi-bin
 SERVERCONF=/etc/httpd/conf/httpd.conf
 CGIBASE=/cgi-bin
 HOST=RPM_CHANGE_HOST
+BASEDIR=/var/lib/interchange
 
 for i in %build_cats
 do 
 	mkdir -p $RPM_BUILD_ROOT$CGIDIR
+	mkdir -p $RPM_BUILD_ROOT$DOCROOT/$i/images
 	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
-	MAKECATCMD="bin/makecat \
+	bin/makecat \
 		-F \
 		--cgibase=$CGIBASE \
-		--basedir=/var/lib/interchange \
+		--basedir=$BASEDIR \
 		--documentroot=$DOCROOT \
 		--sharedir=$DOCROOT \
 		--shareurl=/ \
-		--interchangeuser=interch \
-		--interchangegroup=interch \
+		--interchangeuser=%interchange_user \
+		--interchangegroup=%interchange_user \
 		--serverconf=$SERVERCONF \
 		--vendroot=/usr/lib/interchange \
-		--catroot=/var/lib/interchange/$i \
+		--catroot=$BASEDIR/$i \
 		--cgidir=$CGIDIR \
 		--relocate=$RPM_BUILD_ROOT \
 		--servername=$HOST \
 		--cgiurl=$CGIBASE/$i \
 		--demotype=$i \
-		--mailorderto=interch@$HOST \
-		--catuser=interch \
+		--mailorderto=%{interchange_user}@$HOST \
+		--catuser=%interchange_user \
 		--permtype=user \
 		--samplehtml=$DOCROOT/$i \
 		--imagedir=$DOCROOT/$i/images \
 		--imageurl=/$i/images \
 		--linkmode=UNIX \
-		--sampleurl=http://$HOST/$i
-		--catalogname=$i"
-	echo $MAKECATCMD
-	$MAKECATCMD
+		--sampleurl=http://$HOST/$i \
+		--catalogname=$i
 done
 
 find $RPM_BUILD_ROOT/var/lib/interchange -type d | xargs chmod 755
@@ -283,8 +292,14 @@ then
 	sleep 5
 fi
 
-# Create an interch user if one doesn't already exist.
-useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %interchange_user 2> /dev/null || true 
+# Create an interch user if one doesn't already exist (on install machine).
+if [ -n "`grep ^%{interchange_user}: /etc/group`" ]
+then
+	GROUPOPT='-g %{interchange_user}'
+else
+	GROUPOPT=
+fi
+useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" $GROUPOPT %interchange_user 2> /dev/null || true 
 
 
 %files
@@ -366,15 +381,12 @@ missing=
 for i in MD5 MIME::Base64 URI::URL SQL::Statement Safe::Hole
 do
 	status=`perl -e "require $i and print 1;" 2>/dev/null`
-	if test "x$status" = x1
+	if test "x$status" != x1
 	then
-		echo > /dev/null
-	else
 		missing="$missing $i"
 	fi
 done
 
-WARNDEST=%{_docdir}/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
 if test -n "$missing"
 then
 	{
@@ -388,21 +400,10 @@ then
 		echo ""
 		echo "Try:"
 		echo ""
-		echo "perl -MCPAN -e \"install Bundle::Interchange\""
+		echo 'perl -MCPAN -e "install Bundle::Interchange"'
 		echo ""
-	} >> $WARNDEST
+	} > %warning_file
 fi
-
-# Could start Interchange at this point, but then Red Hat
-# certification tests fail.
-
-# Allow Interchange to start and print a message before we exit
-#/etc/rc.d/init.d/interchange start >/dev/null 2>/dev/null
-#sleep 2
-#echo ""
-#echo You should now be able to access the Interchange demos with:
-#echo ""
-#echo "http://$HOST/construct"
 
 
 %preun
@@ -423,3 +424,16 @@ fi
 rm -rf /var/run/interchange/*
 rm -rf /var/lib/interchange/*/images
 rm -rf %{_prefix}/lib/interchange/lib/HTML
+rm -f %warning_file
+
+
+%changelog
+* Fri Dec  1 2000 Jon Jensen <jon@akopia.com>
+- combined Red Hat 6 and Red Hat 7 specfiles -- target platform is now
+  determined by build machine
+- fixed bug for HTML::Entities and IniConf installation caused by
+  /usr/lib/interchange/build directory not being created
+- imported makedirs.redhat and makecat.redhat scripts into specfile
+- allow creation of interch user even if interch group already exists
+  (relevant only to Red Hat 7 AFAIK)
+- numerous other minor modifications
