@@ -24,5 +24,11 @@ if [ "$1" = "upgrade" ] && dpkg --compare-versions $2 lt 4.8.0-1; then
 	rm -rf /usr/lib/interchange/etc
 fi
 
+# We use the file /var/run/interchange-install to record 
+# the installed interchange packages, so only one server
+# restart is needed 
+
+echo interchange > /var/run/interchange-install
+
 #DEBHELPER#
 

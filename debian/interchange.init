@@ -2,7 +2,7 @@
 #
 # interchange.init - Interchange start-stop script
 #
-# Copyright (C) 2000 Stefan Hornburg <racke@linuxia.de>
+# Copyright (C) 2000,2001 Stefan Hornburg (Racke) <racke@linuxia.de>
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/interchange
@@ -22,6 +22,10 @@ USER=interchange
 
 case "$1" in
   start)
+	# skip start during unfinished installation
+	if [ -f /var/run/interchange-install ]; then
+		exit 0
+	fi
 	echo -n "Starting $DESC: "
 	start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
 		--chuid $USER --exec $DAEMON -- --serve $MODE \
