@@ -26,16 +26,14 @@
 [/if]
 [loop
     random="[either][scratch component_vsize][or]3[/either]"
-    list="[scratch cross_codes]"
+    list="[strip interpolate=1][scratch cross_codes][/strip]"
  ] 
-[on-match]
 <table width="132" border="0" cellspacing="0" cellpadding="0">
 	<tr bgcolor="#FF9900" align="center" valign="middle"> 
 		  <td><font size="2" color="#FFFFFF"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">[scratch vbanner]</font></b></i></font></td>
 	</tr>
 	<tr align="center"> 
 	  <td>
-[/on-match]
 [list]
 		<table width="132" border="0" cellspacing="0" cellpadding="0">
 		  <tr> 
@@ -68,14 +66,12 @@
 		  </tr>
 		</table>
 [/list]
-[on-match]
 	  </td>
 	</tr>
 	<tr align="center">
 	  <td>&nbsp;</td>
 	</tr>
   </table>
-[/on-match]
 [/loop]
 
 <!-- END COMPONENT cross_vertical -->

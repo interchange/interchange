@@ -36,7 +36,7 @@
 <td> 
   <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr align="center"> 
-	[loop random="[either][scratch component_hsize][or]2[/either]" list="[scratch cross_codes]"]
+	[loop random="[either][scratch component_hsize][or]2[/either]" list="[strip interpolate=1][scratch cross_codes][/strip]"]
 	  <td> 
 		<table width="132" border="0" cellspacing="0" cellpadding="0">
 		  <tr> 
