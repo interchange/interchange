@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.213 2004-07-07 17:06:53 mheins Exp $
+# $Id: Interpolate.pm,v 2.214 2004-07-15 17:20:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.213 $, 10);
+$VERSION = substr(q$Revision: 2.214 $, 10);
 
 @EXPORT = qw (
 
@@ -213,6 +213,65 @@ sub init_calc {
 	$Vend::Calc_initialized = 1;
 	return;
 }
+
+# Define conditional ops
+my %cond_op = (
+	eq  => sub { $_[0] eq $_[1] },
+	ne  => sub { $_[0] ne $_[1] },
+	gt  => sub { $_[0] gt $_[1] },
+	ge  => sub { $_[0] ge $_[1] },
+	le  => sub { $_[0] le $_[1] },
+	lt  => sub { $_[0] lt $_[1] },
+   '>'  => sub { $_[0]  > $_[1] },
+   '<'  => sub { $_[0]  < $_[1] },
+   '>=' => sub { $_[0] >= $_[1] },
+   '<=' => sub { $_[0] <= $_[1] },
+   '==' => sub { $_[0] == $_[1] },
+   '!=' => sub { $_[0] != $_[1] },
+   '=~' => sub { 
+   				 my $re;
+				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
+				 $2 and substr($_[1], 0, 0) = "(?$2)";
+   				 eval { $re = qr/$_[1]/ };
+				 if($@) {
+					logError("bad regex %s in if-PREFIX-data", $_[1]);
+					return undef;
+				 }
+				 return $_[0] =~ $re;
+				},
+   '!~' => sub { 
+   				 my $re;
+				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
+				 $2 and substr($_[1], 0, 0) = "(?$2)";
+   				 eval { $re = qr/$_[1]/ };
+				 if($@) {
+					logError("bad regex %s in if-PREFIX-data", $_[1]);
+					return undef;
+				 }
+				 return $_[0] !~ $re;
+				},
+   'filter' => sub { 
+   				 my ($string, $filter) = @_;
+				 my $newval = filter_value($filter, $string);
+				 return $string eq $newval ? 1 : 0;
+				},
+   'length' => sub { 
+   				 my ($string, $lenspec) = @_;
+				 my ($min,$max) = split /-/, $lenspec;
+				 if($min and length($string) < $min) {
+				 	return 0;
+				 }
+				 elsif($max and length($string) > $max) {
+				 	return 0;
+				 }
+				 else {
+				 	return 0 unless length($string) > 0;
+				 }
+				 return 1;
+				},
+);
+
+$cond_op{len} = $cond_op{length};
 
 # Regular expression pre-compilation
 my %T;
@@ -853,6 +912,10 @@ sub tag_data {
 						my ($val, $tag, $table, $column) = @_;
 						return tag_data($table, $column, $val) || $val;
 				},
+	'lc' =>		sub {
+					use locale;
+					return lc(shift);
+				},
 	'uc' =>		sub {
 					use locale;
 					return uc(shift);
@@ -1247,19 +1310,52 @@ sub conditional {
 	my ($op, $status);
 	my $noop;
 	$noop = 1 unless defined $operator;
+
+	my $sub;
+	my $newcomp;
+
+	if($operator =~ /^([^\s.]+)\.(.+)/) {
+		$operator = $1;
+		my $tag = $2;
+		my $arg;
+		if($comp =~ /^\w[-\w]+=/) {
+			$arg = get_option_hash($comp);
+		}
+		else {
+			$arg = $comp;
+		}
+
+		$Tag ||= new Vend::Tags;
+#::logDebug("ready to call tag=$tag with arg=$arg");
+		$comp = $Tag->$tag($arg);
+	}
+
+	if($sub = $cond_op{$operator}) {
+		$noop = 1;
+		$newcomp = $comp;
+		undef $comp;
+	}
+
 	local($^W) = 0;
 	undef $@;
-#::logDebug("cond: base=$base term=$term op=$operator comp=$comp\n");
+#::logDebug("cond: base=$base term=$term op=$operator comp=$comp newcomp=$newcomp nooop=$noop\n");
 #::logDebug (($reverse ? '!' : '') . "cond: base=$base term=$term op=$operator comp=$comp");
 	my %stringop = ( qw! eq 1 ne 1 gt 1 lt 1! );
 
 	if(defined $stringop{$operator}) {
-		$comp =~ /^(["']).*\1$/ or
-		$comp =~ /^qq?([{(]).*[})]$/ or
-		$comp =~ /^qq?(\S).*\1$/ or
-		(index ($comp, '}') == -1 and $comp = 'q{' . $comp . '}')
-			or
-		(index ($comp, '!') == -1 and $comp = 'q{' . $comp . '}')
+		if(! $noop) {
+			$comp =~ /^(["']).*\1$/ or
+			$comp =~ /^qq?([{(]).*[})]$/ or
+			$comp =~ /^qq?(\S).*\1$/ or
+			(index ($comp, '}') == -1 and $comp = 'q{' . $comp . '}')
+				or
+			(index ($comp, '!') == -1 and $comp = 'q!' . $comp . '!')
+		}
+	    else {
+			$newcomp =~ s/^(["'])(.*)\1$/$2/s or
+				$newcomp =~ s/^qq?([{(])(.*)[})]$/$2/s or
+					$newcomp =~ s/^qq?(\S)(.*)\1$/$2/s;
+		}
 	}
 
 #::logDebug ("cond: base=$base term=$term op=$operator comp=$comp\n");
@@ -1445,7 +1541,11 @@ sub conditional {
 	RUNSAFE: {
 		last RUNSAFE if defined $status;
 		
-		if ($noop) {
+		if($sub) {
+			$status = $sub->($op, $newcomp);
+			last RUNSAFE;
+		}
+		elsif ($noop) {
 			$status = $op ? 1 : 0;
 			last RUNSAFE;
 		}
@@ -1669,6 +1769,7 @@ sub tag_profile {
 			}
 
 #::logDebug("profile value=$val, string=$string");
+			undef $@;
 			$val = $ready_safe->reval($string) if $string;
 
 			if($@) {
@@ -3031,43 +3132,6 @@ sub tag_self_contained_if {
 
 	return $out;
 }
-
-my %cond_op = (
-	eq  => sub { $_[0] eq $_[1] },
-	ne  => sub { $_[0] ne $_[1] },
-	gt  => sub { $_[0] gt $_[1] },
-	ge  => sub { $_[0] ge $_[1] },
-	le  => sub { $_[0] le $_[1] },
-	lt  => sub { $_[0] lt $_[1] },
-   '>'  => sub { $_[0]  > $_[1] },
-   '<'  => sub { $_[0]  < $_[1] },
-   '>=' => sub { $_[0] >= $_[1] },
-   '<=' => sub { $_[0] <= $_[1] },
-   '==' => sub { $_[0] == $_[1] },
-   '!=' => sub { $_[0] != $_[1] },
-   '=~' => sub { 
-   				 my $re;
-				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
-				 $2 and substr($_[1], 0, 0) = "(?$2)";
-   				 eval { $re = qr/$_[1]/ };
-				 if($@) {
-					logError("bad regex %s in if-PREFIX-data", $_[1]);
-					return undef;
-				 }
-				 return $_[0] =~ $re;
-				},
-   '!~' => sub { 
-   				 my $re;
-				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
-				 $2 and substr($_[1], 0, 0) = "(?$2)";
-   				 eval { $re = qr/$_[1]/ };
-				 if($@) {
-					logError("bad regex %s in if-PREFIX-data", $_[1]);
-					return undef;
-				 }
-				 return $_[0] !~ $re;
-				},
-);
 
 sub pull_cond {
 	my($string, $reverse, $cond, $lhs) = @_;
@@ -4956,10 +5020,16 @@ sub tag_loop_list {
 			return;
 		}
 		my ($ary, $fh, $fa) = @$list;
-		$opt->{object}{mv_results} = $ary;
-		$opt->{object}{matches} = scalar @$ary;
-		$opt->{object}{mv_field_names} = $fa if $fa;
-		$opt->{object}{mv_field_hash} = $fh if $fh;
+		my $obj = $opt->{object} ||= {};
+		$obj->{mv_results} = $ary;
+		$obj->{matches} = scalar @$ary;
+		$obj->{mv_field_names} = $fa if $fa;
+		$obj->{mv_field_hash} = $fh if $fh;
+		if($opt->{ml}) {
+			$obj->{mv_matchlimit} = $opt->{ml};
+			$obj->{mv_first_match} = $opt->{mv_first_match} || 0;
+			$obj->{mv_next_pointer} = $opt->{mv_first_match} + $opt->{ml};
+		}
 		return region($opt, $text);
 	}
 
