@@ -3,7 +3,7 @@
 ui_component: best
 ui_component_type: vertical, content
 ui_component_group: promotion
-ui_component_description: Best sellers
+ui_component_label: Best sellers
 
 banner:
 	widget: text

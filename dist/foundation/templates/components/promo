@@ -21,6 +21,7 @@ cols:
 
 banner:
 	label: Banner for top box
+	default: Specials
 	widget: text
 	width: 40
 

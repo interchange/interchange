@@ -3,7 +3,7 @@
 ui_component: search_box_small
 ui_component_type: vertical
 ui_component_group: search
-ui_component_description: Small search box
+ui_component_label: Small search box
 
 matches:
 	widget: select

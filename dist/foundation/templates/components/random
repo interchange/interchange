@@ -55,7 +55,7 @@ banner:
     <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 	[loop
-			random="[control size 2]"
+			random="[control matches 2]"
 			search="
 					fi=products
 					st=db
