@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.3
 #
-# $Id: interchange.PL,v 1.15.2.43 2001-05-25 17:05:10 jon Exp $
+# $Id: interchange.PL,v 1.15.2.44 2001-06-12 15:29:33 jason Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -437,6 +437,8 @@ sub update_quantity {
 			elsif (! $line->{mv_sku}) {
 				$line->{mv_sku} = $line->{code};
 				$line->{code} 	= $sku;
+			} else {
+				$line->{code}	= $sku;
 			}
 			$line->{mv_ib} 	= ::product_code_exists_tag($sku);
 		}
