@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.54 2004-04-11 05:05:49 mheins Exp $
+# $Id: Editor.pm,v 1.55 2004-04-11 23:01:57 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.54 $, 10);
+$VERSION = substr(q$Revision: 1.55 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1729,6 +1729,9 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 		$db = database_exists_ref($tab);
 
 		if($db) {
+			if($db->config('COMPOSITE_KEY') and $key !~ /\0/) {
+				$key =~ s/-_NULL_-/\0/g;
+			}
 			if($opt->{ui_clone_id} and $db->record_exists($opt->{ui_clone_id})) {
 				$data = $db->row_hash($opt->{ui_clone_id});
 			}
