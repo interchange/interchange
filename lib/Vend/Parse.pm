@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.0.2.7 2002-06-27 22:38:24 jon Exp $
+# $Id: Parse.pm,v 2.0.2.8 2002-07-20 14:53:56 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.8 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -1263,6 +1263,9 @@ sub html_start {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
 			}
 			$Vend::StatusLine = '' if ! $Vend::StatusLine;
+			$Vend::StatusLine .= <<EOF if $attr->{target};
+Window-Target: $attr->{target}
+EOF
 			$Vend::StatusLine .= <<EOF;
 Status: 302 moved
 Location: $attr->{href}
@@ -1578,6 +1581,9 @@ sub start {
 			}
 			$Vend::StatusLine = '' if ! $Vend::StatusLine;
 			$Vend::StatusLine .= "\n" if $Vend::StatusLine !~ /\n$/;
+			$Vend::StatusLine .= <<EOF if $attr->{target};
+Window-Target: $attr->{target}
+EOF
 			$Vend::StatusLine .= <<EOF;
 Status: 302 moved
 Location: $attr->{href}
