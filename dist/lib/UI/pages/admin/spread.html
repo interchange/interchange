@@ -28,36 +28,35 @@
 
 @_UI_STD_HEAD_@
 
+[tmp extra_title]
+[loop list="[cgi mv_data_table]"]
+	[if-loop-data __UI_META_TABLE__ name]
+	<B>[loop-data __UI_META_TABLE__ name]</B>
+	[/if-loop-data]
+	[if-loop-data __UI_META_TABLE__ help_url]
+	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
+	[/if-loop-data]
+	[if-loop-data __UI_META_TABLE__ help]
+	<i>[loop-data __UI_META_TABLE__ name]</i>
+	[/if-loop-data]
+[/loop]
+[/tmp]
+[calc]
+	$Scratch->{page_banner} .= $Scratch->{extra_title};
+	$Scratch->{page_title} .= $Scratch->{extra_title};
+	return;
+[/calc]
+
+[output name=search_box]
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_meta_view     value="[cgi ui_meta_view]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
-
-[if !scratch tmp_large]
-<table>
-<tr>
-<td>
-		[loop list="[cgi mv_data_table]"]
-		 	[if-loop-data __UI_META_TABLE__ name]
-		 	<B>[loop-data __UI_META_TABLE__ name]</B>
-			[/if-loop-data]
-		 	[if-loop-data __UI_META_TABLE__ help_url]
-		 	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
-			[/if-loop-data]
-		 	[if-loop-data __UI_META_TABLE__ help]
-		 	<BR><i>[loop-data __UI_META_TABLE__ name]</i>
-			[/if-loop-data]
-		[/loop]
-</td>
-<td>
-<input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
-</td>
-</tr>
-</table>
-[/if]
+<span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
 </FORM>
+[output name=""]
 
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $table = $CGI->{mv_data_table};
@@ -121,6 +120,7 @@
 	return;
 [/perl]
 
+[output name="top_of_form"]
 <FORM METHOD=POST ACTION="[base-url]/ui">
 <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
 <INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
@@ -137,25 +137,13 @@
 <INPUT TYPE=hidden NAME="mv_data_fields" VALUE="[cgi mv_data_fields]">
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
 
+[output name=""]
 [calc]
 [/calc]
 
 [search-region more=1 arg="[scratch mrec_options]"]
-<table cellpadding=2 cellspacing=0 width="90%">
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
-<tr>
-<td colspan="[scratch ui_num_col]" class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr>
-	<td class=rnorm>&nbsp;</td>
-	<td colspan="[scratch ui_most_col]" class=rnorm>
-	&nbsp;&nbsp;&nbsp;[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
-		mv_todo=set
-		[return-to click]
-	[/button]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]">
-	</td>
-</tr>
 [more-list]
 [prev-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&lt;</span>&nbsp;&nbsp;[/prev-anchor]
 [next-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;</span>&nbsp;&nbsp;[/next-anchor]
@@ -166,20 +154,16 @@
 <td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td class=rnorm>&nbsp;</td>
-<td colspan="[scratch ui_most_col]" class=rnorm>
+<td class=rhead>&nbsp;</td>
+<td colspan="[scratch ui_most_col]" class=rhead>
 	[msg arg.0=`q{[more]}`]More pages: %s[/msg]
 </td>
 </tr>
 [/more-list]
 
-<tr>
-<td colspan="[scratch ui_num_col]" class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<TR class=rnorm CELLPADDING=2>
-	<TH ALIGN=CENTER>&nbsp;</TH>
-	<TH ALIGN=CENTER>[cgi ui_data_key_name]</TH>
+<TR class=rhead CELLPADDING=2>
+	<td align=center>&nbsp;</td>
+	<td>[cgi ui_data_key_name]</td>
 	[row-edit columns="[cgi mv_data_fields]" ]
 </TR>
 
@@ -194,42 +178,41 @@
 		return $out;
 	[/item-sub]
 	[if-mm keys [item-code]]
-<TR class=rnorm>
+<TR class=rownorm>
 	<td valign=top><input type=checkbox name="batch_id" value="[item-code]"><input type=hidden name="[item-exec addnum][/item-exec][cgi ui_data_key_name]" value="[item-code]"></td>
 	<TD valign=top>
 	[page href="__UI_BASE__/flex_editor"
 	form=|
 		page_title=Edit [cgi mv_data_table]: [item-code]
 		mv_data_table=[cgi mv_data_table]
+		ui_meta_specific=[cgi ui_meta_specific]
 		item_id=[item-code]
-	|]<small><small><u>edit</u></small></small>&nbsp;<b>[item-code]</b></A>
+	|][item-code]</A>
 	</TD>
 	[row-edit
 		key="[item-code]"
 		extra="valign=top"
 		pointer="[item-exec addnum]1[/item-exec]"
 		columns="[cgi mv_data_fields]"
+		ui_meta_specific="[cgi ui_meta_specific]"
 		]
-</TR>
-<tr>
-<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 	[/if-mm]
 	[set row_number][item-increment][/set]
 	[/search-list]
 
 <tr>
-<td colspan="[scratch ui_num_col]" class=rmarq>New record</td>
+<td colspan="[scratch ui_num_col]" class=rhead><b>New record</b></td>
 </tr>
 
-<TR class=rnorm CELLPADDING=2>
+<TR class=rhead CELLPADDING=2>
 	<TH ALIGN=CENTER>&nbsp;</TH>
 	<TH ALIGN=CENTER>[cgi ui_data_key_name]</TH>
-	[row-edit columns="[cgi mv_data_fields]" ]
+	[row-edit columns="[cgi mv_data_fields]"]
 </TR>
 
 
-<TR class=rnorm>
+<TR class=rownorm>
 	<td COLSPAN=2 valign=top>
 	<input type=text size=12 name="999999_[cgi ui_data_key_name]">
 	</TD>
@@ -249,34 +232,23 @@
 [last-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;&gt;</span>[/last-anchor]
 [page-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">$PAGE$</span>[/page-anchor]
 <tr>
-<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr>
-<td class=rnorm>&nbsp;</td>
-<td colspan="[scratch ui_most_col]" class=rnorm>
+<td class=rhead>&nbsp;</td>
+<td colspan="[scratch ui_most_col]" class=rhead>
 	[msg arg.0=`q{[more]}`]More pages: %s[/msg]
 </td>
 </tr>
 [/more-list]
 
-<tr>
-<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
+</TABLE>
+</center>
+[/search-region]
 
-<tr>
-<td colspan="[scratch ui_num_col]" class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-<td class=rnorm>&nbsp;</td>
-<td colspan="[scratch ui_most_col]" class=rnorm>
-
-
-	&nbsp;&nbsp;&nbsp;[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
+[output name=top_buttons]
+	[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
 		mv_todo=set
 		[return-to click]
-	[/button]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	[button text="[L]Delete checked rows[/L]"
+	[/button]
+	[button text="[L]Delete checked[/L]"
 		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 mv_nextpage=__UI_BASE__/flex_select
@@ -307,19 +279,57 @@ mv_todo=return
 [/else]
 [/if-mm]
 	[return-to click]
-[/button]&nbsp;&nbsp;&nbsp;
-	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]">
+[/button]
+
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" type=s3>
+
+[output name=bottom_buttons]
+
 	[if-mm super]
-	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[cgi mv_data_table]">
-		[L]Auto-export[/L]</b>
+	<INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[cgi mv_data_table]" class=s3>
+		<span class=s3>[L]Auto-export[/L]</span>
 	[/if-mm]
 
-</td>
-</tr>
+	[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
+		mv_todo=set
+		[return-to click]
+	[/button]
+	[button text="[L]Delete checked[/L]"
+		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
+[flag type=write table="[cgi mv_data_table]"]
+mv_nextpage=__UI_BASE__/flex_select
+mv_auto_export=
+mv_todo=return
+[if-mm tables =d]
+	[perl tables="[cgi mv_data_table]"]
+		my $tab = $CGI->{mv_data_table};
+		my $db  = $Db{$tab};
+		unless ($db) {
+			$Scratch->{ui_message} = "No table '$tab'";
+			return;
+		}
+		my @items = split /\0/, $CGI->{batch_id};
+		foreach my $item (@items) {
+			if ($db->delete_record($item)) {
+				$out .= "Deleted $item from table $tab<BR>";
+			}
+			else {
+				$out .= "Item $item not in $tab table (or delete failed)<BR>";
+			}
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+[else]
+	[set ui_message][L]Not authorized to delete items.[/L][/set]
+[/else]
+[/if-mm]
+	[return-to click]
+[/button]
 
-</TABLE>
-</center>
-[/search-region]
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" type=s3>
+[output name="bottom_of_form"]
+
 </FORM>
 
 

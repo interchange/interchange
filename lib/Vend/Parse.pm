@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.23 2002-11-03 14:17:15 kwalsh Exp $
+# $Id: Parse.pm,v 2.24 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -155,8 +155,14 @@ my %PosRoutine = (
 				unless		=> \&Vend::Interpolate::tag_unless,
 			);
 
+my %Special = qw/
+				goto	1
+				bounce	1
+				output 	1
+			  /;
 my %Routine = (
 
+				output          => sub { return '' },
 				bounce          => sub { return '' },
 				if				=> \&Vend::Interpolate::tag_self_contained_if,
 				unless			=> \&Vend::Interpolate::tag_unless,
@@ -277,7 +283,7 @@ my %Gobble = ( qw/
 					mvasp			1
 				/ );
 
-my $Initialized = 0;
+my $Initialized;
 
 sub global_init {
 		add_tags($Global::UserTag);
@@ -292,17 +298,88 @@ sub global_init {
 
 sub new {
     my $class = shift;
+	my $opt = shift;
     my $self = new Vend::Parser;
 	$self->{INVALID} = 0;
 
 	add_tags($Vend::Cfg->{UserTag})
 		unless $Vend::Tags_added++;
 
-	$self->{TOPLEVEL} = 1 if ! $Initialized;
-
-	$self->{OUT} = '';
     bless $self, $class;
-	$Initialized = $self;
+
+	if($opt) {
+		$self->destination('');
+	}
+	else {
+		my $string = '';
+		$self->{OUT} = $self->{DEFAULT_OUT} = \$string;
+	}
+#::logDebug("OUT=$self->{OUT}");
+
+	if (! $Initialized) {
+		$Initialized = $self;
+		$self->{TOPLEVEL} = 1;
+	}
+
+	return $self;
+}
+
+sub destination {
+	my ($s, $name, $attr) = @_;
+	$s->{_outname} ||= [];
+
+	if(! defined $name) {
+		pop @{$s->{_outname}};
+		$name = pop  @{$s->{_outname}};
+	}
+	else {
+		$name = lc $name;
+		push @{$s->{_outname}}, $name;
+	}
+
+#::logDebug("destination set to '$name'");
+	$name ||= '';
+
+	my $string = '';
+	$s->{OUT} = \$string;
+	push @Vend::Output, $s->{OUT};
+
+	my $nary = $Vend::OutPtr{$name} ||= [];
+	push @$nary, $#Vend::Output;
+
+	return unless $attr;
+#::logDebug("destination extended output settings");
+
+	my $fary = $Vend::OutFilter{$name};
+
+	if ($name) {
+		$Vend::MultiOutput = 1;
+		if(! $Vend::OutFilter{''}) {
+			my $ary = [];
+			push @$ary, \&Vend::Interpolate::substitute_image
+				unless $::Pragma->{no_image_rewrite};
+			$Vend::OutFilter{''} = $ary;
+		}
+
+		if(! $fary) {
+			$fary = $Vend::OutFilter{$name} = [];
+			if($attr->{output_filter}) {
+				my $filt = $attr->{output_filter};
+				push @$fary, sub {
+					my $ref = shift;
+					$$ref = Vend::Interpolate::filter_value($filt, $$ref);
+					return;
+				};
+			}
+			if (! $attr->{no_image_parse} and ! $::Pragma->{no_image_rewrite}) {
+				push @$fary, \&Vend::Interpolate::substitute_image;
+			}
+			if ($attr->{output_extended}) {
+				$Vend::OutExtended{$name} = $attr;
+			}
+		}
+	}
+	return $s->{OUT};
 }
 
 my %noRearrange = qw//;
@@ -358,7 +435,15 @@ sub do_tag {
         }
         $tag = $Alias{$tag};
 	};
-	if(
+	if($Special{$tag}) {
+		my $ref = pop(@_);
+		my @args = @$ref{ @{$Order{$tag}} };
+		push @args, $ref if $addAttr{$tag};
+#::logDebug("Parse-do_tag: args now=" . ::uneval_it(\@args) );
+		$Initialized->start($tag, $ref);
+		return;
+	}
+	elsif(
 		( ref($_[-1]) && scalar @{$Order{$tag}} > scalar @_ and ! $noRearrange{$tag}) 
 	)
 	{
@@ -434,7 +519,7 @@ sub eof {
 
 sub text {
     my($self, $text) = @_;
-	$self->{OUT} .= $text;
+	${$self->{OUT}} .= $text;
 }
 
 my %Monitor = ( qw( tag_ary 1 ) );
@@ -504,6 +589,7 @@ sub start {
     my($self, $tag, $attr, $attrseq, $origtext, $empty_container) = @_;
 	$tag =~ tr/-/_/;   # canonical
 	$Vend::CurrentTag = $tag = lc $tag;
+#::logDebug("start tag=$tag");
 	my $buf = \$self->{_buf};
 
 	my($tmpbuf);
@@ -521,7 +607,7 @@ sub start {
 					$Vend::restricted,
 				);
 			}
-			$self->{OUT} .= $origtext;
+			${$self->{OUT}} .= $origtext;
 			return 1;
 		}
 		elsif (! $Vend::admin) {
@@ -549,7 +635,8 @@ sub start {
 			return 1;
 		}
 		else {
-			$self->{OUT} .= $origtext;
+#::logDebug("no alias. origtext: $origtext");
+			${$self->{OUT}} .= $origtext;
 			return 1;
 		}
 	}
@@ -572,7 +659,7 @@ sub start {
 
 		my $p = new Vend::Parse;
 		$p->parse($attr->{$trib});
-		$attr->{$trib} = $p->{OUT};
+		$attr->{$trib} = ${$p->{OUT}};
 		$self->{INVALID} += $p->{INVALID};
 	}
 
@@ -617,22 +704,13 @@ sub start {
 #interpolate=$attr->{interpolate}
 #EOF
 
-	if($tag =~ /^[gb]o/) {
-		if($tag eq 'goto') {
-			return 1 if resolve_if_unless($attr);
-			if(! $args[0]) {
-				$$buf = '';
-				$Initialized->{_buf} = '';
-				$self->{ABORT} = 1
-					if $attr->{abort};
-				return ($self->{SEND} = 1);
-			}
-			goto_buf($args[0], $buf);
-			$self->{ABORT} = 1;
-			$self->{SEND} = 1 if ! $$buf;
+	if($Special{$tag}) {
+		if($tag eq 'output') {
+			$self->destination($attr->{name}, $attr);
 			return 1;
 		}
 		elsif($tag eq 'bounce') {
+#::logDebug("bouncing...");
 			return 1 if resolve_if_unless($attr);
 			if(! $attr->{href} and $attr->{page}) {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
@@ -652,9 +730,27 @@ EOF
 			$self->{SEND} = 1;
 			return 1;
 		}
+		elsif($tag eq 'goto') {
+			return 1 if resolve_if_unless($attr);
+			if(! $args[0]) {
+				$$buf = '';
+				$Initialized->{_buf} = '';
+				$self->{ABORT} = 1
+					if $attr->{abort};
+				return ($self->{SEND} = 1);
+			}
+			goto_buf($args[0], $buf);
+			$self->{ABORT} = 1;
+			$self->{SEND} = 1 if ! $$buf;
+			return 1;
+		}
 	}
 
 	local($SIG{__DIE__}) = \&eval_die;
+
+#::logDebug("output attr=$attr->{_output}");
+	$self->destination($attr->{_output}) if $attr->{_output};
+
 	if($hasEndTag{$tag}) {
 		# Handle embedded tags, but only if interpolate is 
 		# defined (always if using old tags)
@@ -664,17 +760,17 @@ EOF
 		if ($attr->{interpolate} and !$empty_container) {
 			my $p = new Vend::Parse;
 			$p->parse($tmpbuf);
-			$tmpbuf = $p->{ABORT} ? '' : $p->{OUT};
+			$tmpbuf = $p->{ABORT} ? '' : ${$p->{OUT}};
 		}
 		if($attr->{reparse} ) {
 			$$buf = ($routine->(@args,$tmpbuf)) . $$buf;
 		}
 		else {
-			$self->{OUT} .= &{$routine}(@args,$tmpbuf);
+			${$self->{OUT}} .= &{$routine}(@args,$tmpbuf);
 		}
 	}
 	elsif(! $attr->{interpolate}) {
-		$self->{OUT} .= &$routine( @args );
+		${$self->{OUT}} .= &$routine( @args );
 	}
 	else {
 		$$buf = &$routine( @args ) . $$buf;
@@ -682,6 +778,7 @@ EOF
 
 	$self->{SEND} = $attr->{'send'} || undef;
 #::logDebug("Returning from $tag");
+	$self->destination() if $attr->{_output};
 	return 1;
 }
 
@@ -689,7 +786,7 @@ sub end {
     my($self, $tag) = @_;
 	my $save = $tag;
 	$tag =~ tr/-/_/;   # canonical
-	$self->{OUT} .= "[/$save]";
+	${$self->{OUT}} .= "[/$save]";
 }
 
 sub find_html_end {
@@ -797,7 +894,7 @@ sub _find_tag {
 					and do {
 						my $p = new Vend::Parse;
 						$p->parse($val);
-						$val = $p->{OUT};
+						$val = ${$p->{OUT}};
 					};
 			}
 		# truncated just after the '=' or inside the attribute

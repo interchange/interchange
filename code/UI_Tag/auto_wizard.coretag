@@ -75,7 +75,7 @@ sub already {
 		$surv->{$wizname} = $set;
 	}
 
-	if ($Vend::Session->{logged_in}) {
+	if ($Vend::Session->{logged_in} and ! $Vend::admin) {
 		if (! defined $surv->{$wizname}) {
 			my $o = {
 				function => 'check_file_acl',

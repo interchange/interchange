@@ -40,7 +40,7 @@ Variable UI_STD_FILE_NAV <<EONav
 			</SELECT>
 			<INPUT TYPE=submit VALUE="[msg]Find files[/msg]"><BR>
 			<small>
-			<INPUT TYPE=checkbox NAME="find_session" VALUE=1> [msg]Look in session and temporary files[/msg]
+			<INPUT TYPE=checkbox NAME="find_session" VALUE=1 [checked cgi=1 name=find_session value=1]> [msg]Look in session and temporary files[/msg]
 			&nbsp;&nbsp;&nbsp;
 			[if type=explicit
 				compare=`
@@ -84,7 +84,7 @@ Variable UI_STD_FILE_NAV <<EONav
 	]
 [else]
 <table width="100%">
-[table-organize columns=3 columnize=1 interpolate=1]
+[table-organize columns=3 columnize=1 min-rows=15 interpolate=1]
 	[file-navigator
 		mask="[scratch dir_mask]"
 		include_mask="[scratch include_mask]"

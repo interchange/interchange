@@ -87,26 +87,13 @@
 [/if]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-<table>
-<tr>
-[if scratch ui_message]
-<td>
-[L]Message[/L]:
-<BLOCKQUOTE>
-	[scratchd ui_message]
-</BLOCKQUOTE>
-<p>
-&nbsp;
-</td>
-[/if]
-<td>
-<FORM ACTION="[area @@MV_PAGE@@]" name=itemlist>
-<INPUT NAME=ui_text_qualification>
-<INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
+[output name=search_box]
+<FORM ACTION="[area @@MV_PAGE@@]">
+<INPUT NAME=ui_text_qualification type=text class=s3>
+<INPUT TYPE=submit VALUE="[L]Limit with search[/L]" class=s3>
 </FORM>
-</td>
-</tr>
-</table>
+
+[output name=""]
 [if-mm !super]
 [tmp ui_owner][db-hash
 				table="__UI_ACCESS_TABLE__"
@@ -193,13 +180,11 @@ EOF
 			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
 		}
 
-		$out_message = '<H3>' 
-			. errmsg('Entries matching "%s"', $ui_text_qualification) . '</H3>';
+		$out_message = errmsg('entries matching "%s"', $ui_text_qualification);
 	}
 	elsif ($ui_text_qualification) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
-		$out_message = '<H3>' 
-			. errmsg('Entries matching "%s"', $ui_text_qualification) . '</H3>';
+		$out_message = errmsg('entries matching "%s"', $ui_text_qualification);
 		if($Scratch->{ui_owner}) {
 			$CGI->{ui_text_qualification} = <<EOF;
 co=1
@@ -281,8 +266,18 @@ EOF
 	}
 	$CGI->{changed_qual} = 1 if delete $Scratch->{item_list_clicked};
 
-	return $out_message;
+	$Scratch->{ui_text_qualification} = $out_message;
+	return;
 [/perl]
+
+[if scratch ui_text_qualification]
+[calc]
+	return if $CGI->{mv_like_spec};
+	$Scratch->{page_banner} ||= $Scratch->{page_title};
+	$Scratch->{page_banner} .= ' -- ' . $Scratch->{ui_text_qualification};
+	return;
+[/calc]
+[/if]
 
 <!-- existing item_sparams: '[scratch item_sparams]'
 		tq: '[cgi ui_text_qualification]' -->
@@ -294,6 +289,7 @@ EOF
 			fi=[cgi mv_data_table]
 			st=db
 			[cgi ui_text_qualification]
+			nh=[cgi showinactive]
 			su=1
 			md=1
 			ml=[cgi ui_list_size]
@@ -308,6 +304,7 @@ EOF
 			st=db
 			ra=yes
 			md=1
+			nh=[cgi showinactive]
 			ml=[cgi ui_list_size]
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
@@ -346,17 +343,17 @@ EOF
 
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=back>
-<TABLE border=0 CELLSPACING=0 width="90%">
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
-<TR class=rtitle><TD>&nbsp;</TD>
+<tr class=rhead><TD>&nbsp;</TD>
 [loop list="[cgi ui_description_fields]"]
-<TH[loop-calc]
+<th[loop-calc]
 			my $extra = '';
 			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
 				$extra .= " $1";
 			}
 			return $extra || ' ALIGN=LEFT';
-		[/loop-calc]>
+		[/loop-calc] class=rhead>
 
     <table align="left">
     <tr>
@@ -368,7 +365,7 @@ EOF
 		']"><IMG ALT="select by [loop-code]" SRC="smindex.gif" BORDER=0></A>
 
       </td>
-      <td align="left" valign="center">
+      <td align="left" valign="center" class=rhead>
 	<A HREF="[area href='@@MV_PAGE@@'
 					form=`
 						my $f = '[loop-code]';
@@ -385,11 +382,11 @@ EOF
 							ui_sort_option=$o
 						);
 					`
-				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
+				]" class=rhead>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
       </td>
     </tr>
     </table>	
-  </TH>
+  </th>
 [/loop]
 [calc]
 	my $out = '';
@@ -418,7 +415,7 @@ EOF
 			}
 			my $url = $Tag->page({
 						href => '@@MV_PAGE@@',
-						extra => 'class=ctitle',
+						extra => 'class=rhead',
 						form => "
 									ui_text_qualification=$ui_text_qualification
 									mv_data_table=$CGI->{mv_data_table}
@@ -428,7 +425,7 @@ EOF
 			$display = "$url$display</A>";
 		}
 		$out .= <<EOF;
-<td class=ctitle ALIGN=CENTER><small class=ctitle>$display</small></td>
+<td class=rhead ALIGN=CENTER><small class=rhead>$display</small></td>
 EOF
 	}
 	return $out;
@@ -436,7 +433,7 @@ EOF
 </tr>
 [/on-match]
 [search-list]
-<tr class=[item-alternate 2]ralt[else]rnorm[/else][/item-alternate]>
+<tr class=[item-alternate 2]rowalt[else]rownorm[/else][/item-alternate]>
 
 <TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"></TD><TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
 [item-sub show_line]
@@ -534,7 +531,12 @@ Inventory
 </tr>
 [/more-list]
 </table>
-[button text="[L]Edit checked items in sequence[/L]"]
+
+[/search-region]
+
+[output name="bottom_buttons"]
+
+[button text="[L]Edit checked items in sequence[/L]" extra="class=s3"]
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
 	$CGI->{item_id_left} =~ s/\0+/,/g;
@@ -554,7 +556,7 @@ mv_todo=return
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-[button text="[L]Delete checked items[/L]"
+[button text="[L]Delete checked items[/L]" extra="class=s3"
 		confirm="Are you sure you want to delete the checked items\n__UI_ITEM_TABLES__?"
 ]
 [flag type=write table="[cgi mv_data_table]"]
@@ -565,10 +567,11 @@ mv_todo=back
 mv_nextpage=@@MV_PAGE@@
 [/button]
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
-</FORM>
 
-[/search-region]
+[output name="bottom_of_form"]
+</FORM>
+[output name=""]
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.13 2002-10-17 04:46:23 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.14 2003-01-14 02:25:50 mheins Exp $ -->

@@ -1,6 +1,6 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 2.4 2002-09-10 17:29:09 mheins Exp $
+# $Id: DB_File.pm,v 2.5 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -30,7 +30,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -100,8 +100,20 @@ sub open_table {
 		}
 	}
 
-	my $dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
-		or die "Could not open '$filename': $!";
+	my $dbm;
+	my $failed = 0;
+
+	my $retry = $Vend::Cfg->{Limit}{dbm_open_retries} || 10;
+
+	while( $failed < $retry ) {
+		$dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
+			and undef($failed), last;
+		$failed++;
+		select(undef,undef,undef,$failed * .100);
+	}
+
+	die ::errmsg("%s could not tie to '%s': %s", 'DB_File', $filename, $!)
+		unless $dbm;
 
 	my $columns = [split(/\t/, $tie->{'c'})];
 

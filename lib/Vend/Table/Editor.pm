@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.21 2002-12-13 12:53:22 mheins Exp $
+# $Id: Editor.pm,v 1.22 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.22 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -157,7 +157,7 @@ sub filters {
 }
 
 sub meta_record {
-	my ($item, $view, $mdb) = @_;
+	my ($item, $view, $mdb, $extended_only) = @_;
 
 #::logDebug("meta_record: item=$item view=$view mdb=$mdb");
 	return undef unless $item;
@@ -191,14 +191,19 @@ sub meta_record {
 	# Get additional settings from extended field, which is a serialized
 	# hash
 	my $hash;
-	if($record->{extended}) {
+	if(! $record->{extended}) {
+			return undef if $extended_only;
+	}
+	else {
 		## From Vend::Util
 		$hash = get_option_hash($record->{extended});
+		$record = {} if $extended_only;
 		if(ref $hash eq 'HASH') {
 			@$record{keys %$hash} = values %$hash;
 		}
 		else {
 			undef $hash;
+			return undef if $extended_only;
 		}
 	}
 
@@ -306,6 +311,7 @@ sub display {
 								append
 								attribute
 								db
+								class
 								extra
 								field
 								filter
@@ -490,7 +496,7 @@ EOF
 	<B>$LABEL$</B>
 </TD>
 <TD VALIGN=TOP>
-	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELP_URL}<BR><A HREF="$HELP_URL$">help</A>{/HELP_URL}</TD></TR></TABLE>
+	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD>$HELP${HELP_URL}<BR><A HREF="$HELP_URL$">help</A>{/HELP_URL}</TD></TR></TABLE>
 </TD>
 </TR>
 EOF
@@ -536,42 +542,49 @@ sub tabbed_display {
 	
 	$opt ||= {};
 
-	my @chars = reverse(0 .. 9, 'a' .. 'e');
 	my @colors;
 	$opt->{tab_bgcolor_template} ||= '#xxxxxx';
-	$opt->{tab_height} ||= '30';
-	$opt->{tab_width} ||= '120';
-	$opt->{panel_height} ||= '600';
-	$opt->{panel_width} ||= '800';
+	$opt->{tab_height} ||= '20'; $opt->{tab_width} ||= '120';
 	$opt->{panel_id} ||= 'mvpan';
 	$opt->{tab_horiz_offset} ||= '10';
 	$opt->{tab_vert_offset} ||= '8';
+	my $width_height;
 	$opt->{tab_style} ||= q{
 								text-align:center;
 								font-family: sans-serif;
 								line-height:150%;
+								font-size: smaller;
 								border:2px;
 								border-color:#999999;
 								border-style:outset;
 								border-bottom-style:none;
 							};
-	$opt->{panel_style} ||= q{ 
+	if($opt->{ui_style}) {
+		$opt->{panel_style} ||= q{ 
+									padding: 0;
+								};
+		$width_height = '';
+	}
+	else {
+		$opt->{panel_style} ||= q{ 
 									font-family: sans-serif;
 									font-size: smaller;
+									padding: 0;
 									border: 2px;
 									border-color:#999999;
 									border-style:outset;
 								};
-	$opt->{layer_tab_style} ||= q{
-									font-weight:bold;
-									text-align:center;
-									font-family:sans-serif;
-									};
-	$opt->{layer_panel_style} ||= q{
-									font-family:sans-serif;
-									padding:6px;
-									};
+		$opt->{panel_height} ||= '600';
+		$opt->{panel_width} ||= '800';
+		$width_height = <<EOF;
+   width: $opt->{panel_width}px;
+   height: $opt->{panel_height}px;
+EOF
+	}
 
+	$opt->{panel_shade} ||= 'e';
+
+	my @chars = reverse(0 .. 9, 'a' .. $opt->{panel_shade});
 	my $id = $opt->{panel_id};
 	my $vpf = $id . '_';
 	my $num_panels = scalar(@$cont);
@@ -579,15 +592,24 @@ sub tabbed_display {
 	my $num_rows = POSIX::ceil( $num_panels / $opt->{tab_width});
 	my $width = $opt->{panel_width};
 	my $height = $opt->{tab_height} * $num_rows + $opt->{panel_height};
-	my $panel_y =
+	my $panel_y;
+	my $int1;
+	my $int2;
+	if($opt->{ui_style}) {
+		$panel_y = 2;
+		$int1 = $int2 = 0;
+	}
+	else {
+	  $panel_y =
 		$num_rows
 		* ($opt->{tab_height} - $opt->{tab_vert_offset})
 		+ $opt->{tab_vert_offset};
-	my $int1 = $panel_y - 2;
-	my $int2 = $opt->{tab_height} * $num_rows;
+		$int1 = $panel_y - 2;
+		$int2 = $opt->{tab_height} * $num_rows;
+	}
 	for(my $i = 0; $i < $num_panels; $i++) {
 		my $c = $opt->{tab_bgcolor_template} || '#xxxxxx';
-		$c =~ s/x/$chars[$i] || 'e'/eg;
+		$c =~ s/x/$chars[$i] || $opt->{panel_shade}/eg;
 		$colors[$i] = $c;
 	}
 	my $cArray = qq{var ${vpf}colors = ['} . join("','", @colors) . qq{'];};
@@ -606,6 +628,8 @@ var ${vpf}vOffset = $opt->{tab_vert_offset};
 var ${vpf}hOffset = $opt->{tab_horiz_offset};
 $cArray
 
+var ${vpf}uptabs = new Array;
+var ${vpf}dntabs = new Array;
 var ${vpf}divLocation = new Array(${vpf}numLocations)
 var ${vpf}newLocation = new Array(${vpf}numLocations)
 for(var i=0; i<${vpf}numLocations; ++i) {
@@ -640,6 +664,40 @@ function ${vpf}updatePosition(div, newPos) {
 	}
 	div.style.top = (${vpf}numRows-(Math.floor(newPos/${vpf}tabsPerRow) + 1)) * (${vpf}tabHeight-${vpf}vOffset)
 	div.style.left = (newPos % ${vpf}tabsPerRow) * ${vpf}tabWidth +	(${vpf}hOffset * (Math.floor(newPos / ${vpf}tabsPerRow)))
+}
+
+function ${vpf}tripTab(n) {
+	// n is the ID of the division that was clicked
+	// firstTab is the location of the first tab in the selected row
+	var el;
+	for(var i = 0; i < ${vpf}dntabs.length; i++) {
+		el = document.getElementById('${vpf}td' + i);
+		if(el != undefined) {
+			el.innerHTML = ${vpf}dntabs[ i ];
+			el.style.backgroundColor = '#B4B0AA';
+		}
+	}
+	el = document.getElementById('${vpf}td' + n);
+	el.innerHTML = ${vpf}uptabs[ n ];
+	el.style.backgroundColor = '#D4D0C8';
+	// Set tab positions & zIndex
+	// Update location
+	var j = 1;
+	for(var i=0; i<${vpf}numDiv; ++i) {
+		var loc = ${vpf}newLocation[i]
+		var div = ${vpf}getDiv("panel",i)
+		if(i == n) {
+			${vpf}setZIndex(div, ${vpf}numLocations +1);
+			div.style.display = 'block';
+			div.style.backgroundColor = ${vpf}colors[0];
+		}
+		else {
+			${vpf}setZIndex(div, ${vpf}numLocations - loc)
+			div.style.display = 'none';
+			div.style.backgroundColor = ${vpf}colors[j++];
+		}
+		${vpf}divLocation[i] = loc
+	}
 }
 
 function ${vpf}selectTab(n) {
@@ -681,13 +739,6 @@ function ${vpf}selectTab(n) {
 	}
 }
 
-// Nav4: position component into a table
-function ${vpf}positionPanel() {
-	document.$id.top=document.panelLocator.pageY;
-	document.$id.left=document.panelLocator.pageX;
-}
-if (document.layers) window.onload=${vpf}positionPanel;
-
 //-->
 </SCRIPT>
 <STYLE type="text/css">
@@ -716,6 +767,8 @@ if (document.layers) window.onload=${vpf}positionPanel;
 EOF
 	my $s1 = '';
 	my $s2 = '';
+	my @dntabs;
+	my @uptabs;
 	for(my $i = 0; $i < $num_panels; $i++) {
 		my $zi = $num_panels - $i;
 		my $pnum = $i + 1;
@@ -737,6 +790,47 @@ $opt->{panel_prepend}
 $cont->[$i]
 $opt->{panel_append}
 </DIV>
+EOF
+		if($opt->{ui_style}) {
+			$s2 .= <<EOF;
+<td class=subtabdown id="${vpf}td$i"> 
+EOF
+
+			$dntabs[$i] = <<EOF;
+	<table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtabdownleft><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabdownfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
+		 <td class=subtabdownright><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+	  </tr>
+   </table>
+EOF
+
+			$s2 .= $dntabs[$i];
+
+			$uptabs[$i] = <<EOF;
+	<table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtableft><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
+		 <td class=subtabright><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=subtabfilllwr><img src="bg.gif" height=1></td>
+	  </tr>
+	</table>
+EOF
+			$s2 .= "</td>\n";
+
+		}
+		else {
+			$s1 .= <<EOF;
 <DIV
 	onclick="${vpf}selectTab($i)"
 	id="${id}tab$i"
@@ -752,53 +846,51 @@ $opt->{panel_append}
 $tit->[$i]
 </DIV>
 EOF
-		my $lheight = $opt->{tab_height} * $num_rows;
-		my $ltop = $num_rows * ($opt->{tab_height} - $opt->{tab_vert_offset})
-					+ $opt->{tab_vert_offset} - 2;
-		$s2 .= <<EOF;
-<LAYER
-	bgcolor="$colors[$i]"
-	style="$opt->{layer_tab_style}"
-	width="$opt->{tab_width}"
-	height="$lheight"
-	left="$left"
-	top="$top"
-	z-index="$zi"
-	id="${id}tab$i"
-	onfocus="${vpf}selectTab($i)"
-	>
-<table width="100%" cellpadding=2 cellspacing=0>
-$tit->[$i]
-</LAYER>
-<LAYER
-	bgcolor="$colors[$i]"
-	style="$opt->{layer_panel_style}"
-	width="$opt->{panel_width}"
-	height="$opt->{panel_height}"
-	left="0"
-	top="$ltop"
-	z-index="$zi"
-	id="${id}panel$i"
-	>$cont->[$i]
-</LAYER>
-EOF
+		}
 	}
 
 	my $start_index = $opt->{start_at_index} || 0;
 	$start_index += 0;
-	return <<EOF;
-$out
+	if($s2) {
+		$Tag->output_to('third_tabs', { name => 'third_tabs' }, $s2);
+	}
+	$out .= <<EOF;
 <div style="
 		position: relative;
 		left: 0; top: 0; width=100%; height=100%;
 		z-index: 0;
 	">
 $s1
+EOF
+	if($s2) {
+		$out .= <<EOF;
+<script>
+EOF
+		for(my $i = 0; $i < @dntabs; $i++) {
+			$out .= "${vpf}uptabs[ $i ] = ";
+			$out .= $Tag->jsq($uptabs[$i]);
+			$out .= ";\n";
+			$out .= "${vpf}dntabs[ $i ] = ";
+			$out .= $Tag->jsq($dntabs[$i]);
+			$out .= ";\n";
+		}
+		$out .= <<EOF;
+	${vpf}tripTab($start_index);
+</script>
+EOF
+	}
+	else {
+		$out .= <<EOF;
 <script>
 	${vpf}selectTab($start_index);
 </script>
+EOF
+	}
+
+	$out .= <<EOF;
 </div>
 EOF
+
 }
 
 my $tcount_all;
@@ -923,6 +1015,7 @@ my %o_default_length = (
 	break_row_class => 'rbreak',
 	title_row_class => 'rmarq',
 	data_row_class => 'rnorm',
+	ok_button_style => 'font-weight: bold; width: 40px; text-align: center',
 );
 
 my %o_default_var = (qw/
@@ -932,7 +1025,7 @@ my %o_default_var = (qw/
 
 my %o_default_defined = (
 	mv_update_empty		=> 1,
-	restrict_allow		=> 'page area var cgi',
+	restrict_allow		=> 'page area var',
 );
 
 my %o_default = (
@@ -947,7 +1040,6 @@ my %o_default = (
 	border_height		=> 1,
 	clear_image			=> 'bg.gif',
 	table_width			=> '100%',
-	table_height		=> '100%',
 );
 
 # Build maps for ui_te_* option pass
@@ -1078,8 +1170,134 @@ sub resolve_options {
 #::logDebug("options now=" . ::uneval($opt));
 	}
 
+	my @mapdirect = qw/
+		border_cell_class
+		border_height
+		border_height
+		bottom_buttons
+		break_cell_class
+		break_cell_style
+		break_cell_style
+		break_row_class
+		break_row_style
+		button_delete
+		clear_image
+		cancel_button_class
+		cancel_button_style
+		reset_button_class
+		reset_button_style
+		delete_button_class
+		delete_button_style
+		ok_button_class
+		ok_button_style
+		next_button_class
+		next_button_style
+		back_button_class
+		back_button_style
+		data_cell_class
+		data_cell_style
+		data_row_class
+		data_row_style
+		default_widget
+		display_type
+		file_upload
+		help_anchor
+		help_cell_class
+		help_cell_style
+		image_meta
+		include_before
+		include_form
+		include_form_expand
+		include_form_interpolate
+		intro_text
+		label_cell_class
+		label_cell_style
+		left_width
+		link_before
+		link_extra
+		link_fields
+		link_key
+		link_label
+		link_no_blank
+		link_row_qual
+		link_auto_number
+		link_row_blank
+		link_sort
+		link_table
+		link_template
+		link_view
+		mv_blob_field
+		mv_blob_label
+		mv_blob_nick
+		mv_blob_pointer
+		mv_blob_title
+		mv_data_decode
+		mv_data_table
+		mv_update_empty
+		output_map
+		panel_height
+		panel_id
+		panel_class
+		panel_shade
+		panel_style
+		panel_width
+		restrict_allow
+		spacer_height
+		spacer_row_class
+		spacer_row_style
+		start_at
+		tab_bgcolor_template
+		tab_cellpadding
+		tab_cellspacing
+		tab_height
+		tab_horiz_offset
+		tab_vert_offset
+		tab_width
+		tab_class
+		tab_style
+		tabbed
+		table_height
+		table_width
+		title_row_class
+		title_row_style
+		top_buttons
+		ui_break_before
+		ui_break_before_label
+		ui_data_fields
+		ui_data_fields_all
+		ui_data_key_name
+		ui_delete_box
+		ui_display_only
+		ui_hide_key
+		ui_meta_specific
+		ui_meta_view
+		ui_new_item
+		ui_nextpage
+		ui_no_meta_display
+		view_from
+		widget_cell_class
+		widget_cell_style
+		widget_class
+	/;
+
+	if($opt->{cgi}) {
+		for(@mapdirect) {
+			next if ! defined $CGI->{$_};
+			$opt->{$_} = $CGI->{$_};
+		}
+		my @cgi = keys %{$CGI};
+		foreach my $row (@hmap) {
+			my @keys = grep $_ =~ $row->[0], @cgi;
+			for(@keys) {
+				/^ui_\w+:(\S+)/
+					and $opt->{$row->[1]}{$1} = $CGI->{$_};
+			}
+		}
+	}
+
+#::logDebug("no_meta_display=$opt->{ui_no_meta_display}");
 	my $tmeta;
-	if($opt->{no_table_meta}) {
+	if($opt->{no_table_meta} || $opt->{ui_no_meta_display}) {
 		$tmeta = {};
 	}
 	else {
@@ -1087,10 +1305,21 @@ sub resolve_options {
 	}
 
 	$opt->{view_from} ||= $tmeta->{view_from};
+	
+	my $baseopt;
+	if($opt->{no_base_meta} || $opt->{ui_no_meta_display}) {
+		$baseopt = {};
+	}
+	else {
+		$baseopt = meta_record('table-editor') || {};
+		delete $baseopt->{extended};
+	}
 
 	if( !   $opt->{ui_meta_view}
 		and $opt->{view_from}
+		and $opt->{view_from}
 		and $data
+		and ! $opt->{ui_no_meta_display}
 		and $opt->{ui_meta_view} = $data->{$opt->{view_from}}
 		)
 	{
@@ -1143,120 +1372,29 @@ sub resolve_options {
 		}
 	}
 
-	my @mapdirect = qw/
-		bottom_buttons
-		border_cell_class
-		border_height
-		break_cell_style
-		border_height
-		break_cell_class
-		break_cell_style
-		break_row_class
-		break_row_style
-		clear_image
-		data_cell_class
-		data_cell_style
-		data_row_class
-		data_row_style
-		default_widget
-		display_type
-		file_upload
-		help_cell_class
-		help_cell_style
-		help_anchor
-		include_before
-		include_form
-		include_form_expand
-		include_form_interpolate
-		intro_text
-		label_cell_class
-		label_cell_style
-		left_width
-		link_before
-		link_table
-		link_fields
-		link_label
-		link_sort
-		link_key
-		link_view
-		link_no_blank
-		link_template
-		link_extra
-		mv_blob_field
-		mv_blob_label
-		mv_blob_nick
-		mv_blob_pointer
-		mv_blob_title
-		mv_data_decode
-		mv_data_table
-		mv_update_empty
-		panel_height
-		panel_id
-		panel_width
-		restrict_allow
-		spacer_row_class
-		spacer_row_style
-		spacer_height
-		start_at
-		tab_bgcolor_template
-		tab_cellpadding
-		tab_cellspacing
-		tab_height
-		tab_horiz_offset
-		tab_vert_offset
-		tab_width
-		tabbed
-		table_height
-		table_width
-		title_row_class
-		title_row_style
-		top_buttons
-		ui_break_before
-		ui_break_before_label
-		ui_data_fields
-		ui_data_fields_all
-		ui_data_key_name
-		ui_delete_box
-		ui_display_only
-		ui_hide_key
-		ui_meta_specific
-		ui_meta_view
-		ui_new_item
-		ui_nextpage
-		ui_no_meta_display
-		view_from
-		widget_cell_class
-		widget_cell_style
-	/;
+	for(grep length($baseopt->{$_}), @mapdirect) {
+#::logDebug("checking baseopt->{$_}, baseopt=$baseopt->{$_} tmeta=$tmeta->{$_}");
+		$tmeta->{$_} = $baseopt->{$_}	unless length $tmeta->{$_};
+	}
 
 	for(grep defined $tmeta->{$_}, @mapdirect) {
-		$opt->{$_} = $tmeta->{$_} if ! defined $opt->{$_};
+#::logDebug("checking tmeta->{$_}, tmeta=$tmeta->{$_} opt=$opt->{$_}");
+#::logDebug("opt->{$_} is " . (defined $opt->{$_} ? 'defined' : 'undefined'));
+		$opt->{$_} = $tmeta->{$_}		unless defined $opt->{$_};
 	}
 
 	if($opt->{cgi}) {
-		unshift @mapdirect, qw/
+		my @extra = qw/
 				item_id
 				item_id_left
 				ui_clone_id
 				ui_clone_tables
 				ui_sequence_edit
 		/;
-		for(@mapdirect) {
+		for(@extra) {
 			next if ! defined $CGI->{$_};
 			$opt->{$_} = $CGI->{$_};
 		}
-		my @cgi = keys %{$CGI};
-		foreach my $row (@hmap) {
-			my @keys = grep $_ =~ $row->[0], @cgi;
-			for(@keys) {
-				/^ui_\w+:(\S+)/
-					and $opt->{$row->[1]}{$1} = $CGI->{$_};
-			}
-		}
-
-		### Why these here?
-		#$table = $opt->{mv_data_table};
-		#$key = $opt->{item_id};
 	}
 
 	if($opt->{wizard}) {
@@ -1375,19 +1513,24 @@ sub resolve_options {
 		$opt->{$mainp} = $thing;
 	}
 
-	#### This code is also in main editor routine, change there too!
-	my $rowdiv         = $opt->{across}    || 1;
-	my $cells_per_span = $opt->{cell_span} || 2;
-	my $rowcount = 0;
-	my $span = $rowdiv * $cells_per_span;
-	#### 
+	# Init the button styles
 
-	# Make standard fixed rows
-	$opt->{spacer_row} = <<EOF;
-<tr$opt->{spacer_row_extra}>
-<td colspan=$span $opt->{spacer_row_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
-</tr>
-EOF
+	for my $ctype (qw/ok next back cancel delete reset/) {
+		my $mainp = $ctype . '_button_extra';
+		my $thing = '';
+		for my $ptype (qw/class style/) {
+			my $parm = $ctype . '_button_' . $ptype;
+			$opt->{$parm} ||= $tmeta->{$parm};
+			if(defined $opt->{$parm}) {
+				$thing .= qq{ $ptype="$opt->{$parm}"};
+			}
+		}
+		$opt->{$mainp} ||= $tmeta->{$mainp};
+		if($opt->{$mainp}) {
+			$thing .= " " . $opt->{$mainp};
+		}
+		$opt->{$mainp} = $thing;
+	}
 
 	###############################################################
 	# Get the field display information including breaks and labels
@@ -1396,6 +1539,7 @@ EOF
 		$opt->{ui_data_fields} = $tmeta->{ui_data_fields} || $tmeta->{options};
 	}
 #::logDebug("fields were=$opt->{ui_data_fields}");
+
 	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
 	$opt->{ui_data_fields} =~ s/\r/\n/g;
 	$opt->{ui_data_fields} =~ s/^[ \t]+//mg;
@@ -1420,6 +1564,42 @@ EOF
 	$opt->{ui_data_fields} =~ s/^[\s,\0]+//;
 	$opt->{ui_data_fields} =~ s/[\s,\0]+$//;
 #::logDebug("fields now=$opt->{ui_data_fields}");
+
+	## Visual field layout
+	if($opt->{ui_data_fields} =~ /[\w:.]+[ \t,]+\w+.*\n\w+/) {
+		my $cs = $opt->{colspan} ||= {};
+		my @things = split /\n/, $opt->{ui_data_fields};
+		my @rows;
+		my $max = 0;
+		for(@things) {
+			my @cols = split /[\s\0,]+/, $_;
+			my $cnt = scalar(@cols);
+			$max = $cnt if $cnt > $max;
+			push @rows, \@cols;
+		}
+		$opt->{across} = $max;
+		for(@rows) {
+			my $cnt = scalar(@$_);
+			if ($cnt < $max) {
+				my $name = $_->[-1];
+				$cs->{$name} = (($max - $cnt) * 2) + 1;
+			}
+		}
+	}
+
+	#### This code is also in main editor routine, change there too!
+	my $rowdiv         = $opt->{across}    || 1;
+	my $cells_per_span = $opt->{cell_span} || 2;
+	my $rowcount = 0;
+	my $span = $rowdiv * $cells_per_span;
+	#### 
+
+	# Make standard fixed rows
+	$opt->{spacer_row} = <<EOF;
+<tr$opt->{spacer_row_extra}>
+<td colspan=$span $opt->{spacer_row_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
+</tr>
+EOF
 
 	$opt->{mv_nextpage} = $Global::Variable->{MV_PAGE}
 		if ! $opt->{mv_nextpage};
@@ -1470,9 +1650,9 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	$key ||= $opt->{item_id};
 
 	if($opt->{cgi}) {
-		$key ||= delete $CGI->{item_id};
-		$opt->{item_id_left} ||= delete $CGI::values{item_id_left};
-		$opt->{ui_sequence_edit} ||= delete $CGI::values{ui_sequence_edit};
+		$key ||= $CGI->{item_id};
+		$opt->{item_id_left} ||= $CGI::values{item_id_left};
+		$opt->{ui_sequence_edit} ||= $CGI::values{ui_sequence_edit};
 	}
 
 	if($key =~ /\0/ or (! $key and $key = delete $opt->{item_id_left}) ) {
@@ -1534,6 +1714,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	my $append       = $opt->{append};
 	my $check        = $opt->{check};
+	my $class        = $opt->{class} || {};
 	my $database     = $opt->{database};
 	my $default      = $opt->{default};
 	my $error        = $opt->{error};
@@ -1558,6 +1739,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $template     = $opt->{template};
 	my $widget       = $opt->{widget};
 	my $width        = $opt->{width};
+	my $colspan      = $opt->{colspan} || {};
 
 	my $blabel = $opt->{blabel};
 	my $elabel = $opt->{elabel};
@@ -1960,7 +2142,7 @@ EOF
 				}
 				$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
 <B>$msg1:</B> $blob_widget&nbsp;
-<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;$msg2</SMALL>
+<INPUT TYPE=checkbox NAME=mv_blob_only class="$opt->{widget_class}" VALUE=1$checked>&nbsp;$msg2</SMALL>
 EOF
 			}
 
@@ -1970,7 +2152,7 @@ EOF
 	   <SMALL>$opt->{mv_blob_title}<BR>
 		$loaded_from
 	 </td>
-	 <td$opt->{widget_cell_extra}>
+	 <td$opt->{data_cell_extra}>
 	 	$blob_widget&nbsp;
 	 </td>
 </TR>
@@ -2033,8 +2215,9 @@ EOF
 
 	no strict 'subs';
 
-	chunk 'FORM_BEGIN', <<EOF; # unless $wo;
-$restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
+	chunk ttag(), $restrict_begin;
+	chunk 'FORM_BEGIN', 'OUTPUT_MAP', <<EOF; # unless $wo;
+<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
 EOF
 
     $hidden->{mv_click}      = $opt->{process_filter};
@@ -2043,7 +2226,7 @@ EOF
     $hidden->{mv_data_table} = $table;
     $hidden->{mv_data_key}   = $keycol;
 
-	chunk 'HIDDEN_ALWAYS', <<EOF;
+	chunk 'HIDDEN_ALWAYS', 'OUTPUT_MAP', <<EOF;
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 EOF
@@ -2107,9 +2290,13 @@ EOF
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
 			push @o, produce_hidden($hk, $hv);
 		}
-		chunk 'HIDDEN_USER', join("", @o); # unless $wo;
+		chunk 'HIDDEN_USER', 'OUTPUT_MAP', join("", @o); # unless $wo;
 	}
 
+	if($opt->{tabbed} and $Session->{browser} !~ /Gecko/) {
+		$opt->{table_width} ||= $opt->{panel_width} + 10;
+		$opt->{table_height} ||= $opt->{panel_height} + 10;
+	}
 	chunk ttag(), <<EOF; # unless $wo;
 <table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}" height="$opt->{table_height}">
 <tr>
@@ -2117,7 +2304,7 @@ EOF
 
 <table class=tinner width="$opt->{inner_table_width}" height="$opt->{inner_table_height}" cellspacing=0 cellmargin=0 cellpadding="2" align="center" border="0">
 EOF
-	chunk ttag(), 'NO_TOP', <<EOF; # unless $opt->{no_top} or $wo;
+	chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF; # unless $opt->{no_top} or $wo;
 <tr> 
 <td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
@@ -2134,21 +2321,22 @@ EOF
 
 	#### Extra buttons
 	my $extra_ok =	$blob_widget
+						|| $opt->{output_map}
 	  					|| $linecount > 4
 						|| defined $opt->{include_form}
 						|| $mlabel;
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
-		  chunk ttag(), '', <<EOF; # unless $wo;
+		  chunk ttag(), 'OUTPUT_MAP', <<EOF; # unless $wo;
 <tr$opt->{data_row_extra}>
-<td>&nbsp;</td>
+<td$opt->{label_cell_extra}>&nbsp;</td>
 <td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
-			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS OUTPUT_MAP', <<EOF;
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
 <BR>
 EOF
-			chunk 'MLABEL', '', 'MESSAGES', $mlabel;
+			chunk 'MLABEL', 'OUTPUT_MAP', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
 	</td>
 </tr>
@@ -2156,47 +2344,46 @@ $opt->{spacer_row}
 EOF
 		}
 		elsif ($opt->{wizard}) {
-		  chunk ttag(), 'NO_TOP', <<EOF;
+			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
 <TR$opt->{data_row_extra}>
-<td>&nbsp;</td>
+<td$opt->{label_cell_extra}>&nbsp;</td>
 <td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
-			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', <<EOF; # if ! $opt->{bottom_buttons};
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF; 
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
 <BR>
 EOF
-			chunk 'MLABEL', 'BOTTOM_BUTTONS', 'MESSAGES', $mlabel;
-			chunk ttag(), <<EOF;
+			chunk 'MLABEL', 'BOTTOM_BUTTONS OUTPUT_MAP', 'MESSAGES', $mlabel;
+			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
 	</td>
 </tr>
 $opt->{spacer_row}
 EOF
 		}
 		else {
-		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
+		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 <TR$opt->{data_row_extra}>
-<td>&nbsp;</td>
+<td$opt->{label_cell_extra}>&nbsp;</td>
 <td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
 
-		  $opt->{ok_button_style} = 'font-weight: bold; width: 40px; text-align: center'
-		  	unless defined $opt->{ok_button_style};
-		  	
-		  chunk 'OK_TOP', 'NO_TOP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}" style="$opt->{ok_button_style}">
+		  chunk 'OK_TOP', 'NO_TOP OUTPUT_MAP', <<EOF;
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{ok_button_extra}>
 EOF
-		  chunk 'CANCEL_TOP', 'NOCANCEL BOTTOM_BUTTONS NO_TOP', <<EOF;
+		  chunk 'CANCEL_TOP', 'NOCANCEL BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}" style="$opt->{cancel_button_style}">
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>
 EOF
 
-		  chunk 'RESET_TOP', '_SHOW_RESET BOTTOM_BUTTONS NO_TOP', <<EOF;
+		  if($opt->{show_reset}) {
+			  chunk 'RESET_TOP', 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 &nbsp;
-<INPUT TYPE=reset>
+<INPUT TYPE=reset$opt->{reset_button_extra}>
 EOF
+		  }
 
-			chunk 'MLABEL', 'BOTTOM_BUTTONS', $mlabel;
-			chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
+			chunk 'MLABEL', 'BOTTOM_BUTTONS OUTPUT_MAP', $mlabel;
+			chunk ttag(), 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 	</td>
 </tr>
 $opt->{spacer_row}
@@ -2258,7 +2445,7 @@ EOF
 	@tables = grep $_ !~ /:/, @tables;
 	for(@tables) {
 		next unless $possible{$_};
-		my $db = database_exists_ref($_);
+		my $db = $Db{$_} || Vend::Data::database_exists_ref($_);
 		next unless $db;
 		my $new = 
 		my $res = $db->clone_row($id, $new);
@@ -2271,7 +2458,7 @@ EOF
 	}
 	for(@sets) {
 		my ($t, $col) = split /:/, $_;
-		my $db = database_exists_ref($t) or next;
+		my $db = $Db{$t} || Vend::Data::database_exists_ref($t) or next;
 		my $res = $db->clone_set($col, $id, $new);
 		if($res) {
 			$out .= "cloned $col=$id to to $col=$new in table $t<BR>\n";
@@ -2328,8 +2515,6 @@ EOF
 								OK_TOP
 								CANCEL_TOP
 								RESET_TOP
-								BLOB_WIDGET
-								CLONE_TABLES
 								/;
 
 	my %break;
@@ -2467,7 +2652,7 @@ EOF
 		$opt->{meta_extra} ||= "";
 		$opt->{meta_extra} .= qq{ class="$opt->{meta_class}"}
 			if $opt->{meta_class};
-		$opt->{meta_extra} .= qq{ class="$opt->{meta_style}"}
+		$opt->{meta_extra} .= qq{ style="$opt->{meta_style}"}
 			if $opt->{meta_style};
 	}
 
@@ -2481,22 +2666,26 @@ EOF
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$opt->{data_cell_extra}>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   <td$opt->{data_cell_extra}\{COLSPAN}>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
    </td>
 EOF
 		}
 		elsif($opt->{image_meta}) {
+			$opt->{break_template} ||= <<EOF;
+$opt->{spacer_row}
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+EOF
 			$row_template = <<EOF;
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$opt->{data_cell_extra}>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
          <td align=right>{META_STRING}</td>
        </tr>
      </table>
@@ -2526,7 +2715,7 @@ EOF
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}{META_STRING}
    </td>
-   <td$opt->{data_cell_extra}>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
@@ -2587,6 +2776,9 @@ EOF
 		my @llab;
 		my @ltpl;
 		my @lnb;
+		my @lrq;
+		my @lra;
+		my @lrb;
 		my @lbefore;
 		my @lsort;
 		my $tcount = 1;
@@ -2598,6 +2790,9 @@ EOF
 			@llab    = @{$opt->{link_label}};
 			@ltpl    = @{$opt->{link_template}};
 			@lnb     = @{$opt->{link_no_blank}};
+			@lrq     = @{$opt->{link_row_qual}};
+			@lra     = @{$opt->{link_auto_number}};
+			@lrb     = @{$opt->{link_rows_blank}};
 			@lbefore = @{$opt->{link_before}};
 			@lsort   = @{$opt->{link_sort}};
 		}
@@ -2609,6 +2804,9 @@ EOF
 			@llab    = $opt->{link_label};
 			@ltpl    = $opt->{link_template};
 			@lnb     = $opt->{link_no_blank};
+			@lrq     = $opt->{link_row_qual};
+			@lra     = $opt->{link_auto_number};
+			@lrb     = $opt->{link_rows_blank};
 			@lbefore = $opt->{link_before};
 			@lsort   = $opt->{link_sort};
 		}
@@ -2620,6 +2818,9 @@ EOF
 			my $lb = shift @lbefore;
 			my $lnb = shift @lnb;
 			my $ls = shift @lsort;
+			my $lrq = shift @lrq;
+			my $lra = shift @lra;
+			my $lrb = shift @lrb;
 
 			my $rcount = 0;
 
@@ -2637,6 +2838,15 @@ EOF
 			$lf ||= $lmeta->{spread_fields};
 
 			my $l_pkey = $ldb->config('KEY');
+			$lrq ||= $l_pkey;
+
+			my $an_piece = '';
+			if($lra) {
+				$an_piece = <<EOF;
+<input type=hidden name="mv_data_auto_number__$tcount" value="$lra">
+<input type=hidden name="mv_data_function__$tcount" value="insert">
+EOF
+			}
 
 			my @cf = grep /\S/, split /[\s,\0]+/, $lf;
 			@cf = grep $_ ne $l_pkey, @cf;
@@ -2650,6 +2860,8 @@ EOF
 <input type=hidden name="mv_data_fields__$tcount" value="$lf">
 <input type=hidden name="mv_data_multiple__$tcount" value="1">
 <input type=hidden name="mv_data_key__$tcount" value="$l_pkey">
+<input type=hidden name="mv_data_multiple_qual__$tcount" value="$lrq">
+$an_piece
 $l_pkey</td>};
 			push @lout, $Tag->row_edit({ table => $lt, columns => $lf });
 			push @lout, '</tr>';
@@ -2681,20 +2893,25 @@ $l_pkey</td>};
 				push @lout, "</tr>";
 			}
 			unless($lnb) {
-				my %o = (
-					table => $lt,
-					blank => 1,
-					extra => $opt->{link_extra},
-					pointer => 999999,
-					stacker => $tcount,
-					columns => $lf,
-					extra => $opt->{link_extra},
-				);
-				push @lout, qq{<tr><td$lextra>};
-				push @lout, qq{<input size=8 name="999999_${l_pkey}__$tcount" value="">};
-				push @lout, '</td>';
-				push @lout, $Tag->row_edit(\%o);
-				push @lout, '</tr>';
+				my $start_ptr = 999000;
+				$lrb ||= 1;
+				for(0 .. $opt->{link_rows_blank}) {
+					my %o = (
+						table => $lt,
+						blank => 1,
+						extra => $opt->{link_extra},
+						pointer => $start_ptr,
+						stacker => $tcount,
+						columns => $lf,
+						extra => $opt->{link_extra},
+					);
+					push @lout, qq{<tr><td$lextra>};
+					push @lout, qq{<input size=8 name="${start_ptr}_${l_pkey}__$tcount" value="">};
+					push @lout, '</td>';
+					push @lout, $Tag->row_edit(\%o);
+					push @lout, '</tr>';
+					$start_ptr++;
+				}
 			}
 			push @lout, "</table>";
 			$whash->{LABEL}  = $ll;
@@ -2864,7 +3081,7 @@ $l_pkey</td>};
 
 		my $namecol;
 		if($serialize) {
-#Debug("serialize=$serialize");
+#::logDebug("serialize=$serialize");
 			if($serialize{$col}) {
 				push @{$serialize{$col}}, $serialize;
 			}
@@ -2875,18 +3092,18 @@ $l_pkey</td>};
 					$sd = tag_data($tt, $tc, $k);
 				}
 				else {
-					$sd = $data->{$col} || $def->{$col};
+					$sd = $data->{$col} || $default->{$col};
 				}
-#Debug("serial_data=$sd");
+#::logDebug("serial_data=$sd");
 				$serial_data{$col} = $sd;
 				$opt->{hidden}{$col} = $data->{$col};
 				$serialize{$col} = [$serialize];
 			}
 			$c =~ /\.(.*)/;
 			my $hk = $1;
-#Debug("fetching serial_data for $col hk=$hk data=$serial_data{$col}");
+#::logDebug("fetching serial_data for $col hk=$hk data=$serial_data{$col}");
 			$currval = dotted_hash($serial_data{$col}, $hk);
-#Debug("fetched hk=$hk value=$currval");
+#::logDebug("fetched hk=$hk value=$currval");
 			$overridden = 1;
 			$namecol = $c = $serialize;
 		}
@@ -2990,11 +3207,14 @@ EOF
 			}
 		}
 
+		$class->{$c} ||= $opt->{widget_class};
+
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c}");
 		my $display = display($t, $c, $key, {
 							append				=> $append->{$c},
 							applylocale			=> 1,
 							arbitrary			=> $opt->{ui_meta_view},
+							class				=> $class->{$c},
 							column				=> $c,
 							db					=> $database->{$c},
 							default				=> $currval,
@@ -3042,6 +3262,8 @@ EOF
 		$display->{TKEY}   = $tkey_message;
 		$display->{BLABEL} = $blabel;
 		$display->{ELABEL} = $elabel;
+		$display->{COLSPAN} = " colspan=$colspan->{$namecol}" 
+			if $colspan->{$namecol};
 		$display->{ERROR}  = $err_string;
 
 		$update_ctl = 0;
@@ -3111,12 +3333,12 @@ EOF
 	if(@ext_enable) {
 		$::Scratch->{mv_data_enable} .= " " . join(" ", @ext_enable) . " ";
 	}
-#Debug("setting mv_data_enable to $::Scratch->{mv_data_enable}");
+#::logDebug("setting mv_data_enable to $::Scratch->{mv_data_enable}");
 	my @serial = keys %serialize;
 	my @serial_fields;
 	my @o;
 	for (@serial) {
-#Debug("$_ serial_data=$serial_data{$_}");
+#::logDebug("$_ serial_data=$serial_data{$_}");
 		$serial_data{$_} = uneval($serial_data{$_})
 			if is_hash($serial_data{$_});
 		$serial_data{$_} =~ s/\&/&amp;/g;
@@ -3129,7 +3351,7 @@ EOF
 		push @o, qq{<INPUT TYPE=hidden NAME="ui_serial_fields" VALUE="};
 		push @o, join " ", @serial_fields;
 		push @o, qq{">};
-		chunk 'SERIAL_FIELDS', join("", @o);
+		chunk 'HIDDEN_SERIAL', 'OUTPUT_MAP', join("", @o);
 	}
 
 	###
@@ -3158,63 +3380,43 @@ EOF
 
 	my ($beghid, $endhid) = split m{</td>}i, $opt->{spacer_row}, 2;
 	$endhid = "</td>$endhid" if $endhid;
-	chunk ttag(), $beghid;
-	chunk 'HIDDEN_EXTRA', qq{<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden};
-	chunk ttag(), $endhid;
+	chunk ttag(), 'OUTPUT_MAP', $beghid;
+	chunk 'HIDDEN_EXTRA', 'OUTPUT_MAP', qq{<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden};
+	chunk ttag(), 'OUTPUT_MAP', $endhid;
 
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $wo || $opt->{nosave}; 
 #::logDebug("in SAVEWIDGETS");
-		chunk ttag(), <<EOF;
+		chunk ttag(), 'OUTPUT_MAP', <<EOF;
 <TR$opt->{data_row_extra}>
-<td>&nbsp;</td>
+<td$opt->{label_cell_extra}>&nbsp;</td>
 <td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
-
 
 	  	if($opt->{back_text}) {
 
-			chunk 'COMBINED_BUTTONS_BOTTOM', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+			chunk 'COMBINED_BUTTONS_BOTTOM', 'OUTPUT_MAP', <<EOF;
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
 EOF
 		}
 		elsif($opt->{wizard}) {
-			chunk 'WIZARD_BUTTONS_BOTTOM', <<EOF;
-<TR$opt->{data_row_extra}>
-<td>&nbsp;</td>
-<td align=left colspan=$oddspan$opt->{data_cell_extra}>
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+			chunk 'WIZARD_BUTTONS_BOTTOM', 'OUTPUT_MAP', <<EOF;
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
 EOF
 		}
 		else {
-			chunk 'OK_BOTTOM', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}" style="$opt->{ok_button_style}">
+			chunk 'OK_BOTTOM', 'OUTPUT_MAP', <<EOF;
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{ok_button_extra}>
 EOF
 
-			chunk 'CANCEL_BOTTOM', 'NOCANCEL', <<EOF;
-&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}" style="$opt->{cancel_button_style}">
+			chunk 'CANCEL_BOTTOM', 'NOCANCEL OUTPUT_MAP', <<EOF;
+&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>
 EOF
 
-			chunk 'RESET_BOTTOM', qq{&nbsp;<INPUT TYPE=reset>}
+			chunk 'RESET_BOTTOM', 'OUTPUT_MAP', qq{&nbsp;<INPUT TYPE=reset$opt->{reset_button_extra}>}
 				if $opt->{show_reset};
 		}
 
-	if(! $opt->{notable} and $Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
-		my $checked = ' CHECKED';
-		$checked = ''
-			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
-		my $autoexpstr = errmsg('Auto-export');		
-		chunk 'AUTO_EXPORT', 'NOEXPORT NOSAVE', <<EOF; # unless $opt->{noexport} or $opt->{nosave};
-<small>
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
-	<INPUT TYPE=checkbox NAME=mv_auto_export VALUE="$table"$checked>&nbsp;$autoexpstr
-EOF
-
-	}
 
 	if($exists and ! $opt->{nodelete} and $Tag->if_mm('tables', "$table=d")) {
 		my $extra = $Tag->return_to( { type => 'click', tablehack => 1 });
@@ -3233,17 +3435,44 @@ EOF
 					});
 		my $delstr = errmsg('Delete');
 		my $delmsg = errmsg('Are you sure you want to delete %s?',$key);
-		chunk 'DELETE_BUTTON', 'NOSAVE', <<EOF; # if ! $opt->{nosave};
-<BR><BR><A
-onClick="return confirm('$delmsg')"
-HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> $delstr
+		if($opt->{output_map} or $opt->{button_delete}) {
+			chunk 'DELETE_BUTTON', 'NOSAVE OUTPUT_MAP', <<EOF;
+&nbsp;
+	<input
+		type=button
+		onClick="if(confirm('$delmsg')) { location='$url' }"
+		title="Delete $key"
+		value="$delstr"$opt->{delete_button_extra}>
+EOF
+		}
+		else {
+			chunk 'DELETE_BUTTON', 'NOSAVE OUTPUT_MAP', <<EOF; # if ! $opt->{nosave};
+<BR><BR><A onClick="return confirm('$delmsg')" HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> $delstr
+EOF
+		}
+
+	}
+
+	if(! $opt->{notable} and $Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
+		my $checked = ' CHECKED';
+		my $msg = errmsg("Automatically export to text file");
+		$checked = ''
+			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
+		my $autoexpstr = errmsg('Auto-export');		
+		chunk 'AUTO_EXPORT', 'NOEXPORT NOSAVE OUTPUT_MAP', <<EOF;
+<small>
+&nbsp;
+&nbsp;
+	<INPUT TYPE=checkbox class="$opt->{widget_class}" title="$msg" NAME=mv_auto_export VALUE="$table"$checked><span class="$opt->{widget_class}" title="$msg">&nbsp;$autoexpstr</span>
 EOF
 
 	}
+
 	chunk_alias 'HIDDEN_FIELDS', qw/
 										HIDDEN_ALWAYS
-										HIDDEN_AUTO
 										HIDDEN_EXTRA
+										HIDDEN_SERIAL
+										HIDDEN_USER
 										/;
 	chunk_alias 'BOTTOM_BUTTONS', qw/
 										WIZARD_BUTTONS_BOTTOM
@@ -3251,9 +3480,12 @@ EOF
 										OK_BOTTOM
 										CANCEL_BOTTOM
 										RESET_BOTTOM
+										/;
+	chunk_alias 'EXTRA_BUTTONS', qw/
 										AUTO_EXPORT
-										DELETE_BUTTON/;
-	chunk ttag(), <<EOF;
+										DELETE_BUTTON
+										/;
+	chunk ttag(), 'OUTPUT_MAP', <<EOF;
 </small>
 </td>
 </tr>
@@ -3299,9 +3531,26 @@ EOF
 </td></tr></table>
 EOF
 
-	chunk 'FORM_END', '', 'BOTTOM_OF_FORM', <<EOF;
-</form>$restrict_end
+	my $end_script = '';
+	if( $opt->{start_at}
+			and
+		$opt->{form_name}
+			and
+		$widget->{$opt->{start_at}} !~ /radio|check/i
+		)
+	{
+		$end_script = <<EOF;
+<script>
+	document.$opt->{form_name}.$opt->{start_at}.focus();
+</script>
 EOF
+	}
+	chunk 'FORM_END', 'OUTPUT_MAP', <<EOF;
+</form>$end_script
+EOF
+	chunk ttag(), $restrict_end;
+
+	chunk_alias 'BOTTOM_OF_FORM', qw/ FORM_END /;
 
 	my %ehash = (
 	);
@@ -3311,6 +3560,7 @@ EOF
 		NOEXPORT
 		NOSAVE
 		NO_BOTTOM
+		OUTPUT_MAP
 		NO_TOP
 		SHOW_RESET
 		/)
@@ -3321,6 +3571,38 @@ EOF
 	$ehash{MESSAGE} = length($message) ? 1 : 0;
 
 #::logDebug("exclude is " . uneval(\%exclude));
+
+	if($opt->{output_map}) {
+		$opt->{output_map} =~ s/^\s+//;
+		$opt->{output_map} =~ s/\s+$//;
+		my %map;
+		my @map = split /[\s,=\0]+/, $opt->{output_map};
+		if(@map > 1) {
+			for(my $i = 0; $i <= @map; $i += 2) {
+				$map{ uc $map[$i] } = lc $map[$i + 1];
+			}
+		}
+		else {
+			%map = qw/
+				TOP_OF_FORM			top_of_form
+				BOTTOM_OF_FORM		bottom_of_form
+				HIDDEN_FIELDS  	    hidden_fields
+				TOP_BUTTONS    	    top_buttons
+				BOTTOM_BUTTONS    	bottom_buttons
+				EXTRA_BUTTONS    	extra_buttons
+			/;
+		}
+
+		while(my($al, $to) = each %map) {
+#::logDebug("outputting alias $al to output $to");
+			my $ary = $alias{$al} || [];
+#::logDebug("alias $al means " . join(" ", @$ary));
+			my $string = join("", @outhash{@$ary});
+#::logDebug("alias $al string is $string");
+			$Tag->output_to($to, { name => $to}, $string );
+		}
+	}
+
 	resolve_exclude(\%ehash);
 
 	if($wo) {
@@ -3381,7 +3663,9 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 			for(@controls) {
 				push @tabcont, create_rows($opt, $_);
 			}
-			$opt->{panel_prepend} ||= '<table>';
+			$opt->{panel_table_extra} ||= 'width="100%" cellpadding=3 cellspacing=1';
+			$opt->{panel_table_extra} =~ s/^/ /;
+			$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 			$opt->{panel_append} ||= '</table>';
 			push @put, tabbed_display(\@titles,\@tabcont,$opt);
 		}
@@ -3407,7 +3691,9 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 		for(@controls) {
 			push @tabcont, create_rows($opt, $_);
 		}
-		$opt->{panel_prepend} ||= '<table>';
+		$opt->{panel_table_extra} ||= 'width="100%" cellpadding=3 cellspacing=1';
+		$opt->{panel_table_extra} =~ s/^/ /;
+		$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 		$opt->{panel_append} ||= '</table>';
 		push @put, tabbed_display(\@titles,\@tabcont,$opt);
 	}
@@ -3452,15 +3738,20 @@ sub create_rows {
 	my $rowcount		= 0;
 	my $span			= $rowdiv * $cells_per_span;
 	my $oddspan			= $span - 1;
+	my $colspan = $opt->{colspan};
+#::logDebug("colspan=" . ::uneval($colspan));
 
 	my @out;
 
-	for(@$columns) {
+	for my $c (@$columns) {
+		my $colname = $c;
+		$colname =~ s/^COLUMN_//;
+#::logDebug("doing column $c name=$colname");
 		# If doesn't exist, was brought in before.
-		my $ref = delete $outhash{$_}
+		my $ref = delete $outhash{$c}
 			or next;
 		if($ref->{ROW}) {
-#::logDebug("outputting ROW $_=$ref->{ROW}");
+#::logDebug("outputting ROW $c=$ref->{ROW}");
 			my $tpl = $ref->{TEMPLATE} || $opt->{combo_template};
 			push @out, tag_attr_list($tpl, $ref);
 			$rowcount = 0;
@@ -3468,6 +3759,11 @@ sub create_rows {
 		}
 		my $w = '';
 		$w .= "<tr$opt->{data_row_extra}>\n" unless $rowcount++ % $rowdiv;
+		if(my $s = $colspan->{$colname}) {
+#::logDebug("found colspan=$s (ref=$ref->{COLSPAN}) for $colname");
+			my $extra =  ($s - 1) / $cells_per_span;
+			$rowcount += $extra;
+		}
 		$w .= tag_attr_list($ref->{TEMPLATE}, $ref);
 		$w .= "</tr>" unless $rowcount % $rowdiv;
 		push @out, $w;

@@ -1,9 +1,10 @@
 UserTag  global-value  Order  name
 UserTag  global-value  Routine <<EOR
 sub {
+	my $thing = shift;
 	no strict 'refs';
-	defined ${$_[0]} and return ${$_[0]};
-	return '';
+	return '' unless defined ${$thing};
+	return ${$thing};
 }
 EOR
 

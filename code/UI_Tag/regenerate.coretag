@@ -338,7 +338,7 @@ EOF
 	my $end = (times)[0] - $start;
 	$end = int($end);
 	regen_track("Finished static page building in $end seconds.");
-	::response(::interpolate_html(<<EOF, 1));
+	::interpolate_html(<<EOF, 1);
 <table cellpadding=2 cellspacing=0 width=__UI_OVERALL_WIDTH__ bgcolor=__UI_C_TITLEBARBG__ border=0>
 <tr>
 <td>
@@ -365,6 +365,7 @@ EOF
    <center>
 $Global::Variable->{UI_STD_FOOTER};
 EOF
+	::response();
 	return;
 }
 EOR

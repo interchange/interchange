@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.8 2002-09-07 18:45:42 mheins Exp $
+# $Id: Page.pm,v 2.9 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 my $wantref = 1;
 
@@ -70,7 +70,8 @@ sub display_special_page {
 		unless defined $page;
 	$page =~ s#\[subject\]#$subject#ig;
 	$Vend::PageInit = 0;
-	return ::response(::interpolate_html($page, 1));
+	interpolate_html($page, 1);
+	::response();
 }
 
 # Displays the catalog page NAME.  If the file is not found, displays
@@ -122,7 +123,8 @@ sub display_page {
 
 	if (defined $page) {
 		$Vend::PageInit = 0;
-		::response(::interpolate_html($page, 1, $opt));
+		interpolate_html($page, 1, $opt);
+		::response();
 		return 1;
 	}
 	else {
@@ -191,6 +193,85 @@ sub do_scan {
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
 	return 1;
+}
+
+sub output_test {
+	my ($tag) = @_;
+	my $ary;
+	return '' unless $ary = $Vend::OutPtr{lc $tag};
+	for(@$ary) {
+		next unless $Vend::Output[$_];
+		next unless length(${$Vend::Output[$_]});
+		return 1;
+	}
+	return '';
+}
+
+sub output_cat {
+	my ($tag) = @_;
+	my $ary;
+	return '' unless $ary = $Vend::OutPtr{lc $tag};
+	my $out = '';
+	for(@$ary) {
+		next unless $Vend::Output[$_];
+		$out .= ${$Vend::Output[$_]};
+		undef $Vend::Output[$_];
+	}
+	return $out;
+}
+
+sub output_ary {
+	my ($tag) = @_;
+	my $ary;
+	return '' unless $ary = $Vend::OutPtr{lc $tag};
+	my @out;
+	for(@$ary) {
+		next unless $Vend::Output[$_];
+		push @out, ${$Vend::Output[$_]};
+		undef $Vend::Output[$_];
+	}
+	return \@out;
+}
+
+sub output_rest {
+	my ($tag) = @_;
+	my $out = '';
+	for(@$Vend::Output) {
+		next unless $_;
+		$out .= ${$Vend::Output[$_]};
+		undef $Vend::Output[$_];
+	}
+	return $out;
+}
+
+sub templatize {
+	my ($template) = @_;
+	$template ||= $Vend::Cfg->{PageTemplate} || '{:REST}';
+#::logDebug("Templatizing, template length=" . length($template));
+	my $body = $template;
+
+	$body =~ s!\{\{\@([A-Z][A-Z_]*[A-Z])\}\}(.*?)\{\{/\@\1\}\}!
+					my $tag = lc $1;
+					my $ary;
+					return '' unless $ary = $Vend::OutPtr{$tag};
+					my $tpl = $2;
+					my $out = '';
+					for(@$ary) {
+						my $ref = $Vend::Output[$_]
+							or next;
+						my $chunk = $tpl;
+						$chunk =~ s/\{$tag\}/$$ref/;
+						undef $Vend::Output[$_];
+						$out .= $chunk;
+					}
+					$out;
+				!sge;
+	1 while $body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\?\}\}(.*?)\{\{/\1\?\}\}! output_test(lc $1) ? $2 : ''!egs;
+	1 while $body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\:\}\}(.*?)\{\{/\1\:\}\}! output_test(lc $1) ? '' : $2!egs;
+	$body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\}\}!output_cat($1)!eg;
+	$body =~ s!\{\{:DEFAULT\}\}!output_cat('')!e;
+	$body =~ s!\{\{:REST\}\}!output_rest('')!e;
+	@Vend::Output = (\$body);
 }
 
 1;

@@ -29,19 +29,17 @@
 <input type=hidden name=mv_action value=back>
 
 <table border=0 __UI_T_PROPERTIES__>
-<tr>
-<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr class=rnorm>
-<td width=25%>
-
-1. Choose a table to operate on:
+<tr class=rownorm>
+<td class=clabel>
+[calc]++$numbering[/calc].
+</td>
+<td class=clabel width="25%">
+Choose a table to operate on:
 
 </td>
-<td>
+<td class=cdata width="100%">
 [if !cgi area_table]
-	[value name=area_table set="[either][cgi mv_data_table][or]__ProductFiles_1__[/either]" hide=1]
+	[value name=area_table set="[either][cgi mv_data_table][or]__ProductFiles_0__[/either]" hide=1]
 	[value name=area_column set=category hide=1]
 [/if]
 <select name="area_table"
@@ -59,11 +57,14 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td>
-2. Choose a column to operate on:
+<tr class=rownorm>
+<td class=clabel>
+[calc]++$numbering[/calc].
 </td>
-<td>
+<td class=clabel width="25%">
+Choose a column to operate on:
+</td>
+<td class=cdata width="100%">
 <select name="area_column">
 <option value=""> -- none --
 [loop list="[db-columns table='[value area_table]']" option=area_column]
@@ -72,29 +73,38 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td>
-3. Set what to search for in that column:
+<tr class=rownorm>
+<td class=clabel>
+[calc]++$numbering[/calc].
 </td>
-<td>
+<td class=clabel width="25%">
+Set what to search for in that column:
+</td>
+<td class=cdata width="100%">
 <input name="search_for" type="text" size="30"> Case-sensitive? [display name=case_sensitive type=yesno cgi-default=1]
 <br><i>(Exact text match or regular expression)</i>
 </td>
 </tr>
-<tr>
-<td>
-4. Choose the replacement string
+<tr class=rownorm>
+<td class=clabel>
+[calc]++$numbering[/calc].
 </td>
-<td>
+<td class=clabel width="25%">
+Choose the replacement string
+</td>
+<td class=cdata width="100%">
 <input name="replace_with" type="text" size="30">
 <br><i>(Exact text to be inserted instead of search value. Replaces parenthisized text if parentheses are used.)</i>
 </td>
 </tr>
-<tr>
-<td>
-5. Click this button to do it:
+<tr class=rownorm>
+<td class=clabel>
+[calc]++$numbering[/calc].
 </td>
-<td>
+<td class=clabel width="25%">
+Click this button to do it:
+</td>
+<td class=cdata width="100%">
 [button text="Search and Replace"]
 [flag type=write table="[cgi area_table]"]
 [seti ui_failure]
@@ -176,10 +186,6 @@ size=1>
 [/button]
 <BR>
 </td>
-</tr>
-
-<tr>
-<td colspan=2 class=rmarq><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

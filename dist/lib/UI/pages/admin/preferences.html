@@ -7,17 +7,11 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [calc] $Config->{NoSearch} = ''; return; [/calc]
-<center>
-<table __UI_T_PROPERTIES__>
 
-<tr>
-<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
+<div class=titlebox>Edit Preferences</div>
 
-<tr>
-  <td align=left class=rnorm>
-		<table style="margin-left: 20px" width="70%">
-		[table-organize columnize=1 cols=4]
+<table style="margin-left: 20px" width="70%">
+	[table-organize columnize=1 cols=4]
 [loop search="
 		fi=variable
 		st=db
@@ -29,7 +23,7 @@
 "]
 <TD width="25%">
 [if-loop-pos 0]
-<a href="[area href="__UI_BASE__/flex_select" form=|
+<a href="[area href="__UI_BASE__/pref_select" form=|
 				mv_data_table=variable
 				ui_meta_specific=1
 				ui_hide_key=1
@@ -41,7 +35,7 @@
 				help_name=knar.main
 |]">[loop-code]</A>
 [else]
-<a href="[area href="__UI_BASE__/flex_select" form=|
+<a href="[area href="__UI_BASE__/pref_select" form=|
 				mv_data_table=variable
 				ui_meta_specific=1
 				ui_hide_key=1
@@ -61,13 +55,23 @@
 		[/table-organize]
 		</table>
 
-[if-mm super]
-<tr>
-<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
+[output name=search_box]
+<FORM ACTION="[process href="__UI_BASE__/pref_select"]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="variable">
+<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="1">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 
-<tr>
-<td class=rnorm>
+<span class="s3">Search for a preference:</span><input NAME=ui_text_qualification size=16 class=s3><INPUT TYPE=submit VALUE="[L]Search[/L]" class=s3>
+</FORM>
+
+[output name=""]
+
+
+[if-mm super]
+	<br>
+<div class=titlebox>Table Editor Control</div>
+
 	[if type=explicit compare=`
 			return
 				(! defined $Values->{ui_meta_force} and $Variable->{UI_META_LINK})
@@ -91,46 +95,22 @@
 				ui_meta_force=1"][L]Temporarily turn on meta links in database edit[/L]</A>
 	[/else]
 	[/if]
-	</td>
-</tr>
+	<br>
+	[page href="__UI_BASE__/edit_metaconfig"]Configure defaults for table editor</A>
+<br>
 [/if-mm]
 
-<tr>
-<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-	<td class=rnorm>
-	<table width="100%">
-		<tr>
-			<td width="30%">
 [if !variable UI_REGISTERED]
-<a href="http://interchange.redhat.com/cgi-bin/ic/register.html">[L]Register[/L]</a>
+<br>
+<div class=titlebox>Register </div>
+<a href="http://interchange.redhat.com/cgi-bin/ic/register.html" title="Completely optional">[L]Register[/L]</a>
 [/if]
 
-			</td>
-			<td>
-<FORM ACTION="[process href="__UI_BASE__/flex_select"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
-<INPUT TYPE=hidden NAME=mv_data_table    VALUE="variable">
-<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="1">
-<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-Search for a preference: <input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="[L]Search[/L]">
-</FORM>
-			</td>
-		</tr>
-	</table>
+<br>
+<br>
 
-</td></tr>
-
-<tr>
-	<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-	<td class=rnorm valign=top>
+		<div class=titlebox>[L]Personal CSS[/L]</div>
 		<form action="[process href="@@MV_PAGE@@"]">
-		<b>[L]Personal CSS[/L]</b>
 		[if cgi personal_css]
 			[if type=explicit compare="[userdb function=save profile=ui]"]
 				<span class=cmessage>(saved successfully)</span>
@@ -153,15 +133,7 @@ Search for a preference: <input NAME=ui_text_qualification size=16><INPUT TYPE=s
 		<textarea name=personal_css rows=24 cols=50>[value personal_css]</textarea>
 				</td>
 		</form>
-	</td>
-</tr>
 
-<tr>
-<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-</table>
-</center>
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@

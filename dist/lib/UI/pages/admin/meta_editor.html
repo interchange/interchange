@@ -60,9 +60,9 @@ EOF
 	return;
 [/calc]
 
-[set ui_class]Admin[/set]
+[set ui_class]Tables[/set]
 [set help_name]meta.edit[/set]
-[set icon_name][/set]
+[set icon_name]icon_config.gif[/set]
 
 @_UI_STD_HEAD_@
 
@@ -72,13 +72,10 @@ EOF
 	no-table-meta=1
 	no-meta=1
 	ui_data_fields="
-		=Label
+		=Typical
 
 		code
 		label
-
-		=Widget
-
 		type
 		filter
 		width
@@ -110,11 +107,10 @@ EOF
 	   extended
 	"
 	widget.extended="textarea_5_50"
+	ui_style=1
+	output_map=1
 	tabbed=1
-	panel_width=800
-	panel_height=700
-	table_width=800
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.4 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.5 $ -->

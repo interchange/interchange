@@ -125,7 +125,8 @@
 		else	   { $CGI->{ui_text_qualification} = "" }
 	}
 	return if $CGI->{ui_text_qualification};
-	return unless $Config->{Database}{transactions}{LARGE};
+	return unless
+		$Variable->{ORDER_VIEW_LARGE} or $Config->{Database}{transactions}{LARGE};
 	$Scratch->{ui_location} = $Tag->area( {
 									
 									href => '__UI_BASE__/flex_select',
@@ -156,72 +157,40 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<table border=0><tr>
-<td>
-<small>
+[output name=search_box]
+<table align=right>
+	<tr>
+		<td class=s3>
+		<FORM ACTION="[area admin/order_view]">
+		View order: <INPUT NAME=order VALUE="[cgi order]" class=s3>
+		<INPUT TYPE=submit VALUE="[L]Go[/L]" class=s3>
+		</FORM>
+		</td>
+		<td>
     <FORM ACTION="[area @@MV_PAGE@@]">
-    <INPUT NAME=order VALUE="[cgi order]">
-    <INPUT TYPE=submit VALUE="[L]Start at order number[/L]">
+    <INPUT NAME=ui_text_qualification VALUE="" class=s3>
+    <INPUT TYPE=submit VALUE="[L]Limit with search[/L]" class=s3>
     </FORM>
-</small>
-</td>
-<td valign=top><B> [L]or[/L] </B></td>
-<td>
-<small>
-    <FORM ACTION="[area @@MV_PAGE@@]">
-    <INPUT NAME=ui_text_qualification VALUE="">
-    <INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
-    </FORM>
-</small>
-</td>
-</tr>
+		</td>
+	</tr>
 </table>
 
-[if !scratch old_browser]
-<script>
-	var stat_array = new Array;
-	function push_el (el, status) {
-		if(stat_array[status] == undefined) {
-			stat_array[status] = new Array;
-// alert('created ' + status + ' array');
-		}
-		var els = stat_array[status];
-		els[els.length] = el;
-	}
 
-	function checkType (type, cond) {
-		var other = false;
-		if(cond == undefined) 
-			cond = true;
-		if(cond != true) 
-			other = true;
-		if(stat_array == undefined) {
-			return;
-		}
-		var i;
-		var alerted;
-		for(i in stat_array) {
-// alert("checking status of " + i);
-			var els = stat_array[i];
-			for (var j = 0; j < els.length; j++) {
-				var el = document.getElementById(els[j]);
-				if(el != undefined) {
-					if(i == type) 
-						el.checked = cond;
-					else 
-						el.checked = other;
-				}
-			}
-		}
-	}
-</script>
-[/if]
+
+[output name=""]
 
 [if cgi ui_text_qualification]
-[if !cgi mv_like_spec]
-<H4>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H4>
+	[calc]
+		return if $CGI->{mv_like_spec};
+		$Scratch->{page_banner} ||= $Scratch->{page_title};
+		$Scratch->{page_banner} .= errmsg(
+																'-- entries containing "%s"',
+																$CGI->{ui_text_qualification},
+																);
+		return;
+	[/calc]
 [/if]
-[/if]
+
 [search-region more=1 arg="
 		fi=transactions
 		ml=__UI_SZ_LIST_ORDER__
@@ -272,54 +241,57 @@
 	}
 	return;
 [/calc]
+
+[output name=top_of_form]
 <FORM ACTION="[process]" METHOD=POST NAME=batch>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
-<TABLE border=0 CELLSPACING=0 width="90%">
-<tr class=rborder height=1><td colspan=8></td></tr>
-<TR class=rmarq>
-<th>&nbsp;</th>
-<TH ALIGN=LEFT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+
+[output]
+
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+<tr class=rhead>
+<td>&nbsp;</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=code\n" . sortrev('code');
 	`][L]Order[/L]</A>
-</TH>
-<TH ALIGN=LEFT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=lname,fname\n" . sortrev('lname');
 	`][L]User[/L]</A>
-</TH>
-<TH ALIGN=LEFT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=country,state,city\n" . sortrev('country');
 	`][L]Location[/L]</A>
-</TH>
-<TH ALIGN=LEFT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=order_date\n" . sortrev('order_date');
 	`][L]Date[/L]/[L]Time[/L]</A>
-</TH>
-<TH ALIGN=LEFT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td class=rhead align=right>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
 `][L]Items[/L]</A>
-</TH>
-<TH ALIGN=CENTER>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td class=rhead align=right>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
 `][L]Total[/L]</A>
-</TH>
-<TH ALIGN=RIGHT>
-[page href=@@MV_PAGE@@ extra=rmarq form=`
+</td>
+<td align=right class=rhead>
+[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=status\n" . sortrev('status');
 `][L]Status[/L]</A>
-</TH>
+</td>
 </tr>
-<tr class=rborder height=1><td colspan=8></td></tr>
 [search-list]
-<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
-<TD>
+<tr [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
+<td>
 <INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
 		[item-calc]
 			my $string = '';
@@ -348,16 +320,16 @@
 	']"
 	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
 [/if]
-</TD>
-<TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
+</td>
+<TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></td>
 <TD>
 	[page href=__UI_BASE__/customer_view form="customer=[item-param username]"][item-param lname], [item-param fname][if-item-param company] -- [item-param company][/if-item-param]</A>
-</TD>
-<TD>[item-filter 30][item-param city], [item-param state] [item-param country][/item-filter]</TD>
-<TD ALIGN=LEFT>[convert-date][item-param order_date][/convert-date]</TD>
-<TD ALIGN=CENTER>[item-param nitems]</TD>
-<TD ALIGN=Right>[currency][item-param total_cost][/currency]</TD>
-<TD ALIGN=Right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][loc][item-param status][/loc]</A></TD>
+</td>
+<td>[item-filter 30][item-param city], [item-param state] [item-param country][/item-filter]</td>
+<td align=left>[convert-date][item-param order_date][/convert-date]</td>
+<td align=right>[item-param nitems]</td>
+<td align=right>[currency][item-param total_cost][/currency]</td>
+<td align=right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][loc][item-param status][/loc]</A></td>
 </tr>
 [/search-list]
 [no-match]
@@ -369,7 +341,6 @@
 </td>
 </tr>
 [/no-match]
-<tr class=rborder height=1><td colspan=8></td></tr>
 [more-list]
 <tr class=ralt>
 <td colspan=8 align=center>
@@ -383,31 +354,43 @@
 </table>
 [/search-region]
 
-<table>
-<tr>
-	<td>
-		[if scratch can_delete]
-		[button form=batch text="[L]Delete checked orders[/L]"
-		 src="__UI_IMG__delete.gif"
-		 link-text-too=1
-		 confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
-		[/button]
-		[/if]
+[output name=bottom_buttons]
+
+[if scratch can_delete]
+	[button form=batch text="[L]Delete checked[/L]"
+	 no-src="__UI_IMG__delete.gif"
+		extra="class=s3"
+	 link-text-too=1
+	 confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
+	[/button]
 &nbsp;
-	</td>
-	<td>
-		[button form=batch src="[scratch archive_img]"
-			 link-text-too=1
+[/if]
+
+[button form=batch
+			no-src="[scratch archive_img]"
+			extra="class=s3"
+			link-text-too=1
 			text=`
-			my $tmp = "$Scratch->{archive_nm} checked orders";
+			my $tmp = "$Scratch->{archive_nm} checked";
 			return errmsg("\u$tmp");
 			`]
-[scratch archive_nm]order=1[/button]
-	</td>
-	<td>
-	[button form=batch src="__UI_IMG__icon_merch.gif"
+[scratch archive_nm]order=1
+[/button]
+
+<input type=button
+		onClick="location='[area href=__UI_BASE__/spread
+													form="
+														mv_data_table=transactions
+													ui_meta_view=tracking
+													ui_text_qualification=tracking_number=
+													"]'"
+		value="[L]Enter tracking numbers[/L]" class=s3>
+
+[button form=batch
+			no-src="__UI_IMG__icon_merch.gif"
 			link-text-too=1
-			text="Ship checked orders"
+			extra="class=s3"
+			text="Ship checked"
 			]
 ui_sequence_edit=[calc]
 	$CGI->{item_id} = delete $CGI->{order};
@@ -424,78 +407,93 @@ ui_sequence_edit=[calc]
 [/calc]
 mv_nextpage=__UI_BASE__/order_status
 [/button]
-	</td>
-[if scratch old_browser]
-	<td colspan=2>
+
 		<input
 			type=checkbox
 			name=ship_auto
-			value=1>
-				<span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]">Ship all automatically</span>
-	</td>
-[else]
-	<td>
-		<script>
-		[calc]
-			return join "\n", @els, '';
-		[/calc]
-			function div_vis (show) {
-				var el = document.getElementById('ship_auto_help');
-				el.style.display = show ? 'block' : 'none';
-			}
-		</script>
-		<span onMouseOver="div_vis(1)" onMouseOut="div_vis(0)">
-			<input type=checkbox name=ship_auto value=1> Ship all automatically
-		&nbsp;
-		</span>
-		</td>
-		<td rowspan=2>
-			<div
-				id=ship_auto_help
-				style="
-					display: none;
-					border: 2px solid black;
-					padding: 5px;
-				">
-				Ship all lines of all orders,<br>
-				archive[if variable SETTLE_TRANSACTION], settle[/if]
-			</div>
-		</td>
-[/else]
-[/if]
-	</tr>
+			value=1 class=s3>
+				<span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]" class=s3>Ship all automatically</span>
+
+[output name=""]
+
 [if !scratch old_browser]
-	<tr>
-		<td>
-			<A HREF="javascript:checkAll(document.batch, 'order', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		</td>
-		<td>
-			<A HREF="javascript:checkAll(document.batch, 'order', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+<script>
+	var stat_array = new Array;
+	function push_el (el, status) {
+		if(stat_array[status] == undefined) {
+			stat_array[status] = new Array;
+// alert('created ' + status + ' array');
+		}
+		var els = stat_array[status];
+		els[els.length] = el;
+	}
 
-		</td>
-		<td>
-[page href=__UI_BASE__/spread
-	  form="
-	  	mv_data_table=transactions
-		ui_meta_view=tracking
-		ui_text_qualification=tracking_number=
-	  "]<img src="__UI_IMG__box_checked.gif" border=0>Enter tracking numbers</A>  
-
-		</td>
-	<tr>
-			[loop list="shipped pending canceled partial"]
-				<td width=100>
-					<A HREF="javascript:checkType('[loop-code]')">
-						<img src="__UI_IMG__box_checked.gif" border=0>Check all [loop-code]
-					</A>
-				</td>
-			[/loop]
-	</tr>
+	function checkType (type, cond) {
+		var other = false;
+		if(cond == undefined) 
+			cond = true;
+		if(cond != true) 
+			other = true;
+		if(stat_array == undefined) {
+			return;
+		}
+		var i;
+		var alerted;
+		for(i in stat_array) {
+// alert("checking status of " + i);
+			var els = stat_array[i];
+			for (var j = 0; j < els.length; j++) {
+				var el = document.getElementById(els[j]);
+				if(el != undefined) {
+					if( type == 'none' ) {
+						el.checked = false;
+					}
+					else {
+						if( type == 'all' ) {
+							el.checked = true;
+						}
+						else {
+							if(i == type)
+								el.checked = cond;
+							else
+								el.checked = other;
+						}
+					}
+				}
+			}
+			var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
+			var types = ['all', 'none', 'shipped', 'pending', 'canceled', 'partial'];
+			for(var i = 0; i < types.length; i++) {
+				var img = document.getElementById('img_check_' + types[i]);
+				if(img != undefined) 
+					img.src= image_dir + 'box_empty.gif';
+			}
+			var img = document.getElementById('img_check_' + type);
+			img.src= image_dir + 'box_checked.gif';
+		}
+	}
+	[calc]
+		return join "\n", @els, '';
+	[/calc]
+</script>
+<br>
+			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>Check all</A>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<A HREF="javascript:checkType('none')"><img id="img_check_none" src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+[loop list="shipped pending canceled partial"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<A HREF="javascript:checkType('[loop-code]')">
+			<img id="img_check_[loop-code]" src="__UI_IMG__box_empty.gif" border=0>Check all [loop-code]
+		</A>
+[/loop]
 [/if]
-</table>
+
+[output name=bottom_of_form]
 </FORM>
+[output]
+
 <!-- ----- END REAL STUFF ----- -->
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.11 2002-11-04 14:48:27 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.12 2003-01-14 02:25:50 mheins Exp $ -->

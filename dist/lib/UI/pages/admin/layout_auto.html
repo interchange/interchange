@@ -30,18 +30,15 @@
 <input type=hidden name=mv_action value=back>
 
 <table border=0 __UI_T_PROPERTIES__ width="70%">
-<tr>
-<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
 
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>1.</td>
 <td class=clabel width="25%">
 
 Choose a table as the source:
 
 </td>
-<td>
+<td class=cdata>
 [if !value area_table]
 	[value name=area_table set=products hide=1]
 	[value name=area_column set=prod_group hide=1]
@@ -67,12 +64,12 @@ size=1>
 </select>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>2.</td>
 <td class=clabel>
 Choose a column to populate areas:
 </td>
-<td class=clabel>
+<td class=cdata>
 <select name="area_column">
 <option value=""> -- none --
 [loop list="[db-columns table='[value area_table]']" option=area_column]
@@ -81,12 +78,12 @@ Choose a column to populate areas:
 </select>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>3.</td>
 <td class=clabel>
 Choose a column to populate categories:
 </td>
-<td>
+<td class=cdata>
 <select name="cat_column">
 <option value=""> -- none --
 [loop list="[db-columns table='[value area_table]']" option=cat_column]
@@ -95,12 +92,12 @@ Choose a column to populate categories:
 </select>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>4.</td>
 <td class=clabel>
 Choose a search type:
 </td>
-<td>
+<td class=cdata>
 <select name="cat_type" onChange="change_ta(this.form.search_code,this.form.cat_type.value)">
 <option value="narrow"> Narrow search (area and category match)
 <option value="simple"> Simple search (only category matches)
@@ -108,12 +105,12 @@ Choose a search type:
 </select>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel valign=top>5.</td>
 <td valign=top class=clabel>
 Complex search code:
 </td>
-<td>
+<td class=cdata>
 NOTE: Not active unless complex search selected above.<br>
 <textarea rows=1 cols=50 name=search_code disabled=true>
 	fi=products
@@ -138,39 +135,39 @@ NOTE: Not active unless complex search selected above.<br>
 </textarea>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>6.</td>
 <td class=clabel>
 Select the page class:
 </td>
-<td>
+<td class=cdata>
 <INPUT NAME=which_page VALUE=all>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>7.</td>
 <td class=clabel>
 Select the page area:
 </td>
-<td>
+<td class=cdata>
 <INPUT NAME=sel VALUE=left>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>8.</td>
 <td class=clabel>
 Decide whether to remove previous settings:
 </td>
-<td>
+<td class=cdata>
 <SELECT NAME=nuke><OPTION VALUE=0>No <OPTION VALUE=1>Yes</SELECT>
 </td>
 </tr>
-<tr class=rnorm>
+<tr class=rownorm>
 <td class=clabel>9.</td>
 <td class=clabel>
 Click this button to populate:
 </td>
-<td>
+<td class=cdata>
 [button text="Populate"]
 [flag type=write table="area"]
 [flag type=write table="cat"]
@@ -298,10 +295,6 @@ EOF
 [/button]
 <BR>
 </td>
-</tr>
-
-<tr>
-<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

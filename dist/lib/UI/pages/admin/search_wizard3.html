@@ -1,6 +1,7 @@
 [seti page_title]Search Builder: sorting[/seti]
 [set help_name]search_builder[/set]
 [set ui_class]Design[/set]
+[set display_class]type5[/set]
 [set icon_name]icon_config.gif[/set]
 [seti name=tables][list-databases][/seti]
 [seti meta_header]
@@ -139,6 +140,7 @@ EOF
 <INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
 <INPUT TYPE=hidden NAME=ui_source_form VALUE="[cgi ui_source_form]">
 <INPUT TYPE=hidden NAME=ui_source_var VALUE="[cgi ui_source_var]">
+<INPUT TYPE=hidden NAME=display_class VALUE="[cgi display_class]">
 [return-to]
 <P>
 <table __UI_T_PROPERTIES__>

@@ -8,9 +8,15 @@ Hit action for no-content
 [set page_title]Menu construction[/set]
 [tmpn dhtml_required]1[/tmpn]
 [set ui_class]Design[/set]
+[if cgi qmenu_name]
+[set page_banner]Edit the <i>[cgi qmenu_name]</i> menu[/set]
+[else]
 [set page_banner]Menu constructor: Make a quick menu[/set]
+[/else]
+[/if]
+[tmpn check_publish]1[/tmpn]
 [set page_perm]layout=e[/set]
-[set help_name]layout.edit[/set]
+[set help_name]menu.edit[/set]
 [set icon_name]icon_pages.gif[/set]
 [seti ui_body_extra][/seti]
 [tmp meta_header]
@@ -51,6 +57,10 @@ area
 __UI_META_TABLE__
 [/seti]
 
+<script>
+	var is_form_unpublished = 0;
+</script>
+
 [perl tables="[scratch medit_tables]"]
 	my $menupath = $Variable->{MV_MENU_DIRECTORY} || 'include/menus';
 	@menufields = qw/
@@ -75,6 +85,8 @@ __UI_META_TABLE__
 		my %opt = (
 			table => $CGI->{qmenu_products},
 			comb_field => $CGI->{qmenu_comb_field},
+			sort_string => $CGI->{qmenu_sort_string},
+			sort_order => $CGI->{qmenu_sort_order},
 			type => 'comb_category',
 			even_large => $CGI->{qmenu_even_large},
 		);
@@ -378,1263 +390,1334 @@ __UI_META_TABLE__
 	return;
 [/perl]
 
-<p style="font-size: larger">
-
 [tmp qmenu_options]
 [loop head-skip=1 lr=1 list="[scratch qmenu_fdata]" cgi=1 option=qmenu_name]
 <option value="[loop-code]">[loop-code]</option>
 [/loop]
 [/tmp]
 
-<table width="95%">
-<tr>
-	<td width="30%">
-[if scratch qmenu_options =~ /\S/]
-	<form action="[area @@MV_PAGE@@]">
-	<input name=mv_action type=hidden value="back">
-	<B>Menu name:</B>
-	<select name=qmenu_name><option value="">--select--</option>[scratch qmenu_options]</select>
-	<input type=submit value="[L]Load[/L]">
-	[page href="__UI_BASE__/file_transfer"
-			form="
-				initial_dir=include/menus
-			"]Delete/Manage</A>
-	</form>
-[/if]
-	</td>
-	<td width="40%">
-	<span class=cmessage>[warnings auto=1]</span>
-	[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
-	</td>
-	<td width="30%" rowspan=2>
+[output name=search_box]
+<form action="[area @@MV_PAGE@@]" style="margin: 0px; padding: 0px">
+[tmp delete_loc][area href=admin/file_transfer form=| initial_dir=include/menus |][/tmp]
+<input	type=button
+		onClick="if(check_publish()) { location='[scratch delete_loc]' }"
+		value="[L]Delete/Manage[/L]"
+		class=s3>
+<input name=mv_action type=hidden value="back">
+&nbsp;
+&nbsp;
+<span class=s3>Menu name</span>
+<select name=qmenu_name
+		onChange="if(check_publish()) { this.form.submit() }"
+		class=s3><option value="" class=s3>--select--</option>[scratch qmenu_options]</select>
+<input	type=button
+		name=submittor
+		value="[L]Load[/L]"
+		onClick="if(check_publish()) { this.form.submit() }"
+		class=s3>
+</form>
+[output name=""]
 
-Build menu tree from database table(s):<br>
-[tabbed-display panel-width=300 panel-height=100
-        js-prefix=mvtb_
-		panel_style="
-			font-family: sans-serif;
-			font-size: 10px;
-			border: 2px;
-			border-color:#999999;
-			border-style:outset;" 
-
-				tab-width=150 
-				tab-height=20
-				panel_id=mvspan2
-				tab_style="
-    font-size:10px;
-    text-align:center;
-    font-family: sans-serif;
-    line-height:150%;
-    border:2px;
-    border-color:#999999;
-    border-style:outset;
-    border-bottom-style:none;"]
-[tabbed-panel Comb_category field]
-                <form action="[process href=@@MV_PAGE@@]" style="margin-bottom:0px;">
-                <input type=hidden name=mv_session_id value="[data session id]">
-                <input type=hidden name=mv_action value="back">
-
-[if !cgi qmenu_products]
-        [cgi name=qmenu_products set=products hide=1]
-        [cgi name=qmenu_comb_field set=comb_category hide=1]
-        [cgi name=qmenu_toplevel_field set=prod_group hide=1]
-        [cgi name=qmenu_sublevel_field set=category hide=1]
-[/if]
-		<select name="qmenu_products"
-        		onChange="
-                		populateTable(
-            				this.form.qmenu_products.options,
-            				this.form.qmenu_comb_field.options,
-            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
-            				);
-                		populateTable(
-            				this.form.qmenu_products.options,
-            				this.form.qmenu_toplevel_field.options,
-            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
-            				);
-                		populateTable(
-            				this.form.qmenu_products.options,
-            				this.form.qmenu_sublevel_field.options,
-            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
-            				);
-        			"
-		size=1 style="width:130px;">
-			[loop list="[list-databases]" option=qmenu_products cgi=1]
-			<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
-			[/loop]
-		</select> <input type=submit value=Go><br>
-<div id=combfield style="visibility:[if cgi qmenu_use_comb_field]Visible[else]Hidden[/else][/if];">
-		<select name="qmenu_comb_field" style="width:130px;">
-			<option value=""> -- none --
-			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_comb_field cgi=1]
-			<option>[loop-code]
-			[/loop]
-		</select> Field (Default: comb_category)
-</div>
-<div id=nocombfield style="visibility:[if cgi qmenu_use_comb_field]Hidden[else]Visible[/else][/if];">
-		<select name="qmenu_toplevel_field" style="width:130px;">
-			<option value=""> -- none --
-			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_toplevel_field cgi=1]
-			<option>[loop-code]
-			[/loop]
-		</select> Top Level Field<br>
-		<select name="qmenu_sublevel_field" style="width:130px;">
-			<option value=""> -- none --
-			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sublevel_field cgi=1]
-			<option>[loop-code]
-			[/loop]
-		</select> Sub Level Field
-</div>
-                <input type=checkbox name="qmenu_use_comb_field" value=1 onClick="toggle_comb(this.form.qmenu_use_comb_field.checked);" [checked name=qmenu_use_comb_field value=1 cgi=1]> Use comb_field&nbsp;&nbsp;
-                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> Override, build even if large &nbsp;
-                </form>
-[/tabbed-panel]
-[tabbed-panel Top&Sub Level Tables]
-                <form action="[process href=@@MV_PAGE@@]" style="margin-bottom:0px;">
-                <input type=hidden name=mv_session_id value="[data session id]">
-                <input type=hidden name=mv_action value="back">
-                <input type=hidden name=qmenu_cat value=1>
-
-				<table style="font-size: 10px">
-					<tr>
-						<td>
-					<select name=qmenu_toplevel>
-					[loop list="area [list-databases]" option=qmenu_toplevel cgi=1]
-					<option> [loop-code][/loop]
-					</select>
-						</td>
-						<td>
-					Top Level table (Default: area)
-						</td>
-					</tr>
-					<tr>
-						<td>
-					<select name=qmenu_sublevel>
-					[loop list="cat [list-databases]" option=qmenu_sublevel cgi=1]
-					<option> [loop-code][/loop]
-					</select>
-						</td>
-						<td>
-					Sub Level table (Default: cat)
-						</td>
-					</tr>
-					<tr>
-						<td>
-					[display type=select name=qmenu_sel_value
-							 lookup_query="select distinct sel from area"
-							 options="=none" cgi=1]
-						</td>
-						<td>
-					Selector (if any)
-						</td>
-					</tr>
-				</table>
-                <input type=checkbox name="qmenu_even_large" value=1> Override, build even if large &nbsp;
-                <input type=submit value=Go>
-                </form>
-[/tabbed-panel]
-[/tabbed-display]
-	</td>
-</tr>
+<span class=cmessage>[warnings auto=1]</span>
+[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 
 <script language="JavaScript1.2">
-	var lines = new Array;
-	var initialized = 0;
-	var no_alert = 0;
-	var tree_mode = 0;
-	var extended;
-	var extra = new Array;
-	var label = new Array;
-	var meta = new Array;
-	var help = new Array;
-	var widget = new Array;
-	var ltitle = new Array;
-	var emodes;
-	var evalues;
-	var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
-	var empty_img    = image_dir + 'box_empty.gif';
-	var up_img       = image_dir + 'up.gif';
-	var down_img     = image_dir + 'down.gif';
-	var full_img     = image_dir + 'box_checked.gif';
-	var left_img     = image_dir + 'left.gif';
-	var right_img    = image_dir + 'right.gif';
-	var forward_img  = image_dir + 'forward.gif';
-	var transfer_img = image_dir + 'transfer.gif';
+var lines = new Array;
+var toggle = new Array;
+var initialized = 0;
+var no_alert = 0;
+var tree_mode = 0;
+var extended;
+var extra = new Array;
+var label = new Array;
+var meta = new Array;
+var help = new Array;
+var widget = new Array;
+var ltitle = new Array;
+var emodes;
+var evalues;
+var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
+var empty_img    = image_dir + 'box_empty.gif';
+var up_img       = image_dir + 'up.gif';
+var down_img     = image_dir + 'down.gif';
+var full_img     = image_dir + 'box_checked.gif';
+var left_img     = image_dir + 'left.gif';
+var right_img    = image_dir + 'right.gif';
+var plus_img     = image_dir + 'tplus.gif';
+var minus_img     = image_dir + 'tminus.gif';
+var leaf_img     = image_dir + 'bg.gif';
+var forward_img  = image_dir + 'forward.gif';
+var transfer_img = image_dir + 'transfer.gif';
+
+var plus_title = ' title="open tree branch" ';
+var minus_title = ' title="close tree branch" ';
+var up_title = ' title="Move checked tree branch or individual item up" ';
+var down_title = ' title="Move checked tree branch or individual item down" ';
+var left_title = ' title="move item (or items from here to checked item) left" ';
+var right_title = ' title="move item (or items from here to checked item) right" ';
+var transfer_title = ' title="load item into editor" ';
+var forward_title = ' title="load item into editor" ';
 
 [perl reparse=0]
-	my @out;
-	my $i = 0;
-	
-	$metabase ||= 'icmenu';
-	for(@menufields) {
-		push @out, "    var \U$_\E = $i;";
-		DOMETA: {
-			last DOMETA if $required{$_} or $_ eq 'code';
-			my $metaname = "${metabase}::$_";
-			my $mrecord = $Tag->meta_record($metaname)
-				or last DOMETA;
-			my $lab;
-			my $help;
-			if($lab = $mrecord->{label}) {
-				push @out, "    label[$i] = " . $Tag->jsq($lab) . ';';
-			}
-			if($help = $mrecord->{help}) {
-				$help = '<span style="font-size: 12pt;">' .
-						'<u>' . "$lab " . "($_)" . '</u><br>' . $help .
-						'</span>';
-				$help = $Tag->filter('encode_entities', $help);
-				push @out, "    help[$i] = " . $Tag->jsq($help) . ';';
-			}
-			if( defined $Values->{ui_meta_force} && $Values->{ui_meta_force}
-				or $Variable->{UI_META_LINK}
-			   )
-			{
-				my $u = $Tag->page({ href => '__UI_BASE__/flex_editor',
-									form => qq(
-										ui_meta_view=metaconfig
-										item_id=$metaname
-									) });
-				push @out, "    meta[$i] = " . $Tag->jsq($u . 'meta</a>');
-			}
-			if(my $type = $mrecord->{type}) {
-				$mrecord->{name} = "ext_$_";
-				$mrecord->{extra} = qq{onChange="form_changed(1)"};
-				my $wid = $Tag->display( {
-										meta => $mrecord,
-										override => 1,
-										default => '',
-										} );
-				push @out, "    widget[$i] = " . $Tag->jsq($wid) . ';';
-			}
+my @out;
+my $i = 0;
+
+$metabase ||= 'icmenu';
+for(@menufields) {
+	push @out, "    var \U$_\E = $i;";
+	DOMETA: {
+		last DOMETA if $required{$_} or $_ eq 'code';
+		my $metaname = "${metabase}::$_";
+		my $mrecord = $Tag->meta_record($metaname)
+			or last DOMETA;
+		my $lab;
+		my $help;
+		if($lab = $mrecord->{label}) {
+			push @out, "    label[$i] = " . $Tag->jsq($lab) . ';';
 		}
-		$i++;
+		if($help = $mrecord->{help}) {
+			$help = '<span style="font-size: 12pt;">' .
+					'<u>' . "$lab " . "($_)" . '</u><br>' . $help .
+					'</span>';
+			$help = $Tag->filter('encode_entities', $help);
+			push @out, "    help[$i] = " . $Tag->jsq($help) . ';';
+		}
+		if( defined $Values->{ui_meta_force} && $Values->{ui_meta_force}
+			or $Variable->{UI_META_LINK}
+		   )
+		{
+			my $u = $Tag->page({ href => '__UI_BASE__/flex_editor',
+								form => qq(
+									ui_meta_view=metaconfig
+									item_id=$metaname
+								) });
+			push @out, "    meta[$i] = " . $Tag->jsq($u . 'meta</a>');
+		}
+		if(my $type = $mrecord->{type}) {
+			$mrecord->{name} = "ext_$_";
+			$mrecord->{extra} = qq{onChange="form_changed(1)"};
+			my $wid = $Tag->display( {
+									meta => $mrecord,
+									override => 1,
+									default => '',
+									} );
+			push @out, "    widget[$i] = " . $Tag->jsq($wid) . ';';
+		}
 	}
-
-	for (@suggested) {
-		push @out, "    var \U$_;";
-	}
-
-	$i = scalar(@menufields);
-	push @out, "\tvar CHECK = $i;";
 	$i++;
-	push @out, "\tvar MSG = $i;";
+}
 
-	push @out, "\tlines[0] = ['" . join("', '", @menufields) . "'];";
-	return join "\n", @out;
+for (@suggested) {
+	push @out, "    var \U$_;";
+}
+
+$i = scalar(@menufields);
+push @out, "\tvar CHECK = $i;";
+$i++;
+push @out, "\tvar MSG = $i;";
+
+push @out, "\tlines[0] = ['" . join("', '", @menufields) . "'];";
+return join "\n", @out;
 [/perl]
 
 [restrict enable="perl calc scratch loop image area" log=none]
 [loop head-skip=1 lr=1 list="[scratch qmenu_data]"][loop-sub jsline]
 sub {
-	$loopname = shift;
-	my $row = shift;
-	$loopinc++;
+$loopname = shift;
+my $row = shift;
+$loopinc++;
 
-	while(@$row < @menufields) {
-		push @$row, '';
-	}
+while(@$row < @menufields) {
+	push @$row, '';
+}
 
-	if($CGI->{remap}) {
-		my $tmp = $row->[$menu_fh{mgroup}];
-		$row->[$menu_fh{mgroup}] = $row->[$menu_fh{msort}];
-		$row->[$menu_fh{msort}] = $tmp;
-	}
+if($CGI->{remap}) {
+	my $tmp = $row->[$menu_fh{mgroup}];
+	$row->[$menu_fh{mgroup}] = $row->[$menu_fh{msort}];
+	$row->[$menu_fh{msort}] = $tmp;
+}
 
-	my $i = 0;
-	for(@$row) {
-		my $foundit = '';
-		if($_ eq '0') {
-			# Do nothing
-		}
-		elsif(/^[1-9](\d*\.)?\d*$/) {
-			# Do nothing
-		}
-		elsif(! length($_) and exists $menuinit{$menufields[$i]}) {
-			$_ = $menuinit{$menufields[$i]};
-		}
-		elsif($_ !~ /'/) {
-			s/\r/\\r/g;
-			$_ = "'$_'";
-		}
-		elsif($_ !~ /"/) {
-			s/\r/\\r/g;
-			$_ = qq{"$_"};
-		}
-		else {
-			if(s/^\s*{\s+//) {
-				s/(,?\s*\}\s*)$//;
-				$foundit = 1;
-			}
-			s/\\'/-_ESC_QUOTE_-/g;
-			s/'/\\'/g;
-			s/\r+$/' + "\\r"/g;
-			s/\r/' + "\\r" + '/g;
-			s/-_ESC_QUOTE_-/\\\\\\'/g;
-			if($foundit) {
-				$_ = "{" . $_ . "}";
-			}
-			$_ = qq{'$_'};
-		}
-		$i++;
+my $i = 0;
+for(@$row) {
+	my $foundit = '';
+	if($_ eq '0') {
+		# Do nothing
 	}
-	my $line = "$loopname\[" . $loopinc  . "] = [" . join(", ", @$row) . "];";
+	elsif(/^[1-9](\d*\.)?\d*$/) {
+		# Do nothing
+	}
+	elsif(! length($_) and exists $menuinit{$menufields[$i]}) {
+		$_ = $menuinit{$menufields[$i]};
+	}
+	elsif($_ !~ /'/) {
+		s/\r/\\r/g;
+		$_ = "'$_'";
+	}
+	elsif($_ !~ /"/) {
+		s/\r/\\r/g;
+		$_ = qq{"$_"};
+	}
+	else {
+		if(s/^\s*{\s+//) {
+			s/(,?\s*\}\s*)$//;
+			$foundit = 1;
+		}
+		s/\\'/-_ESC_QUOTE_-/g;
+		s/'/\\'/g;
+		s/\r+$/' + "\\r"/g;
+		s/\r/' + "\\r" + '/g;
+		s/-_ESC_QUOTE_-/\\\\\\'/g;
+		if($foundit) {
+			$_ = "{" . $_ . "}";
+		}
+		$_ = qq{'$_'};
+	}
+	$i++;
+}
+my $line = "$loopname\[" . $loopinc  . "] = [" . join(", ", @$row) . "];";
 #Debug("Final line=$line");
-	return $line;
+return $line;
 }
 [/loop-sub][loop-exec jsline]lines[/loop-exec]
 [/loop]
 [calc]
-	$loopinc++;
-	$Scratch->{lastfull} = $loopinc;
-	my $stop = $loopinc + 50;
-	my @out;
-	for(; $loopinc < $stop; $loopinc++) {
-		# do nothing
-	}
-	$Scratch->{loopinc} = $loopinc - 1;
-	return;
+$loopinc++;
+$Scratch->{lastfull} = $loopinc;
+my $stop = $loopinc + 50;
+my @out;
+for(; $loopinc < $stop; $loopinc++) {
+	# do nothing
+}
+$Scratch->{loopinc} = $loopinc - 1;
+return;
 [/calc]
 
 
-	var is_form_changed = 0;
-	var checkcur = 0;
-	var form;
+var is_form_changed = 0;
+var checkcur = 0;
+var form;
 
-	function form_changed (is) {
-		if(is == undefined) 
-			return is_form_changed;
+function form_changed (is) {
+	is_form_unpublished = 1;
+	if(is == undefined) 
+		return is_form_changed;
 
-		is_form_changed = is;
+	is_form_changed = is;
 
-		set_save_buttons(is_form_changed);
+	set_save_buttons(is_form_changed);
+}
+
+function check_publish () {
+
+	if(is_form_unpublished == 0) {
+		return true;
 	}
 
-	function check_change (wid) {
-
-		form.cancelsubmit.value = wid == undefined ? 0 : 1;
-
-		if(form_changed() == 0) {
-			form.cancelsubmit.value = '';
-			return true;
-		}
-
-		if( confirm("Form has changed and not been saved. Continue?") ) {
-			form.cancelsubmit.value = '';
-			return true;
-		}
-
-		return false;
+	if( confirm("Menu has changed and not been published. Continue?") ) {
+		return true;
 	}
 
-	function set_checked_buttons (enab) {
-		if(enab == undefined) 
-			enab = 0;
-		var dis;
-		var vis;
-		var weight;
-		var f = document.qmenuform;
-		if(enab == 0) {
-			dis = 1;
-			vis = 'Hidden';
-			weight = 'normal';
-			f.insbutton.value = "Append menu item";
-		}
-		else {
-			dis = 0;
-			vis = 'Visible';
-			weight = 'bold';
-			f.insbutton.value = "Insert menu item";
-		}
-		var buttons = [ f.delbutton, f.upbutton, f.downbutton,
-						f.loadbutton, f.copybutton ];
+	return false;
+}
+
+function check_change (wid) {
+
+	form.cancelsubmit.value = wid == undefined ? 0 : 1;
+
+	if(form_changed() == 0) {
+		form.cancelsubmit.value = '';
+		return true;
+	}
+
+	if( confirm("Form has changed and not been saved. Continue?") ) {
+		form.cancelsubmit.value = '';
+		return true;
+	}
+
+	return false;
+}
+
+function set_checked_buttons (enab) {
+	if(enab == undefined) 
+		enab = 0;
+	var dis;
+	var vis;
+	var weight;
+	var f = document.qmenuform;
+	if(enab == 0) {
+		dis = 1;
+		vis = 'Hidden';
+		weight = 'normal';
+		f.insbutton.value = "Append menu item";
+	}
+	else {
+		dis = 0;
+		vis = 'Visible';
+		weight = 'bold';
+		f.insbutton.value = "Insert menu item";
+	}
+	var singles = [ f.delbutton, f.upbutton, f.downbutton ];
+	var buttons = [ singles, f.loadbutton, f.copybutton ];
+	var j;
+	for ( j = 0; j < buttons.length; j++) {
+		var ary = buttons[j];
 		var i;
-		for( i = 0; i < buttons.length; i++) {
-			var el = buttons[i];
+		for( i = 0; i < ary.length; i++) {
+			var el = ary[i];
 			if(el != undefined) {
 				el.disabled			= dis;
 				el.style.visibility	= vis;
 				el.style.fontWeight	= weight;
 			}
 		}
-		return;
 	}
+	return;
+}
 
-	function set_save_buttons (enab) {
-		if(enab == undefined) 
-			enab = 0;
-		var color;
-		var weight;
-		if(enab == 0) {
-			color = '#666666';
-			weight = 'normal';
-		}
-		else {
-			color = '#000000';
-			weight = 'bold';
-		}
-		var f = document.qmenuform;
-		var buttons = [ f.savebutton ];
-		var i;
-		for( i = 0; i < buttons.length; i++) {
-			var el = buttons[i];
-			if(el != undefined) {
-				el.style.color			= color;
-				el.style.fontWeight	= weight;
-			}
-		}
-		return;
+function set_save_buttons (enab) {
+	if(enab == undefined) 
+		enab = 0;
+	var color;
+	var weight;
+	if(enab == 0) {
+		color = '#666666';
+		weight = 'normal';
 	}
-
-
-	function checkit(idx) {
-		var nam = 'img' + idx;
-		var i_el = document.getElementById(nam);
-		var l = lines[idx];
-
-		if(l != undefined && l[CHECK] == 1) {
-			checkcur = l[CHECK] = 0;
-			i_el.src = empty_img;
-			set_checked_buttons(0);
-			return void(0);
+	else {
+		color = '#000000';
+		weight = 'bold';
+	}
+	var f = document.qmenuform;
+	var buttons = f.savebutton;
+	var i;
+	for( i = 0; i < buttons.length; i++) {
+		var el = buttons[i];
+		if(el != undefined) {
+			el.style.color			= color;
+			el.style.fontWeight	= weight;
 		}
-		var i;
-		var uncheck = new Array;
-		var j = 0;
-		for(i = 1; i < lines.length; i++)  {
-			if(lines[i][CHECK] == 1) {
-				uncheck[j] = i;
-				j++;
-			}
-		}
+	}
+	return;
+}
 
-		for(i = 0; i < uncheck.length; i++) {
-			var n = uncheck[i];
-			lines[n][CHECK] = 0;
-			var el = document.getElementById('img' + n);
-			el.src = empty_img;
-		}
 
-		checkcur = idx;
-		lines[idx][CHECK] = 1;
-		i_el.src = full_img;
-		set_checked_buttons(1);
-		// alert("checkcur=" + checkcur);
+function checkit(idx) {
+	var nam = 'img' + idx;
+	var i_el = document.getElementById(nam);
+	var l = lines[idx];
+
+	if(l != undefined && l[CHECK] == 1) {
+		checkcur = l[CHECK] = 0;
+		i_el.src = empty_img;
+		set_checked_buttons(0);
 		return void(0);
 	}
-
-    function escapeParams (parms) {
-		// alert("parms=" + parms);
-		parms = parms.replace(/[\r\n]+/g, "\n");
-		parms = parms.replace(/^\s+/, "");
-		parms = parms.replace(/\s+$/, "");
-		parms = parms.replace(/=/g, "-_EQUAL_X_-");
-		parms = parms.replace(/\n/g, "-_NEWLINE_X_-");
-		parms = escape(parms);
-		parms = parms.replace(/-_NEWLINE_X_-/g, '@@UrlJoiner@@');
-		parms = parms.replace(/-_EQUAL_X_-/g, '=');
-		// alert("parms=" + parms);
-		return parms;
+	var i;
+	var uncheck = new Array;
+	var j = 0;
+	for(i = 1; i < lines.length; i++)  {
+		if(lines[i][CHECK] == 1) {
+			uncheck[j] = i;
+			j++;
+		}
 	}
 
-    function unescapeParams (parms) {
-		// alert("parms=" + parms);
-		parms = parms.replace(/=/g, "-_EQUAL_X_-");
-		parms = parms.replace(/@@UrlJoiner@@/g, "-_NEWLINE_X_-");
-		parms = unescape(parms);
-		parms = parms.replace(/-_NEWLINE_X_-/g, "\n");
-		parms = parms.replace(/-_EQUAL_X_-/g, '=');
-		// alert("parms=" + parms);
-		return parms;
+	for(i = 0; i < uncheck.length; i++) {
+		var n = uncheck[i];
+		lines[n][CHECK] = 0;
+		var el = document.getElementById('img' + n);
+		el.src = empty_img;
 	}
 
-	var page_rep = '';
-	var params_rep = '';
-	var name_rep = '';
-	var showlevel = 1;
-	
-	function toggleShowlevel () {
-	    if(showlevel != 1) {
-			showlevel = 1;
-		}
-		else {
-			showlevel = 0;
-		}
+	checkcur = idx;
+	lines[idx][CHECK] = 1;
+	i_el.src = full_img;
+	set_checked_buttons(1);
+	// alert("checkcur=" + checkcur);
+	return void(0);
+}
 
-		if(tree_mode == 1) {
-			for(var i = 1; i < lines.length; i++)
-				rewrite_tree(i);
-		}
-		else {
-			showlevel = 0;
-		}
-		form.showlevel.checked = showlevel;
+function escapeParams (parms) {
+	// alert("parms=" + parms);
+	parms = parms.replace(/[\r\n]+/g, "\n");
+	parms = parms.replace(/^\s+/, "");
+	parms = parms.replace(/\s+$/, "");
+	parms = parms.replace(/=/g, "-_EQUAL_X_-");
+	parms = parms.replace(/\n/g, "-_NEWLINE_X_-");
+	parms = escape(parms);
+	parms = parms.replace(/-_NEWLINE_X_-/g, '@@UrlJoiner@@');
+	parms = parms.replace(/-_EQUAL_X_-/g, '=');
+	// alert("parms=" + parms);
+	return parms;
+}
+
+function unescapeParams (parms) {
+	// alert("parms=" + parms);
+	parms = parms.replace(/=/g, "-_EQUAL_X_-");
+	parms = parms.replace(/@@UrlJoiner@@/g, "-_NEWLINE_X_-");
+	parms = unescape(parms);
+	parms = parms.replace(/-_NEWLINE_X_-/g, "\n");
+	parms = parms.replace(/-_EQUAL_X_-/g, '=');
+	// alert("parms=" + parms);
+	return parms;
+}
+
+var page_rep = '';
+var params_rep = '';
+var name_rep = '';
+var showlevel = 1;
+var toggle_bg = 'FFFFFF';
+var collapseit;
+var explodeit;
+
+function toggleShowlevel () {
+	if(showlevel != 1) {
+		showlevel = 1;
 	}
-	
-	function toggleName (form,val) {
-		if(val != undefined) {
-			val = val.replace(/\s+$/, '');
-			if (val == '') {
-				form.label.checked = 1;
-			}
-			else {
-				form.label.checked = 0;
-			}
+	else {
+		showlevel = 0;
+	}
+
+	if(tree_mode == 1) {
+		for(var i = 1; i < lines.length; i++)
+			rewrite_tree(i);
+	}
+	else {
+		showlevel = 0;
+	}
+	form.showlevel.checked = showlevel;
+}
+
+function reset_collapse () {
+		if(explodeit != undefined) 
+			explodeit.checked = false;
+		if(collapseit != undefined) 
+			collapseit.checked = false;
+}
+
+function toggleItem (idx, formel, explode) {
+	toggle = new Array;
+	toggle_bg = 'FFFFFF';
+	reset_collapse();
+
+	if(formel != undefined) {
+		if(explode == 1) 
+			explodeit = formel;
+		else
+			collapseit = formel;
+
+		formel.checked = true;
+		idx = 1;
+		if(explode != 1)
+			explode = 0;
+		for(var i = 1; i < lines.length; i++) {
+			lines[ i ][0] = explode;
+		}
+	}
+	else {
+		if(lines[idx] == undefined)
 			return;
-		}
-
-		if(form.label.checked) {
-			page_rep = form.page.value;
-			params_rep = form.params.value;
-			form.page.value = '';
-			form.params.value = '';
-		}
-		else {
-			form.page.value = page_rep;
-			form.params.value = params_rep;
-		}
-		set_save_buttons(form_changed);
-		return;
+		if(lines[idx][0] == 0)
+			lines[idx][0] = 1;
+		else 
+			lines[idx][0] = 0;
 	}
+	for(var i = 1; i < lines.length; i++)
+		rewrite_tree(i, 1);
+}
 
-	function toggleBreak (form,val) {
-		if(val != undefined) {
-			val = val.replace(/\s+$/, '');
-			if (val == '') {
-				form.breakline.checked = 1;
-			}
-			else {
-				form.breakline.checked = 0;
-			}
-			return;
-		}
-			
-		if(form.breakline.checked) {
-			form.label.checked = 0;
-			toggleName(form);
-			form.label.checked = 1;
-			toggleName(form);
-			name_rep = form.name.value;
-			form.name.value = '';
-		}
-		else {
-			form.name.value = name_rep;
-		}
-		set_save_buttons(form_changed);
-		return;
-	}
-
-	function ext_name (str) {
-		var pos = str.indexOf('_') + 1;
-		if(pos < 1) 
-			return '';
-		str = str.substr(pos);
-		return str;
-	}
-
-	function show_title (idx, msg) {
-	    if(document.qmenuform.show_info == undefined ||
-			document.qmenuform.show_info.checked != true)
-			return;
-		var el = document.getElementById('titlebox');
-		if(el == undefined) 
-			return;
-		if(msg == undefined) 
-			msg = ltitle[idx];
-		if(idx == 0 || msg.length == 0) {
-			el.style.visibility = 'Hidden';
-			el.style.display = 'none';
-		}
-		else {
-			el.innerHTML = msg;
-			el.style.visibility = 'Visible';
-			el.style.display = 'block';
-		}
-	}
-
-	function set_mode (mode) {
-		if(mode == 'toggle') {
-			if(tree_mode == 0) {
-				mode = 'tree';
-			}
-			else {
-				mode = 'simple';
-			}
-		}
-		var f = document.qmenuform;
-		var el = f.treebutton;
-		var ch = f.qmenu_tree;
-		var cht = f.qmenu_write_tree;
-		var tel = document.getElementById('treebox');
-// alert("change mode, el=" + el);
-		if(mode == 'tree') {
-			tree_mode = 1;
-			lines[1][MSORT] = 0;
-			el.value = "Set simple mode";
-			ch.checked = 1;
-			cht.checked = 1;
-			tel.style.visibility = 'Visible';
-		}
-		else {
-			tree_mode = 0;
-			lines[1][MSORT] = 'x';
-			el.value = "Set tree mode";
-			ch.checked = 0;
-			cht.checked = 0;
-			tel.style.visibility = 'Hidden';
-		}
-		var i;
-		for(i = 1; i < lines.length; i++) {
-			rewrite(i);
-		}
-		return;
-	}
-
-	function rewrite_tree (idx) {
-		var out = '';
-
-		var l = lines[idx];
-			
-		if(l != undefined && idx < lines.length) {
-			// out =	idx + 
-			out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
-			if(l[CHECK] == 1) {
-				out = out + 'src="' + checked_img + '" ';
-			}
-			else {
-				out = out + 'src="' + empty_img + '" ';
-			}
-
-			var grp = l[MSORT] + '';
-// alert("rewrite grp=" + grp);
-			if(! grp.match(/^\d+$/) ) {
-				l[MSORT] = 0;
-			}
-			out = out + 'border=0 align=absbottom ' +
-					'id="img' + idx + '"></A>' + "\n" +
-					'<a href="javascript:motion(' + idx + ", 'left');void(0)" +
-					'"><img src="' + left_img + '" border=0 align=absbottom></A>' + "\n" +
-					'<a href="javascript:motion(' + idx + ", 'right');void(0)" +
-					'"><img src="' + right_img + '" border=0 align=absbottom></A>' + "\n" +
-					'<a href="javascript:loadForm(' + idx + ");void(0)" +
-					'"><img src="' + forward_img + '" border=0 align=absbottom></A>' + "\n";
-			for(i = 0; i < l[MSORT]; i++)
-				out = out + '&nbsp;&nbsp;&nbsp;'; 
-			if(showlevel == 1 && l[MSORT] > 0) {
-				out = out + l[MSORT] + '&nbsp;'
-			}
-
-			var nme = l[NAME];
-			if(nme != undefined) {
-				nme = nme.replace(/</g, '&lt;');
-			}
-			if(l[PAGE]) {
-				var i;
-				out = out + '<a href="javascript:loadForm(' +
-						idx + ');void(0)"' +
-						' onDblClick="checkit(' + idx + ')"' +
-						' title="' + l[PAGE];
-				if(l[FORM])
-					out = out + '?' + l[FORM];
-				if(l[DESCRIPTION])
-					out = out + " : " + l[DESCRIPTION];
-				out = out + '">' + nme + '</a>';
-			}
-			else {
-				out = out + '<b>' + nme + '</b>';
-			}
-
-			if(l[MSG]) {
-				out = out + ' <i style="font-size: 8pt;">(' + l[MSG] + ')</i>';
-			}
-		}
-
-		var el = document.getElementById('box' + idx);
-// alert("rewriting, el=" + el);
-		el.innerHTML = out;
-		if(l != undefined && l[CHECK] == 1)
-			checkcur = idx;
-		// alert("idx=" + idx + ", writing " + out);
-		if(lines.length > 25) 
-			document.getElementById('scrollbox').style.overflow = 'scroll';
-		if(lines.length < 25) 
-			document.getElementById('scrollbox').style.overflow = 'visible';
-		return;
-	}
-
-	function rewrite (idx) {
-		if(tree_mode == 1)
-			return rewrite_tree(idx);
-
-		var out = '';
-
-		var l = lines[idx];
-			
-		if(l != undefined && idx < lines.length) {
-			// out =	idx + 
-			out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
-			if(l[CHECK] == 1) {
-				out = out + 'src="' + checked_img + '" ';
-			}
-			else {
-				out = out + 'src="' + empty_img + '" ';
-			}
-
-			var linktitle = '';
-			var lzero = lines[0];
-			for(var k = 1; k < lzero.length; k++) {
-				var lstring = l[k] + '';
-				if(lstring.length > 0)
-					linktitle = linktitle + '<b>' + lzero[k] + ':</b> ' + lstring + "<br>";
-			}
-			out = out + 'border=0 align=absbottom ' +
-					'id="img' + idx + '"></A>' + "\n" +
-					'<a href="javascript:motion(' + idx + ", 'up');void(0)" +
-					'"><img src="' + up_img + '" border=0 align=absbottom></A>' + "\n" +
-					'<a href="javascript:motion(' + idx + ", 'down');void(0)" +
-					'"><img src="' + down_img + '" border=0 align=absbottom></A>' + "\n" +
-					'<a href="javascript:loadForm(' + idx + ");void(0)" +
-					'"><img src="' + transfer_img + '" border=0 align=absbottom></A>' + "\n";
-
-			var nme = l[NAME];
-			if(nme.length > 30) {
-				nme=nme.substr(0,27) + '...';
-			}
-			if(l[PAGE]) {
-				out = out + '&nbsp;&nbsp;&nbsp;<a href="javascript:loadForm(' +
-						idx + ');void(0)"' +
-						' onDblClick="checkit(' + idx + ')"' +
-						' onMouseOver="show_title(' + idx + ')"' +
-						' onMouseOut="show_title(0)"' +
-						' title="' + l[PAGE];
-				if(l[FORM])
-					out = out + '?' + l[FORM];
-				out = out + '">' + nme + '</a>';
-			}
-			else {
-				out = out + '<span style="font-weight: bold"' +
-						' onMouseOver="show_title(' + idx + ')"' +
-						' onMouseOut="show_title(0)"' + '>' +
-						nme + '</span>';
-			}
-
-			if(l[MSG]) {
-				out = out + ' <i style="font-size: 8pt;">(' + l[MSG] + ')</i>';
-			}
-
-			// Set box title array
-			ltitle[idx] = linktitle.replace(/\r/g, '<br>');
-		}
-
-		var el = document.getElementById('box' + idx);
-// alert("rewriting idx=" + idx + ", el=" + el);
-		el.innerHTML = out;
-		if(l != undefined && l[CHECK] == 1)
-			checkcur = idx;
-		// alert("idx=" + idx + ", writing " + out);
-		if(lines.length > 25) 
-			document.getElementById('scrollbox').style.overflow = 'scroll';
-		if(lines.length < 25) 
-			document.getElementById('scrollbox').style.overflow = 'visible';
-		return;
-	}
-
-	function delRow (idx) {
-
-		if( ! check_change() )
-			return;
-
-		zeroForm;
-
-		if(idx == undefined || idx < 1) {
-			idx = checkcur;
-			if(idx > 0)
-				checkit(idx);
-		}
-		if(idx == undefined || idx < 1) {
-			alert("No row selected!");
-			return;
-		}
-
-		var l = lines[idx];
-		if(l == undefined) {
-			alert("deleting non-existent row!");
-			return;
-		}
-
-		var needs_confirm = l[PAGE].length || l[FORM].length
-
-		var i;
-		for(i = 3; i < 8; i++) {
-			if(l[i] != undefined && l[i].length) {
-				needs_confirm = 1;
-				break;
-			}
-		}
-			
-		if(needs_confirm && ! confirm("Delete row " + idx + ", '" + lines[idx][NAME] + "'?") )
-			return;
-
-		var len  = lines.length;
-		var last = len - 2;
-
-		if(tree_mode == 1) {
-			var d = lines[idx + 1];
-			if(l[MSORT] == 0 && d != undefined && d[MSORT] > 0) {
-				motion(idx + 1, 'left');
-			}
-			else {
-				var save = no_alert;
-				no_alert = 1;
-				motion(idx, 'left');
-				no_alert = save;
-			}
-		}
-
-		for( i = idx; i <= last; i++) {
-			lines[i] = lines[i+1];
-			rewrite(i);
-		}
-		len--;
-		lines.length   = len;
-		rewrite(len);
-		for(i = idx; i <= len; i++) 
-			rewrite(i);
-		return;
-	}
-
-	function insRow (idx) {
-
-		if( ! check_change() )
-			return;
-
-		if(idx == undefined || idx < 1) {
-			idx = checkcur;
-			if (idx > 0)
-				checkit(idx);
-		}
-
-		if(idx == undefined || idx < 1) {
-			idx = lines.length;
-		}
-
-		lines.length = lines.length + 1;
-		var last = lines.length - 1;
-		
-		if(lines[idx] != undefined) {
-			var penult = last - 1;
-			var i;
-			for( i = penult; i >= idx; i--) {
-				lines[i + 1] = lines[i];
-				rewrite(i + 1);
-			}
-		}
-
-		lines[idx] = new Array;
-		for (i = 0; i < CHECK; i++)
-			lines[idx][i] = '';
-		lines[idx][MSG] = 'NEW';
-
-		if(tree_mode == 1) {
-			if(lines[idx - 1] != undefined) {
-				lines[idx][MSORT] = lines[idx-1][MSORT];
-			}
-			else {
-				lines[idx][MSORT] = 0;
-			}
-		}
-
-		rewrite(idx);
-
-		var ch = [	form.page.value,
-					form.params.value,
-					form.description.value,
-					form.extended.value];
-		var something = 0;
-		var i;
-		for(i = 0; i < ch.length; i++) {
-			if(ch[i] != undefined && ch[i].length > 0) {
-				something = 1;
-				break;
-			}
-		}
-
-		form.lineidx.value = idx;
-		if(something > 0 && confirm("Start item out with values from form?")) {
-			saveForm(idx);
-		}
-		return;
-	}
-
-	function loadForm (idx, msg, zeromsg) {
-		if( ! check_change() )
-			return;
-
-		if(idx == undefined || idx <= 0) {
-			idx = checkcur;
-			if (idx <= 0) return;
-			checkit(idx);
-		}
-
-		if(msg == undefined)
-			msg = 'loaded'; 
-                            
-		if(zeromsg == undefined)
-			zeromsg = 'loaded';
-
-		var l = lines[idx];
-		// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
-
-		form.name.value      = name_rep   = l[NAME];
-		form.page.value      = page_rep   = l[PAGE];
-		form.params.value    = params_rep = unescapeParams(l[FORM]);
-		form.description.value            = l[DESCRIPTION];
-		form.mgroup.value                 = l[MGROUP];
-
-		for(var x = 0; x < extra.length; x++) {
-			var el;
-			var en = extra[x];
-			var un = en.toUpperCase();
-			var eidx;
-			eval('eidx = ' + un);
-			eval ('el = form.ext_' + en );
-//			if( x < 2) {
-// alert('loading extra form value ' + en + '(' + un + '), eidx=' + eidx + ', value=' + l[eidx]);
-//			}
-			if(el == undefined) {
-				alert('bad extra form element: ' + en);
-				continue;
-			}
-			if(el.type == 'select') {
-				for(var j = 0; j < el.length; j++) {
-					if(el.options[j].value == l[eidx]) {
-						el.selectedIndex = j;
-						break;
-					}
-				}
-			}
-			else {
-				el.value = l[eidx];
-			}
-		}
-
-		if(INACTIVE != undefined) {
-			form.inactive.disabled = 0;
-			form.inactive.checked = l[INACTIVE] ? 1 : 0;
-		}
-		else {
-			form.inactive.disabled = 1;
-		}
-
-		if(form.page.value == '') {
+function toggleName (form,val) {
+	if(val != undefined) {
+		val = val.replace(/\s+$/, '');
+		if (val == '') {
 			form.label.checked = 1;
 		}
 		else {
 			form.label.checked = 0;
 		}
-		if(form.name.value == '') {
+		return;
+	}
+
+	if(form.label.checked) {
+		page_rep = form.page.value;
+		params_rep = form.params.value;
+		form.page.value = '';
+		form.params.value = '';
+	}
+	else {
+		form.page.value = page_rep;
+		form.params.value = params_rep;
+	}
+	set_save_buttons(form_changed);
+	return;
+}
+
+function toggleBreak (form,val) {
+	if(val != undefined) {
+		val = val.replace(/\s+$/, '');
+		if (val == '') {
 			form.breakline.checked = 1;
 		}
 		else {
 			form.breakline.checked = 0;
 		}
-		form.lineidx.value = idx;
-
-		var j;
-		for(j = 0; j < lines.length; j++) {
-			if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
-				lines[j][MSG] = '';
-				rewrite(j);
-			}
-		}
-		l[MSG] = msg;
-		rewrite(idx);
-		form_changed(0);
-		mvpan_selectTab(0);
 		return;
 	}
-
-	function zeroForm (form) {
-		if(form == undefined) {
-			form = document.qmenuform;
-		}
-		form.page.value = '';
-		form.params.value = '';
-		form.name.value = '';
-		form.description.value = '';
-		form.mgroup.value = '';
-		if(EXTENDED != undefined)
-			form.extended.value = '';
-
-		form.inactive.checked = 0;
-		form.breakline.checked = 0;
+		
+	if(form.breakline.checked) {
 		form.label.checked = 0;
-		form.lineidx.value = 0;
-
-		for(var x = 0; x < extra.length; x++) {
-			var el;
-			var en = extra[x];
-			var un = en.toUpper;
-			eval ('el = form.ext_' + en );
-
-			if(el.type == 'select') {
-				el.selectedIndex = undefined;
-			}
-			else {
-				el.value = '';
-			}
-		}
-
-
-		form_changed(0);
-		mvpan_selectTab(0);
-		return;
+		toggleName(form);
+		form.label.checked = 1;
+		toggleName(form);
+		name_rep = form.name.value;
+		form.name.value = '';
 	}
+	else {
+		form.name.value = name_rep;
+	}
+	set_save_buttons(form_changed);
+	return;
+}
 
-	function boxMsg (idx, msg) {
+function ext_name (str) {
+	var pos = str.indexOf('_') + 1;
+	if(pos < 1) 
+		return '';
+	str = str.substr(pos);
+	return str;
+}
+
+function show_title (idx, msg) {
+	if(document.qmenuform.show_info == undefined ||
+		document.qmenuform.show_info.checked != true)
+		return;
+	var el = document.getElementById('titlebox');
+	if(el == undefined) 
+		return;
+	if(msg == undefined) 
+		msg = ltitle[idx];
+	if(idx == 0 || msg.length == 0) {
+		el.style.visibility = 'Hidden';
+		el.style.display = 'none';
+	}
+	else {
+		el.innerHTML = msg;
+		el.style.visibility = 'Visible';
+		el.style.display = 'block';
+	}
+}
+
+function set_mode (mode) {
+	if(mode == 'toggle') {
+		if(tree_mode == 0) {
+			mode = 'tree';
+		}
+		else {
+			mode = 'simple';
+		}
+	}
+	var f = document.qmenuform;
+	var el = f.treebutton;
+	var ch = f.qmenu_tree;
+	var cht = f.qmenu_write_tree;
+	var tel = document.getElementById('treebox');
+// alert("change mode, el=" + el);
+	if(mode == 'tree') {
+		tree_mode = 1;
+		toggleItem(0, form.collapse, 0);
+		lines[1][MSORT] = 0;
+		el.value = "Set simple mode";
+		ch.checked = 1;
+		cht.checked = 1;
+		tel.style.visibility = 'Visible';
+		tel.style.display = 'block';
+	}
+	else {
+		toggleItem(0, form.explode, 1);
+		tree_mode = 0;
+		lines[1][MSORT] = 'x';
+		el.value = "Set tree mode";
+		ch.checked = 0;
+		cht.checked = 0;
+		tel.style.visibility = 'Hidden';
+		tel.style.display = 'none';
+	}
+	var i;
+	for(i = 1; i < lines.length; i++) {
+		rewrite(i);
+	}
+	return;
+}
+
+function rewrite_tree (idx, tog) {
+	var out = '';
+
+	var l = lines[idx];
+	var next = lines[idx + 1];
+
+	var children = 0;
+
 		
-	}
-
-	function saveForm (idx, msg, zeromsg) {
-
-		if(idx == undefined || idx < 1)
-			idx = form.lineidx.value;
-
-		if(idx <= 0) {
-			alert("Improper line index " + idx);
-			return;
+	if(l != undefined && idx < lines.length) {
+		// out =	idx + 
+		if(next != undefined && next[MSORT] > l[MSORT] ) 
+			children = 1;
+		out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
+		if(l[CHECK] == 1) {
+			out = out + 'src="' + full_img + '" ';
 		}
-		var l = lines[idx];
+		else {
+			out = out + 'src="' + empty_img + '" ';
+		}
 
-		if(msg == undefined)
-			msg = 'saved';
+		var grp = l[MSORT] + '';
+// alert("rewrite grp=" + grp);
+		if(! grp.match(/^\d+$/) ) {
+			l[MSORT] = 0;
+		}
 
-		if(zeromsg == undefined)
-			zeromsg = 'saved';
+		toggle[l[MSORT]] = l[0];
 
-		// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
-
-		form.lineidx.value = idx;
-		l[PAGE] = form.page.value;
-		l[FORM] = escapeParams(form.params.value);
-		l[NAME] = form.name.value;
-		l[MGROUP] = form.mgroup.value;
-
-		var ttt = form.description.value;
-		ttt = ttt.replace(/\r\n/g, "\r");
-		l[DESCRIPTION] = ttt.replace(/\n/g, "\r");
-
-		for(var x = 0; x < extra.length; x++) {
-			var el;
-			var en = extra[x];
-			var un = en.toUpperCase();
-			var eidx;
-			eval('eidx = ' + un);
-			eval('el = form.ext_' + en );
-
-			if(el.type == 'select') {
-				var sel = el.options[el.selectedIndex];
-				if(sel == defined) {
-					l[eidx] = sel.value;
-				}
-				else {
-					l[eidx] = '';
-				}
+		out = out + 'border=0 align=absbottom ' +
+				'id="img' + idx + '"></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'up');void(0)" +
+				'"><img src="' + up_img + '"' + up_title + ' border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'down');void(0)" +
+				'"><img src="' + down_img + '"' + down_title + ' border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'left');void(0)" +
+				'"><img src="' + left_img + '"' + left_title + ' border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'right');void(0)" +
+				'"><img src="' + right_img + '"' + right_title + ' border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:loadForm(' + idx + ");void(0)" +
+				'"><img src="' + forward_img + '"' + forward_title + ' border=0 align=absbottom></A>' + "\n";
+		for(i = 0; i < l[MSORT]; i++)
+			out = out + '&nbsp;&nbsp;&nbsp;'; 
+		if(children == 1) {
+			var img;
+			if( l[0] != 0 ) {
+				img = minus_img;
+				htitle = minus_title;
 			}
 			else {
-				l[eidx] = el.value;
+				img = plus_img;
+				htitle = plus_title;
 			}
+			out = out + 
+				'<a href="javascript:toggleItem(' + idx + ");void(0)" +
+				'"' + htitle + '><img border=0 src="' + img + '"></A>' + "\n";
+		}
+		else {
+			out += '<img border=0 height=16 width=16 src="' + leaf_img + '">';
+		}
+		if(showlevel == 1 && l[MSORT] > 0) {
+			out = out + l[MSORT] + '&nbsp;'
 		}
 
-		if(INACTIVE != undefined) {
-			l[INACTIVE] = form.inactive.checked ? 1 : 0;
+		var nme = l[NAME];
+		if(nme != undefined) {
+			nme = nme.replace(/</g, '&lt;');
+		}
+		if(l[PAGE]) {
+			var i;
+			out = out + '<a href="javascript:loadForm(' +
+					idx + ');void(0)"' +
+					' onDblClick="checkit(' + idx + ')"' +
+					' title="' + l[PAGE];
+			if(l[FORM])
+				out = out + '?' + l[FORM];
+			if(l[DESCRIPTION])
+				out = out + " : " + l[DESCRIPTION];
+			out = out + '">' + nme + '</a>';
+		}
+		else {
+			out = out + '<b>' + nme + '</b>';
 		}
 
-		var j;
-		for(j = 0; j < lines.length; j++) {
-			if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
-				lines[j][MSG] = '';
-				rewrite(j);
-			}
+		if(l[MSG]) {
+			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[MSG] + ')</i>';
+		}
+	}
+
+	var el = document.getElementById('box' + idx);
+// alert("rewriting, el=" + el);
+	
+	if(tog == 1) {
+		for(var n = 0; n < l[MSORT]; n++) {
+			if(toggle[n] == 0)
+				out = '';
+		}
+		if(out != '') {
+			el.style.background = '#' + toggle_bg;
+			el.style.display = 'block';
+			if(toggle_bg == 'FFFFFF')
+				toggle_bg = 'EEEEEE';
+			else 
+				toggle_bg = 'FFFFFF';
+		}
+		else {
+			el.style.background = '#FFFFFF';
+			el.style.display = 'none';
+		}
+	}
+	el.innerHTML = out;
+
+	if(l != undefined && l[CHECK] == 1)
+		checkcur = idx;
+	// alert("idx=" + idx + ", writing " + out);
+	if(lines.length > 25) 
+		document.getElementById('scrollbox').style.overflow = 'scroll';
+	if(lines.length < 25) 
+		document.getElementById('scrollbox').style.overflow = 'visible';
+	return;
+}
+
+function rewrite (idx) {
+	if(tree_mode == 1)
+		return rewrite_tree(idx);
+
+	var out = '';
+
+	var l = lines[idx];
+		
+	if(l != undefined && idx < lines.length) {
+		// out =	idx + 
+		out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
+		if(l[CHECK] == 1) {
+			out = out + 'src="' + full_img + '" ';
+		}
+		else {
+			out = out + 'src="' + empty_img + '" ';
 		}
 
-		l[MSG] = msg;
-		if(checkcur > 0)
-			checkit(checkcur);
-		rewrite(idx);
-		zeroForm();
+		var linktitle = '';
+		var lzero = lines[0];
+		for(var k = 1; k < lzero.length; k++) {
+			var lstring = l[k] + '';
+			if(lstring.length > 0)
+				linktitle = linktitle + '<b>' + lzero[k] + ':</b> ' + lstring + "<br>";
+		}
+		out = out + 'border=0 align=absbottom ' +
+				'id="img' + idx + '"></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'up');void(0)" +
+				'"><img src="' + up_img + '" border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:motion(' + idx + ", 'down');void(0)" +
+				'"><img src="' + down_img + '" border=0 align=absbottom></A>' + "\n" +
+				'<a href="javascript:loadForm(' + idx + ");void(0)" +
+				'"><img src="' + transfer_img + '" border=0 align=absbottom></A>' + "\n";
+
+		var nme = l[NAME];
+		if(nme.length > 30) {
+			nme=nme.substr(0,27) + '...';
+		}
+		if(l[PAGE]) {
+			out = out + '&nbsp;&nbsp;&nbsp;<a href="javascript:loadForm(' +
+					idx + ');void(0)"' +
+					' onDblClick="checkit(' + idx + ')"' +
+					' onMouseOver="show_title(' + idx + ')"' +
+					' onMouseOut="show_title(0)"' +
+					' title="' + l[PAGE];
+			if(l[FORM])
+				out = out + '?' + l[FORM];
+			out = out + '">' + nme + '</a>';
+		}
+		else {
+			out = out + '<span style="font-weight: bold"' +
+					' onMouseOver="show_title(' + idx + ')"' +
+					' onMouseOut="show_title(0)"' + '>' +
+					nme + '</span>';
+		}
+
+		if(l[MSG]) {
+			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[MSG] + ')</i>';
+		}
+
+		// Set box title array
+		ltitle[idx] = linktitle.replace(/\r/g, '<br>');
+	}
+
+	var el = document.getElementById('box' + idx);
+// alert("rewriting idx=" + idx + ", el=" + el);
+	el.innerHTML = out;
+	if(l != undefined && l[CHECK] == 1)
+		checkcur = idx;
+	// alert("idx=" + idx + ", writing " + out);
+	if(lines.length > 25) 
+		document.getElementById('scrollbox').style.overflow = 'scroll';
+	if(lines.length < 25) 
+		document.getElementById('scrollbox').style.overflow = 'visible';
+	return;
+}
+
+function delRow (idx) {
+
+	if( ! check_change() )
+		return;
+
+	zeroForm;
+
+	if(idx == undefined || idx < 1) {
+		idx = checkcur;
+		if(idx > 0)
+			checkit(idx);
+	}
+	if(idx == undefined || idx < 1) {
+		alert("No row selected!");
 		return;
 	}
 
-	function setOutput () {
-		var output = new Array;
+	var l = lines[idx];
+	if(l == undefined) {
+		alert("deleting non-existent row!");
+		return;
+	}
+
+	var needs_confirm = l[PAGE].length || l[FORM].length
+
+	var i;
+	for(i = 3; i < 8; i++) {
+		if(l[i] != undefined && l[i].length) {
+			needs_confirm = 1;
+			break;
+		}
+	}
+		
+	if(needs_confirm && ! confirm("Delete row " + idx + ", '" + lines[idx][NAME] + "'?") )
+		return;
+
+	var len  = lines.length;
+	var last = len - 2;
+
+	if(tree_mode == 1) {
+		var d = lines[idx + 1];
+		if(l[MSORT] == 0 && d != undefined && d[MSORT] > 0) {
+			motion(idx + 1, 'left');
+		}
+		else {
+			var save = no_alert;
+			no_alert = 1;
+			motion(idx, 'left');
+			no_alert = save;
+		}
+	}
+
+	for( i = idx; i <= last; i++) {
+		lines[i] = lines[i+1];
+		rewrite(i);
+	}
+	len--;
+	lines.length   = len;
+	rewrite(len);
+	for(i = idx; i <= len; i++) 
+		rewrite(i);
+	return;
+}
+
+function insRow (idx) {
+
+	if( ! check_change() )
+		return;
+
+	if(idx == undefined || idx < 1) {
+		idx = checkcur;
+		if (idx > 0)
+			checkit(idx);
+	}
+
+	if(idx == undefined || idx < 1) {
+		idx = lines.length;
+	}
+
+	lines.length = lines.length + 1;
+	var last = lines.length - 1;
+	
+	if(lines[idx] != undefined) {
+		var penult = last - 1;
 		var i;
-		var linelen = [calc]scalar @menufields[/calc];
-		output[0] = "[calc]join "\\t", @menufields [/calc]";
-		document.qmenuform.qmenu_text.value = output[0];
-		for(i = 1; i < lines.length; i++) {
-			var ttt = "" + i;
-			while( ttt.length < 3 )
-				ttt = '0' + ttt;
-			var tl = new Array;
-			var j;
-			tl[0] = ttt;
-			if(tree_mode != 1)
-				lines[i][MSORT] = 'x' + ttt;
-			for( j = 1; j < linelen; j++) {
-				tl[j] = lines[i][j];
-				if(tl[j] == undefined) 
-					tl[j] = '';
-			}
-			tl[DESCRIPTION] = tl[DESCRIPTION].replace(/\r/g, "\\r");
-			if(EXTENDED != undefined) 
-				tl[EXTENDED] = tl[EXTENDED].replace(/\r/g, "\\r");
-			output[i] = tl.join("\t");
+		for( i = penult; i >= idx; i--) {
+			lines[i + 1] = lines[i];
+			rewrite(i + 1);
 		}
-		document.qmenuform.qmenu_text.value = output.join("\n") + "\n";
-		// alert(document.qmenuform.qmenu_text.value);
+	}
+
+	lines[idx] = new Array;
+	for (i = 0; i < CHECK; i++)
+		lines[idx][i] = '';
+	lines[idx][MSG] = 'NEW';
+
+	if(tree_mode == 1) {
+		if(lines[idx - 1] != undefined) {
+			lines[idx][MSORT] = lines[idx-1][MSORT];
+		}
+		else {
+			lines[idx][MSORT] = 0;
+		}
+	}
+
+	rewrite(idx);
+
+	var ch = [	form.page.value,
+				form.params.value,
+				form.description.value,
+				form.extended.value];
+	var something = 0;
+	var i;
+	for(i = 0; i < ch.length; i++) {
+		if(ch[i] != undefined && ch[i].length > 0) {
+			something = 1;
+			break;
+		}
+	}
+
+	form.lineidx.value = idx;
+	if(something > 0 && confirm("Start item out with values from form?")) {
+		saveForm(idx);
+	}
+	return;
+}
+
+function loadForm (idx, msg, zeromsg) {
+	if( ! check_change() )
+		return;
+
+	if(idx == undefined || idx <= 0) {
+		idx = checkcur;
+		if (idx <= 0) return;
+		checkit(idx);
+	}
+
+	if(msg == undefined)
+		msg = 'loaded'; 
+						
+	if(zeromsg == undefined)
+		zeromsg = 'loaded';
+
+	var l = lines[idx];
+	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
+
+	form.name.value      = name_rep   = l[NAME];
+	form.page.value      = page_rep   = l[PAGE];
+	form.params.value    = params_rep = unescapeParams(l[FORM]);
+	form.description.value            = l[DESCRIPTION];
+	form.mgroup.value                 = l[MGROUP];
+
+	for(var x = 0; x < extra.length; x++) {
+		var el;
+		var en = extra[x];
+		var un = en.toUpperCase();
+		var eidx;
+		eval('eidx = ' + un);
+		eval ('el = form.ext_' + en );
+//			if( x < 2) {
+// alert('loading extra form value ' + en + '(' + un + '), eidx=' + eidx + ', value=' + l[eidx]);
+//			}
+		if(el == undefined) {
+			alert('bad extra form element: ' + en);
+			continue;
+		}
+		if(el.type == 'select') {
+			for(var j = 0; j < el.length; j++) {
+				if(el.options[j].value == l[eidx]) {
+					el.selectedIndex = j;
+					break;
+				}
+			}
+		}
+		else {
+			el.value = l[eidx];
+		}
+	}
+
+	if(INACTIVE != undefined) {
+		form.inactive.disabled = 0;
+		form.inactive.checked = l[INACTIVE] ? 1 : 0;
+	}
+	else {
+		form.inactive.disabled = 1;
+	}
+
+	if(form.page.value == '') {
+		form.label.checked = 1;
+	}
+	else {
+		form.label.checked = 0;
+	}
+	if(form.name.value == '') {
+		form.breakline.checked = 1;
+	}
+	else {
+		form.breakline.checked = 0;
+	}
+	form.lineidx.value = idx;
+
+	var j;
+	for(j = 0; j < lines.length; j++) {
+		if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
+			lines[j][MSG] = '';
+			rewrite(j);
+		}
+	}
+	l[MSG] = msg;
+	rewrite(idx);
+	form_changed(0);
+	mvpan_selectTab(0);
+	return;
+}
+
+function zeroForm (form) {
+	if(form == undefined) {
+		form = document.qmenuform;
+	}
+	form.page.value = '';
+	form.params.value = '';
+	form.name.value = '';
+	form.description.value = '';
+	form.mgroup.value = '';
+	if(EXTENDED != undefined)
+		form.extended.value = '';
+
+	form.inactive.checked = 0;
+	form.breakline.checked = 0;
+	form.label.checked = 0;
+	form.lineidx.value = 0;
+
+	for(var x = 0; x < extra.length; x++) {
+		var el;
+		var en = extra[x];
+		var un = en.toUpper;
+		eval ('el = form.ext_' + en );
+
+		if(el.type == 'select') {
+			el.selectedIndex = undefined;
+		}
+		else {
+			el.value = '';
+		}
+	}
+
+
+	form_changed(0);
+	mvpan_selectTab(0);
+	return;
+}
+
+function boxMsg (idx, msg) {
+	
+}
+
+function saveForm (idx, msg, zeromsg) {
+
+	if(idx == undefined || idx < 1)
+		idx = form.lineidx.value;
+
+	if(idx <= 0) {
+		alert("Improper line index " + idx);
+		return;
+	}
+	var l = lines[idx];
+
+	if(msg == undefined)
+		msg = 'saved';
+
+	if(zeromsg == undefined)
+		zeromsg = 'saved';
+
+	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
+
+	form.lineidx.value = idx;
+	l[PAGE] = form.page.value;
+	l[FORM] = escapeParams(form.params.value);
+	l[NAME] = form.name.value;
+	l[MGROUP] = form.mgroup.value;
+
+	var ttt = form.description.value;
+	ttt = ttt.replace(/\r\n/g, "\r");
+	l[DESCRIPTION] = ttt.replace(/\n/g, "\r");
+
+	for(var x = 0; x < extra.length; x++) {
+		var el;
+		var en = extra[x];
+		var un = en.toUpperCase();
+		var eidx;
+		eval('eidx = ' + un);
+		eval('el = form.ext_' + en );
+
+		if(el.type == 'select') {
+			var sel = el.options[el.selectedIndex];
+			if(sel == defined) {
+				l[eidx] = sel.value;
+			}
+			else {
+				l[eidx] = '';
+			}
+		}
+		else {
+			l[eidx] = el.value;
+		}
+	}
+
+	if(INACTIVE != undefined) {
+		l[INACTIVE] = form.inactive.checked ? 1 : 0;
+	}
+
+	var j;
+	for(j = 0; j < lines.length; j++) {
+		if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
+			lines[j][MSG] = '';
+			rewrite(j);
+		}
+	}
+
+	l[MSG] = msg;
+	if(checkcur > 0)
+		checkit(checkcur);
+	rewrite(idx);
+	zeroForm();
+	return;
+}
+
+function setOutput () {
+	var output = new Array;
+	var i;
+	var linelen = [calc]scalar @menufields[/calc];
+	output[0] = "[calc]join "\\t", @menufields [/calc]";
+	document.qmenuform.qmenu_text.value = output[0];
+	for(i = 1; i < lines.length; i++) {
+		var ttt = "" + i;
+		while( ttt.length < 3 )
+			ttt = '0' + ttt;
+		var tl = new Array;
+		var j;
+		tl[0] = ttt;
+		if(tree_mode != 1)
+			lines[i][MSORT] = 'x' + ttt;
+		for( j = 1; j < linelen; j++) {
+			tl[j] = lines[i][j];
+			if(tl[j] == undefined) 
+				tl[j] = '';
+		}
+		tl[DESCRIPTION] = tl[DESCRIPTION].replace(/\r/g, "\\r");
+		if(EXTENDED != undefined) 
+			tl[EXTENDED] = tl[EXTENDED].replace(/\r/g, "\\r");
+		output[i] = tl.join("\t");
+	}
+	document.qmenuform.qmenu_text.value = output.join("\n") + "\n";
+	// alert(document.qmenuform.qmenu_text.value);
+	return;
+}
+
+function canon_lines () {
+	for(i = lines.length - 1; i > 0; i--) {
+		if(lines[i] != undefined)
+			break;
+		lines.length = lines.length - 1;
+	}
+}
+
+function do_alert (msg) {
+	if(no_alert != 1)
+		alert(msg);
+}
+
+function moveit (idx, motion) {
+	var up = idx - 1;
+	var dn = idx + 1;
+
+	var dest;
+
+	if (up < 1 && motion == 'up')
+		return void(0);
+	if (dn > lines.length - 1 && motion == 'down')
+		return void(0);
+
+	reset_collapse();
+
+	dest = motion == 'up' ? up : dn;
+
+	var tmp = lines[dest];
+	lines[dest] = lines[idx];
+	lines[idx] = tmp;
+
+	rewrite(idx);
+	rewrite(dest);
+
+	return;
+}
+
+function movetree (idx, motion) {
+	var up = idx - 1;
+	var dn = idx + 1;
+
+	if(up < 1) {
+		alert("Can't move first element in tree.");
 		return;
 	}
 
-	function canon_lines () {
-		for(i = lines.length - 1; i > 0; i--) {
-			if(lines[i] != undefined)
-				break;
-			lines.length = lines.length - 1;
-		}
-	}
+	var end = checkcur;
 
-	function do_alert (msg) {
-		if(no_alert != 1)
-			alert(msg);
-	}
-
-	function moveit (idx, motion) {
-		var up = idx - 1;
-		var dn = idx + 1;
-
-		var dest;
-
-		if (up < 1 && motion == 'up')
-			return void(0);
-		if (dn > lines.length - 1 && motion == 'down')
-			return void(0);
-		dest = motion == 'up' ? up : dn;
-
-		var tmp = lines[dest];
-		lines[dest] = lines[idx];
-		lines[idx] = tmp;
-
-		rewrite(idx);
-		rewrite(dest);
-
-		return;
-	}
-
-	function movetree (idx, motion) {
-		var up = idx - 1;
-		var dn = idx + 1;
-
-		if(up < 1) {
-			alert("Can't move first element in tree.");
-			return;
+	if(end < idx)
+		end = idx;
+	
+	var x;
+	for(x = idx; x <= end; x++) {
+		var l = lines[x];
+		var u = lines[up];
+		var d = lines[dn];
+		u[MSORT] *= 1;
+		l[MSORT] *= 1;
+		if(isNaN(u[MSORT])) {
+			u[MSORT] = 0;
 		}
 
-		var end = checkcur;
+		if(isNaN(l[MSORT])) {
+			l[MSORT] = 0;
+		}
 
-		if(end < idx)
-			end = idx;
-		
-		var x;
-		for(x = idx; x <= end; x++) {
-			var l = lines[x];
-			var u = lines[up];
-			var d = lines[dn];
-			u[MSORT] *= 1;
-			l[MSORT] *= 1;
-			if(isNaN(u[MSORT])) {
-				u[MSORT] = 0;
-			}
-
-			if(isNaN(l[MSORT])) {
-				l[MSORT] = 0;
-			}
-
-			if(motion == 'left') {
-				if(l[MSORT] == 0) {
-					if(x == idx) {
-						do_alert("Already at top level.");
-						break;
-					}
-				}
-				else {
-					l[MSORT] -= 1;
-				}
-				while (x >= end && d != undefined && d[MSORT] - 1 > l[MSORT]) {
-					d[MSORT] -= 1;
-					rewrite_tree(dn);
-					dn++;
-					d = lines[dn];
+		if(motion == 'left') {
+			if(l[MSORT] == 0) {
+				if(x == idx) {
+					do_alert("Already at top level.");
+					break;
 				}
 			}
 			else {
-				if(l[MSORT] > u[MSORT]) {
-					if(x == idx) {
-						do_alert("Already at farthest right, need parent at same level or higher.");
-						break;
+				l[MSORT] -= 1;
+			}
+			while (x >= end && d != undefined && d[MSORT] - 1 > l[MSORT]) {
+				d[MSORT] -= 1;
+				rewrite_tree(dn, 1);
+				dn++;
+				d = lines[dn];
+			}
+		}
+		else {
+			if(l[MSORT] > u[MSORT]) {
+				if(x == idx) {
+					do_alert("Already at farthest right, need parent at same level or higher.");
+					break;
+				}
+			}
+			else {
+				l[MSORT] += 1;
+			}
+		}
+		dn++;
+		up++;
+		rewrite(x);
+	}
+
+	return;
+}
+
+function search_win () {
+		window.name = 'mainwindow[scratch window_name]';
+		var url = '[area
+						href="admin/search_wizard"
+						form=|
+							ui_source_form=qmenuform
+							ui_source_var=params
+						|]';
+		url += '&ui_searchblob=' + escape(form.params.value);
+		window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=900,height=700');
+		return void(0);
+}
+
+function movethem (idx, end, target) {
+	var tmp = new Array;
+	reset_collapse();
+
+	for (var i = target; i < idx; i++) {
+		tmp[tmp.length] = lines[i];
+	}
+
+	var j = target;
+	for(var i = idx; i <= end; i++, j++) {
+		lines[j] = lines[i];
+	}
+	for (var i = 0; i < tmp.length; i++, j++) {
+		lines[j] = tmp[i];
+	}
+	for(var i = 1; i < lines.length; i++) 
+		rewrite_tree(i, 1);
+}
+
+function motion (idx, motion, fromchecked) {
+
+	if(motion == 'left' || motion == 'right') {
+		if(tree_mode != 1) {
+			alert("Not in tree mode, can't move " + motion);
+			return;
+		}
+
+		return movetree(idx, motion);
+	}
+	if(fromchecked == 1) {
+		idx = checkcur;
+		if(idx == undefined || idx < 1)
+			return;
+	}
+
+	var up = idx - 1;
+	var dn = idx + 1;
+
+	if( ! check_change() )
+		return;
+
+	var dest;
+
+	// alert("checkcur=" + checkcur + "\nidx=" + idx + "\ndest=" + dest);
+	if (checkcur != 0 && fromchecked != 1) {
+		if(tree_mode == 1) {
+// alert('in tree mode move');
+			var extant;
+			var m;
+			var nextpeer;
+			var prevpeer;
+			var clev = lines[checkcur][MSORT];
+			if(motion == 'down') {
+				
+				for(m=checkcur + 1; extant==undefined; m++) {
+// alert('in tree mode move, m=' + m + ', nextpeer=' + nextpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
+					if(lines[m] == undefined) {
+						if(nextpeer == undefined)
+							return void(0);
+						extant = m - 1;
+// alert('ready for tree mode move, m=' + m + ', nextpeer=' + nextpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
+					}
+					else if(lines[m][MSORT] <= clev) {
+						if(nextpeer == undefined) {
+							nextpeer = m;
+						}
+						else {
+							extant = m -1;
+// alert('ready for tree mode move, m=' + m + ', nextpeer=' + nextpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
+						}
 					}
 				}
-				else {
-					l[MSORT] += 1;
+				movethem(nextpeer, extant, checkcur);
+				return void(0);
+			}
+			else {
+				var m;
+				for(m=checkcur + 1; extant==undefined; m++) {
+					if(lines[m] == undefined || lines[m][MSORT] == clev) {
+// alert('tree move up, extant=' + extant + ', checkcur=' + checkcur + '');
+						extant = m - 1;
+					}
 				}
+				for(m=checkcur - 1; prevpeer==undefined; m--) {
+					if(lines[m] == undefined) {
+							return void(0);
+					}
+// alert('in tree mode move, m=' + m + ',  prevpeer=' + prevpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
+					if(lines[m][MSORT] == clev) {
+						prevpeer = m;
+					}
+				}
+				movethem(checkcur, extant, prevpeer);
+				return void(0);
 			}
-			dn++;
-			up++;
-			rewrite(x);
 		}
-
-		return;
-	}
-
-	function search_win () {
-			window.name = 'mainwindow[scratch window_name]';
-			var url = '[area
-							href="admin/search_wizard"
-							form=|
-								ui_source_form=qmenuform
-								ui_source_var=params
-							|]';
-			url += '&ui_searchblob=' + escape(form.params.value);
-			window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=900,height=700');
-			return void(0);
-	}
-
-	function motion (idx, motion, fromchecked) {
-
-		if(motion == 'left' || motion == 'right') {
-			if(tree_mode != 1) {
-				alert("Not in tree mode, can't move " + motion);
-				return;
-			}
-
-			return movetree(idx, motion);
-		}
-		if(fromchecked == 1) {
-			idx = checkcur;
-			if(idx == undefined || idx < 1)
-				return;
-		}
-
-		var up = idx - 1;
-		var dn = idx + 1;
-
-		if( ! check_change() )
-			return;
-
-		var dest;
-
-		// alert("checkcur=" + checkcur + "\nidx=" + idx + "\ndest=" + dest);
-		if (checkcur != 0 && fromchecked != 1) {
+		else {
 			dest = checkcur;
 			checkit(checkcur);
 			if(idx == dest) 
@@ -1658,39 +1741,47 @@ sub {
 			}
 			motion = 0;
 		}
-		else {
-			if (up < 1 && motion == 'up')
-				return void(0);
-			if (dn > lines.length - 1 && motion == 'down')
-				return void(0);
-			dest = motion == 'up' ? up : dn;
-		}
-
-		// alert("checkcur=" + checkcur + "\nidx=" + idx + "\ndest=" + dest);
-		if (motion) {
-			moveit(idx, motion);
-		}
-
-		return void(0);
 	}
+	else {
+		if (up < 1 && motion == 'up')
+			return void(0);
+		if (dn > lines.length - 1 && motion == 'down')
+			return void(0);
+		dest = motion == 'up' ? up : dn;
+	}
+
+	// alert("checkcur=" + checkcur + "\nidx=" + idx + "\ndest=" + dest);
+	if (motion) {
+		moveit(idx, motion);
+	}
+
+	return void(0);
+}
 
 </script>
 [/restrict]
-<tr>
+
+[output name="top_of_form"]
 <form name=qmenuform action="[process href=@@MV_PAGE@@]" method=POST>
-	<td colspan=2>
 		<input name=mv_session_id type=hidden value="[data session id]">
 		<input name=mv_action type=hidden value="back">
 		<input name=cancelsubmit type=hidden value="">
 		<input name=qmenu_name type=hidden value="[scratch qmenu_name]">
 		<input name=qmenu_text type=hidden value="">
-Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]">
+[output name=top_buttons]
+<span class=s3>
+Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]" class=s3>
 		<input type=submit
 				style="Visibility: Hidden;"
 				disabled=1
 				name=junksubmit
 				value=".">
-		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type=button
+				onClick="set_mode('toggle')"
+				name=treebutton
+				value="Set tree mode" class=s3>
+		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()" class=s3>
 		&nbsp;&nbsp;&nbsp;
 		<input type=submit
 				onClick="
@@ -1698,21 +1789,12 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 					this.form.qmenu_new.value='';
 					this.form.qmenu_name.value='';
 					"
-				value="Cancel">
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type=button
-				onClick="set_mode('toggle')"
-				name=treebutton
-				value="Set tree mode">
-		<div id=treebox>
-		<input type=checkbox
-				name=show_info
-				value=1> Show item info in flyout
-		<input type=checkbox name=qmenu_tree value=1> Tree mode
-		<input type=checkbox name=qmenu_write_tree value=1> Write tree to DB
-		<input type=checkbox name=showlevel value=1 onClick="toggleShowlevel()" CHECKED=1> Show numerical level
-		</div>
-<br>
+				value="Cancel" class=s3>
+</span>
+[output name=""]
+<table width="100%">
+<tr>
+	<td>
 		<input type=button
 				onClick="insRow()"
 				name=insbutton
@@ -1735,6 +1817,16 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 				disabled=1
 				onClick="motion(0,'down',1)"
 				value="Down">
+	</td>
+	<td>
+		<div id=treebox style="font-size: 10px; display: none">
+		<input type=checkbox name=show_info value=1>&nbsp;Show&nbsp;item&nbsp;info
+		<input type=checkbox name=qmenu_tree value=1>&nbsp;Tree&nbsp;mode
+		<input type=checkbox name=qmenu_write_tree value=1>&nbsp;Write&nbsp;tree&nbsp;to&nbsp;DB
+		<input type=checkbox name=showlevel value=1 onClick="toggleShowlevel()" CHECKED=1>&nbsp;Show&nbsp;numerical&nbsp;level
+		<input type=checkbox name=collapse value=1 onClick="toggleItem(0,this,0)">&nbsp;Collapse&nbsp;tree
+		<input type=checkbox name=explode value=1 onClick="toggleItem(0,this,1)">&nbsp;Explode&nbsp;tree
+		</div>
 	</td>
 </tr>
 </table>
@@ -1776,34 +1868,11 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 	</td>
 	<td valign=top>
 
+	<input type=hidden name=lineidx value="0">
 	<table width="100%">
 	<tr>
-		<td>
-
-		<input type=hidden name=lineidx value="0">
-		<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
-		<input type=button onClick="loadForm()" name=loadbutton
-					style="visibility: Hidden;"
-					value="Load menu item">
-		<input type=button onClick="saveForm(checkcur)" name=copybutton
-					style="visibility: Hidden;"
-					value="Copy to checked entry">
-		<br><br>
-		<input type=submit style="font-weight: bold" name=doit value="Publish" onClick="check_change(1) && setOutput()">
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type=submit
-				onClick="
-					this.form.qmenu_text.value='';
-					this.form.qmenu_new.value='';
-					this.form.qmenu_name.value='';
-					"
-				value="Cancel">
-		</td>
-	</tr>
-	<tr>
 	  <td>
-[tabbed-display panel-width=500 panel-height=800
-				tab-width=150]
+[tabbed-display panel-width="500" panel-height="100%" panel-shade=e tab-height=24 tab-width=150]
 [tabbed-panel General]
 		<table>
 		<tr>
@@ -1824,10 +1893,41 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
+				Form values<br>
+				<input name=ui_searchblob type=hidden value="">
+				<input name=ui_source_win type=hidden value="[scratch window_name]">
+
+			<div align=right>
+			<input
+				style="font-size: smaller; font-weight: bold;"
+				type=button
+				value="Create search"
+				onClick="this.form.page.value = 'search';form_changed(1);search_win();"
+				><br><input
+							style="font-size: smaller;"
+							type=button onClick="this.form.params.value=''"
+							value="clear search">
+			</div>
+			</td>
+			<td class=cdata>
+				<textarea cols=50 rows=4 name=params onChange="form_changed(1);"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class=clabel>
 				Detailed Description
 			</td>
 			<td class=cdata>
 				<textarea cols=50 rows=4 name=description onChange="form_changed(1);"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class=clabel>
+				Options
+			</td>
+			<td class=cdata>
+				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
+				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
 			</td>
 		</tr>
 		<tr>
@@ -1847,38 +1947,14 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			</td>
 		</tr>
 		<tr>
-			<td class=clabel>
-				Options
-			</td>
-			<td class=cdata>
-				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
-				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
-			</td>
-		</tr>
-		</table>
-[/tabbed-panel]
-[tabbed-panel Form Parameters]
-		<table>
-		<tr>
-			<td class=clabel>
-				Form values<br>
-				<input name=ui_searchblob type=hidden value="">
-				<input name=ui_source_win type=hidden value="[scratch window_name]">
-
-			<div align=right>
-			<input
-				style="font-size: smaller; font-weight: bold;"
-				type=button
-				value="Create search"
-				onClick="this.form.page.value = 'search';form_changed(1);search_win();"
-				>&nbsp;<input
-							style="font-size: smaller;"
-							type=button onClick="this.form.params.value=''"
-							value="clear search">
-			</div>
-			</td>
-			<td class=cdata>
-				<textarea cols=50 rows=4 name=params onChange="form_changed(1);"></textarea>
+			<td colspan=2>
+			<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
+			<input type=button onClick="loadForm()" name=loadbutton
+						style="visibility: Hidden;"
+						value="Load menu item">
+			<input type=button onClick="saveForm(checkcur)" name=copybutton
+						style="visibility: Hidden;"
+						value="Copy to checked entry">
 			</td>
 		</tr>
 		</table>
@@ -1901,6 +1977,8 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		if(lines.length > 1) {
 			if(tm == 1) {
 				set_mode('tree');
+				toggleShowlevel();
+				toggleItem(0, form.collapse, 0);
 			}
 			else {
 				set_mode('simple');
@@ -1970,7 +2048,18 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		}
 
 </script>
-			</table>
+		<tr>
+			<td colspan=2>
+			<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
+			<input type=button onClick="loadForm()" name=loadbutton
+						style="visibility: Hidden;"
+						value="Load menu item">
+			<input type=button onClick="saveForm(checkcur)" name=copybutton
+						style="visibility: Hidden;"
+						value="Copy to checked entry">
+			</td>
+		</tr>
+	</table>
 [/tabbed-panel]
 [/tabbed-display]
 		</td>
@@ -1979,9 +2068,20 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 	</td>
 </tr>
 </table>
-<a href="javascript:document.qmenuform.inactive.disabled = 1; void(0)">Disable</A>
-<a href="javascript:document.qmenuform.inactive.disabled = 0; void(0)">Enable</A>
+[output name="bottom_buttons"]
+		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()" class=s3>
+		&nbsp;&nbsp;&nbsp;
+		<input type=submit
+				onClick="
+					this.form.qmenu_text.value='';
+					this.form.qmenu_new.value='';
+					this.form.qmenu_name.value='';
+					"
+				value="Cancel" class=s3>
+[output name="bottom_of_form"]
 </form>
+[output name=""]
+
 <!-- ----- END REAL STUFF ----- -->
 @_UI_STD_FOOTER_@
 

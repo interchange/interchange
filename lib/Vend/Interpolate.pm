@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.141 2003-01-02 22:41:31 jon Exp $
+# $Id: Interpolate.pm,v 2.142 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.141 $, 10);
+$VERSION = substr(q$Revision: 2.142 $, 10);
 
 @EXPORT = qw (
 
@@ -455,6 +455,9 @@ sub get_joiner {
 sub substitute_image {
 	my ($text) = @_;
 
+	## Allow no substitution of downloads
+	return if $::Pragma->{download};
+
 	## If post_page routine processor returns true, return. Otherwise,
 	## continue image rewrite
 	if($::Pragma->{post_page}) {
@@ -500,54 +503,6 @@ sub substitute_image {
                          $1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
 		}
     }
-}
-
-#
-# This is one entry point for page display.
-# Evaluates all of the Interchange tags. Does some basic cache management
-# for static page building.
-#
-
-sub cache_html {
-	my ($html,$wantref) = @_;
-	my ($name, @post);
-	my ($bit, %post);
-
-	# static page building should be independent from secure mode
-	my $secure = $CGI::secure;
-	$CGI::secure = 0;
-	
-	$CacheInvalid = 0;
-
-	vars_and_comments(\$html);
-
-	my $complete;
-	my $full = '';
-	my $parse = new Vend::Parse;
-	$parse->parse($html);
-	while($parse->{_buf}) {
-		substitute_image(\$parse->{OUT});
-		Vend::Dispatch::response( \$parse->{OUT});
-		$full .= $parse->{OUT};
-		$parse->{OUT} = '';
-		$parse->parse('');
-	}
-	substitute_image(\$parse->{OUT})
-		unless $parse->{ABORT};
-	$full .= $parse->{OUT} if $full;
-	$CacheInvalid++ if $parse->{INVALID};
-	$Vend::CachePage = $CacheInvalid ? undef : 1;
-	$complete = \$full if $full;
-
-	# restore secure mode
-	$CGI::secure = $secure;
-	
-	if (defined $Vend::BuildingPages) {
-		return $full if $full;
-		return $parse->{OUT};
-	}
-	return (\$parse->{OUT}, $complete || undef) if defined $wantref;
-	return ($parse->{OUT});
 }
 
 sub dynamic_var {
@@ -641,21 +596,21 @@ sub interpolate_html {
 		unless $opt and $opt->{onfly};
 
     # Returns, could be recursive
-	my $parse = new Vend::Parse;
+	my $parse = new Vend::Parse $wantref;
 	$parse->parse($html);
 	while($parse->{_buf}) {
 		if($toplevel and $parse->{SEND}) {
 			delete $parse->{SEND};
-			substitute_image(\$parse->{OUT});
-			::response(\$parse->{OUT});
-			$parse->{OUT} = '';
+			::response();
+			$parse->destination($parse->{_current_output});
 		}
 		$parse->parse('');
 	}
-	substitute_image(\$parse->{OUT});
-	return \$parse->{OUT} if defined $wantref;
-	return $parse->{OUT};
+	return $parse->{OUT} if defined $wantref;
+	return ${$parse->{OUT}};
 }
+
+*cache_html = \&interpolate_html;
 
 my $Filters_initted;
 
@@ -1426,6 +1381,13 @@ sub conditional {
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
+	elsif($base =~ /^warnings?$/) {
+		my $warn = 0;
+		if(my $ary = $Vend::Session->{warnings}) {
+			ref($ary) eq 'ARRAY' and $warn = scalar(@$ary);
+		}
+		$op = $warn;
+	}
 	elsif($base eq 'validcc') {
 		$CacheInvalid = 1;
 		no strict 'refs';
@@ -1478,7 +1440,7 @@ sub conditional {
 	for(@addl) {
 		my $chain = /^\[[Aa]/;
 		last if ($chain ^ $status);
-		$status = (new Vend::Parse)->parse($_)->{OUT};
+		$status = ${(new Vend::Parse)->parse($_)->{OUT}};
 	}
 #::logDebug("if status=$status");
 
@@ -4185,14 +4147,14 @@ sub tag_attr_list {
 		return undef if ! ref $hash;
 	}
 	if($ucase) {
-		$body =~ s!\{($Codere)\}!$hash->{"\L$1"}!g;
-		$body =~ s!\{($Codere)\?($Codere)\:($Codere)\}!
+		$body =~ s!\{([A-Z_][A-Z_]+)\}!$hash->{"\L$1"}!g;
+		$body =~ s!\{([A-Z_][A-Z_]+)\?([A-Z_][A-Z_]+)\:([A-Z_][A-Z_]+)\}!
 					length($hash->{lc $1}) ? $hash->{lc $2} : $hash->{lc $3}
 				  !eg;
-		$body =~ s!\{($Codere)\|($Some)\}!$hash->{lc $1} || $2!eg;
-		$body =~ s!\{($Codere)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+		$body =~ s!\{([A-Z_][A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
+		$body =~ s!\{([A-Z_][A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{([A-Z_][A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{([A-Z_][A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 		$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
 	}
 	else {
@@ -5244,8 +5206,12 @@ sub tag_loop_list {
 		}
 		my $id = $tab;
 		$id .= "::$key" if $key;
-		my $meta = Vend::Table::Editor::meta_record($id, $view, $opt->{table});
-
+		my $meta = Vend::Table::Editor::meta_record(
+								$id,
+								$view,
+								$opt->{table},
+								$opt->{extended_only},
+								);
 		if(! $meta) {
 			$opt->{object} = {
 					matches		=> 1,
@@ -5908,9 +5874,9 @@ sub timed_build {
 
     $file = Vend::Util::escape_chars($file);
     if(!$opt->{auto} and $Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
-	::logError("Can't use file '%s' with NoAbsolute set", $file);
-	::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
-	return '';
+		::logError("Can't use file '%s' with NoAbsolute set", $file);
+		::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
+		return '';
     }
 
     if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {

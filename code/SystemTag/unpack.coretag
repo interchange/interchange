@@ -1,0 +1,34 @@
+UserTag unpack PosNumber 0
+UserTag unpack addAttr
+UserTag unpack hasEndTag
+UserTag unpack Interpolate
+UserTag unpack Routine <<EOR
+sub {
+	my ($opt, $template) = @_;
+	Vend::Interpolate::substitute_image(\$template);
+	if($Vend::MultiOutput) {
+#::logDebug("We have mult-output");
+		for my $space (keys %Vend::OutPtr) {
+#::logDebug("Filtering $space");
+			my $things = $Vend::OutPtr{$space} || [];
+			for my $ptr (@$things) {
+				my $subs = $Vend::OutFilter{$space} || [];
+				for my $sub (@$subs) {
+#::logDebug("Filtering ${$Vend::Output[$ptr]}");
+					$sub->($Vend::Output[$ptr]);
+#::logDebug("Now is    ${$Vend::Output[$ptr]}");
+				}
+			}
+		}
+	}
+	else {
+		for(@Vend::Output) {
+			Vend::Interpolate::substitute_image($_);
+		}
+	}
+	undef $Vend::MultiOutput;
+	$::Pragma->{no_image_rewrite} = 1;
+	Vend::Page::templatize($template);
+	return;
+}
+EOR

@@ -112,14 +112,14 @@ __NAME__ db_maintenance
 		}
 
 #Log("using idp=$idp, value=$CGI->{$idp}");
-		$return unless $idp;
+		return unless $idp;
 
 		delete $Scratch->{ui_location};
 		$Config->{NoSearch} = '';
 		
-		my $out = '';
 		my @deltables = split /[\s0,]/, $CGI->{ui_delete_tables};
 		unshift @deltables, $CGI->{mv_data_table};
+		my @out;
 		for(@{$CGI_array->{$idp}}) {
 			my $key = $_;
 			my $db;
@@ -127,11 +127,12 @@ __NAME__ db_maintenance
 				my ($t, $col) = split /:/, $_;
 				next unless $t;
 				if ( $Tag->if_mm('!tables', "$t=d") ) {
-					push @errors, "Not authorized to delete from table $t";
+					push @errors,
+						errmsg("Not authorized to delete from table %s", $t);
 					next;
 				}
 				unless ($db = $Db{$t}) {
-					push @errors, "Table $t not available.";
+					push @errors, errmsg("Table %s not available.", $t);
 					next;
 				}
 				if($col) {
@@ -139,10 +140,21 @@ __NAME__ db_maintenance
 					$key = $db->quote($key, $col);
 					my $num = $db->query("delete from $t where $col = $key");
 					if($num > 0) {
-						$out .= "deleted $num records from $t where $col = $key</BR>";
+						push @out, errmsg(
+									"deleted %s records from %s where %s = %s",
+									$num,
+									$t,
+									$col,
+									$key,
+									);
 					}
 					else {
-						$out .= "No records in $t where $col = $key</BR>";
+						push @errors, errmsg(
+										"No records in %s where %s = %s",
+										$t,
+										$col,
+										$key,
+										);
 					}
 				}
 				else {
@@ -152,11 +164,23 @@ __NAME__ db_maintenance
 							push @errors, $@;
 							next;
 						};
-					$out .= "deleted $key from $t<br>";
+					push @out, errmsg("Deleted %s from %s", $key, $t);
 				}
 			}
 		}
-
+		if(@errors) {
+			my $str = '<ul><li>';
+			$str .= join '<li>', @errors;
+			$str .= '</ul>';
+			$Tag->error({ name => 'db_maintenance', set => $str });
+		}
+		if(@out) {
+			my $str = '<ul><li>';
+			$str .= join '<li>', @out;
+			$str .= '</ul>';
+			$Tag->warnings($str);
+		}
+		return;
 	[/perl]
 [/if]
 

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# $Id: configure,v 2.11 2002-12-14 17:59:30 jon Exp $
+# $Id: configure,v 2.12 2003-01-14 02:25:49 mheins Exp $
 
-ICVERSION='4.9.6'
+ICVERSION='4.9.7'
 
 cat <<EOF
 

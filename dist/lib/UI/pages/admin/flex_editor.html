@@ -31,7 +31,6 @@
 		 (<b>[page href="__UI_BASE__/db_metaconfig"
 				 form='
 				 ui_table=[cgi mv_data_table]
-				 ui_view=[cgi ui_meta_view]
 				 start_at=extended.ui_data_fields
 				 '][L]standard view[/L]</A>)
 		[/if-mm]
@@ -74,11 +73,12 @@
 
 [/strip]@_UI_STD_HEAD_@
 
-[table-editor cgi=1 image_meta="__UI_IMAGE_META__"]
+[tmp tmp_item_id][cgi item_id][/tmp]
+[table-editor cgi=1 output_map="[scratch ui_style_edit]" ui_style="[scratch ui_style_edit]"]
 
 <A HREF="[area href=admin/flex_editor
 				form='
-					item_id=[cgi item_id]
+					item_id=[scratch tmp_item_id]
 					mv_data_table=[value mv_data_table]
 					page_title=Edit [value mv_data_table]: [cgi item_id]
 					help_name=genedit
@@ -91,4 +91,4 @@
 
 @_UI_STD_FOOTER_@
 
-<!-- page: @@MV_PAGE@@ version: $Id: flex_editor.html,v 2.7 2002-10-27 05:09:39 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: flex_editor.html,v 2.8 2003-01-14 02:25:50 mheins Exp $ -->

@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.7 2002-08-14 15:32:04 mheins Exp $
+# $Id: Parser.pm,v 2.8 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1997-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 
 sub new
@@ -101,7 +101,8 @@ sub parse
 	while (1) {  # the loop will end by returning when text is parsed
 		# If a preceding routine sent the response, stop 
 		if ($Vend::Sent) {
-			$self->{OUT} = $self->{_buf} = '';
+			${$self->{OUT}} = $self->{_buf} = '';
+			@Vend::Output = ();
 			return $self;
 		}
 		# We try to pull off any plain text (anything before a '[')
@@ -142,7 +143,7 @@ sub parse
 #::logDebug("tag='$tag' eat='$eaten'");
 
 				# Then we would like to find some attributes
-				while (	$$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)|| or
+				while (	$$buf =~ s|^(([_a-zA-Z][-a-zA-Z0-9._]*)\s*)|| or
 					 	$$buf =~ s|^(([=!<>][=~]?)\s+)||                 )
 				{
 					$eaten .= $1;

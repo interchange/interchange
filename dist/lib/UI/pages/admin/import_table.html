@@ -73,10 +73,12 @@
 					autonumber="[cgi ui_autonumber]"
 					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
+					filter_field="[cgi ui_filter_field]"
 					dir=backup
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
 					quiet="[cgi ui_import_quiet]"
 					table="[cgi mv_data_table]"
 	]
@@ -89,8 +91,10 @@
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
 					quiet="[cgi ui_import_quiet]"
 					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
 	]
 	[/elsif]
 	[elsif cgi ui_upload_ext eq cleanse]
@@ -103,8 +107,10 @@
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
 					quiet="[cgi ui_import_quiet]"
 					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
 	]
 	[/elsif]
 	[/if]
@@ -121,7 +127,7 @@
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/gentable">
 <table __UI_T_PROPERTIES__>
 <tr>
-	<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+	<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr class=rnorm>
@@ -145,18 +151,19 @@
 </tr>
 
 <tr>
-	<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+	<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr class=rnorm>
-	<td colspan=2>
+	<td colspan=2 valign=top>
 <br>
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> [L]Add new items if present[/L]
 	<OPTION VALUE=cleanse> [L]Replace existing items[/L]
 	<OPTION VALUE=update> [L]Ignore new items[/L]
 </SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> [L]Allow delete[/L]
-&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]</SMALL>
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]
+<INPUT TYPE=checkbox NAME=ui_import_transactions VALUE=1> [L]Use transactions[/L]</SMALL>
 <BR><select NAME=ui_import_convert>
 		<OPTION VALUE=0> [L]Single table[/L]
 		<OPTION VALUE=1> [L]Gnumeric simple tex[/L]
@@ -169,11 +176,37 @@
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> [L]Show summary messages only[/L]
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> [L]Show *no* messages[/L]
 </td>
+	
+	<td valign=top>
+		<b>Field filters</b><br>
+		<textarea name=ui_filter_field cols=30 rows=3>[data
+												table="mv_metadata"
+												field="extended.filter_field"
+												serial=1
+												key="[cgi mv_data_table]"]</textarea>
+		<br>
+		<i>
+			Specified one per line:
+			<blockquote>
+<pre>
+	fieldname1=filter
+	fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+			If multiple tables, must specify table as well:
+			<blockquote>
+<pre>
+	table1:fieldname1=filter
+	table2:fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+		</i>
+	</td>
 
 </tr>
 
 <tr>
-<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

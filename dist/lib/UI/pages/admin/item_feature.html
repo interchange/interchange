@@ -42,21 +42,7 @@
 
 @_UI_STD_HEAD_@
 <P>
-[table-editor cgi=1]
-
-[if-mm super]
-<A HREF="[area href=admin/flex_editor
-				form='
-					item_id=[cgi item_id]
-					mv_data_table=__ProductFiles_0__
-					page_title=Edit items: [cgi item_id]
-					help_name=inventory.edit
-					ui_no_meta_display=1
-					ui_hide_key=1
-					ui_return_to=admin/item
-					icon_name=icon_item.gif
-					']">No meta display</A>
-[/if-mm]
+[table-editor cgi=1 output-map=1]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

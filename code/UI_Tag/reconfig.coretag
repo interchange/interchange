@@ -1,9 +1,9 @@
-UserTag reconfig Order name
-UserTag reconfig PosNumber  1
+UserTag reconfig Order name table file
 UserTag reconfig Routine <<EOR
 use strict;
 sub {
-	my $name = shift || $Vend::Cfg->{CatalogName};
+	my ($name, $table, $file) = @_;
+	$name ||= $Vend::Cfg->{CatalogName};
 
 	my $myname = $Vend::Cfg->{CatalogName};
 #::logGlobal("Trying to reconfig $name");
@@ -15,7 +15,17 @@ sub {
 	}
 #::logGlobal("Passed name check on reconfig $name");
 
-	logData("$Global::RunDir/reconfig", $Global::Catalog{$name}->{'script'});
+	my $script = $Global::Catalog{$name}->{script};
+	unless($script) {
+		logGlobal("Attempt to reconfigure catalog without script?");
+		logError("Attempt to reconfigure catalog without script?");
+		return undef;
+	}
+
+	if($table and $file) {
+		$script = join "\t", $script, $table, $file;
+	}
+	logData("$Global::RunDir/reconfig", $script);
 	return 1;
 }
 EOR

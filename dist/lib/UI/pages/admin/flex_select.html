@@ -38,12 +38,29 @@
 		[cgi page_title]
 	[or]
 		[L]Select for table edit[/L]:
-		[page href="__UI_BASE__/db_metaconfig" secure="[scratch page_secure]"
-				 form='
+		<a href="[area
+					href="__UI_BASE__/db_metaconfig"
+					secure="[scratch page_secure]"
+					form=|
+						 ui_table=[cgi mv_data_table]
+						 start_at=height
+					|
+				]"
+				title="[cgi mv_data_table] [L]edit properties[/L], standard [L]view[/L]"
+				class=rtitle>[cgi mv_data_table]</A>
+		[if cgi ui_meta_view]
+		(<a href="[area
+					href="__UI_BASE__/db_metaconfig"
+					secure="[scratch page_secure]"
+					form=|
 						 ui_view=[cgi ui_meta_view]
 						 ui_table=[cgi mv_data_table]
 						 start_at=height
-				 '][cgi mv_data_table]</A>
+					|
+				]"
+				title="[cgi mv_data_table] [L]edit properties[/L], [cgi ui_meta_view] [L]view[/L]"
+				class=rtitle>[cgi ui_meta_view] [L]view[/L]</A>)
+		[/if]
 	[/either]
 [/tmp]
 [tmp help_name][either][cgi help_name][or]flex.select[/either][/tmp]
@@ -117,16 +134,9 @@
 @_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
-<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
-<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
-<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 
 [if !scratch tmp_large]
-<table>
-<tr>
-<td>
+	[tmp extra_title]
 		[loop list="[cgi mv_data_table]"]
 		 	[if-loop-data __UI_META_TABLE__ name]
 		 	<B>[loop-data __UI_META_TABLE__ name]</B>
@@ -135,16 +145,24 @@
 		 	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
 			[/if-loop-data]
 		 	[if-loop-data __UI_META_TABLE__ help]
-		 	<BR><i>[loop-data __UI_META_TABLE__ name]</i>
+		 	<i>[loop-data __UI_META_TABLE__ name]</i>
 			[/if-loop-data]
 		[/loop]
-</td>
-<td>
-<input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
-</td>
-</tr>
-</table>
+	[/tmp]
+	[calc]
+		$Scratch->{page_title} .= $Scratch->{extra_title};
+		return;
+	[/calc]
+
+[output name=search_box]
+<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+<span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
 </FORM>
+[output]
 [/if]
 
 [if scratch ui_failure]
@@ -258,13 +276,11 @@ EOF
 			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
 		}
 
-		$out_message = '<H3>' . errmsg('Entries matching "%s"', 
-			$ui_text_qualification) . '</H3>';
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
 	}
 	elsif ($ui_text_qualification) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
-		$out_message = '<H3>' . errmsg('Entries matching "%s"', 
-			$ui_text_qualification) . '</H3>';
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
 		if($Scratch->{ui_owner}) {
 			$CGI->{ui_text_qualification} = <<EOF;
 co=1
@@ -399,13 +415,15 @@ EOF
 	rf=$CGI->{ui_description_fields}
 
 EOF
-	return $out_message;
+	$Scratch->{page_banner} .= $out_message;
+	$Scratch->{page_title} .= $out_message;
+	return;
 [/perl]
 </FORM>
 
 [tmpn tmp_ncols][/tmpn]
 <!-- tq: [scratch sparams] -->
-<TABLE __UI_T_PROPERTIES__>
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 	[if cgi ui_meta_view]
@@ -424,47 +442,58 @@ EOF
 	[/else]
 	[/if]
 	<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-	<TR class=rmarq>
+	<tr class=rhead>
+	<td class=rhead>&nbsp;</td>
 	[loop list="[cgi ui_description_fields]"]
-	<TH[loop-calc]
-				my $extra = '';
-				$Scratch->{tmp_ncols}++;
-				while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
-					$extra .= " $1";
-				}
-				return $extra || ' ALIGN=LEFT';
-			[/loop-calc]>
-		[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
+	<td class=rhead>
+    <table align="left" class=rhead cellspacing=2 cellpadding=0>
+    <tr>
+      <td align="right" valign="center">
 		<A HREF="[area href='__UI_BASE__/flex_group'
 						form='
 							mv_data_table=[cgi mv_data_table]
 							ui_meta_view=[cgi ui_meta_view]
 							mv_arg=[loop-code]
 						'
-					]"><IMG ALT="select by [loop-code]" SRC="smindex.gif" BORDER=0></A></TH>
-	[/loop]
-	</tr>
-	<TR class=rmarq>
-	[loop list="[cgi ui_description_fields]"]
-	<TH ALIGN=LEFT>
-		[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
-		<A HREF="[area href='@@MV_PAGE@@'
-						form=`
-							my $f = '[loop-code]';
-							my $o = '';
-							$o .= 'r'
-								if $CGI->{ui_sort_field} eq $f
-										and
-									$CGI->{ui_sort_option} !~ /r/;
-							$o .= 'n' if $numeric{$f};
-							return qq(
-								ui_text_qualification=$ui_text_qualification
-								mv_data_table=$CGI->{mv_data_table}
-								ui_sort_field=$f
-								ui_sort_option=$o
-							);
-						`
-					]" class=rmarq>[loop-code]</TH>
+					]"
+			title="[msg arg.0='[loop-code]']Select group by %s[/msg]"
+				><img src="smindex.gif" border=0></a>
+      </td>
+      <td align="left" valign="center" class=rhead>
+	  [calc]
+			my $f = '[loop-code]';
+			my $o = '';
+			my $msg;
+			my $rmsg;
+			if ($CGI->{ui_sort_field} eq $f and $CGI->{ui_sort_option} !~ /r/) {
+				$o .= 'r';
+				$msg = "sort by %s (%s)";
+				$rmsg = errmsg('reverse');
+			}
+			else {
+				$msg = "sort by %s";
+			}
+			$o .= 'n' if $numeric{$f};
+			$Scratch->{tmp_sort_msg} = errmsg($msg, $f, $rmsg);
+			$Scratch->{tmp_url} = $Tag->area( {
+											href => '@@MV_PAGE@@',
+											form => qq(
+									ui_text_qualification=$ui_text_qualification
+									mv_data_table=$CGI->{mv_data_table}
+									ui_meta_view=$CGI->{ui_meta_view}
+									ui_sort_field=$f
+									ui_sort_option=$o
+											),
+											});
+			return;
+		[/calc]
+		<a href="[scratch tmp_url]"
+			class=rhead
+			title="[scratch tmp_sort_msg]">[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
+      </td>
+    </tr>
+    </table>	
+	</td>
 	[/loop]
 	</tr>
 	[tmp tmp_url]
@@ -480,11 +509,16 @@ EOF
 			ui_return_to=@@MV_PAGE@@
 		[/else]
 		[/if][/tmp]
-	[search-region more=1 form="ui_meta_specific=[cgi ui_meta_specific]" arg="[scratch sparams]"]
+	[search-region more=1
+		form="
+			ui_meta_specific=[cgi ui_meta_specific]
+			ui_meta_view=[cgi ui_meta_view]
+		" arg="[scratch sparams]"]
 	[search-list]
-	<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
+	<tr [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
 
-	<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/flex_editor form=|
+	<td width="30"><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"></td>
+	<td>[page href=__UI_BASE__/flex_editor form=|
 								[scratch tmp_url]
 							item_id=[item-code]
 						|][item-code]</A></TD>
@@ -553,21 +587,47 @@ sub {
 
 [on-match]
 [if !cgi ui_meta_view]
-[button text="[L]Edit checked records in sequence[/L]"]
+
+[output name=top_buttons]
+[button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
 ui_sequence_edit=1
 mv_nextpage=__UI_BASE__/flex_editor
 mv_todo=return
 [/button]
+
+[output name=bottom_buttons]
+[button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
+ui_sequence_edit=1
+mv_nextpage=__UI_BASE__/flex_editor
+mv_todo=return
+[/button]
+
+[output]
 [/if]
 
 [if-mm function="tables" table="[cgi mv_data_table]=d"]
+
+[output name=top_buttons]
 &nbsp;&nbsp;&nbsp;&nbsp;
 [button text="[L]Delete checked records[/L]"
+		extra="class=s2"
 		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 deleterecords=1
 mv_click=db_maintenance
 [/button]
+
+[output name=bottom_buttons]
+&nbsp;&nbsp;&nbsp;&nbsp;
+[button text="[L]Delete checked records[/L]"
+		extra="class=s2"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
+[flag type=write table="[cgi mv_data_table]"]
+deleterecords=1
+mv_click=db_maintenance
+[/button]
+[output]
+
 [/if-mm]
 
 [/on-match]
@@ -578,4 +638,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.17 2002-11-20 18:52:17 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.18 2003-01-14 02:25:50 mheins Exp $ -->

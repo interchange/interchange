@@ -280,7 +280,6 @@ mv_nextpage=__UI_BASE__/content_preview
 			value=1><br>
 [loop list="[page-param ui_display_order]"]
 	<A
-		style="font-size: larger; font-weight: bolder"
 		HREF="javascript:void(0)"
 		onClick="visible(1)"
 		title="edit page controls"
@@ -329,7 +328,6 @@ mv_nextpage=__UI_BASE__/content_preview
 		<A
 			HREF="javascript:void(0)"
 			TITLE="edit [comp-param component]"
-			STYLE="font-size: larger; font-weight: bolder"
 			onClick="visible([comp-increment],'comp')"
 		>[if-comp-param component][comp-param component][else]-empty-[/else][/if-comp-param]</A>&nbsp;<input
 				type=checkbox
@@ -489,7 +487,7 @@ EoPC
 			href="silent/ce_modify"
 			item_id="CONTENT"
 			js_changed=changed
-			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content<br><br><input type=button onClick="content_win();" Value="[L]Edit in Browser[/L]">|
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content|
 			mv_nextpage=@@MV_PAGE@@
 			nocancel=1
 			notable=1
@@ -501,6 +499,7 @@ EoPC
 			table_width="100%"
 			ui_data_fields="code ui_body_text"
 			ui_hide_key=1
+			filter.ui_body_text="linkdecode"
 			widget.ui_body_text="textarea"
 			view=ui_component
 			form-extra=|

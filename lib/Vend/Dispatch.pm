@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.7 2002-11-18 16:55:15 mheins Exp $
+# $Id: Dispatch.pm,v 1.8 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -67,13 +67,32 @@ sub http {
 }
 
 sub response {
-	my ($output) = @_;
-	my $out = ref $output ? $output : \$output;
-	if (defined $Vend::CheckHTML) {
-		require Vend::External;
-		Vend::External::check_html($out);
+	my $possible = shift;
+	if(defined $possible) {
+		push @Vend::Output, ( ref $possible ? $possible : \$possible);
 	}
-	$H->respond($out);
+#::logDebug("output=" . ::uneval(\@Vend::Output) . "\nnames=" . ::uneval(\%Vend::OutPtr) . "\nfilters=" . ::uneval(\%Vend::OutFilter));
+	if($Vend::MultiOutput) {
+		for my $space (keys %Vend::OutPtr) {
+			my $things = $Vend::OutPtr{$space} || [];
+			for my $ptr (@$things) {
+				my $subs = $Vend::OutFilter{$space} || [];
+				for my $sub (@$subs) {
+					$sub->($Vend::Output[$ptr]);
+				}
+			}
+		}
+		for(grep $_, @Vend::Output) {
+			$H->respond($_);
+		}
+	}
+	else {
+		for(@Vend::Output) {
+			Vend::Interpolate::substitute_image($_);
+			$H->respond($_);
+		}
+	}
+	@Vend::Output = ();
 }
 
 # Parse the mv_click and mv_check special variables

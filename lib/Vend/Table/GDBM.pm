@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.4 2002-09-10 17:29:09 mheins Exp $
+# $Id: GDBM.pm,v 2.5 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -105,15 +105,18 @@ sub open_table {
 	my $dbm;
 	my $failed = 0;
 
-	while( $failed < 10 ) {
+	my $retry = $Vend::Cfg->{Limit}{dbm_open_retries} || 10;
+
+	while( $failed < $retry ) {
 		$dbm = tie(%$tie, 'GDBM_File', $filename, $flags, 0777)
 			and undef($failed), last;
 		$failed++;
 		select(undef,undef,undef,$failed * .100);
 	}
 
-	die ::errmsg("Could not tie to '%s': %s", $filename, $!)
-		if $failed;
+	die ::errmsg("%s could not tie to '%s': %s", 'GDBM', $filename, $!)
+		unless $dbm;
+
 	my $columns = [split(/\t/, $tie->{'c'})];
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 

@@ -57,12 +57,6 @@
 	return;
 [/calc]
 
-[if session content_edit]
-	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
-				onClick="return confirm('Are you sure you want to purge all in-process edits?')"
-	>Purge all in-process</A>
-[/if]
-
 [warnings auto=1]
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
@@ -72,75 +66,36 @@
 </blockquote>
 [/if]
 
-<table border=0 __UI_T_PROPERTIES__>
-<tr>
-<td colspan=3 class=rborder><img src="bg.gif" width="100%" height=1></td>
-</tr>
+<div class=titlebox>Edit pages</div>
 
-<tr>
-	<td class=rnorm valign=top width="33%">
-	<h2>Pages</h2>
+[if session content_edit]
+	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
+				onClick="return confirm('Are you sure you want to purge all in-process edits?')"
+	>Purge all in-process (including page, template, component edits)</A> <br>
+[/if]
+
 	[calc] tmp_display_in_progress('page'); [/calc]
 	<A HREF="[area
 					href=__UI_BASE__/content_editor
 					form=auto
 					ui_type=page
 					new=1
-				]"><img src="layout.gif" border=0 align=textmiddle> [L]New page[/L]</A><br><br>
+				]"><img src="layout.gif" border=0 align=center> [L]New page[/L]</A><br><br>
+<table width="100%">
+[table-organize columns=3 columnize=1 interpolate=1 min-rows=15]
+
 	[file-navigator
 			initial_dir="__UI_PAGE_DIR__"
 			start_open="__UI_PAGE_DIR__"
+			top-of-tree="__UI_PAGE_DIR__"
+			template=|<TD width="33%">%s</TD>|
 			edit_only=1
 			edit_all=1
+			details=0
 			edit_page=content_editor
 			edit_form="ui_name=~RN~&ui_type=page"
 			]
-	</td>
-
-	<td class=rnorm valign=top width="33%">
-	<h2>Templates</h2>
-	[calc] tmp_display_in_progress('template'); [/calc]
-	<A HREF="[area
-					href=__UI_BASE__/content_editor
-					form=auto
-					ui_type=template
-					new=1
-				]"><img src="layout.gif" border=0 align=textmiddle> [L]New template[/L]</A><br><br>
-	[loop acclist=1 list="[content-info templates=1 no-none=1]"]
-	<A HREF="[area
-					href=__UI_BASE__/content_editor
-					form=auto
-					ui_type=template
-					ui_name="[loop-code]"
-				]"><img src="layout.gif" border=0 align=textmiddle>[loop-param label]</A><br>
-	[/loop]
-
-	</td>
-
-	<td class=rnorm valign=top width="33%">
-	<h2>Components</h2>
-	[calc] tmp_display_in_progress('component'); [/calc]
-	<A HREF="[area
-					href=__UI_BASE__/content_editor
-					form=auto
-					ui_type=component
-					new=1
-				]"><img src="layout.gif" border=0 align=textmiddle> [L]New component[/L]</A><br><br>
-	[loop acclist=1 list="[content-info components=1 no-none=1]"]
-	<A HREF="[area
-					href=__UI_BASE__/content_editor
-					form=auto
-					ui_type=component
-					ui_name="[loop-code]"
-				]"><img src="layout.gif" border=0 align=textmiddle>[loop-param label]</A><br>
-	[/loop]
-	</td>
-</tr>
-
-<tr>
-<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
+[/table-organize]
 </table>
 
 </form>

@@ -60,7 +60,7 @@ function open_quicklinks() {
 ">
 <br><br><br>
 <div align=center>
-<table width="90%" border="1" cellspacing=0 cellpadding="0">
+<table width="90%" border="1" cellspacing=0 cellpadding="0" bgcolor="#FFFFFF">
 <tr class=ralt>
 <td>
 <br>						
@@ -112,6 +112,55 @@ EOF
 	return $out;
 [/calc]
 
+[perl tables="__UI_META_TABLE__ mv_metadata"]
+	delete $Scratch->{merge_complete};
+	delete $Scratch->{do_merge};
+	my $tab = q{__UI_META_TABLE__} || 'mv_metadata';
+	my $db = $Db{$tab}
+		or do {
+			$Scratch->{merge_complete}
+				= errmsg("Cannot merge: no meta table '%s'", $tab);
+			return;
+		};
+
+	my $newver = $Tag->version();
+	$Scratch->{newver} = $newver;
+	my $compnew = $newver;
+	$compnew =~ s/\D+//g;
+
+	my $curver = 0;
+	if($db->record_exists('ui-version')) {
+		$curver = $db->field("ui-version", 'label');
+	}
+
+	$Scratch->{curver} = $curver;
+	my $compcur = $curver;
+	$compcur =~ s/\D+//g;
+
+	if ($curver eq $newver) {
+		## All is copasetic
+	}
+	elsif($compcur gt $compnew) {
+		## I guess this is OK
+	}
+	else {
+		return qq{
+<TR>
+<TD COLSPAN=3>
+<blockquote class=titlebox>
+UI update appears to have been done and metadata has not
+been updated for this catalog...
+	<blockquote>
+		[page href=admin/merge_meta extra=class=titlebox]Merge Metadata</a>
+	</blockquote>
+</blockquote>
+</TD>
+</TR>
+		};
+	}
+	return;
+[/perl]
+
 [menu
 	  name=Top
 	  superuser=super
@@ -126,9 +175,7 @@ EOF
 	  {/IMG_ICON?}
 </td>
 <td valign="top">
-<b>
 &nbsp;<a href="{HREF}">{NAME}</a>
-</b>
 </td>
 <td valign="top">
 {DESCRIPTION}

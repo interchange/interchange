@@ -4,15 +4,13 @@
 	return;
 [/calc]
 [set table_perm]1[/set]
-[set ui_class]Admin[/set]
+[set ui_class]Content[/set]
 [set page_title][L]Set up a survey[/L][/set]
 [set help_name]survey.main[/set]
-[set icon_name]icon_config.gif[/set]
+[set icon_name]icon_pages.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- BEGIN REAL STUFF -->
-
-<blockquote>
 
 [tmp survey_keys]code	label
 [loop search="
@@ -27,35 +25,7 @@
 	  "][loop-code]	[loop-param label]
 [/loop][/tmp]
 
-<form action="[area __UI_BASE__/survey/overall]">
-<input type=hidden name=mv_action value=back>
-<input type=hidden name=mv_session_id value="[data session_id]">
-<input type=hidden name="mv_filter:item_id" value=word>
-<table>
-<tr>
-	<td>New survey name</td>
-	<td>Clone from</td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>
-	 <input type=text size=16 name=item_id> 
-	</td>
-	<td>
-		<select name="survey_clone">
-		<option value=""> -- none --
-		[loop list="[scratch survey_keys]" lr=1 head-skip=1]<option value="[loop-code]"> [loop-code]</option>[/loop]
-		</select>
-	</td>
-	<td>
-		<input type=submit value="[L]Create[/L]">
-	</td>
-</tr>
-</table>
-
-</form>
-
-Edit an existing survey:
+<div class=titlebox>Edit an existing survey</div>
 <ul>
 [loop list="[scratch survey_keys]" lr=1 head-skip=1]
 <li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A>
@@ -63,15 +33,43 @@ Edit an existing survey:
 	 </li>
 [/loop]
 </ul>
+
+
+<div class=titlebox>Create a new survey</div>
+<blockquote>
+<form action="[area __UI_BASE__/survey/overall]">
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=mv_session_id value="[data session_id]">
+<input type=hidden name="mv_filter:item_id" value=word>
+<table class=rseparator cellspacing=0 cellpadding=3>
+<tr class=rhead>
+	<td>Survey name</td>
+	<td colspan=2>Clone from</td>
+</tr>
+<tr class=rownorm>
+	<td class=clabel>
+	 <input type=text size=16 name=item_id class=s3> 
+	</td>
+	<td class=cdata>
+		<select name="survey_clone" class=s3>
+		<option value=""> -- none --
+		[loop list="[scratch survey_keys]" lr=1 head-skip=1]<option value="[loop-code]"> [loop-code]</option>[/loop]
+		</select>
+	</td>
+	<td class=cdata>
+		<input type=submit value="[L]Create[/L]">
+	</td>
+</tr>
+</table>
+
+</form>
 </blockquote>
+<div class=titlebox>Access survey results</div>
 
 <blockquote>
-<h2>Access survey results</h2>
-
 	[file-navigator initial_dir="logs/survey" no-up=1 no-new-file=1]
-
 </blockquote>
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.2 2002-11-23 03:54:12 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.3 2003-01-14 02:25:52 mheins Exp $ -->

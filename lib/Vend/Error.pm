@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.5 2002-09-16 23:06:31 mheins Exp $
+# $Id: Error.pm,v 2.6 2003-01-14 02:25:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -81,7 +81,8 @@ sub interaction_error {
     $page = readin(find_special_page('interact'));
     if (defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
-		::response(::interpolate_html($page, 1));
+		::interpolate_html($page, 1);
+		::response();
     }
 	else {
 		logError( "Missing special page: interact" , '');

@@ -1,9 +1,9 @@
+[flag type=write table=mv_metadata]
 [set table_perms]mv_metadata[/set]
 [tmp page_title] New view for table display: [cgi ui_table] [/tmp]
-[set ui_class]Admin[/set]
-@_UI_STD_HEAD_@
+[set ui_class]Tables[/set]
 
-[flag type=write table=mv_metadata]
+@_UI_STD_HEAD_@
 
 [tmpn bounce_url][/tmpn]
 
@@ -56,7 +56,8 @@
 	ui_wizard_fields="ui_table ui_view based_on"
 	table_width="50%"
 	hidden.do_view=1
-	ui_nextpage="@@MV_PAGE@@"
+	href="@@MV_PAGE@@"
+	action=go
 	ui_prevpage=""
 	no_meta=1
 	no_top=1
@@ -82,4 +83,5 @@
 	/]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: db_newview.html,v 2.1 2002-10-11 18:42:47 mheins Exp $ -->
+
+<!-- page: @@MV_PAGE@@ Revision: $Id: db_newview.html,v 2.2 2003-01-14 02:25:50 mheins Exp $ -->

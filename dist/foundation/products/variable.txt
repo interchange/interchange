@@ -14,6 +14,7 @@ CATEGORYBAR_LINKDECO	none	Catalog Colors and Style
 CATEGORYBAR_HOVERDECO	underline	Catalog Colors and Style
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECK_ACCEPTED	1	Payment
+CHECKOUT_MAIL_LIST	1	Mailings
 CITY	__MVC_CITY__	Company
 COD_ACCEPTED	__MVC_PAYCOD__	Payment
 COMPANY	__MVC_COMPANY__	Company

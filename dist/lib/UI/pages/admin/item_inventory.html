@@ -6,13 +6,6 @@
 		$CGI->{ui_hide_key} = 1;
 		$CGI->{mv_data_table} = 'inventory';
 	}
-	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = '__ProductFiles_0__:__DescriptionField__ [db-columns name=inventory]';
-		$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
-	}
-	if(! $CGI->{ui_break_before}) {
-		$CGI->{ui_break_before} = 'account';
-	}
 	if(! $CGI->{ui_return_to}) {
 		my @args = (
 			 '__UI_BASE__/item_edit',
@@ -33,7 +26,7 @@
 
 @_UI_STD_HEAD_@
 <P>
-[table-editor cgi=1]
+[table-editor cgi=1 output-map=1]
 
 [if-mm super]
 <A HREF="[area href=admin/flex_editor

@@ -9,7 +9,6 @@
 
 [set page_perm]dbconfig[/set]
 [set table_perm]1[/set]
-[set page_title]Configuration[/set]
 [set ui_class]Admin[/set]
 [set help_name]genconfig.main[/set]
 [set icon_name]icon_config.gif[/set]
@@ -18,6 +17,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
+[tmp page_title]Table Configuration: [cgi mv_data_table][/tmp]
 [perl tables="[list-databases] __UI_META_TABLE__"]
 	%ignore;
 	my @ignore = qw/
@@ -95,6 +95,7 @@
 	%Misc_set = (
 		GUESS_NUMERIC => '=No numeric guess, 1=Guess numeric fields',
 		EXCEL => '=No Excel correction, 1=Correct for Excel peculiarities',
+		LARGE   => '=No, 1=Yes (prevents building select list)',
 		HOT   => '=Normal open, 1=Keep table always connected',
 		CONTINUE   => q{=No extra line processing,
 						DITTO="Ditto" line continuation,
@@ -226,23 +227,11 @@
 [/perl]
 [/if]
 
-<center>
-<FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
-<table __UI_T_PROPERTIES__>
+[output name="top_of_form"]
+<FORM METHOD=POST ACTION="[area admin/dbconfig_save]">
 
-class=rnorm>
-<TABLE border=0>
-<TR>
-  <TD class=rborder COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>Database configuration</CENTER></TD>
-</TR>
-
-<TR>
-  <TD COLSPAN=3><input type=submit name=mv_dbconf VALUE="Save"></TD>
-</TR>
-
-<TR>
-	<TD>&nbsp; &nbsp;</TD>
-	<TD>
+[output name=""]
+<table width="100%" border=0 cellpadding=2 cellspacing=0 class=rseparator>
 
 [comment] Prevent Safe object creation problems [/comment]
 [seti have_dbi][version extended=1 modtest='DBI'][/seti]
@@ -337,52 +326,44 @@ class=rnorm>
 		$dfile .= "</TT>";
 		my $obj   = $ref->{Object};
 
-		push @out, <<EOF;
-<TR>
-<TH VALIGN=TOP ALIGN=RIGHT width="15%">
-Current
-</TH>
-<td VALIGN=TOP>
-	<TABLE border=1 width="100%">
-	<tr>
-		<th valign=top align=left>Type</th>
-		<td>$text_type</td>
-	</tr>
-	<tr>
-		<th valign=top align=left width="30%">Class</th>
-		<td>$class</td>
-	</tr>
-	<tr>
-		<th valign=top align=left width="30%">Directory</th>
-		<td>$dir</td>
-	</tr>
-	<tr>
-		<th valign=top align=left width="30%">Text File</th>
-		<td>$file</td>
-	</tr>
-	<tr>
-		<th valign=top align=left width="30%">DB File</th>
-		<td>$dfile</td>
-	</tr>
-	</table>
-</TD>
-</TR>
-
-<TR>
-  class=rspacer COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></TD>
-</TR>
-EOF
+## 		push @out, <<EOF;
+## <tr class=rhead>
+## <td colspan=2 class=rhead>Current Settings</td>
+## </tr>
+## <tr class=rownorm>
+## 	<td valign=top class=clabel>Type</td>
+## 	<td class=cdata>$text_type</td>
+## </tr>
+## <tr class=rownorm>
+## 	<td valign=top width="30%" class=clabel>Class</td>
+## 	<td class=cdata>$class</td>
+## </tr>
+## <tr class=rownorm>
+## 	<td valign=top width="30%" class=clabel>Directory</td>
+## 	<td class=cdata>$dir</td>
+## </tr>
+## <tr class=rownorm>
+## 	<td valign=top width="30%" class=clabel>Text File</td>
+## 	<td class=cdata>$file</td>
+## </tr>
+## <tr class=rownorm>
+## 	<td valign=top width="30%" class=clabel>DB File</td>
+## 	<td class=cdata>$dfile</td>
+## </tr>
+## 
+## <tr class=rownorm>
+## 	<td COLSPAN=2><input type=submit name=mv_dbconf VALUE="[L]Save[/L]" class=s3></TD>
+## </tr>
+## EOF
 	}
 
 	$use_sql = 1 if $current_sql or ($new and $base_sql);
 
 	push @out, <<EOF;
-<TR>
-<TH VALIGN=TOP ALIGN=RIGHT width="15%">
+<tr class=rhead>
+<td VALIGN=TOP colspan=2 class=rhead>
 Change Settings
-</TH>
-<td VALIGN=TOP>
-	<TABLE border=1 width="100%">
+</td>
 
 EOF
 
@@ -391,37 +372,42 @@ EOF
 	# Don't allow change of table name....
 	if($new) {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Table name</th>
-		<td><INPUT TYPE=text NAME=mv_data_table
-				onChange="
-					this.form.mv_dbconf_file.value =
-						this.form.mv_data_table.value + '.txt'
-						"
-				VALUE=""></td>
-	</tr>
+<tr class=rownorm>
+	<td valign=top class=clabel>Table name</td>
+	<td class=cdata><INPUT TYPE=text NAME=mv_data_table
+			onChange="
+				this.form.mv_dbconf_file.value =
+					this.form.mv_data_table.value + '.txt'
+					"
+			VALUE=""></td>
+</tr>
 EOF
 	}
 	else {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Table name</th>
-		<td><INPUT TYPE=hidden NAME=mv_data_table VALUE="$tname"><INPUT TYPE=hidden NAME=mv_dbconf_file VALUE="$ref->{file}">$tname</td>
-	</tr>
+<tr class=rownorm>
+	<td valign=top class=clabel>Table name</td>
+	<td class=cdata>
+		<INPUT TYPE=hidden NAME=mv_data_table VALUE="$tname">
+		<INPUT TYPE=hidden NAME=mv_dbconf_file VALUE="$ref->{file}">
+		<INPUT TYPE=hidden NAME=mv_dbconf_db_file VALUE="$dfn">
+		$tname
+	</td>
+</tr>
 EOF
 	}
 
 	# Allow upload of new file only
 	if($new) {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>File name</th>
-		<td><INPUT TYPE=text NAME=mv_dbconf_file VALUE=""></td>
-	</tr>
-	<tr>
-		<th valign=top align=left>Upload file</th>
-		<td><INPUT TYPE=file NAME=mv_dbconf_upload_file VALUE=""></td>
-	</tr>
+<tr class=rownorm>
+	<td valign=top class=clabel>File name</td>
+	<td class=cdata><INPUT TYPE=text NAME=mv_dbconf_file VALUE=""></td>
+</tr>
+<tr class=rownorm>
+	<td valign=top class=clabel>Upload file</td>
+	<td class=cdata><INPUT TYPE=file NAME=mv_dbconf_upload_file VALUE=""></td>
+</tr>
 EOF
 	}
 
@@ -436,10 +422,10 @@ EOF
 							} );
 
 	push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Table type</th>
-		<td>$wid</td>
-	</tr>
+<tr class=rownorm>
+	<td valign=top class=clabel>Table type</td>
+	<td class=cdata>$wid</td>
+</tr>
 EOF
 
 	$wid = $Tag->widget( { 
@@ -450,9 +436,9 @@ EOF
 							} );
 
 	push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Delimiter type</th>
-		<td>$wid</td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Delimiter type</td>
+		<td class=cdata>$wid</td>
 	</tr>
 EOF
 
@@ -460,21 +446,21 @@ EOF
 	my $def_USER = $ref->{USER} eq $Variable->{SQLUSER} ? 'CHECKED' : '';
 	my $def_PASS = $ref->{PASS} eq $Variable->{SQLPASS} ? 'CHECKED' : '';
 	push @out, <<EOF if $use_sql;
-	<tr>
-		<th valign=top align=left>DSN</th>
-		<td><INPUT SIZE=40 NAME=mv_dbconf_DSN VALUE="$ref->{DSN}">
+	<tr class=rownorm>
+		<td valign=top class=clabel>DSN</td>
+		<td class=cdata><INPUT SIZE=40 NAME=mv_dbconf_DSN VALUE="$ref->{DSN}">
 			<INPUT TYPE=checkbox NAME=mv_dbconf_DSN_default $def_DSN> use default
 		</td>
 	</tr>
-	<tr>
-		<th valign=top align=left>USER</th>
-		<td><INPUT SIZE=40 NAME=mv_dbconf_USER VALUE="$ref->{USER}">
+	<tr class=rownorm>
+		<td valign=top class=clabel>USER</td>
+		<td class=cdata><INPUT SIZE=40 NAME=mv_dbconf_USER VALUE="$ref->{USER}">
 			<INPUT TYPE=checkbox NAME=mv_dbconf_USER_default $def_USER> use default
 		</td>
 	</tr>
-	<tr>
-		<th valign=top align=left>PASS</th>
-		<td><INPUT SIZE=40 NAME=mv_dbconf_PASS VALUE="$ref->{PASS}">
+	<tr class=rownorm>
+		<td valign=top class=clabel>PASS</td>
+		<td class=cdata><INPUT SIZE=40 NAME=mv_dbconf_PASS VALUE="$ref->{PASS}">
 			<INPUT TYPE=checkbox NAME=mv_dbconf_PASS_default $def_PASS> use default
 		</td>
 	</tr>
@@ -482,9 +468,9 @@ EOF
 
 	if($ref->{included_from}) {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Configuration file</th>
-		<td><INPUT TYPE=hidden NAME="mv_dbconf_included_from" value="$ref->{included_from}">$ref->{included_from}</td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Configuration file</td>
+		<td class=cdata><INPUT TYPE=hidden NAME="mv_dbconf_included_from" value="$ref->{included_from}">$ref->{included_from}</td>
 	</tr>
 EOF
 	}
@@ -497,9 +483,9 @@ EOF
 							} );
 
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Configuration directory</th>
-		<td>$wid</td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Configuration directory</td>
+		<td class=cdata>$wid</td>
 	</tr>
 EOF
 	}
@@ -507,9 +493,9 @@ EOF
 	my $def_type = $ref->{DEFAULT_TYPE} || 'char(128)';
 	if($current_sql or ($new and $base_sql)) {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Default type</th>
-		<td><INPUT TYPE=text NAME=mv_dbconf_DEFAULT_TYPE value="$def_type"></td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Default type</td>
+		<td class=cdata><INPUT TYPE=text NAME=mv_dbconf_DEFAULT_TYPE value="$def_type"></td>
 	</tr>
 EOF
 	}
@@ -522,6 +508,7 @@ EOF
 		$fdbh = $Sql{$base_sql};
 	}
 
+	my $addrow_info;
 ROWINFO: {
 
 	last ROWINFO unless $fdbh and $fdbh->can('type_info_all');
@@ -530,6 +517,7 @@ ROWINFO: {
 
 	last ROWINFO unless $type_info and $ref->{NAME};
 
+	$addrow_info = 1;
 	my @types;
 
 	for(my $i = 1; $i < @{$type_info}; $i++) {
@@ -564,8 +552,8 @@ ROWINFO: {
 
 	my @rows;
 	push @out, <<EOF;
-	<tr>
-		<td valign=top align=left><b>Field configuration</b><br><br>
+	<tr class=rownorm>
+		<td valign=top align=left class=clabel><b>Field configuration</b><br><br>
 <script language=JavaScript>
 function visible (index) {
 	var vis = new Array;
@@ -587,14 +575,23 @@ function visible (index) {
 }
 </script>
 EOF
+	
+	# Need this to see if field is added
+	my $orignames = join ",", @names;
+	push @out, qq{<input type=hidden name="mv_dbconf_orignames" value="$orignames">};
+
+	push @names, 'NEW FIELD';
 	for(my $i = 0; $i < @names; $i++) {
 		my $name = $names[$i];
 		push @out, qq{<A HREF="javascript:void(0)" onClick="visible($i)">$name</a><br>};
 	}
 
+	pop @names;
+	push @names, '';
+
 	push @out, <<EOF;
 		</td>
-		<td>
+		<td class=cdata>
 <div
 	style="
 			Position:Relative;
@@ -608,7 +605,6 @@ EOF
 			Left:0; Top:0; Height:100%; Width:100%;
 			Visibility:Visible;
 			z-index:0;
-			background-color: #999999
 		">&nbsp;</div>
 <div
 	style="
@@ -616,15 +612,15 @@ EOF
 			Left:2; Top:2; Height:98%; Width:98%;
 			Visibility:Visible;
 			z-index:0;
-			background-color: #EEEEEE
 		">&nbsp;</div>
 EOF
 
 	for(my $i = 0; $i <= scalar @names; $i++) {
 		my $clen = '';
 		my $rname = $names[$i];
+		my $add;
 		if(!$rname) {
-			$rname = "(add)<BR><INPUT SIZE=16 NAME=mv_dbconf_COLUMN_DEF_name>";
+			$add = "(add)<BR><INPUT SIZE=16 NAME=mv_dbconf_COLUMN_DEF_name>";
 		}
 		my $pkey	= $ref->{KEY_INDEX} == $i		? ' SELECTED' : '';
 		my $idx		= $indexed->{$names[$i]}		? ' SELECTED' : '';
@@ -662,6 +658,22 @@ EOF
 						default => $tinfo->{TYPE_NAME},
 						name => 'mv_dbconf_COLUMN_DEF_type',
 						} );
+		my $delbox = '&nbsp;';
+		if(! $add) {
+				$delbox = <<EOF;
+<INPUT type=checkbox NAME=mv_dbconf_delete_field VALUE="$rname" class=s3 onChange="
+					if(this.checked) {
+						if(confirm('Are you sure you want to delete $rname?')) {
+							// do nothing
+						}
+						else {
+							this.checked = false;
+						}
+					}
+				"> delete field $rname
+EOF
+		}
+
 		push @out, <<EOF;
 <div
 	id=dynform$i
@@ -672,35 +684,39 @@ EOF
 			z-index:2;
 		">
 	<table>
-	<tr>
-		<td>
-		<span style="font-size: larger; font-weight: bold">$rname</span><br>
+	<tr class=rownorm>
+		<td class=rownorm>
+		<span style="font-size: larger; font-weight: bold">$rname$add</span><br>
 			<table border=1 style="border-type: thin" width="98%">
-			<tr>
-				<td><small><b>type</td>
-				<td><small><b>length</td>
-				<td><small><b>default (if any)</td>
+			<tr class=rownorm>
+				<td><b>type</td>
+				<td><b>length</td>
+				<td><b>default (if any)</td>
+				<td><b>action</td>
 			</tr>
-			<tr>
-				<td><small>$wid<INPUT TYPE=hidden NAME=mv_dbconf_COLUMN_DEF_name VALUE="$rname"></td>
+			<tr class=rownorm>
+				<td>$wid<INPUT TYPE=hidden NAME=mv_dbconf_COLUMN_DEF_name VALUE="$rname"></td>
 
-				<td><small><INPUT SIZE=6 TYPE=text NAME="mv_dbconf_COLUMN_DEF_length" VALUE="$clen"></td>
-				<td><small><INPUT SIZE=8 NAME=mv_dbconf_COLUMN_DEF_default VALUE="$fdefault"></td>
+				<td><INPUT SIZE=6 TYPE=text NAME="mv_dbconf_COLUMN_DEF_length" VALUE="$clen"></td>
+				<td><INPUT SIZE=8 NAME=mv_dbconf_COLUMN_DEF_default VALUE="$fdefault" class=s3></td>
+				<td rowspan=3 valign=top nowrap>
+						$delbox
+				</td>
 			</tr>
-			<tr>
-				<td><small><b>null status</td>
-				<td colspan=2><small><b>key status</td>
+			<tr class=rownorm>
+				<td><b>null status</td>
+				<td colspan=2><b>key status</td>
 			</tr>
-			<tr>
-				<td><small><SELECT NAME=mv_dbconf_COLUMN_DEF_notnull>
+			<tr class=rownorm>
+				<td><SELECT NAME=mv_dbconf_COLUMN_DEF_notnull>
 	<OPTION VALUE=""> NULL is OK
 	<OPTION VALUE="1" $notnull> NOT NULL
 </SELECT></td>
-				<td><small><SELECT NAME=mv_dbconf_COLUMN_DEF_key>
+				<td><SELECT NAME=mv_dbconf_COLUMN_DEF_key>
 	<OPTION VALUE=""> not primary key
 	<OPTION VALUE="1"$pkey> PRIMARY KEY
 </SELECT></td>
-				<td><small><SELECT NAME=mv_dbconf_CREATE_INDEX>
+				<td><SELECT NAME=mv_dbconf_INDEX>
 	<OPTION VALUE=""> no index
 	<OPTION VALUE="$names[$i]"$idx> index
 	<OPTION VALUE="UNIQUE:$names[$i]"$uidx> unique index
@@ -727,6 +743,34 @@ EOF
 
 }
 	
+	if(! $addrow_info) {
+		my @names = $db->columns();
+		unshift @names, '=--no delete--';
+		my $dstring = join ",", @names;
+		my $sel = $Tag->display( {
+						name => "mv_dbconf_delete_field",
+						type => 'select',
+						options => $dstring,
+						} );
+		push @out, <<EOF;
+<tr class=rownorm>
+	<td class=clabel>
+		Add a field
+	</td>
+	<td class=cdata>
+		<input type=text name="mv_dbconf_COLUMN_DEF_name">
+	</td>
+</tr>
+<tr class=rownorm>
+	<td class=clabel>
+		Delete a field
+	</td>
+	<td class=cdata>
+		$sel
+	</td>
+</tr>
+EOF
+	}
 
 
 	%misc = %Misc_set;
@@ -752,13 +796,14 @@ EOF
 	$wid .= "</TABLE>";
 
 	push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Extra settings</th>
-		<td>$wid</td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Extra settings</td>
+		<td class=cdata>$wid</td>
 	</tr>
 EOF
 
 	my $create_sql = $ref->{CREATE_SQL} || $db->create_sql();
+	$create_sql =~ s/^\s*create\s+table\s+\(/CREATE TABLE $tname (/i;
 #Debug("create_sql=$create_sql");
 	if($current_sql or ($new and $base_sql) ) {
 		my @post;
@@ -780,18 +825,18 @@ EOF
 			$extra .= "Custom create SQL</A>";
 		}
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>SQL after creation$extra</th>
-		<td><TEXTAREA NAME="mv_dbconf_POSTCREATE" ROWS=3 COLS=50>$post</TEXTAREA></td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>SQL after creation$extra</td>
+		<td class=cdata><TEXTAREA NAME="mv_dbconf_POSTCREATE" ROWS=3 COLS=50>$post</TEXTAREA></td>
 	</tr>
 EOF
 	}
 
 	if($CGI->{custom_table_create} and ($current_sql or ($new and $base_sql)) ) {
 		push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Custom table creation SQL</th>
-		<td><TEXTAREA NAME="mv_dbconf_CREATE_SQL" ROWS=12 COLS=50>$create_sql</TEXTAREA></td>
+	<tr class=rownorm>
+		<td valign=top class=clabel>Custom table creation SQL</td>
+		<td class=cdata><TEXTAREA NAME="mv_dbconf_CREATE_SQL" ROWS=12 COLS=50>$create_sql</TEXTAREA></td>
 	</tr>
 EOF
 	}
@@ -807,8 +852,10 @@ EOF
 		}
 	}
 
+	my $advanced;
 	$wid = '<TABLE>';
 	for(sort keys %misc) {
+		$advanced = 1;
 		$wid .= "<TR><TD>$_</TD><TD>";
 		my $type = $misc{$_} ? 'select' : 'text';
 		$wid .= $Tag->widget( { 
@@ -821,39 +868,42 @@ EOF
 	}
 	$wid .= "</TABLE>";
 
-	push @out, <<EOF;
-	<tr>
-		<th valign=top align=left>Advanced settings<br><small>(must uncomment to set in configuration)</th>
-		<td>$wid</td>
-	</tr>
+	push @out, <<EOF if	$advanced;
+<tr class=rownorm>
+	<td valign=top class=clabel>Advanced settings<br>(must uncomment to set in configuration)</td>
+	<td class=cdata>$wid</td>
+</tr>
 EOF
-
-
-	push @out, <<EOF;
-		</table>
-	</TD>
-</TR>
-EOF
-
 
 	return join "", @out;
 [/perl]
-	</TD>
-</TR>
 
-<TR>
-  <TD class=rborder COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></TD>
-</TR>
 
 </TABLE>
 
-</td></tr>
+[output name=top_buttons]
+<input type=hidden name=mv_dbconf value="">
+<input type=button VALUE="[L]Save[/L]" class=s3 style="padding-left: 8px; padding-right: 8px; font-weight: bold"
+onClick="
+	if( confirm('This will export and change the configuration of the database. Are you sure?') ) {
+		this.form.mv_dbconf.value=1;
+		this.form.submit();
+	}"
+>
 
-</table>
+[output name=bottom_buttons]
+<input type=button VALUE="[L]Save[/L]" class=s3 style="padding-left: 8px; padding-right: 8px; font-weight: bold"
+onClick="
+	if( confirm('This will export and change the configuration of the database. Are you sure?') ) {
+		this.form.mv_dbconf.value=1;
+		this.form.submit();
+	}"
+>
+
+[output name=bottom_of_form]
 </FORM>
-</center>
 
-
+[output name=""]
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@

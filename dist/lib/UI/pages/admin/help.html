@@ -49,108 +49,137 @@
 [/tmp]
 
 [calc]
-	if ($Scratch->{help_text} =~ /~~HELP_TOPICS~~/) {
-		my $help_index = <<EOF;
+	if ($CGI->{help_search}) {
+		$Scratch->{help_text} =~ s/~~HELP_TOPICS~~//;
+	}
+	else {
+		$Scratch->{help_text} =~ m/~~HELP_TOPICS~~/
+			and $CGI->{do_index} = 1;
+	}
+	$Scratch->{help_text} =~ s{(<a\s+.*?href=")([-\w.]+)(?:\.html?)"}
+							  { $1 . $Tag->area({
+							  						href => '@@MV_PAGE@@', 
+													form => "topic=$2"
+												}) . '"'}gies;
+													
+	return;
+[/calc]
+
+@_UI_STD_INIT_@
+<html>
+<head>
+<title>[L]Interchange Help:[/L] [scratch help_title]</title>
+<link href="[var UI_IMG]interchange.css" rel="stylesheet" type="text/css">
+</head>
+<body class=rownorm>
+
+<div class=titlebox>
+<table width="100%" border=0 cellpadding=0 cellspacing=0>
+<form action="[area @@MV_PAGE@@]">
+<tr>
+<td valign=middle>
+<img src="bg.gif" height=1 width=12>
+[if scratch help_key ne 'home']
+	[page href="@@MV_PAGE@@" form="topic=home"]<font face="[scratch fontface]" size=2>Home</font></a>
+	<img src="bg.gif" height=1 width=12>
+[/if]
+[if scratch help_key ne 'faq']
+	[page href="@@MV_PAGE@@" form="topic=faq"]<font face="[scratch fontface]" size=2>FAQ</font></a>
+[/if]
+	<img src="bg.gif" height=1 width=12>
+[if scratch help_orig =~ /\S/]
+[page href=admin/flex_editor
+	  form="
+	  	mv_data_table=ichelp
+		item_id=[scratch help_orig]
+		display_class=type5
+		ui_return_to=admin/help
+		ui_return_to=topic=[scratch help_orig]
+	  "]edit this help topic ([scratch help_orig])</A>
+[/if]
+</td>
+<td align=right valign=center>
+<input name=topic type=hidden value="[cgi topic]">
+<input name=help_search size=10 class=s3>
+<input type=submit value="[L]Search Help[/L]" class=s3>
+&nbsp;
+&nbsp;
+&nbsp;
+<a href="javascript:history.go(-1)" target="Help" onmouseover="window.status='Help';return true;" onmouseout="window.status='';return true;"><font face="[scratch fontface]" size=2>[L]Back[/L]</font></a><img src="bg.gif" height=1 width=12>
+<a href="javascript:window.close()"><font face="[scratch fontface]" size=2>[L]Close[/L]</font></a><img src="bg.gif" height=1 width=12>
+</td>
+</tr>
+</form>
+</table>
+</div>
+
+<div class=rownorm
+		style="
+			width: 100%;
+			text-align: left;
+		">
+[if cgi help_search]
+[loop search="
+				fi=ichelp.txt
+				st=text
+				se=[cgi help_search]
+				rf=code,title
+				ml=10
+			"
+			form="help_search=1"
+			more=1]
+<ol>
+[list]
+<li> [page href="@@MV_PAGE@@" form="topic=[loop-code]"][loop-param title]</a>
+[/list]
+</ol>
+[no-match]
+  No help found for [cgi name=help_search filter=entities].
+[/no-match]
+[more-list] [more] [/more-list]
+[/loop]
+[/if]
+
+[if cgi do_index]
+[tmp help_topics]
 <ul>
 [search-region more=1
                form="topic=[scratch help_key]"
 	       search="
 	fi=@_UI_HELP_TABLE_@
-	ra=yes
+	ac=0
+	ne=1
+	se=^(faq|home|404|[scratch help_key])$
 	rf=code,title
 	tf=title
 	ml=20
 	sp=@@MV_PAGE@@
 "]
 [search-list]
-[if type=explicit compare="q{[item-code]} !~ m{^(?:faq|home|404|\Q[scratch help_key]\E)$}"]
-	<li>[page href="@@MV_PAGE@@" form="topic=[item-code]"][item-pos 1]</a>
-[/if]
+	<li>[page href="@@MV_PAGE@@" form="topic=[item-code]"][item-param title]</a>
 [/search-list]
 </ul>
 [more-list]More help topics: [more][/more-list]
 [/search-region]
-
-EOF
-		$Scratch->{help_text} =~ s/~~HELP_TOPICS~~/$help_index/g;
-	}
-	return;
-[/calc]
-
-<html>
-<head>
-<title>[L]Interchange Help:[/L] [scratch help_title]</title>
-<style type="text/css">
-<!--
-BODY { font-family: [scratch fontface] }
-P    { font-family: [scratch fontface] }
-H1   { font-family: [scratch fontface] }
-H2   { font-family: [scratch fontface] }
-H3   { font-family: [scratch fontface] }
-B    { font-family: [scratch fontface] }
-I    { font-family: [scratch fontface] }
-TD   { font-family: [scratch fontface] }
-
-A:link    { text-decoration: none } 
-A:visited { text-decoration: none } 
-A:active  { text-decoration: none }
-A:hover   { color: #663333; text-decoration: none }
--->
-</style>
-</head>
-<body bgcolor="#ffffff" link="#660000" alink="#660000" vlink="#660000">
-
-<div align=center>
-
-<table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr>
-<td height=23 bgcolor="CC0000" valign=middle>
-<table width="100%" border=0 cellpadding=0 cellspacing=0>
-<tr>
-<td valign=middle width=530>
-<img src="cleardot.gif" height=1 width=12>
-[if scratch help_key ne 'home']
-	[page href="@@MV_PAGE@@" form="topic=home"]<font face="[scratch fontface]" size=2>Home</font></a>
-	<img src="cleardot.gif" height=1 width=12>
+[/tmp]
+	[calc] $Scratch->{help_text} =~ s/~~HELP_TOPICS~~/$Scratch->{help_topics}/g; return; [/calc]
 [/if]
-[if scratch help_key ne 'faq']
-	[page href="@@MV_PAGE@@" form="topic=faq"]<font face="[scratch fontface]" size=2>FAQ</font></a>
-	<img src="cleardot.gif" height=1 width=12>
-[/if]
-</td>
-<td align=right valign=middle width=40>
-<a href="javascript:history.go(-1)" target="Help" onmouseover="window.status='Help';return true;" onmouseout="window.status='';return true;"><font face="[scratch fontface]" size=2>Back</font></a><img src="cleardot.gif" height=1 width=12>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
 
-<table border=0 cellspacing=0 cellpadding=2 width=450>
-<tr>
-<td>
+<h2> [scratch help_title] </h2>
 
-<h2>&nbsp;<br>
-[scratch help_title]
-</h2>
-
-<hr noshade size=2 width="100%">
+<hr noshade size=1>
 
 [scratch help_text]
 
 <br>
 
-<hr noshade size=2 width="100%">
+<hr noshade size=1>
+
 
 <p><font face="[scratch fontface]" size=1>
 <b><a href="@_INTERCHANGE_URL_@" target="_new">Interchange</a> -
-&copy; 2000-2002 <a href="http://www.redhat.com/" target="_new">Red Hat, Inc.</a></b>
-</font></p>
-
-</td>
-</tr>
-</table>
+&copy; 2002-2003 <a href="http://www.icdevgroup.org/" target="_new">Interchange Development Group</a></b>
+</font>&nbsp;&nbsp;&nbsp;<a href="javascript:window.close()">close this window</A></p>
 
 </div>
 

@@ -75,6 +75,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
+[output name=top_of_form]
 <FORM METHOD=POST ACTION="[area ui]">
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
@@ -87,21 +88,23 @@
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="username yes_functions no_tables yes_tables table_control">
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
+[output name=""]
 
+[tabbed-display
+	js-prefix="perm_"
+	width=800
+	height=800
+	]
+[tabbed-panel Editor Functions]
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td colspan=6 class=rborder><img src="bg.gif" width=600 height=1></td>
-</tr>
-
-<tr>
-<td class=rnorm valign=top>&nbsp;</td>
-<td class=rnorm valign=top>[L]View list[/L]</td>
-<td class=rnorm valign=top>[L]View detail[/L]</td>
-<td class=rnorm valign=top>[L]Create[/L]</td>
-<td class=rnorm valign=top>[L]Edit[/L]</td>
-<td class=rnorm valign=top>[L]Delete[/L]</td>
+<tr class=rhead>
+<td class=rhead valign=top>&nbsp;</td>
+<td class=rhead valign=top>[L]View list[/L]</td>
+<td class=rhead valign=top>[L]View detail[/L]</td>
+<td class=rhead valign=top>[L]Create[/L]</td>
+<td class=rhead valign=top>[L]Edit[/L]</td>
+<td class=rhead valign=top>[L]Delete[/L]</td>
 </tr>
 
 [seti tables][list-databases][/seti]
@@ -155,27 +158,29 @@
 #DEBUG
 #	$out .= <<EOF;
 #<tr>
-#<td colspan=6 class=rnorm valign=top>
+#<td colspan=6 class=rownorm valign=top>
 #$string
 #</td>
 #EOF
 
 	my $perm;
 	my $title;
+	my $inc = 0;
 	while( $perm = shift @permissions) {
 		$title = shift @permissions;
 		my $ref = $permref->{$perm} || {};
+		my $class = $inc++ % 2 ? 'rownorm' : 'rowalt';
 		$out .= <<EOF;
-<tr>
-<td class=rnorm valign=top>
+<tr class=$class>
+<td class=$class valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_functions">
 </td>
 EOF
 		for(@some) {
 			$out .= <<EOF;
-<td class=rnorm valign=top>
-<INPUT type=checkbox value=$_ name="yes_functions"$ref->{$_}>
+<td class=$class valign=top>
+<INPUT type=checkbox class=s3 value=$_ name="yes_functions"$ref->{$_}>
 </td>
 EOF
 		}
@@ -183,22 +188,15 @@ EOF
 	}
 	my $ref = $permref->{order};
 	$out .= <<EOF;
-<tr>
-<td colspan=6 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
 </table>
- 
-<br>
+[/tabbed-panel]
 
-<table __UI_T_PROPERTIES__>
+[tabbed-panel Other Functions]
 
-<tr>
-<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
-</tr>
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
 <tr>
-<td class=rnorm valign=top>
+<td class=rownorm valign=top>
 <b>[L]Order manager[/L]:</b>
 <INPUT type=hidden value="order=" name="yes_functions">
 <li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
@@ -211,7 +209,7 @@ EOF
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
-<td class=rnorm valign=top ROWSPAN=2>
+<td class=rownorm valign=top ROWSPAN=2>
 EOF
 	@permissions = (
 		orderstats		=> 'Order statistics utility',
@@ -245,7 +243,7 @@ EOF
 </tr>
 
 <tr>
-<td class=rnorm valign=top>
+<td class=rownorm valign=top>
 <b>[L]Customer Edit Permissions[/L]:</b>
 <INPUT type=hidden value="userdb=" name="yes_functions">
 <li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
@@ -262,38 +260,28 @@ EOF
 	return $out;
 [/perl]
 
-<tr>
-<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
-</tr>
-
 </table>
 
-<p>
+[/tabbed-panel]
 
-<table cellpadding=3 cellspacing=0 width=100%>
+[tabbed-panel Table Permissions]
+
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
 <tr>
-<td colspan=9 class=rborder><img src="bg.gif" width=600 height=1></td>
+<td colspan=9 class=rhead ALIGN=center><B>[L]Table Permissions[/L]</B></td>
 </tr>
 
 <tr>
-<td colspan=9 class=rnorm ALIGN=center><B>[L]Table Permissions[/L]</B></td>
-</tr>
-
-<tr>
-<td colspan=9 class=rspacer><img src="bg.gif" width=600 height=1></td>
-</tr>
-
-<tr>
-<td class=rnorm valign=top>&nbsp;</td>
-<td class=rnorm valign=top>[L]HIDE[/L]</td>
-<td class=rnorm valign=top>[L]View[/L]</td>
-<td class=rnorm valign=top>[L]Edit[/L]</td>
-<td class=rnorm valign=top>[L]Create[/L]</td>
-<td class=rnorm valign=top>[L]Delete[/L]</td>
-<td class=rnorm valign=top>[L]Import[/L]</td>
-<td class=rnorm valign=top>[L]Export[/L]</td>
-<td class=rnorm valign=top>[L]Owner field[/L]</td>
+<td class=rhead valign=top>&nbsp;</td>
+<td class=rhead valign=top>[L]HIDE[/L]</td>
+<td class=rhead valign=top>[L]View[/L]</td>
+<td class=rhead valign=top>[L]Edit[/L]</td>
+<td class=rhead valign=top>[L]Create[/L]</td>
+<td class=rhead valign=top>[L]Delete[/L]</td>
+<td class=rhead valign=top>[L]Import[/L]</td>
+<td class=rhead valign=top>[L]Export[/L]</td>
+<td class=rhead valign=top>[L]Owner field[/L]</td>
 </tr>
 
 [perl]
@@ -348,22 +336,24 @@ EOF
 
 	my $perm;
 	my $title;
+	my $inc = 0;
 	while( $perm = shift @permissions) {
 		$title = shift @permissions;
+		my $class = $inc++ % 2 ? 'rownorm' : 'rowalt';
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
-<tr>
-<td class=rnorm valign=top>
+<tr class=$class>
+<td class=$class valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_tables">
 </td>
-<td class=rnorm valign=top>
-<INPUT type=checkbox value="$perm" name="no_tables"$no{$perm}>
+<td class=$class valign=top>
+<INPUT type=checkbox class=s3 value="$perm" name="no_tables"$no{$perm}>
 </td>
 EOF
 		for(@all) {
 			$out .= <<EOF;
-<td class=rnorm valign=top>
+<td class=$class valign=top>
 <INPUT type=checkbox value=$_ name="yes_tables"$ref->{$_}>
 </td>
 EOF
@@ -374,7 +364,7 @@ EOF
 			$of = $tc->{$perm}{owner_field};
 		}
 		$out .= <<EOF;
-<td class=rnorm valign=top>
+<td class=$class valign=top>
 <INPUT type=hidden value="$perm=" name="owner_field">
 <INPUT type=text value="$of" name="owner_field" size=10>
 <INPUT type=hidden value="," name="owner_field">
@@ -386,27 +376,21 @@ EOF
 	return $out;
 	[/perl]
 
-<tr>
-<td colspan=9 class=rspacer><img src="bg.gif" width=600 height=1></td>
-</tr>
-
-
-<tr>
-<td colspan=9 class=rnorm>
-	<input type=submit value="[L]Ok[/L]">
-	<input type=submit name=mv_click value="[L]Cancel[/L]">
-</td>
-</tr>
-
-<tr>
-<td colspan=9 class=rborder><img src="bg.gif" width=600 height=1></td>
-</tr>
-
 </table>
+[/tabbed-panel]
+[/tabbed-display]
 
-<BR>
+[output name=top_buttons]
+	<input type=submit value="[L]Ok[/L]" class=s3 style="font-weight: bold; width: 40px; text-align: center">
+	<input type=submit name=mv_click value="[L]Cancel[/L]" class=s3>
 
+[output name=bottom_buttons]
+	<input type=submit value="[L]Ok[/L]" class=s3 style="font-weight: bold; width: 40px; text-align: center">
+	<input type=submit name=mv_click value="[L]Cancel[/L]" class=s3>
+
+[output name=bottom_of_form]
 </form>
+[output name=""]
 @_UI_STD_FOOTER_@
 
 <!-- page: @@MV_PAGE@@ -->

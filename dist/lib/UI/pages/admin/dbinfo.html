@@ -1,6 +1,6 @@
 [tmp page_perm]techadmin[/tmp]
-[tmp page_title][L]Administration[/L]: [data session arg] [L]table information[/L][/tmp]
-[tmp page_banner]<i>[calc]$Config->{CatalogName}[/calc]</i> [L]table information[/L] [if session arg]([data session arg])[/if][/tmp]
+[tmp page_title][L]Administration[/L]: [cgi name=mv_data_table filter=entities keep=1] [L]table information[/L][/tmp]
+[tmp page_banner]<i>[calc]$Config->{CatalogName}[/calc]</i> [L]table information[/L] [if cgi mv_data_table]([cgi name=mv_data_table filter=entities keep=1])[/if][/tmp]
 [set ui_class]Admin[/set]
 [tmp help_name]genconfig.main[/tmp]
 [tmp icon_name]icon_config.gif[/tmp]
@@ -9,18 +9,12 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <center>
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td class=rborder COLSPAN=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr><td align=left class=rnorm colspan=2>
-<TABLE border=0 width="100%">
+<table width="100%" border=0 cellpadding=2 cellspacing=0 class=rseparator>
 
 [perl tables="[list-databases] __UI_META_TABLE__"]
 	my @tables;
-	if($Session->{arg}) {
-		@tables = split /[\s,\0]+/, $Session->{arg};
+	if($CGI->{mv_data_table}) {
+		@tables = split /[\s,\0]+/, $CGI->{mv_data_table};
 	}
 	else {
 		@tables = sort keys %{$Config->{Database}};
@@ -62,7 +56,7 @@
 	my $tcount = 0;
 	for (@tables) {
 		my $tname = $_;
-		my $rclass = ($tcount++ % 2) ? 'rnorm' : 'ralt';
+		my $rclass = ($tcount++ % 2) ? 'rownorm' : 'rowalt';
 		my $tinfo = '';
 		if($mdb and $mdb->record_exists($tname) ) {
 			$tinfo = $mdb->field($tname, 'label');
@@ -101,31 +95,30 @@
 		$dfile .= "</TT>";
 		my $obj   = $ref->{Object};
 		$out .= <<EOF;
-<TR>
-	<TH VALIGN=TOP ALIGN=RIGHT width="15%" class=$rclass>
-	$tname$tinfo
-	</TH>
-	<td VALIGN=TOP>
-		<TABLE border=1 width="100%">
-		<tr>
-			<th valign=top align=left>Type</th>
-			<td>$type</td>
+		<tr class=rhead>
+			<td valign=TOP align=center class=rhead colspan=2>
+			<b>$tname$tinfo</b>
+			</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Class</th>
-			<td>$class</td>
+		<tr class=rownorm>
+			<th valign=top align=left class=clabel>Type</th>
+			<td class=cdata>$type</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Directory</th>
-			<td>$dir</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Class</th>
+			<td class=cdata>$class</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Text File</th>
-			<td>$file</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Directory</th>
+			<td class=cdata>$dir</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">DB File</th>
-			<td>$dfile</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Text File</th>
+			<td class=cdata>$file</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>DB File</th>
+			<td class=cdata>$dfile</td>
 		</tr>
 EOF
 
@@ -137,8 +130,8 @@ EOF
 EOF
 
 		$out .= <<EOF;
-		<tr>
-			<th colspan=2>Other</th>
+		<tr class=rhead>
+			<td colspan=2 class=rhead>Parameters</th>
 		</tr>
 EOF
 		for(sort keys %{$ref}) {
@@ -146,9 +139,9 @@ EOF
 			my $key = $_;
 			my $r = $ref->{$_};
 			my $o = <<EOF;
-		<tr>
-			<th valign=top align=left width="30%">$_</th>
-			<td>
+		<tr class=rownorm>
+			<td valign=top align=left width="30%" class=clabel>$_</td>
+			<td class=cdata>
 EOF
 			if(! defined $r) {
 				$o .= "undef";
@@ -185,18 +178,11 @@ EOF
 		}
 
 		$out .= <<EOF;
-		</TABLE>
-	</TD>
-</TR>
 EOF
 
 	}
 	return $out;
 [/perl]
-
-<tr>
-<td class=rborder COLSPAN=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
 
 </TABLE>
 

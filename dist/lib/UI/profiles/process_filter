@@ -1,7 +1,7 @@
 __NAME__ process_filter
 [flag type=write table="[cgi mv_data_table]"]
 [perl tables="[list-databases]"]
-# $Id: process_filter,v 2.2 2002-10-14 21:35:02 mheins Exp $
+# $Id: process_filter,v 2.3 2003-01-14 02:25:53 mheins Exp $
 	my @filters = grep /^ui_filter:/, keys %$CGI;
   FILTERS: {
 	last FILTERS unless @filters;
@@ -19,7 +19,7 @@ __NAME__ process_filter
 	}
   }
 
-  SERIALIZE: {
+ SERIALIZE: {
   	last SERIALIZE unless $CGI->{ui_serial_fields};
 #Debug("Found serialzed values $CGI->{ui_serial_fields}");
 	my(@scols) = split /\s+/, $CGI->{ui_serial_fields};
@@ -45,6 +45,7 @@ __NAME__ process_filter
 									$serial_data{$maincol},
 									$hashkey,
 									$val,
+									1,
 								);
 
 	}
@@ -54,7 +55,7 @@ __NAME__ process_filter
 	for(@cols) {
 #Debug("after serialize data for $_: $CGI->{$_}");
 	}
-  }
+ }
 
 	my @uploads = grep /^ui_upload_file_path:/, keys %$CGI;
 #Debug("Check uploads: " . join ",", @uploads);
