@@ -26,6 +26,23 @@ use warnings;
 use Vend::Util;
 use Vend::Accounting;
 use Text::ParseWords;
+use vars qw/$Have_AR $Have_IC $Have_IS/;
+eval {
+	require SL::GL;
+	require SL::AR;
+	$Have_AR = 1;
+};
+
+eval {
+	require SL::IC;
+	$Have_IC = 1;
+};
+
+
+eval {
+	require SL::IS;
+	$Have_IS = 1;
+};
 
 use vars qw/$VERSION @ISA/;
 @ISA = qw/ Vend::Accounting /;
@@ -226,10 +243,37 @@ sub create_order_entry {
 
 	$cart ||= $Vend::Items;
 
+	my $tab = $cfg->{link_table} || 'customer';
+	my $db = ::database_exists_ref($tab)
+				or die errmsg("No database '%s' for SQL-Ledger link!J", $tab);
+	my $dbh = $db->dbh()
+				or die errmsg("No database handle for table '%s'.", $tab);
+
+	my $cq = 'select id from parts where partnumber = ?';
+	my $sth = $dbh->prepare('select id from parts where partnumber = ?')
+				or die errmsg("Prepare '%s' failed.", $cq);
+
+
 	my @charges;
-	my $salestax = delete $opt->{salestax};
-	my $salestax_desc = delete($opt->{salestax_desc}) || $cfg->{salestax_desc};
-	my $salestax_part = delete($opt->{salestax_part}) || $cfg->{salestax_part};
+	if($Vend::Cfg->{Levies}) {
+		$Tag->levies(1);
+		my $lcart = $::Levies;
+		for my $levy (@$lcart) {
+			my $pid = $levy->{part_number};
+			$pid ||= uc($levy->{group} || $levy->{type});
+			my $lresult = {
+						code => $pid,
+						description => $levy->{description},
+						mv_price => $levy->{cost},
+			};
+#::logDebug("levy result=" . ::uneval($lresult));
+			push @charges, $lresult;
+		}
+	}
+	else {
+		my $salestax = $opt->{salestax};
+		my $salestax_desc = $opt->{salestax_desc} || $cfg->{salestax_desc};
+		my $salestax_part = $opt->{salestax_part} || $cfg->{salestax_part};
 	$salestax_part ||= 'SALESTAX';
 	if(not length $salestax) {
 		$salestax = $Tag->salestax( { noformat => 1 } );
@@ -243,7 +287,7 @@ sub create_order_entry {
 
 	if($::Values->{mv_handling}) {
 		my @handling = split /\0+/, $::Values->{mv_handling};
-		my $part	= delete ($opt->{handling_part})
+			my $part	= $opt->{handling_part}
 					|| $cfg->{handling_part}
 					|| 'HANDLING';
 		for (@handling) {
@@ -257,9 +301,9 @@ sub create_order_entry {
 		}
 	}
 
-	my $shipping = delete $opt->{shipping};
-	my $shipping_desc = delete($opt->{shipping_desc});
-	my $shipping_part = delete($opt->{shipping_part}) || $cfg->{shipping_part};
+		my $shipping = $opt->{shipping};
+		my $shipping_desc = $opt->{shipping_desc};
+		my $shipping_part = $opt->{shipping_part} || $cfg->{shipping_part};
 	$shipping_part ||= 'SHIPPING';
 	if(not length $shipping) {
 		$shipping = $Tag->shipping( { noformat => 1 } );
@@ -270,16 +314,7 @@ sub create_order_entry {
 					description => $shipping_desc,
 					mv_price => $shipping,
 				};
-
-	my $tab = $cfg->{link_table} || 'customer';
-	my $db = ::database_exists_ref($tab)
-				or die errmsg("No database '%s' for SQL-Ledger link!J", $tab);
-	my $dbh = $db->dbh()
-				or die errmsg("No database handle for table '%s'.", $tab);
-
-	my $cq = 'select id from parts where partnumber = ?';
-	my $sth = $dbh->prepare('select id from parts where partnumber = ?')
-				or die errmsg("Prepare '%s' failed.", $cq);
+	}
 
 	my @oe;
 
@@ -423,6 +458,232 @@ EOF
     return 1;
 }
 
+my @all_part_fields = qw/
+			partnumber
+			description
+			bin
+			unit
+			listprice
+			sellprice
+			weight
+			onhand
+			notes
+			inventory_accno_id
+			income_accno_id
+			expense_accno_id
+			obsolete
+/;
+my @update_part_fields = qw/
+			partnumber
+			description
+			unit
+			listprice
+			weight
+			obsolete
+/;
+
+my %query = (
+	find   => 'SELECT id FROM parts WHERE partnumber = ?',
+	insert => 'INSERT INTO parts ( $ALLFIELDS$ ) VALUES ( $ALLVALUES$ )',
+	update => 'UPDATE parts set $UPDATEFIELDS$ WHERE id = ?',
+);
+
+my %default_source = (qw/
+	listprice	products:price
+	sellprice	products:price
+	partnumber	products:sku
+	weight		products:weight
+	onhand		inventory:quantity
+	obsolete	products:inactive
+	description	products:description
+/);
+
+my %default_value = (
+	unit	=> 'ea',
+	weight	=> 0,
+	onhand	=> 0,
+	notes	=> 'Added from Interchange',
+	inventory_accno_id	=> 1520,
+	expense_accno_id	=> 5020,
+	income_accno_id	=> 4020,
+);
+
+use vars qw/%value_filter %value_indirect/;
+
+%value_filter = (
+	obsolete => sub { my $val = shift; return $val =~ /1/ ? 't' : 'f'; },
+	inventory_accno_id	=> sub { my $val = shift; return $val || shift || 0 },
+	expense_accno_id	=> sub { my $val = shift; return $val || shift || 0 },
+	income_accno_id		=> sub { my $val = shift; return $val || shift || 0 },
+	weight		=> sub { my $val = shift; return $val || shift || 0 },
+);
+
+
+%value_indirect = (
+	inventory_accno_id	=> 'select id from chart where accno = ?',
+	expense_accno_id	=>  'select id from chart where accno = ?',
+	income_accno_id		=>  'select id from chart where accno = ?',
+);
+
+
+sub parts_update {
+	my ($self, $opt) = @_;
+	my $cfg = $self->{Config};
+	my $atab = $cfg->{link_table}
+		or die errmsg("missing accounting link_table: %s", 'definition');
+	my $adb = ::database_exists_ref($atab)
+		or die errmsg("missing accounting link_table: %s", 'table');
+	my $dbh = $adb->dbh()
+		or die errmsg("missing accounting link_table: %s", 'handle');
+
+
+	my %source  = %default_source;
+	my %default = %default_value;
+	for(@all_part_fields) {
+		my $src = $cfg->{"parts_source_$_"};
+		if(defined $src) {
+			$source{$_} = $src;
+		}
+		my $def = $cfg->{"parts_default_$_"};
+		if(defined $def) {
+			$default{$_} = $def;
+		}
+	}
+	my @fields = grep defined $source{$_} || defined $default{$_}, @all_part_fields;
+	my $fstring = join ", ", @fields;
+
+	my @ufields;
+	if($cfg->{update_fields}) {
+		@ufields = grep /\S/, split /[\s,\0]+/, $cfg->{update_fields};
+	}
+	else {
+		@ufields = @update_part_fields;
+	}
+
+	my @vph;
+	my @uph;
+
+	push(@vph, '?') for @fields;
+	for(@ufields) {
+		push @uph, "$_ = ?";
+	}
+
+	my $partskey = $cfg->{parts_key} || 'sku';
+
+	my %dbo;
+	my %rowfunc;
+	my %row;
+
+	my $colsub = sub {
+		my ($name) = @_;
+		my $src = $source{$name};
+		my $val;
+		my ($st, $sc) = split /:/, ($src || '');
+		if($sc and defined $row{$st}) {
+			$val = defined $row{$st}{$sc} ? $row{$st}{$sc} : $default{$name};
+		}
+		else {
+			$val = $default{$name};
+		}
+
+		$val = '' if ! defined $val;
+		my $filt = $value_filter{$name} || '';
+		my $indir = $value_indirect{$name} || '';
+#::logDebug("$name='$val' filter=$filt indir=$indir");
+		if($indir) {
+			my $sth = $dbh->prepare($indir);
+			$sth->execute($val);
+			$val = ($sth->fetchrow_array)[0];
+		}
+
+		if($filt) {
+			$val = $filt->($val, $default{$name});
+		}
+#::logDebug("$name='$val'");
+		return $val;
+	};
+
+	for (values %source) {
+		my ($t,$c) = split /:/, $_;
+		if(! $t) {
+			$rowfunc{""} ||= sub { return Vend::Data::product_row_hash(shift) };
+		}
+		else {
+			my $d = $dbo{$t} ||= ::database_exists_ref($t);
+			$rowfunc{$t} ||= sub { return $d->row_hash(shift) };
+		}
+	}
+
+	my $qst = $dbh->prepare('select id from parts where partnumber = ?')
+		or die errmsg("accounting statement handle: %s", 'part check');
+
+	my $upq = $query{update};
+	$upq =~ s/\$UPDATEFIELDS\$/join ", ", @uph/e;
+#::logDebug("update query is: $upq");
+	my $qup = $dbh->prepare($upq)
+		or die errmsg("accounting statement prepare: %s", 'update query');
+
+	my $inq = $query{insert};
+	$inq =~ s/\$ALLFIELDS\$/join ", ", @fields/e;
+	$inq =~ s/\$ALLVALUES\$/join ",", @vph/e;
+#::logDebug("insert query is: $inq");
+	my $qin = $dbh->prepare($inq)
+		or die errmsg("accounting statement prepare: %s", 'update query');
+
+	my @parts;
+
+	my $source_tables = $cfg->{parts_tables} || 'products';
+
+	if($opt->{skus}) {
+		@parts = grep /\S/, split /[\s,\0]+/, $opt->{skus};
+	}
+	else {
+		my @tabs = grep /\S/, split /[\s,\0]+/, $source_tables;
+		for(@tabs) {
+			 my $q = "select $partskey from $_";
+			 my $db = ::database_exists_ref($_)
+			 	or next;
+			 my $ary = $db->query($q) || [];
+			 for(@$ary) {
+			 	push @parts, $_->[0];
+			 }
+		}
+	}
+	
+	my $updated = 0;
+
+	foreach my $p (@parts) {
+#::logDebug("Doing part $p");
+		%row = ();
+		for(keys %rowfunc) {
+			$row{$_} = $rowfunc{$_}->($p);
+		}
+		my $pid;
+		if($qst->execute($p)) {
+			$pid = ($qst->fetchrow_array)[0];
+		}
+		
+		if($pid) {
+			my @v;
+			for(@ufields) {
+				push @v, $colsub->($_);
+			}
+			push @v, $pid;
+			$qup->execute(@v);
+			$updated++;
+		}
+		else {
+			my @v;
+			for(@fields) {
+				push @v, $colsub->($_); 
+			}
+			$qin->execute(@v);
+			$updated++;
+		}
+	}
+
+	return $updated;
+}
 
 sub enter_payment {
     my ($self, $string) = @_;
