@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.7
 #
-# $Id: interchange.PL,v 2.3 2001-07-26 01:26:45 jon Exp $
+# $Id: interchange.PL,v 2.4 2001-07-26 16:34:44 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -645,11 +645,7 @@ sub update_data {
 	}
 
 	if( $multi and ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
-		my $msg = errmsg(
-				"probable bad form -- number of values min=%s (%s) max=%s (%s)",
-				$min, $minname, $max, $maxname,
-				);
-		Vend::Interpolate::set_error($msg);
+		logError("probable bad form -- number of values min=%s (%s) max=%s (%s)", $min, $minname, $max, $maxname);
 		return;
 	}
 
