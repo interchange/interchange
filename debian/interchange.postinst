@@ -76,7 +76,9 @@ echo DOCROOT=$RET >> $INITCFG
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf
 
-/usr/sbin/interchangeconfig
+db_get interchange/debug
+DEBUG=$RET
+/usr/sbin/interchangeconfig DEBUG=$DEBUG
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
