@@ -102,3 +102,7 @@ Password for Postgres (if any)
 SUPERUSER
 Account name that will control this catalog
 __MVC_CATUSER__	minivend
+
+CRYPTPW
+Administrative password
+pass	nevairbe

@@ -60,3 +60,8 @@ name that has full access.
 The initial password is "pass". CHANGE IT! You can do this
 by going to the admin menu and selecting the superuser and
 then "Change password".
+
+CRYPTPW
+.
+You should set a password for the administrative account.
+Remember this! It will be encrypted.
