@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.60 2003-06-25 16:38:17 mheins Exp $
+# $Id: Util.pm,v 2.61 2003-07-07 22:24:04 ramoore Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.60 $, 10);
+$VERSION = substr(q$Revision: 2.61 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1214,7 +1214,7 @@ sub vendUrl {
 
 	$path = escape_chars_url($path)
 		if $path =~ $need_escape;
-    $r .= '/' . $path;
+    	$r .= '/' . $path;
 	$r .= '.html' if $opt->{add_dot_html} and $r !~ /\.html?$/;
 
 	if($opt->{add_source} and $Vend::Session->{source}) {
@@ -1222,15 +1222,15 @@ sub vendUrl {
 		push @parms, "$::VN->{mv_source}=$sn";
 	}
 
-	push @parms, "$::VN->{mv_session_id}=$id"			 if $id;
-	push @parms, "$::VN->{mv_arg}=" . hexify($arguments) if defined $arguments;
-	push @parms, "$::VN->{mv_pc}=$ct"                 	 if $ct;
-	push @parms, "$::VN->{mv_cat}=$Vend::Cat"            if $Vend::VirtualCat;
+	push @parms, "$::VN->{mv_session_id}=$id"		if $id;
+	push @parms, "$::VN->{mv_arg}=" . hexify($arguments) 	if defined $arguments;
+	push @parms, "$::VN->{mv_pc}=$ct"                 	if $ct;
+	push @parms, "$::VN->{mv_cat}=$Vend::Cat"            	if $Vend::VirtualCat;
 
-    $r .= '?' . join($Global::UrlJoiner, @parms) if @parms;
+    	$r .= '?' . join($Global::UrlJoiner, @parms) if @parms;
 	if($opt->{anchor}) {
 		$opt->{anchor} =~ s/^#//;
-		$r .= $opt->{anchor};
+		$r .= '#' . $opt->{anchor};
 	}
 	return $r;
 } 
