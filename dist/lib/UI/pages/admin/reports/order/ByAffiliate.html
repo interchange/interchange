@@ -86,6 +86,10 @@ EOF
 	}
 	#Log("query returned " . $Tag->uneval( {ref => $Tmp->{main} } ));
 	foreach $line (@{$Tmp->{main}}) {
+        if ($line->{order_date} =~ /-/) {
+            $line->{order_date} = sprintf ("%4d%02d%02d", split(/-/,
+                $line->{order_date}));
+        }
 		my ($month) = substr($line->{order_date}, 0, 6);
 		my $id = $line->{affiliate};
 		$id .= "-$line->{campaign}";
