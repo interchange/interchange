@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.8 2000-12-17 07:21:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.9 2000-12-21 11:26:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.9 $, 10);
 
 @EXPORT = qw (
 
@@ -122,6 +122,7 @@ BEGIN {
 							&tag_data
 							&errmsg
 							&Log
+							&Debug
 							&uneval
 							&HTML
 							&interpolate_html
@@ -147,6 +148,7 @@ sub reset_calc {
 		no strict 'refs';
 		$Document   = new Vend::Document;
 		*Log = \&Vend::Util::logError;
+		*Debug = \&Vend::Util::logDebug;
 		*uneval = \&Vend::Util::uneval_it;
 		*HTML = \&Vend::Document::HTML;
 		$ready_safe->share(@Share_vars, @Share_routines);
@@ -445,7 +447,7 @@ sub cache_html {
 
 	vars_and_comments(\$html);
 
-	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = $2, ''/ige;
+	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
 
 	my $complete;
 	my $full = '';
@@ -535,7 +537,7 @@ sub interpolate_html {
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
-	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = $2, ''/ige;
+	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
 
 #::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval_it(\%Vend::Cfg->{Pragma}));
 
@@ -995,10 +997,6 @@ sub tag_data {
 	'entities' => sub {
 					return HTML::Entities::encode(shift);
 				},
-#	'option_format' => sub {
-#					$_[0] =~ s/[,\s]*[\r\n]+/,\r/g;
-#					return $_[0];
-#				},
 	);
 
 sub input_filter_do {
@@ -1763,19 +1761,22 @@ sub tag_options {
 		for(qw/code o_enable o_group description price weight volume differential/) {
 			push @rf, ($map{$_} || $_);
 		}
-		my $fsel = $map{sku} || 'sku';
-		my $rsel = $db->quote($sku, $fsel);
+		my $lcol = $map{sku} || 'sku';
+		my $lval = $db->quote($sku, $lcol);
 		
-		my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
+		my $q = "SELECT " . join(",", @rf);
+		$q .= " FROM $table where $lcol = $lval";
 		my $ary = $db->query($q); 
 		my $ref;
 		my $price = {};
 		foreach $ref (@$ary) {
+			# skip unless enabled
+			next unless $ref->[1];
 			# skip unless description
 			next unless $ref->[3];
 			$ref->[3] =~ s/,/&#44;/g;
 			$ref->[3] =~ s/=/&#61;/g;
-			$price->{$ref->[0]} = $ref->[5];
+			$price->{$ref->[0]} = $ref->[4];
 			push @out, "$ref->[0]=$ref->[3]";
 		}
 		$out .= "<td>" if $opt->{td};
@@ -4894,6 +4895,29 @@ sub tag_loop_list {
 	$opt->{prefix} = 'loop' unless defined $opt->{prefix};
 	$opt->{label}  =  "loop" . $List_it++ . $Global::Variable->{MV_PAGE}
 						unless defined $opt->{label};
+
+#::logDebug("list is: " . ::uneval($list) );
+
+	## Thanks to Kaare Rasmussen for this suggestion
+	## about passing embedded Perl objects to a list
+
+	# Can pass object.mv_results=$ary object.mv_field_names=$ary
+	return region($opt, $text) if $opt->{object};
+
+	# Here we can take the direct results of an op like
+	# @set = $db->query() && return \@set;
+	# Called with
+	#	[loop list=`$Scratch->{ary}`] [loop-code]
+	#	[/loop]
+	if (ref $list) {
+#::logDebug("opt->list in: " . ::uneval($list) );
+		my ($ary, $fh, $fa) = @$list;
+		$opt->{object}{mv_results} = $ary;
+		$opt->{object}{mv_field_names} = $fa if $fa;
+		$opt->{object}{mv_field_hash} = $fh if $fh;
+		return region($opt, $text);
+	}
+
 	my $delim;
 
   RESOLVELOOP: {
@@ -5534,8 +5558,26 @@ sub tag_control {
 		return;
 	}
 	return defined $::Control->[$::Scratch->{control_index}]{$name} 
-			?  ( $::Control->[$::Scratch->{control_index}]{$name} )
+			?  ( $::Control->[$::Scratch->{control_index}]{$name} || $default )
 			:  ( length($::Scratch->{$name}) ? ($::Scratch->{$name}) : $default )
+}
+
+# Batch sets a set of controls without affecting Scratch
+# Increments the index afterwards unless index is defined
+sub tag_control_set {
+	my ($index, $opt, $body) = @_;
+
+	my $inc;
+	unless($index) {
+		$index = $::Scratch->{control_index} || 0;
+		$inc = 1;
+	}
+	
+	while($body =~ m{\[(\w+)\](.*)\[/\1\]}sg) {
+		$::Control->[$index]{$1} = $2;
+	}
+	$::Scratch->{control_index}++;
+	return;
 }
 
 sub tag_scratchd {
