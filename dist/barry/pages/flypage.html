@@ -86,6 +86,33 @@ __LEFTSIDE__
 				<table cellpadding="2" cellspacing="2" border="0" width="162"><tr><td>
 				<font face="verdana" size="2" color="#003366">
 				[item-field comment]
+	[if-item-data merchandising others_bought]
+	[perl tables=products]
+		my $hash = [item-data merchandising others_bought];
+		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+		return '' unless @ary;
+		my %in_basket;
+		splice(@ary, 3);
+		for(@{$Carts->{main}}) {
+			$in_basket{$_->{code}} = 1;
+		}
+		@ary = grep ! $in_basket{$_}, @ary;
+		return '' unless @ary;
+		my $out = <<'EOF';
+	<BR><TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR><TD __HEADERBG__><FONT SIZE="-1" COLOR="__HEADERTEXT__">Customers who bought this item also bought:</TD>
+		</TR><TR>
+		<TD><FONT SIZE="-1">
+EOF
+		for(@ary) {
+ 			my $desc = tag_data( 'products', 'description', $_);
+			$out .= <<EOF;
+		<A HREF="[area $_]">$desc</A><BR>
+EOF
+		}
+		return $out . '</TD></TR></TABLE>';
+	[/perl]
+	[/if-item-data]
 				</font>
 [if-item-field size]
 	<P><SMALL>[item-accessories size] [item-accessories color]</SMALL></P>
