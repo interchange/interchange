@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.5.2.3 2000-11-27 18:32:39 zarko Exp $
+# $Id: Scan.pm,v 1.5.2.4 2000-12-04 18:15:42 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.5.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.5.2.4 $, 10);
 
 use strict;
 use Vend::Util;
@@ -240,7 +240,8 @@ sub find_search_params {
 	my(@args);
 	if(! $param) {
 		$c = \%CGI::values;
-	} else {
+	}
+	else {
 		$param =~ s/__NULL__/\0/g;
 		@args = split m:/:, $param;
 	}
@@ -270,12 +271,15 @@ sub parse_map {
 	my($params);
 	if(index($map, "\n") != -1) {
 		$params = $map;
-	} elsif(defined $Vend::Cfg->{SearchProfileName}->{$map}) {
+	}
+	elsif(defined $Vend::Cfg->{SearchProfileName}->{$map}) {
 		$map = $Vend::Cfg->{SearchProfileName}->{$map};
 		$params = $Vend::Cfg->{SearchProfile}->[$map];
-	} elsif($map =~ /^\d+$/) {
+	}
+	elsif($map =~ /^\d+$/) {
 		$params = $Vend::Cfg->{SearchProfile}->[$map];
-	} elsif(defined $::Scratch->{$map}) {
+	}
+	elsif(defined $::Scratch->{$map}) {
 		$params = $::Scratch->{$map};
 	}
 	
@@ -322,9 +326,11 @@ sub parse_profile {
 	if(defined $Vend::Cfg->{SearchProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{SearchProfileName}->{$profile};
 		$params = $Vend::Cfg->{SearchProfile}->[$profile];
-	} elsif($profile =~ /^\d+$/) {
+	}
+	elsif($profile =~ /^\d+$/) {
 		$params = $Vend::Cfg->{SearchProfile}->[$profile];
-	} elsif(defined $::Scratch->{$profile}) {
+	}
+	elsif(defined $::Scratch->{$profile}) {
 		$params = $::Scratch->{$profile};
 	}
 	
@@ -382,7 +388,8 @@ sub perform_search {
 			Vend::Scan::create_last_search($c);
 			$c->{mv_cache_key} = generate_key($Vend::Session->{last_search});
 		}
-	} elsif($c->{mv_search_immediate}) {
+	}
+	elsif($c->{mv_search_immediate}) {
 		unless($c->{mv_cache_key}) {
 			undef $c->{mv_search_immediate};
 			Vend::Scan::create_last_search($c);
@@ -416,13 +423,15 @@ sub perform_search {
 	parse_map($c) if defined $c->{mv_search_map};
 
 	if(defined $c->{mv_sql_query}) {
-		my $params = Vend::Interpolate::escape_scan(delete $c->{mv_sql_query}, $c);
+#::logDebug("found sql query in perform_search");
+		my $params = Vend::Interpolate::escape_scan(delete $c->{mv_sql_query}, \%CGI::values);
 		find_search_params($c, $params);
 	}
 
 	if($pre_made) {
 		parse_profile_ref(\%options,$c);
-	} else {
+	}
+	else {
 		foreach $p ( grep defined $c->{$_}, @ScanKeys) {
 			$c->{$Scan{$p}} = $c->{$p}
 				if ! defined $c->{$Scan{$p}};
@@ -431,7 +440,8 @@ sub perform_search {
 #::logDebug("Parsing $p mv_search_file");
 			if(defined $Parse{$p}) {
 				$options{$p} = &{$Parse{$p}}(\%options, $c->{$p})
-			} else {
+			}
+			else {
 				$options{$p} = $c->{$p};
 			}
 			last if $options{$p} eq '-1' and $p eq 'mv_profile';
@@ -464,19 +474,23 @@ sub perform_search {
 		if(defined $pre_made) {
 			$q = $pre_made;
 			@{$q}{keys %options} = (values %options);
-		} elsif(
+		}
+		elsif(
 				! $options{mv_searchtype} && $::Variable->{MV_DEFAULT_SEARCH_DB}
 				or $options{mv_searchtype} =~ /db|sql/i
 			)
 		{
 			$q = new Vend::DbSearch %options;
-		} elsif(! $options{mv_searchtype} or $options{mv_searchtype} eq 'text') {
+		}
+		elsif(! $options{mv_searchtype} or $options{mv_searchtype} eq 'text') {
 			$q = new Vend::TextSearch %options;
 # GLIMPSE
-		} elsif( $options{mv_searchtype} eq 'glimpse'){
+		}
+		elsif( $options{mv_searchtype} eq 'glimpse'){
 			$q = new Vend::Glimpse %options;
 # END GLIMPSE
-		} else  {
+		}
+		else  {
 			eval {
 				no strict 'refs';
 				$q = "$Global::Variable->{$options{mv_searchtype}}"->new(%options);
@@ -537,7 +551,8 @@ sub sql_statement {
 	if(wantarray) {
 		$hash = {};
 		$ary = '';
-	} else {
+	}
+	else {
 		$ary = [];
 		$hash = '';
 	}
@@ -598,13 +613,15 @@ sub sql_statement {
 			$nuhash = $db->config('NUMERIC') || undef;
 			push_spec( 'fi', $Vend::Cfg->{Database}{$t}{'file'}, $ary, $hash);
 # GLIMPSE
-		} elsif("\L$t" eq 'glimpse') {
+		}
+		elsif("\L$t" eq 'glimpse') {
 			$codename = 'code';
 			undef $nuhash;
 			push_spec('st', 'glimpse', $ary, $hash);
 
 # END GLIMPSE
-		} else {
+		}
+		else {
 			push_spec('fi', $t, $ary, $hash);
 		}
 #::logDebug("t=$t obj=$_ db=$db nuhash=" . ::uneval($nuhash));
@@ -622,9 +639,11 @@ sub sql_statement {
 
 #	if(! $update) {
 #		# do nothing
-#	} elsif($stmt->{mv_value_relocate}) {
+#	}
+#	elsif($stmt->{mv_value_relocate}) {
 #		splice(@{$hash->{rf}}, $stmt->{mv_value_relocate}, 1);
-#	} elsif($update eq 'insert') {
+#	}
+#	elsif($update eq 'insert') {
 #		$stmt->{mv_value_relocate} = 0 if ! $stmt->columns();
 #	}
 
@@ -655,40 +674,46 @@ sub sql_statement {
 				if($op eq 'OR') {
 					push_spec( 'os', 'yes', $ary, $hash)     unless $or++;
 					push(@where, $where->arg1() , $where->arg2());
-				} elsif($op eq 'AND') {
+				}
+				elsif($op eq 'AND') {
 					push(@where, $where->arg1() , $where->arg2());
-				} else {
+				}
+				else {
 					my ($col, $spec);
 
 					# Search spec is a variable if a ref
 					$spec = $where->arg2();
+#::logDebug("where col=$col spec=$spec");
 					$spec = $ref->{$spec->name()}		if ref $spec;
+
+					last OP unless $spec;
 
 					# Column name is a variable if a string
 					$col = $where->arg1();
 					$col = ref $col ? $col->name() : $::Values->{$col};
 
+					last OP unless $col;
+
 					$numeric = (defined $nuhash)
 							? (exists $nuhash->{$col})
 							: (
-								$spec !~ /[^\d.]/		and
-								($spec =~ tr/././) < 2	and
-								$spec !~ /^0\d/				 );
-#::logDebug("numeric for $col=$numeric");
-					push_spec  ('nu', $numeric, $ary, $hash); 
+								$spec =~ /^-?\d+\.?\d*$/
+								and
+								$spec !~ /^0\d+$/			 );
 
 #::logDebug("where col=$col spec=$spec");
-					# If both are not supplied, we ignore it
-					last OP unless defined $col and $spec;
 
-					push_spec('se', $spec, $ary, $hash);
-					push_spec('op', $op, $ary, $hash);
-					push_spec('sf', $col, $ary, $hash);
-					push_spec('ne', ($where->neg() || 0), $ary, $hash) ;
+#::logDebug("numeric for $col=$numeric");
+					push_spec('nu', ($numeric || 0),      $ary, $hash); 
+					push_spec('se', $spec,                $ary, $hash);
+					push_spec('op', $op,                  $ary, $hash);
+					push_spec('sf', $col,                 $ary, $hash);
+					push_spec('ne', ($where->neg() || 0), $ary, $hash);
 				}
 			}
 		} while @where;
-	} else {
+	}
+	else {
 		push_spec('ra', 'yes', $ary, $hash);
 	}
 	
@@ -732,9 +757,11 @@ sub _column_opt {
 		next if /^\d+$/;
 		if(! $_[0]->{mv_search_file} and defined ($col = column_index($_)) ) {
 			$_ = $col + 1;
-		} elsif( $col = _find_field($_[0], $_) or defined $col ) {
+		}
+		elsif( $col = _find_field($_[0], $_) or defined $col ) {
 			$_ = $col;
-		} else {
+		}
+else {
 			::logError( "Bad search column '%s=$col'" , $_ );
 		}
 	}
@@ -752,9 +779,11 @@ sub _column {
 		next if /:/;
 		if(! defined $_[0]->{mv_search_file} and defined ($col = column_index($_)) ) {
 			$_ = $col + 1;
-		} elsif( $col = _find_field($_[0], $_) or defined $col ) {
+		}
+		elsif( $col = _find_field($_[0], $_) or defined $col ) {
 			$_ = $col;
-		} else {
+		}
+		else {
 			logError( "Bad search column '%s'" , $_ );
 		}
 	}
@@ -767,13 +796,17 @@ sub _find_field {
 
 	if($s->{mv_field_names}) {
 		@fields = @{$s->{mv_field_names}};
-	} elsif(! defined $s->{mv_search_file}) {
+	}
+	elsif(! defined $s->{mv_search_file}) {
 		return undef;
-	} elsif(ref $s->{mv_search_file}) {
+	}
+	elsif(ref $s->{mv_search_file}) {
 		$file = $s->{mv_search_file}->[0];
-	} elsif($s->{mv_search_file}) {
+	}
+	elsif($s->{mv_search_file}) {
 		$file = $s->{mv_search_file};
-	} else {
+	}
+	else {
 		return undef;
 	}
 
