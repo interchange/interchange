@@ -28,13 +28,13 @@
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
 	[if type=explicit compare=`$Session->{arg} =~ m{[^/]$}`]
-	Uploading file <b>[data session arg]</B>
+	[msg arg.0="[data session arg]"]Uploading file <b>%s</B>[/msg]
 	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
 	[elsif session arg]
-	Uploading file to <b>[data session arg]</B>
+	[msg arg.0="[data session arg]"]Uploading file to <b>%s</B>[/msg]
 	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
 	[comment]
-	<B>File to upload</B>
+	<B>[L]File to upload[/L]</B>
 		<BLOCKQUOTE>
 		<INPUT NAME=ui_upload_fn type=hidden VALUE="[data session arg]">
 		<INPUT NAME=ui_upload_fn SIZE=40>
@@ -42,7 +42,7 @@
 	[/comment]
 	[/elsif]
 	[else]
-	<B>File to upload</B>
+	<B>[L]File to upload[/L]</B>
 		<BLOCKQUOTE>
 		<INPUT NAME=ui_upload_fn SIZE=40>
 		</BLOCKQUOTE>
@@ -60,32 +60,32 @@
 [set existing]1[/set]
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
-Preview: <BR>
+[L]Preview:[/L] <BR>
 <IMG SRC="[cgi ui_image_preview]">
 </td>
 </tr>
 [/if]
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
-<B>Local file</B><BR>
+<B>[L]Local file[/L]</B><BR>
 	<BLOCKQUOTE>
 	<INPUT TYPE=file NAME="ui_upload_file" SIZE=40>
 	</BLOCKQUOTE>
 <P>
-<B>Upload mode</B>
+<B>[L]Upload mode[/L]</B>
 	<BLOCKQUOTE>
 [if session arg =~ /\.(gif|jpe?g|png)$/i]
 [or cgi ui_upload_binary]
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1>&nbsp;ASCII<BR>
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0 CHECKED>&nbsp;Binary
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1>&nbsp;[L]ASCII[/L]<BR>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0 CHECKED>&nbsp;[L]Binary[/L]
 	<P>
 	[if scratch existing]
-	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=1>&nbsp;Use new file name<BR>
-	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=0 CHECKED>&nbsp;Use existing file name
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=1>&nbsp;[L]Use new file name[/L]<BR>
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=0 CHECKED>&nbsp;[L]Use existing file name[/L]
 	[/if]
 [else]
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;ASCII<BR>
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;Binary
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;[L]ASCII[/L]<BR>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;[L]Binary[/L]
 [/else]
 [/if]
 	</BLOCKQUOTE>
@@ -93,11 +93,11 @@ Preview: <BR>
 <B>[L]Backup mode[/L]</B>
 	<BLOCKQUOTE>
 	[if cgi ui_backup]
-	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;Back up<BR>
-	<INPUT NAME=ui_backup TYPE=radio VALUE=0>&nbsp;NO backup
+	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;[L]Back up[/L]<BR>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=0>&nbsp;[L]NO backup[/L]
 	[else]
-	<INPUT NAME=ui_backup TYPE=radio VALUE=1>&nbsp;Back up<BR>
-	<INPUT NAME=ui_backup TYPE=radio VALUE=0 CHECKED>&nbsp;NO backup
+	<INPUT NAME=ui_backup TYPE=radio VALUE=1>&nbsp;[L]Back up[/L]<BR>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=0 CHECKED>&nbsp;[L]NO backup[/L]
 	[/else]
 	[/if]
 	</BLOCKQUOTE>
@@ -128,7 +128,7 @@ Preview: <BR>
 		return;
 	[/calc]
 [/button]
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
+<INPUT TYPE=submit NAME=mv_click VALUE=[L]Cancel[/L]>
 
 </FORM>
 </td>
