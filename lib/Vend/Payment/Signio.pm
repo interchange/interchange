@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange Signio support
 #
-# $Id: Signio.pm,v 2.1 2002-06-17 22:24:11 jon Exp $
+# $Id: Signio.pm,v 2.2 2002-08-27 22:06:16 jon Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 2.1 $
+Vend::Payment::Signio $Revision: 2.2 $
 
 =head1 SYNOPSIS
 
@@ -112,8 +112,10 @@ The type of transaction to be run. Valid values are:
     Interchange         Signio
     ----------------    -----------------
 	sale                S
-	auth                C
+	auth                A
+	credit              C
 	void                V
+	settle              D (from previous A trans)
 
 Default is C<sale>.
 
@@ -329,17 +331,20 @@ sub signio {
     my %type_map = (
         qw/
                         sale          S
-                        auth          C
-                        authorize     C
+                        auth          A
+                        authorize     A
                         void          V
+                        settle        D
+                        credit        C
                         mauthcapture  S
-                        mauthonly     C
+                        mauthonly     A
                         mauthdelay    D
-                        mauthreturn   V
+                        mauthreturn   C
                         S             S
                         C             C
                         D             D
                         V             V
+                        A             A
         /
     );
 
