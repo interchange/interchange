@@ -203,70 +203,86 @@
 	}
 	return;
 [/perl]
+
+
+
+
+
+
+
 [query
-	list=1
 	hashref=master
 	sql="SELECT * FROM options
 			WHERE o_master = '[cgi name=item_id filter=sql]'
 			ORDER BY o_group, o_sort
 		"]
 [sql-sub o_display]
-	my $master = shift;
+	return shift;
+[/sql-sub]
+[sql-exec o_display][sql-code][/sql-exec]
+[/query]
+
+[perl tables=options]
+	my $item_id = $Tag->cgi({name => 'item_id', filter => 'sql'});
+	my $sql = "SELECT * FROM options WHERE o_master='$item_id' ORDER BY o_group, o_sort";
+	Log("sql=$sql");
+	my $hash_results = $Tag->query({ sql => $sql, hashref => 'my_results'});
+
 	my %above;
-	$above{$CGI->{item_id}} = 1;
-	$above{$master} = 1;
-	my $row = shift;
 	my @rows;
-#Log("received master=$master row=$row modular=$row->{o_enable}");
-	my @stack = ( [ $row ] );
-	ARY: for (;;) {
-		my $ary;
-		$ary = pop(@stack)
-			or last ARY;
-		ROW: for(;;) {
-			$row = shift @$ary
-				or last ROW;
-			$row->{level} = scalar(@stack);
-			push(@rows, $row);
-			my $sku = $row->{sku};
-			next ROW if ! $row->{o_enable};
-			my $code = $row->{code};
-			if($above{$sku}) {
-				$row->{description} = errmsg("ENDLESS TREE") . " $row->{description}";
-				display_template($_);
-				next ROW;
-			}
-			if( $expand->{$code}
-					or 
-				($explode and ! defined $expand->{$code})
-				)
-			{
-				push(@stack, $ary);
-				my $key = $odb->quote($sku, 'sku');
-				my $q = "SELECT * FROM options WHERE o_master = $key ORDER BY o_sort",
-				$ary = $odb->query(
-						{ 
-							hashref => 1,
-							sql => "SELECT * FROM options
-									WHERE o_master = $key
-									ORDER BY o_sort
-								",
-						}
-				);
-				$above{$sku} = 1 if $ary and scalar @{$ary};
-				
-			}
-		}  # END ROW
-	}  # END ARY
-	
+	foreach my $row (@{$hash_results}) {
+		my $master = $row->{code};
+Log("master=$master");
+		$above{$CGI->{item_id}} = 1;
+		$above{$master} = 1;
+		my @stack = ( [ $row ] );
+		ARY: for (;;) {
+			my $ary;
+			$ary = pop(@stack)
+				or last ARY;
+			ROW: for(;;) {
+				$row = shift @$ary
+					or last ROW;
+				$row->{level} = scalar(@stack);
+				push(@rows, $row);
+				my $sku = $row->{sku};
+				next ROW if ! $row->{o_enable};
+				my $code = $row->{code};
+				if($above{$sku}) {
+					$row->{description} = errmsg("ENDLESS TREE") . " $row->{description}";
+					display_template($_);
+					next ROW;
+				}
+				if( $expand->{$code}
+						or 
+					($explode and ! defined $expand->{$code})
+					)
+				{
+					push(@stack, $ary);
+					my $key = $odb->quote($sku, 'sku');
+					my $q = "SELECT * FROM options WHERE o_master = $key ORDER BY o_sort",
+					$ary = $odb->query(
+							{ 
+								hashref => 1,
+								sql => "SELECT * FROM options
+										WHERE o_master = $key
+										ORDER BY o_sort
+									",
+							}
+					);
+					$above{$sku} = 1 if $ary and scalar @{$ary};
+					
+				}
+			}  # END ROW
+		}  # END ARY
+	}
 	my $out;
 	for(@rows) {
 		$out .= display_template($_);
 	}
 	return $out;
-[/sql-sub]
-[sql-exec o_display][sql-code][/sql-exec]
-[/query]
+[/perl]
+
 </table>
 
 [page href=__UI_BASE__/flex_editor
@@ -297,7 +313,7 @@
 			ui_return_to=ui_return_table=[cgi mv_data_table]
 			ui_return_to=item_id=[cgi item_id]
 			ui_return_to=ignore_sku=1
-		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0> Add phantom</A>
+		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add phantom" BORDER=0> Add phantom</A>
 &nbsp;&nbsp;
 <FORM ACTION="[area @@MV_PAGE@@]">
 <input type=hidden name=mv_action value=back>
