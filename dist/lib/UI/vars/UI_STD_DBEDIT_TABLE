@@ -234,10 +234,14 @@ EOF
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
 			my $page = $Tag->var('MV_PAGE', 1);
+			my $id = $t . "::$c";
+			$id = $CGI->{ui_meta_view} . "::$id"
+				if $CGI->{ui_meta_view} and $CGI->{ui_meta_view} ne 'metaconfig';
+
 			$meta .= $Tag->page(
 							{	href => "$base/meta_editor",
 								form => qq{
-										item_id=${t}::$c
+										item_id=$id
 										ui_return_to=$page
 										ui_return_to=item_id=$Scratch->{arg}
 										ui_return_to=ui_return_table=$t
