@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.20 2003-02-16 13:02:17 racke Exp $
+# $Id: Shadow.pm,v 1.21 2003-02-17 11:49:08 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 
 # TODO
 #
@@ -129,7 +129,6 @@ sub column_index {
 
 sub column_exists {
     my ($s, $column) = @_;
-	my ($locale);
 	
 	$s = $s->import_db() if ! defined $s->[$OBJ];
 	my ($orig_db, $orig_col) = $s->_map_field($column);
