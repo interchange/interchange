@@ -40,10 +40,14 @@ mv_todo=return
 [/set]
 
 
+<tr id=rnorm>
+<td colspan=2>
+<B>1.</B> Either...
+</tr>
+
 <tr class=ralt>
 <td width=25%>
-1. Choose a page template from the pull-down menu:
-
+<b>a.</B> Choose a page template to base the new template on:
 </td>
 <td>
 <select name="ui_template_template" size=1>
@@ -80,25 +84,15 @@ mv_todo=return
 </select>
 </td>
 </tr>
+
 <tr id=rnorm>
-<td>
-2. (Optional) Preview your selection:
-</td>
-<td>
-<input type="submit" name="mv_click" value="Preview template" onClick="this.form.target='_blank'"> &nbsp; (Opens a new window)
-</td>
+<td colspan=2>
+<blockquote>or...</blockquote>
 </tr>
-<tr id=ralt>
-<td>
-3. Name the template you are creating:
-</td>
-<td>
-<INPUT NAME=ui_template_new>
-</td>
-</tr>
+
 <tr id=rnorm>
-<td>
-4. Upload a page to base it on:
+<td valign=top>
+<B>b.</b>Upload a page to base it on:
 </td>
 <td>
 <input type="file" name="ui_upload_template"><BR>
@@ -111,7 +105,25 @@ mv_todo=return
 
 <tr id=ralt>
 <td>
-5. [L]Click this button to create the template[/L]:
+<B>2.</b> Name the template you are creating:
+</td>
+<td>
+<INPUT NAME=ui_template_new>
+</td>
+</tr>
+
+<tr id=ralt>
+<td>
+<B>3.</b> Short description of the template (if any):
+</td>
+<td>
+<INPUT NAME=ui_template_description>
+</td>
+</tr>
+
+<tr id=ralt>
+<td>
+<B>4.</b> [L]Click this button to create the template[/L]:
 </td>
 <td>
 <input type="submit" name="mv_click" value="[L]Create new template[/L]" onClick="this.form.target='_self'"><INPUT TYPE=hidden NAME=ui_show_template VALUE=1>

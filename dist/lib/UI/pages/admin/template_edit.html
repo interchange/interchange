@@ -60,6 +60,17 @@
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 	my $ver = $Tag->version();
+	$Values->{ui_theme} = $CGI->{ui_theme} if defined $CGI->{ui_theme};
+	$Values->{ui_theme} = $Variable->{THEME} unless defined $Values->{ui_theme};
+
+	sub bleach_it {
+		my $val = shift;
+		$val =~ s/\s+$//g;
+		$val =~ s/^\s+//g;
+		$val =~ s/\W+/_/g;
+		$val =~ s/_+/_/g;
+		return lc($val);
+	}
 
 	sub tmp_error {
 		my $msg = errmsg(@_);
@@ -70,20 +81,41 @@
 EOF
 	}
 
-	my $current;
-	if (! $CGI->{ui_template_backup}) {
-		$current = $Scratch->{ui_current_content};
+	my $new;
+	my $ary;
+	my $tref;
+	my $t_name;
+	my $t_desc;
+
+	if($CGI->{ui_template_new}) {
+#Debug("found new template");
+		$t_desc = $CGI->{ui_template_description} || $CGI->{ui_template_new};
+		$t_name = bleach_it($CGI->{ui_template_new});
+		$new = 1;
 	}
 	else {
-		$current = tag_data('backup', 'page_text', $CGI->{ui_template_backup});
-		$current = $Tag->filter('decode_entities', $current);
-		if(! length($current)) {
-			return tmp_error(
-					"Backup retrieval (%s) failed.",
-					$CGI->{ui_template_backup},
-					);
-		}
+#Debug("named template cgi=$CGI->{ui_template}");
+		$t_name = $CGI->{ui_template};
 	}
+
+#Debug(sprintf "template name=$t_name, length %d", length($t_name));
+	return tmp_error("No name for template.")
+		unless $t_name =~ /\S/;
+
+#	my $current;
+#	if (! $CGI->{ui_template_backup}) {
+#		$current = $Scratch->{ui_current_content};
+#	}
+#	else {
+#		$current = tag_data('backup', 'page_text', $CGI->{ui_template_backup});
+#		$current = $Tag->filter('decode_entities', $current);
+#		if(! length($current)) {
+#			return tmp_error(
+#					"Backup retrieval (%s) failed.",
+#					$CGI->{ui_template_backup},
+#					);
+#		}
+#	}
 
 	my %hidden;
 #Log("current begins: " . substr($current, 0, 1000) );
@@ -99,21 +131,11 @@ EOF
 		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
 	}
 
-	sub bleach_it {
-		my $val = shift;
-		$val =~ s/\W+/_/g;
-		$val =~ s/_+/_/g;
-		return lc($val);
-	}
-
-	my $new;
-	my $ary;
-	my $tref;
-
-	if($CGI->{ui_template_change}) {
+	my $t_revert;
+	if($new and $CGI->{ui_template_template}) {
 #Log("found change of template");
-		$t_name = $CGI->{ui_template_change};
-		$new = 1;
+		$t_revert = $t_name;
+		$t_name = $CGI->{ui_template_template};
 	}
 	elsif ($Scratch->{ui_template_structure}) {
 		$tref = delete $Scratch->{ui_template_structure};
@@ -144,6 +166,7 @@ EOF
 
 	TEMPLATE_READ:  {
 		last TEMPLATE_READ if $tref;
+		last TEMPLATE_READ if ! $exists;
 		($ary) = $Tag->read_ui_template($t_file);
 		$tref = shift @$ary;
 		ref($tref) =~ /HASH/ 
@@ -152,6 +175,10 @@ EOF
 					$t_name,
 				);
 		last TEMPLATE_READ if $tref;
+	
+   }
+
+   if($new and ! $tref) {
 		$tref = {};
 		my $name_top = uc($t_name) . "_TOP";
 		my $name_bot = uc($t_name) . "_BOTTOM";
@@ -168,37 +195,50 @@ ui_template_description: $t_desc
 ui_template_version: $ver
 
 EOF
-		my $template_input;
-		my $content;
-		if( $Values->{ui_upload_template}
-			and $Tag->value_extended(
-					{
-						name => 'ui_upload_template',
-						test => 'isfile',
-					}
-				)
-			)							
-		{
+	}
+
+	my $template_input;
+	my $content;
+	if( $Values->{ui_upload_template}
+		and $Tag->value_extended(
+				{
+					name => 'ui_upload_template',
+					test => 'isfile',
+				}
+			)
+		)							
+	{
 push @messages, "template from upload:\n$tref->{ui_definition}";
-			$template_input = $Tag->value_extended( {
-													name => 'ui_upload_template',
-													file_contents => 1,
-													});
-			$template_input =~ s{(.*)(<!--\s+begin\s+content\s+-->)}{$2}is;
-			$template_top = $1;
-			$template_top =~ s/^\s+//;
-			$template_top =~ s/\s+$//;
-			$template_input =~ s{(<!--\s+end\s+content\s+-->)\n*(.*)}{$1\n}is;
-			$template_bot = $2;
-			$template_bot =~ s/^\s+//;
-			$template_bot =~ s/\s+$//;
-			$content = $template_input;
-			$content =~ s/^\s*<!--+\s+begin\s+content\s+--+>(?:\s*\n+)?//i;
-			$content =~ s/(?:\n+\s*)?<!--+\s+end\s+content\s+--+>\s*$//i;
-			push @messages, "Content:\n$content";
-		}
-	
-   }
+		$template_input = $Tag->value_extended( {
+												name => 'ui_upload_template',
+												file_contents => 1,
+												});
+		$template_input =~ s{(.*)(<!--\s+begin\s+content\s+-->)}{$2}is;
+		$template_top = $1;
+		$template_top =~ s/^\s+//;
+		$template_top =~ s/\s+$//;
+		$template_input =~ s{(<!--\s+end\s+content\s+-->)\n*(.*)}{$1\n}is;
+		$template_bot = $2;
+		$template_bot =~ s/^\s+//;
+		$template_bot =~ s/\s+$//;
+		$content = $template_input;
+		$content =~ s/^\s*<!--+\s+begin\s+content\s+--+>(?:\s*\n+)?//i;
+		$content =~ s/(?:\n+\s*)?<!--+\s+end\s+content\s+--+>\s*$//i;
+		push @messages, "Content:\n$content";
+	}
+
+	my $example_layout;
+   if($t_revert) {
+   		$t_name = $t_revert;
+		$example_layout = $tref->{ui_template_layout};
+   		return tmp_error("Still no template reference?") unless $tref;
+		my $name_top = uc($t_name) . "_TOP";
+		my $name_bot = uc($t_name) . "_BOTTOM";
+		$tref->{ui_template} = $t_name;
+		$tref->{ui_template_name} = $t_name;
+		$tref->{ui_template_layout} = "$name_top, UI_CONTENT, $name_bot";
+		$tref->{ui_template_description} = $t_desc;
+	}
 
 	$t_desc = $tref->{ui_template_description} if ! $t_desc;
 
@@ -272,7 +312,7 @@ EOF
 	}
 
 	if($tref and ! $template_top) {
-		my @el = split /[\s,\0]+/, $tref->{ui_template_layout};
+		my @el = split /[\s,\0]+/, $example_layout || $tref->{ui_template_layout};
 		my $i = -1;
 		my $found;
 		for (@el) {
