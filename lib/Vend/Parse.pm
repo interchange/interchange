@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.27 2003-06-18 17:34:44 jon Exp $
+# $Id: Parse.pm,v 2.28 2003-06-23 16:44:40 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -704,7 +704,7 @@ sub start {
 			return 1;
 		}
 		elsif($tag eq 'bounce') {
-#::logDebug("bouncing...");
+#::logDebug("bouncing...options=" . ::uneval($attr));
 			return 1 if resolve_if_unless($attr);
 			if(! $attr->{href} and $attr->{page}) {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
@@ -719,8 +719,16 @@ EOF
 Status: $attr->{status}
 Location: $attr->{href}
 EOF
+#::logDebug("bouncing...status line=\n$Vend::StatusLine");
 			$$buf = '';
 			$Initialized->{_buf} = '';
+			
+            my $body = qq{Redirecting to <A href="%s">%s</a>.};
+            $body = errmsg($body, $attr->{href}, $attr->{href});
+#::logDebug("bouncing...body=$body");
+			$::Pragma->{download} = 1;
+			::response($body);
+			$Vend::Sent = 1;
 			$self->{SEND} = 1;
 			return 1;
 		}
