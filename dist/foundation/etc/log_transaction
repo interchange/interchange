@@ -160,7 +160,7 @@ There was an error adding to the transaction log.
 [userdb save]
 
 [if scratch auto_create]
-	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]
+	Logout auto-created user: [seti auto_username show=1][userdb function=logout clear=0 clear_cart=0][/seti][scratch auto_username]
 [/if]
 
 [comment]Past add data entry.[/comment]

@@ -22,28 +22,32 @@ Checking shipping: HASSHIPPING=[scratch HASSHIPPING]
 
 [if value b_address1]
 [then]
-	[seti ADDR1][if value company][value company] -- [/if][if value b_fname][value b_fname] [value b_lname][else][value fname] [value lname][/else][/if][/seti]
-	[seti ADDR2][value b_address1][if value b_address2], [value b_address2][/if][/seti]
-	[seti ADDR3][value b_city], [value b_state] [value b_zip][/seti]
-	[seti ADDR4][if value b_country][if value b_country ne US]INTL: [data table=country col=name key="[value b_country]"][/if][/if][/seti]
-	[seti SADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
-	[seti SADDR2][value address1][if value address2], [value address2][/if][/seti]
-	[seti SADDR3][value city], [value state] [value zip][/seti]
-	[seti SADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
+	[seti ADDR1][if value b_fname][value b_fname] [value b_lname][else][value fname] [value lname][/else][/if][/seti]
+	[seti ADDR2][if value company][value company][/if][/seti]
+	[seti ADDR3][value b_address1][if value b_address2], [value b_address2][/if][/seti]
+	[seti ADDR4][value b_city], [value b_state] [value b_zip][/seti]
+	[seti ADDR5][if value b_country][if !value country =~ /^US.*/]INTL: [data table=country col=name key="[value b_country]"][/if][/if][/seti]
+	[seti SADDR1][value fname] [value lname][/seti]
+	[seti SADDR2][if value company][value company][/if][/seti]
+	[seti SADDR3][value address1][if value address2], [value address2][/if][/seti]
+	[seti SADDR4][value city], [value state] [value zip][/seti]
+	[seti SADDR5][if value country][if !value country =~ /^US.*/]INTL: [data table=country col=name key="[value country]"][/if][/if][/seti]
 [/then]
 [else]
-	[seti ADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
-	[seti ADDR2][value address1][if value address2], [value address2][/if][/seti]
-	[seti ADDR3][value city], [value state] [value zip][/seti]
-	[seti ADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
-	[seti SADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
-	[seti SADDR2][value address1][if value address2], [value address2][/if][/seti]
-	[seti SADDR3][value city], [value state] [value zip][/seti]
-	[seti SADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
+	[seti ADDR1][value fname] [value lname][/seti]
+	[seti ADDR2][if value company][value company][/if][/seti]
+	[seti ADDR3][value address1][if value address2], [value address2][/if][/seti]
+	[seti ADDR4][value city], [value state] [value zip][/seti]
+	[seti ADDR5][if value country][if !value country =~ /^US.*/]INTL: [data table=country col=name key="[value country]"][/if][/if][/seti]
+	[seti SADDR1][value fname] [value lname][/seti]
+	[seti SADDR2][if value company][value company][/if][/seti]
+	[seti SADDR3][value address1][if value address2], [value address2][/if][/seti]
+	[seti SADDR4][value city], [value state] [value zip][/seti]
+	[seti SADDR5][if value country][if !value country =~ /^US.*/]INTL: [data table=country col=name key="[value country]"][/if][/if][/seti]
 [/else]
 [/if]
 
-[seti CUSTNAME][either][value company][or][value lname], [value fname][/either] ([data session username])[/seti]
+[seti CUSTNAME][either][value company][or][value lname], [value fname][/either] ([either][scratch auto_username][or][data session username][/either])[/seti]
 [set TRNSTYPE]INVOICE[/set]
 [seti DATE][tag time]%m/%d/%y[/tag][/seti]
 [seti FILEDATE][tag time]%Y%m%d[/tag][/seti]
@@ -84,7 +88,7 @@ Cash
 [comment]MIDINIT[/comment]
 [value lname]
 [comment]CUSTFLD1[/comment]
-[comment]CUSTFLD2[/comment]
+[value email][comment]CUSTFLD2[/comment]
 [comment]CUSTFLD3[/comment]
 [value email]
 [comment]CUSTFLD5[/comment]
@@ -106,17 +110,18 @@ Cash
 [comment]JOBDESC[/comment]
 N
 __STORE_ID__[/filter]
-!TRNS	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
+!TRNS	TRNSID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	[if !var QB_DISABLE_DOCNUM]DOCNUM[/if]	MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
 !SPL	SPLID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	QNTY	PRICE	INVITEM	PAYMETH	TAXABLE	VALADJ	SERVICEDATE	OTHER2	EXTRA
 !ENDTRNS
 [filter tabbed]TRNS
+[value mv_order_number]
 [scratch TRNSTYPE]
 [scratch DATE]
 Accounts Receivable
 [scratch CUSTNAME]
 
 [total-cost noformat=1]
-[value mv_order_number]
+[if !var QB_DISABLE_DOCNUM][value mv_order_number][/if]
 [value name=gift_note filter=mac] - Order Number: [value mv_order_number]
 N
 N
@@ -135,7 +140,7 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-[if-item-data inventory account][item-data inventory account][else]Other Income[/else][/if-item-data]
+[either][item-data inventory account][or][var QB_DEFAULT_ACCOUNT][or]Other Income[/either]
 [scratch CUSTNAME]
 
 -[item-subtotal noformat]
@@ -144,7 +149,7 @@ N
 N
 -[item-quantity]
 [item-price noformat=1]
-[item-filter 30][item-field title][/item-filter]
+[item-filter 45][var QB_TITLE_PREFIX][item-field title][/item-filter]
 
 [if-item-field nontaxable]N[else][scratch NAMEISTAXABLE][/else][/if-item-field]
 N
@@ -155,7 +160,7 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-Other Income
+[either][var QB_SHIPPING_ACCOUNT][or]Other Income[/either] 
 [scratch CUSTNAME]
 
 -[shipping noformat=1]
@@ -164,7 +169,7 @@ Other Income
 N
 -1
 [shipping noformat=1]
-Shipping
+[either][var QB_SHIPPING_ITEM][or]Shipping[/either]
 
 N
 N
@@ -175,8 +180,8 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-Sales Tax Payable
-State Board of Equalization
+[either][var QB_SALES_TAX_ACCOUNT][or]Sales Tax Payable[/either]
+[either][var QB_SALES_TAX_AGENCY][or]State Board of Equalization[/either]
 
 -[salestax noformat=1]
 [value mv_order_number]
@@ -184,7 +189,7 @@ State Board of Equalization
 N
 -1
 
-Sales Tax Item
+[either][var QB_SALES_TAX_ITEM][or]Sales Tax Item[/either]
 
 N
 N
@@ -198,7 +203,7 @@ ENDTRNS
 	$Scratch->{qb_trans} =~ s/\s*$/\r\n/;
 	return;
 [/calc]
-Logging transaction to orders/qb[scratch FILEDATE].iif: [tag op=log umask=022 file="orders/qb[scratch FILEDATE].iif" type=text interpolate=1][scratch qb_trans]
+Logging transaction to orders/qb[either][var QB_FILE_SUFFIX][or][scratch FILEDATE][/either].iif: [tag op=log umask=022 file="orders/qb[value mv_order_number].iif" type=text interpolate=1][scratch qb_trans]
 [/tag]
 
 [calc]
