@@ -414,7 +414,6 @@ dist/foundation/dbconf/sqlite/variable.dbm
 dist/foundation/dbconf/sqlite/variants.lite
 dist/foundation/etc/area.recordnumber
 dist/foundation/etc/cat.recordnumber
-dist/foundation/etc/log_entry
 dist/foundation/etc/log_transaction
 dist/foundation/etc/mail_receipt
 dist/foundation/etc/order.number
