@@ -31,13 +31,10 @@ sub regen_build {
 	$Vend::Session = {
 		'ohost'		=> 'REGENERA',
 		'browser'	=> "Interchange $::VERSION regenerator",
-		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}},
-							mv_no_session_id => 1,
-							mv_no_count => 1,
-							},
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
 	};
+$::Scratch->{mv_no_session_id} = 1;
 	my ($key, $value);
 	while (($key, $value) = each (%{$Vend::Cfg->{StaticSessionDefault}})) {
         $Vend::Session->{$key} = $value;
@@ -78,9 +75,18 @@ sub regen_build {
 	return unless defined $page;
 
 	my $pageref;
+    my $scratch = $::Scratch;
+	$::Scratch = { %{$Vend::Cfg->{ScratchDefault}},
+					mv_no_session_id => 1,
+					mv_no_count => 1,
+				 };
+
 	eval {
 		($pageref) = ::cache_html($page, 1);
 	};
+
+	$::Scratch = $scratch;
+
 #::logDebug(<<EOF);
 #finished regen_build:
 #	out=$regen_out
