@@ -62,6 +62,8 @@ Core
   is in the route. This is really how it should have been done in the
   first place.
 
+* Remove Vend::Server::http_log_msg which is only called for SOAP accesses.
+
 Foundation
 ----------
 

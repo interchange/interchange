@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.43 2003-12-10 21:35:43 mheins Exp $
+# $Id: Server.pm,v 2.44 2004-01-07 15:37:41 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -700,25 +700,6 @@ BEGIN {
 
 }
 
-sub http_log_msg {
-	my($status, $env, $request) = @_;
-	my(@params);
-
-	# IP, Session, REMOTE_USER (if any) and time
-    push @params, ($$env{REMOTE_HOST} || $$env{REMOTE_ADDR});
-	push @params, ($$env{SERVER_PORT} || '-');
-	push @params, ($$env{REMOTE_USER} || '-');
-	push @params, logtime();
-
-	# Catalog name
-	push @params, qq{"$request"};
-
-	push @params, $status;
-
-	push @params, '-';
-	return join " ", @params;
-}
-
 sub http_soap {
 	my($fh, $env, $entity) = @_;
 
@@ -795,14 +776,6 @@ sub http_soap {
 #::logDebug("found catalog $catname");
 		$$env{SCRIPT_NAME} = $catname;
 	}
-
-	logData("$Global::VendRoot/etc/access_log",
-			http_log_msg(
-						"SOAP$status",
-						$env,
-						($$env{REQUEST_METHOD} .  " " .  $request),
-						)
-		);
 
 	populate($env);
 	map_misc_cgi();
