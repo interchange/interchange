@@ -884,6 +884,7 @@ lib/Vend/Order.pm
 lib/Vend/Page.pm
 lib/Vend/Parse.pm
 lib/Vend/Parser.pm
+lib/Vend/SOAP.pm
 lib/Vend/Scan.pm
 lib/Vend/Search.pm
 lib/Vend/Server.pm
