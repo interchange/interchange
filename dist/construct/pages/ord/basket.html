@@ -90,10 +90,14 @@ lose your shopping cart.
 [calc]
 my $item = '[item-increment]';
 my $up = q{[item-data merchandising upsell_to]};
-if($up) {
-	$Scratch->{upsell} .= " $up";
-	$Scratch->{upsell} =~ s/^\s+//;
-}
+$upsell_remove{'[item-code]'} = 1;
+my %seen = ( '' => 1 );
+
+$Scratch->{upsell} .= " $up" if $up;
+my @up = split /\s+/, $Scratch->{upsell};
+@up = grep  ( (!$seen{$_}++ && ! $upsell_remove{$_}), @up);
+$Scratch->{upsell} = join " ", @up;
+
 if ($item % 2 == 1) {
 	$Scratch->{color} = "#CCCCCC";
 }
