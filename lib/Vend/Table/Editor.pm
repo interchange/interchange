@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.40 2003-07-21 17:58:55 mheins Exp $
+# $Id: Editor.pm,v 1.41 2003-07-22 03:36:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.40 $, 10);
+$VERSION = substr(q$Revision: 1.41 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3292,7 +3292,7 @@ EOF
 												}
 										});
 				$meta_specific = <<EOF;
-<br><a href="$meta_url_specific"$opt->{meta_extra}>$opt->{meta_anchor_specific}</A>
+<br><a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor_specific}</A>
 EOF
 			}
 								
@@ -3302,18 +3302,18 @@ EOF
 #::logDebug("meta-title=$opt->{meta_title}");
 				my $title = errmsg($opt->{meta_title}, $t, $c);
 				$meta_string = <<EOF;
-<a href="$meta_url"$opt->{meta_extra}><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></A></A>
+<a href="$meta_url"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></A></A>
 EOF
 				if($meta_specific) {
 					$title = errmsg($opt->{meta_title_specific}, $t, $c, $key);
 					$meta_string .= <<EOF;
-<a href="$meta_url_specific"$opt->{meta_extra}><img src="$opt->{meta_image_specific}" title="$title" $opt->{meta_image_extra}></A>
+<a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image_specific}" title="$title" $opt->{meta_image_extra}></A>
 EOF
 				}
 			}
 			else {
 				$meta_string = <<EOF;
-$opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra}>$opt->{meta_anchor}</A>
+$opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor}</A>
 $meta_specific$opt->{meta_append}
 EOF
 			}
