@@ -1,5 +1,5 @@
 LICENSE
-MANIFEST
+MANIFEST			This list of files
 MANIFEST.SKIP
 Makefile.PL
 README
@@ -49,6 +49,7 @@ code/SystemTag/fly_tax.coretag
 code/SystemTag/handling.coretag
 code/SystemTag/harness.coretag
 code/SystemTag/html_table.coretag
+code/SystemTag/image.tag
 code/SystemTag/import.coretag
 code/SystemTag/include.coretag
 code/SystemTag/index.coretag
@@ -59,6 +60,7 @@ code/SystemTag/levy_list.coretag
 code/SystemTag/log.coretag
 code/SystemTag/loop.coretag
 code/SystemTag/mail.coretag
+code/SystemTag/menu.coretag
 code/SystemTag/msg.coretag
 code/SystemTag/mvasp.coretag
 code/SystemTag/nitems.coretag
@@ -138,6 +140,7 @@ code/UI_Tag/if_mm.coretag
 code/UI_Tag/if_sql.coretag
 code/UI_Tag/image_collate.coretag
 code/UI_Tag/import_fields.coretag
+code/UI_Tag/jsq.coretag
 code/UI_Tag/list_databases.coretag
 code/UI_Tag/list_glob.coretag
 code/UI_Tag/list_keys.coretag
@@ -188,7 +191,6 @@ code/UserTag/formel.tag
 code/UserTag/fortune.tag
 code/UserTag/get_url.tag
 code/UserTag/history_scan.tag
-code/UserTag/image.tag
 code/UserTag/load_cart.tag
 code/UserTag/loc.tag
 code/UserTag/rand.tag
@@ -280,6 +282,7 @@ dist/foundation/dbconf/default_db/pricing.dbm
 dist/foundation/dbconf/default_db/products.dbm
 dist/foundation/dbconf/default_db/state.dbm
 dist/foundation/dbconf/default_db/transactions.dbm
+dist/foundation/dbconf/default_db/tree.dbm
 dist/foundation/dbconf/default_db/userdb.dbm
 dist/foundation/dbconf/default_db/variable.dbm
 dist/foundation/dbconf/mysql/2ndDayAir.dbm
@@ -304,6 +307,7 @@ dist/foundation/dbconf/mysql/pricing.mysql
 dist/foundation/dbconf/mysql/products.mysql
 dist/foundation/dbconf/mysql/state.mysql
 dist/foundation/dbconf/mysql/transactions.mysql
+dist/foundation/dbconf/mysql/tree.mysql
 dist/foundation/dbconf/mysql/userdb.mysql
 dist/foundation/dbconf/mysql/variable.dbm
 dist/foundation/dbconf/oracle/2ndDayAir.dbm
@@ -328,6 +332,7 @@ dist/foundation/dbconf/oracle/pricing.ora
 dist/foundation/dbconf/oracle/products.ora
 dist/foundation/dbconf/oracle/state.ora
 dist/foundation/dbconf/oracle/transactions.ora
+dist/foundation/dbconf/oracle/tree.ora
 dist/foundation/dbconf/oracle/userdb.ora
 dist/foundation/dbconf/oracle/variable.dbm
 dist/foundation/dbconf/pgsql/2ndDayAir.dbm
@@ -352,6 +357,7 @@ dist/foundation/dbconf/pgsql/pricing.pgsql
 dist/foundation/dbconf/pgsql/products.pgsql
 dist/foundation/dbconf/pgsql/state.pgsql
 dist/foundation/dbconf/pgsql/transactions.pgsql
+dist/foundation/dbconf/pgsql/tree.pgsql
 dist/foundation/dbconf/pgsql/userdb.pgsql
 dist/foundation/dbconf/pgsql/variable.dbm
 dist/foundation/etc/area.recordnumber
@@ -374,6 +380,8 @@ dist/foundation/images/clear.gif
 dist/foundation/images/computer.xls
 dist/foundation/images/construct.xls
 dist/foundation/images/download.png
+dist/foundation/images/fc.gif
+dist/foundation/images/fo.gif
 dist/foundation/images/foundation/about.gif
 dist/foundation/images/foundation/buynow.gif
 dist/foundation/images/foundation/cart.gif
@@ -473,6 +481,7 @@ dist/foundation/products/salestax.asc
 dist/foundation/products/shipping.asc
 dist/foundation/products/state.txt
 dist/foundation/products/transactions.txt
+dist/foundation/products/tree.txt
 dist/foundation/products/userdb.txt
 dist/foundation/products/variable.txt
 dist/foundation/special_pages/badsearch.html
@@ -502,6 +511,7 @@ dist/foundation/templates/components/category_vertical
 dist/foundation/templates/components/cross
 dist/foundation/templates/components/fortune
 dist/foundation/templates/components/none
+dist/foundation/templates/components/product_tree
 dist/foundation/templates/components/promo
 dist/foundation/templates/components/random
 dist/foundation/templates/components/saved_carts_list_small
@@ -658,6 +668,8 @@ dist/lib/UI/pages/admin/.access
 dist/lib/UI/pages/admin/.autoload
 dist/lib/UI/pages/admin/access.html
 dist/lib/UI/pages/admin/access_permissions.html
+dist/lib/UI/pages/admin/accounting/index.html
+dist/lib/UI/pages/admin/accounting/return.html
 dist/lib/UI/pages/admin/add_meta_option.html
 dist/lib/UI/pages/admin/advanced.html
 dist/lib/UI/pages/admin/affiliates.html
@@ -724,6 +736,7 @@ dist/lib/UI/pages/admin/item_up.html
 dist/lib/UI/pages/admin/layout.html
 dist/lib/UI/pages/admin/layout_auto.html
 dist/lib/UI/pages/admin/login.html
+dist/lib/UI/pages/admin/menu_editor.html
 dist/lib/UI/pages/admin/merchandising.html
 dist/lib/UI/pages/admin/meta_editor.html
 dist/lib/UI/pages/admin/misc_order_number.html
@@ -813,6 +826,8 @@ dist/lib/UI/pages/include/component_editor
 dist/lib/UI/pages/include/item_option_matrix
 dist/lib/UI/pages/include/item_option_modular
 dist/lib/UI/pages/include/item_option_simple
+dist/lib/UI/pages/include/menus/Accounting.txt
+dist/lib/UI/pages/include/menus/Quicklinks.txt
 dist/lib/UI/pages/include/order_delete_archive
 dist/lib/UI/pages/include/page_editor
 dist/lib/UI/pages/include/table_populator
@@ -913,6 +928,7 @@ lib/Vend/Glimpse.pm
 lib/Vend/Imagemap.pm
 lib/Vend/Interpolate.pm
 lib/Vend/MakeCat.pm
+lib/Vend/Menu.pm
 lib/Vend/ModPerl.pm
 lib/Vend/Order.pm
 lib/Vend/Page.pm
@@ -923,8 +939,10 @@ lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CCVS.pm
 lib/Vend/Payment/CyberCash.pm
+lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
+lib/Vend/Payment/TCLink.pm
 lib/Vend/Payment/WellsFargo.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/RefSearch.pm

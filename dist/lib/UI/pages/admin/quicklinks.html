@@ -30,48 +30,8 @@
 [seti win][data session arg][/seti]
 [/if]
 
-[loop prefix=menu
-	  head-skip=1
-	  list="[file include/menus/Quicklinks.txt]"
-	  lr=1
-][on-match][menu-exec menu_link]Just gets fieldnames[/menu-exec][/on-match]
-[menu-sub menu_link]
-sub {
-	my $attrlist = shift;
-
-	# Set to a default if not passed
-	$attrlist = <<EOF unless $attrlist =~ /\S/;
+[menu menu-type=simple name=Quicklinks]
 {PAGE:}
-	<b>{NAME}:</b>
-	<br>
-{/PAGE:}
-
-{PAGE?}
-&nbsp;&nbsp;&nbsp;
-<a href="{HREF}"{DESCRIPTION?} title="{DESCRIPTION}"{/DESCRIPTION?}>{NAME}</a><br>
-{/PAGE?}
-EOF
-
-	my $row = shift;
-	if(ref($row) eq 'HASH') {
-		@menu_fieldnames = map { uc($_) } @{$row->{object}{mv_field_names}};
-		return;
-	}
-	my %line;
-	@line{@menu_fieldnames} = @$row;
-	if($line{MGROUP} and $CGI->{mgroup} !~ /\b$line{MGROUP}\b/) {
-		return;
-	}
-	return '<br>' unless $line{NAME};
-	return $line{NAME} if ! $line{PAGE} and $line{NAME} =~ /^\s*</;
-	$line{WIN}  = $Scratch->{win};
-	$line{HREF} = $Tag->area( { href => $line{PAGE}, form => $line{FORM} });
-	$line{NAME} = errmsg($line{NAME});
-	$line{DESCRIPTION} =~ s/"/&quot;/g;
-	return $Tag->attr_list(\%line, $attrlist);
-}
-[/menu-sub]
-[menu-exec menu_link]{PAGE:}
 	<b>{NAME}:</b>
 	<br>
 {/PAGE:}{PAGE?}
@@ -80,7 +40,8 @@ EOF
 	target="mainwindow{WIN}"
 	href="{HREF}"{DESCRIPTION?}
 	title="{DESCRIPTION}"{/DESCRIPTION?}>{NAME}</a><br>
-{/PAGE?}[/menu-exec][/loop]
+{/PAGE?}
+[/menu]
 
 </FONT>
                 </TD>

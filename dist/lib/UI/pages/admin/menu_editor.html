@@ -16,6 +16,10 @@ Hit action for no-content
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
+[loop list="tree __MV_TREE_TABLE__"]
+[flag type=write table="[loop-code]"]
+[/loop]
+
 [seti medit_tables]
 __MV_TREE_TABLE__
 __ProductFiles_0__
@@ -25,7 +29,7 @@ __UI_META_TABLE__
 [/seti]
 
 [perl tables="[scratch medit_tables]"]
-	my $menupath = $Variable->{MENU_DIRECTORY} || 'include/menus';
+	my $menupath = $Variable->{MV_MENU_DIRECTORY} || 'include/menus';
 	@menufields = qw/code mgroup inactive msort page form name description extended/;
 
 	$Tag->tmp('qmenu_fdata');

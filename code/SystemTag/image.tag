@@ -202,6 +202,10 @@ sub {
 		}
 	}
 
+	if($opt->{name_only} and $src) {
+		return $src =~ /$absurlre/ ? $src : "$imagedircurrent$src";
+	}
+
 	if ($src =~ /$absurlre/) {
 		# we have no way to check validity of full URLs,
 		# so we just assume they're good
@@ -293,6 +297,9 @@ sub {
 			$val = '""' if $val eq '';
 			$opts .= qq{ $_=$val};
 		}
+	}
+	if($opt->{extra}) {
+		$opts .= " $opt->{extra}";
 	}
 	$image = $imagedircurrent . $image unless
 		$image =~ /$absurlre/ or substr($image, 0, 1) eq '/';

@@ -36,6 +36,14 @@ Core
 * Add First and Last links to more-list, with ability to customize via
   [first-anchor] and [last-anchor] containers.
 
+* Add new menu editor and menu system. It is based around Vend::Menu
+  and the new tag [menu ...], which builds various types of DHTMl and
+  standard HTML menus based on browser type.
+
+  The menu editor can edit simple menus or tree-based menus. Eventually
+  all UI menus will use this, and a simple menu component (i.e. a link list)
+  can be placed in the public-facing catalog.
+
 * New support for database-native sequences for MySQL, PostgreSQL, and Oracle:
 
   - To do a minimal sequenced table, all you need to do is:

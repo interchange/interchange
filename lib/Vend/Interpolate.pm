@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.99 2002-08-03 04:20:30 mheins Exp $
+# $Id: Interpolate.pm,v 2.100 2002-08-05 04:05:40 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.99 $, 10);
+$VERSION = substr(q$Revision: 2.100 $, 10);
 
 @EXPORT = qw (
 
@@ -4066,7 +4066,7 @@ sub labeled_list {
 }
 
 sub tag_attr_list {
-	my ($body, $hash) = @_;
+	my ($body, $hash, $ucase) = @_;
 	if(! ref $hash) {
 		$hash = string_to_ref($hash);
 		if($@) {
@@ -4074,6 +4074,18 @@ sub tag_attr_list {
 		}
 		return undef if ! ref $hash;
 	}
+	if($ucase) {
+		$body =~ s!\{($Codere)\}!$hash->{"\L$1"}!g;
+		$body =~ s!\{($Codere)\?($Codere)\:($Codere)\}!
+					length($hash->{lc $1}) ? $hash->{lc $2} : $hash->{lc $3}
+				  !eg;
+		$body =~ s!\{($Codere)\|($Some)\}!$hash->{lc $1} || $2!eg;
+		$body =~ s!\{($Codere)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+		$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
+	}
+	else {
 	$body =~ s!\{($Codere)\}!$hash->{$1}!g;
 	$body =~ s!\{($Codere)\?($Codere)\:($Codere)\}!
 				length($hash->{$1}) ? $hash->{$2} : $hash->{$3}
@@ -4083,6 +4095,7 @@ sub tag_attr_list {
 	1 while $body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{$1} ? $2 : ''!eg;
 	1 while $body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{$1} ? '' : $2!eg;
 	$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
+	}
 	return $body;
 }
 
@@ -4316,7 +4329,6 @@ use vars qw/%Ary_code/;
 	last => \&interpolate_html,
 	next => \&interpolate_html,
 	options => \&tag_options,
-	tag => \&tag_dispatch,
 );
 
 use vars qw/%Hash_code/;
@@ -4328,7 +4340,6 @@ use vars qw/%Hash_code/;
 	last => \&interpolate_html,
 	next => \&interpolate_html,
 	options => \&tag_options,
-	tag => \&tag_dispatch,
 );
 
 sub map_list_routines {
@@ -4359,13 +4370,13 @@ sub map_list_routines {
 	if($ac = $opt->{maproutine}) {
 		$nc ||= {};
 		if(! ref($ac) ) {
-			$ac =~ s/\s+$//;
-			$ac =~ s/^\s+//;
-			$ac = { split /[\s,=\0]/, $ac };
+			$ac =~ s/[\s'",=>\0]+$//;
+			$ac =~ s/^[\s'",=>\0]+//;
+			$ac = { split /[\s'",=>\0]+/, $ac };
 		}
 		$ac = {} if ref($ac) ne 'HASH';
-		for(keys %$ac) {
-			$nc->{$_} = $Vend::Cfg->{Sub}{$_} || $Global::GlobalSub->{$_}
+		while( my($k,$v) = each %$ac) {
+			$nc->{$k} = $Vend::Cfg->{Sub}{$v} || $Global::GlobalSub->{$v}
 			  or do {
 				  logError("%s: non-existent mapped routine %s.", $type, $_);
 					delete $nc->{$_};
@@ -4426,7 +4437,9 @@ my $once = 0;
 	my $oexec = { %$opt };
 
 	if($opt->{iterator}) {
-		my $sub = $Vend::Cfg->{Sub}{$opt->{iterator}}
+		my $sub;
+		$sub = $opt->{iterator}          if ref($opt->{iterator}) eq 'CODE';
+		$sub ||= $Vend::Cfg->{Sub}{$opt->{iterator}}
 				|| $Global::GlobalSub->{$opt->{iterator}};
 		if(! $sub) {
 			logError(
@@ -4581,7 +4594,9 @@ sub iterate_hash_list {
 	my $oexec = { %$opt };
 
 	if($opt->{iterator}) {
-		my $sub = $Vend::Cfg->{Sub}{$opt->{iterator}}
+		my $sub;
+		$sub   = $opt->{iterator}          if ref($opt->{iterator}) eq 'CODE';
+		$sub ||= $Vend::Cfg->{Sub}{$opt->{iterator}}
 				|| $Global::GlobalSub->{$opt->{iterator}};
 		if(! $sub) {
 			logError(
