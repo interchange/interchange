@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.154 2005-02-01 02:07:14 jon Exp $
+# $Id: Config.pm,v 2.155 2005-02-03 14:52:19 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.154 $, 10);
+$VERSION = substr(q$Revision: 2.155 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3973,17 +3973,17 @@ sub parse_tag {
 	my $c = defined $C ? $C->{UserTag} : $Global::UserTag;
 
 	my($tag,$p,$val) = split /\s+/, $value, 3;
+
+	unless ( $tagCanon{lc $p} ) {
+		config_warn("Bad user tag parameter '%s' for '%s', skipping.", $p, $tag);
+		return $c;
+	}
 	
 	# Canonicalize
 	$p = $tagCanon{lc $p};
 	$tag =~ tr/-/_/;
 	$tag =~ s/\W//g
 		and config_warn("Bad characters removed from '%s'.", $tag);
-
-	unless ($p) {
-		config_warn("Bad user tag parameter '%s' for '%s', skipping.", $p, $tag);
-		return $c;
-	}
 
 	if($CodeDest and $CodeDest eq 'CoreTag') {
 		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
