@@ -185,6 +185,7 @@ code/UserTag/button.tag
 code/UserTag/capture_page.tag
 code/UserTag/component.tag
 code/UserTag/convert_date.tag
+code/UserTag/css.tag
 code/UserTag/db_date.tag
 code/UserTag/delete_cart.tag
 code/UserTag/email.tag
@@ -1306,6 +1307,7 @@ lib/Vend/Table/Shadow.pm
 lib/Vend/Tags.pm
 lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
+lib/Vend/UserControl.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
 relocate.pl
