@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.12 2002-09-30 11:13:41 racke Exp $
+# $Id: Shadow.pm,v 1.13 2002-09-30 20:58:05 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 # TODO
 #
@@ -241,20 +241,21 @@ sub _map_hash {
 	my ($s, $key, $href) = @_;
 
     for (keys %$href) {
-		$href->{$_} = $s->_map_column($key, $_);
+		$href->{$_} = $s->_map_column($key, $_, 1, $href->{$_});
 	}
 
 	$href;
 }
 
 sub _map_column {
-	my ($s, $key, $column) = @_;
-	my ($map, $db, $value);
+	my ($s, $key, $column, $done, $orig) = @_;
+	my ($map, $mapentry, $db, $value);
 
 	my $locale = $::Scratch->{mv_locale} || 'default';
 
 	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
-		$map = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+		$mapentry = $s->[$CONFIG]->{MAP}->{$column};
+		$map = $mapentry->{$locale};
 		if (exists $map->{table}) {
 			$db = Vend::Data::database_exists_ref($map->{table})
 					   or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
@@ -266,8 +267,22 @@ sub _map_column {
 		} else {
 			$value = $s->field($key, $map->{column});
 		}
-		$value;
+		if (! $value && $mapentry->{fallback}) {
+			# nothing found, so we fallback to the original entry
+			if ($done) {
+				$value = $orig;
+			} else {
+				$value = $s->field($key, $column);
+			}
+		}
+	} elsif ($done) {
+		# column lookup already took place
+		$value = $orig;
+	} else {
+		$value = $s->field($key, $column);
 	}
+
+	return $value;
 }
 
 1;
