@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.86 2001-06-29 03:20:56 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.87 2001-06-29 15:08:15 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.86 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.87 $, 10);
 
 @EXPORT = qw (
 
@@ -4068,7 +4068,7 @@ sub tag_more_list {
 				$prev_anchor = $1;
 			}
 			else {
-				$prev_anchor = 'Previous';
+				$prev_anchor = ::errmsg('Previous');
 			}
 		}
 		elsif ($prev_anchor ne 'none') {
@@ -4098,7 +4098,7 @@ sub tag_more_list {
 				$next_anchor = $1;
 			}
 			else {
-				$next_anchor = 'Next';
+				$next_anchor = ::errmsg('Next');
 			}
 		}
 		else {
@@ -4130,14 +4130,17 @@ sub tag_more_list {
 		$page_anchor = qq%<IMG SRC="$page_anchor?__PAGE__"__BORDER__>%;
 	}
 
+	my $more_string = ::errmsg('more');
 	my ($decade_next, $decade_prev, $decade_div);
 	if( $q->{mv_more_decade} or $r =~ m:\[decade[-_]next\]:) {
 		$r =~ s:\[decade[-_]next\]($All)\[/decade[-_]next\]::i
 			and $decade_next = $1;
-		$decade_next = '<SMALL>&#91;more&gt;&gt;&#93;</SMALL>' if ! $decade_next;
+		$decade_next = "<SMALL>&#91;$more_string&gt;&gt;&#93;</SMALL>"
+			if ! $decade_next;
 		$r =~ s:\[decade[-_]prev\]($All)\[/decade[-_]prev\]::i
 			and $decade_prev = $1;
-		$decade_prev = '<SMALL>&#91;&lt;&lt;more&#93;</SMALL>' if ! $decade_prev;
+		$decade_prev = "<SMALL>&#91;&lt;&lt;$more_string&#93;</SMALL>"
+			if ! $decade_prev;
 		$decade_div = $q->{mv_more_decade} > 1 ? $q->{mv_more_decade} : 10;
 	}
 
