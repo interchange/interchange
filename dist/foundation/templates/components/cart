@@ -257,8 +257,6 @@ EOF
 	[/calc]
 [/if]
 
-[if variable SEPARATE_SHIPPING]
-
 [item-tag-address
 			set="[cgi mv_an[item-modifier mv_ip]]"
 			address_label=city
@@ -325,7 +323,6 @@ EOF
 	  </td>
 	</TR>
 
-[/if]
 [/if]
 
 [/item-list]
