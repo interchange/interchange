@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.56 2003-04-01 04:12:32 mheins Exp $
+# $Id: Util.pm,v 2.57 2003-05-05 21:28:23 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.56 $, 10);
+$VERSION = substr(q$Revision: 2.57 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1158,7 +1158,6 @@ sub vendUrl {
 		unless defined $r;
 
 	my $secure;
-	my $can_cache = ! $Vend::Cfg->{NoCache}{$path};
 	my @parms;
 
 	if(exists $Vend::Cfg->{AlwaysSecure}{$path}) {
@@ -1193,9 +1192,9 @@ sub vendUrl {
 	my($id, $ct);
 	$id = $Vend::SessionID
 		unless $opt->{no_session_id}
-		or     ($Vend::Cookie and $can_cache and $::Scratch->{mv_no_session_id});
+		or     ($Vend::Cookie and $::Scratch->{mv_no_session_id});
 	$ct = ++$Vend::Session->{pageCount}
-		unless $opt->{no_count} or ($can_cache && $::Scratch->{mv_no_count});
+		unless $opt->{no_count} or $::Scratch->{mv_no_count};
 
 	if($opt->{match_security}) {
 		$opt->{secure} = $CGI::secure;
