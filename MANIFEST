@@ -1053,7 +1053,6 @@ dist/lib/UI/pages/admin/special/.access
 dist/lib/UI/pages/admin/special/.autoload
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
-dist/lib/UI/pages/admin/spread_control.html
 dist/lib/UI/pages/admin/survey/.access
 dist/lib/UI/pages/admin/survey/.autoload
 dist/lib/UI/pages/admin/survey/index.html
