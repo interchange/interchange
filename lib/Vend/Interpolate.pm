@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.46 2001-04-13 10:17:39 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.47 2001-04-13 10:22:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.46 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.47 $, 10);
 
 @EXPORT = qw (
 
@@ -366,6 +366,7 @@ my @th = (qw!
 	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Optx\]),
 	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Optx\]),
 	'_discount_subtotal' => qr($T{_discount_subtotal}$Optx\]),
+	'has_else'		=> qr($T{'/else'}\s*$),
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
@@ -1285,8 +1286,8 @@ sub split_if {
 	$body =~ s#$QR{then}##o
 		and $then = $1;
 
-	$body =~ s#$QR{else_end}##o
-		and $else = $1;
+	$body =~ s#$QR{has_else}##o
+		and $else = find_matching_else(\$body);
 
 	$body =~ s#$QR{elsif_end}##o
 		and $elsif = $1;
@@ -1297,7 +1298,7 @@ sub split_if {
 }
 
 sub tag_if {
-	my ($cond,$body) = @_;
+	my ($cond,$body,$negate) = @_;
 #::logDebug("Called tag_if: $cond\n$body\n");
 	my ($base, $term, $op, $operator, $comp);
 	my ($else, $elsif, $else_present, @addl);
@@ -1308,6 +1309,9 @@ sub tag_if {
 			and ($comp = $1, $operator = '');
 	}
 #::logDebug("tag_if: base=$base term=$term op=$operator comp=$comp");
+
+	#Handle unless
+	($base =~ s/^\W+// or $base = "!$base") if $negate;
 
 	$else_present = 1 if
 		$body =~ /\[[EeTtAaOo][hHLlNnRr][SsEeDd\s]/;
@@ -3323,8 +3327,13 @@ sub tag_calc {
 	return $result;
 }
 
+sub tag_unless {
+	return tag_self_contained_if(@_, 1) if defined $_[4];
+	return tag_if(@_, 1);
+}
+
 sub tag_self_contained_if {
-	my($base, $term, $operator, $comp, $body) = @_;
+	my($base, $term, $operator, $comp, $body, $negate) = @_;
 
 	my ($else,$elsif,@addl);
 	
@@ -3346,6 +3355,8 @@ sub tag_self_contained_if {
 		undef $operator;
 		undef $comp;
 	}
+
+	($base =~ s/^\W+// or $base = "!$base") if $negate;
 
 	my $status = conditional ($base, $term, $operator, $comp, @addl);
 
@@ -3421,7 +3432,7 @@ sub pull_if {
 	return pull_cond(@_) if $_[2];
 	my($string, $reverse) = @_;
 	return pull_else($string) if $reverse;
-	$string =~ s:$QR{else_end}::o;
+	find_matching_else(\$string) if $string =~ s:$QR{has_else}::;
 	return $string;
 }
 
@@ -3429,7 +3440,7 @@ sub pull_else {
 	return pull_cond(@_) if $_[2];
 	my($string, $reverse) = @_;
 	return pull_if($string) if $reverse;
-	return $1 if $string =~ s:$QR{else_end}::;
+	return find_matching_else(\$string) if $string =~ s:$QR{has_else}::;
 	return;
 }
 
@@ -4322,6 +4333,43 @@ EOF
 my %Dispatch_hash = (
 	address => \&tag_address,
 );
+
+sub find_matching_else {
+    my($buf) = @_;
+    my $out;
+	my $canon;
+
+    my $open  = '[else]';
+    my $close = '[/else]';
+    my $first;
+	my $pos;
+
+  	$$buf =~ s{\[else\]}{[else]}igo;
+    $first = index($$buf, $open, $pos);
+#::logDebug("first=$first");
+	return undef if $first < 0;
+	my $int     = $first;
+	my $begin   = $first;
+	$$buf =~ s{\[/else\]}{[/else]}igo
+		or $int = -1;
+
+	while($int > -1) {
+		$pos   = $begin + 1;
+		$begin = index($$buf, $open, $pos);
+		$int   = index($$buf, $close, $int + 1);
+		last if $int < 1;
+		if($begin > $int) {
+			$first = $int = $begin;
+			$int = $begin;
+		}
+#::logDebug("pos=$pos int=$int first=$first begin=$begin");
+    }
+	$first = $begin if $begin > -1;
+	substr($$buf, $first) =~ s/(.*)//s;
+	$out = $1;
+	substr($out, 0, 6) = '';
+	return $out;
+}
 
 sub tag_dispatch {
 	my($tag, $count, $item, $hash, $chunk) = @_;
