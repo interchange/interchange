@@ -20,16 +20,16 @@ else
 	exit 1
 fi
 
-if test -d /home/httpd/html -a -w /home/httpd/html
-then
-	DOCROOT=/home/httpd/html
-	CGIDIR=/home/httpd/cgi-bin
-	SERVERCONF=/etc/httpd/conf/httpd.conf
-	CGIBASE=/cgi-bin
-elif test -d /var/www/html -a -w /var/www/html
+if test -d /var/www/html -a -w /var/www/html
 then
 	DOCROOT=/var/www/html
 	CGIDIR=/var/www/cgi-bin
+	SERVERCONF=/etc/httpd/conf/httpd.conf
+	CGIBASE=/cgi-bin
+elif test -d /home/httpd/html -a -w /home/httpd/html
+then
+	DOCROOT=/home/httpd/html
+	CGIDIR=/home/httpd/cgi-bin
 	SERVERCONF=/etc/httpd/conf/httpd.conf
 	CGIBASE=/cgi-bin
 elif test -d /usr/local/apache/htdocs -a -w /usr/local/apache/htdocs
