@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.0.2.6 2004-03-28 20:34:35 mheins Exp $
+# $Id: Page.pm,v 2.0.2.7 2004-03-29 16:32:27 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
 
 my $wantref = 1;
 
@@ -60,7 +60,7 @@ sub display_special_page {
 					"Security violation -- scripting character in page name '%s'.",
 					$name,
 				);
-			$name = 'violation';
+			$name = find_special_page('violation');
 			1 while $subject =~ s/[\@_]_/_/g;
 		};
 
@@ -84,17 +84,18 @@ sub display_page {
 	my($name) = @_;
 	my($page);
 
+	$name ||= $CGI::values{mv_nextpage};
+	
 	$name =~ m/[\[<]|[\@_]_[A-Z]\w+_[\@_]|\@\@[A-Z]\w+\@\@/
 		and do {
 			::logGlobal(
 					"Security violation -- scripting character in page name '%s'.",
 					$name,
 				);
-			$name = 'violation';
+			$name = find_special_page('violation');
 			return display_special_page($name);
 		};
 
-	$name = $CGI::values{mv_nextpage} unless $name;
 #::logDebug("display_page: $name");
 	if($Vend::Cfg->{ExtraSecure} and
 		$Vend::Cfg->{AlwaysSecure}->{$name}
