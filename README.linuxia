@@ -54,9 +54,11 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - link help to localhost (catalog_before.cfg: 1.17.4.5-6)
 [Debian specific]
 - new UserTag email_html
+[is there another possibility to make this from IC ?]
 - new route options locale and sub (Order.pm: 1.14.4.5)
 [locale => parse [L] within report file
-sub => call this sub instead of send_mail, I used this for HTML emails]
+sub => call this sub instead of send_mail, I used this for HTML emails
+see usertag email_html]
 - hack to display another start page besides index.html; a catalog 
   configuration value for History greater than 1 is required for this; 
   (login.html: 1.15.2.2, index.html: 1.22.4.8-11)
