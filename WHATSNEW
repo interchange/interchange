@@ -6,6 +6,9 @@ Interchange 4.6.4
   in 1999. With Francis's blessing, we're taking over maintenance of
   the module. Thanks, Francis!
  
+* Fixed bug with encrypted-password users not being logged in after
+  new account creation. Reported by tamas.kohegyi@unforgettable.com.
+
 
 Interchange 4.6.3
 
