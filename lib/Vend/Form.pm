@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.1 2002-01-31 14:58:41 mheins Exp $
+# $Id: Form.pm,v 2.2 2002-01-31 15:17:34 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @EXPORT = qw (
 	display
@@ -750,8 +750,10 @@ sub display {
 		my $adder;
 		$adder = $item->{mv_ip} if	defined $item->{mv_ip}
 								and $opt->{item} || ! $opt->{name};
+		$opt->{value} = $item->{$opt->{attribute} || $opt->{name}};
 		$opt->{name} = $opt->{attribute} unless $opt->{name};
 		$opt->{name} .= $adder if defined $adder;
+		$opt->{price} = get_option_hash($opt->{price_data}) if $opt->{price};
 #::logDebug("tag_accessories: name=$name");
 	}
 	else {
