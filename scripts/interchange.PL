@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.18 2001-03-08 13:53:12 heins Exp $
+# $Id: interchange.PL,v 1.15.2.19 2001-03-18 00:17:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1755,6 +1755,7 @@ EOF
 		if defined $CGI::authorization;
 
 	$sessionid = $CGI::values{mv_session_id} || undef;
+	$sessionid =~ s/\0.*//s;
 
 	if (defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
