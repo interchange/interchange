@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
+# $Id: MakeCat.pm,v 1.5 2000-09-19 20:33:14 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,7 +61,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -180,9 +180,9 @@ EOF
 EOF
 	permtype  =>  <<EOF,
 # The type of permission structure for multiple user catalogs.
-# Select M for each user in own group (with minivend user in group)
-#        G for all users in group of minivend user
-#        U for all catalogs owned by minivend user (must be catuser as well)
+# Select M for each user in own group (with interchange user in group)
+#        G for all users in group of interchange user
+#        U for all catalogs owned by interchange user (must be catuser as well)
 #
 #        M is recommended, G works for most installations.
 EOF
