@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.8 2002-08-14 15:40:22 mheins Exp $
+# $Id: Menu.pm,v 2.9 2002-08-15 05:41:26 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use Vend::Util;
 use strict;
@@ -314,6 +314,288 @@ sub dhtml_simple {
 	return old_simple(@_);
 }
 
+sub old_flyout {
+	return dhtml_flyout(@_);
+}
+
+sub dhtml_flyout {
+	my($name, $opt, $template) = @_;
+
+	my @out;
+	my $fdiv = $name . "_flyout";
+
+	$template = <<EOF if $template !~ /\S/;
+{MV_LEVEL:}<div>{PAGE?}{MV_SPACER}<a id="{CODE}" href="{PAGE}" onMouseOver="mousein(this)" onMouseOut="mouseout(this)" TITLE="{DESCRIPTION}" class="$opt->{link_class}">{NAME}</A>{/PAGE?}{PAGE:}{MV_SPACER}{NAME}{/MV_SPACER}{/PAGE:}</div>{/MV_LEVEL:}
+EOF
+
+	$opt->{cursor_type} ||= 'hand';
+	$opt->{flyout_style} ||= <<EOF;
+		font-weight: bold;
+		text-align: left;
+		font-size: 10px;
+		font-family: verdana,arial;
+		cursor: hand;
+		text-decoration: none;
+		padding: 2px;
+EOF
+
+
+	push @out, <<EOF;
+<script language="JavaScript1.3">
+var timeoutCode = -1;
+var lines = new Array;
+EOF
+
+	my %o = (
+			start       => $opt->{tree_selector} || $opt->{name},
+			table       => $opt->{table} || $::Variable->{MV_TREE_TABLE} || 'tree',
+			master      => 'parent_fld',
+			subordinate => 'code',
+			autodetect  => '1',
+			sort        => $opt->{sort} || 'code',
+			iterator    => \&tree_line,
+			row_repository => [],
+			full        => '1',
+			spacing     => '4',
+		);
+	push @out, Vend::Tags->tree(\%o);
+
+	my $rows = $o{row_repository} || [];
+	my %seen;
+	my @levels = grep !$seen{$_}++, map { $_->{mv_level} } @$rows;
+	@levels = sort { $a <=> $b } @levels;
+	shift @levels;
+
+	push @out, <<EOF;
+var last_level = $levels[$#levels];
+var link_class = '$opt->{link_class}';
+var link_class_open = '$opt->{link_class_open}';
+var link_class_closed = '$opt->{link_class_closed}';
+var link_style = '$opt->{link_style}';
+var link_style_open = '$opt->{link_style_open}';
+var link_style_closed = '$opt->{link_style_closed}';
+EOF
+	push @out, <<EOF;
+
+	function menu_link (idx) {
+
+		var l = lines[ idx ];
+
+		if(l == undefined) {
+			alert("Bad idx=" + idx + ", no line there.");
+			return;
+		}
+
+		var out = '<DIV';
+		if(l[MV_CHILDREN] > 0) {
+			out = out + ' id="' + l[0] + '"';
+			out = out + ' onMouseOver="mousein(this,' + l[MV_LEVEL] + ')"';
+		}
+		out += '>';
+		var tstyle = link_style;
+		var tclass = link_class;
+		if(l[PAGE]) {
+			out = out + '<a href="' + l[ PAGE ] + '"';
+			if(tclass)
+				out = out + ' class="' + tclass + '"';
+			if(tstyle)
+				out = out + ' style="' + tstyle + '"';
+			if(l[DESCRIPTION])
+				out = out + ' title="' + l[ DESCRIPTION ] + '"';
+			out = out + '>';
+			out = out + l[ NAME ] + '</a>';
+		}
+		else {
+			out = out + l[ NAME ];
+		}
+	// alert("build idx=" + idx + " into: " + out);
+		out += '</div>';
+
+		return out;
+	}
+
+	var mydiv = '$fdiv';
+
+	function mousein (obj,level) {
+		if( browserType() == "other" )
+			return;
+
+		if(level == undefined) 
+			level = 0;
+		level++;
+
+		var divname = mydiv + level;
+		var fod = document.getElementById( divname );
+		if(fod == undefined) 
+			return;
+		fod.style.display = 'none';
+		clearTimeout( timeoutCode );
+		timeoutCode = -1;
+
+		var html = "";
+
+		var idx = -1;
+		for(var j = 0; j < lines.length; j++) {
+			if(lines[j][0] == obj.id) {
+				idx = j;
+				break;
+			}
+		}
+
+		if(idx < 0) 
+			return;
+	
+		var currentlevel = lines[idx][MV_LEVEL];
+		if(currentlevel == undefined)
+			currentlevel = 0;
+
+		menuClear(currentlevel);
+
+		var x = getRightX( obj ) + 1;
+		var y = getTopX( obj );
+		var menu = fod.style;
+		menu.left = x + "px";
+		menu.top = y + "px";
+		menu.display = 'block';
+
+		var i;
+		for( i = idx + 1; ; i++ )
+		{
+			var l = lines[i];
+// alert("running link for level=" + l[MV_LEVEL] + ", line=" + l);
+			if(l == undefined || l[MV_LEVEL] < level)
+				break;
+			if(l[MV_LEVEL] == level)
+				html += menu_link(i);
+		}
+		fod.innerHTML = html;
+	}
+
+	function getRightX( obj )
+	{
+		if( browserType() == "ie" )
+			return obj.getBoundingClientRect().right - 2;
+		else {
+			var n = 0;
+			var x = obj.offsetParent;
+			while(x.offsetParent != undefined) {
+				n += x.offsetLeft;
+				x = x.offsetParent;
+			}
+			return n + obj.offsetLeft + obj.offsetWidth;
+		}
+	}
+
+	function getTopX( obj )
+	{
+		if( browserType() == "ie" )
+			return obj.getBoundingClientRect().top - 2;
+		else {
+			var n = 0;
+			var x = obj;
+			while(x.offsetParent != undefined) {
+				n += x.offsetParent.offsetTop;
+				x = x.offsetParent;
+			}
+			return n + obj.offsetTop;
+		}
+	}
+	
+	function mouseout( obj, level )
+	{
+		if( browserType() == "other" )
+			return;
+
+		if(level == undefined) 
+			level = 0;
+		level++;
+		timeoutCode = setTimeout( "menuClear();", 1000 );
+	}
+
+	function menuClear(level)
+	{
+		if (level == undefined)
+			level = 0;
+		level++;
+		for( var i = level; i <= last_level; i++) {
+			var thisdiv = mydiv + i;
+			var fod = document.getElementById( thisdiv );
+			if(fod != undefined)
+				fod.style.display = 'none';
+		}
+		clearTimeout( timeoutCode );
+		timeoutCode = -1;
+	}
+
+	function menuBusy()
+	{
+		clearTimeout( timeoutCode );
+		timeoutCode = -1;
+	}
+
+	var clientType = "unknown";
+
+	function browserType()
+	{
+		if( clientType != "unknown"  )
+			return clientType;
+	
+		clientType = "other";
+		if (document.all) {
+			if( document.getElementById )
+		  		clientType = "ie";
+		}
+		else if (document.layers) {
+		}
+		else if (document.getElementById) {
+			clientType = "ns6";
+		}
+		else
+		{
+		}
+
+		return clientType;
+	}
+
+</script>
+EOF
+
+	for(@levels) {
+		push @out, <<EOF;
+<div id="$fdiv$_" style="
+						position:absolute;
+						display:none;
+						$opt->{flyout_style}
+					"
+		 OnMouseOver="menuBusy();" OnMouseOut="mouseout();"></DIV>
+EOF
+	}
+
+	my $header;
+	$header = ::interpolate_html($opt->{header_template})
+		if $opt->{header_template};
+	if($header =~ /\S/) {
+		$header = Vend::Tags->uc_attr_list($opt, $header);
+		push @out, $header;
+	}
+
+#::logDebug("Template is: $template");
+	for my $row (@$rows) {
+#::logDebug("Doing row: " . ::uneval($row));
+		push @out, Vend::Tags->uc_attr_list($row, $template);
+	}
+
+	my $footer;
+	$footer = ::interpolate_html($opt->{footer_template})
+		if $opt->{footer_template};
+	if($footer =~ /\S/) {
+		$footer = Vend::Tags->uc_attr_list($opt, $footer);
+		push @out, $footer;
+	}
+
+	return join "", @out;
+}
+
 sub dhtml_tree {
 	my($name, $opt, $template) = @_;
 	my @out;
@@ -551,14 +833,20 @@ sub tree_link {
 	}
 
 	$template ||= qq[
-{MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{URL?}<A href="{URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/URL?}{NAME}{URL?}</a>{/URL?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{URL?}<A href="{URL}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/URL?}{NAME}{URL?}</a>{/URL?}{/MV_CHILDREN:}<br>
+{MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{PAGE?}<A href="{HREF}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{PAGE?}<A href="{HREF}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN:}<br>
 ];
 
-	if($row->{page}) {
+	if(! $row->{page}) {
+	}
+	elsif ($row->{page} =~ /^\w+:/) {
+		$row->{href} = $row->{page};
+	}
+	else {
 		unless($row->{form} =~ /[\r\n]/) {
 			$row->{form} = join "\n", split $Global::UrlSplittor, $row->{form};
 		}
-		$row->{url} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
+		$row->{form} ||= ' ';
+		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
 	}
 	$row->{name} =~ s/ /&nbsp;/g;
 	$opt->{toggle_base_url} ||= Vend::Tags->history_scan(
@@ -624,6 +912,9 @@ sub tree_line {
 			}
 		}
 
+		if($opt->{fields_repository}) {
+			$opt->{fields_repository} = [ @$fields ];
+		}
 		push @$fields, 'open';
 		for(my $i = 1; $i < @$fields; $i++) {
 			push @out, "var \U$fields->[$i]\E = $i;";
@@ -638,10 +929,13 @@ sub tree_line {
 		return unless $transform{$_}->($row, $opt->{$_});
 	}
 
-	if($row->{page}) {
+	if($row->{page} and $row->{page} !~ /^\w+:/) {
 		my $form = $row->{form};
+		if($form and $form !~ /[\r\n]/) {
+			$form = join "\n", split $Global::UrlSplittor, $form;
+		}
+
 		if($form) {
-			$form =~ s/&/\n/g;
 			$form .= "\nopen=";
 		}
 		else {
@@ -650,6 +944,9 @@ sub tree_line {
 		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
 	}
 
+	if($opt->{row_repository}) {
+		push @{$opt->{row_repository}}, $row;
+	}
 	my @values = @{$row}{@$fields};
 
 	for(@values) {
@@ -694,12 +991,17 @@ EOF
 #::logDebug("passed transforms, row now: " . ::uneval($row)) if  $row->{debug};
 
 	#return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
-	if($row->{page}) {
-		$row->{form} =~ tr/&/\n/;
+	if(! $row->{page}) {
+	}
+	elsif ($row->{page} =~ /^\w+:/) {
+		$row->{href} = $row->{page};
+	}
+	else {
+		unless($row->{form} =~ /[\r\n]/) {
+			$row->{form} = join "\n", split $Global::UrlSplittor, $row->{form};
+		}
 		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
 	}
-		$row->{name} = errmsg($row->{name});
-		$row->{description} =~ s/"/&quot;/g;
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
@@ -778,8 +1080,45 @@ sub menu {
 							});
 		}
 
-		return old_tree(@_) unless $opt->{dhtml_browser};
-		return dhtml_tree(@_);
+		return old_tree($name,$opt,$template) unless $opt->{dhtml_browser};
+		return dhtml_tree($name,$opt,$template);
+	}
+	elsif($opt->{menu_type} eq 'flyout') {
+		$opt->{link_class_open}   ||= $opt->{link_class};
+		$opt->{link_class_closed} ||= $opt->{link_class};
+		if(is_yes($opt->{no_image})) {
+			$opt->{no_image} = 1;
+			$opt->{toggle_anchor_clear}  ||= '&nbsp;';
+			$opt->{toggle_anchor_closed} ||= '+';
+			$opt->{toggle_anchor_open}   ||= '-';
+		}
+		else {
+			$opt->{no_image} = 0;
+			my $nm = "img_$_";
+			$opt->{toggle_anchor_open} = Vend::Tags->image( {
+							src => $opt->{img_open}  || $menu_default_img{open},
+							border => 0,
+							extra => $opt->{img_open_extra} || 'align=absbottom',
+							});
+			$opt->{toggle_anchor_closed} = Vend::Tags->image( {
+							src => $opt->{img_closed} || $menu_default_img{closed},
+							border => 0,
+							extra => $opt->{img_closed_extra} || 'align=absbottom',
+							});
+			if($opt->{toggle_anchor_closed} =~ /\s+width="?(\d+)/i) {
+				$opt->{img_clear_extra} ||= "height=1 width=$1";
+			}
+			$opt->{toggle_anchor_clear} = Vend::Tags->image( {
+							src => $opt->{img_clear} || $menu_default_img{clear},
+							getsize => 0,
+							border => 0,
+							extra => $opt->{img_clear_extra},
+							});
+		}
+
+		return old_flyout($name,$opt,$template) unless $opt->{dhtml_browser};
+#::logDebug("ready to run dhtml_flyout");
+		return dhtml_flyout($name,$opt,$template);
 	}
 	elsif($opt->{menu_type} eq 'simple') {
 		if($opt->{search}) {
