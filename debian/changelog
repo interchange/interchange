@@ -1,9 +1,10 @@
-interchange (5.1.1-2) unstable; urgency=low
+interchange (5.2.0-1) unstable; urgency=low
 
+  * new upstream release
   * creating system group for Interchange user instead of a regular one
     (Closes: #246323)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 28 Apr 2004 23:40:32 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  5 May 2004 12:15:34 +0200
 
 interchange (5.1.1-1) unstable; urgency=low
 
