@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.5 2001-01-20 20:02:28 heins Exp $
+# $Id: Order.pm,v 1.18.2.6 2001-01-28 08:40:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -66,6 +66,8 @@ my $Success;
 my $Profile;
 my $Fail_page;
 my $Success_page;
+my $No_error;
+my $Overwrite_error;
 
 sub _length {
 }
@@ -79,6 +81,8 @@ my %Parse = (
 	'&and'       	=>	\&_and_check,
 	'&or'       	=>	\&_or_check,
 	'&format'		=> 	\&_format,
+	'&noerror'		=> 	sub { $No_error = $_[1] },
+	'&overwrite'	=> 	sub { $Overwrite_error = $_[1] },
 	'&success'		=> 	sub { $Success_page = $_[1] },
 	'&fail'         =>  sub { $Fail_page    = $_[1] },
 	'&final'		=>	\&_final,
@@ -1088,6 +1092,7 @@ sub do_check {
 sub check_order {
 	my ($profile, $vref) = @_;
 	my($codere) = '[-\w_#/.]+';
+#::logDebug("call profile $profile");
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};
@@ -1160,7 +1165,10 @@ sub check_order {
 #::logDebug("Failing, setting message=$message for $var.");
 			$Vend::Session->{errors} = {}
 				if ! $Vend::Session->{errors};
-			if( $Vend::Session->{errors}{$var} ) {
+			if( $No_error ) {
+				# do nothing
+			}
+			elsif( ! $Overwrite_error and $Vend::Session->{errors}{$var} ) {
 				$Vend::Session->{errors}{$var} .= " AND $message"
 					if $message;
 			}
