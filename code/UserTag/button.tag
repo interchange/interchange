@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.11 2004-03-12 01:21:44 jon Exp $
+UserTag button Version $Revision: 1.12 $
 UserTag button Documentation <<EOD
 
 =pod
@@ -210,7 +210,7 @@ sub {
 			$onclick  = qq{ onClick="};
 			$onclick .= qq{var msg = 'Already submitted.';};
 			$onclick .= qq{this.value = '$opt->{wait_text}';};
-			$onclick .= qq{this.onclick = 'alert(msg)';};
+			$onclick .= qq{this.onclick = 'alert(msg)'; return true;};
 			$onclick .= qq{"};
 		}
 
