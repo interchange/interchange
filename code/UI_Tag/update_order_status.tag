@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.3 2002-10-18 06:00:10 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.4 2002-10-18 06:47:54 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -25,15 +25,16 @@ sub {
 	my $wants_copy = $udb->field($user, 'email_copy');
 
 	for(qw/
-			settle_transaction
-			void_transaction
-			cancel_order
-			status
-			do_archive
 			archive
+			auth_code
+			cancel_order
+			do_archive
 			lines_shipped
 			send_email
+			settle_transaction
 			ship_all
+			status
+			void_transaction
 		/)
 	{
 		$opt->{$_} = $CGI::values{$_} if ! defined $opt->{$_};
@@ -123,7 +124,7 @@ sub {
 			elsif($oid =~ /-$/) {
 				Vend::Tags->error( {
 								name => 'void_transaction',
-								set => "Order ID $oid already settled!",
+								set => "Order ID $oid already voided!",
 							});
 				return undef;
 			}
@@ -147,7 +148,7 @@ sub {
 				}
 				else {
 					Vend::Tags->error( {
-						name => 'settle_transaction',
+						name => 'void_transaction',
 						set => errmsg(
 								"Order ID %s void operation failed. Reason: %s",
 								$oid,
