@@ -196,8 +196,7 @@ SL	9	Other	SL	air_F surf_F	Sierra Leone	SLE	694
 SG	9	Other	SG	air_F surf_F	Singapore	SGP	702
 SK	9	Other	SK	air_E surf_E	Slovak Republic	SVK	703
 SI	9	Other	SI	air_E surf_E	Slovenia	SVN	705
-Sb	9	Other	Sb	air_E surf_E	Solomon Islands		
-SB	9	Other	SB		Solomon Islands	SLB	090
+SB	9	Other	SB	air_E surf_E	Solomon Islands	SLB	090
 SO	9	Other	SO		Somalia	SOM	706
 ZA	9	Other	ZA	air_F surf_F	South Africa	ZAF	710
 GS	9	Other	GS		South Georgia And The South Sand	SGS	239
