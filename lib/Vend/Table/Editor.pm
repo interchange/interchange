@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.23 2003-01-15 14:32:48 racke Exp $
+# $Id: Editor.pm,v 1.24 2003-02-07 15:51:00 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.23 $, 10);
+$VERSION = substr(q$Revision: 1.24 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -767,6 +767,12 @@ function ${vpf}selectTab(n) {
 EOF
 	my $s1 = '';
 	my $s2 = '';
+	my $ibase = $Tag->image({
+							ui			=> $Vend::admin,
+							dir_only	=> 1,
+							secure		=> $Vend::admin && $::Variable->{UI_SECURE},
+						});
+	my $clear = "$ibase/$opt->{clear_image}";
 	my @dntabs;
 	my @uptabs;
 	for(my $i = 0; $i < $num_panels; $i++) {
@@ -799,15 +805,15 @@ EOF
 			$dntabs[$i] = <<EOF;
 	<table width="100%" border=0 cellspacing=0 cellpadding=0>
 	  <tr> 
-		 <td class=subtabdownleft><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td class=subtabdownleft><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
 		 <td nowrap class=subtabdownfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
-		 <td class=subtabdownright><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td class=subtabdownright><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+		 <td colspan=3 class=darkshade><img src="$clear" height=1></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+		 <td colspan=3 class=lightshade><img src="$clear" height=1></td>
 	  </tr>
    </table>
 EOF
@@ -817,12 +823,12 @@ EOF
 			$uptabs[$i] = <<EOF;
 	<table width="100%" border=0 cellspacing=0 cellpadding=0>
 	  <tr> 
-		 <td class=subtableft><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td class=subtableft><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
 		 <td nowrap class=subtabfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
-		 <td class=subtabright><a href="javascript:${vpf}tripTab($i,1)"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td class=subtabright><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=subtabfilllwr><img src="bg.gif" height=1></td>
+		 <td colspan=3 class=subtabfilllwr><img src="$clear" height=1></td>
 	  </tr>
 	</table>
 EOF
@@ -1226,6 +1232,7 @@ sub resolve_options {
 		link_table
 		link_template
 		link_view
+		mv_auto_export
 		mv_blob_field
 		mv_blob_label
 		mv_blob_nick
@@ -1234,6 +1241,7 @@ sub resolve_options {
 		mv_data_decode
 		mv_data_table
 		mv_update_empty
+		nodelete
 		output_map
 		panel_height
 		panel_id
