@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.10 2003-04-29 20:08:26 mheins Exp $
+UserTag button Version $Id: button.tag,v 1.11 2004-03-12 01:21:44 jon Exp $
 UserTag button Documentation <<EOD
 
 =pod
@@ -17,6 +17,12 @@ or a JavaScript-linked C<< <A HREF=....><img src=...> >> combination.
 	    [mvtag] Use any Interchange tag here, i.e. ....[/mvtag]
 	    [perl] # code to delete item [/perl]
     [/button]
+
+You can include arbitrary custom JavaScript like this:
+
+	[button text="Click me"]
+		[javascript]onClick="myOwnOnClickFunction(this);"[/javascript]
+	[/button]
 
 Parameters for this tag are:
 
@@ -76,11 +82,11 @@ Defaults to the same as TEXT.
              
 =item anchor 
 
-Set to the anchor text value, defaults to TEXT
+Set to the anchor text value, defaults to TEXT.
              
 =item hidetext
 
-Set true if you don't want the anchor displayed
+Set true if you don't want the anchor displayed.
 
 =item extra
 
@@ -138,7 +144,7 @@ sub {
 						\]
 							(.*?)
 					  \[ / \1 \]
-					  !!xgis
+					  !!xis
 		)
 	{
 		my $script = $2;
@@ -170,7 +176,7 @@ sub {
 
 	if($onclick) {
 		$confirm .= ' && ' if $confirm;
-		$onclick = qq{onClick="$confirm$onclick"};
+		$onclick = qq{ onClick="$confirm$onclick"};
 	}
 
 	# Constructing form button. Will be sent back in all cases,
