@@ -32,12 +32,24 @@
 </select>
 </td>
 <td bgcolor="__UI_C_INTBLOCK__" width="__UI_RIGHT_WIDTH__">
-<b>[L]Entry page:[/L]</b><br>
 
-[set pages][/set]
+[tmp pages][/tmp]
+
 [calc]
-	# Find the list of pages not defined "NoCache"
-	$Values->{ui_initial_page} = $Config->{StaticIndex} || $Config->{SpecialPage}{catalog};
+    if ($Config->{StaticAll}) {
+        # startpage makes sense only if "StaticAll" is set
+    	$Values->{ui_initial_page} = $Config->{StaticIndex} || $Config->{SpecialPage}{catalog};
+        %forced_pages = ();
+    } else {
+    	$Values->{ui_initial_page};
+        # setup hash with selected pages
+        %forced_pages = %{$Config->{StaticPage}};
+        if ($Config->{StaticFly}) {
+            $forced_pages{$Config->{Special}->{flypage}} = 1;
+        }
+    }
+
+    # Find the list of pages not defined "NoCache"
 	@pages = split /\s+/, $Tag->list_pages();
 	my $check = $Config->{NoCache};
 	for(@pages) {
@@ -47,22 +59,37 @@
 		} while ($test =~ s:(.*)/.*:$1:);
 	}
 	$Scratch->{pages} = join "\n", grep $_, @pages;
+
+    # Generated selection of forced pages
+    my ($opts, $selected);
+    for (@pages) {
+        if (defined $forced_pages{$_}) {
+            $selected = ' selected';
+        } else {
+            $selected = '';
+        }
+        $opts .= "<option$selected>$_\n";
+    }
+	$Scratch->{forced_pages} = $opts;
 	return;
 [/calc]
+
+[if config StaticAll]
+<b>[L]Entry page:[/L]</b><br>
+
 
 <select name="ui_initial_page">
 [loop option=ui_initial_page list="[scratch pages]"]
 	<option>[loop-code]
 [/loop]
 </select><BR><BR>
+[/if]
 	<table>
 		<tr>
 			<td>
 			<b>[L]Force build of:[/L]</b><br>
 			<select name="ui_force_build" multiple size=25>
-			[loop prefix=force option=ui_initial_page list="[scratch pages]"]
-				<option>[force-code]
-			[/loop]
+			[scratchd forced_pages]  
 			</select>
 			</td>
 			<td>
