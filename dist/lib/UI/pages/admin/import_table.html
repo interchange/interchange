@@ -29,9 +29,11 @@
 	[if cgi ui_upload_ext eq add]
 	[import-fields	table="[cgi mv_data_table]"
 					file="products/[cgi mv_data_table].add"
+					delete="[cgi ui_allow_delete]"
 					move=1 add=1 dir=backup]
 	[elsif cgi ui_upload_ext eq update]
 	[import-fields	table="[cgi mv_data_table]"
+					delete="[cgi ui_allow_delete]"
 					file="products/[cgi mv_data_table].update"
 					move=1 dir=backup]
 	[/elsif]
@@ -61,7 +63,7 @@
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> Add new items if present
 	<OPTION VALUE=update> Ignore new items
-</SELECT>
+</SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 
