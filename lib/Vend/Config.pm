@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.15 2000-08-19 04:15:34 heins Exp $
+# $Id: Config.pm,v 1.16 2000-08-26 17:19:06 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -84,6 +84,7 @@ my $OldDirectives = q{
     TransparentItem
 	Tracking
 };
+
 use strict;
 use vars qw(
 			$VERSION $C $CanTie
@@ -94,6 +95,7 @@ use Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
+
 BEGIN {
 	eval {
 		require Tie::Watch or die;
@@ -101,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 my %CDname;
 
@@ -223,6 +225,7 @@ sub config_warn {
 				)
 	);
 }
+
 sub setcat {
 	$C = $_[0] || $Vend::Cfg;
 }
@@ -522,6 +525,7 @@ sub evaluate_ifdef {
 	return $reverse ? ! $status : $status;
 }
 
+# This is what happens when ParseVariables is true
 sub substitute_variable {
 	my($val) = @_;
 	# Return after globals so can others can be contained
@@ -539,7 +543,7 @@ sub substitute_variable {
 # Parse the configuration file for directives.  Each directive sets
 # the corresponding variable in the Vend::Cfg:: package.  E.g.
 # "DisplayErrors No" in the config file sets Vend::Cfg->{DisplayErrors} to 0.
-# Directives which have no default value ("undef") must be specified
+# Directives which have no defined default value ("undef") must be specified
 # in the config file.
 
 sub config {
@@ -618,6 +622,8 @@ sub config {
 		push @include, $_;
 	}
 
+	# %MV::Default holds command-line mods to config, which we write
+	# to a file for easier processing 
 	if(defined $MV::Default{$catalog}) {
 		my $fn = "$Global::ConfDir/$catalog.cmdline";
 		open(CMDLINE, ">$fn")
@@ -734,7 +740,7 @@ CONFIGLOOP:
 					qq#no end marker ("$mark") found#));
 			}
 		}
-		elsif ($value =~ /^(.*)<&(\w+)\s*/) {                  # "here" value
+		elsif ($value =~ /^(.*)<&(\w+)\s*/) {                # "here sub" value
 			my $begin  = $1 || '';
 			$begin .= "\n" if $begin;
 			my $mark  = $2;
@@ -797,7 +803,10 @@ EOF
 		# Now we can give an unknown error
 		config_error("Unknown directive '$var'"), next unless defined $CDname{$lvar};
 
+		# Use our closure defined above
 		&$read($lvar, $value, $tie);
+
+		# If we have passed off configuration to a database we stop here...
 		last if $C->{ConfigDatabase}->{ACTIVE};
 
 		# See if we want to load the config database
@@ -860,6 +869,7 @@ EOF
 		}
 	}
 
+	# We need to make this directory if it isn't already there....
 	if($C->{ScratchDir} and ! -e $C->{ScratchDir}) {
 		mkdir $C->{ScratchDir}, 0700
 			or die "Can't make temporary directory $C->{ScratchDir}: $!\n";
@@ -870,8 +880,10 @@ EOF
 	}
 
 } # end CONFIGLOOP
+
     # check for unspecified directives that don't have default values
 
+	# but set some first if appropriate
 	set_defaults();
 
 	REQUIRED: {
@@ -889,6 +901,7 @@ EOF
 			}
 		}
 	}
+	# Ugly legacy stuff so API won't break
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
 	%CDname = ();
 	return $C;
@@ -1121,9 +1134,7 @@ GLOBLOOP:
 	return 1;
 }
 
-1;
-
-
+# Use Tie::Watch to attach subroutines to config variables
 sub watch {
 	my($name, $value) = @_;
 	my ($ref, $orig);
@@ -1161,6 +1172,7 @@ sub watch {
 					);
 }
 
+# Set up an ActionMap or FormAction
 sub parse_action {
 	my ($var, $value) = @_;
 	return {} if ! $value;
@@ -1213,7 +1225,7 @@ EOF
 	
 }
 
-# Checks to see if a globalsub or usertag is present
+# Checks to see if a globalsub, sub, or usertag is present
 
 sub parse_require {
 	my($var, $val) = @_;
@@ -1313,8 +1325,9 @@ sub parse_replace {
 	$C->{$name};
 }
 
-# Warn about directives no longer supported in the configuration file.
 
+# Send a message during configuration, goes to terminal if during
+# daemon startup, always goes to error log
 sub parse_message {
     my($name, $val) = @_;
 
@@ -1330,6 +1343,7 @@ sub parse_message {
 }
 
 
+# Warn about directives no longer supported in the configuration file.
 sub parse_warn {
     my($name, $val) = @_;
 
@@ -1517,6 +1531,12 @@ sub parse_special {
 	return $C->{$item};
 }
 
+# Sets up a hash value from a configuration directive, syntax is
+# 
+#   Directive  "key" "value"
+# 
+# quotes are optional if word-only chars
+
 sub parse_hash {
 	my($item,$settings) = @_;
 	return {} if ! $settings;
@@ -1542,6 +1562,7 @@ sub parse_hash {
 	$c;
 }
 
+# Set up illegal values for certain directives
 my %IllegalValue = (
 
 		AutoModifier => { qw/   mv_mi 1
@@ -1563,6 +1584,7 @@ my %IllegalValue = (
 );
 
 
+# Set up defaults for certain directives
 my $Have_set_global_defaults;
 my %Default = (
 		UserDB => sub {
@@ -1592,6 +1614,9 @@ my %Default = (
 							return 1 if defined $Have_set_global_defaults;
 							$Have_set_global_defaults = 1;
 							my (@sets) = keys %{$Global::TcpMap};
+							if(scalar @sets == 1 and $sets[0] eq '-') {
+								$Global::TcpMap = {};
+							}
 							return 1 if @sets;
 							$Global::TcpMap->{7786} = '-';
 							return 1;
@@ -1684,7 +1709,6 @@ sub parse_array_complete {
 
 	$c;
 }
-
 # Make a dos-ish regex into a Perl regex, check for errors
 sub parse_wildcard {
     my($var, $value) = @_;
@@ -1748,7 +1772,7 @@ sub parse_dir_array {
 	return $c;
 }
 
-# Prepend the VendRoot pathname to the relative directory specified,
+# Prepend the CatalogRoot pathname to the relative directory specified,
 # unless it already starts with a leading /.
 
 sub parse_relative_dir {
@@ -1769,7 +1793,7 @@ sub parse_relative_dir {
     $value;
 }
 
-
+# Ensure only an integer value in the directive
 sub parse_integer {
     my($var, $value) = @_;
 	$value = hex($value) if $value =~ /^0x[\dA-Fa-f]+$/;
@@ -1779,6 +1803,7 @@ sub parse_integer {
     $value;
 }
 
+# Make sure no trailing slash in VendURL etc.
 sub parse_url {
     my($var, $value) = @_;
     $value =~ s,/+$,,;
@@ -1870,6 +1895,7 @@ sub parse_time {
     $n;
 }
 
+# Determine catalog structure from Catalog config line(s)
 sub parse_catalog {
 	my ($var, $setting) = @_;
 	my $num = ! defined $Global::Catalog ? 0 : $Global::Catalog;
