@@ -48,7 +48,7 @@ sub {
 	my $tab = $rec->[0];
 	if(! $admin_done++) {
 		# Set up hidden tables
-		%admin = map { ($_, 1) } split /[\s.\0]+/, $Variable->{UI_ADMIN_TABLES};
+		%admin = map { ($_, 1) } split /[\s,\0]+/, $Variable->{UI_ADMIN_TABLES};
 		# To build the links to hidden tables
 		$Scratch->{ui_tmp_admin} = join " ", sort keys %admin;
 	}
