@@ -1,4 +1,15 @@
 CodeDef imagedir Widget 1
+CodeDef imagedir ExtraMeta <<EOM
+{
+	_order => [ qw/ follow_symlinks / ],
+	follow_symlinks => {
+		widget => 'yesno',
+		label => 'Follow Symlinks',
+		help => 'Set to yes if you want to list all files, even following symbolic links',
+	},
+}
+EOM
+
 CodeDef imagedir Routine <<EOR
 use File::Find;
 sub {
@@ -28,7 +39,7 @@ sub {
 					$n =~ s:^$dir/?::;
 					push(@names, $n);
 				};
-	find($wanted, $dir);
+	find({ wanted => $wanted, follow => $opt->{follow_symlinks} }, $dir);
 	$opt->{passed} = [ '=None', sort @names ];
 	$opt->{type} = delete $opt->{variant} || 'combo';
 	return Vend::Form::display($opt);

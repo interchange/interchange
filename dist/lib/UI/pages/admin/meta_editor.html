@@ -72,7 +72,7 @@ EOF
 	my $sneak_type = $Tag->data($CGI->{mv_data_table}, 'type', $CGI->{item_id});
 	my $extra_meta;
 	if($sneak_type) {
-		$extra_meta = $Tag->meta_record("_widget::$sneak_type", undef, undef, 1);
+		$extra_meta = $Tag->widget_meta($sneak_type);
 	}
 
 	%me_opt = (
@@ -134,8 +134,10 @@ EOF
 
 	   outboard
 	   pre_filter
+	   display_filter
 	   prepend
 	   append
+	   extended.restrict_allow
 	   __UI_META_ADDITIONAL__
 	},
 
@@ -180,6 +182,8 @@ EOF
 		'extended.blank_default' => 'Default value',
 		'extended.size_to' => 'Field to store uploadblob size in',
 		'extended.name_to' => 'Field to store uploadblob file name in',
+		'extended.restrict_allow' => 'Allow these ITL tags',
+		'display_filter' => 'Display filter',
 	},
 	help => {
 		'extended.fs_data_calc' => 'Current record passed as $item',
@@ -189,6 +193,8 @@ EOF
 		'extended.check' => 'Standard IC mv_profile checks -- required, postcode, etc.',
 		'extended.size_to' => 'if any -- must be in fields of table editor',
 		'extended.name_to' => 'if any -- must be in fields of table editor',
+		'extended.restrict_allow' => 'in append/prepend/lookup_query',
+		'display_filter' => 'Only used for hidden_text type',
 	},
 	widget => {
 		extended => "textarea_5_50",
@@ -278,4 +284,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.12 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.13 $ -->

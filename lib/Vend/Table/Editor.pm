@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.60 2004-06-23 16:21:58 mheins Exp $
+# $Id: Editor.pm,v 1.61 2004-07-21 05:46:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.60 $, 10);
+$VERSION = substr(q$Revision: 1.61 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -154,6 +154,27 @@ sub filters {
 	unshift @out, "=--add--" unless $opt->{no_add};
 	$opt->{joiner} = Vend::Interpolate::get_joiner($opt->{joiner}, ",\n");
 	return join $opt->{joiner}, @out;
+}
+
+sub widget_meta {
+	my ($type,$opt) = @_;
+	my $meta = meta_record("_widget::$type", $opt->{view}, $opt->{meta_table}, 1);
+	return $meta if $meta;
+	my $w = $Vend::Cfg->{CodeDef}{Widget};
+	if($w and $w->{Widget}{$type}) {
+		my $string;
+		return undef unless $string = $w->{ExtraMeta}{$type};
+		return get_option_hash($string);
+	}
+
+	$w = $Global::CodeDef->{Widget};
+	if($w and $w->{Widget}{$type}) {
+		my $string;
+		return undef unless $string = $w->{ExtraMeta}{$type};
+		return get_option_hash($string);
+	}
+
+	return $Vend::Form::ExtraMeta{$type};
 }
 
 sub meta_record {

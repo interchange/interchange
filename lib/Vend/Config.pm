@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.143 2004-07-19 22:26:00 mheins Exp $
+# $Id: Config.pm,v 2.144 2004-07-21 05:46:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.143 $, 10);
+$VERSION = substr(q$Revision: 2.144 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3680,6 +3680,7 @@ my %tagCanon = ( qw(
 	cannest			canNest
 	description  	Description
 	documentation	Documentation
+	extrameta		ExtraMeta
 	gobble			Gobble
 	hasendtag		hasEndTag
 	implicit		Implicit
