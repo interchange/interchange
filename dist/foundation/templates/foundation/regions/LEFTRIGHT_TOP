@@ -33,7 +33,7 @@
 <!--- menu bar along the top --->
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr class="categorybar">
-  <td class="categorybar" height="1" width="100%"><img src="__THEME_IMG_DIR__clear.gif" height="1"></td>
+  <td class="categorybar" height="1" width="100%"><img src="__THEME_IMG_DIR__bg.gif" height="1"></td>
 </tr>
 <tr>
   <td width="100%" class="menubar">
@@ -58,7 +58,7 @@
   </td>
 </tr>
 <tr class="categorybar">
-  <td class="categorybar" height="1" width="100%"><img src="__THEME_IMG_DIR__clear.gif" height="1"></td>
+  <td class="categorybar" height="1" width="100%"><img src="__THEME_IMG_DIR__bg.gif" height="1"></td>
 </tr>
 </table>
 
