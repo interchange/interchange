@@ -508,10 +508,12 @@ sub {
 	my $out = '';
 	my $i = 1;
 	for(@$line) {
-		my $filter = $filter_show[$i] || 'entities';
-		my $extra = '';
+		my $filter = $filter_show[$i] || '';
+		$filter .= ' encode_entities' unless $filter =~ /\b(?:encode_)?entities\b/;
 
+		my $extra = '';
 		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
+
 #Log("$i filter = $filter");
 
 		$_ = $Tag->filter($filter, $_);
