@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.144 2003-01-23 19:18:47 mheins Exp $
+# $Id: Interpolate.pm,v 2.145 2003-02-02 15:00:15 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.144 $, 10);
+$VERSION = substr(q$Revision: 2.145 $, 10);
 
 @EXPORT = qw (
 
@@ -1872,8 +1872,7 @@ sub tag_options {
 		my $ref;
 		my $price = {};
 		foreach $ref (@$ary) {
-			# skip unless enabled
-			next unless $ref->[1];
+
 			# skip unless description
 			next unless $ref->[3];
 
