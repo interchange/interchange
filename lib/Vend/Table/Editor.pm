@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.14 2002-10-17 04:46:24 mheins Exp $
+# $Id: Editor.pm,v 1.15 2002-10-18 07:12:37 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1032,6 +1032,7 @@ sub resolve_options {
                     extra
                     field
                     filter
+					form
                     height
                     help
                     help_url
@@ -1046,6 +1047,7 @@ sub resolve_options {
                     pre_filter
                     prepend
                     template
+                    wid_href
                     widget
                     width
 				/ )
@@ -1362,10 +1364,12 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $extra        = $opt->{extra};
 	my $field        = $opt->{field};
 	my $filter       = $opt->{filter};
+	my $form	     = $opt->{form};
 	my $height       = $opt->{height};
 	my $help         = $opt->{help};
 	my $help_url     = $opt->{help_url};
 	my $label        = $opt->{label};
+	my $wid_href     = $opt->{wid_href};
 	my $lookup       = $opt->{lookup};
 	my $lookup_query = $opt->{lookup_query};
 	my $meta         = $opt->{meta};
@@ -2775,9 +2779,11 @@ EOF
 							fallback			=> 1,
 							field				=> $field->{$c},
 							filter				=> $filter->{$c},
+							form				=> $form->{$c},
 							height				=> $height->{$c},
 							help				=> $help->{$c},
 							help_url			=> $help_url->{$c},
+							href				=> $wid_href->{$c},
 							key					=> $key,
 							label				=> $label->{$c},
 							lookup				=> $lookup->{$c},
