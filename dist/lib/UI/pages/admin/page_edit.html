@@ -57,7 +57,7 @@
 #	}
 	else {
 		$ref = {} if ! $ref;
-		$current !~ m{<!--\s+begin\s+content\s+-->(.*)<!--\s+end\s+content\s+-->}is
+		$current !~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is
 			and $current = "<!-- BEGIN CONTENT -->$current<!-- END CONTENT -->";
 	}
 
@@ -203,7 +203,7 @@ EOF
 	}
 
 	if($current) {
-		$current =~ m{<!--\s+begin\s+content\s+-->(.*)<!--\s+end\s+content\s+-->}is;
+		$current =~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is;
 		$content = $1 || '';
 	}
 
