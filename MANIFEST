@@ -56,10 +56,12 @@ dist/barry/images/admin/folder.gif
 dist/barry/images/admin/folder.open.gif
 dist/barry/images/admin/greendot.gif
 dist/barry/images/admin/icon_config.gif
+dist/barry/images/admin/icon_error.gif
 dist/barry/images/admin/icon_help.gif
 dist/barry/images/admin/icon_item.gif
 dist/barry/images/admin/icon_orders.gif
 dist/barry/images/admin/icon_pages.gif
+dist/barry/images/admin/icon_people.gif
 dist/barry/images/admin/icon_regen.gif
 dist/barry/images/admin/icon_regen_anim.gif
 dist/barry/images/admin/icon_stats.gif
@@ -113,6 +115,7 @@ dist/barry/images/next.gif
 dist/barry/images/oklahoma.gif
 dist/barry/images/panaracer.mach.gif
 dist/barry/images/pedal.jpg
+dist/barry/images/poweredby.gif
 dist/barry/images/racing.gif
 dist/barry/images/rf.lpcrank.jpg
 dist/barry/images/rf.system.jpg
@@ -272,6 +275,8 @@ dist/barry/special_pages/reconfig.html
 dist/barry/special_pages/sec_faq.html
 dist/barry/special_pages/security.html
 dist/barry/special_pages/violation.html
+dist/barry/templates/standalone
+dist/barry/templates/standard
 dist/barry/tmp/.empty
 dist/barry/upload/.empty
 dist/basic/catalog.cfg
@@ -587,10 +592,12 @@ dist/simple/images/admin/folder.gif
 dist/simple/images/admin/folder.open.gif
 dist/simple/images/admin/greendot.gif
 dist/simple/images/admin/icon_config.gif
+dist/simple/images/admin/icon_error.gif
 dist/simple/images/admin/icon_help.gif
 dist/simple/images/admin/icon_item.gif
 dist/simple/images/admin/icon_orders.gif
 dist/simple/images/admin/icon_pages.gif
+dist/simple/images/admin/icon_people.gif
 dist/simple/images/admin/icon_regen.gif
 dist/simple/images/admin/icon_regen_anim.gif
 dist/simple/images/admin/icon_stats.gif
@@ -644,6 +651,7 @@ dist/simple/images/mvlogo.png
 dist/simple/images/mvlogo_dark.png
 dist/simple/images/new.png
 dist/simple/images/perl_id_313c.png
+dist/simple/images/poweredby.gif
 dist/simple/images/smallamex.png
 dist/simple/images/smalldisc.png
 dist/simple/images/smallmc.png
@@ -757,6 +765,8 @@ dist/simple/special_pages/reconfig.html
 dist/simple/special_pages/sec_faq.html
 dist/simple/special_pages/security.html
 dist/simple/special_pages/violation.html
+dist/simple/templates/standalone
+dist/simple/templates/standard
 dist/simple/tmp/.empty
 dist/simple/upload/.empty
 dist/src/compile.pl
