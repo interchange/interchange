@@ -123,6 +123,8 @@ Options
 * Add blank_label="--select--" option to [item-options], allows development
   of code to enforce option selection.
 
+* Add missing space to SQL query in Interchange 4.8 options.
+
 i18n
 ----
 
