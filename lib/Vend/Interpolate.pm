@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.185 2003-07-26 16:00:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.186 2003-07-31 13:18:20 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.185 $, 10);
+$VERSION = substr(q$Revision: 2.186 $, 10);
 
 @EXPORT = qw (
 
@@ -3205,8 +3205,8 @@ sub check_change {
 		$value = $value ? lc $1 : $1;
 	}
 	$value = substr($value, 0, $substr) if $substr;
-	my $prev = $Prev{$name} || undef;
-	$Prev{$name} = $value || '';
+	my $prev = $Prev{$name};
+	$Prev{$name} = $value;
 	if(defined $text) {
 		return pull_if($text) if ! defined $prev or $value ne $prev;
 		return pull_else($text);
