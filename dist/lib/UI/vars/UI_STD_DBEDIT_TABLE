@@ -53,6 +53,7 @@ EOF
 <%
 	my $table	= $Values->{mv_data_table};
 	my $db		= $Db{$table};
+	my $mdb		= $Db{__UI_META_TABLE__};
 	my %break;
 	if($CGI->{ui_break_before}) {
 		my @tmp = grep /\S/, split /[\s,\0]+/, $CGI->{ui_break_before};
@@ -73,10 +74,13 @@ EOF
 	if($db->record_exists($key)) {
 		#Log("Should work. key=$key table=$table");
 	}
+	elsif($db->config('AUTO_NUMBER')) {
+		$CGI->{$Values->{ui_data_key_name}} = '';
+		undef $key;
+	}
 	else {
 		$CGI->{$Values->{ui_data_key_name}} = $key;
 		undef $key;
-		#Log("key is undeffed.");
 	}
 	foreach my $col (@cols) {
 		if($CGI->{ui_hide_key} and $col eq $keycol) {
@@ -89,7 +93,13 @@ EOF
 		if($CGI->{$col} and !tag_data($table, $col, $key) ) {
 			$currval = $CGI->{$col};
 		}
-		my $label = $Tag->field_label($table, $col);
+		else {
+			$currval = delete $Scratch->{"ui_preload:$table:$col"} || undef;
+		}
+		my $label = $Tag->field_label( {	table => $table,
+											column =>  $col,
+											key => $key,
+										} );
 		my $meta = '';
 		if($super) {
 			$meta .= '<FONT SIZE=1><BR>';
@@ -106,13 +116,26 @@ EOF
 										ui_return_to=mv_data_table=$table
 										}
 							});
-			$meta .= 'meta</A></FONT>';
+			$meta .= 'meta</A>';
+			$meta .= '<br>' . $Tag->page(
+							{	href => "$base/flex_editor",
+								form => qq{
+										item_id=${table}::${col}::$key
+										mv_data_table=mv_metadata
+										ui_return_to=$page
+										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=mv_data_table=$table
+										}
+							}) . 'item-specific meta</A></FONT>'
+				if $CGI->{ui_meta_specific};
+			$meta .= '</FONT>';
 		}
+Log("Current preload val for $table:$col -- $currval");
 		my $display = $Tag->display({
 										table => $table,
 										column => $col,
 										key => $key,
-										default => $default,
+										default => $currval,
 									});
 		$Document->write(<<EOF) if $break{$col};
 <tr>
@@ -141,15 +164,16 @@ EOF
 
 <p>
 
-<input type=submit value="Ok">
+[button text="Ok"]
+junk=
+[/button]
 
-[seti Cancel]
-mv_todo=return
-mv_nextpage=[either][value-extended name=ui_return_to index=0][or]admin/flex_select[/either]
+[button text="Cancel"]
+mv_todo=back
+[return-to click]
 mv_data_table=[cgi mv_data_table]
-[/seti]
+[/button]
 
-<input type=submit name="mv_click" value="Cancel">
 <BR>
 [if-mm tables =x]
 	[if !value ui_too_large]

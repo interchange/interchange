@@ -36,6 +36,7 @@ Variable UI_STD_FILE_NAV <<EONav
 		mask="[scratch dir_mask]"
 		include_mask="[scratch include_mask]"
 		exclude_mask="[scratch exclude_mask]"
+		view_link="[scratch view_link]"
 		start_open="[scratch start_open]"
 	]
 
