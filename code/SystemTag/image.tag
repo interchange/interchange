@@ -332,6 +332,11 @@ sub {
 					File::Path::mkpath($dir);
 				}
 
+				my $mgkpath = $newpath;
+				my $ext;
+				$mgkpath =~ s/\.(\w+)$/.mgk/
+					and $ext = $1;
+
 				File::Copy::copy($path, $newpath)
 					or do {
 						logError("%s: Unable to create image '%s'", 'image tag', $newpath);
@@ -354,6 +359,10 @@ sub {
 					last MOGIT;
 				}
 
+				if(-f $mgkpath) {
+					rename $mgkpath, $newpath
+						or die "Could not overwrite image with new one!";
+				}
 				$image =~ s:(/?)([^/]+$):$1$siz/$2:;
 				$path = $newpath;
 			}
