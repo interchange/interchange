@@ -1,3 +1,9 @@
+interchange (4.7.0-0) unstable; urgency=low
+
+  * upstream changes 
+
+ -- Stefan Hornburg <racke@linuxia.de>  Wed, 14 Mar 2001 11:39:42 -0500
+
 interchange (4.6.3-2) unstable; urgency=low
 
   * don't abuse debconf any longer
