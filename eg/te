@@ -66,7 +66,7 @@ Jon Jensen <jon@redhat.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Red Hat, Inc., http://www.redhat.com/
+Copyright (C) 2001-2002 Red Hat, Inc., http://www.redhat.com/
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -98,6 +98,11 @@ native file reading instead of doing it ourselves.
 
 2001-10-03. Added gvim support by forcing foreground option -f.
 
+2002-07-23. Remove line endings whether CR, LF, or CRLF, instead of
+using running Perl's platform-specific chomp. If preserving a trailing
+solitary CR in the last field of a line is important, you'll want to
+change this behavior.
+
 =cut
 
 use strict;
@@ -127,7 +132,8 @@ for my $filename (@ARGV) {
 		warn "Error 'opening' $filename for reading: $!\n";
 		next;
 	}
-	chomp ($_ = <IN>);
+	$_ = <IN>;
+	s/\x0d?\x0a?$//;
 	die "Error in '$filename' header: null field name found\n" if /\t\t/;
 	$fieldcount = tr/\t/\t/ + 1;
 	@fieldnames = split /\t/, $_, $fieldcount;
@@ -152,7 +158,7 @@ for my $filename (@ARGV) {
 #
 EOF
 	while (<IN>) {
-		chomp;
+		s/\x0d?\x0a?$//;
 		@fields = split /\t/, $_, $fieldcount;
 		for (my $i = 0; $i < @fieldnames; $i++) {
 			print OUT $fieldnames[$i], ":",
