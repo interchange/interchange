@@ -17,7 +17,6 @@ debian/control
 debian/copyright
 debian/docs
 debian/interchange-cat-foundation.files
-debian/interchange-doc.docs
 debian/interchange-ui.files
 debian/interchange-ui.postinst
 debian/interchange.cfg
