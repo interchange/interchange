@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.7 2003-03-11 18:56:01 racke Exp $
+# $Id: SOAP.pm,v 2.8 2003-03-18 13:37:02 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -302,6 +302,8 @@ sub AUTOLOAD {
     $routine =~ s/.*:://;
 	if ($Vend::Cfg->{SOAP_Action}{$routine}) {
 		$sub = $Vend::Cfg->{SOAP_Action}{$routine};
+		Vend::Interpolate::init_calc();
+		new Vend::Tags;
 	} elsif (! $Allowed_tags{$routine}) {
 		die ::errmsg("Not allowed routine: %s", $routine);
 	}
