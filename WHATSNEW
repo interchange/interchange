@@ -18,6 +18,17 @@ Core
 
 * Send Content-Size header with downloads.
 
+* Add MD5 password support to UserDB. 
+  To activate, use UserDB "md5" option, i.e.:
+
+	UserDB   ui   md5   1
+
+* Make $Tag object be rebuilt every time a new page is done.
+
+* Fix bug in [PREFIX-discount-subtotal] where quantity was greater
+  than one. We were overloading the discount_price() routine, which
+  was dumb, so a new discount_subtotal() routine takes over.
+
 Payment
 -------
 
@@ -71,6 +82,13 @@ UI
 * Add meta_editor support for MAXLENGTH and JavaScript checks.
 
 * Made default metadata (for merge) match foundation.
+
+Form
+----
+
+* Honor flag telling we already have data.
+
+* Honor "db" passed parameter in lookup_query.
 
 Table Editor
 ------------
@@ -130,6 +148,9 @@ Foundation
 * Update Oracle configuration files for new options.
   Supplied by Jason <ic@santabarbara.org>.
 
+* Add HIDE_FIELD to products database definition, so products marked
+  inactive will not be found in search.
+
 Usertags
 --------
 
@@ -162,6 +183,39 @@ Usertags
     scan="fi=products/st=db/co=yes/sf=category/se=[loop-code]" 
     auto_create_dir=1]
   [/loop]
+
+SQL Parsing
+-----------
+
+* Add Vend::SQL_Parser module, eliminating need for SQL::Statement.
+
+* Improved tolerance for re-routing queries with table-only option.
+
+* Parses more SQL -- now can use IN and BETWEEN and translate those
+  to IC search specs.
+
+* Handles complex parenthesized queries properly.
+
+* Reads LIMIT N and translates to mv_matchlimit.
+
+* Tests added to regression tests to check parser.
+
+* Fix several deficiencies in SQL parsing.
+
+  -- Recognize IS [NOT] NULL and map to a search for the
+     empty string.
+
+  -- Allow verbatim passing of field names for GDBM types, allowing
+     "select Variable from variable where Variable = ''" which
+	 would not work before.
+
+  -- Add VERBATIM_FIELDS definition to database types which need it.
+
+  -- Add support for "select sometable as foo, othertable bar where ..."
+     so that queries using it can be rerouted properly.
+
+  -- Always set mv_min_string = 0, so we don't have to do anything
+     special for "where column = ''" and such.
 
 i18n
 ----
