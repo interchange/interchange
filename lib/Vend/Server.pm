@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.28 2003-03-08 00:14:58 racke Exp $
+# $Id: Server.pm,v 2.29 2003-03-21 16:34:04 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -746,7 +746,14 @@ sub http_soap {
 	}
 
 	my $ref;
-	if($ref = $Global::Selector{$catname} || $Global::SelectorAlias{$catname}) {
+
+	if (exists $Global::Selector{$catname}) {
+		$ref = $Global::Selector{$catname};
+	} elsif (exists $Global::SelectorAlias{$catname}) {
+		$ref = $Global::SelectorAlias{$catname};
+	}
+
+	if($ref) {
 #::logDebug("found catalog $catname");
 		$$env{SCRIPT_NAME} = $catname;
 	}
@@ -1729,24 +1736,23 @@ my $pretty_vector = unpack('b*', $s_vector);
 
 			$Vend::OnlyInternalHTTP = $Global::OnlyInternalHTTP;
 
-			$Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity);
-			$Vend::Cat = $Vend::Cfg->{CatalogName};
+			if ($Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity)) {
+				$Vend::Cat = $Vend::Cfg->{CatalogName};
+			}
 
 			my $result;
 			my $error;
 			if(! $Vend::Cfg) {
 #::logDebug("we have no catalog");
 				$result = Vend::SOAP::Transport::Server
-					->new( error => 'Catalog not found' )
-					->dispatch_to('', 'Vend::SOAP::Error')
-					->handle();
+					->new()
+					->make_fault('Client.NotFound','Service not found');
 			}
 			elsif(! $Vend::Cfg->{SOAP}) {
 #::logDebug("we have no SOAP enable");
 				$result = Vend::SOAP::Transport::Server
-					->new( error => 'SOAP not enabled' )
-					->dispatch_to('', 'Vend::SOAP::Error')
-					->handle();
+					->new()
+					->make_fault('Client.NotAvailable','Service not available');
 			}
 			else {
 #::logDebug("we have our SOAP enable, entity is $entity");
