@@ -1,6 +1,6 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: Parser.pm,v 1.2.6.1 2000-12-13 13:51:51 heins Exp $
 #
 #
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -113,7 +113,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2.6.1 $ =~ /(\d+)\.(\d+)/);
 
 
 sub new
@@ -225,6 +225,7 @@ sub parse
 				{
 					$eaten .= $1;
 					my $attr = lc $2;
+					$attr =~ tr/-/_/;
 #::logDebug("in parse, eaten=$eaten");
 					$attr =~ s/\.(.*)//
 						and $element = $1;
