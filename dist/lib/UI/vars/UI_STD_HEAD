@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.39 2003-04-23 11:14:15 racke Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.40 2003-12-06 18:26:55 mheins Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -124,7 +124,7 @@ Variable UI_STD_HEAD <<EOV
 	full_interpolate=page
 	localize="name,description"
 	]
-	<td nowrap>&nbsp;<a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=toplink>{NAME}</a>&nbsp;</td>
+	<td nowrap>&nbsp;<a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=toplink>{NAME}</a>&nbsp;</td>{MV_LAST_ROW:}<td>-</td>{/MV_LAST_ROW:}
 [menu-footer]
 [if-mm super]
 	[if scratch ui_meta_link]
