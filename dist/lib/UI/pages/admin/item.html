@@ -6,7 +6,7 @@
 [/calc]
 [/if]
 [set ui_class]Items[/set]
-[tmp page_title]Item editor[/tmp]
+[tmp page_title][L]Item editor[/L][/tmp]
 [if-mm super]
 [tmp page_banner][page href="__UI_BASE__/flex_editor"
 				 form='
@@ -14,7 +14,7 @@
 				 ui_meta_view=dbconfig
 				 ui_data_fields=code name height field outboard options help help_url display_filter
 				 ui_break_before=height display_filter
-				 page_title=Change display information: [cgi mv_data_table]
+				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/item
 				 ui_return_to=ui_scrub_table=1
 				 item_id=[cgi mv_data_table]
@@ -307,7 +307,7 @@ EOF
 [/elsif]
 [else]
 	[set item_list_clicked]1[/set]
-	<span class=cmessage>(click Items again to reset list)</span>
+	<span class=cmessage>([L]click Items again to reset list[/L])</span>
 [/else]
 [/if]
 
@@ -510,7 +510,7 @@ Inventory
 <tr>
 <td colspan=6 align=left>
 <br>
-<B>Nothing matched.</B>
+<B>[L]Nothing matched[/L].</B>
 <br><br>
 </td>
 </tr>
@@ -520,12 +520,12 @@ Inventory
 [more-list]
 <tr>
 <td colspan=8 align=center>
-More items: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[L]More items[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
 </table>
-[button text="Edit checked items in sequence"]
+[button text="[L]Edit checked items in sequence[/L]"]
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
 	$CGI->{item_id_left} =~ s/\0+/,/g;
@@ -545,7 +545,7 @@ mv_todo=return
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-[button text="Delete checked items"
+[button text="[L]Delete checked items[/L]"
 		confirm="Are you sure you want to delete the checked items\n__UI_ITEM_TABLES__?"
 ]
 [flag type=write table="[cgi mv_data_table]"]
