@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.15 2002-03-18 20:18:59 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.16 2002-06-06 02:14:47 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.15 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.16 $, 10);
 
 @EXPORT = qw (
 
@@ -6120,7 +6120,6 @@ sub tag_checked {
 sub tag_order {
     my($code,$quantity,$opt) = @_;
 	$opt = {} unless $opt;
-    my($r);
 	my @parms = (
 					"mv_action=refresh",
 				  );
@@ -6137,7 +6136,7 @@ sub tag_order {
 	$opt->{page} = find_special_page('order')
 		unless $opt->{page};
 
-	return form_link($opt->{area}, $opt->{arg}, $opt)
+	return form_link($opt->{page}, $opt->{arg}, $opt)
 		if $opt->{area};
 	return tag_page($opt->{page}, $opt->{arg}, $opt);
 }
