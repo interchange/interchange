@@ -1,12 +1,24 @@
 code	Variable	pref_group
 ADDRESS	__MVC_ADDRESS__	Company
+BACKGROUND	#FFFFFF	Catalog Colors and Style
 BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink">$ANCHOR$</A>	Admin colors
 CATALOG_STATIC	No	Static pages
+CATEGORYBAR_TEXT	#FFFFFF	Catalog Colors and Style
+CATEGORYBAR_BG	#993333	Catalog Colors and Style
+CATEGORYBAR_FONT	Helvetica	Catalog Colors and Style
+CATEGORYBAR_FONTSIZE	11px	Catalog Colors and Style
+CATEGORYBAR_WEIGHT	normal	Catalog Colors and Style
+CATEGORYBAR_LINK	#FFFFCC	Catalog Colors and Style
+CATEGORYBAR_LINKHOVER	#FFFFCC Catalog Colors and Style
+CATEGORYBAR_LINKDECO	none	Catalog Colors and Style
+CATEGORYBAR_HOVERDECO	underline	Catalog Colors and Style
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECK_ACCEPTED	1	Payment
 CITY	__MVC_CITY__	Company
 COD_ACCEPTED	__MVC_PAYCOD__	Payment
 COMPANY	__MVC_COMPANY__	Company
+CONTENTBAR1	#DDDDDD	Catalog Colors and Style
+CONTENTBAR2	#BBBBBB	Catalog Colors and Style
 CONTRAST	RED	Template
 CREDIT_CARDS_ACCEPTED	__MVC_PAYCC__	Payment
 DECREMENT_INVENTORY	1	Order
@@ -27,8 +39,22 @@ IMG_MOREINFO	__MVC_IMGMOREINFO__	Images
 IMG_PLACEORDER	__MVC_IMGPLACEORDER__	Images
 IMG_RECALC	__MVC_IMGRECALC__	Images
 IMG_VIEWCART	__MVC_IMGVIEWCART__	Images
+LINK	#993333	Catalog Colors and Style
+LINKHOVER	#FF3333	Catalog Colors and Style
+LINKDECO	underline	Catalog Colors and Style
+LINKHOVERDECO	underline	Catalog Colors and Style
 LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
+MAINCONTENT_TEXT	#000000	Catalog Colors and Style
+MAINCONTENT_BG	#FFFFFF	Catalog Colors and Style
+MAINCONTENT_FONT	Helvetica	Catalog Colors and Style
+MAINCONTENT_FONTSIZE	12px	Catalog Colors and Style
+MAINCONTENT_WEIGHT	normal	Catalog Colors and Style
+MENUBAR_TEXT	#FFFFFF	Catalog Colors and Style
+MENUBAR_BG	#CC3333	Catalog Colors and Style
+MENUBAR_FONT	Helvetica	Catalog Colors and Style
+MENUBAR_FONTSIZE	11px	Catalog Colors and Style
+MENUBAR_WEIGHT	normal	Catalog Colors and Style
 MV_DEFAULT_SEARCH_DB	1	Database
 MV_DEMO_MODE	__MVC_DEMOMODE__	General
 MV_OPTION_TABLE	options	Item display
