@@ -62,7 +62,7 @@
 [/if]
 
 [set ui_class]Items[/set]
-[seti page_title]Item editor: [cgi item_id][/seti]
+[seti page_title][L]Item editor[/L]: [cgi item_id][/seti]
 [set help_name]edit.item[/set]
 [set icon_name]icon_item.gif[/set]
 
@@ -73,14 +73,14 @@
 				 ui_meta_view=dbconfig
 				 ui_data_fields=code name height field outboard options help help_url display_filter
 				 ui_break_before=height display_filter
-				 page_title=Change display information: [cgi mv_data_table]
+				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/item
 				 ui_return_to=ui_scrub_table=1
 				 item_id=[cgi mv_data_table]
-		 ']Item editor</A> edit item <B>[cgi item_id]</B>
+		 '][L]Item editor[/L]</A> [msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg]
 [/tmp]
 [else]
-[tmp page_banner]Item editor: edit item <B>[cgi item_id]</B>[/tmp]
+[tmp page_banner][L]Item editor[/L]: [msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg][/tmp]
 [/else]
 [/if-mm]
 
@@ -93,13 +93,13 @@
 				form='
 					item_id=[cgi item_id]
 					mv_data_table=__ProductFiles_0__
-					page_title=Edit items: [cgi item_id]
+					page_title=[L]Edit items[/L]: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1
 					ui_hide_key=1
 					ui_return_to=__UI_BASE__/item
 					icon_name=icon_item.gif
-					']">No meta display</A>
+					']">[L]No meta display[/L]</A>
 [/if-mm]
 
 @_UI_STD_FOOTER_@
