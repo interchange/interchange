@@ -120,19 +120,10 @@ function update_price (form) {
 
 [if-item-param mv_si][comment] Subitems [/comment]
 
-	<B>[query
-			hashref=master
-			list=1
-			sql="
-				SELECT *
-				FROM   options
-				WHERE  code = '[item-modifier mv_mp]'
-				"
-			][sql-param description][/query]</B>
-	<br>
+	<b>[data table="options" field="description" key="[item-modifier mv_mp]"]</b><br>
 	<INPUT TYPE=hidden NAME="[quantity-name]" VALUE="[item-quantity]">
-	<INPUT TYPE=hidden NAME="item_pointer" VALUE="[modifier-name mv_sku]=[item-data options o_group]">
-	<SMALL><SELECT NAME="[item-data options o_group]" onChange="update_price(this.form)">
+	<INPUT TYPE=hidden NAME="item_pointer" VALUE="[modifier-name mv_sku]=[data table="options" field="o_group" key="[item-modifier mv_mp]"]">
+	<SMALL><SELECT NAME="[data table="options" field="o_group" key="[item-modifier mv_mp]"]" onChange="update_price(this.form)">
 
 [tree
 		prefix=tree
@@ -141,7 +132,7 @@ function update_price (form) {
 		master=o_master
 		sub=sku
 		sort=o_group
-		start=[item-data options o_master]
+		start=|[data table="options" field="sku" key="[item-modifier mv_mp]"]|
 		table=options
 	]
 [tree-sub do_level]
@@ -158,7 +149,7 @@ function update_price (form) {
 
 #Log("differential=$differential");
 	}
-	my $sel = $ivalue eq $row->{code} ? ' SELECTED' : '';
+	my $sel = $ivalue eq $row->{sku} ? ' SELECTED' : '';
 	
 	my $price = $row->{price} + $differential;
 #Log("differential=$differential rowprice=$row->{price} price=$price");
@@ -167,7 +158,7 @@ function update_price (form) {
 				: '';
 	my $desc = $row->{description};
 	$desc .= " ($price)" if $price;
-	return qq{<OPTION VALUE="$row->{code}"$sel>$desc</OPTION>};
+	return qq{<OPTION VALUE="$row->{sku}"$sel>$desc</OPTION>};
 [/tree-sub][tree-exec do_level][/tree-exec][/tree]
 
 	</SELECT></SMALL>
