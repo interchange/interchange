@@ -1,5 +1,6 @@
 [comment]
 ui_component: category_vertical
+ui_component_type: vertical
 ui_component_group: Navigation
 ui_component_label: Vertical category list
 

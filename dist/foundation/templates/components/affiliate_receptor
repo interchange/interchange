@@ -1,5 +1,6 @@
 [comment]
 ui_component: affiliate_receptor
+ui_component_type: content
 ui_component_label: Welcome affiliate program arrivals
 
 coupon_allowed: 

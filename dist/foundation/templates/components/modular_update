@@ -1,5 +1,7 @@
 [comment]
 ui_component: modular_buy
+ui_component_type: content
+ui_component_group: checkout
 ui_component_label: Modular item update display
 [/comment]
 

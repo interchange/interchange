@@ -1,5 +1,6 @@
 [comment]
 ui_component: upsell
+ui_component_type: content, vertical
 ui_component_group: promotions
 ui_component_label: Upsell
 ui_component_help: depends on setting upsell codes in cart or flypage

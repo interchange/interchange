@@ -1,5 +1,6 @@
 [comment]
 ui_component: saved_carts_list_small
+ui_component_type: vertical
 ui_component_group: info
 ui_component_label: Small saved cart list for left/right display
 

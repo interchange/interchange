@@ -1,5 +1,6 @@
 [comment]
 ui_component: cart_tiny
+ui_component_type: vertical
 ui_component_group: info
 ui_component_label: Small cart for left/right display
 

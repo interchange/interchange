@@ -1,5 +1,7 @@
 [comment]
 ui_component: random
+ui_component_type: content, vertical
+ui_component_group: promotion
 ui_component_label: Random items
 
 matches:

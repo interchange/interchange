@@ -1,7 +1,9 @@
 <!-- BEGIN COMPONENT [control component search_box_small] -->
 [comment]
 ui_component: search_box_small
-ui_component_name: search_box_small
+ui_component_type: vertical
+ui_component_group: search
+ui_component_description: Small search box
 
 matches:
 	widget: select

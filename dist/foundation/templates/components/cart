@@ -1,5 +1,6 @@
 [comment]
 ui_component: cart
+ui_component_type: content
 ui_component_group: checkout
 ui_component_label: Shopping cart display (full)
 
@@ -256,6 +257,8 @@ EOF
 	[/calc]
 [/if]
 
+[if variable SEPARATE_SHIPPING]
+
 [item-tag-address
 			set="[cgi mv_an[item-modifier mv_ip]]"
 			address_label=city
@@ -302,7 +305,6 @@ EOF
 [/item-tag-address]
 
 [if session logged_in]
-
 	<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
 	  <TD ALIGN="right" COLSPAN="6" valign="top">
 		[if value separate_addresses]
@@ -323,6 +325,7 @@ EOF
 	  </td>
 	</TR>
 
+[/if]
 [/if]
 
 [/item-list]
