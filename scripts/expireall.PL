@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8.2.1.2.2 2001-04-25 15:28:43 heins Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.3 2001-04-26 08:57:12 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,6 +101,7 @@ EOF
 
 use Vend::Config;
 
+$Vend::ExternalProgram = 1;
 $Vend::Quiet = 1;
 
 getopts('e:f:rn') or die "$@\n$USAGE\n";
@@ -151,7 +152,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-# $Id: expireall.PL,v 1.8.2.1.2.2 2001-04-25 15:28:43 heins Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.3 2001-04-26 08:57:12 racke Exp $
 
 =head1 DESCRIPTION
 
