@@ -62,12 +62,31 @@ sub {
 		my $structure = $1 || '';
 		next unless $structure;
 		my @lines = split /\n/, $structure;
+		my $found;
+		for(;;) {
+			my $i = -1;
+			for(@lines) {
+				$i++;
+				next unless s/\\$//;
+				$found = $i;
+				last;
+			}
+			last unless defined $found;
+			if (defined $found) {
+				my $add = splice @lines, $found + 1, 1;
+::logDebug("Add is '$add', found index=$found");
+				$lines[$found] .= $add;
+::logDebug("Complete line now is '$lines[$found]'");
+				undef $found;
+			}
+		}
 		$ref->{ui_definition} = join "\n", @lines;
 		my $current;
+	
 		for(@lines) {
-			if(/^ui_/) {
+			if(/^\s*ui_/) {
 				my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
-				#Log ("found el=$el el_item=$el_item el_data=$el_data");
+#Log ("found el=$el el_item=$el_item el_data=$el_data");
 				if(defined $el_data) {
 					$ref->{$el} = { } if ! ref($ref->{$el});
 					$ref->{$el}{$el_item} = $el_data;
@@ -78,13 +97,13 @@ sub {
 			}
 			elsif ( /^(\w+)\s*:\s*(.*)$/) {
 				$current = $1;
-				$ref->{ui_control_element}{$current} = $2;
+				$ref->{element}{$current} = $2;
 				$ref->{ui_display_order} = [] if ! $ref->{ui_display_order};
 				push @{$ref->{ui_display_order}}, $current;
 			}
 			elsif( /^\s+(\w+)\s*:\s*(.*)/ ) {
 				my ($fn, $fv) = ( lc($1), $2 );
-				$ref->{"ui_control_$fn"}{$current} = $fv;
+				$ref->{$fn}{$current} = $fv;
 			}
 		}
 		if($opt->{structure}) {
