@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.4 2003-07-07 00:00:30 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.5 2003-07-30 04:00:45 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 sub new {
 	my $class = shift;
@@ -174,8 +174,6 @@ sub tables {
 			push @try, $_;
 			last if $last;
 		}
-		$s->{raw_columns} =~ s/^\s*distinct\s+//i
-			and $s->{distinct} = 1;
 	}
 	elsif ($s->{command} eq 'UPDATE') {
 		$st =~ s/(\w+(?:\s*,\s*\w+)*)\s+set\s+//is;
@@ -201,12 +199,6 @@ sub tables {
 
 	$s->{tables} = \@tab;
 	return @tab;
-}
-
-sub distinct {
-	my $s = shift;
-	$s->tables() unless $s->{tables};
-	return $s->{distinct};
 }
 
 sub limit {
@@ -795,6 +787,15 @@ sub name {
 	return shift->{name};
 }
 
+sub distinct {
+	my $s = shift;
+	return $s->{distinct};
+}
+
+sub as {
+	return shift->{as};
+}
+
 sub new {
 	my $class = shift;
 	my $self = { @_ };
@@ -813,6 +814,19 @@ sub new {
 		elsif ($space =~ /^c/i) {
 			$name = $CGI::values{$sel};
 		}
+	}
+	elsif($raw =~ /\s/) {
+		$self->{distinct} = 1 if s/^distinct\s+//i;
+		my $title;
+		$title = $1 if $raw =~ s/\s+as\s+(.*)//;
+		if($title) {
+			my $match;
+			$title =~ s/^(["']?)(.*)\1$/$2/
+				and $match = $1
+				and $title =~ s/$match$match/$match/g;
+			$self->{as} = $title;
+		}
+		$name = $raw;
 	}
 	else {
 		$name = $raw;

@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.24 2003-07-12 04:47:10 mheins Exp $
+# $Id: Scan.pm,v 2.25 2003-07-30 04:00:45 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use strict;
 use Vend::Util;
@@ -114,6 +114,7 @@ my @Order = ( qw(
 
 ## Place marker, not used in search specs but is reserved
 ##  rt  mv_real_table
+##  hf  mv_header_fields
 ##
 my %Scan = ( qw(
 	ac  mv_all_chars
@@ -650,8 +651,6 @@ sub sql_statement {
 #::logDebug("t=$t obj=$_ db=$db nuhash=" . ::uneval($nuhash));
 	}
 
-	$text =~ /\bselect\s+distinct\s+/i and push_spec( 'un', 'yes', $ary, $hash);
-
 	if(my $l = $stmt->limit()) {
 #::logDebug("found limit=" . $l->limit());
 		push_spec('ml', $l->limit(), $ary, $hash);
@@ -661,10 +660,13 @@ sub sql_statement {
 		}
 	}
 
+	my $distincted;
 	for($stmt->columns()) {
 		my $name = $_->name();
 #::logDebug("found column=$name");
+		push_spec('un', 1, $ary, $hash) if $_->distinct() and ! $distincted++;
 		push_spec('rf', $name, $ary, $hash);
+		push_spec('hf', $_->as(), $ary, $hash);
 		last if $name eq '*';
 #::logDebug("column name=" . $_->name() . " table=" . $_->table());
 	}
@@ -690,7 +692,6 @@ sub sql_statement {
 		push_spec('to', $d, $ary, $hash);
 	}
 
-	push_spec('un', 1, $ary, $hash) if $stmt->distinct();
 #::logDebug("ary spec to this point=" . ::uneval($ary));
 #::logDebug("hash spec to this point=" . ::uneval($hash));
 	my @where;
