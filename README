@@ -11,12 +11,12 @@ Copyright 1995-96 by Andrew M. Wilcox
 
 See the file LICENSE for redistribution terms.
 
-This program is completely unsupported, without warranty of any kind. We
-are interested in problems, suggestions, or comments, but do not have
-time to offer free individual support in most cases. Our professional
-services group offers paid consulting services, which are detailed at:
+This program is offered without warranty of any kind. We are interested
+in problems, suggestions, or comments, but do not offer free individual
+support in most cases. Our professional services group offers paid
+consulting services, which are detailed at:
 
-http://www.akopia.com/
+http://www.redhat.com/ecommerce
 
 -----------------------------------------------------------------------------
 
@@ -28,31 +28,28 @@ dynamic content presentation; content management; internationalization
 and localization support; real-time tax and shipping hooks; reporting;
 and web-based administration.
 
-Interchange absolutely REQUIRES Perl 5.005 or Perl 5.6 on a Unix-like
-operating system.
+Interchange absolutely REQUIRES Perl 5.005 or Perl 5.6 or later on a
+Unix-like operating system.
 
 -----------------------------------------------------------------------------
 
 More information is in the following files and directories:
 
-pdf/           Documentation viewable with xpdf, gv, or Adobe Acrobat Reader.
-
-pod/           Documentation viewable with perldoc.
-
-README.cvs     How to access the CVS repository to track the development of
-               Interchange as it happens.
+doc/           Documentation.
 
 README.rpm     Notes on using Interchange when installed from RPM packages.
 
 README.debian  Notes on using Interchange when installed from Debian packages.
 
-WHATSNEW       Change information for all versions in this version family.
+README.cvs     How to access the CVS repository to track ongoing development.
+
+WHATSNEW       Changes per version for this version family.
 
 -----------------------------------------------------------------------------
 
 Major files/directories in the distribution:
 
-Makefile.PL    The installation script.
+Makefile.PL    Script to create a Makefile, used for installation.
 
 dist/          The distribution files, exclusive of executable
                files and modules. Includes:
@@ -101,7 +98,7 @@ To install the demo, go to the directory where you installed Interchange
 for root installations, or /usr/lib/interchange for RPM installations)
 and run:
 
-    bin/makecat
+bin/makecat
 
 Follow the prompts and after restarting the Interchange server you
 should be able to access the demo catalog.
@@ -116,12 +113,12 @@ Visit http://demo.akopia.com/ to see a live demo on our servers.
 
                          D O C U M E N T A T I O N
 
-The included documentation is in man, POD, and PDF formats. Extended
+The included documentation is in man(1), POD, and HTML formats. Extended
 documentation is available at:
 
 http://developer.akopia.com/
 
-which includes user-annotated documentation, HTML versions of the manual,
+which includes user-annotated documentation, the manual in other formats,
 and a user-contributed code library.
 
 -----------------------------------------------------------------------------
@@ -130,18 +127,8 @@ and a user-contributed code library.
 
 Interchange is regularly tested on Linux, FreeBSD, and Solaris. It
 has also been used on OpenBSD, Digital UNIX/Tru64, SCO, AIX, and other
-Unix ports. It should work on any Unix with Perl 5.005 or higher and
+Unix variants. It should work on any Unix with Perl 5.005 or higher and
 the necessary Perl modules.
-
------------------------------------------------------------------------------
-
-                        K N O W N   P R O B L E M S
-
-Apache with suEXEC:
-
-vlink/UNIX socket mode will not work well unless you do the install as
-a normal user. If you are going to support multiple users, you must use
-tlink/INET mode.
 
 -----------------------------------------------------------------------------
 
