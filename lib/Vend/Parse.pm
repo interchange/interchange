@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.21 2001-06-01 15:08:59 heins Exp $
+# $Id: Parse.pm,v 1.12.2.22 2001-06-14 12:38:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.22 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -202,6 +202,7 @@ my %Order =	(
 				search_region	=> [qw( arg   )],
 				region			=> [qw( )],
 				record			=> [qw( )],
+				restrict		=> [qw( enable )],
 				control			=> [qw( name default )],
 				control_set		=> [qw( index )],
 				selected		=> [qw( name value )],
@@ -271,6 +272,7 @@ my %addAttr = (
                     sql             1
 					selected        1
 					setlocale       1
+					restrict        1
                     record          1
                     region          1
                     search_region   1
@@ -314,6 +316,7 @@ my %hasEndTag = (
                         perl            1
                         query           1
                         region          1
+                        restrict        1
                         row             1
                         search_region   1
                         set             1
@@ -533,6 +536,7 @@ my %Routine = (
 				profile      	=> \&Vend::Interpolate::tag_profile,
 				query			=> \&Vend::Interpolate::query,
 				read_cookie     => \&Vend::Util::read_cookie,
+
 				row				=> \&Vend::Interpolate::tag_row,
 				salestax		=> \&Vend::Interpolate::tag_salestax,
 				scratch			=> \&Vend::Interpolate::tag_scratch,
@@ -570,6 +574,57 @@ my %Routine = (
 				value_extended	=> \&Vend::Interpolate::tag_value_extended,
 
 			);
+
+## Put here because we need to call keys %Routine
+## Restricts execution of tags by tagname
+$Routine{restrict} = sub {
+	my ($enable, $opt, $body) = @_;
+	my $save = $Vend::Cfg->{AdminSub};
+
+	my $save_restrict = $Vend::restricted;
+
+	my $default;
+	if($opt->{policy} eq 'accept') {
+		# Accept all, deny only ones defined in disable
+		$default = undef;
+	}
+	else {
+		# This is default, deny all except enabled
+		$default = 1;
+		$opt->{policy} = 'deny';
+	}
+	my @enable  = split /[\s,\0]+/, $enable;
+	my @disable = split /[\s,\0]+/, $opt->{disable};
+
+	for(@enable, @disable) {
+		$_ = lc $_;
+		tr/-/_/;
+	}
+
+
+	my %restrict;
+	for(keys %Routine) {
+		$restrict{$_} = $default;
+	}
+
+	$restrict{$_} = undef for @enable;
+	$restrict{$_} = 1     for @disable;
+	$restrict{$_} = 1     for keys %$save;
+
+	$Vend::Cfg->{AdminSub} = \%restrict;
+	$Vend::restricted = join " ",
+			'default=', $opt->{policy},
+			'enable=', join(",", @enable),
+			'disable=', join(",", @disable),
+			;
+	my $out;
+	eval {
+		$out = Vend::Interpolate::interpolate_html($body);
+	};
+	$Vend::restricted = $save_restrict;
+	$Vend::Cfg->{AdminSub} = $save;
+	return $out;
+};
 
 my %attrAlias = (
 	 counter        => { 'name' => 'file' },
@@ -779,6 +834,7 @@ my %Interpolate = (
 
 my %NoReparse = ( qw/
 					mvasp			1
+					restrict		1
 				/ );
 
 my %Gobble = ( qw/
@@ -873,8 +929,24 @@ use vars '%myRefs';
 sub do_tag {
 	my $tag = shift;
 #::logDebug("Parse-do_tag: tag=$tag caller=" . caller() . " args=" . ::uneval_it(\@_) );
+	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
+	
+		if($Vend::restricted) {
+			die errmsg(
+					"Tag '%s' in execution-restricted area: %s",
+					$tag,
+					$Vend::restricted,
+				);
+		}
+		elsif (! $Vend::admin) {
+			die errmsg("Unauthorized for admin tag %s", $tag)
+		}
+
+	}
+
 	die errmsg("Unauthorized for admin tag %s", $tag)
-		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
+		if defined $Vend::Cfg->{AdminSub}{$tag} and
+			($Vend::restricted or ! $Vend::admin);
 	
 	if (! defined $Routine{$tag}) {
         if (! $Alias{$tag}) {
@@ -1034,14 +1106,33 @@ sub html_start {
 #::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	$tag =~ tr/-/_/;   # canonical
 
-	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
-		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
-		::response( errmsg("Unauthorized for admin tag %s", $tag) );
-		return ($self->{ABORT} = 1);
+	my $buf = \$self->{_buf};
+
+	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
+	
+		if($Vend::restricted) {
+			::logError(
+				"Restricted tag (%s) attempted during restriction '%s'",
+				$origtext,
+				$Vend::restricted,
+				);
+			$self->{OUT} .= $origtext;
+			return 1;
+		}
+		elsif (! $Vend::admin) {
+			::response(
+						get_locale_message (
+							403,
+							"Unauthorized for admin tag %s",
+							$tag,
+							)
+						);
+			return ($self->{ABORT} = 1);
+		}
+
 	}
 
 	$end_tag = lc $end_tag;
-	my $buf = \$self->{_buf};
 #::logDebug("tag=$tag end_tag=$end_tag buf length " . length($$buf)) if $Monitor{$tag};
 #::logDebug("attributes: ", %{$attr}) if $Monitor{$tag};
 	my($tmpbuf);
@@ -1340,13 +1431,30 @@ sub start {
 	$tag =~ tr/-/_/;   # canonical
 	$tag = lc $tag;
 	my $buf = \$self->{_buf};
-#::logDebug("tag=$tag buf length " . length($$buf));
-#::logDebug("tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
+
 	my($tmpbuf);
-	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
-		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
-		::response( errmsg("Unauthorized for admin tag %s", $tag) );
-		return ($self->{ABORT} = 1);
+	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
+	
+		if($Vend::restricted) {
+			::logError(
+				"Restricted tag ([%s) attempted during restriction '%s'",
+				$origtext,
+				$Vend::restricted,
+				);
+			$self->{OUT} .= $origtext;
+			return 1;
+		}
+		elsif (! $Vend::admin) {
+			::response(
+						get_locale_message (
+							403,
+							"Unauthorized for admin tag %s",
+							$tag,
+							)
+						);
+			return ($self->{ABORT} = 1);
+		}
+
 	}
 
     # $attr is reference to a HASH, $attrseq is reference to an ARRAY

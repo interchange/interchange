@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.72 2001-06-13 21:39:28 jason Exp $
+# $Id: Interpolate.pm,v 1.40.2.73 2001-06-14 12:38:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.72 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.73 $, 10);
 
 @EXPORT = qw (
 
@@ -349,7 +349,7 @@ my @th = (qw!
 				 		($Some)
 				 		\[/col(?:umn)?\] )ix,
 
-	'comment'		=> qr($T{comment}\]
+	'comment'		=> qr($T{comment}(?:\s+$Some)?\]
 						(?!$All$T{comment}\])
 						$Some
 						$T{'/comment'})x,
