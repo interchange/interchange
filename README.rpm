@@ -3,10 +3,10 @@ NAME
 
   VERSION
 
-    4.5.7
+    4.5.8
 
 SYNOPSIS
-    rpm -Uvh interchange-4.5.7-1.rpm
+    rpm -Uvh interchange-4.5.8-1.rpm
 
 DESCRIPTION
     The Interchange 4 RPM is designed to integrate Interchange with a stock
@@ -30,7 +30,7 @@ DESCRIPTION
         work!
 
         Interchange uses a special invocation script, located at
-        /usr/lib/bin/interchange, to start the Interchange server. This is
+        /usr/sbin/interchange, to start the Interchange server. This is
         called by /etc/rc.d/init.d/interchange.
 
     Run Run files go in /var/run/interchange/*. The subdirectory is needed
@@ -47,7 +47,7 @@ ASSUMPTIONS
         Interchange relies upon the following things in the Apache
         installation:
 
-         For Red Hat Linux 6.x:
+         For Red Hat Linux 6.x (and Linux-Mandrake):
          -- Server root in /home/httpd
          -- ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
 
@@ -73,7 +73,7 @@ ASSUMPTIONS
     Run files
         To place the logs, configuration, and run files in standard
         Red Hat/LSB locations, Interchange relies on a special invocation
-        from /usr/lib/bin/interchange. In other words, don't expect
+        from /usr/sbin/interchange. In other words, don't expect
         /usr/lib/interchange/bin/restart to work.
 
         Interchange will be started by this command:
@@ -86,7 +86,7 @@ ASSUMPTIONS
 
         or possibly:
 
-            /usr/lib/bin/interchange -r
+            /usr/sbin/interchange -r
 
         The run files, i.e. UNIX-domain socket, catalog status files, will
         be placed in /var/run/interchange. That directory must be
