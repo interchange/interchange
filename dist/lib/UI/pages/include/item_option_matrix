@@ -114,9 +114,16 @@ HREF="[area
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="ui_text_qualification=sku=[cgi item_id]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 
-<H2>Add Variant</H2>
-<TABLE CELLSPACING=0 cellpadding=2 cellmargin=3 width="100%">
-<TR BGCOLOR="__UI_C_TITLEBARBG__"><TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Option name</TH><TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Choices</TH><TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
+<table __UI_T_PROPERTIES__>
+<tr class=rtitle>
+	<td class=ctitle colspan=3>
+		<H2>Add Variant</H2>
+	</td>
+</tr>
+<tr class=rtitle>
+	<td class=ctitle>Option name</td>
+	<td class=ctitle>Choices</td>
+	<td class=ctitle>&nbsp;</td>
 </tr>
 [tmp built_js]
 <SCRIPT LANGUAGE="JavaScript">
@@ -147,10 +154,17 @@ HREF="[area
 				se=[cgi item_id]
 				sf=sku
 				op=eq
+				ac=0
 
 				sf=o_matrix
 				se=1
 				op=ne
+				ac=0
+
+				sf=o_master
+				se=.
+				op=rn
+				ac=0
 
 				rf=*
 				"]
@@ -190,11 +204,11 @@ EOF
 									mv_data_table=[cgi mv_data_table]
 									ui_page_title=[cgi ui_page_title]
 									ui_page_title=[cgi ui_page_banner]
+									ui_meta_view=matrix_options
+									ui_hide_key=1
 									ui_class=Items
 									ui_meta_specific=[cgi ui_meta_specific]
 									ui_return_to=@@MV_PAGE@@
-									ui_return_to=ui_return_table=[cgi mv_data_table]
-									ui_return_to=ui_text_qualification=sku=[cgi item_id]
 									item_id=[item-code]
 						|][item-param o_group]</A></TD>
 <TD>
@@ -234,22 +248,30 @@ HREF="[area
 [page href=__UI_BASE__/flex_editor
 		form="
 			ui_new_item=1
+			item_id=new
 			sku=[cgi item_id]
 			mv_data_table=[cgi mv_data_table]
 			ui_return_to=@@MV_PAGE@@
+			ui_return_to=ignore_sku=1
+			ui_return_to=item_id=[cgi item_id]
+			ui_te_default:sku=[cgi item_id]
+			ui_data_fields=code sku o_group o_label o_value price
+			ui_te_widget:sku=hidden_text
 		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0></A>
 &nbsp;&nbsp;
 [query
 	list=1
 	prefix=clone
-	sql="select DISTINCT sku from [cgi mv_data_table]"
+	db=1
+	sql="SELECT DISTINCT code
+		 FROM  [cgi mv_data_table]
+		 WHERE o_matrix  =  '1'
+		 AND   o_enable  =  '1'
+		 AND   code      <> '[cgi item_id]'
+		"
 	more=1]<SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
-[list]
-[if-clone-data options o_enable]
-<OPTION VALUE="[clone-code]">[clone-filter 20][clone-description][/clone-filter]
-[/if-clone-data]
-[/list]
+[list]<OPTION VALUE="[clone-code]">[clone-filter 30][clone-description][/clone-filter][/list]
 </SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="Clone options"]
 [flag type=write table="[cgi mv_data_table]"]
 ui_clone_options=1
@@ -261,6 +283,7 @@ mv_nextpage=@@MV_PAGE@@
 
 
 [table-editor
+	table_width=400
 	default.o_matrix=1
 	default.quantity=1
 	default.sku=`$CGI->{item_id}`
@@ -274,5 +297,4 @@ mv_nextpage=@@MV_PAGE@@
 	ui_new_item=1
 	widget.o_matrix=hidden
 	widget.sku="hidden_text"
-	widget_width.description="20"
 ]

@@ -213,7 +213,7 @@
 [sql-sub o_display]
 	my $master = shift;
 	my %above;
-	$above{$CGI->{sku}} = 1;
+	$above{$CGI->{item_id}} = 1;
 	$above{$master} = 1;
 	my $row = shift;
 	my @rows;
@@ -229,11 +229,13 @@
 			$row->{level} = scalar(@stack);
 			push(@rows, $row);
 			my $sku = $row->{sku};
-			if($above{$sku}++) {
-				last ARY;
-			}
 			next ROW if ! $row->{o_enable};
 			my $code = $row->{code};
+			if($above{$sku}) {
+				$row->{description} = errmsg("ENDLESS TREE") . " $row->{description}";
+				display_template($_);
+				next ROW;
+			}
 			if( $expand->{$code}
 					or 
 				($explode and ! defined $expand->{$code})
@@ -251,6 +253,8 @@
 								",
 						}
 				);
+				$above{$sku} = 1 if $ary and scalar @{$ary};
+				
 			}
 		}  # END ROW
 	}  # END ARY
