@@ -1,3 +1,4 @@
 UserTag dump                Order        key
+UserTag dump                addAttr
 UserTag dump                PosNumber    1
 UserTag dump                MapRoutine   ::full_dump

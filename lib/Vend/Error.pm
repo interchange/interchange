@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.7 2003-06-18 17:34:44 jon Exp $
+# $Id: Error.pm,v 2.7.2.1 2004-01-30 17:36:52 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.7.2.1 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -111,6 +111,7 @@ EOF
 
 sub full_dump {
 	my $portion = shift;
+	my $opt = shift || {};
 	my $out = '';
 	if($portion) {
 		$out .= "###### SESSION ($portion) #####\n";
@@ -122,20 +123,32 @@ sub full_dump {
 
 	$out = minidump();
 	local($Data::Dumper::Indent) = 2;
-	$out .= "###### ENVIRONMENT     #####\n";
-	if(my $h = ::http()) {
-		$out .= uneval($h->{env});
+	unless ($opt->{no_env}) {
+		$out .= "###### ENVIRONMENT     #####\n";
+		if(my $h = ::http()) {
+			$out .= uneval($h->{env});
+		}
+		else {
+			$out .= uneval(\%ENV);
+		}
+		$out .= "\n###### END ENVIRONMENT #####\n";
 	}
-	else {
-		$out .= uneval(\%ENV);
+	unless($opt->{no_cgi}) {
+		my %cgi = %CGI::values;
+		unless($opt->{show_all}) {
+			for(@Global::HideCGI) {
+				delete $cgi{$_};
+			}
+		}
+		$out .= "###### CGI VALUES      #####\n";
+		$out .= uneval(\%cgi);
+		$out .= "\n###### END CGI VALUES  #####\n";
 	}
-	$out .= "\n###### END ENVIRONMENT #####\n";
-	$out .= "###### CGI VALUES      #####\n";
-	$out .= uneval(\%CGI::values);
-	$out .= "\n###### END CGI VALUES  #####\n";
-	$out .= "###### SESSION         #####\n";
-	$out .= uneval($Vend::Session);
-	$out .= "\n###### END SESSION    #####\n";
+	unless($opt->{no_session}) {
+		$out .= "###### SESSION         #####\n";
+		$out .= uneval($Vend::Session);
+		$out .= "\n###### END SESSION    #####\n";
+	}
 	$out =~ s/\0/\\0/g;
 	return $out;
 }
