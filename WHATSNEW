@@ -157,6 +157,51 @@ Core
 * Avoid cluttering of global logs with 
   'Attempt to call perl from within Safe'.
 
+* Fix prefork problem that might be biting someone, could cause missing
+  filters.
+
+* Add ability to access and test the $opt hash for any search
+  loop.
+
+  [loop prefix=top list="a b c"]
+	[loop list="1 2 3" foo-opt="[top-code]"]
+		[if-loop-header-param foo_opt]
+			Foo is there! It is: [loop-header-param foo_opt]
+		[/if-loop-header-param]
+
+		[if-loop-header-param !foo_opt]
+			Foo is NOT there! It is: [loop-header-param foo_opt]
+		[/if-loop-header-param]
+
+		[if-loop-header-param foo_opt eq a]
+			Foo is equal to a.
+		[else]
+			Foo is NOT equal to a.
+		[/else]
+		[/if-loop-header-param]
+		<br>
+    [/loop]
+	<p>
+  [/loop]
+
+* Add module-version intrinsic test:
+
+	<input	name=mv_column_op
+			type=hidden
+			value="[if module-version Text::Query]aq[else]rm[/else][/if]"
+			>
+
+* Enhance [PREFIX-alternate] to support
+
+	[PREFIX-alternate]              Defaults to [value mv_item_alternate] or 2 (same)
+	[PREFIX-alternate N]            Alternate every N items (same)
+	[PREFIX-alternate except_last]  Every time except last in list
+	[PREFIX-alternate except_first] Every time except last in list
+	[PREFIX-alternate first_only]   Only on the first item
+	[PREFIX-alternate last_only]    Only on the last item
+	[PREFIX-alternate 0]            Alias for first_only
+	[PREFIX-alternate -1]           Alias for except_last
+
 Tables
 ------
 
@@ -219,6 +264,86 @@ Tables
 
 * Fix bug in DBI module that caused arbitrary column to get set 
   to primary key instead of to the intended new value.
+
+Search
+------
+
+* Add Altavista-style search operator with Text::Query (CPAN) module.
+  Calls Text::Query::*AdvancedString with op=aq, calls
+  Text::Query::*SimpleString with op=tq.
+
+  Examples:
+
+    [loop search="
+                se=hammer -framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=tq
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+    [loop search="
+                se=hammer NEAR framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=aq
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+  Honors mv_case (-case option), mv_all_chars (-regexp option),
+  mv_substring_match (-whole option) and mv_exact_match
+  (-litspace option).
+
+* Add ability to map in custom search routines. In interchange.cfg:
+
+    CodeDef find_hammer SearchOp find_hammer
+    CodeDef find_hammer Routine <<EOR
+    sub {
+        my($self, $i, $string, $opname);
+    #::logDebug("Calling fake SearchOp");
+        return sub {
+    #::logDebug("testing with fake SearchOp");
+            my $string = shift;
+            $string =~ /hammer/i;
+        };
+    }
+    EOR
+
+   Now you can do:
+
+    [loop search="
+                se=hammer NOT framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=find_hammer
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+   The passed parameters are:
+
+        - The search object ($self)
+        - The index into coordinated search array ($i)
+        - The pattern to match
+        - The name of the op (find_hammer in this case)
+
+    Must return a sub which receives the data to match and returns
+    1 if it matches. DOES NOT HONOR mv_negate UNLESS you tell it to.
+
+    See Vend::Search::create_text_query for an example of how to
+    return a proper routine and look in search object for the
+    associated params.
 
 Payment
 -------
@@ -490,12 +615,17 @@ UI
 		'extended.data_row_class_odd' => 'Data row CSS class, odd numbers',
 		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
 
+* No longer check for Term::Readline and Term::ReadKey.
+
 Form
 ----
 
 * Honor flag telling we already have data.
 
 * Honor "db" passed parameter in lookup_query.
+
+* Add display type "labels" that is like "options" except it displays the
+  labels instead of their codes.
 
 Menu
 ----
