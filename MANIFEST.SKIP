@@ -36,6 +36,7 @@ dev/.*
 dist/etc/[^.].*
 dist/lib/MiniMate.*
 dist/mvmall.*
+dist/books.*
 doc/.*[^d]
 lib/src/config.cache
 lib/src/config.h

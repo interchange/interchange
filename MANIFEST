@@ -22,7 +22,6 @@ dist/barry/config/no_left
 dist/barry/config/no_right
 dist/barry/config/precopy_commands
 dist/barry/config/rightside
-dist/barry/config/standard_defs
 dist/barry/etc/log_entry
 dist/barry/etc/log_transaction
 dist/barry/etc/mail_receipt
@@ -207,12 +206,6 @@ dist/barry/pages/privacy.html
 dist/barry/pages/quantity.html
 dist/barry/pages/query/check_orders.html
 dist/barry/pages/query/order_detail.html
-dist/barry/pages/reconfig/.access
-dist/barry/pages/reconfig/.access_gate
-dist/barry/pages/reconfig/do_download.html
-dist/barry/pages/reconfig/do_upload.html
-dist/barry/pages/reconfig/reconfig.html
-dist/barry/pages/reconfig/upload.html
 dist/barry/pages/results.html
 dist/barry/pages/shoes.html
 dist/barry/pages/special/feedback.html
