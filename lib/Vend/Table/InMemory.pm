@@ -1,6 +1,6 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.0 2001-07-18 02:23:20 jon Exp $
+# $Id: InMemory.pm,v 2.0.2.1 2002-01-08 04:39:52 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 use strict;
 
 # 0: column names
@@ -108,9 +108,9 @@ sub row {
 
 sub row_hash {
 	my ($s, $key) = @_;
-	my $a = $s->[$TIE_HASH]{$key};
+	my $a = $s->[$TIE_HASH]{$key}
+		or return undef
 #::logDebug("here is row $key: " . ::uneval($a));
-	die "There is no row with index '$key'" unless defined $a;
 	my %row;
 	@row{ @{$s->[$COLUMN_NAMES]} } = @$a;
 	return \%row;
