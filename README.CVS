@@ -49,7 +49,6 @@ Before you can check out from the server, log in:
 
 	$ cvs login
 	password: anon_cvs
-	$
 
 =item Select a place to put it and check it out
 
@@ -85,10 +84,9 @@ to make a distribution tar file:
 If you want to experiment with ZIP, which doesn't work quite as well, try:
 
 	$ make zipdist
-	.... messages ...
+	.... messages ....
 	$ ls inter*
 	interchange-4.X.X.tar.gz  interchange-4.X.X.zip
-	$
 
 =head2 Unpack and install
 
@@ -111,8 +109,7 @@ directory (i.e. src/interchange), then run:
 	$ cvs update
 	U MANIFEST
 	U WHATSNEW
-	.....
-	$
+	....
 
 In many cases, the major differences in the distribution will be easily
 updateable. You can copy any changed files directly to these
@@ -123,10 +120,10 @@ library directories:
 
 You should check the files:
 
-	catalog_after.cfg  (infrequently updated)
-	catalog_before.cfg (frequently updated)
-	minivend.cfg.dist  (infrequently updated)
-	usertag/*          (infrequently updated)
+	catalog_after.cfg     (infrequently updated)
+	catalog_before.cfg    (frequently updated)
+	interchange.cfg.dist  (infrequently updated)
+	usertag/*             (infrequently updated)
 
 Finally, you should check differences in the bin/* files. While they
 are not as frequently updated as the lib/* files, they do change. Run
@@ -141,5 +138,3 @@ files for changes. In particular, mv_metadata.asc is used to format
 and present quite a few things in the user interface. You may have
 to merge the databases manually. In most cases, you can import them
 into a spreadsheet or database.
-
-
