@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.10 2002-02-05 01:33:11 mheins Exp $
+# $Id: Parse.pm,v 2.11 2002-02-07 21:33:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -891,7 +891,7 @@ EOF
 
 sub start {
 	return html_start(@_) if $_[0]->{HTML};
-    my($self, $tag, $attr, $attrseq, $origtext) = @_;
+    my($self, $tag, $attr, $attrseq, $origtext, $empty_container) = @_;
 	$tag =~ tr/-/_/;   # canonical
 	$tag = lc $tag;
 	my $buf = \$self->{_buf};
@@ -1038,9 +1038,9 @@ EOF
 		# Handle embedded tags, but only if interpolate is 
 		# defined (always if using old tags)
 #::logDebug("look end for $tag, buf=" . length($$buf) );
-		$tmpbuf = find_matching_end($tag, $buf);
+		$tmpbuf = $empty_container ? '' : find_matching_end($tag, $buf);
 #::logDebug("FOUND end for $tag\nBuf " . length($$buf) . ":\n" . $$buf . "\nTmpbuf:\n$tmpbuf\n");
-		if ($attr->{interpolate}) {
+		if ($attr->{interpolate} and !$empty_container) {
 			my $p = new Vend::Parse;
 			$p->parse($tmpbuf);
 			$tmpbuf = $p->{ABORT} ? '' : $p->{OUT};
