@@ -24,7 +24,7 @@ Variable UI_STD_FOOTER  <<EOV
   	  <font size="1">&nbsp; <a href="http://interchange.redhat.com/"><font size="1"><b>Red Hat Interchange&#8482;</b></font></a><font size="1"><b> - &copy; 2000-2001 Red Hat, Inc.</font></font>
         </td></tr>
         <tr><td nowrap>
-          <font size="1">&nbsp; [loc]Username[/loc]: [either][data session username][or](none)[/either] &nbsp;&nbsp;&nbsp; [loc]StoreID[/loc]: <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a></font>
+          <font size="1">&nbsp; [msg]Username[/msg]: [either][data session username][or](none)[/either] &nbsp;&nbsp;&nbsp; [msg]StoreID[/msg]: <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a></font>
         </td></tr>
         <tr><td nowrap>
           <font size="1">&nbsp; [tag time]%d %B %Y %H:%M:%S[/tag] ([var MV_PAGE 1])</font>
@@ -35,13 +35,13 @@ Variable UI_STD_FOOTER  <<EOV
         [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
         [if session logged_in]
         <font size="1">
-	[if-mm advanced gentable]<a href="[area __UI_BASE__/gentable]"><small>[loc]Tables[/loc]</small></A> - [/if-mm]
-	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0"><small>[loc]Quicklinks[/loc]</small></A> - 
+	[if-mm advanced gentable]<a href="[area __UI_BASE__/gentable]"><small>[msg]Tables[/msg]</small></A> - [/if-mm]
+	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0"><small>[msg]Quicklinks[/msg]</small></A> - 
         [/if]
 	[if-mm advanced reconfig]
-	<A href="[area __UI_BASE__/reconfig]"><small>[loc]Apply changes[/loc]</small></A> - 
+	<A href="[area __UI_BASE__/reconfig]"><small>[msg]Apply changes[/msg]</small></A> - 
 	[/if-mm]
-        <A href="[area __UI_BASE__/login]"><small>[loc]Log out[/loc]</small></A>
+        <A href="[area __UI_BASE__/login]"><small>[msg]Log out[/msg]</small></A>
       </td>
       <td valign="top" align="right" nowrap>
         <a href="http://www.redhat.com/ecommerce"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;
