@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.120 2002-10-23 16:38:49 jon Exp $
+# $Id: Interpolate.pm,v 2.121 2002-10-23 16:58:12 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.120 $, 10);
+$VERSION = substr(q$Revision: 2.121 $, 10);
 
 @EXPORT = qw (
 
@@ -3248,7 +3248,8 @@ my %cond_op = (
    '!=' => sub { $_[0] != $_[1] },
    '=~' => sub { 
    				 my $re;
-				 $_[1] =~ s:^/(.*)/$:$1:;
+				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
+				 $2 and substr($_[1], 0, 0) = "(?$2)";
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					logError("bad regex %s in if-PREFIX-data", $_[1]);
@@ -3258,7 +3259,8 @@ my %cond_op = (
 				},
    '!~' => sub { 
    				 my $re;
-				 $_[1] =~ s:^/(.*)/$:$1:;
+				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
+				 $2 and substr($_[1], 0, 0) = "(?$2)";
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					logError("bad regex %s in if-PREFIX-data", $_[1]);
