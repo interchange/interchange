@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.7 2002-08-12 17:10:13 mheins Exp $
+# $Id: Menu.pm,v 2.8 2002-08-14 15:40:22 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use Vend::Util;
 use strict;
@@ -32,6 +32,14 @@ my %transform = (
 		return 1 if ref($fields) ne 'ARRAY';
 		for(@$fields) {
 			$row->{$_} =~ s/ /&nbsp;/g;
+		}
+		return 1;
+	},
+	entities => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			$row->{$_} = HTML::Entities::encode_entities($row->{$_});
 		}
 		return 1;
 	},
@@ -133,6 +141,26 @@ my %transform = (
 			$status = $status && (! $CGI::values{$row->{$_}});
 		}
 		return $status;
+	},
+	indicator_profile => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			my ($indicator,$rev, $last, $status);
+			next unless $indicator = $row->{$_};
+			$rev = $indicator =~ s/^\s*!\s*// ? 1 : 0;
+			$last = $indicator =~ s/\s*!\s*$// ? 1 : 0;
+			$status = Vend::Tags->run_profile($indicator);
+			if($rev xor $status) {
+				$row->{indicated} = 1;
+				next unless $last;
+			}
+			last if $last;
+			$status = $Global::Variable->{MV_PAGE} eq $indicator;
+			($row->{indicated} = 1, next)
+				if $rev xor $status;
+		}
+		return 1;
 	},
 	indicator => sub {
 		my ($row, $fields) = @_;
@@ -621,7 +649,6 @@ sub tree_line {
 		}
 		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
 	}
-	$row->{description} = HTML::Entities::encode_entities($row->{description});
 
 	my @values = @{$row}{@$fields};
 
@@ -699,7 +726,18 @@ sub menu {
 	}
 
 	my @transform;
+	my @ordered_transform = qw/localize entities nbsp/;
+	my %ordered;
+	@ordered{@ordered_transform} = @ordered_transform;
+
 	for(keys %transform) {
+		next if $ordered{$_};
+		next unless $opt->{$_};
+		my @fields = grep /\S/, split /[\s,\0]+/, $opt->{$_};
+		$opt->{$_} = \@fields;
+		push @transform, $_;
+	}
+	for(@ordered_transform) {
 		next unless $opt->{$_};
 		my @fields = grep /\S/, split /[\s,\0]+/, $opt->{$_};
 		$opt->{$_} = \@fields;
