@@ -42,7 +42,7 @@ NoAbsolute Yes
 
 ifdef @DEBUG
 
-Message -i Sending debug to /tmp/icdebug.
+Message Sending debug to /tmp/icdebug.
 DebugFile /tmp/icdebug
 
 # A few simple tests ...
