@@ -5,9 +5,25 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.8 released 2003-12-16.
+Interchange 4.8.8 released 2004-03-29.
+
+Security
+--------
+
+* Plug a security hole which allows an attacker to expose arbitrary variable 
+  contents by using an URL like 
+  http://shop.example.com/cgi-bin/store/__SQLUSER__. 
+
+  All Interchange applications using the standard "missing" special page
+  from the demo catalog or a similar one are vulnerable to this attack.
+  The attacker may learn the SQL access information for your Interchange
+  application and use this information to read and manipulate sensitive
+  data.
 
 * Fix security hole with possible SQL injection.
+
+Miscellaneous
+-------------
 
 * Fix order import problem found by Karen Gold.
 
