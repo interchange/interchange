@@ -169,7 +169,7 @@ function visible (index, base) {
 
 <h3 id="silent_display">[L]Template Attributes[/L]</h3>
 <div align=right>
-	Description: <input name=ui_label size=30 value="[tem-param ui_label]"><BR>
+	[L]Description[/L]: <input name=ui_label size=30 value="[tem-param ui_label]"><BR>
 	<input type=submit
 		   value="[L]Save[/L]"
 		   onClick="check_change()">
