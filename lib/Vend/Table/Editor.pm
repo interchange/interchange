@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.62 2004-07-21 21:18:52 mheins Exp $
+# $Id: Editor.pm,v 1.63 2004-12-30 18:00:23 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.62 $, 10);
+$VERSION = substr(q$Revision: 1.63 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1184,7 +1184,7 @@ sub resolve_options {
 	# First we see if something has created a big options munge
 	# for us
 	if($opt->{all_opts}) {
-#::logDebug("all_opts being brought in...=$opt->{all_opts}");
+#::logDebug("all_opts being brought in...=" . ::uneval($opt->{all_opts}));
 		if(ref($opt->{all_opts}) eq 'HASH') {
 #::logDebug("all_opts being brought in...");
 			my $o = $opt->{all_opts};
@@ -1194,7 +1194,7 @@ sub resolve_options {
 		}
 		else {
 			my $o = meta_record($opt->{all_opts});
-#::logDebug("all_opts being brought in, o=$o");
+#::logDebug("all_opts being brought in text, o=$o");
 			if($o) {
 				for (keys %$o ) {
 					$opt->{$_} = $o->{$_};
@@ -3325,10 +3325,18 @@ $l_pkey</td>};
 					};
 			if($opt->{all_errors}) {
 				$parm->{keep} = 1;
-				$parm->{text} = <<EOF;
+				if(! $::Pragma->{compatible_5_2}) {
+					$parm->{text} = $opt->{error_template} || <<EOF;
+<FONT COLOR="$opt->{color_fail}">\$LABEL\$ (%s)</FONT>
+[else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
+EOF
+				}
+				else {
+					$parm->{text} = $opt->{error_template} || <<EOF;
 <FONT COLOR="$opt->{color_fail}">\$LABEL\$</FONT><!--%s-->
 [else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
 EOF
+				}
 			}
 			$err_string = $Tag->error($parm);
 			if($template->{$c} !~ /{ERROR\??}/) {
