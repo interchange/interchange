@@ -25,6 +25,15 @@ Core
 
   From a suggestion by Dan <ic@concolor.org>.
 
+
+Payment
+-------
+
+* Added a Vend::Payment::TestPayment module to allow developers to test
+  their site's interaction with the Interchange Payment system, without
+  actually being connected to a real Payment Services Provider. 
+
+
 UserTags
 --------
 
