@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.9 2002-12-13 03:22:27 ramoore Exp $
+# $Id: Payment.pm,v 2.10 2003-05-21 20:24:26 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -115,6 +115,7 @@ sub map_actual {
 		b_address2
 		b_city
 		b_country
+		b_company
 		b_fname
 		b_lname
 		b_name
@@ -135,6 +136,7 @@ sub map_actual {
 		country
 		cvv2
 		email
+		company
 		fname
 		item_code
 		item_desc
