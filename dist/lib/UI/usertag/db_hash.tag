@@ -21,6 +21,10 @@ sub {
 		}
 	}
 	if (! $rest) {
+		if ($opt->{scratch}) {
+			$::Scratch->{$opt->{scratch}} = $ref;
+			return;
+		}
 		return $val unless defined $opt->{value};
 	}
 	my @extra;
@@ -37,6 +41,11 @@ sub {
 			return "BAD HASH: $out" if $opt->{show_error};
 			return;
 		}
+	}
+
+	if ($opt->{scratch}) {
+		$::Scratch->{$opt->{scratch}} = $curr->{$final};
+		return;
 	}
 
 	if($opt->{keys}) {

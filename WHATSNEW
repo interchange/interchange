@@ -41,6 +41,8 @@ Admin UI
 * Added capability to page editor to cope with any ITL page instead of only
   the ones derived from the foundation demo.
 
+* Owner field in the permission editor didn't propagate to the database.
+
 * Fixed a bug in the permission check in the order resp. traffic
   statistics pages.
 
@@ -66,7 +68,7 @@ Packaging
   to do those things.
 
 * Check for demo catalog added in interchange-ui's postinst (fixes Debian
-  bug #147705). Fixes inaccesible demo catalog if only interchange-ui is
+  bug #147705). Fixes inaccessible demo catalog if only interchange-ui is
   upgraded.
 
 * Turned Depends of the libapache-mod-interchange Debian package on 

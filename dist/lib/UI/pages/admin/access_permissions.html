@@ -18,15 +18,13 @@
 
 [set process_perm]
 [flag type=write table="__UI_ACCESS_TABLE__"]
-[tmp ui_owner][db-hash
+[db-hash
 				table="__UI_ACCESS_TABLE__"
 				column="table_control"
-				key="[cgi user_id]"][/tmp]
-[calc] $Scratch->{ui_owner} .= ";" if $Scratch->{ui_owner} =~ /\S/; return; [/calc]
-<!-- [calc]
-	$tc = [scratch ui_owner] '';
-[/calc] -->
+				key="[cgi user_id]"
+				scratch=ui_owner]
 [perl]
+    $tc = $Scratch->{ui_owner};
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {
 		my $val = delete $CGI->{$key};
@@ -105,6 +103,11 @@
 </tr>
 
 [seti tables][list-databases][/seti]
+[db-hash
+	table="__UI_ACCESS_TABLE__"
+	column="table_control"
+	key="[cgi user_id]"
+	scratch="ui_owner"]
 [perl tables="__UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 
 	my @permissions = (
@@ -295,6 +298,11 @@ EOF
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Export[/L]</td>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Owner field[/L]</td>
 </tr>
+[db-hash
+	table="__UI_ACCESS_TABLE__"
+	column="table_control"
+	key="[cgi user_id]"
+	scratch="ui_owner"]
 
 [perl]
 
@@ -348,6 +356,7 @@ EOF
 
 	my $perm;
 	my $title;
+	$tc = $Scratch->{ui_owner};
 	while( $perm = shift @permissions) {
 		$title = shift @permissions;
 		my $ref = $permref->{$perm} || {};
