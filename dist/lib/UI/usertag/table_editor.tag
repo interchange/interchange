@@ -942,6 +942,7 @@ EOF
      </table>
    </td>
 EOF
+	$row_template =~ s/~OPT:(\w+)~/$opt->{$1}/g;
 	$row_template =~ s/~BLABEL~/$blabel/g;
 	$row_template =~ s/~ELABEL~/$elabel/g;
 	foreach my $col (@cols) {
