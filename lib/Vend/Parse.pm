@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.5 2000-12-17 07:35:40 heins Exp $
+# $Id: Parse.pm,v 1.12.2.6 2000-12-17 07:39:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,13 +26,9 @@
 # MA  02111-1307  USA.
 
 package Vend::Parse;
-
-# $Id: Parse.pm,v 1.12.2.5 2000-12-17 07:35:40 heins Exp $
-
 require Vend::Parser;
 
-
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.5 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.6 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +40,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.6 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
