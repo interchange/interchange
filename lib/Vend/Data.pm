@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.14 2001-03-24 17:47:08 heins Exp $
+# $Id: Data.pm,v 1.17.2.15 2001-03-30 13:41:53 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -622,7 +622,7 @@ sub tie_database {
 #::logDebug("Screwed up database: " . ::uneval( $data) );
 			next;
 		}
-		if( $data->{type} > 6 or $data->{HOT} ) {
+		if( $data->{type} > 6 or $data->{HOT} or $data->{IMPORT_ONCE} ) {
 #::logDebug("Importing '$data->{name}'...");
 			eval {
 				$Vend::Database{$name} = import_database($data);
@@ -719,6 +719,7 @@ sub import_database {
 
   IMPORT: {
 	last IMPORT if $no_import and $obj->{DIR};
+#::logDebug ("no_import_check: once=$obj->{IMPORT_ONCE} dir=$obj->{DIR}");
 	last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{DIR};
 #::logDebug ("first no_import_check: passed") if $type == 9;
 
@@ -885,10 +886,10 @@ sub import_database {
 #::logDebug("ready to try opening db $table_name") if ! $db;
 		eval { 
 			if($MVSAFE::Safe) {
-				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
+				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $obj->{db_file} );
 			}
 			else {
-				$db = $class_config->{Class}->open_table( $obj, $table_name );
+				$db = $class_config->{Class}->open_table( $obj, $obj->{db_file} );
 			}
 			$obj->{NAME} = $db->[$Vend::Table::Common::COLUMN_INDEX]
 				unless defined $obj->{NAME};
