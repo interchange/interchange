@@ -80,7 +80,7 @@ of the Interchange documentation package.
 UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 -------------------------------------------
 
-* Add a new columns "extended" products/mv_metadata.asc. This just involves
+* Add a new column "extended" to products/mv_metadata.asc. This just involves
   adding a TAB and "extended" to the end of the first line of the file.
 
 * Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
@@ -232,7 +232,7 @@ You should be able to update a catalog from 4.6.x if you are reasonably
 proficient in Perl and/or Interchange. If you expect to rely on the
 backend admin UI, it is sometimes better to build a new catalog from
 scratch, and integrate your look and feel with that. Contact a competent
-Interchange consultant to help (interchange- biz@icdevgroup.org).
+Interchange consultant to help (interchange-biz@icdevgroup.org).
 
 That being said, here are some of the issues.
 
@@ -278,7 +278,7 @@ There is one security change that can break constructs that ran under 4.6.x.
         user put in something in [square brackets], knowingly or even
         unknowingly, it could cause anomalous or insecure behavior. 
         (There were no known exploits in the demo, but they could
-        easily be constructed.
+        easily be constructed.)
 
 
 PROBLEMS WITH USERTAGS
