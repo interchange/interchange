@@ -108,22 +108,22 @@
 [perl tables="__UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 
 	my @permissions = (
-        item		=> 'Item editor',
-        page		=> 'Page editor',
-        cat			=> 'Category editor',
-        tax			=> 'Tax editor',
-        shipping	=> 'Shipping editor',
-        payment		=> 'Payment editor',
-        affiliate	=> 'Affiliates editor',
-        itemtype	=> 'Item type editor',
-        pagetype	=> 'Page type editor',
-        grouptype	=> 'Group type editor',
-        matrix		=> 'Matrix editor',
-        knar		=> 'Knar editor',
-        access		=> 'Administrator Permissions',
-        group		=> 'Access Group editor',
-        perm		=> 'Permission editor',
-        layout		=> 'Layout editor',
+        item		=> '[L]Item editor[/L]',
+        page		=> '[L]Page editor[/L]',
+        cat			=> '[L]Category editor[/L]',
+        tax			=> '[L]Tax editor[/L]',
+        shipping	=> '[L]Shipping editor[/L]',
+        payment		=> '[L]Payment editor[/L]',
+        affiliate	=> '[L]Affiliates editor[/L]',
+        itemtype	=> '[L]Item type editor[/L]',
+        pagetype	=> '[L]Page type editor[/L]',
+        grouptype	=> '[L]Group type editor[/L]',
+        matrix		=> '[L]Matrix editor[/L]',
+        knar		=> '[L]Knar editor[/L]',
+        access		=> '[L]Administrator Permissions[/L]',
+        group		=> '[L]Access Group editor[/L]',
+        perm		=> '[L]Permission editor[/L]',
+        layout		=> '[L]Layout editor[/L]',
 	);
 	my %extra = qw/userdb 1 order 1/;
 	my $current = tag_data('__UI_ACCESS_TABLE__', 'yes_functions', $CGI->{user_id});
@@ -163,7 +163,7 @@
 	my $perm;
 	my $title;
 	while( $perm = shift @permissions) {
-		$title = $Tag->loc('',shift @permissions);
+		$title = shift @permissions;
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
 <tr>
