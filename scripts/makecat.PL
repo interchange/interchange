@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.25 2000-09-25 21:47:15 jon Exp $
+# $Id: makecat.PL,v 1.26 2000-09-26 02:41:56 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2059,7 +2059,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.25 2000-09-25 21:47:15 jon Exp $
+$Id: makecat.PL,v 1.26 2000-09-26 02:41:56 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2345,7 +2345,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-construct and copy the C<constructconstructconstruct> demo directory to it as a starting point.
+construct and copy the C<construct> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
