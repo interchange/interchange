@@ -3,12 +3,10 @@
 [set help_name]wizard.aboutus[/set]
 @_UI_STD_HEAD_@
 
-<table><tr><td width=400>
 Enter the title and content to be displayed on your <b>About Us</b> page.
 The <b>Content</b> section contains sample text formatted in HTML. You can
 manipulate this sample text or enter all new text.
-</td></tr></table>
-
+<p>
 [tmp default_abouttext]
 <p>
 <B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
@@ -76,7 +74,7 @@ If you would like further information, please contact:
 	default.abouttitle=`'About ' . ($Values->{company} || 'Us')`
 
 	label.abouttext="Content"
-	widget.abouttext=textarea_18_80
+	widget.abouttext=textarea_18_60
 	default.abouttext=`$Scratch->{default_abouttext}`
 ]
 

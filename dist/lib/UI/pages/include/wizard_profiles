@@ -42,6 +42,7 @@
 [/set]
 
 [set profile_ship]
+	shipmethod=required
 [/set]
 
 [set profile_pay]
