@@ -5,6 +5,9 @@
 	return;
 [/calc]
 [/if]
+[if cgi mv_data_table eq 'mv_metadata']
+	[cgi name=mv_data_table set=__ProductFiles_0__ hide=1]
+[/if]
 [set ui_class]Items[/set]
 [tmp page_title][L]Item editor[/L][/tmp]
 [if-mm super]
@@ -578,4 +581,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.16 2003-04-23 13:04:06 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.17 2003-07-12 04:17:43 mheins Exp $ -->
