@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.22 2003-01-14 02:25:53 mheins Exp $
+# $Id: Editor.pm,v 1.23 2003-01-15 14:32:48 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.22 $, 10);
+$VERSION = substr(q$Revision: 1.23 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3612,7 +3612,7 @@ EOF
 show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 
 	my @put;
-	if($overall_template) {
+	if($overall_template =~ /\S/) {
 		my $death = sub {
 			my $item = shift;
 			logDebug("must have chunk {$item} defined in overall template.");
