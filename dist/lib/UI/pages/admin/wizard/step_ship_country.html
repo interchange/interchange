@@ -53,8 +53,17 @@ the CommerceLauncher.
 	push @intout, "FREE=Free shipping";
 
 	if(! @active) {
-		$Scratch->{no_ups_fed} = 1;
+			$Scratch->{no_ups_fed} = 1;
+			$Scratch->{tmp_defaultship} = $Values->{defaultshipd};
 	}
+	else {
+		for(@out) {
+            next unless /ground/i;
+            $Scratch->{tmp_defaultship} = $_;
+            $Scratch->{tmp_defaultship} =~ s/=.*//s;
+        }
+	}
+
 	$Scratch->{all_ship_modes} = join ",\n", @out;
 	$Scratch->{int_ship_modes} = join ",\n", @intout;
 	return;
@@ -101,10 +110,11 @@ the CommerceLauncher.
 	help.defaultshipmode="You must select something, even if it is Free Shipping"
 	widget.defaultshipmode=select
 	passed.defaultshipmode=`$Scratch->{all_ship_modes}`
+	default.defaultshipmode=`$Scratch->{tmp_defaultship}`
 
 	label.defaultshipzip="Default domestic ship postal code"
 	widget.defaultshipzip=text_5
-	passed.defaultshipzip=61821
+	default.defaultshipzip=61821
 
 ]
 
