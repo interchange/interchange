@@ -79,7 +79,7 @@ amount. For example, enter 3.00 for a $3.00 handling charge.
 	if ($Values->{shipmethod} =~ /\bups\b/i) {
 		$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_ship_ups';
 	}
-	else {
+	elsif($Values->{shipmethod} =~ /\bflat\b/i) {
 		$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_ship_default';
 	}
 	delete $Scratch->{ui_override_next};

@@ -38,7 +38,7 @@ example, enter 3.00 for a $3.00 handling charge.
 	no_bottom=1
    	row_template="[scratch row_template]"
 
-	mv_nextpage=__UI_BASE__/wizard/step_ship_default
+	mv_nextpage=__UI_BASE__/wizard/step_pay
 	mv_prevpage=__UI_BASE__/wizard/step_ship
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
@@ -70,5 +70,15 @@ example, enter 3.00 for a $3.00 handling charge.
 	widget.upsadder=text_8
 	default.upsadder="3.00"
 ]
+
+[set ui_override_next]
+[perl]
+	if($Values->{shipmethod} =~ /\bflat\b/i) {
+		$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_ship_default';
+	}
+	delete $Scratch->{ui_override_next};
+	return;
+[/perl]
+[/set]
 
 @_UI_STD_FOOTER_@
