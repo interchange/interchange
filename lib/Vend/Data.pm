@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.40 2004-06-04 04:05:35 mheins Exp $
+# $Id: Data.pm,v 2.41 2004-06-04 06:17:16 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1849,6 +1849,8 @@ sub update_data {
 	my $prikey		= $CGI::values{mv_data_key};
 	my $decode		= is_yes($CGI::values{mv_data_decode});
 
+	my %skip_for_now;
+
 	my $en_col;
 #::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
 	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/s) {
@@ -1993,7 +1995,12 @@ sub update_data {
 			my $nm = $file_fields[$i];
 			unless (length($data{$nm}->[0])) {
 				# no need for a file update
-				$data{$nm}->[0] = $file_oldfiles[$i];
+				if($file_oldfiles[$i]) {
+					$data{$nm}->[0] = $file_oldfiles[$i];
+				}
+				else {
+					$skip_for_now{$nm} = 1;
+				}
 				next;
 			}
 
@@ -2143,6 +2150,7 @@ sub update_data {
 		for(keys %data) {
 #::logDebug("iteration of field $_");
 
+			next if $skip_for_now{$_};
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
