@@ -1,3 +1,8 @@
 #! /bin/sh -e
 
-/usr/lib/interchange/bin/interchange --confdir /var/run/interchange $@
+. /etc/interchange/init.cfg
+if [ "$UID" -eq 0 ]; then
+	su -s /bin/sh -c "/usr/lib/interchange/bin/interchange --confdir /var/run/interchange $@" $USER
+else
+	/usr/lib/interchange/bin/interchange --confdir /var/run/interchange $@
+fi
