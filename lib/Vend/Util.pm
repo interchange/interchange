@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.21 2002-02-16 18:27:19 mheins Exp $
+# $Id: Util.pm,v 2.22 2002-03-29 18:47:33 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 BEGIN {
 	eval {
@@ -936,6 +936,30 @@ sub find_locale_bit {
 	return $text;
 }
 
+sub parse_locale {
+	my ($input) = @_;
+
+	# avoid copying big strings
+	my $r = ref($input) ? $input : \$input;
+	
+	if($Vend::Cfg->{Locale}) {
+		my $key;
+		$$r =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
+						$key = $2 || $3;		
+						defined $Vend::Cfg->{Locale}{$key}
+						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
+		$$r =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
+						find_locale_bit($1) ~eg;
+		undef $Lang;
+	}
+	else {
+		$$r =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
+	}
+
+	# return scalar string if one get passed initially
+	return ref($input) ? $input : $$r;
+}
+
 sub teleport_name {
 	my ($file, $teleport, $table) = @_;
 	my $db;
@@ -1072,19 +1096,7 @@ EOF
 
 	return unless defined $contents;
 	
-	if($locale and $Vend::Cfg->{Locale}) {
-		my $key;
-		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
-						$key = $2 || $3;		
-						defined $Vend::Cfg->{Locale}{$key}
-						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
-		$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
-						find_locale_bit($1) ~eg;
-		undef $Lang;
-	}
-	else {
-		$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
-	}
+	parse_locale(\$contents);
 
 	return $contents unless wantarray;
 	return ($contents, $record);

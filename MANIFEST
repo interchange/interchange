@@ -60,6 +60,7 @@ code/SystemTag/options.coretag
 code/SystemTag/order.coretag
 code/SystemTag/page.coretag
 code/SystemTag/perl.coretag
+code/SystemTag/parse_locale.coretag
 code/SystemTag/price.coretag
 code/SystemTag/process.coretag
 code/SystemTag/profile.coretag

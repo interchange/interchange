@@ -1,0 +1,3 @@
+UserTag parse_locale hasEndTag	
+UserTag parse_locale PosNumber  0
+UserTag parse_locale MapRoutine Vend::Util::parse_locale
