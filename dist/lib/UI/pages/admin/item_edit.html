@@ -1,4 +1,7 @@
 [calc]
+	if($CGI->{mv_return_table}) {
+		$CGI->{ui_return_to} = 'admin/item';
+	}
 	$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
 	$CGI->{ui_hide_key} = 1 unless $CGI->{ui_new_item};
 	$CGI->{ui_return_to} ||= '__UI_BASE__/item';
@@ -76,4 +79,4 @@
 [/if-mm]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.7 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.8 $ -->

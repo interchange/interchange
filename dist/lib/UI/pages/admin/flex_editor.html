@@ -1,8 +1,10 @@
 [strip interpolate=1]
 @_UI_STD_INIT_@
 [calc]
-	$CGI->{mv_data_table} = delete $CGI->{mv_return_table}
-		if $CGI->{mv_return_table};
+	if($CGI->{mv_return_table}) {
+		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
+		$CGI->{ui_return_to} = 'admin/flex_select';
+	}
 	return;
 [/calc]
 [tmp page_title]
@@ -91,4 +93,4 @@
 
 @_UI_STD_FOOTER_@
 
-<!-- page: @@MV_PAGE@@ version: $Id: flex_editor.html,v 2.10 2004-02-22 19:38:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: flex_editor.html,v 2.11 2004-04-23 17:12:01 mheins Exp $ -->
