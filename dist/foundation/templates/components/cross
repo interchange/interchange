@@ -73,7 +73,7 @@ random:
   <td> 
     [calc]
   	my $n = [control cols 3];
-	$Scratch->{width_percent} = q{[control width_percent 100]}
+	$Scratch->{width_percent} = q{[control width_percent 100%]}
 							  || int(100 / $n) . '%';
 	my $rand = q{[control random]};
 	delete $Scratch->{random};
