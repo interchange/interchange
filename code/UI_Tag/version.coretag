@@ -56,6 +56,11 @@ sub {
 		$done_something = 1;
 	}
 
+	if($opt->{mode}) {
+		push @out, Vend::Server::server_start_message('%s', 1);
+		$done_something = 1;
+	}
+
 	if($opt->{uid}) {
 		push @out, scalar getpwuid($>) . " (uid $>)";
 		$done_something = 1;
