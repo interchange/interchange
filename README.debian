@@ -30,6 +30,12 @@ Debian Specific Changes
 * any global usertags used locally should go into /etc/interchange/usertag
   and they'll be included if they have the extension .tag
 
+Foundation Demo
+===============
+
+For the administration of the foundation demo (interchange-cat-foundation
+package) a secure webserver (https://) is required.
+
 Other Notes
 ===========
 
