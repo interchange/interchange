@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.29 2004-04-16 16:31:04 mheins Exp $
+# $Id: UserDB.pm,v 2.30 2004-10-12 11:41:26 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1102,7 +1102,7 @@ sub login {
 			@$ary == 1
 				or do {
 					$self->log_either(errmsg(
-						"Denied attempted login with nonexistent (indirect from %s) user name %s",
+						@$ary ? "Denied attempted login with ambiguous (indirect from %s) user name %s" : "Denied attempted login with nonexistent (indirect from %s) user name %s",
 						$foreign,
 						$uname,
 						$self->{USERNAME},
