@@ -4,8 +4,8 @@
  
  ifdef @DEBUG
  
--Message Sending debug to /tmp/icdebug.
--DebugFile /tmp/icdebug
+-Message Sending debug messages to debug.log.
+-DebugFile debug.log
 +Message Sending debug to /var/log/interchange/debug.log.
 +DebugFile /var/log/interchange/debug.log
  

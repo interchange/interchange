@@ -1,5 +1,5 @@
 # use Perl installation in /usr/local custom built from source?
-%define localperl 0
+%define localperl 1
 
 %if %localperl
 %define __perl /usr/local/bin/perl
@@ -14,7 +14,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.0.0
+Version: 5.1.1
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -26,6 +26,7 @@ Source1: interchange-wrapper
 Source2: interchange-init
 Source3: interchange-logrotate
 Source4: interchange-cron
+Source5: interchange.cfg.patch
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 Requires: perl >= 5.6.0
@@ -93,6 +94,8 @@ ICBASE=%{_libdir}/interchange
 %__cp -p extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
 %__cp -p extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
 %__cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
+%__mkdir_p $RPM_BUILD_ROOT%_bindir
+%__cp -p eg/te $RPM_BUILD_ROOT%_bindir
 
 # Tell Perl where to find IC libraries during build time
 export PERL5LIB=$RPM_BUILD_ROOT$ICBASE/lib
@@ -184,6 +187,9 @@ find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec %__rm
 %__mv interchange.cfg.dist $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
 %__ln_s $ETCBASE/interchange.cfg
 
+# Move location of debug log to /var/log/interchange
+patch -p0 $RPM_BUILD_ROOT$ETCBASE/interchange.cfg < %SOURCE5
+
 # Put global error log in /var/log/interchange instead of IC software directory
 RPMICLOG=$LOGBASE/interchange/error.log
 %__rm -f error.log
@@ -250,6 +256,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %dir %{_libdir}/interchange
 %{webdir}/html/interchange-5
 %{_mandir}/*/*
+%{_bindir}/te
 
 
 %files foundation-demo
@@ -380,6 +387,20 @@ fi
 
 
 %changelog
+* Tue Apr 20 2004 Jon Jensen <jon@icdevgroup.org>
+- fix little bugs in installing te and interchange.cfg patch
+- rebuild for Interchange 5.1.1
+
+* Mon Apr 12 2004 Jon Jensen <jon@icdevgroup.org>
+- simplify logrotate params
+- rebuild for Interchange 5.3.0
+
+* Thu Apr 01 2004 Jon Jensen <jon@icdevgroup.org>
+- install eg/te into /usr/bin for easy access to tab-delimited file editor
+
+* Thu Jan 08 2004 Jon Jensen <jon@icdevgroup.org>
+- add patch moving debug log to /var/log/interchange
+
 * Wed Dec 03 2003 Jon Jensen <jon@icdevgroup.org> 5.0.0-1
 - Update for new release
 - Add new expired session/tmp removal script for cron
