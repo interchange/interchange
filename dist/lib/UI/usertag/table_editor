@@ -245,7 +245,7 @@ EOF
 			)
 		)
 	{
-::logDebug("meta info for table: view_table=$view_table table=$table");
+#::logDebug("meta info for table: view_table=$view_table table=$table");
 		$opt->{ui_data_fields} = $mdb->field($view_table || $table, 'options');
 	}
 
@@ -356,7 +356,7 @@ EOF
 
 			my $bstring = $data->{$opt->{mv_blob_field}};
 
-::logDebug("blob: bstring=$bstring");
+#::logDebug("blob: bstring=$bstring");
 
 			my $blob;
 
@@ -411,12 +411,12 @@ EOF
 				if ! $opt->{mv_blob_title};
 
 			$Scratch->{Load} = <<EOF;
-[return-to type=click page="$Global::Variable->{MV_PAGE}"]
+[return-to type=click stack=1 page="$Global::Variable->{MV_PAGE}"]
 ui_nextpage=
 [perl]Log("tried to go to $Global::Variable->{MV_PAGE}"); return[/perl]
 mv_todo=back
 EOF
-::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
+#::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
 
 			my $loaded_from;
 			if( $opt->{mv_blob_nick} ) {
@@ -457,17 +457,17 @@ EOF
 			}
 
 			$blob_widget = <<EOF;
-<TR id=rnorm>
-	 <td id=clabel width="$opt->{left_width}">
+<TR class=rnorm>
+	 <td class=clabel width="$opt->{left_width}">
 	   <SMALL>$opt->{mv_blob_title}<BR>
 		$loaded_from
 	 </td>
-	 <td id=cwidget>
+	 <td class=cwidget>
 	 	$blob_widget&nbsp;
 	 </td>
 </TR>
 
-<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
+<tr class=rtitle>
 <td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
@@ -551,6 +551,26 @@ EOF
 		$opt->{hidden}{mv_data_email} = 1;
 	}
 
+	$Vend::Session->{ui_return_stack} ||= [];
+
+	if($opt->{cgi}) {
+		my $r_ary = $Vend::Session->{ui_return_stack};
+
+::logDebug("ready to maybe push/pop return-to from stack, stack = " . ::uneval($r_ary));
+		if($CGI::values{ui_return_stack}++) {
+			push @$r_ary, $CGI::values{ui_return_to};
+			$CGI::values{ui_return_to} = $r_ary->[0];
+		}
+		elsif ($CGI::values{ui_return_to}) {
+			@$r_ary = ( $CGI::values{ui_return_to} ); 
+		}
+		$out .= $Tag->return_to();
+::logDebug("return-to stack = " . ::uneval($r_ary));
+	}
+
+	$Scratch->{Ok} = $Tag->return_to('click', 1)
+		unless $opt->{nosave};
+
 	if(ref $opt->{hidden}) {
 		my ($hk, $hv);
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
@@ -558,18 +578,14 @@ EOF
 		}
 	}
 
-	$out .= $Tag->return_to();
-	$Scratch->{Ok} = $Tag->return_to('click', 1)
-		if ! $opt->{nosave};
-
 	$out .= <<EOF;
-<table id=touter  width="$opt->{table_width}" border="" cellspacing="0" cellpadding="0">
+<table class=touter  width="$opt->{table_width}" border="" cellspacing="0" cellpadding="0">
 <tr>
   <td>
 
-<table id=tinner cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+<table class=tinner cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 
-<tr id=rtitle> 
+<tr class=rtitle> 
 <td align=right colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
@@ -580,7 +596,7 @@ EOF
 						|| defined $opt->{include_form}
 						|| $mlabel;
       $out .= <<EOF if $extra_ok and ! $opt->{nosave};
-<TR id=rnorm>
+<TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan>
 <B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
@@ -590,7 +606,7 @@ EOF
 </TD>
 </TR>
 
-<tr id=rspacer>
+<tr class=rspacer>
 <td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
@@ -692,7 +708,7 @@ EOF
 		$set =~ s/_TABLES_/$tabs/g;
 		$Scratch->{clone_tables} = $set;
 		$out .= <<EOF;
-<tr id=rtitle>
+<tr class=rtitle>
 <td colspan=$span>
 $tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
 <INPUT TYPE=hidden NAME=ui_clone_id VALUE="$opt->{ui_clone_id}">
@@ -773,16 +789,16 @@ EOF
 	my @data_enable = ($opt->{mv_blob_pointer}, $opt->{mv_blob_field});
 	my @ext_enable;
  	my $row_template = $opt->{row_template} || <<EOF;
-   <td id=clabel width="$opt->{left_width}"> 
+   <td class=clabel width="$opt->{left_width}"> 
      $blabel\$LABEL\$$elabel~META~
    </td>
-   <td id=cdata> 
+   <td class=cdata> 
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
-         <td id=cwidget> 
+         <td class=cwidget> 
            \$WIDGET\$
          </td>
-         <td id=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
        </tr>
      </table>
    </td>
@@ -829,7 +845,7 @@ EOF
 		if (defined $override->{$c} ) {
 			$currval = $override->{$c};
 			$overridden = 1;
-::logDebug("hit override for $col,currval=$currval");
+#::logDebug("hit override for $col,currval=$currval");
 		}
 		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
 			$currval = delete $CGI->{"ui_preload:$t:$c"};
@@ -854,10 +870,10 @@ EOF
 		}
 		elsif (defined $default->{$c} and ! length($data->{$c}) ) {
 			$currval = $default->{$c};
-::logDebug("hit preload for $col,currval=$currval");
+#::logDebug("hit preload for $col,currval=$currval");
 		}
 		else {
-::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
+#::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
 			$currval = length($data->{$col}) ? $data->{$col} : '';
 			$overridden = 1;
 		}
@@ -918,13 +934,20 @@ EOF
 			$id = $opt->{ui_meta_view} . "::$id"
 				if $opt->{ui_meta_view} and $opt->{ui_meta_view} ne 'metaconfig';
 
+			my $return = <<EOF;
+ui_return_to=$page
+ui_return_to=item_id=$opt->{item_id}
+ui_return_to=ui_meta_view=$opt->{ui_meta_view}
+ui_return_to=mv_return_table=$t
+mv_return_table=$table
+ui_return_stack=$CGI->{ui_return_stack}
+EOF
+
 			$meta .= $Tag->page(
 							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=$id
-										ui_return_to=$page
-										ui_return_to=item_id=$opt->{item_id}
-										ui_return_to=ui_return_table=$t
+										$return
 										}
 							});
 			$meta .= 'meta</A>';
@@ -932,12 +955,7 @@ EOF
 							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::${c}::$key
-										mv_data_table=$Variable->{UI_META_TABLE}
-										ui_hide_key=1
-										ui_meta_view=metaconfig
-										ui_return_to=$page
-										ui_return_to=item_id=$opt->{item_id}
-										ui_return_to=ui_return_table=$t
+										$return
 										}
 							}) . 'item-specific meta</A></FONT>'
 				if $opt->{ui_meta_specific};
@@ -952,13 +970,13 @@ EOF
 			}
 			$out .= "</TR>\n";
 			$out .= <<EOF if $break{$col};
-<TR id=rbreak>
-	<TD COLSPAN=$span id=cbreak>$break_label{$col}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
+<TR class=rbreak>
+	<TD COLSPAN=$span class=cbreak>$break_label{$col}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 			$rowcount = 0;
 		}
-		$out .= "<tr id=rnorm>" unless $rowcount++ % $rowdiv;
+		$out .= "<tr class=rnorm>" unless $rowcount++ % $rowdiv;
 		$out .= $display;
 		$out .= "</TR>\n" unless $rowcount % $rowdiv;
 	}
@@ -981,7 +999,7 @@ EOF
 	### Here the user can include some extra stuff in the form....
 	###
 	$out .= <<EOF if $opt->{include_form};
-<tr id=rnorm>
+<tr class=rnorm>
 <td colspan=$span>$opt->{include_form}</td>
 </tr>
 EOF
@@ -994,7 +1012,7 @@ EOF
 
 	$out .= <<EOF;
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">
-<tr id=rspacer>
+<tr class=rspacer>
 <td colspan=$span ><img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 EOF
@@ -1003,7 +1021,7 @@ EOF
   	last SAVEWIDGETS if $opt->{nosave}; 
 	$out .= <<EOF;
 
-<TR id=rnorm>
+<TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan>
 <B><INPUT TYPE=submit NAME=mv_click VALUE=Ok></B>
@@ -1028,7 +1046,7 @@ EOF
 	}
 
 	if($exists and ! $opt->{nodelete} and $Tag->if_mm('tables', "$table=d")) {
-		my $extra = $Tag->return_to('click');
+		my $extra = $Tag->return_to( { type => 'click', tablehack => 1 });
 		my $page = $CGI->{ui_return_to};
 		$page =~ s/\0.*//s;
 		my $url = $Tag->area( {
@@ -1039,6 +1057,7 @@ EOF
 						mv_data_table=$table
 						mv_click=db_maintenance
 						mv_action=back
+						$extra
 					!,
 					});
 		$out .= <<EOF if ! $opt->{nosave};
@@ -1083,7 +1102,7 @@ EOF
 	$Tag->error( { all => 1 } );
 
 	$out .= <<EOF;
-<tr id=rtitle>
+<tr class=rtitle>
 <td colspan=$span><!-- $Scratch->{Ok} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 
