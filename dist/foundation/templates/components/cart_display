@@ -13,6 +13,11 @@ ui_source: templates/components/cart_display
 [if items]
 <center>
   <table width="95%" border="0" cellspacing="0" cellpadding="0">
+		<tr class="contentbar2" valign=top>
+			<td colspan=6 class="contentbar2"> 
+				<b>Your Cart:</b>
+			</td>
+		</tr>
 		<TR class="contentbar2" VALIGN=TOP>
                         <td align=center class="contentbar2">Action</td>
                         <td class="contentbar2"> 

@@ -47,6 +47,7 @@ ui_template_name: leftright
 
 [if scratch did_order]
 [include file="templates/components/cart_display"]
+<br>
 [/if]
 [set did_order][/set]
 [search-region]
@@ -87,6 +88,8 @@ ui_template_name: leftright
 	[bounce href="[history-scan exclude=nothing]"]
 [/set]
 
+<br>
+
 [on-match]
 <FORM ACTION="[area nothing]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_session_id value="[data session id]">
@@ -103,9 +106,6 @@ ui_template_name: leftright
   <td align="center"><b>Price</b></td>
   <td align="center"><b>Qty</b></td>
   <td align="center"><b>Buy</b></td>
-</tr>
-<tr>
-  <td colspan="6">&nbsp;</td>
 </tr>
 
 [search-list]

@@ -18,6 +18,8 @@ upsell_in_cart:
 [/comment]
 <!-- BEGIN COMPONENT [control component cart] -->
 
+<br><b>Your Current Shopping Cart:</b><br>
+
 <table width="95%" cellspacing="0">
 <tr>
 	<td align="center">
