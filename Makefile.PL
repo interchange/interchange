@@ -473,11 +473,14 @@ sub initialize {
 		# other languages either not yet translated
 		# or without embedded text
 		my @imgfiles = grep m:^share/interchange/en_US/:, @sharefiles;
+		my @loc;
+		@loc = map { s:.*/::; s/\.cfg$//; $_ } glob('dist/lib/UI/locales/*_*.cfg');
 		my $cwd = cwd();
 		my ($locale, $imgfile, $fname);
 		chdir("$realdir/share/interchange")
 			|| die "Couldn't enter directory $realdir/share/interchange: $!\n";
-		for $locale ('de_DE') {
+
+		for $locale (@loc) {
 			unless (-d $locale) {
 				mkdir ($locale, 0777)
 					|| die "Couldn't create directory $realdir/share/interchange/$locale: $!\n";
