@@ -26,9 +26,9 @@ use vars '%Filter_desc';
 	name            => 'Last&#44;First to First Last',
 	digits          => 'Digits only',
 	word            => 'A-Za-z_0-9',
-	unix            => 'DOS to UNIX CR',
-	dos             => 'UNIX to DOS CR',
-	mac             => 'LF/CR to CR',
+	unix            => 'DOS to UNIX newlines',
+	dos             => 'UNIX to DOS newlines',
+	mac             => 'UNIX or DOS to Mac OS newlines',
 	no_white        => 'No whitespace',
 	strip           => 'Trim whitespace',
 	sql             => 'SQL quoting',
@@ -36,7 +36,7 @@ use vars '%Filter_desc';
 	textarea_get    => 'Textarea GET',
 	text2html       => 'Simple text2html',
 	urlencode       => 'URL encode',
-	entities        => 'HTML entitiies',
+	entities        => 'HTML entities',
 );
 
 my $fdesc_sort = sub {
