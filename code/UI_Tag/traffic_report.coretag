@@ -101,7 +101,7 @@ EOF
 			$prev = $_[0];
 			return;
 		}
-		if ($_[0] gt $end_date) {
+		if ($end_date and $_[0] gt $end_date) {
 			$done = 1;
 			return 1;
 		}
@@ -172,6 +172,7 @@ EOF
 				$recall = $_;
 				last COUNT;
 			};
+		next if $affiliate and $line->[5] ne $affiliate;
 		my $update_visit;
 		my $interval;
 		$hits++;
