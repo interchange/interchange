@@ -99,6 +99,64 @@ Core
 
 * Fix problems that GDBM and some other types would not honor HIDE_AUTO_FILES.
 
+* Allow an ActionMap, Autoload, or profile to generate a completely
+  virtual page and avoid readin() of anything.
+
+* Fix bug that prevented [loop-change foo] from working when the range of
+  conditions was only 0 and 1.
+
+* Add no_set boolean option to [userdb], which prevents userdb row from
+  being set with values.
+
+* Don't throw away UseModifier cart modifiers on every cart update.
+  They can still be updated via CGI mv_item_option if it's set.
+
+* Remove insurance of trailing null fields being included in arrays.
+  Any traversing of the arrays should be keyed on code/sku anyway,
+  and that is the only one that needs to be fully populated.
+
+  Fix provided by Brian Rogers of Groxis -- caused problems for one
+  of his custom ordering routines.
+
+* Allow return of page from readin (or readfile in locale mode) without
+  the locale language substitutions done. This allows proper edits of
+  pages.
+
+* Allow set of status header even when not doing redirect.
+
+* Fix double-setting of Content-Type header, use proper header
+  setting routine.
+
+* Never set a cookie when mv_tmp_session in effect.
+
+* Add DeliverImage directive that enables fast IC delivery of
+  images requested from it.
+
+  To enable, do in catalog.cfg:
+
+  	DeliverImage  Yes
+
+  If the file extension is present and the MimeType for that extension
+  begins with "image/", the path will be adjusted to add ImageDir
+  or ImageDirSecure, and a 302 issued.
+
+  This happens before database or session opens, and is quite fast.
+
+  Sets $Vend::tmp_session so no cookie is issued.
+
+* Make frequently-used HTML::Entities encode_entities routine available
+  to embedded Perl.
+
+* Allow timed_build to autocreate directory path when filename with path
+  component is specified. This makes it easier to do dynamic directories
+  based on CGI parameters etc. when there are thousands of timed build
+  files. E.g.:
+
+  [timed-build file="timed/@@MV_PAGE@@/[item-code]" minutes=86400] ...
+
+* Avoid cluttering of global logs with 
+  'Attempt to call perl from within Safe'.
+
 Tables
 ------
 
@@ -155,6 +213,12 @@ Tables
 * Attempt to regularize error messages so that they can be
   more easily translated. Now should have about 50% less
   variations.
+
+* Prevent internal server error when $db->row($key) fetches no results
+  within DBI module.
+
+* Fix bug in DBI module that caused arbitrary column to get set 
+  to primary key instead of to the intended new value.
 
 Payment
 -------
@@ -244,6 +308,187 @@ UI
 
 * Fix the long-standing problem that sorts and groupings would not
   work on query-by-example search returns.
+
+* Fix problem with creating new option when no prior options exist.
+  Fix found by Reid Sutherland (reid-ic@thirddimension.net).
+
+* Add ability to edit pages using Mozilla composer, or any HTML editor
+  that can publish with an HTTP put. Includes ability to upload images
+  with the files, create new files, and more.
+
+* ONLY operates on the area between <!-- BEGIN CONTENT --> and
+  <!-- END CONTENT -->.
+
+* Pulls the page title from the <title></title> of the PUT page.
+
+* If a new page is PUT, it is wrapped with the template used in
+  the nearest DirectoryIndex ("index" by default). If a new file
+  "trucks/chevy/mom.html" is created and does not exist, the following
+  files will be used as the template in this order if they exist:
+
+    trucks/chevy/index
+    trucks/index
+    index
+
+* Update [if-mm ...] to have a "pagematch" and "filematch" function
+  that allows security checks based on the files and pages fields
+  in the access table. This allows certain users to have publish
+  permission only on certain image and page directories. For
+  instance, if the user "bubba" is only to edit files in the
+  "trucks" hierarchy, you would want in access:
+
+    username:bubba
+    files:images/trucks/
+    pages:trucks/
+
+* Add action "admin_publish" that handles the PUT process. Requires
+  user be logged in as an admin, and requires
+
+* Automatic RCS versioning if PUBLISH_DO_RCS variable is set. Can
+  stop publish if RCS error when PUBLISH_QUIT_ON_RCS_ERROR Variable
+  is set.
+
+* Adding "ui_mozilla_edit=1" to the URL keeps ITL tags from being
+  interpolated within the BEGIN CONTENT/END CONTENT area. This
+  allows
+
+* Automatically adjusts image paths in the uploaded file to be
+  relative to the directory the page is in. This allows individual
+  directories to use different sets of images and Mozilla won't
+  willy-nilly overwrite things in other directories.
+
+* Can prevent any publishing to the pages root if PUBLISH_NO_PAGE_ROOT
+  is set.
+
+* Allow component modification via Mozilla editor.
+
+  If you follow the "show tags" link (i.e. add ui_mozilla_edit=1 to
+  the param list), it will output the current component set
+  in meta headers:
+
+  <meta name="component" content="1;component;search_box_small">
+  <meta name="component" content="2;component;cart_tiny">
+  <meta name="component" content="3;component;product_tree">
+  <meta name="component" content="4;component;">
+  <meta name="component" content="5;component;cross">
+  <meta name="component" content="5;banner;Specials">
+  <meta name="component" content="5;cols;2">
+  <meta name="component" content="5;size;2">
+  <meta name="component" content="6;component;random">
+  <meta name="component" content="6;banner;See also...">
+  <meta name="component" content="6;cols;1">
+  <meta name="component" content="6;size;3">
+  <meta name="component" content="7;component;">
+  <meta name="component" content="8;component;">
+
+  For instance, component 5 above is exactly equivalent to:
+
+  	[control-set]
+		[component]cross[/component]
+		[banner][L]Specials[/component]
+		[cols]2[/cols]
+		[size]2[/size]
+	[/control-set]
+
+* Also turn on no_locale_parse in ui_mozilla_edit mode, so that
+  locale-based information won't be lost.
+
+* Add ability to manipulate any [set setting]value[/set] (tmpn?, seti also)
+  via meta header edit on Mozilla.
+
+  Same procedure, just add a meta_header:
+
+  	<meta name=setting content="tmpn;setting_name;The setting value">
+
+  and that setting will be modified accordingly.
+
+  Does not remove settings, only sets the ones found in headers.
+
+* Prevent linked forms et al from coming in from table metadata.
+
+* Add [flex-select] tag, complete replacement for and enhancement to
+  the admin/flex_select.html page in the UI.
+
+* Each colunn can have individual sort settings, and can individually
+  be specified to use alphabetic more lists when it is the sorting
+  column. (ui_more_alpha, ui_sort_option)
+
+* Group "magnifying glass" can be turned off in metadata. (fs_no_group)
+
+* Filters can be specified in metadata instead of just ui_data_fields.
+  (fs_display_filter)
+
+* Links to other pages specifying the field value can be done
+  easily. For example, to add a per-sku link on the products
+  table to the item_options page, put in ui_data_fields
+
+  	sku
+	sku-options
+	price
+	description
+
+  In the metadata for products::sku-options, do:
+
+		'extended.fs_link_page' => 'admin/item_options',
+		'extended.fs_link_parm' => 'item_id',
+		'extended.fs_link_anchor' => 'Edit Options',
+
+  That will produce:
+
+   <a href="__CGI_URL__/admin/item_options?item_id=SKU">Edit Options</a>
+
+  Can be shorthand-set in ui_data_fields with:
+
+  	sku
+	sku-admin/item_options:item_id:Edit Options
+	price
+	description
+
+* Columns can be calculated values by putting embedded perl code in
+  fs_data_calc. The current row hash (with all values in the select colums)
+  is put in $Vend::Interpolate::item. You can set tables to be pre-opened
+  in fs_data_tables.
+
+  This code in products::prod_group::extended.fs_data_calc:
+
+	if($item->{prod_group} eq $prev) {
+		return "''";
+	}
+	else {
+		return $prev = $item->{prod_group};
+	}
+
+  will produce ditto marks if a prod_group is duplicated.
+
+* An explicit "edit record" link can be enabled. (explicit_edit)
+
+* The edit link on the key column can be disabled. (no_code_link)
+
+* Checkboxes can be disabled. (no_checkbox)
+
+* Check All/Uncheck All JavaScript links can be automatically inserted.
+  (check_uncheck_all)
+
+* The lines can be numbered. (number_list)
+
+* Header cell and data cell CSS is completely settable in metadata on a
+  per-column basis.
+
+		'extended.header_link_class' => 'Header row link CSS class',
+		'extended.header_cell_class' => 'Header cell CSS class',
+		'extended.header_cell_style' => 'Header cell CSS style',
+		'extended.data_cell_class' => 'Data cell CSS class',
+		'extended.data_cell_style' => 'Data cell CSS style',
+
+  While no metadata edit is provided for data_cell_width, data_cell_height,
+  data_cell_align, they would be honored if set.
+
+  The header rows and data rows can be set in the table metadata:
+
+		'extended.header_row_class' => 'Header row CSS class',
+		'extended.header_row_style' => 'Header row CSS style',
+		'extended.data_row_class_odd' => 'Data row CSS class, odd numbers',
+		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
 
 Form
 ----
@@ -339,6 +584,8 @@ Table Editor
 * Make tabbed-display relative now that Mozilla supports this. Should make
   setting html-width and table-width in metadata moot.
 
+* Don't focus on meta links when tabbing through form.
+
 Foundation
 ----------
 
@@ -357,6 +604,9 @@ Foundation
 * Add support for all IC-recognized credit card types.
 
 * Removed obsolete log_entry route and etc/log_entry file.
+
+* Remove inadvertent filter for variants::weight from
+  metadata, resolving bug #534.
 
 * Bring MV_DEFAULT_SEARCH_{TABLE,FILE} into catalog.cfg so it is easier
   to hunt down. We can't unset it in catalog_before.cfg because it will
@@ -405,6 +655,9 @@ Usertags
 
   This is highly dependent on the fortune setup; this will work with
   fortune on RHL 7.x and 8.x.
+
+* Add [css VARNAME] tag that automatically generates a varname.css file
+  for use by <link rel=stylesheet href="/foundation/images/theme_css.css">.
 
 Filters
 -------
@@ -534,6 +787,8 @@ Miscellaneous
 
 * Use 127.0.0.1 instead of localhost for default INET host values to avoid
   DNS lookup, as per bug #516.
+
+* Remove abandoned "newcat" script from distribution.
 
 Extensions
 ----------
