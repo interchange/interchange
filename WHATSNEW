@@ -144,6 +144,15 @@ Core
 Payment
 -------
 
+* Patch from Mark Johnson to Vend::Payment::Signio module whose explanation
+  we quote: 
+  If you send a garbage ORIGID, as IC does by default, it will attempt to
+  use that as the key for the transaction, without falling back on the data
+  you sent with it. Thus, it must explicitly not be used unless you have a
+  valid one which you want to use. This was why no credits were succeeding;
+  even though we were sending explicit new data, it ignored it and cried 
+  with the ever useful error "Not signed up for this tender type".
+
 * Added a Vend::Payment::TestPayment module to allow developers to test
   their site's interaction with the Interchange Payment system, without
   actually being connected to a real Payment Services Provider. 
