@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.116 2002-10-05 05:26:29 mheins Exp $
+# $Id: Interpolate.pm,v 2.117 2002-10-11 18:33:17 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.116 $, 10);
+$VERSION = substr(q$Revision: 2.117 $, 10);
 
 @EXPORT = qw (
 
@@ -2995,7 +2995,7 @@ sub escape_form {
 	$val =~ s/\s+$//mg;
 	my @args;
 	if($val =~ /^\S+=\S+=\S*$/) {
-		$val = unhexify($val);
+		$val = Vend::Util::unhexify($val);
 		@args = split $Global::UrlSplittor, $val;
 	}
 	else {
