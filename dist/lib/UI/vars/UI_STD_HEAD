@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.34 2002-10-27 18:51:02 mheins Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.35 2003-01-10 21:10:50 jon Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -273,6 +273,7 @@ function addItem(selector, receptor, joiner) {
 
 [menu
 	  name=Top
+	  superuser=super
 	  inactive=inactive
 	  localize=name
 	  indicator=indicator
