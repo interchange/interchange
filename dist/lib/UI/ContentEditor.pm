@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.13 2003-11-03 16:26:14 racke Exp $
+# $Id: ContentEditor.pm,v 2.14 2004-02-23 01:55:50 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -1900,6 +1900,7 @@ sub format_page {
 		push @sets, "<!-- BEGIN PREAMBLE -->";
 		$ref->{PREAMBLE} =~ s/^\s*\n//;
 		$ref->{PREAMBLE} =~ s/\n\s*$//;
+		$ref->{PREAMBLE} =~ s/\r\n|\r/\n/g;
 		push @sets, $ref->{PREAMBLE};
 		push @sets, "<!-- END PREAMBLE -->";
 	}
@@ -1988,6 +1989,7 @@ sub format_page {
 		push @bods, "<!-- BEGIN POSTAMBLE -->";
 		$ref->{POSTAMBLE} =~ s/^\s*\n//;
 		$ref->{POSTAMBLE} =~ s/\n\s*$//;
+		$ref->{POSTAMBLE} =~ s/\r\n|\r/\n/g;
 		push @bods, $ref->{POSTAMBLE};
 		push @bods, "<!-- END POSTAMBLE -->";
 	}
