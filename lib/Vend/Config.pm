@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.4.6 2000-12-26 15:47:33 racke Exp $
+# $Id: Config.pm,v 1.23.4.7 2001-01-02 18:12:30 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -105,7 +105,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.4.6 $, 10);
+$VERSION = substr(q$Revision: 1.23.4.7 $, 10);
 
 my %CDname;
 
@@ -1651,14 +1651,6 @@ my %Default = (
 							for(@$setting) {
 								next unless defined $C->{Database}{$_}{'file'};
 								push @out, $C->{Database}{$_}{'file'};
-								if( defined $Vend::Cfg->{OnlyProducts} ) {
-									undef $Vend::Cfg->{OnlyProducts};
-									next;
-								}
-								else {
-									$Vend::Cfg->{OnlyProducts} = 
-										$C->{Database}{$_}{'name'};
-								}
 							}
 							unless (scalar @out) {
 								return 1 if $C->{BaseCatalog};
