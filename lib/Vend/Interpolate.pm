@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.2.8 2000-11-16 01:00:39 zarko Exp $
+# $Id: Interpolate.pm,v 1.29.2.9 2000-11-16 01:17:58 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.9 $, 10);
 
 @EXPORT = qw (
 
@@ -673,16 +673,32 @@ sub tag_data {
 			return '';
 		}
 	} elsif($opt->{increment}) {
-		$CacheInvalid = 1;
-#::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
+::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
 		return Vend::Data::increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	} elsif(defined $opt->{value}) {
-#::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
+#::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
+		my $db = $Vend::Database{$selector};
 		$CacheInvalid = 1;
-		if($opt->{filter}) {
-			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
+		if ($opt->{alter}) {
+			$opt->{alter} =~ s/\W+//g;
+			$opt->{alter} = lc($opt->{alter});
+			if ($opt->{alter} eq 'change') {
+				return $db->change_column($field, $opt->{value});
+			} elsif($opt->{alter} eq 'add') {
+				return $db->add_column($field, $opt->{value});
+			} elsif ($opt->{alter} eq 'delete') {
+				return $db->delete_column($field, $opt->{value});
+			} else {
+				::logError("alter function '%s' not found", $opt->{alter});
+				return undef;
+			}
+		} else {
+::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
+			if($opt->{filter}) {
+				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
+			}
+			return Vend::Data::set_field($selector,$key,$field,$opt->{value},$opt->{append});
 		}
-		return Vend::Data::set_field($selector,$key,$field,$opt->{value},$opt->{append});
 	} elsif($opt->{hash}) {
 		my $db = Vend::Data::database_exists_ref($selector);
 		return $db->row_hash($key);
@@ -3414,7 +3430,7 @@ sub iterate_hash_list {
 	my($i, $end, $count, $text, $hash, $opt_select) = @_;
 
 	my $r = '';
-	my ($run, $item, $code, $return);
+	my ($run, $code, $return);
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . ::uneval($hash));
 
