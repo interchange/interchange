@@ -513,12 +513,6 @@ my %Prefix = (
 
 );
 
-sub add_trailing_slash {
-	my $url = shift;
-	$url =~ s:[/\s]*$:/:;
-	return $url;
-}
-
 sub strip_trailing_slash {
 	my $url = shift;
 	$url =~ s:[/\s]+$::;
@@ -544,7 +538,7 @@ my %Postprocess = (
 	samplehtml		=> \&directory_process,
 	catroot			=> \&directory_process,
 	relocate		=> \&strip_trailing_slash,
-	shareurl		=> \&add_trailing_slash,
+	shareurl		=> \&strip_trailing_slash,
 
 );
 
@@ -2055,7 +2049,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.19 2000-09-25 08:34:54 heins Exp $
+$Id: makecat.PL,v 1.20 2000-09-25 08:45:01 heins Exp $
 
 =head1 INTRODUCTION
 
