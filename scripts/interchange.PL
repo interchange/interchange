@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.30 2002-05-25 13:27:58 racke Exp $
+# $Id: interchange.PL,v 2.31 2002-05-29 09:52:21 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -3056,16 +3056,16 @@ Original author of Vend, ancestor to Minivend and Interchange, was Andrew
 Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
 both were produced in 1995.
 
-# columnize with "pr -t -2 | expand -8 | sed 's/^/    /'"
+# columnize with "sort -u | pr -t -2 | expand -8 | sed 's/^/    /'"
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Jeff Carnahan
-    Bill Dawkins                        Jeff Nappi
-    Bill Randle                         Jochen Wiedmann
-    Birgitt Funk                        Jon Jensen
-    Bob Jordan                          Keiko
-    Brev Patterson                      Keith Oberlin
+    Andreas Koenig                      Jeff Nappi
+    Bill Dawkins                        Jochen Wiedmann
+    Bill Randle                         Jon Jensen
+    Birgitt Funk                        Keiko
+    Bob Jordan                          Keith Oberlin
+    Brev Patterson                      Kevin Walsh
     Brian Bullen                        Larry Leszczynski
     Bruce Albrecht                      Marc Austin
     Cameron Prince                      Mark Johnson
@@ -3084,6 +3084,7 @@ Contributions to Interchange have been made by:
     Heinz Wittenbecher                  Victor Nolton
     Jason Holt                          William Dan Terry
     Jason Kohles                        and many others
+    Jeff Carnahan
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
