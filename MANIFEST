@@ -145,9 +145,6 @@ dist/construct/images/admin/widgets.gif
 dist/construct/images/affiliate/hardhat.gif
 dist/construct/images/bg.gif
 dist/construct/images/clear.gif
-dist/construct/images/gift_certificate.gif
-dist/construct/images/gift_certificate_large.gif
-dist/construct/images/items/gift_certificate.gif
 dist/construct/images/items/gift_certificate_large.gif
 dist/construct/images/items/os28004.gif
 dist/construct/images/items/os28005.gif
@@ -233,6 +230,7 @@ dist/construct/images/navigation/poweredby.gif
 dist/construct/images/navigation/recalculate_button.gif
 dist/construct/images/navigation/whitey.gif
 dist/construct/images/poweredby.gif
+dist/construct/images/thumb/gift_certificate.gif
 dist/construct/images/thumb/os28004_b.gif
 dist/construct/images/thumb/os28005_b.gif
 dist/construct/images/thumb/os28006_b.gif
@@ -476,6 +474,7 @@ dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_data.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
+dist/lib/UI/pages/admin/sku_selector.html
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
@@ -654,6 +653,7 @@ pod/deprecated.sdf
 pod/mv_metadata.pod
 pod/mvdocs.pod
 pod/mvfaq.pod
+pod/usertag.pod
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL
