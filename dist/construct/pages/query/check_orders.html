@@ -1,51 +1,6 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-break1:
-	widget: break
-
-component_before:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component after content
-
-component_hsize:
-	options: 1,2*,3
-	widget: select
-	description: Component items horizontal
-
-hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Before/after Banner
-	help: Banner for Before/after component
-
-hpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a horizontal Promotion
 [/comment]
 
 [set component_after]promo_horizontal[/set]
@@ -56,7 +11,7 @@ hpromo_type:
 [set component_before][/set]
 [set hpromo_type]new[/set]
 [set page_title]__COMPANY__ -- Order History[/set]
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 [query st=db arrayref=orders
@@ -87,28 +42,28 @@ __LEFTONLY_TOP__
 	my $header_template = <<'EOF';
 <TR bgcolor="#0099FF">
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">DATE</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">DATE</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">ORDER ID</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">ORDER ID</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">QTY<BR>TOTAL</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">QTY<BR>TOTAL</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">PAYMENT<BR>METHOD</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">PAYMENT<BR>METHOD</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">SUBTOTAL</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">SUBTOTAL</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">SHIPPING<BR>HANDLING</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">SHIPPING<BR>HANDLING</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">TOTAL</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">TOTAL</FONT>
 	</TD>
 	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1">STATUS</FONT>
+		<FONT COLOR="#FFFFFF" __FFACE__ size="1">STATUS</FONT>
 	</TD>
 </TR>
 EOF
@@ -116,28 +71,28 @@ EOF
 		my $line_template = <<'EOF';
 <TR bgcolor="#FEEDD2">
 	<TD VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$order_date</FONT>
+		<FONT __FFACE__ size="1">$order_date</FONT>
 	</TD>
 	<TD VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1"><A HREF="$detail_url">$order_number</A></FONT>
+		<FONT __FFACE__ size="1"><A HREF="$detail_url">$order_number</A></FONT>
 	</TD>
 	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$nitems</FONT>
+		<FONT __FFACE__ size="1">$nitems</FONT>
 	</TD>
 	<TD VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$payment_method</FONT>&nbsp;
+		<FONT __FFACE__ size="1">$payment_method</FONT>&nbsp;
 	</TD>
 	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$subtotal</FONT>
+		<FONT __FFACE__ size="1">$subtotal</FONT>
 	</TD>
 	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$shipping$handling</FONT>
+		<FONT __FFACE__ size="1">$shipping$handling</FONT>
 	</TD>
 	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$total_cost</FONT>
+		<FONT __FFACE__ size="1">$total_cost</FONT>
 	</TD>
 	<TD VALIGN=TOP>
-		<FONT face="Verdana, Arial, Helvetica, sans-serif" size="1">$status</FONT>
+		<FONT __FFACE__ size="1">$status</FONT>
 	</TD>
 </TR>
 EOF
@@ -199,4 +154,4 @@ EOF
 [seti export][tag export orderline orderline.txt][/tag][/seti]
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

@@ -1,51 +1,6 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-break1:
-	widget: break
-
-component_before:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component after content
-
-component_hsize:
-	options: 1,2*,3
-	widget: select
-	description: Component items horizontal
-
-hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Before/after Banner
-	help: Banner for Before/after component
-
-hpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a horizontal Promotion
 [/comment]
 
 [set component_after][/set]
@@ -56,7 +11,7 @@ hpromo_type:
 [set component_before][/set]
 [set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Stock Alerting[/set]
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 [if session arg]
@@ -66,10 +21,10 @@ __LEFTONLY_TOP__
       <TABLE cellPadding=8 border="0">
         <TBODY>
         <TR>
-          <TD align=left vAlign=top><FONT face="Verdana, Arial, Helvetica, sans-serif" size=2>
+          <TD align=left vAlign=top><FONT __FFACE__ size=2>
 		  <b>Your request has been sent sucessfully.</b></font>
 		  <br><br>
-		  <FONT face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		  <FONT __FFACE__ size=2>
 		  We will contact you once your selected item becomes available.<br><br>
 		  Thank you for your interest in our products.
 		  </FONT></TD>
@@ -85,11 +40,11 @@ __LEFTONLY_TOP__
 
 [email
 					to="[value email]"
-                    subject="Construct Something - Stock Alert Request"
-                    from="Construct Something <info@ConstructSomething.com>"
-                    reply="Construct Something <info@ConstructSomething.com>"]
+                    subject="__COMPANY__ - Stock Alert Request"
+                    from="__COMPANY__ <__EMAIL_INFO__>"
+                    reply="__COMPANY__ <__EMAIL_INFO__>"]
 
-Hello and thank you for your interest in Construct Something products.
+Hello and thank you for your interest in __COMPANY__ products.
 
 We have received your in-stock alert notification and we will contact you
 once the selected item becomes available.
@@ -108,4 +63,4 @@ Current Price: [data table=products column=price key='[scratch code]']
 
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

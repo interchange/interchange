@@ -1,21 +1,31 @@
+<!-- BEGIN COMPONENT cross_horizontal -->
 [if !scratch cross_codes]
 [tmp cross_codes][loop search="
 [if scratch cross_category]
 						st=db
 						fi=merchandising
-						se=[scratch cross_category]
 						sf=cross_category
+						se=[scratch cross_category]
 [else]
 						st=db
 						fi=merchandising
-						se=featured
-						sf=specials
+						sf=featured
+						se=specials
 [/else]
 [/if]
 					"] [loop-code][/loop][/tmp]
-[/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+						st=db
+						fi=merchandising
+						ra=yes
+						tf=times_ordered
+						ml=10
+					"] [loop-code][/loop][/tmp]
 [/if]
 <br clear=all>
+<div align=bottom>
 <table width="80%" align=center>
 <tr bgcolor="#0099FF"> 
 <td> 
@@ -68,3 +78,6 @@
   </td>
 </tr>
 </table>
+</div>
+
+<!-- END COMPONENT cross_horizontal -->

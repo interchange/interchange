@@ -1,10 +1,10 @@
+<!-- BEGIN COMPONENT upsell_horizontal -->
 [if scratch upsell]
 <br clear=all>
 <table width="80%" align=center>
 <tr bgcolor="#0099FF"> 
 <td> 
-  <div align="left"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><i>Other items you may like
-	</i></b></font></div>
+  <div align="left"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><i>Other items you may like</i></b></font></div>
 </td>
 </tr>
 <tr> 
@@ -54,3 +54,5 @@
 </tr>
 </table>
 [/if]
+
+<!-- END COMPONENT upsell_horizontal -->

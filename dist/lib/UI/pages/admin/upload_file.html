@@ -55,7 +55,9 @@
 <tr>
 <td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
+[set existing][/set]
 [if type=explicit compare=`$CGI->{ui_image_preview} =~ m{[^/]$}`]
+[set existing]1[/set]
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
 Preview: <BR>
@@ -72,15 +74,20 @@ Preview: <BR>
 <P>
 <B>Upload mode</B>
 	<BLOCKQUOTE>
-	[if session arg =~ /\.(gif|jpe?g|png)$/i]
-	[or cgi ui_upload_binary]
+[if session arg =~ /\.(gif|jpe?g|png)$/i]
+[or cgi ui_upload_binary]
 	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1>&nbsp;ASCII<BR>
 	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0 CHECKED>&nbsp;Binary
-	[else]
+	<P>
+	[if scratch existing]
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=1>&nbsp;Use new file name<BR>
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=0 CHECKED>&nbsp;Use existing file name
+	[/if]
+[else]
 	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;ASCII<BR>
 	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;Binary
-	[/else]
-	[/if]
+[/else]
+[/if]
 	</BLOCKQUOTE>
 <P>
 <B>Backup mode</B>
@@ -97,9 +104,10 @@ Preview: <BR>
 <P>
 [button text="Upload" src="@_UI_IMG_@admin/upload.gif"]
 	[calc]
-		if( $CGI->{ui_upload_fn} =~ m:/$:) {
+		if( $CGI->{ui_upload_newfn} or $CGI->{ui_upload_fn} =~ m:/$:) {
 			my $image = $CGI->{ui_upload_file};
 			$image =~ s:.*[\\/]::;
+			$CGI->{ui_upload_fn} =~ s:/[^/]*$:/:;
 			$CGI->{ui_upload_fn} .= $image;
 			$Session->{ui_message} = sprintf ("[L]Uploaded file: %s[/L]", $image);
 			if($CGI->{ui_preload}) {
@@ -108,8 +116,8 @@ Preview: <BR>
 					?  $CGI->{ui_preload}
 					: "$Values->{mv_data_table}:$CGI->{ui_preload}";
 #Log("preloading $pre=$image");
-				$Scratch->{"ui_preload:$pre"} = $image;
-#Log(qq{actual preload: Scratch->{"ui_preload:$pre"} = $Scratch->{"ui_preload:$pre"}});
+				$CGI->{ui_return_to} .= "\0ui_preload:$pre=$image";
+#Log(qq{actual preload: CGI->{"ui_preload:$pre"} = $CGI->{"ui_preload:$pre"}});
 			}
 		}
 

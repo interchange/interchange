@@ -59,7 +59,7 @@ $Values->{ui_data_fields} =
 	$CGI->{mv_data_fields} ||
 	$Values->{"$table:ui_data_fields"} || 
 	(join " ", $db->columns());
-Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
+#Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
 $Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
 
 my @cols = split /[,\0\s]/, $Values->{ui_data_fields};

@@ -1,51 +1,6 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-break1:
-	widget: break
-
-component_before:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component after content
-
-component_hsize:
-	options: 1,2*,3
-	widget: select
-	description: Component items horizontal
-
-hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Before/after Banner
-	help: Banner for Before/after component
-
-hpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a horizontal Promotion
 [/comment]
 
 [set component_after][/set]
@@ -56,50 +11,52 @@ hpromo_type:
 [set component_before][/set]
 [set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Customer Service[/set]
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
                     <p>&nbsp;</p>
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">At 
-                      Construct Something customer service is our number one concern. 
+                    <p><font __FFACE__ size="2" color="#669999">At 
+                      __COMPANY__ customer service is our number one concern. 
                       The links below can help you manage your account and ordering. 
                       If you need to talk to someone please <a href="contact.html">click 
                       here</a>.</font></p>
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                    <p><font __FFACE__ size="2"> 
                       </font></p>
                     <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#FF9900" bordercolorlight="#FF9900">
                       <tr bgcolor="#669999"> 
                         <td> 
                           <table width="300" border="0" cellspacing="0" cellpadding="2">
                             <tr bgcolor="#669999"> 
-                              <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#FFFFFF"><b>Links 
+                              <td><font size="2" __FFACE__><font color="#FFFFFF"><b>Links 
                                 to manage your account</b></font></font></td>
                             </tr>
                             <tr bgcolor="#999999"> 
-                              <td align="left"> <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#000000"><a href="[area help]"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Help</b></font></a></font></font></td>
+                              <td align="left"> <font color="#FFFFFF" size="2" __FFACE__><font color="#000000"><a href="[area help]"><font __FFACE__ size="2"><b>Help</b></font></a></font></font></td>
                             </tr>
                             <tr bgcolor="#999999"> 
                               <td align="left"> 
-                                <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area account]"><b>Account 
+                                <p><font __FFACE__ size="2"><a href="[area account]"><b>Account 
                                   Maintenance</b></a> </font></p>
                               </td>
                             </tr>
                             <tr bgcolor="#999999"> 
-                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area query/check_orders]"><b>Order 
+                              <td align="left"><font __FFACE__ size="2"><a href="[area query/check_orders]"><b>Order 
                                 Tracking</b></a></font></td>
                             </tr>
+[comment]
                             <tr bgcolor="#999999"> 
-                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area recurring_orders]"><b>Recurring Orders</b></a></font> </td>
+                              <td align="left"><font __FFACE__ size="2"><a href="[area recurring_orders]"><b>Recurring Orders</b></a></font> </td>
                             </tr>
+[/comment]
 							<tr bgcolor="#999999"> 
-                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area ship_addresses]"><b>Additional Shipping Addresses</b></a></font> </td>
+                              <td align="left"><font __FFACE__ size="2"><a href="[area ship_addresses]"><b>Additional Shipping Addresses</b></a></font> </td>
                             </tr>							
                             <tr bgcolor="#999999"> 
-                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area new_account]"><b>New 
+                              <td align="left"><font __FFACE__ size="2"><a href="[area new_account]"><b>New 
                                 Account</b></a></font> </td>
                             </tr>
                             <tr bgcolor="#999999"> 
-                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area returns]"><b> 
+                              <td align="left"><font __FFACE__ size="2"><a href="[area returns]"><b> 
                                 Order Returns</b></a></font> </td>
                             </tr>							
                           </table>
@@ -109,4 +66,4 @@ __LEFTONLY_TOP__
                     <p>&nbsp;</p>
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

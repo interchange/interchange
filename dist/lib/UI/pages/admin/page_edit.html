@@ -46,28 +46,35 @@
 
 	my $ary;
 	my $current = $Tag->file($page);
+	delete $CGI->{save_in_page};
 
 	# This call returns an array of hashes if exists
-	if($current) {
+	if(! $ref and $current) {
+		# Force array context for return value (wantarray test)
 		($ary) = $Tag->read_ui_template($page);
 		if(ref $ary) {
-			$ref_in_page = shift (@$ary);
+			my $refp =  shift (@$ary);
+			if($refp->{ui_template_name} and ! $refp->{ui_template_layout}) {
+				# Force array context for return value (wantarray test)
+				($ary) = $Tag->read_ui_template("templates/$refp->{ui_template_name}");
+				if(ref $ary) {
+					$ref = shift @$ary || {};
+				}
+				else {
+					$ref = $refp;
+				}
+			}
+			else {
+				$ref = $refp;
+				$CGI->{save_in_page} = 'CHECKED';
+			}
 		}
 	}
 
-	if(! $ref and $ref_in_page) {
-		$ref = $ref_in_page;
-	}
-#	elsif($ref_in_page) {
-#		for(keys %$ref_in_page) {
-#			$ref->{$_} = $ref_in_page->{$_};
-#		}
-#	}
-	else {
-		$ref = {} if ! $ref;
+	$ref = {} if ! $ref;
+	length($current) and
 		$current !~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is
-			and $current = "<!-- BEGIN CONTENT -->$current<!-- END CONTENT -->";
-	}
+		and $current = "<!-- BEGIN CONTENT -->$current<!-- END CONTENT -->";
 
 	$t_name = $ref->{ui_template_name} || 'None'
 		if ! $t_name;
@@ -78,6 +85,8 @@
 
 	my $def_string = $ref->{ui_definition};
 	$def_string =~ s/"/&quot;/g;
+
+	my $short_def = "ui_template: Yes\nui_template_name: $ref->{ui_template_name}";
 
 	my $r;
 	#Log("ui_control_element=$ref->{ui_control_element}");
@@ -99,7 +108,7 @@
 					next;
 				}
 				my $options = $ref->{ui_control_options}{$_} || $t_set || '=No,1=Yes';
-Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
+#Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
 				my $help = $ref->{ui_control_help}{$_} || '';
 
 				if($wtype) {
@@ -135,6 +144,7 @@ Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
 		<INPUT TYPE=hidden NAME=ui_page VALUE="$page">
 		<INPUT NAME=ui_elements TYPE=hidden VALUE="$ref->{ui_template_layout}">
 		<input type=hidden name=ui_definition value="$def_string">
+		<input type=hidden name=ui_short_definition value="$short_def">
 		</b></font>
 	</td>
 </tr>
@@ -234,7 +244,7 @@ EOF
 					test => 'isfile',
 				}
 			);
-Log("upload_content=$Values->{ui_upload_content} isfile=$isfile");
+#Log("upload_content=$Values->{ui_upload_content} isfile=$isfile");
 	if( $Values->{ui_upload_content}
 		and $Tag->value_extended(
 				{
@@ -244,12 +254,12 @@ Log("upload_content=$Values->{ui_upload_content} isfile=$isfile");
 			)
 		)							
 	{
-Log("content from upload.");
+#Log("content from upload.");
 		$content_input = $Tag->value_extended( {
 												name => 'ui_upload_content',
 												file_contents => 1,
 												});
-Log("content from upload is:\n$content_input");
+#Log("content from upload is:\n$content_input");
 		$content_input =~ s{(<!--\s+begin\s+content\s+-->)([^\n])}{$1\n$2}is;
 		$content_input =~ s{([^\n])(<!--\s+end\s+content\s+-->)}{$1\n$2}is;
 	}
@@ -332,7 +342,9 @@ mv_todo=back
 
 <INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'">
 <INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'">
+<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
+<INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save templage in page
+
 </td>
 </tr>
 

@@ -71,7 +71,7 @@ function MM_swapImage() { //v3.0
                   <td width="590" bgcolor="#669999"> 
                     <div align="left"><font size="1"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">
 					&nbsp;&nbsp;&nbsp;
-                      <font color="#FFFFFF" size="2">Welcome to Construct Something,
+                      <font color="#FFFFFF" size="2">Welcome to __COMPANY__,
 					  
 					  [if !session logged_in]
                       your online hardware store!
@@ -124,11 +124,15 @@ function MM_swapImage() { //v3.0
 		  <td width="119">
 <FORM ACTION="[area search]">
 <INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
-<INPUT TYPE=hidden NAME=mv_search_field VALUE=category>
-<INPUT TYPE=hidden NAME=mv_search_field VALUE=":artist,title,comment,display">
-<INPUT TYPE=hidden NAME=mv_searchspec VALUE="">
-
-			  <INPUT MAXLENGTH=30 NAME=mv_searchspec type="text" size="10">
+<INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
+<INPUT TYPE=hidden NAME=mv_matchlimit VALUE=10>
+<INPUT TYPE=hidden NAME=mv_sort_field VALUE=category>
+<INPUT TYPE=hidden NAME=mv_search_field VALUE=inactive>
+<INPUT TYPE=hidden NAME=mv_search_field VALUE=":*">
+<INPUT TYPE=hidden NAME=mv_column_op VALUE=ne>
+<INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
+<INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
+<INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
 
 		  </td>
 		  <td width="119" valign="top"><INPUT TYPE=image alt="Search Go" border="0" src="navigation/go.gif" width="23" height="17"></a></td>

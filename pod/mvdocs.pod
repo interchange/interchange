@@ -7834,14 +7834,8 @@ based on quantity, size, color or other factors read on.
 
 =head2 Price Maintenance with CommonAdjust
 
-As of Interchange 3.11, a flexible chained pricing scheme is available
-when the I<CommonAdjust> directive is set.
-
-NOTE: For compatibility with older carts, if both PriceAdjustment
-and CommonAdjust are set, and CommonAdjust contains a valid database
-identifier, the CommonAdjust value is used to set pricing adjustments
-based on item attributes. This is not discussed further in this
-section; all items below assume I<PriceAdjustment> is not in use.
+A flexible chained pricing scheme is available when the I<CommonAdjust>
+directive is set.
 
 We talk below about a I<CommonAdjust string>; it will be defined
 in due time.
@@ -7870,15 +7864,10 @@ will be used to set the price of the items.
 
 =item 4
 
-If PriceBreaks is in use, it's price will take precedence over the
-value of C<CommonAdjust>, though it may also contain a CommonAdjust string.
-
-=item 5
-
 If no CommonAdjust strings are found, then the price will be 0, subject
 to any later application of discounts.
 
-=item 6
+=item 5
 
 If another CommonAdjust string is found as the result of an operation,
 it will be re-parsed and the result applied. Chaining is retained; a

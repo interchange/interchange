@@ -1,3 +1,4 @@
+<!-- BEGIN COMPONENT random_vertical -->
 [loop
     random="[either][scratch component_vsize][or]3[/either]"
     search="ra=yes/ml=1000"
@@ -47,3 +48,5 @@
 		</tr>
 	  </table>
 [/loop]
+
+<!-- END COMPONENT random_vertical -->

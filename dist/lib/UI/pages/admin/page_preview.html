@@ -32,7 +32,7 @@
 			push @out, $content;
 		}
 		elsif ($one =~ /^[A-Z]\w+$/) {
-			push @out, '__' . $one . '__';
+			push @out, '@_' . $one . '_@';
 		}
 		else {
 			push @out, $one;

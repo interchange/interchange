@@ -8,7 +8,6 @@
 [/if]<html>
 <head>
 	<title>[scratch page_title]</title>
-</head>
 <script language="JavaScript">
 <!--
 function MM_swapImgRestore() { //v3.0
@@ -71,7 +70,7 @@ function MM_swapImage() { //v3.0
                   <td width="590" bgcolor="#669999"> 
                     <div align="left"><font size="1"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">
 					&nbsp;&nbsp;&nbsp;
-                      <font color="#FFFFFF" size="2">Welcome to Construct Something,
+                      <font color="#FFFFFF" size="2">Welcome to __COMPANY__,
 					  
 					  [if !session logged_in]
                       your online hardware store!

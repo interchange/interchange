@@ -25,9 +25,14 @@
 		unshift @layout, "[set $k]" . $CGI->{$_} . '[/set]';
 	}
 
-	if($CGI->{ui_definition}) {
-		unshift @layout, '[' . "comment]\n" . $CGI->{ui_definition} . "\n[" . "/comment]\n";
+	my $def_string;
+	if($CGI->{ui_save_t_in_page}) {
+		$def_string = $CGI->{ui_definition};
 	}
+	else {
+		$def_string = $CGI->{ui_short_definition};
+	}
+	unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
 
 	foreach $one (@layout) {
 		if( $one eq 'UI_CONTENT') {
@@ -38,7 +43,7 @@
 			push @out, $content;
 		}
 		elsif ($one =~ /^[A-Z]\w+$/) {
-			push @out, '__' . $one . '__';
+			push @out, '@_' . $one . '_@';
 			#Log("inserted variable $one");
 		}
 		else {
