@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.192 2003-09-19 03:27:59 mheins Exp $
+# $Id: Interpolate.pm,v 2.193 2003-10-05 19:09:23 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.192 $, 10);
+$VERSION = substr(q$Revision: 2.193 $, 10);
 
 @EXPORT = qw (
 
@@ -1546,8 +1546,13 @@ sub tag_if {
 	}
 	elsif ($elsif) {
 		$else = '[else]' . $else . '[/else]' if length $else;
-		$elsif =~ s#(.*?)$QR{'/elsif'}(.*)#$1${2}[/elsif]#s;
-		$out = '[if ' . $elsif . $else . '[/if]';
+		my $pertinent = Vend::Parse::find_matching_end('elsif', \$elsif);
+		unless(defined $pertinent) {
+			$pertinent = $elsif;
+			$elsif = '';
+		}
+		$elsif .= '[/elsif]' if $elsif =~ /\S/;
+		$out = '[if ' . $pertinent . $elsif . $else . '[/if]';
 	}
 	elsif (length $else) {
 		$out = $else;
