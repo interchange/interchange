@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.16 2002-09-16 23:06:31 mheins Exp $
+# $Id: Data.pm,v 2.17 2002-10-06 00:03:34 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -875,10 +875,12 @@ sub import_database {
 
 	$obj->{ObjectType} = $class_config->{Class};
 
+	my $dot = $obj->{HIDE_AUTO_FILES} ? '.' : '';
+
 	if($class_config->{Extension}) {
 		$database_dbm = Vend::Util::catfile(
 												$dir,
-												"$base."     .
+												"$dot$base."     .
 												$class_config->{Extension}
 											);
 		$new_database_dbm =  Vend::Util::catfile(

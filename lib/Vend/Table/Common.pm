@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.20 2002-09-10 17:29:09 mheins Exp $
+# $Id: Common.pm,v 2.21 2002-10-06 00:03:34 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1323,8 +1323,9 @@ EndOfRoutine
 	delete $out->[$CONFIG]{_Dirty};
 	unlockfile(\*IN) or die "unlock\n";
     close(IN);
+	my $dot = $out->[$CONFIG]{HIDE_AUTO_FILES} ? '.' : '';
 	if($numeric_guess) {
-		my $fn = Vend::Util::catfile($out->[$CONFIG]{DIR}, $out->[$CONFIG]{file});
+		my $fn = Vend::Util::catfile($out->[$CONFIG]{DIR}, "$dot$out->[$CONFIG]{file}");
 		Vend::Util::writefile(
 					">$fn.numeric",
 					join " ", map { $field_names[$_] } @possible,
