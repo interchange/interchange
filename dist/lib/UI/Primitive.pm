@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.1 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -357,6 +357,7 @@ sub ui_acl_global {
   		}
 
 		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
+
 		for(@fields) {
 			$CGI->{$_} =~ s/\[/&#91;/g unless $mml_enable;
 			$CGI->{$_} =~ s/\</&lt;/g unless $html_enable;
@@ -696,6 +697,37 @@ sub date_widget {
 	$out .= qq{</SELECT>};
 }
 
+
+sub option_widget_box {
+	my ($name, $val, $lab, $default, $width) = @_;
+	my $half = int($width / 2);
+	my $sel = $default ? ' SELECTED' : '';
+	$val =~ s/"/&quot;/g;
+	$lab =~ s/"/&quot;/g;
+	$width = 10 if ! $width;
+	return qq{<TR><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$val" SIZE=$half></SMALL></TD><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$lab" SIZE=$width></SMALL></TD><TD><SMALL><SMALL><SELECT NAME="$name"><OPTION value="0">no<OPTION value="1"$sel>default*</SELECT></SMALL></SMALL></TD></TR>};
+}
+
+sub option_widget {
+	my($name, $val, $opt) = @_;
+	$opt = {} if ! ref $opt;
+	my $width = $opt->{width} || 16;
+	$val = Vend::Interpolate::filter_value('option_format', $val);
+	my @opts = split /\s*,\s*/, $val;
+	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
+	for(@opts) {
+		my ($v,$l) = split /\s*=\s*/, $_, 2;
+		next unless $l || length($v);
+		my $default;
+		($l =~ s/\*$// or ! $l && $v =~ s/\*$//)
+			and $default = 1;
+		$out .= option_widget_box($name, $v, $l, $default, $width);
+	}
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= "</TABLE>";
+}
+
 my $base_entry_value;
 
 sub meta_display {
@@ -810,6 +842,12 @@ sub meta_display {
 					if ! $record->{passed};
 			}
 		}
+		elsif ($record->{type} eq 'option_format') {
+			my $w = option_widget($column, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="option_format">};
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+		}
 		elsif ($record->{type} eq 'date') {
 			my $w = date_widget($column, $value);
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
@@ -875,6 +913,7 @@ sub meta_display {
 			type		=> ($o->{type} || $record->{'type'}		|| undef),
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
+			extra		=> ($o->{'extra'}		|| undef),
 		};
 #::logDebug("going to display for $opt->{name} type=$opt->{type}");
 		my $w = Vend::Interpolate::tag_accessories(
