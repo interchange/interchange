@@ -5,7 +5,7 @@ sub {
 	my ($file, $locale) = @_;
 	$locale = 1 unless defined $locale;
 	return Vend::Interpolate::interpolate_html(
-		Vend::Util::readfile($file, $Global::NoAbsolute, $locale)
+		Vend::Util::readfile($file, undef, $locale)
 	);
 }
 EOR

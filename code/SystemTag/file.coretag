@@ -5,11 +5,11 @@ UserTag file                Routine   <<EOR
 # NoAbsolute is not set.
 sub {
 	my ($file, $type) = @_;
-    return readfile($file, $Global::NoAbsolute)
+    return readfile($file)
 		unless $type;
-	return readfile($file, $Global::NoAbsolute, 0)
+	return readfile($file, undef, 0)
 		if $type eq 'raw';
-	my $text = readfile($file, $Global::NoAbsolute);
+	my $text = readfile($file);
 	if($type =~ /mac/i) {
 		$text =~ tr/\n/\r/;
 	}
