@@ -109,11 +109,13 @@ ui_template_name: leftright
                   [loop option=category search="
                         ra=yes
                         fi=cat
-                        rf=code,name
+						st=db
+                        rf=name
                         ml=1000
                         tf=name
+						un=1
                   "]
-                  <option value="[loop-data cat name]"> [loop-data cat name]</option>
+                  <option>[loop-code]</option>
                   [/loop]
   </select>
    category.  
