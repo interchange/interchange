@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6.2.1.2.2 2000-12-21 12:14:48 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.3 2001-02-02 07:39:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -57,10 +57,12 @@ use Getopt::Long;
 
 Getopt::Long::config(qw/permute/);
 
+use vars qw/$Self/;
+
 BEGIN {
 	use Config;
 	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-	$::Self = {
+	$Self = {
 		INSTALLPRIVLIB => '/usr/local/interchange/lib',
 #		INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
 		INSTALLARCHLIB => '/usr/local/interchange',
@@ -130,13 +132,10 @@ DOIT: {
 sub doit {
 	my ($self, $orig, $template, $preamble, $key, $postamble) = @_;
 	my $replace =  $Self->{$key} || $Config{$key};
-#warn <<EOF;
-#orig=$orig
-#template=$template
-#key=$key
-#replace=$replace
-#EOF
+
 	return "$orig$template" unless defined $replace;
+	$preamble =~ s/~_~(\w+)~_~/$Self->{$1} || $Config{$1}/eg;
+	$postamble =~ s/~_~(\w+)~_~/$Self->{$1} || $Config{$1}/eg;
 	return "$preamble$replace$postamble$template";
 }
 
@@ -160,7 +159,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 1.6.2.1.2.2 2000-12-21 12:14:48 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.3 2001-02-02 07:39:29 heins Exp $
 
 =head1 DESCRIPTION
 
