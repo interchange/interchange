@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.0 2001-07-18 02:21:56 jon Exp $
+# $Id: Primitive.pm,v 2.1 2001-08-10 17:54:53 heins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -182,6 +182,7 @@ sub ui_acl_enabled {
 		or die "Bad database record for $uid.";
 	if($ref->{table_control}) {
 		$ref->{table_control_ref} = $ui_safe->reval($ref->{table_control});
+		ref $ref->{table_control_ref} or delete $ref->{table_control_ref};
 	}
 	return $ref if $try;
 	$Vend::UI_entry = $ref;
