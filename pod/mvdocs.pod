@@ -2250,9 +2250,9 @@ reconfiguration:
    Database  products  products.txt   TAB
    Database  products  IMPORT_ONCE    1
 
-SQL databases don't normally need this -- they will only be imported once
-in normal operation. Also see I<NoImport> for a way to guarantee that the
-table will never be imported.
+SQL databases don't normally need this -- they will only be imported
+once in normal operation. Also see I<NoImport> and I<NoImportExternal>
+for a way to guarantee that the table will never be imported.
 
 IMPORT_ONCE is always in effect for MEMORY databases. Do a catalog
 reconfiguration to force a change.
@@ -2608,6 +2608,14 @@ you B<must> be careful to set the I<NoImport> directive or create the
 proper .sql file. If that is not done, and the database source file
 is changed, the SQL database could be overwritten. In any case,
 always back up your database before enabling it for use by Interchange.
+
+If you frequently use SQL (or LDAP) databases and always set them up
+without the import assistance of Interchange, you can use the
+catalog.cfg setting:
+
+	NoImportExternal  Yes
+
+See I<NoExportExternal>.
 
 =head1 INTERCHANGE TAG REFERENCE
 
@@ -13166,11 +13174,22 @@ pages in that directory (or any below it) be cached or built statically.
 
 =head2 NoImport
 
+When set to one or more Interchange database identifiers, those
+table(s) will never be subject to import. Useful for external databases
+(like SQL or LDAP ones), or databases that will *never* change. To exclude
+all external databases at once, use the NoImportExternal directive.
+
+    NoImport   inventory
+
+=head2 NoImportExternal
+
 When set to one or more Interchange database identifiers,
 those database(s) will never be subject to import. Useful for SQL
 databases, or databases that will *never* change.
 
-    NoImport   inventory
+	NoImportExternal Yes
+
+You might enable this directive after your initial catalog build.
 
 =head2 NonTaxableField
 
