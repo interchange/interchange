@@ -151,8 +151,7 @@ cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
 # http://developer.akopia.com/
 #
 # chkconfig: 345 96 4
-# description: Interchange is a database access and HTML templating system \
-#	       focused on ecommerce
+# description: Interchange is a database access and HTML templating system focused on ecommerce
 # processname: interchange
 # pidfile: $RUNBASE/interchange/interchange.pid
 # config: $ETCBASE/interchange.cfg
