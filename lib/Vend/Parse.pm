@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.10 2001-02-22 19:59:54 heins Exp $
+# $Id: Parse.pm,v 1.12.2.11 2001-02-26 00:58:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.11 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -837,7 +837,7 @@ use vars '%myRefs';
 
 sub do_tag {
 	my $tag = shift;
-::logDebug("Parse-do_tag: tag=$tag caller=" . caller() . " args=" . ::uneval(\@_) );
+#::logDebug("Parse-do_tag: tag=$tag caller=" . caller() . " args=" . ::uneval_it(\@_) );
 	die errmsg("Unauthorized for admin tag %s", $tag)
 		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
 	
@@ -848,12 +848,16 @@ sub do_tag {
         }
         $tag = $Alias{$tag};
 	};
-	if(ref($_[-1]) =~ /HASH/ && scalar @{$Order{$tag}} > scalar @_) {
+	if(
+		( ref($_[-1]) && scalar @{$Order{$tag}} > scalar @_ ) 
+	)
+	{
 		my $text;
 		my $ref = pop(@_);
 		$text = shift if $hasEndTag{$tag};
 		my @args = @$ref{ @{$Order{$tag}} };
 		push @args, $ref if $addAttr{$tag};
+#::logDebug("Parse-do_tag: args now=" . ::uneval_it(\@args) );
 		return &{$Routine{$tag}}(@args, $text || undef);
 	}
 	else {
@@ -863,12 +867,14 @@ sub do_tag {
 
 sub resolve_args {
 	my $tag = shift;
+#::logDebug("resolving args for $tag, attrAlias = $attrAlias{$tag}");
 	return @_ unless defined $Routine{$tag};
 	my $ref = shift;
 	my @list;
 	if(defined $attrAlias{$tag}) {
 		my ($k, $v);
 		while (($k, $v) = each %{$attrAlias{$tag}} ) {
+#::logDebug("checking alias $k -> $v");
 			next unless defined $ref->{$k};
 			$ref->{$v} = $ref->{$k};
 		}
