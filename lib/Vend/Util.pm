@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10.2.3 2000-11-13 16:29:10 zarko Exp $
+# $Id: Util.pm,v 1.10.2.4 2000-11-20 01:30:47 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -76,7 +76,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.10.2.4 $, 10);
 
 BEGIN {
 	eval {
@@ -108,7 +108,8 @@ sub setup_escape_chars {
 		$a = chr($i);
 		if(index($ESCAPE_CHARS::ok_in_filename,$a) == -1) {
 			$t = '%' . sprintf( "%02X", $i );
-		} else {
+		}
+		else {
 			$t = $a;
 		}
 		$ESCAPE_CHARS::translate[$i] = $t;
@@ -152,7 +153,8 @@ FINDOFFSET: {
 	my ($lm,$lh,$ld,$ly) = (localtime($now))[1,2,5,7];
 	if($gy != $ly) {
 		$gy < $ly ? $lh += 24 : $gh += 24;
-	} elsif($gd != $ld) {
+	}
+	elsif($gd != $ld) {
 		$gd < $ld ? $lh += 24 : $gh += 24;
 	}
 	$gh *= 100;
@@ -197,9 +199,11 @@ sub round_to_frac_digits {
 	my ($num, $digits) = @_;
 	if(defined $digits) {
 		# use what we were given
-	} elsif( $Vend::Cfg->{Locale} ) {
+	}
+	elsif( $Vend::Cfg->{Locale} ) {
 		$digits = $Vend::Cfg->{Locale}{frac_digits} || 2;
-	} else {
+	}
+	else {
 		$digits = 2;
 	}
 	my @frac;
@@ -344,12 +348,14 @@ sub currency {
 			if($loc->{p_cs_precedes}) {
 				$precede = $cs;
 				$precede = "$precede " if $loc->{p_sep_by_space};
-			} else {
+			}
+			else {
 				$succede = $cs;
 				$succede = " $succede" if $loc->{p_sep_by_space};
 			}
 		}
-	} else {
+	}
+	else {
 		$fmt = "%.2f";
 	}
 
@@ -396,7 +402,8 @@ if(! $@) {
 					$Md->add(@_);
 					$Md->hexdigest();
 				};
-} else {
+}
+else {
 	$Keysub = sub {
 		my $out = '';
 		@_ = time() unless @_;
@@ -440,19 +447,22 @@ sub uneval_it {
 	if(!$r) {
 		$o =~ s/([\\"\$@])/\\$1/g;
 		$s = '"' . $o . '"';
-	} elsif($r eq 'ARRAY') {
+	}
+	elsif($r eq 'ARRAY') {
 		$s = "[";
 		foreach $i (0 .. $#$o) {
 			$s .= uneval_it($o->[$i]) . ",";
 		}
 		$s .= "]";
-	} elsif($r eq 'HASH') {
+	}
+	elsif($r eq 'HASH') {
 		$s = "{";
 		while (($key, $value) = each %$o) {
 			$s .= "'$key' => " . uneval_it($value) . ",";
 		}
 		$s .= "}";
-	} else {
+	}
+	else {
 		$s = "'something else'";
 	}
 
@@ -500,7 +510,8 @@ eval {
 		$Data::Dumper::Deepcopy = 1;
 		if(defined $Fast_uneval) {
 			$Pretty_uneval = \&Data::Dumper::Dumper;
-		} else {
+		}
+		else {
 			$Pretty_uneval = \&Data::Dumper::DumperX;
 			$Fast_uneval = \&Data::Dumper::DumperX
 		}
@@ -538,16 +549,19 @@ sub writefile {
 			seek(MVLOGDATA, 0, 2) or die "seek\n";
 			if(ref $data) {
 				print(MVLOGDATA $$data) or die "write to\n";
-			} else {
+			}
+			else {
 				print(MVLOGDATA $data) or die "write to\n";
 			}
 			unlockfile(\*MVLOGDATA) or die "unlock\n";
-		} else {
+		}
+		else {
 			my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
 			open(MVLOGDATA, "|-") || exec @args;
 			if(ref $data) {
 				print(MVLOGDATA $$data) or die "pipe to\n";
-			} else {
+			}
+			else {
 				print(MVLOGDATA $data) or die "pipe to\n";
 			}
 		}
@@ -591,7 +605,8 @@ sub logData {
 			seek(MVLOGDATA, 0, 2)		or die "seek\n";
 			print(MVLOGDATA "$msg\n")	or die "write to\n";
 			unlockfile(\*MVLOGDATA)		or die "unlock\n";
-		} else {
+		}
+		else {
 			my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
 			open(MVLOGDATA, "|-") || exec @args;
 			print(MVLOGDATA "$msg\n") or die "pipe to\n";
@@ -640,24 +655,29 @@ sub copyref {
 		# Would \$$x work?
 		$z = $$x;
 		return \$z;
-	} elsif($rt =~ /HASH/) {
+	}
+	elsif($rt =~ /HASH/) {
 		$r = {} unless defined $r;
 		for $y (sort keys %$x) {
 			$r->{$y} = &copyref($x->{$y}, $r->{$y});
 		}
 		return $r;
-	} elsif($rt =~ /ARRAY/) {
+	}
+	elsif($rt =~ /ARRAY/) {
 		$r = [] unless defined $r;
 		for ($y = 0; $y <= $#{$x}; $y++) {
 			$r->[$y] = &copyref($x->[$y]);
 		}
 		return $r;
-	} elsif($rt =~ /REF/) {
+	}
+	elsif($rt =~ /REF/) {
 		$z = &copyref($x);
 		return \$z;
-	} elsif(! $rt) {
+	}
+	elsif(! $rt) {
 		return $x;
-	} else {
+	}
+	else {
 		die "do not know how to copy $x";
 	}
 }
@@ -676,9 +696,11 @@ sub check_gate {
 #::logDebug("gate=$gate");
 			$gate =~ s/\n[\S].*//s;
 			$gate =~ s/^\s+//;
-		} elsif($gate =~ m{^\*(?:\.html?)?[: \t]+(.*)}m) {
+		}
+		elsif($gate =~ m{^\*(?:\.html?)?[: \t]+(.*)}m) {
 			$gate = $1;
-		} else {
+		}
+		else {
 			undef $gate;
 		}
 	}
@@ -765,7 +787,8 @@ sub readin {
 			if(-f "$dir/.access") {
 				if(-s _) {
 					$level = 3;
-				} else {
+				}
+				else {
 					$level = '';
 				}
 				if(-f "$dir/.autoload") {
@@ -785,11 +808,13 @@ WWW-Authenticate: Basic realm="$realm"
 EOF
 				if(-f "$try/violation.$suffix") {
 					$fn = "$try/violation.$suffix";
-				} else {
+				}
+				else {
 					$file = find_special_page('violation');
 					$fn = $try . "/" . escape_chars($file) . $suffix;
 				}
-			} else {
+			}
+			else {
 				$fn = $try . "/" . escape_chars($file) . $suffix;
 			}
 
@@ -806,7 +831,8 @@ EOF
 			last FINDPAGE if $suffix eq '.html';
 			$suffix = '.html';
 			redo FINDPAGE;
-		} elsif($Vend::Cfg->{Locale}) {
+		}
+		elsif($Vend::Cfg->{Locale}) {
 			my $key;
 			$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 							$key = $2 || $3;		
@@ -815,7 +841,8 @@ EOF
 			$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
 							find_locale_bit($1) ~eg;
 			undef $Lang;
-		} else {
+		}
+		else {
 			$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
 		}
 	}
@@ -830,7 +857,8 @@ EOF
 			)
 		{
 			return $contents;
-		} else {
+		}
+		else {
 			# We want to work anyway
 			open (MIR, ">$mir")
 				or return $contents;
@@ -974,13 +1002,15 @@ sub flock_lock {
 	if($wait) {
 		flock($fh, $flag) or die "Could not lock file: $!\n";
 		return 1;
-	} else {
+	}
+	else {
 		if(! flock($fh, $flag | $flock_LOCK_NB)) {
 			if($! =~ m/^Try again/
 				or $! =~ m/^Resource temporarily unavailable/
 				or $! =~ m/^Operation would block/) {
 				return 0;
-			} else {
+			}
+			else {
 				die "Could not lock file: $!\n";
 			}
 		}
@@ -1003,13 +1033,15 @@ sub fcntl_lock {
 	if ($wait) {
 		fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
 		return 1;
-	} else {
+	}
+	else {
 		if (fcntl($fh, $op, $struct) < 0) {
 			if ($! =~ m/^Try again/
 				or $! =~ m/^Resource temporarily unavailable/
 				or $! =~ m/^Operation would block/) {
 				return 0;
-			} else {
+			}
+			else {
 				die "Could not lock file: $!\n";
 			}
 		}
@@ -1025,7 +1057,8 @@ sub fcntl_unlock {
 				or $! =~ m/^Resource temporarily unavailable/
 				or $! =~ m/^Operation would block/) {
 			return 0;
-		} else {
+		}
+		else {
 			die "Could not un-fcntl_lock file: $!\n";
 		}
 	}
@@ -1049,7 +1082,8 @@ if($use eq 'none') {
 	print "using NO locking\n";
 	$lock_function = sub {1};
 	$unlock_function = sub {1};
-} else {
+}
+else {
 	$lock_function = \&flock_lock;
 	$unlock_function = \&flock_unlock;
 }
@@ -1072,7 +1106,8 @@ sub tag_nitems {
 	if($ref) {
 		 $cart = $::Carts->{$ref}
 		 	or return 0;
-	} else {
+	}
+	else {
 		$cart = $Vend::Items;
 	}
 
@@ -1086,7 +1121,8 @@ sub tag_nitems {
 			$sub = sub { 
 							$_[0] =~ $qr;
 						};
-		} else {
+		}
+		else {
 			$sub = sub { return $_[0] };
 		}
 	}
@@ -1136,7 +1172,8 @@ sub check_authorization {
 	{
 		$cmp_pw = $Vend::Cfg->{Password};
 		undef $use_crypt if $::Variable->{MV_NO_CRYPT};
-	} else {
+	}
+	else {
 		$pwinfo = $Vend::Cfg->{UserDatabase} unless $pwinfo;
 		undef $use_crypt unless $::Variable->{MV_USE_CRYPT};
 		$cmp_pw = Vend::Interpolate::tag_data($pwinfo, 'password', $user)
@@ -1147,7 +1184,8 @@ sub check_authorization {
 
 	if(! $use_crypt) {
 		return $user if $pw eq $cmp_pw;
-	} else {
+	}
+	else {
 		my $test = crypt($pw, $cmp_pw);
 		return $user
 			if $test eq $cmp_pw;
@@ -1168,7 +1206,8 @@ sub check_security {
 		if($gate) {
 			$gate =~ s/\s+//g;
 			return 1 if is_yes($gate);
-		} elsif($Vend::Session->{logged_in}) {
+		}
+		elsif($Vend::Session->{logged_in}) {
 			return 1 if $::Variable->{MV_USERDB_REMOTE_USER};
 			my $db;
 			my $field;
@@ -1192,13 +1231,16 @@ sub check_security {
 							);
 		}
 		return '';  
-	} elsif($reconfig eq '1') {
+	}
+	elsif($reconfig eq '1') {
 		$msg = 'reconfigure catalog';
-	} elsif($reconfig eq '2') {
+	}
+	elsif($reconfig eq '2') {
 		$msg = "access protected database $item";
 #::logDebug("passed gate of $gate");
 		return 1 if is_yes($gate);
-	} elsif($reconfig eq '3') {
+	}
+	elsif($reconfig eq '3') {
 		$msg = "access administrative function $item";
 	}
 
@@ -1341,14 +1383,16 @@ sub errmsg {
 	my $location;
 	if($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$fmt}) {
 	 	$location = $Vend::Cfg->{Locale};
-	} elsif($Global::Locale and defined $Global::Locale->{$fmt}) {
+	}
+	elsif($Global::Locale and defined $Global::Locale->{$fmt}) {
 	 	$location = $Global::Locale;
 	}
 	return sprintf $fmt, @strings if ! $location;
 	if(ref $location->{$fmt}) {
 		$fmt = $location->{$fmt}[0];
 		@strings = @strings[ @{ $location->{$fmt}[1] } ];
-	} else {
+	}
+	else {
 		$fmt = $location->{$fmt};
 	}
 	return sprintf $fmt, @strings;
@@ -1381,7 +1425,8 @@ sub logGlobal {
 		if($Global::SysLog->{tag}) {
 			$tag = " -t $Global::SysLog->{tag}"
 				unless "\L$Global::Syslog->{tag}" eq 'none';
-		} else {
+		}
+		else {
 			$tag = " -t interchange";
 		}
 		$tag .= ".$opt->{level}" if $tag and ! $leveled;
@@ -1619,7 +1664,8 @@ if($^O =~ /win32/i) {
 	$catfile_routine = \&win_catfile;
 	$path_routine = \&win_path;
 	$canonpath_routine = \&win_canonpath;
-} else {
+}
+else {
 	$catdir_routine = \&unix_catdir;
 	$catfile_routine = \&unix_catfile;
 	$path_routine = \&unix_path;
