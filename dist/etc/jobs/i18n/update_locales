@@ -13,7 +13,7 @@ if (index($Config->{PageDir}, "$Config->{VendRoot}/")) {
 $pdir = substr($Config->{PageDir}, length($Config->{VendRoot}) + 1);
 
 # get all pages, templates and components
-@files = $Tag->find({}, [$pdir, 'templates', 'special_pages']);
+@files = $Tag->find({}, [$pdir, 'templates', 'special_pages', include]);
 
 for $file (@files) {
     # get contents of current page
