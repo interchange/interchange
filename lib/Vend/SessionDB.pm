@@ -1,6 +1,6 @@
 # Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 2.3 2003-11-13 16:07:26 mheins Exp $
+# $Id: SessionDB.pm,v 2.4 2004-06-07 03:44:19 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,29 +28,89 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 sub TIEHASH {
-	my($self, $db) = @_;
-	$db = Vend::Data::database_exists_ref($db);
-	$db = $db->ref();
-#::logDebug("$self: tied");
-	die "Vend::SessionDB: bad database\n"
-		unless $db;
-	
-	bless { DB => $db }, $self;
+	my($class, $db) = @_;
+	$db = Vend::Data::database_exists_ref($db)
+		or die "Vend::SessionDB: bad database $db\n";
+	my $self = {
+		DB => $db,
+		DBH => $db->dbh(),
+		TABLE => $db->name(),
+		LOCK_VALUE => {},
+	};
+
+	bless $self, $class;
+}
+
+sub UNTIE {
+	my $self = shift;
+	%$self = ();
 }
 
 sub FETCH {
 	my($self, $key) = @_;
-#::logDebug("$self fetch: $key");
-	return undef unless $self->{DB}->record_exists($key);
-#::logDebug("$self exists: $key");
-	return $self->{DB}->field($key, 'sessionlock') if $key =~ s/^LOCK_//;
-#::logDebug("$self complex fetch: $key");
-	my $data = $self->{DB}->field($key, 'session');
-	return undef unless $data;
-	return $data;
+#::logDebug("$self fetch: $key (pid=$$)");
+	my $rc;
+
+    if($key =~ /^LOCK_/) {
+
+		return $self->{LOCK_VALUE}{$key}
+			if $self->{LOCK_VALUE}{$key};
+
+		my $val = time() . ":$$";
+
+		$self->{DOLOCK} ||=
+			$self->{DBH}->prepare(
+					"insert (code,sessionlock) into $self->{TABLE} values(?,?)",
+				);
+
+		eval {
+			$rc = $self->{DOLOCK}->execute($key, $val);
+		};
+		if($@ or $rc < 1) {
+			## Session exists
+			my $sth =
+				$self->{FETCHLOCK} ||=
+					$self->{DBH}->prepare(
+						"select code,sessionlock from $self->{TABLE} where code = ?",
+					);
+			$sth->execute($key)
+				or do {
+					logError("DBI query error when fetching session lock $key");
+					return undef;
+				};
+			my $ary = $sth->fetchrow_arrayref
+				or return undef;
+			return $ary->[0];
+		}
+		else {
+			## No session there already
+			$self->{LOCK_VALUE}{$key} = $val;
+			return undef;
+		}
+	}
+	else {
+		return $self->{SESSION_VALUE}{$key}
+			if $self->{SESSION_VALUE}{$key};
+		my $sth = $self->{FETCH} ||= $self->{DBH}->prepare(
+								"select session from $self->{TABLE} where code = ?"
+							);
+		eval {
+			$rc = $sth->execute($key);
+		};
+
+		if($@) {
+			## Session fetch error
+			logError("DBI error fetching session $key");
+			return undef;
+		}
+
+		my $ary = $sth->fetchrow_arrayref
+			or return undef;
+		return $self->{SESSION_VALUE}{$key} = $ary->[0];
+	}
 }
 
 sub FIRSTKEY {
@@ -60,21 +120,25 @@ sub FIRSTKEY {
 		$self->{DB}->config('DELIMITER');
 	};
 	push @{$self->{DB}}, $tmp if $@;
-	return $self->{DB}->each_record();
+	my @pair = $self->{DB}->each_record();
+	while($pair[0] =~ /^LOCK_/) {
+		@pair = $self->{DB}->each_record();
+	}
+	return @pair;
 }
 
 sub NEXTKEY {
-	return $_[0]->{DB}->each_record();
+	my $self = shift;
+	my @pair = $self->{DB}->each_record();
+	while($pair[0] =~ /^LOCK_/) {
+		@pair = $self->{DB}->each_record();
+	}
+	return @pair;
 }
 
 sub EXISTS {
 	my($self,$key) = @_;
 #::logDebug("$self EXISTS check: $key");
-	if ($key =~ s/^LOCK_//) {
-		return undef unless $self->{DB}->record_exists($key);
-		return undef unless $self->{DB}->field($key, 'sessionlock');
-		return 1;
-	}
 	return undef unless $self->{DB}->record_exists($key);
 	1;
 }
@@ -82,21 +146,22 @@ sub EXISTS {
 sub DELETE {
 	my($self,$key) = @_;
 #::logDebug("$self delete: $key");
-	if($key =~ s/^LOCK_// ) {
-		return undef unless $self->{DB}->record_exists($key);
-		$self->{DB}->set_field($key,'sessionlock','');
-		return 1;
-	}
-	$self->{DB}->delete_record($key);
+	$self->{DELHANDLE} ||= $self->{DBH}->prepare(
+								"delete from $self->{TABLE} where code = ?",
+								);
+	$self->{DELHANDLE}->execute($key);
 }
 
 sub STORE {
 	my($self, $key, $val) = @_;
-	my $locking = $key =~ s/^LOCK_//;
-	$self->{DB}->set_row($key) unless $self->{DB}->record_exists($key);
-	return $self->{DB}->set_field($key, 'sessionlock', $val) if $locking;
-	$self->{DB}->set_field( $key, 'session', $val);
-	return 1;
+	if( $key =~ s/^LOCK_//) {
+		return $self->{LOCK_VALUE}{$key};
+	}
+	else {
+		$self->{DB}->set_field( $key, 'session', $val);
+		undef $self->{SESSION_VALUE}{$key};
+		return 1;
+	}
 }
 	
 1;

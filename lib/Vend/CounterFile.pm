@@ -1,6 +1,6 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.4 2003-09-19 03:27:59 mheins Exp $
+# $Id: CounterFile.pm,v 1.5 2004-06-07 03:44:19 mheins Exp $
 #
 
 package Vend::CounterFile;
@@ -98,7 +98,7 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
 
 # first line in counter file, regex to match good value
 $MAGIC           = "#COUNTER-1.0\n";    # first line in standard counter files
@@ -135,13 +135,8 @@ sub new
 	my $magic_value;
 
 	local($/, $\) = ("\n", undef);
-	my $value;
-	if (-e $file) {
-		croak "Specified file is a directory" if -d _;
-		open(F, $file) or croak "Can't open $file: $!";
-		my $first_line = <F>;
-		$value = <F>;
-		close(F);
+	my ($fh, $first_line, $value) = get_initial_fh($file);
+	if (! $fh) {
 		if($first_line eq $MAGIC) {
 			# do nothing
 		}
@@ -158,30 +153,29 @@ sub new
 		}
 		chomp($value);
 	} else {
-		open(F, ">$file") or croak "Can't create $file: $!";
 		if($date) {
 			my $ivalue;
 			if($date eq 'gmt') {
 				$magic_value = $MAGIC_GMT . "-$initial\n";
-				print F $magic_value;
+				print $fh $magic_value;
 				$ivalue = strftime('%Y%m%d', gmtime()) . $initial;
-				print F "$ivalue\n";
+				print $fh "$ivalue\n";
 				$gmt = 1;
 			}
 			else {
 				$magic_value = $MAGIC_DATE . "-$initial\n";
-				print F $magic_value;
+				print $fh $magic_value;
 				$ivalue = strftime('%Y%m%d', localtime()) . $initial;
-				print F "$ivalue\n";
+				print $fh "$ivalue\n";
 			}
 			$value = $ivalue;
 		}
 		else {
-			print F $MAGIC;
-			print F "$initial\n";
+			print $fh $MAGIC;
+			print $fh "$initial\n";
 			$value = $initial;
 		}
-		close(F);
+		close($fh);
 	}
 
 	my $s = { file    => $file,  # the filename for the counter
@@ -197,6 +191,32 @@ sub new
 		  };
 #::logDebug("counter object created: " . ::uneval($s));
 	return bless $s;
+}
+
+sub get_initial_fh {
+	my $file = shift;
+
+	my $created;
+	my $fh = gensym();
+
+	( open $fh, "+<$file" or
+		(++$created and open $fh, ">>$file" and open $fh, "+<$file" )
+		) or croak "Can't open $file: $!";
+
+	Vend::Util::lockfile($fh, 1, 1)
+		or croak "Can't lock $file: $!";
+
+	seek $fh, 0, 0;
+
+	local($/) = "\n";
+	my $magic = <$fh>;
+	my $value = <$fh>;
+
+	unless($created) {
+		close $fh;
+		undef $fh;
+	}
+	return ($fh, $magic, $value);
 }
 
 sub inc_value {

@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.16 2004-02-24 20:53:58 mheins Exp $
+# $Id: Session.pm,v 2.17 2004-06-07 03:44:19 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -202,8 +202,12 @@ sub count_ip {
 	mkdir $dir, 0777 unless -d $dir;
 	my $fn = Vend::Util::get_filename($ip, 2, 1, $dir);
 	if(-f $fn) {
-		my $grace = time() - ($Global::Variable->{MV_ROBOT_EXPIRE} || 86400);
-		unlink $fn if -M $fn < $grace;
+		my $grace = $Vend::Cfg->{Limit}{robot_expire} || 1;
+		my $mtime = -M _;
+		if($mtime > $grace) {
+			::logDebug("ip $ip allowed back in due to '$mtime' < '$grace'");
+			unlink $fn;
+		}
 	}
 	return Vend::CounterFile->new($fn)->inc() if $inc;
 	return Vend::CounterFile->new($fn)->value();
@@ -247,7 +251,9 @@ sub new_session {
 		}
 		$name = session_name();
 		unless ($File_sessions) { 
+			lock_session($name);
 			last unless defined $Vend::SessionDBM{$name};
+			unlock_session($name);
 		}
 		else {
 			last unless exists $Vend::SessionDBM{$name};
@@ -319,20 +325,25 @@ sub write_session {
 
 sub unlock_session {
 #::logDebug ("unlock session id=$Vend::SessionID  name=$Vend::SessionName\n");
+	my $name = shift;
+	$name ||= $Vend::SessionName;
 	delete $Vend::SessionDBM{'LOCK_' . $Vend::SessionName}
 		unless $File_sessions;
 }
 
 sub lock_session {
 	return 1 if $File_sessions;
+	my $name = shift;
+	$name ||= $Vend::SessionName;
 #::logDebug ("lock session id=$Vend::SessionID  name=$Vend::SessionName\n");
-	my $lockname = 'LOCK_' . $Vend::SessionName;
+	my $lockname = "LOCK_$name";
 	my ($tried, $locktime, $sleepleft, $pid, $now, $left);
 	$tried = 0;
 
 	LOCKLOOP: {
-		if (defined $Vend::SessionDBM{$lockname}) {
-			($locktime, $pid) = split /:/, $Vend::SessionDBM{$lockname}, 2;
+		my $lv;
+		if (defined ($lv = $Vend::SessionDBM{$lockname}) ) {
+			($locktime, $pid) = split /:/, $lv, 2;
 		}
 		$now = time;
 		if(defined $locktime and $locktime) {
