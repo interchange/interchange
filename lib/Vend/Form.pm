@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.15 2002-02-16 08:17:14 mheins Exp $
+# $Id: Form.pm,v 2.16 2002-06-11 01:15:49 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 @EXPORT = qw (
 	display
@@ -943,10 +943,7 @@ if($opt->{debug}) {
 
 	my $look;
 
-	if($opt->{passed}) {
-		$data = options_to_array($opt->{passed}, $opt);
-	}
-	elsif($look = $opt->{lookup_query}) {
+	if($look = $opt->{lookup_query}) {
 		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 		my $db = Vend::Data::database_exists_ref($tab);
 		$data = $db->query($look)
@@ -981,6 +978,9 @@ if($opt->{debug}) {
 				}
 			};
 		}
+	}
+	elsif($opt->{passed}) {
+		$data = options_to_array($opt->{passed}, $opt);
 	}
 	elsif($opt->{column} and $opt->{table}) {
 		GETDATA: {
