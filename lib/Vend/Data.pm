@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.16 2001-04-04 04:12:15 jon Exp $
+# $Id: Data.pm,v 1.17.2.17 2001-04-09 06:22:49 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -181,6 +181,7 @@ sub product_description {
 
 sub database_field {
     my ($db, $key, $field_name, $foreign) = @_;
+#::logDebug("database_field: " . ::uneval_it(\@_));
     $db = database_exists_ref($db) or return undef;
     return '' unless defined $db->test_column($field_name);
 	$key = $db->foreign($key, $foreign) if $foreign;
@@ -295,11 +296,14 @@ sub set_field {
 
 sub product_field {
     my ($field_name, $code, $base) = @_;
-	return database_field($Vend::OnlyProducts, $field_name, $code)
+#::logDebug("product_field: name=$field_name code=$code base=$base");
+	return database_field($Vend::OnlyProducts, $code, $field_name)
 		if $Vend::OnlyProducts;
+#::logDebug("product_field: onlyproducts=$Vend::OnlyProducts");
 	my ($db);
     $db = product_code_exists_ref($code, $base || undef)
 		or return '';
+#::logDebug("product_field: exists db=$db");
     return "" unless defined $db->test_column($field_name);
     return $db->field($code, $field_name);
 }
@@ -1470,13 +1474,15 @@ CHAIN:
 				}
 				$table = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]
 					if ! $table;
-				$key   = $item->{code} if ! $key;
+				if($key and defined $item->{$key}) {
+					$key = $item->{$key};
+				}
 				$price = database_field(
 						($table || $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]),
-						($key ?  ($item->{$key} || $key) : $item->{code}),
+						($key || $item->{code}),
 						$field
 						);
-#::logDebug("database referenc found table=$table field=$field key=$key|$item->{$key}|$item->{code}");
+#::logDebug("database referenc found table=$table field=$field key=$key|$item->{$key}|$item->{code} price=$price");
 				redo CHAIN;
 			}
 			elsif ($mod =~ s/^[&]//) {
@@ -1613,7 +1619,7 @@ sub item_price {
 
 		$item->{mv_cache_price} = $price
 			if ! $quantity and exists $item->{mv_cache_price};
-#::logDebug("price for item $item->{code}=$price item=" . ::uneval($item)) if $price != 0;
+#::logDebug("price for item $item->{code}=$price item=" . ::uneval_it($item)) if $price != 0;
 		$final += $price;
 	} while ($item = shift @items);
 #::logDebug("#### final price for item $master->{code}=$final item=" . ::uneval($master)) if $master;
