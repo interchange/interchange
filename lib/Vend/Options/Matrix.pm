@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.7 2004-01-08 22:36:31 mheins Exp $
+# $Id: Matrix.pm,v 1.8 2004-07-19 22:24:17 jon Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 =head1 NAME
 
@@ -275,15 +275,13 @@ sub display_options {
 		for(qw/code description price/) {
 			push @rf, ($map->{$_} || $_);
 		}
-		my $ccol = $map->{code} || 'code';
-		my $cval = $vdb->quote("$sku-%");
 		my $lcol = $map->{sku} || 'sku';
 		my $lval = $vdb->quote($sku, $lcol);
 
 		my $vname = $vdb->name();
 
 		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $vname where $lcol = $lval AND $ccol like $cval $rsort";
+		$q .= " FROM $vname WHERE $lcol = $lval $rsort";
 #::logDebug("tag_options matrix query: $q");
 		my $ary = $vdb->query($q); 
 #::logDebug("tag_options matrix ary: " . ::uneval($ary));
