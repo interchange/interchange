@@ -63,7 +63,7 @@ close CONFIG;
 $| = 1;
 
 print "server/unixmode.......";
-if ( system qq{$Config{'perlpath'} blib/script/minivend -q -r -u} ) {
+if ( system qq{$Config{'perlpath'} blib/script/interchange -q -r -u} ) {
 	print "not ok $testnum\n";
 	$failed++;
 }
@@ -186,7 +186,7 @@ EOF
 $testnum++;
 
 print "server/inetmode.......";
-if ( system qq{$Config{'perlpath'} blib/script/minivend -q -r -i} ) {
+if ( system qq{$Config{'perlpath'} blib/script/interchange -q -r -i} ) {
 	print "not ok $testnum\n";
 	$failed++;
 }
@@ -254,7 +254,7 @@ else {
 $testnum++;
 
 print "server/control........";
-if ( system qq{$Config{'perlpath'} blib/script/minivend -q -stop} ) {
+if ( system qq{$Config{'perlpath'} blib/script/interchange -q -stop} ) {
 	print "not ok $testnum\n";
 	$failed++;
 }
