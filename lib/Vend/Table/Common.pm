@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.11 2002-02-04 01:31:17 mheins Exp $
+# $Id: Common.pm,v 2.12 2002-02-04 08:25:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -715,6 +715,7 @@ eval {
 	
 	@na = @{$spec->{rf}}     if $spec->{rf};
 
+	$spec->{ml} = $opt->{ml} || '1000';
 	$spec->{fn} = [$s->columns];
 
 	my $sub;

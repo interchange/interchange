@@ -8,7 +8,7 @@
 
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
-
+[tmp is_super][if-mm super]1[/if-mm][/tmp]
 [calc]
 	delete $CGI->{list};
 	delete $CGI->{html};
@@ -137,8 +137,7 @@ Base table <select name=mv_data_table>
 		table="[cgi mv_data_table]"
 		st=db
 		row-count="[cgi row-count]"
-		html="[cgi html]" 
-		list="[cgi list]" 
+		html=1
 		sql=`$sql`
 		ml="[cgi limit]"
 	]
@@ -148,8 +147,7 @@ Base table <select name=mv_data_table>
 		table="[cgi mv_data_table]"
 		row-count="[cgi row-count]"
 		st=db
-		html="[cgi html]" 
-		list="[cgi list]" 
+		list=1
 		ml="[cgi limit]"
 		sql=`$sql`
 	]

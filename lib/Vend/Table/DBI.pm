@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.12 2002-02-04 01:31:17 mheins Exp $
+# $Id: DBI.pm,v 2.13 2002-02-04 08:25:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 use strict;
 
@@ -1738,10 +1738,7 @@ eval {
 		map { $_ = $fh{$_} } @{$spec->{$_}};
 	}
 
-	if($update) {
-		die "DBI tables must be updated natively.\n";
-	}
-	elsif ($opt->{hashref}) {
+	if ($opt->{hashref}) {
 		$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = $search->hash($spec);
 	}
 	else {
