@@ -65,8 +65,6 @@ Core
 * Let Vend::Util::unhexify mangle only representations of hex chars instead
   of any three-letter-string starting with the percent sign.
 
-* Add stub for sort_each method to Shadow database.
-
 * Add database filename in question to the fatal error in the
   Vend::Table::Common::column_index method.
 
@@ -315,13 +313,6 @@ Debian
 * Check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are 
   executable in interchange-ui maintainer scripts.
 
-Miscellaneous
--------------
-
-* Fix a bug that prevented the cgi-bin link program from being associated 
-  with the chosen owner and group. The patch was created and tested by Carl
-  Bailey.
-
 UserTags
 --------
 
@@ -336,6 +327,22 @@ Jobs
 ----
 
 * update_locales job added.
+
+Shadow Database
+---------------
+
+* Add stub for sort_each method.
+
+* column_exists method calls now method of underlying class instead of a
+  lookup in the database structure which didn't work properly
+
+Miscellaneous
+-------------
+
+* Fix a bug that prevented the cgi-bin link program from being associated 
+  with the chosen owner and group. The patch was created and tested by Carl
+  Bailey.
+
 
 ------------------------------------------------------------------------------
 
