@@ -34,6 +34,9 @@ Interchange 4.6.2
 * Fix problem with ProductFiles resolution in loops. The Vend::OnlyProducts
   setting was confused after the on-the-fly update.
 
+* Convert '[' characters to &#91; in [value-extended] to prevent reparsing
+  of Interchange tags from user data.
+
 * RPM only: Fixed logrotate.d file to prevent cascading log rotation like
   error.log.1.gz.1.gz etc. Thanks to Murray Gibbins for diagnosis & fix.
 
