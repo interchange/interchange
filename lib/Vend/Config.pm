@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.31 2001-03-22 14:56:30 heins Exp $
+# $Id: Config.pm,v 1.25.2.32 2001-03-22 19:38:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.31 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.32 $, 10);
 
 my %CDname;
 
@@ -751,18 +751,18 @@ CONFIGLOOP:
 	while(<CONFIG>) {
 		if($allcfg) {
 			print ALLCFG $_
-				unless /^#?include\s+/;
+				unless /^#?include\s+/i;
 		}
 		chomp;			# zap trailing newline,
 		# Look for meta commands (ifdef, endif, include) after '#'?
 		my $leadinghash = $C->{ConfigParseComments} ? '#?' : '';
-		if(/^\s*${leadinghash}endif\s*$/) {
+		if(/^\s*${leadinghash}endif\s*$/i) {
 #print "found $_\n";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^\s*${leadinghash}if(n?)def\s+(.*)/) {
+		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
 			if(defined $ifdef) {
 				config_error("Can't overlap ifdef at line $. of $configfile");
 			}
@@ -774,7 +774,7 @@ CONFIGLOOP:
 		if(defined $ifdef) {
 			next unless $ifdef;
 		}
-		if(/^\s*${leadinghash}include\s+(.+)/) {
+		if(/^\s*${leadinghash}include\s+(.+)/i) {
 #print "found $_\n";
 			my $spec = $1;
 			$spec = substitute_variable($spec) if $C->{ParseVariables};
@@ -1113,13 +1113,13 @@ GLOBLOOP:
 	while(<GLOBAL>) {
 		# Look for meta commands (ifdef, endif, include) after '#'?
 		my $leadinghash = $Global::ConfigParseComments ? '#?' : '';
-		if(/^\s*${leadinghash}endif\s*$/) {
+		if(/^\s*${leadinghash}endif\s*$/i) {
 #print "found $_";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^\s*${leadinghash}if(n?)def\s+(.*)/) {
+		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
 #print "found $_";
 			if(defined $ifdef) {
 				config_error("Can't overlap ifdef at line $. of $configfile");
