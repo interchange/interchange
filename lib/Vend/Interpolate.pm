@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.62 2001-05-28 18:39:54 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.63 2001-05-29 13:50:35 bill Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.62 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.63 $, 10);
 
 @EXPORT = qw (
 
@@ -676,11 +676,15 @@ sub try {
 		$Vend::Session->{try}{$label} .= $@;
 	}
 	if ($opt->{status}) {
-		return $@ ? 0 : 1;
+		return ($Vend::Session->{try}{$label}) ? 0 : 1;
 	}
 	elsif ($opt->{hide}) {
 		return '';
 	}
+	elsif ($opt->{clean}) {
+		return ($Vend::Session->{try}{$label}) ? '' : $out;
+	}
+
 	return $out;
 }
 
@@ -690,11 +694,29 @@ sub catch {
 	my $patt;
 	return pull_else($body) 
 		unless $patt = $Vend::Session->{try}{$label};
-	$body =~ m{\[([^\]]*$patt[^\]]*)\](.*)\[/\1\]}s
+
+	unless ( $opt->{exact} ) {
+		#----------------------------------------------------------------
+		# Convert multiple errors to 'or' list and compile it.
+		# Note also the " at (eval ...)" kludge to strip the line numbers
+		$patt =~ s/(?: +at +\(eval .+\).+)?\n\s*/|/g;
+		$patt =~ s/^\s*//;
+		$patt =~ s/\|$//;
+		$patt = qr($patt);
+		#----------------------------------------------------------------
+	}
+
+	#--------------------------------------------------------------------
+	# Note: If more than one error in $patt, this will return only the
+	# first one listed in the catch tag $body.
+	$body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s
 		and return $2;
+	#--------------------------------------------------------------------
+
 	$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
 	return $body;
 }
+
 
 # Returns the text of a configurable database field or a 
 # variable
