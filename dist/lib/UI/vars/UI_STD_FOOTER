@@ -26,7 +26,7 @@ Variable UI_STD_FOOTER  <<EOV
 								<td width="6"><img src="bg.gif"></td>
 								<td><img src="icfooter.gif"></td>
 								<td nowrap class="footer">
-									&copy; 2002-2003 Interchange Development Group&nbsp;&nbsp;&nbsp;
+									[version] &copy; 2002-2003 Interchange Development Group&nbsp;&nbsp;&nbsp;
 									<font class="footerb">[msg]Username[/msg]: </font>[data session username]&nbsp;&nbsp;&nbsp;
 									<font class="footerb">[msg]StoreID[/msg]: </font> <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a>&nbsp;&nbsp;&nbsp;
 									  [tag time]%d %B %Y %H:%M:%S[/tag] &nbsp;([var MV_PAGE 1])
