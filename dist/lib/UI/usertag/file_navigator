@@ -1,180 +1,119 @@
 UserTag file-navigator Order mask
 UserTag file-navigator addAttr
 UserTag file-navigator Routine <<EOR
-my $expand;
-my $in_mask;
-my $ex_mask;
-my %exclude;
-my %include;
-my $ftmpl;
-my $ftmpl_ed;
-my $dtmpl;
-my $count;
-my $first;
-my $dud;
-
-sub fn_ref_tree {
-		my $dn = shift;
-		return $dn if -f $dn;
-		my @outf;
-		my @outd;
-		my (@files) = glob("$dn/*");
-		for(@files) {
-			next if m:/CVS$: ;
-			if (-f $_) {
-				push (@outf, $_);
-				next;
-			}
-			push @outd, fn_ref_tree($_);
-		}
-		push @outf, @outd;
-		return [$dn, \@outf];
-}
-
-sub fn_expand_tree {
-	my $fn = shift;
-	return unless $fn;
-	my $space = 5 + 10 * $count;
-	if (! ref($fn) ) {
-		if (-f $fn) {
-			if($in_mask) {
-				$fn =~ /.*\.(.*)/;
-				return unless $include{$1};
-			}
-			if($ex_mask) {
-				$fn =~ /.*\.(.*)/;
-				return if $exclude{$1};
-			}
-		}
-		my $name = $fn;
-		$name =~ s:.*/::;
-		my $tmpl = $fn =~ m{^pages/} ? $ftmpl_ed : $ftmpl;
-#::logDebug("space=$space");
-		my $return = sprintf($tmpl, $space, $name);
-		#$fn =~ s:/:%2f:g;
-		$return =~ s/~FN~/$fn/g;
-		return $return;
-	}
-	my($dn, $ary) = @$fn;
-	my $img = $expand->{$dn} ? 'folder.open.gif' : 'folder.gif';
-	my $out = sprintf($dtmpl, $space, $dn, $img, $dn);
-	return $out unless $expand->{$dn};
-	for(@$ary) {
-		$count++;
-		$out .= fn_expand_tree($_);
-		$count--;
-	}
-	return $out . '<BR>';
-}
-
 sub {
 	my ($dir_mask, $opt) = @_;
 
+
 #::logDebug("file-nav dir_mask: $dir_mask opt: " . ::uneval($opt));
-    $dir_mask = $Vend::Cfg->{Variable}{UI_ALL_FILES}
-				|| 'catalog.cfg error.log etc pages products'
-			if ! $dir_mask;
-	my @files;
-	if($dir_mask eq '*') {
-#::logDebug("globbing all");
-		@files = grep $_ ne 'CVS', glob('*');
-#::logDebug("files are @files");
-	}
-	else {
-#::logDebug("files are $dir_mask");
-		@files = split /\s+/, $dir_mask;
-	}
+    $dir_mask = '*';
 
-	my $ec = $Scratch->{exp_count}++;
-
-	if($opt->{include_mask}) {
-		my @list = split /\s+/, $opt->{include_mask};
-		@include{@list} = @list;
-		$in_mask = 1;
-	}
-
-	if($opt->{exclude_mask}) {
-		my @list = split /\s+/, $opt->{exclude_mask};
-		@exclude{@list} = @list;
-		$exclude{""} = 1;
-		$ex_mask = 1;
-	}
-	
-	my $base_url
-				= $Vend::Cfg->{VendURL}
+	my $base_admin = ( $::Variable->{UI_BASE} || 'admin');
+	my $base_url = $Vend::Cfg->{VendURL}
 				. '/'
-				. ( $Vend::Cfg->{Variable}{UI_BASE} || 'admin');
-	my $this_page = $Global::Variable->{MV_PAGE};
-	my $this = Vend::Interpolate::tag_area($this_page);
-	if($this =~ /\?(.+)/) {
-		$this .= '&';
+				. $base_admin;
+	if($CGI::values{action} eq 'chdir') {
+		my $newdir = $CGI::values{dir} || '.';
+		if(Vend::Util::file_name_is_absolute($newdir) or $newdir =~ m{^\.\.|\.\./}) {
+			$Scratch->{ui_error} = 'Security violation';
+			$Tag->bounce("$base_admin/error");
+			return undef;
+		}
+		if(! -d $newdir) {
+			$Scratch->{ui_error} = "$newdir not a directory";
+			$Tag->bounce("$base_admin/error");
+		}
+		$Vend::Session->{ui_cwd} = $newdir || '.';
 	}
-	else {
-		$this .= '?';
-	}
+	my $curdir = $Vend::Session->{ui_cwd} || '.';
+	$curdir =~ s:/+$::;
+	my @files;
 
-	my %dir = ( '' => [] );
-	my @dir;
-
-	if(! $Vend::Session->{ui_pg_exp}) {
-		my %open;
-		if($opt->{start_open}) {
-			my @open = split /\s+/, $opt->{start_open};
-#::logDebug("found start_open, open=@open");
-			for(@open) {
-				$open{$_} = 1;
-			}
+	if($curdir eq '.') {
+		if($dir_mask eq '*') {
+			@files = grep $_ ne 'CVS', glob('*');
 		}
 		else {
-#::logDebug("no start_open, opts=" . ::uneval($opt));
+			@files = split /\s+/, $dir_mask;
 		}
-		$Vend::Session->{ui_pg_exp} = { %open };
 	}
-	$expand = $Vend::Session->{ui_pg_exp};
+	else {
+		@files = grep $_ !~ m{/CVS$}, glob("$curdir/*");
+	}
 
-	if($Vend::Session->{arg}) {
-#::logDebug("expanding $Vend::Session->{arg}");
-		$expand->{$Vend::Session->{arg}} = ! $expand->{$Vend::Session->{arg}};
-	}
+	my $this_page = $Global::Variable->{MV_PAGE};
+	my $this = Vend::Interpolate::tag_area($this_page);
+	$this =~ s/\?(.*)//;
 
 	my $imgpath = $::Variable->{UI_IMG} || $Global::Variable->{UI_IMG} || '';
 	$imgpath .= "admin";
 
-	my $up_img = qq{<img src="$imgpath/up.gif" border=0 height=11 width=10 alt="upload ~FN~">};
-	my $dn_img = qq{<img src="$imgpath/down.gif" border=0 height=11 width=10 alt="download ~FN~">};
-	my $vw_img = qq{<img src="$imgpath/index.gif" border=0 height=11 width=10 alt="view ~FN~">};
-	my $ed_img = qq{<img src="$imgpath/layout.gif" border=0 height=11 width=10 alt="edit ~FN~">};
-	my $dir_img = qq{<img src="$imgpath/folder.gif" border=0 height=11 width=10 alt="toggle ~FN~">};
-	$ftmpl = <<EOF;
-<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A><A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;%s<BR>
+	my $up_img = qq{<img src="$imgpath/up.gif" align=center border=0 height=22 width=20 title="upload ~FN~">};
+	my $dn_img = qq{<img src="$imgpath/down.gif" align=center border=0 height=22 width=20 title="download ~FN~">};
+	my $vw_img = qq{<img src="$imgpath/index.gif" align=center border=0 height=22 width=20 title="view ~FN~">};
+	my $ed_img = qq{<img src="$imgpath/layout.gif" align=center border=0 height=22 width=20 title="edit ~FN~">};
+	my $dir_img = qq{<img src="$imgpath/folder.gif" align=center border=0 height=22 width=20 title="toggle ~FN~">};
+
+	my $ftmpl = <<EOF;
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=1">$vw_img&nbsp;%s</A><BR>
 EOF
 
+	my $utmpl = <<EOF;
+<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img&nbsp;%s</A><BR>
+EOF
+
+	my $ftmpl_ed;
 	if($opt->{edit_only}) {
 		$ftmpl_ed = <<EOF;
-<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img&nbsp;%s</A><BR>
+<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=1">$ed_img&nbsp;%s</A><BR>
 EOF
 	}
 	else {
 		$ftmpl_ed = <<EOF;
-<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A>&nbsp;<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img</A>&nbsp;%s<BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=1">$ed_img&nbsp;%s</A><BR>
 EOF
 	}
 
-	$dtmpl = <<EOF;
-<IMG SRC="$imgpath/bg.gif" HEIGHT=1 HSPACE=%d><A HREF="${this}mv_arg=%s&mv_no_cache=$ec"><img src="$imgpath/%s" ALIGN=textmiddle border=0 HEIGHT=16 WIDTH=15>%s</A><BR>
+	my $dtmpl = <<EOF;
+<A HREF="$Vend::Cfg->{VendURL}/$this_page?action=chdir&dir=~FN~">$dir_img&nbsp;%s</A><BR>
 EOF
 
 	my @out;
 	my $out;
+	
+	my @dir;
+	my @plain;
 
 	for(@files) {
-		push @out, fn_ref_tree($_);
+		my $fn = $_;
+		$fn =~ s:.*/::;
+		my $fe = $_;
+		$fe =~ s!([^-\w./:,])!sprintf('%%%02x', ord($1) )!eg;
+		if(-d $_) {
+			push @dir, [$fe, $fn, $dtmpl];
+		}
+		elsif (/\.html?$/) {
+			push @plain, [$fe, $fn, $ftmpl_ed];
+		}
+		else {
+			push @plain, [$fe, $fn, $ftmpl];
+		}
 	}
 
-	for (@out) {
-		next unless $_;
-		$count = 0;
-		$out .= fn_expand_tree($_);
+	my $nd = $curdir;
+	if($nd ne '.') {
+		$nd =~ s:/[^/]*$::
+		  or $nd = '.';
+		my $msg = $nd eq '.' ? "(up to base directory)" : "(up to $nd)";
+		unshift @dir, [ $nd, $msg, $dtmpl ];
+	}
+
+	unshift @dir, [ "$curdir/", '(new file)', $utmpl ];
+
+	for (@dir, @plain) {
+		$_->[2] = sprintf($_->[2], $_->[1]);
+		$_->[2] =~ s/~FN~/$_->[0]/g;
+		$out .= $_->[2];
 	}
 
 	return $out;
