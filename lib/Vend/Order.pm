@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.9 2000-09-14 08:08:27 heins Exp $
+# $Id: Order.pm,v 1.10 2000-09-20 07:52:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1119,7 +1119,7 @@ sub _yes {
 }
 
 sub _postcode {
-	_zip(@_) or _ca_postcode(@_)
+	(_zip(@_))[0] or (_ca_postcode(@_))[0]
 		and return (1, $_[1], '');
 	return (undef, $var, 'not a US or Canada postal/zip code');
 }
