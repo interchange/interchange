@@ -1,4 +1,4 @@
-[set page_title]Set Up Cybercash Information[/set]
+[set page_title]Payment Preferences : CyberCash[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.cybercash[/set]
 @_UI_STD_HEAD_@
@@ -32,18 +32,18 @@ Enter the values used to enable payment processing through CyberCash.
 	ui_display_only="cybermode cyberid cyberkey"
 	ui_hide_key="1"
 
-	label.cybermode="Cybercash mode"
+	label.cybermode="CyberCash mode"
 	help.cybermode="This normally doesn't matter in CyberCash 3.x -- used to enable"
 	widget.cybermode=select
 	passed.cybermode="mauthonly=Auth only, mauthcapture=Settle immediately,=Disabled"
 
-	label.cyberfile="Cybercash configuration file"
+	label.cyberfile="CyberCash configuration file"
 	help.cyberfile="The default should be OK if you insert the values below..."
 	widget.cyberfile=imagehelper
 	filter.cyberfile=nullselect
 	default.cyberfile=etc/merchant_conf
 
-	label.cyberid="Cybercash ID"
+	label.cyberid="CyberCash ID"
 	help.cyberid=`
 		my $comp = $Values->{company};
 		$comp =~ s/\W//g;
@@ -54,8 +54,8 @@ Enter the values used to enable payment processing through CyberCash.
 	`
 	widget.cyberid=text_30
 
-	label.cyberkey="Cybercash Merchant Key"
-	help.cyberkey="Supplied by Cybercash, a 57-character random string"
+	label.cyberkey="CyberCash Merchant Key"
+	help.cyberkey="Supplied by CyberCash, a 57-character random string"
 	widget.cyberkey=text_57
 ]
 

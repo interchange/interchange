@@ -1,21 +1,15 @@
-[set page_title]Set Up Security[/set]
+[set page_title]Security Preferences[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.security[/set]
 @_UI_STD_HEAD_@
 
 <table><tr><td width=500>
-Set up password protection for your e-commerce site. Enter a username
-and password to be used by the Administrator and Shop user. The
-<b>Administrator user</b> has access to all site information and
-oversees the <b>Shop user</b>. The <b>Shop user</b> has limited access
-as determined by the <b>Administrator user</b>. Click <b>Use SSL Web Server</b>
-if you have your SSL web server configured. This is required
-for launch. The required fields are displayed in <b>Bold</b>.
+Set up password protection for your e-commerce site. 
 </td></tr></table>
 
 [table-editor 
 	table=variable
-	left_width=120
+	left_width=250
 	table_width=500
 	wizard=1
 	defaults=1
@@ -40,21 +34,21 @@ for launch. The required fields are displayed in <b>Bold</b>.
 	ui_display_only="paygate adminuser adminpass shopuser shoppass enablesecure"
 	ui_hide_key=1
 
-	label.adminuser="Administrator user name"
+	label.adminuser="Site Administrator Name"
 	help.adminuser="User name for superuser (technical administrator), which is probably you."
 	widget.adminuser=text_15
 	default.adminuser=admin
 
-	label.adminpass="Administrator password"
+	label.adminpass="Site Administrator Password"
 	help.adminpass="Password for superuser. Do not use a system password here."
 	widget.adminpass=password_15
 
 	check.shopuser=mandatory
-	label.shopuser="Shop user name"
+	label.shopuser="Site User Name"
 	help.shopuser="User name for the first shop user, a person who will make changes to products, pages, etc."
 	widget.shopuser=text_15
 
-	label.shoppass="Shop user password"
+	label.shoppass="Site User Password"
 	help.shoppass="Password for shop user. Do not use a system password here."
 	widget.shoppass=password_15
 

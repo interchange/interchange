@@ -62,7 +62,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0082	Wizard	18		launch			admin/wizard/step_launch		Launch	1			general					
 0020	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data									
 0029	Content	03					admin/file_transfer		File Transfer									
-0071	Wizard	05		grouppolicy			admin/wizard/step_grouppolicy		About Your Policies	1			grouppolicy					
+0071	Wizard	05		grouppolicy			admin/wizard/step_grouppolicy		About Your Preferences	1			grouppolicy					
 0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
 0069	Wizard	03	1	company			admin/wizard/step_company		Company Information	1			compinfo					
 0007	Top	07		Reporting		stats	admin/orderstats		Reporting			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	

@@ -1,4 +1,4 @@
-[set page_title]Shipping Configuration[/set]
+[set page_title]Shipping Preferences - UPS[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.ups[/set]
 @_UI_STD_HEAD_@
@@ -9,12 +9,9 @@
 	return;
 [/perl]
 
-<table><tr><td width=500>
-Select the UPS shipping options you want to offer. In the <b>Handling
-charge</b> field, enter the amount beyond the cost of shipping you want to
-charge the customer for delivery. Enter this value as a decimal amount. For
-example, enter 3.00 for a $3.00 handling charge.
-</td></tr></table>
+<p>
+Select the UPS shipping options you want to offer. 
+<p>
 
 [seti ups_modes][available-www-shipping ups][/seti]
 [calc]

@@ -1,14 +1,15 @@
-[set page_title]Company "Index" page[/set]
+[set page_title]Index Page[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.indexpage[/set]
 @_UI_STD_HEAD_@
 
-Enter the title and content to be displayed on your <b>Index</b> page. The
-<b>Content</b> section contains sample text formatted in HTML. You can
-choose to manipulate this text or enter new text.
+Enter the title and content to be displayed on your index page.  The index page is the first page of your site.  The
+<b>Content</b> section already contains sample text formatted in HTML. You 
+can manipulate this text or enter new text.
 <p>
 
 [tmp default_indextext]
+<p>
 <table width="90%">
 <tr>
   <td align="left">
@@ -19,10 +20,11 @@ choose to manipulate this text or enter new text.
       </large>
     </p>
     <p>
-      This foundation site is intended to give you the start you need
-      to design your own Interchange site. Just replace the stock
-      graphics, products, and categories we have here with your own,
-      and you're good to go.
+      This foundation site is intended to give you the
+      start you need to design your own Interchange 
+      site. Just replace the stock graphics, products, 
+      and categories we have here with your own, and 
+      you're good to go.
     </p>
     <p>
       Thank you for visiting.
@@ -30,6 +32,7 @@ choose to manipulate this text or enter new text.
   </td>
 </tr>
 </table>
+</p>
 [/tmp]
 
 [table-editor 
@@ -59,7 +62,7 @@ choose to manipulate this text or enter new text.
 	ui_display_only="indextitle indextext"
 	ui_hide_key=1
 
-	label.indextitle="Page &lt;TITLE&gt;"
+	label.indextitle="Page Title"
 	help.indextitle="Title for the page (top bar)"
 	widget.indextitle=text
 	default.indextitle=`'Welcome' . ($Values->{company} ? ' to ' . $Values->{company} : '') . "!"`

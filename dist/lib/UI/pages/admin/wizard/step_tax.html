@@ -1,9 +1,15 @@
-[set page_title]Tax Settings[/set]
+[set page_title]Tax Information[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.tax[/set]
 @_UI_STD_HEAD_@
 
 [calc] undef $Variable->{UI_META_LINK}; [/calc]
+
+<p>
+
+Enter your tax calculation information.  This information is used to determine the amount of tax to be charged.
+
+<p> 
 
 [table-editor
 	table=variable
@@ -48,37 +54,5 @@
 	filter.taxship=checkbox 
 	passed.taxship="1=&nbsp;&nbsp;&nbsp;&nbsp;"
 ] 
-
-<table><tr><td width=500>
-<P>
-Enter your tax calculation information. This tax calculation information is
-used to determine the amount of tax to be charged. In the <b>Tax
-location</b> field, enter the state in which you are selling. In the <b>Tax
-rate</b> field, enter the tax percentage used in that state. This value
-should be entered as a decimal. For example, 5% sales tax would be entered
-as .05. Check the <b>Tax Shipping</b> box if shipping cost should be
-included in tax calculation. More complex tax calculations can be configured
-using the Interchange Administration Tool. The required fields are displayed
-in <b>Bold</b>.
-<p>
-Sales tax settings allows you to specify what locations (<STRONG>TAX
-LOCATION</STRONG>) you are required to collect sales tax from. For
-example, if your company is located in California, you may be required to
-collect sales tax of 7.25% (<STRONG>TAX RATE</STRONG>) for certain items
-that you sell to customers in California. Interchange will determine at
-checkout, where your customer is located. It does this by checking the
-"ship to" information that they fill in. If the customer is located in
-a <STRONG>TAX LOCATION</STRONG> that you have specified, the amount of
-the order is multiplied by the <STRONG>TAX RATE</STRONG> that you have
-specified and is added to the&nbsp;cost of the products ordered. Some
-companies are required to collect sales tax in more than one state.
-</P>
-<P>
-Once your catalog is installed, you will be able to easily add more
-locations using the Interchange administration tool. If you are not
-required to collect sales tax (please refer to the appropriate friendly,
-helpful taxing authority for your area), leave these fields blank.
-</p>   
-</td></tr></table>
 
 @_UI_STD_FOOTER_@
