@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Parser.pm,v 2.1 2001-10-19 00:32:37 mheins Exp $
 #
 # Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 
 sub new
@@ -96,11 +96,11 @@ sub parse
 		return $self;
 	}
 	$$buf .= $_[0];
-	$Find_tag	= $Vend::Cfg->{Pragma}{no_html_parse}
+	$Find_tag	= $::Pragma->{no_html_parse}
 				?  qr{^([^[]+)}
 				:  qr{^([^[<]+)}
 				;
-#::logDebug("no_html_parse=$Vend::Cfg->{Pragma}{no_html_parse} Find_tag=$Find_tag");
+#::logDebug("no_html_parse=$::Pragma->{no_html_parse} Find_tag=$Find_tag");
 
 	my $eaten;
 	# Parse html text in $$buf.  The strategy is to remove complete

@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Server.pm,v 2.1 2001-10-19 00:32:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -411,7 +411,7 @@ sub respond {
 	}
 
 	$$body =~ s/^\s+//
-		if ! $Vend::ResponseMade and $Vend::Cfg->{Pragma}{strip_white};
+		if ! $Vend::ResponseMade and $::Pragma->{strip_white};
 
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"

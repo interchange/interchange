@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.22 2001-10-18 16:31:49 mheins Exp $
+# $Id: Interpolate.pm,v 2.23 2001-10-19 00:32:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 @EXPORT = qw (
 
@@ -458,7 +458,7 @@ sub comment_out {
 sub substitute_image {
 	my ($text) = @_;
 
-	unless ( $Vend::Cfg->{Pragma}{no_image_rewrite} ) {
+	unless ( $::Pragma->{no_image_rewrite} ) {
 		my $dir = $CGI::secure											?
 			($Vend::Cfg->{ImageDirSecure} || $Vend::Cfg->{ImageDir})	:
 			$Vend::Cfg->{ImageDir};
@@ -469,6 +469,21 @@ sub substitute_image {
 	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
 	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
+						$1 . $dir . $2#ige;
+		}
+	}
+
+	if ( $::Pragma->{path_adjust} ) {
+		my $dir = $Vend::Cfg->{StaticPath};
+
+		if ($dir) {
+			$$text =~ s#(<a\s+[^>]*?href=")(/[^"]+)#
+						$1 . $dir . $2#ige;
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(/[^"]*)#
+						$1 . $dir . $2#ige;
+	        $$text =~ s#(<body\s+[^>]*?background=")(/[^"]+)#
+						$1 . $dir . $2#ige;
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(/[^"]+)#
 						$1 . $dir . $2#ige;
 		}
 	}
@@ -551,7 +566,7 @@ sub dynamic_var {
 			and defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
 
 	VARDB: {
-		last VARDB if $Vend::Cfg->{Pragma}{dynamic_variables_file_only};
+		last VARDB if $::Pragma->{dynamic_variables_file_only};
 		last VARDB unless $Vend::Cfg->{VariableDatabase};
 		if($Vend::VarDatabase) {
 			last VARDB unless $Vend::VarDatabase->record_exists($varname);
@@ -575,11 +590,11 @@ sub vars_and_comments {
 
 	# Set whole-page pragmas from [pragma] tags
 	1 while $$html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/
-		$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
+		$::Pragma->{$1} = (length($2) ? $2 : 1), ''/ige;
 
 	# Substitute in Variable values
 	$$html =~ s/$Gvar/$Global::Variable->{$1}/g;
-	if($Vend::Cfg->{Pragma}{dynamic_variables}) {
+	if($::Pragma->{dynamic_variables}) {
 		$$html =~ s/$Evar/dynamic_var($1) || $Global::Variable->{$1}/ge
 			and
 		$$html =~ s/$Evar/dynamic_var($1) || $Global::Variable->{$1}/ge;
@@ -1291,7 +1306,7 @@ sub conditional {
 				if defined $comp;
 	}
 	elsif($base eq 'pragma') {
-		$op =	qq%$Vend::Cfg->{Pragma}{$term}%;
+		$op =	qq%$::Pragma->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
@@ -2608,7 +2623,7 @@ sub tag_perl {
 }
 
 sub ed {
-	return $_[0] if $Safe_data or $Vend::Cfg->{Pragma}{safe_data};
+	return $_[0] if $Safe_data or $::Pragma->{safe_data};
 	$_[0] =~ s/\[/&#91;/g;
 	return $_[0];
 }
@@ -2637,7 +2652,7 @@ sub pragma {
 		$value = $text;
 	}
 
-	$Vend::Cfg->{Pragma}{$pragma} = $value;
+	$::Pragma->{$pragma} = $value;
 	if($pragma eq 'no_html_parse') {
 		$Vend::Parse::find_tag	= $value
 									?  qr{^([^[]+)}

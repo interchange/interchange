@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.12 2001-10-18 16:31:49 mheins Exp $
+# $Id: interchange.PL,v 2.13 2001-10-19 00:32:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1545,6 +1545,7 @@ sub config_named_catalog {
 	eval {
 		$Vend::Cfg = $c;	
 		$::Variable = $Vend::Cfg->{Variable};
+		$::Pragma   = $Vend::Cfg->{Pragma};
 		Vend::Data::read_salestax();
 		Vend::Data::read_shipping();
 		open_database(1);
