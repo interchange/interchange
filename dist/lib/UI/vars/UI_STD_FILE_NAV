@@ -14,7 +14,7 @@ Variable UI_STD_FILE_NAV <<EONav
 				<SMALL>
 				<IMG SRC="@_UI_IMG_@admin/index.gif" HEIGHT=11 WIDTH=10> view<BR>
 				<IMG SRC="@_UI_IMG_@admin/down.gif" HEIGHT=11 WIDTH=10> download<BR>
-				<IMG SRC="@_UI_IMG_@admin/up.gif" HEIGHT=11 WIDTH=10> upload<BR>
+				<IMG SRC="@_UI_IMG_@admin/up.gif" HEIGHT=11 WIDTH=10> upload [if session arg]<a href="[area href="__UI_BASE__/upload_file" arg="[data session arg]/" form="ui_return_to=[var MV_PAGE 1]"]">new file to [data session arg]</a>[else](select directory to upload new file)[/else][/if]<BR>
 				<IMG SRC="@_UI_IMG_@admin/layout.gif" HEIGHT=11 WIDTH=10> edit (if applicable)
 				</SMALL>
 			</td>
