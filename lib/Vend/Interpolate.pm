@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.3 2000-11-30 06:06:29 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.4 2000-12-02 20:06:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.4 $, 10);
 
 @EXPORT = qw (
 
@@ -2750,7 +2750,7 @@ sub escape_scan {
 	}
 
 	if($scan =~ /^\s*(?:sq\s*=\s*)?select\s+/im) {
-		$scan = Vend::Scan::sql_statement($scan, $ref || $::Scratch);
+		$scan = Vend::Scan::sql_statement($scan, $ref || \%CGI::values);
 	}
 
 	return join '/', 'scan', escape_mv('/', $scan);
@@ -5055,7 +5055,9 @@ sub tag_error {
 	return !(not $found_error)
 		unless $opt->{std_label} || $text || $opt->{show_error};
 	if($opt->{std_label}) {
-		if(defined $::Variable->{MV_ERROR_STD_LABEL}) {
+		if($text) {
+		}
+		elsif(defined $::Variable->{MV_ERROR_STD_LABEL}) {
 			$text = $::Variable->{MV_ERROR_STD_LABEL};
 		}
 		else {
