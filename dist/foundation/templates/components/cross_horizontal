@@ -107,7 +107,9 @@ random:
               </td>
 	    </tr>
 	    <tr> 
-	      <td align="left">Our Price: <B>[loop-price]</B></td>
+	      <td align="left">
+		Our Price: <B>[loop-price]</B>
+	      </td>
 	    </tr>
 	    </table>
 	  </td>
