@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.22 2002-02-05 20:57:04 mheins Exp $
+# $Id: interchange.PL,v 2.23 2002-02-07 02:15:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -645,6 +645,12 @@ sub update_data {
 
 	while (($key, $value) = each %CGI::values) {
 		next unless defined $data{$key};
+		if($CGI::values{"mv_data_prep_$key"}) {
+			$value = Vend::Interpolate::filter_value(
+						 $CGI::values{"mv_data_prep_$key"},
+						 $value
+						 );
+		}
 		$count = (@{$data{$key}} = split /\0/, $value, -1);
 		$max = $count, $maxname = $key if $count > $max;
 		$min = $count, $minname = $key if $count < $min;
@@ -835,7 +841,7 @@ sub update_data {
 # LEGACY
 			HTML::Entities::decode($value) if $decode;
 # END LEGACY
-			if(defined $CGI::values{"mv_data_filter_$_"}) {
+			if($CGI::values{"mv_data_filter_$_"}) {
 				$value = Vend::Interpolate::filter_value(
 							 $CGI::values{"mv_data_filter_$_"},
 							 $value,
@@ -1835,7 +1841,7 @@ EOF
 			unless $Vend::Cfg->{Static};
 	}
 	$::Variable = $Vend::Cfg->{Variable};
-	$::Pragma   = $Vend::Cfg->{Pragma};
+	$::Pragma   = { %{ $Vend::Cfg->{Pragma} } };
 
 	if (defined $Global::SelectorAlias{$CGI::script_name}
 		and ! defined $Vend::InternalHTTP                 )
