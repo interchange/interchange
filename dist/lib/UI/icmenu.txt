@@ -49,7 +49,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0048	Merchandising	02					admin/affiliates		Affiliates					
 0049	Merchandising	03					admin/build_related		Generate "others who ..."					
 0050	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&item_id=new&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate					
-0051	None	1		!nevairbe					<font size="-1"><b>Welcome to Akopia Interchange</b></font>					
+0051	None	1		!nevairbe					<font size="-1"><b>Welcome to Interchange</b></font>					
 0052	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders					
 0053	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders					
 0054	Orders	03					admin/entry		Enter Order					
