@@ -51,115 +51,54 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
-[tag flag write]transactions[/tag]
-[perl tables=transactions]
-	delete $Scratch->{ui_location};
-	my $db = $Db{transactions};
-	if(! $db) {
-		$Scratch->{ui_error} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
-		$Scratch->{ui_location} = $Tag->area("__UI_BASE__/error");
-		return;
-	}
+[include include/order_delete_archive]
 
-	my ($value, $action_col);
-	if($CGI->{archiveorder}) {
-		$value = 1;
-		$action_col = 'archived';
-	}
-	elsif($CGI->{unarchiveorder}) {
-		$value = 0;
-		$action_col = 'archived';
-	}
-	elsif($CGI->{deleteorder}) {
-		$value = 1;
-		$action_col = 'deleted';
-	}
-	elsif($CGI->{vieworder} and ! $CGI->{viewnext}) {
-		$CGI->{order} =~ s/^\0+//;
-		$CGI->{order} =~ s/\0+$//;
-		$Scratch->{ui_location} = $Tag->area('__UI_BASE__/order_view', $CGI->{order});
-	}
-	elsif($CGI->{xload}) {
-		$Scratch->{ui_location} = $Tag->area('__UI_BASE__/dbdownload');
-	}
-	else {
-		$CGI->{order} =~ s/^\0+//;
-		$CGI->{order} =~ s/\0.*//s;
-		$Scratch->{start_at} = "sm=$CGI->{order}";
-	}
-
-	if($action_col) {
-		for(grep $_, @{$CGI_array->{order}}) {
-			$db->set_field($_, $action_col, $value);
+[calc]
+	if ($CGI->{mv_like_spec}) {
+		my @f = split /\0/, $CGI->{mv_like_field};
+		my @s = split /\0/, $CGI->{mv_like_spec};
+		my @q = 'ra=yes';
+		my $found;
+		for(my $i = 0; $i < @f; $i++) {
+			next unless length $s[$i];
+			$found++;
+			push @q, "lf=$f[$i]";
+			push @q, "ls=$s[$i]";
 		}
+		if($found) { $CGI->{ui_text_qualification} = join "\n", @q; }
+		else	   { $CGI->{ui_text_qualification} = "" }
 	}
-	if(@errors) {
-		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
-				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
-	}
-	if($CGI->{viewnext}) {
-		my $ordnum = $CGI->{order};
-		$ordnum =~ s/[\0,\s].*//;
-		return if ! $ordnum;
-		$ordnum++;
-		CHECKNEXT: {
-			if (! $db->record_exists($ordnum) ) {
-				undef $ordnum;
-				last CHECKNEXT;
-			}
-			if ($db->field($ordnum, 'deleted') ) {
-				$ordnum++;
-				next CHECKNEXT;
-			}
-			if ($Values->{showarchive} and ! $db->field($ordnum, 'archived') ) {
-				undef $ordnum;
-				last CHECKNEXT;
-			}
-			else {
-				last CHECKNEXT;
-			}
-		}
-		if ($ordnum) {
-			$Scratch->{ui_location} = $Tag->area(
-									{
-										href => '__UI_BASE__/order_view',
-										form => "order=$ordnum",
-									}
-									);
-		}
-		else {
-			$Scratch->{message} = "[L]No next order.[/L]";
-		}
-	}
+	return if $CGI->{ui_text_qualification};
+	return unless $Config->{Database}{transactions}{LARGE};
+	$Scratch->{ui_location} = $Tag->area( {
+									
+									href => '__UI_BASE__/flex_select',
+									form => q(
+										mv_data_table=transactions
+										page_title=Order select
+										page_banner=Order select
+										ui_searchpage=__UI_BASE__/order
+									),
+								},
+								);
 	return;
-[/perl]
-
+[/calc]
 
 [if scratch ui_location]
+[comment]Comes from above include[/comment]
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
+
 [update values]
 
 [if scratch message]
 <BLOCKQUOTE>
-[scratch message]
+[scratchd message]
 </BLOCKQUOTE>
-[set message][/set]
 [/if]
 </font>
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-
-[if scratch ui_message]
-<BLOCKQUOTE>
-	[scratch ui_message]
-	[set ui_message][/set]
-</BLOCKQUOTE>
-<p>
-&nbsp;
-[/if]
 
 <table border=0><tr>
 <td>
@@ -181,16 +120,22 @@
 </td>
 </tr>
 </table>
+
 [if cgi ui_text_qualification]
+[if !cgi mv_like_spec]
 <H4>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H4>
+[/if]
 [/if]
 [search-region more=1 arg="
 		fi=transactions
 		ml=__UI_SZ_LIST_ORDER__
 		md=1
 		st=db
-		[if cgi ui_text_qualification]
+		[if cgi mv_like_spec]
+			[cgi ui_text_qualification]
+		[elsif cgi ui_text_qualification]
 			se=[cgi ui_text_qualification]
+		[/elsif]
 		[else]
 			co=yes
 			sf=archived

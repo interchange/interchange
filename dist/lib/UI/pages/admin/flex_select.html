@@ -150,7 +150,7 @@
 @_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
-<FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
+<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
@@ -420,7 +420,7 @@ EOF
 [set tmp_ncols][/set]
 <!-- tq: [scratch sparams] -->
 <TABLE CELLSPACING=1 cellmargin=3>
-	<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
+	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 	[if cgi ui_meta_view]
 	[return-to]
