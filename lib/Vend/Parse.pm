@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Parse.pm,v 2.0.2.1 2001-08-14 18:38:33 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -1449,7 +1449,7 @@ sub start {
 	
 		if($Vend::restricted) {
 			::logError(
-				"Restricted tag ([%s) attempted during restriction '%s'",
+				"Restricted tag (%s) attempted during restriction '%s'",
 				$origtext,
 				$Vend::restricted,
 				);
