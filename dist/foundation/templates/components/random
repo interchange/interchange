@@ -87,7 +87,7 @@ banner:
 	  </td>
 	</tr>
 
-	[if-loop-field image]
+	[if-loop-field thumb]
 	<tr> 
 	  <td align="center"> 
 	      <a href="[area [loop-code]]">

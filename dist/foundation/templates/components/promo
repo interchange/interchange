@@ -80,7 +80,7 @@ banner:
 		</td>
 	  </tr>
    
-      [if-loop-field image]
+      [if-loop-field thumb]
 	  <tr> 
 		<td align="center" colspan="2"> 
 		  <img src="thumb/[loop-field thumb]" height="80">

@@ -64,11 +64,13 @@ cols:
 				<b>[loop-description]</b>
 			</td>
 		</tr>
+		[if-loop-field thumb]
 		<tr> 
 			<td align="center" colspan="2"> 
 				<img src="thumb/[loop-field thumb]"></td>
 			</td>
 		</tr>
+		[/if-loop-field]
 		<tr> 
 			<td align="center" colspan="2">
 				Our Price: <b>[loop-price]</b>

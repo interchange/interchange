@@ -89,7 +89,7 @@ random:
 	<table border="0">
 	<tr>
     	  
-    [if-loop-field image]
+    [if-loop-field thumb]
       <td>
 	    <a href="[area [loop-code]]">
 	      <img border="0" src="thumb/[loop-field thumb]"></a>

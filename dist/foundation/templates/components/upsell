@@ -55,7 +55,7 @@ random:
 			<td align="center" colspan="2" class="contentbar1">[loop-description]</td>
 		  </tr>
 
-		  [if-loop-field image]
+		  [if-loop-field thumb]
 		  <tr> 
 			<td align="center" colspan="2"> 
 				  <td><img src="thumb/[loop-field thumb]"></td>
