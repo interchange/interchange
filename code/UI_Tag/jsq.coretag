@@ -18,3 +18,29 @@ sub {
 	return join (" +\n", @lines);
 }
 EOR
+
+UserTag jsq Documentation <<EOD
+=head1 jsqn
+
+Returns a string quoted for JavaScript, with variable substitution.
+
+  <script>
+  	var astring = 'just an insert';
+  	var somevar = [jsq] Big long string you don't
+		want to have to quote for JS, and you want to
+		insert the variable $astring.[/jsq];
+  </script>
+
+Generates:
+
+	<script>
+		var astring = 'just an insert';
+		var somevar = " Big long string you don't" +
+	'       want to have to quote for JS, and you want to' +
+	'       insert the variable ' + astring + '.';
+	</script>
+
+Used in the UI dynamic HTML.
+
+EOD
+

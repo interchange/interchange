@@ -34,7 +34,6 @@ sub {
 		$form .= "\n$_=";
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
 	}
-	$href = Vend::Util::escape_chars_url($href);
 	return $Tag->area( { href => $href, form => $form} );
 }
 EOR

@@ -5,10 +5,16 @@ UserTag process             Routine   <<EOR
 sub {
 	my($target,$secure,$opt) = @_;
 
+	my $save;
 	$secure = defined $secure ? $secure : $CGI::secure;
 
 	my $page = $opt->{href} || 'process';
+	if($opt->{download_name}) {
+		$save = delete $::Scratch->{mv_add_dot_html};
+		$page .= "/$opt->{download_name}";
+	}
 	my $url = $secure ? secure_vendUrl($page) : vendUrl($page);
+	$::Scratch->{mv_add_dot_html} = $save if $save;
 	return $url unless $target;
 	return qq{$url" TARGET="$target};
 }

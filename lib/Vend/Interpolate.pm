@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.104 2002-08-12 16:16:18 mheins Exp $
+# $Id: Interpolate.pm,v 2.105 2002-08-15 16:30:34 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.104 $, 10);
+$VERSION = substr(q$Revision: 2.105 $, 10);
 
 @EXPORT = qw (
 
@@ -3031,6 +3031,7 @@ sub form_link {
 
 	$href = 'process' unless length($href);
 	$href =~ s:^/+::;
+	$href = Vend::Util::escape_chars_url($href);
 	$opt->{secure} = 1 if exists $Vend::Cfg->{AlwaysSecure}{$href};
 	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
 	$href = "$base/$href"     unless $href =~ /^\w+:/;

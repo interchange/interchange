@@ -81,6 +81,19 @@ function standout (nam) {
 	}
 }
 
+function content_win () {
+	window.name = 'mainwindow[scratch window_name]';
+	var url = '[area
+					href="admin/page_upload"
+					form=|
+						ui_source_form=content_edit
+						ui_source_var=ui_body_text
+						page=[page-param ui_name]
+					|]';
+	window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=600,height=480');
+	return void(0);
+}
+
 var visdone = new Array;
 function visible (index, base) {
 	var ai;
@@ -440,10 +453,11 @@ EoPC
 			hidden.ui_content_op=modify_body
 			hidden.ui_name="[page-param ui_name]"
 			hidden.ui_type="[page-param ui_type]"
+			form-name=content_edit
 			href="silent/ce_modify"
 			item_id="CONTENT"
 			js_changed=changed
-			label.ui_body_text="&nbsp;&nbsp;&nbsp;Page&nbsp;content"
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content<br><br><input type=button onClick="content_win();" Value="[L]Edit in Browser[/L]">|
 			mv_nextpage=@@MV_PAGE@@
 			nocancel=1
 			notable=1
@@ -461,6 +475,7 @@ EoPC
 				onReset="submitted('[comp-param where]')"
 			|
 		]
+		
 	[/else]
 	[/if-comp-param]
 	</div>

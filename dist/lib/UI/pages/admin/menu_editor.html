@@ -886,11 +886,16 @@ sub {
 					'<a href="javascript:motion(' + idx + ", 'right');void(0)" +
 					'"><img src="__UI_IMG__right.gif" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:loadForm(' + idx + ");void(0)" +
-					'"><img src="/icons/small/forward.gif" border=0 align=absbottom></A>' + "\n";
+					'"><img src="__UI_IMG__forward.gif" border=0 align=absbottom></A>' + "\n";
 			for(i = 0; i < l[MSORT]; i++)
 				out = out + '&nbsp;&nbsp;&nbsp;'; 
 			if(showlevel == 1 && l[MSORT] > 0) {
 				out = out + l[MSORT] + '&nbsp;'
+			}
+
+			var nme = l[NAME];
+			if(nme != undefined) {
+				nme = nme.replace(/</g, '&lt;');
 			}
 			if(l[PAGE]) {
 				var i;
@@ -902,10 +907,10 @@ sub {
 					out = out + '?' + l[FORM];
 				if(l[DESCRIPTION])
 					out = out + " : " + l[DESCRIPTION];
-				out = out + '">' + l[NAME] + '</a>';
+				out = out + '">' + nme + '</a>';
 			}
 			else {
-				out = out + '<b>' + l[NAME] + '</b>';
+				out = out + '<b>' + nme + '</b>';
 			}
 
 			if(l[MSG]) {

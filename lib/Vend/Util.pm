@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.32 2002-08-06 22:08:04 mheins Exp $
+# $Id: Util.pm,v 2.33 2002-08-15 16:30:34 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 BEGIN {
 	eval {
@@ -170,6 +170,7 @@ sub escape_chars {
 
 sub escape_chars_url {
     my($in) = @_;
+	return $in unless $in =~ $need_escape;
     my($c, $r);
 
     $r = '';
