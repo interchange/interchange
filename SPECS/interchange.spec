@@ -44,6 +44,7 @@ The Foundation Store is a basic catalog you can adapt to build your own store.
 %package %{cat_name}-demo
 Summary: Interchange Foundation demo - a prebuilt demonstration store
 Group: Applications/Internet
+Prereq: %ic_package_basename
 Requires: %ic_package_basename
 Provides: %{ic_package_basename}-%{cat_name}-demo
 Obsoletes: %{ic_package_basename}-%{cat_name}-demo
@@ -533,6 +534,12 @@ rm -f %filelist_main
 
 
 %changelog
+
+* Wed Sep 19 2001 Jon Jensen <jon@redhat.com>
+- Add Prereq: interchange to interchange-foundation-demo because the demo
+  installs files owned by the interch user, which gets created when the base
+  package is installed. This way the order the RPMs are given on the command
+  line won't cause trouble.
 
 * Fri Jul 27 2001 Jon Jensen <jon@redhat.com>
 - Make a symlink to /usr{/share}/doc/interchange-x.x.x in
