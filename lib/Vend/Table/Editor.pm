@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.24 2003-02-07 15:51:00 mheins Exp $
+# $Id: Editor.pm,v 1.25 2003-02-09 21:43:29 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.24 $, 10);
+$VERSION = substr(q$Revision: 1.25 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1227,7 +1227,7 @@ sub resolve_options {
 		link_no_blank
 		link_row_qual
 		link_auto_number
-		link_row_blank
+		link_rows_blank
 		link_sort
 		link_table
 		link_template
