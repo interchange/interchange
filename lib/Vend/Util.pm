@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.2 2000-11-30 02:42:50 heins Exp $
+# $Id: Util.pm,v 1.14.2.3 2000-12-11 01:59:38 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -58,6 +58,7 @@ require Exporter;
 	readin
 	secure_vendUrl
 	setup_escape_chars
+	string_to_ref
 	tag_nitems
 	uneval
 	uneval_it
@@ -77,7 +78,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.3 $, 10);
 
 BEGIN {
 	eval {
@@ -637,8 +638,8 @@ sub logData {
 
 
 sub file_modification_time {
-    my ($fn) = @_;
-    my @s = stat($fn) or die "Can't stat '$fn': $!\n";
+    my ($fn, $tolerate) = @_;
+    my @s = stat($fn) or ($tolerate and return 0) or die "Can't stat '$fn': $!\n";
     return $s[9];
 }
 
@@ -712,6 +713,17 @@ sub check_gate {
 	return $gate;
 }
 
+sub string_to_ref {
+	my ($string) = @_;
+	if(! $Vend::Cfg->{ExtraSecure} and $MVSAFE::Safe) {
+		return eval $string;
+	}
+	elsif ($MVSAFE::Safe) {
+		die ::errmsg("not allowed to eval in Safe mode.");
+	}
+	return $Vend::Interpolate::safe_safe->reval($string);
+}
+
 sub get_option_hash {
 	if (ref $_[0]) {
 		return $_[0] unless ref $_[1];
@@ -726,7 +738,7 @@ sub get_option_hash {
 	$string =~ s/^\s+//;
 	$string =~ s/\s+$//;
 	if($string =~ /^{/ and $string =~ /}/) {
-		return $Vend::Interpolate::ready_safe->reval($string);
+		return string_to_ref($string);
 	}
 
 	my @opts;
