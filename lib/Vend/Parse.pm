@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.2 2001-10-06 06:18:09 mheins Exp $
+# $Id: Parse.pm,v 2.3 2001-10-11 01:34:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -241,6 +241,7 @@ my %addAttr = (
 					assign          1
 					banner          1
 					catch           1
+					cgi				1
 					charge          1
 					checked         1
 					counter         1
