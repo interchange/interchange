@@ -53,8 +53,6 @@
 	[/perl]
 [/if]
 
-@_UI_STD_DBEDIT_HEAD_@
-
 [set ui_class]Items[/set]
 [seti page_title]Item editor: [cgi item_id][/seti]
 [seti page_banner]Item editor: edit item <B>[cgi item_id]</B>[/seti]
@@ -63,7 +61,7 @@
 
 @_UI_STD_HEAD_@
 <P>
-@_UI_STD_DBEDIT_TABLE_@
+[table-editor file_upload=1 cgi=1]
 
 [if-mm super]
 <A HREF="[area href=admin/flex_editor
