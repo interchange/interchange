@@ -1,3 +1,0 @@
-ln -s __MVC_DOCUMENTROOT____MVC_IMAGEURL__ __MVC_CATROOT__
-To enable image upload feature, you need to make a symbolic
-link of the image base directory into your catalog directory.
