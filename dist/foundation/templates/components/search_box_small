@@ -30,8 +30,7 @@ matches:
 	  <INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
 	  <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
 	</td>
-	<td align="right">
-	  &nbsp;
+	<td align="right" valign="middle">
 	  <input type=image alt="Search Go" border="0" src="__THEME_IMG_DIR__go.gif">
 	</td>
       </tr>
