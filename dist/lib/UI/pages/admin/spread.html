@@ -1,3 +1,5 @@
+@_UI_STD_INIT_@
+
 	[calc]
 		return unless $CGI->{mv_more_ip};
 		$CGI->{mv_data_table} = $Values->{mv_data_table};
@@ -14,7 +16,7 @@
 	[either]
 		[cgi page_banner]
 	[or]
-		Spreadsheet Edit: [page href=__UI_BASE__/db_metaconfig
+		[L]Spreadsheet Edit:[/L] [page href=__UI_BASE__/db_metaconfig
 								form="
 									ui_table=[cgi mv_data_table]
 									ui_view=[cgi ui_meta_view]
@@ -202,7 +204,7 @@
 	[/search-list]
 
 <tr>
-<td colspan="[scratch ui_num_col]" class=rhead><b>New record</b></td>
+<td colspan="[scratch ui_num_col]" class=rhead><b>[L]New record[/L]</b></td>
 </tr>
 
 <TR class=rhead CELLPADDING=2>
@@ -248,8 +250,8 @@
 		mv_todo=set
 		[return-to click]
 	[/button]
-	[button text="[L]Delete checked[/L]"
-		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
+	[button text="[L]Delete checked records[/L]"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 mv_nextpage=__UI_BASE__/flex_select
 mv_auto_export=
@@ -294,8 +296,8 @@ mv_todo=return
 		mv_todo=set
 		[return-to click]
 	[/button]
-	[button text="[L]Delete checked[/L]"
-		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
+	[button text="[L]Delete checked records[/L]"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 mv_nextpage=__UI_BASE__/flex_select
 mv_auto_export=
