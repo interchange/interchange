@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.35 2003-04-22 08:07:36 racke Exp $
+# $Id: Shadow.pm,v 1.36 2003-05-01 22:27:42 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.35 $, 10);
+$VERSION = substr(q$Revision: 1.36 $, 10);
 
 # TODO
 #
@@ -508,7 +508,8 @@ sub _map_column {
 
 	my $locale = $::Scratch->{mv_locale} || 'default';
 
-	if (! $mapentry && exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+	if (! $mapentry && ! $::Scratch->{mv_shadowpass}
+		&& exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
 		$mapentry = $s->[$CONFIG]->{MAP}->{$column};
 	}
 
