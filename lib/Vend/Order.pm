@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.57 2003-06-18 17:34:44 jon Exp $
+# $Id: Order.pm,v 2.58 2003-07-27 19:47:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2268,11 +2268,11 @@ sub add_items {
 		$cart = $Vend::Items;
 	}
 
-	@items      = split /\0/, ($items), -1;
-	@quantities = split /\0/, ($quantities || delete $CGI::values{mv_order_quantity} || ''), -1;
-	@bases      = split /\0/, delete $CGI::values{mv_order_mv_ib}, -1
+	@items      = split /\0/, ($items);
+	@quantities = split /\0/, ($quantities || delete $CGI::values{mv_order_quantity} || '');
+	@bases      = split /\0/, delete $CGI::values{mv_order_mv_ib}
 		if defined $CGI::values{mv_order_mv_ib};
-	@lines      = split /\0/, delete $CGI::values{mv_orderline}, -1
+	@lines      = split /\0/, delete $CGI::values{mv_orderline}
 		if defined $CGI::values{mv_orderline};
 
 	if($CGI::values{mv_order_fly} and $Vend::Cfg->{OnFly}) {
@@ -2280,7 +2280,7 @@ sub add_items {
 			@fly = $CGI::values{mv_order_fly};
 		}
 		else {
-			@fly = split /\0/, $CGI::values{mv_order_fly}, -1;
+			@fly = split /\0/, $CGI::values{mv_order_fly};
 		}
 	}
 
@@ -2293,7 +2293,7 @@ sub add_items {
 	}
 
 	if($CGI::values{mv_sku}) {
-		my @sku = split /\0/, $CGI::values{mv_sku}, -1;
+		my @sku = split /\0/, $CGI::values{mv_sku};
 		for (@sku) {
 			$_ = $::Variable->{MV_VARIANT_JOINER} || '0' if ! length($_);
 		}
@@ -2305,7 +2305,7 @@ sub add_items {
 		foreach $attr (@{$Vend::Cfg->{UseModifier} || []}) {
 			$attr{$attr} = [];
 			next unless defined $CGI::values{"mv_order_$attr"};
-			@{$attr{$attr}} = split /\0/, $CGI::values{"mv_order_$attr"}, -1;
+			@{$attr{$attr}} = split /\0/, $CGI::values{"mv_order_$attr"};
 		}
 	}
 
@@ -2331,7 +2331,7 @@ sub add_items {
 						);
 	}
 
-	@group   = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
+	@group   = split /\0/, (delete $CGI::values{mv_order_group} || '');
 	for( my $i = 0; $i < @group; $i++ ) {
 	   $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
 	}
