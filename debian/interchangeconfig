@@ -12,5 +12,6 @@ cat > $SETTINGSCFG <<EOF
 
 EOF
 
-db_get interchange-ui/uilocales
-echo "$RET" | sed "s/German/Variable UI_LOCALE_DE 1/" >> $SETTINGSCFG
+if db_get interchange-ui/uilocales; then
+	echo "$RET" | sed "s/German/Variable UI_LOCALE_DE 1/" >> $SETTINGSCFG
+fi
