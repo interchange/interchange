@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.24 2003-01-12 18:28:45 mheins Exp $
+# $Id: Common.pm,v 2.25 2003-02-13 16:12:18 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -127,11 +127,7 @@ sub stuff {
     return $val;
 }
 
-sub unstuff {
-    my ($val) = @_;
-    $val =~ s,%(..),chr(hex($1)),eg;
-    return $val;
-}
+*unstuff = \&Vend::Util::unhexify;
 
 sub autonumber {
 	my $s = shift;
