@@ -22,9 +22,11 @@ lose your shopping cart.
   This next is a MiniVend UserTag -- if you see it in the page, then
   you don't have it defined in catalog.cfg.
 [/comment]
-
+<BR>
+<BR>
+<P>
 [table-font FACE="verdana,arial, helvetica" size="2"]
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 ALIGN=CENTER>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH="100%" ALIGN=CENTER>
 	<COL WIDTH="10%">
 	<COL WIDTH="1%">
 	<COL WIDTH="40%">
@@ -133,10 +135,7 @@ lose your shopping cart.
 </TR>
 <TR>
 <TD __HEADERBG__ COLSPAN=7 ALIGN=CENTER>
-<FONT COLOR="__HEADERTEXT__">
-<FONT SIZE="-1">Show basket every time item is ordered <INPUT TYPE=RADIO NAME=no_basket VALUE=0 [checked name=no_basket default=1 value=0]> Yes
-<INPUT TYPE=RADIO NAME=no_basket VALUE=1 [checked name=no_basket value=1]> No<BR></FONT>
-<INPUT
+<FONT COLOR="__HEADERTEXT__"><INPUT
                     TYPE="submit"
                     onClick="this.form.target='_top'"
                     NAME="mv_click"
@@ -147,6 +146,14 @@ lose your shopping cart.
 <INPUT TYPE=submit
 	onClick="this.form.action='[process-target]'"
 	NAME=mv_click value="Stop shopping">
+	[if session logged_in]
+	[and !value show_saved]
+	<BR><A HREF="[area form='
+						mv_todo=return
+						mv_nextpage=@@MV_PAGE@@
+						show_saved=1
+					']">Show saved carts</A>
+	[/if]
 </TD>
 </TR>
 </TBODY>
@@ -155,6 +162,7 @@ lose your shopping cart.
 <BR CLEAR=ALL>
 
 [if session logged_in]
+[and value show_saved]
 [userdb function=get_cart_names hide=1]
 
 <P>
@@ -162,8 +170,8 @@ lose your shopping cart.
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/basket">
-<TABLE WIDTH="450" BORDER=0 CELLPADDING=4 CELLSPACING=0 ALIGN=RIGHT>
-<TR><TD COLSPAN=5 BGCOLOR="__TITLEBG__" ALIGN=CENTER><FONT SIZE="+2" FACE="arial,helvetica" COLOR="__TITLETEXT__">Cart Storage Area</FONT><BR></TD></TR>
+<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 ALIGN=CENTER WIDTH=100%>
+<TR><TD COLSPAN=3 BGCOLOR="__TITLEBG__" ALIGN=CENTER><FONT SIZE="+2" FACE="arial,helvetica" COLOR="__TITLETEXT__">Cart Storage Area</FONT><BR></TD></TR>
 	<COL WIDTH="40%">
 	<COL WIDTH="40%">
 	<COL WIDTH="20%">
@@ -222,11 +230,17 @@ lose your shopping cart.
 	<INPUT TYPE=submit NAME=mv_check VALUE="Recall cart(s)">
 	<INPUT TYPE=submit NAME=mv_check VALUE="Save to existing cart">
 	<INPUT TYPE=submit NAME=mv_check VALUE="DELETE cart">
+	<BR><A HREF="[area form='
+						mv_todo=return
+						mv_nextpage=@@MV_PAGE@@
+						show_saved=0
+					']">Hide saved carts</A>
 </TR>
 </TBODY>
 </TABLE>
 </FORM>
 [/if]
+
 [/table-font]
 
 [set Continue shopping]
