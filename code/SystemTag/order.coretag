@@ -1,7 +1,14 @@
 UserTag order               Order        code quantity
+UserTag order               attrAlias    item code
+UserTag order               attrAlias    sku code
+UserTag order               attrAlias    table base
+UserTag order               attrAlias    database base
+UserTag order               attrAlias    db base
+UserTag order               attrAlias    mv_ib base
+UserTag order               attrAlias    href page
 UserTag order               addAttr
 UserTag order               PosNumber    2
-UserTag order               Routine   <<EOR
+UserTag order               Routine      <<EOR
 # Returns an href to place an order for the product PRODUCT_CODE.
 # If AlwaysSecure is set, goes by the page accessed, otherwise 
 # if a secure order has been started (with a call to at least
@@ -9,7 +16,6 @@ UserTag order               Routine   <<EOR
 sub {
     my($code,$quantity,$opt) = @_;
 	$opt = {} unless $opt;
-    my($r);
 	my @parms = (
 					"mv_action=refresh",
 				  );
@@ -24,12 +30,12 @@ sub {
 	push(@parms, "mv_order_quantity=$quantity")
 		if($quantity);
 
-	$opt->{form} = join "\n", @parms;
+	$opt->{form} .= "\n" . join "\n", @parms;
 
 	$opt->{page} = find_special_page('order')
 		unless $opt->{page};
 
-	return form_link($opt->{area}, $opt->{arg}, $opt)
+	return form_link($opt->{page}, $opt->{arg}, $opt)
 		if $opt->{area};
 	return tag_page($opt->{page}, $opt->{arg}, $opt);
 }
