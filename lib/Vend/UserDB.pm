@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.6 2002-06-23 15:04:04 mheins Exp $
+# $Id: UserDB.pm,v 2.7 2002-07-04 17:19:48 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1094,6 +1094,7 @@ sub login {
 			my $ufield = $self->{LOCATION}{USERNAME};
 			$uname = $udb->quote($uname);
 			my $q = "select $ufield from $self->{DB_ID} where $foreign = $uname";
+#::logDebug("indirect login query: $q");
 			my $ary = $udb->query($q)
 				or do {
 					my $msg = ::errmsg( "Database access error for query: %s", $q);
@@ -1102,7 +1103,8 @@ sub login {
 			@$ary == 1
 				or do {
 					logError(
-						"Denied attempted login with nonexistent (indirect) user name %s",
+						"Denied attempted login with nonexistent (indirect from %s) user name %s",
+						$foreign,
 						$uname,
 						$self->{USERNAME},
 					);
@@ -1305,12 +1307,14 @@ sub change_pass {
 
 sub assign_username {
 	my $self = shift;
-	my $file = shift || $self->{OPTIONS}{'counter'};
+	my $file = shift || $self->{OPTIONS}{counter};
 	my $start = $self->{OPTIONS}{username} || 'U00000';
 	$file = './etc/username.counter' if ! $file;
-	my $ctr = Vend::CounterFile->new($file, $start);
 
-	my $custno = $ctr->inc();
+	my $custno = Vend::Interpolate::tag_counter(
+						$file,
+						{ sql => $self->{OPTIONS}{sql_counter} },
+					);
 
 	if(my $l = $Vend::Cfg->{Accounting}) {
 
