@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.14 2002-01-29 05:52:43 mheins Exp $
+# $Id: Util.pm,v 2.15 2002-01-30 21:53:15 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 BEGIN {
 	eval {
@@ -123,7 +123,7 @@ sub setup_escape_chars {
     }
 
 	my $string = "[^$ESCAPE_CHARS::ok_in_filename]";
-	$need_escape = qr{$string};
+	$need_escape = qr{"$string="};
 
 }
 
