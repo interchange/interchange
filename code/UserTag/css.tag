@@ -1,3 +1,7 @@
+# Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: css.tag,v 1.4 2004-10-02 11:07:00 docelic Exp $
+
 UserTag css Order name
 UserTag css addAttr
 UserTag css Routine <<EOR
@@ -6,97 +10,6 @@ sub {
 
 	use vars qw/$Tag/;
 
-=head1 NAME
-
-css -- ITL tag to build css files for <link>
-
-=head1 SYNOPSIS
-
-[css name=CSS_VAR (options)]
-
-=head1 DESCRIPTION
-
-Builds a CSS file from a Variable (or other source) and generates a
-link to it. 
-
-In the simplest case:
-
-	[css THEME_CSS]
-
-it looks for the file C<images/them_css.css>, and if it exists generates
-a <C<link rel=stylesheet href="/standard/images/theme_css.css">> HTML
-tag to call it.
-
-=head2 OPTIONS
-
-=over 4
-
-=item basefile
-
-If the Variable being used is dynamic via DirConfig, this should be the
-file that it is contained in. The file will be checked for mod time, and
-if it is newer than the CSS file the CSS will be rebuilt.
-
-=item imagedir
-
-An image prefix to use instead of the default (the ImageDir directive).
-
-=item literal
-
-The literal CSS to use instead of a Variable. Normally, you would do:
-
-	[set my_css]
-	BODY { }
- 
-	TD { font-size: 11 pt}
-	[/set]
-
-Then call with:
-
-	[css literal="[scratch my_css]"]
-
-=item media
-
-If you need a media code for the <C<link>> tag, you can set it here. In
-other words:
-
-	[css name=THEME_CSS media=PRINT]
-
-will generate:
-
-	<link rel="stylesheet" media="PRINT" href="/found/images/theme_css.css">
-
-=item mode
-
-The mode (in octal) of the file to be created.
-
-=item output-dir
-
-The output directory to place the generated CSS file in, by default "images".
-Obviously you must make the ImageDir match this.
-
-=item relative
-
-Makes the generated CSS file be relative to the directory the IC page is
-in. If the current page is "info/index", and the CSS tag is called,
-it will write the output to <images/info/theme_css.css> and generate:
-
-	<link rel="stylesheet" media="PRINT" href="/found/images/info/theme_css.css">
-
-=item timed
-
-Regenerates the file on a timed basis. Default is the number of minutes,
-but you can pass any standard Interchange interval (i.e. seconds, minutes,
-days, weeks).
-
-=back
-
-=head1 AUTHOR
-
-Mike Heins, Perusion <mikeh@perusion.com>
-
-=cut
-
 	return unless $name;
 
 	my $bn = lc $name;
@@ -104,11 +17,12 @@ Mike Heins, Perusion <mikeh@perusion.com>
 
 	my $dir = $opt->{output_dir} ||= 'images';
 
-	my $add_imagedir = ! $opt->{no_imagedir};
+	my $id = "";
 
-	my $id = $opt->{imagedir} || $Vend::Cfg->{ImageDir};
-
-	$id =~ s:/*$:/:;
+	if (! $opt->{no_imagedir} ) {
+		$id = $opt->{imagedir} || $Vend::Cfg->{ImageDir};
+		$id =~ s:/*$:/:;
+	}
 
 	$dir =~ s:/+$::;
 
@@ -185,7 +99,12 @@ Mike Heins, Perusion <mikeh@perusion.com>
 				logError("CSS file %s has no write permission.", $fn);
 			}
 			else {
-				logError("CSS dir %s has no write permission.", $dir);
+				if ( -x $dir ) {
+					logError("CSS dir %s has no write permission.", $dir);
+				}
+				else {
+					logError("CSS dir %s does not exist.", $dir);
+				}
 			}
 			last WRITE;
 		}
