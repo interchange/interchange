@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.42 2001-04-10 23:50:25 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.43 2001-04-11 15:11:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.42 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.43 $, 10);
 
 @EXPORT = qw (
 
@@ -1360,8 +1360,6 @@ sub build_accessory_links {
 <A HREF="{URL}"{EXTRA}>{SELECTED <B>}{LABEL}{SELECTED </B>}</A>
 EOF
 
-	$opt->{selected_begin} ||= '<B>';
-	$opt->{selected_begin} ||= '</B>';
 	my $href = $opt->{href} || $Global::Variable->{MV_PAGE};
 	$opt->{form} = "mv_action=return" unless $opt->{form};
 
