@@ -388,12 +388,6 @@ dist/foundation/templates/foundation/theme.cfg
 dist/foundation/templates/fullwidth
 dist/foundation/templates/leftonly
 dist/foundation/templates/leftright
-dist/foundation/templates/regions/LEFTONLY_BOTTOM
-dist/foundation/templates/regions/LEFTONLY_TOP
-dist/foundation/templates/regions/LEFTRIGHT_BOTTOM
-dist/foundation/templates/regions/LEFTRIGHT_TOP
-dist/foundation/templates/regions/NOLEFT_BOTTOM
-dist/foundation/templates/regions/NOLEFT_TOP
 dist/foundation/templates/sampledata/computers/images/items/generic.gif
 dist/foundation/templates/sampledata/computers/images/items/gift_certificate_large.gif
 dist/foundation/templates/sampledata/computers/images/items/yourimage.gif
@@ -833,6 +827,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
