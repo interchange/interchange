@@ -668,6 +668,7 @@ EOF
 #::logDebug("wid_data is " . ::uneval_it(\%wid_data));
 			$opt->{mv_blob_title} = "Stored settings"
 				if ! $opt->{mv_blob_title};
+			$opt->{mv_blob_title} = errmsg($opt->{mv_blob_title});
 
 			$Scratch->{Load} = <<EOF;
 [return-to type=click stack=1 page="$Global::Variable->{MV_PAGE}"]
@@ -678,17 +679,19 @@ EOF
 #::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
 
 			my $loaded_from;
+			my $lfrom_msg;
 			if( $opt->{mv_blob_nick} ) {
-				$loaded_from = $opt->{mv_blob_nick};
+				$lfrom_msg = $opt->{mv_blob_nick};
 			}
 			else {
-				$loaded_from = "current values";
+				$lfrom_msg = errmsg("current values");
 			}
+			$lfrom_msg = errmsg("loaded from %s", $lfrom_msg);
 			$loaded_from = <<EOF;
-<I>(loaded from $loaded_from)</I><BR>
+<I>($lfrom_msg)</I><BR>
 EOF
 			if(@labels) {
-				$loaded_from .= "Load from:<BLOCKQUOTE>";
+				$loaded_from .= errmsg("Load from") . ":<BLOCKQUOTE>";
 				$loaded_from .=  join (" ", @url_data{ sort keys %url_data });
 				$loaded_from .= "</BLOCKQUOTE>";
 			}
@@ -709,9 +712,14 @@ EOF
 									set => "$set",
 									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
 									});
+				my $msg1 = errmsg('Save to');
+				my $msg2 = errmsg('Save here only');
+				for (\$msg1, \$msg2) {
+					$$_ =~ s/ /&nbsp;/g;
+				}
 				$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
-<B>Save to:</B> $blob_widget&nbsp;
-<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;Save&nbsp;here&nbsp;only</SMALL>
+<B>$msg1:</B> $blob_widget&nbsp;
+<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;$msg2</SMALL>
 EOF
 			}
 
