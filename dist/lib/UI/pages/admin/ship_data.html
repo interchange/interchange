@@ -31,7 +31,8 @@
 			}
 			last;
 		}
-		my $opt = $lines->[$idx][7] || '';
+		my $master = $lines->[$idx] || {};
+		my $opt = $master->[7] || '';
 		$opt = {} if ! ref $opt;
 		Log("write inmode=$inmode, ptr=$ptr, len=$len ship_type=$opt->{ui_ship_type}" );
 		if($len) {
@@ -49,7 +50,7 @@
 			}
 			$modes[$i][0] = $inmode;
 			$modes[$i][1] = $Config->{Shipping_desc}{$inmode};
-			$modes[$i][2] = $CGI->{"crit$i"};
+			$modes[$i][2] = $master->[2];
 			$modes[$i][3] = $CGI->{"min$i"};
 			$modes[$i][4] = length ($CGI->{"max$i"}) ? $CGI->{"max$i"} : 9999999;
 			my $cost = $CGI->{"cost$i"};
@@ -80,7 +81,7 @@
 			$modes[$i] = [
 					$inmode, 
 					$Config->{Shipping_desc}{$inmode},
-					'',
+					$master->[2],
 					(defined $modes[$i - 1] ? $modes[$i - 1][4] : 0),
 					9999999,
 					'0',
@@ -134,7 +135,7 @@
 				Log("ui_ship_type: $opt->{ui_ship_type}");
 		}
 		my $algomessage = $master->[2];
-		if ($algomessage eq /\[subtotal\snoformat=1\]/) {
+		if ($algomessage =~ /\[subtotal\snoformat=1\]/) {
 			$algomessage = 'total price';
 		}
 		elsif ($algomessage eq 'quantity') {
@@ -142,7 +143,7 @@
 		}
 		if($algomessage) {
 			$algomessage = <<EOF;
-Calculaton is done based on $algomessage of items in cart.
+Calculaton is done based on <B>$algomessage</B> of items in cart.
 EOF
 		}
 		my @out;
@@ -187,17 +188,42 @@ EOF
 				push @modes, 
 					[	$inmode,
 						$master->[1],
-						'',
+						$master->[2],
 						0,
 						150,
-						"f [ups-query mode=$1 weight=" . '@@TOTAL' . '@@',
+						"f [ups-query mode=$1 weight=" . '@@TOTAL' . '@@]', 
+						'',
+						$opt,
 					],
 					[	$inmode,
 						$master->[1],
-						'',
+						$master->[2],
 						150,
 						9999999,
 						"e Too heavy for UPS",
+						'',
+						$opt,
+					];
+			}
+			elsif ($opt->{ui_ship_type} =~ /^UPSI/) {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						0,
+						150,
+						"u",
+						'',
+						$opt,
+					],
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						150,
+						9999999,
+						"e Too heavy for UPS",
+						'',
+						$opt,
 					];
 			}
 			else {
@@ -208,6 +234,8 @@ EOF
 						0,
 						9999999,
 						0,
+						'',
+						$opt,
 					];
 			}
 		}

@@ -43,7 +43,7 @@
 			$ref = [];
 		}
 		my $opt = {};
-		my (@straight) = qw/zone origin adder at_least origin ups round/;
+		my (@straight) = qw/zone origin adder at_least origin ups round table geo/;
 			
 		for(@straight) {
 			$opt->{$_} = $Values->{"ui_ship_$_"}
@@ -75,6 +75,7 @@
 		@here{@countries} = @countries;
 		my %change;
 		while( ($k, @f) = $db->each_record() ) {
+			$here{$k} = ($here{$k} ? 0 : 1) if $CGI->{ui_ship_country_invert};
 			if( $f[$ptr] =~ /\b$inmode\b/o ) {
 				next unless ! $here{$k};
 				Log("changing $k from $f[$ptr], remove");
@@ -114,6 +115,7 @@
 			$ref = $_;
 			last;
 		}
+		return if ! $ref;
 		$ref = [] if ! $ref;
 		my ($mode, $desc, $crit, $min, $max, $cost, $query, $opt) = @{$ref};
 		Log("gave: " . join("|", @$ref) );
@@ -146,15 +148,18 @@
 		$Values->{ui_ship_message}  = $cost;
 		$Values->{ui_ship_description}  = $desc;
 		$Values->{ui_ship_ups}		= $Values->{ui_ship_type} =~ /^ups/i ? 1 : 0;
+		$Values->{ui_ship_ups_external}	= $Values->{ui_ship_type} =~ /^upse/i ? 1 : 0;
+		$Values->{ui_ship_ups_internal}	= $Values->{ui_ship_type} =~ /^upsi/i ? 1 : 0;
 		if(! $crit and $Values->{ui_ship_ups}) {
 			$crit = 'weight';
 		}
 		$Values->{ui_ship_criteria} = $crit;
-		$Values->{ui_ship_adder}	= $opt->{adder};
-		$Values->{ui_ship_at_least}	= $opt->{at_least};
-		$Values->{ui_ship_origin}	= $opt->{origin};
-		$Values->{ui_ship_round}	= $opt->{round};
-		$Values->{ui_ship_zone}		= $opt->{zone};
+		
+		my (@straight) = qw/zone adder at_least origin round table geo/;
+			
+		for(@straight) {
+			$Values->{"ui_ship_$_"} = $opt->{$_};
+		}
 		return;
 	[/perl]
 [/if]
@@ -233,7 +238,7 @@ UPSI	Internal UPS lookup
 <BR><small>Apply this method by country<BR><I>(select as many as desired)</I></small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-
+<FONT SIZE=-1>
 [calc]
 	$modes = <<'EOF';
 [loop lr=1 search="
@@ -262,7 +267,7 @@ EOF
 		 <OPTION VALUE="[loop-code]"> [loop-param name]
 [/loop]
 
-</select>
+</select>&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_ship_country_invert VALUE=1> <B>except</B> these countries
 
 </td>
 </tr>
@@ -301,6 +306,19 @@ EOF
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
+<small>Allow to be zero cost</small>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<SELECT NAME=ui_ship_round>
+<OPTION VALUE=""> No
+<OPTION VALUE="1" [selected ui_ship_free 1]> Yes
+</SELECT>
+</td>
+</tr>
+
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <small>Message when zero</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
@@ -310,20 +328,12 @@ EOF
 
 
 [if value ui_ship_ups]
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>UPS Origin Zone</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<input type=text size=50 name="ui_ship_origin" value="[value ui_ship_origin]">
-</td>
-</tr>
 
+  [if value ui_ship_ups_internal]
 	[seti available_ups_internal][available_ups_internal][/seti]
-	[if scratch available_ups_internal]
 	<tr>
 	<td bgcolor=__UI_C_INTBLOCK__ align=right>
-	<small>UPS Zone chart</small><BR><SMALL><I>(internal types)</I></SMALL>
+	<small>UPS Zone chart</small>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<SELECT NAME=ui_ship_zone>
@@ -334,8 +344,41 @@ EOF
 	</SELECT>
 	</td>
 	</tr>
-	[/if]
 
+	<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<small>Table for lookups</small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<SELECT NAME=ui_ship_table>
+	[loop option=ui_ship_table list="[list-databases]"]
+	<OPTION>[loop-code]
+	[/loop]
+	</SELECT>
+	</td>
+	</tr>
+
+  [else]
+	<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<small>UPS Origin Zone</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<input type=text size=50 name="ui_ship_origin" value="[value ui_ship_origin]">
+	</td>
+	</tr>
+  [/else]
+  [/if]
+
+  <tr>
+  <td bgcolor=__UI_C_INTBLOCK__ align=right>
+  <small>Field that chooses UPS destination</small>[if variable UPS_POSTCODE_FIELD]<BR><SMALL><I>(default __UPS_POSTCODE_FIELD__)</I></SMALL>[/if]
+  </td>
+  <td bgcolor=__UI_C_INTBLOCK__>
+  <input type=text size=50 name="ui_ship_geo" value="[value ui_ship_geo]">
+  </td>
+  </tr>
+  
 [/if]
 
 <tr>

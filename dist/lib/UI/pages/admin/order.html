@@ -4,9 +4,12 @@
 
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
-[set error_message]Not authorized for order administration. Contact administrator?[/set]
+[set ui_error]
+	Not authorized for order administration. Contact administrator?
+[/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
+
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
 	delete $Scratch->{ui_location};
@@ -87,8 +90,9 @@
 	return;
 [/perl]
 
+
 [if scratch ui_location]
-[bounce href="[scratch ui_location]"]
+[bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
 [set icon_name]admin/icon_orders.gif[/set]
@@ -103,7 +107,9 @@
 	[/if]
 [/seti]
 [update values]
+
 @@UI_STD_HEAD@@
+
 
 [if scratch message]
 <BLOCKQUOTE>

@@ -12,7 +12,10 @@
 <td>&nbsp;</td>
 <td valign=top align=left>
 <table border="0" cellpadding="0" cellspacing="3" width="296">
-
+[if scratch ui_error]
+<FONT COLOR=CONTRAST__>[scratch ui_error]</FONT>
+[set ui_error][/set]
+[/if]
 <!-- logout: [if session logged_in]
 [userdb logout]
 [/if] -->

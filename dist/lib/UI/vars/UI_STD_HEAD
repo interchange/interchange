@@ -1,7 +1,8 @@
 Variable UI_STD_HEAD <<EOV
 [if !session logged_in]
-[and !scratch no_login_required]
-	[bounce page="__UI_BASE__/login"]
+	[if !scratch no_login_required]
+		[bounce page="__UI_BASE__/login"]
+	[/if]
 [/if]
 [if scratch table_perm]
 	[if-mm !tables]

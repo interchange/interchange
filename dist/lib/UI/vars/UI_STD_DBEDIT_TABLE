@@ -28,6 +28,10 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 
 <table cellpadding=3 cellspacing=0>
 
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
+
 [seti extra_tables]
 [query list=1 sql="SELECT DISTINCT db FROM __UI_META_TABLE__" table="__UI_META_TABLE__"]
 	[sql-code]

@@ -34,6 +34,7 @@
 </TR>
 
 [calc]
+	my $start = 'AND';
 	if($Session->{arg}) {
 		$Scratch->{date_limit} = "WHERE order_date like '$Session->{arg}%'";
 	}
@@ -51,11 +52,12 @@ EOF
 	}
 	else {
 		$Scratch->{date_limit} = "";
+		$start = 'WHERE';
 	}
 
 	$Scratch->{synd_limit} = '';
 	return unless $CGI->{affiliate};
-	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
+	$Scratch->{synd_limit} = "$start affiliate = '$CGI->{affiliate}'";
 	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
 		if $CGI->{campaign};
 	return;

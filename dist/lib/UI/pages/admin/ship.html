@@ -10,7 +10,8 @@
 			[/calc][read-shipping]
 [if cgi ui_ship_action eq delete]
     ## delete method ##
-	update=[calc]
+	flag write=[flag type=write table=country]
+	update=[perl tables=country]
 		my $count;
 		my @out;
 		my $mode = $CGI->{ui_shipmode};
@@ -22,13 +23,36 @@
 		}
 		$left = scalar @out;
 		$Config->{Shipping_line} = \@out;
-		return sprintf("deleted %d lines, saved %s lines", $count - $left, $left);
-	[/calc]
+		my $db = $Db{country};
+		my $ptr = $db->column_index('shipmodes');
+		my %change;
+		while( ($k, @f) = $db->each_record() ) {
+			next unless $f[$ptr] =~ /\b$mode\b/o;
+			$f[$ptr] =~ s/\b$mode\b//;
+			$f[$ptr] =~ s/\s+/ /g;
+			$change{$k} = $f[$ptr];
+		}
+		my $adj = 0;
+		while ( ($k, $v) = each %change) {
+			$db->set_field($k, 'shipmodes', $v);
+			$adj++;
+		}
+		return sprintf("deleted %d lines, saved %s lines, adjusted %s countries", $count - $left, $left, $adj);
+	[/perl]
 	write=[write-shipping]
 [/if]
 	-->
 
 <!-- ----- BEGIN REAL STUFF ----- -->
+[if type=explicit
+	compare=|
+			[newer
+				source=products/shipping.asc
+				target=`"etc/status.$Config->{CatalogName}"`
+				]
+			|]
+<FONT COLOR="__CONTRAST__">You need to [page __UI_BASE__/reconfig]apply changes[/page] for changes to take effect.</FONT>
+[/if]
 
 <p>
 <form action="[process]" method=POST>
