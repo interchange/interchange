@@ -514,7 +514,7 @@ EOF
 		and $mdb->record_exists($view_table)
 		)
 	{
-::logDebug("meta info for table: view_table=$view_table table=$table");
+#::logDebug("meta info for table: view_table=$view_table table=$table");
 		$opt->{ui_data_fields} = $mdb->field($view_table || $table, 'options');
 	}
 
