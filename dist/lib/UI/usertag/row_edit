@@ -1,9 +1,11 @@
 UserTag row-edit HasEndTag
 UserTag row-edit Order key table size columns
+UserTag row-edit addAttr
 UserTag row-edit Interpolate 1
 UserTag row-edit Routine <<EOR
 sub {
-	my ($key,$table,$size, @columns) = @_;
+	my ($key,$table,$size,$columns,$opt) = @_;
+#::logDebug("row_edit options=" . ::uneval($opt));
 	$table = $table || $CGI::values{mv_data_table} || return "BLANK DB";
 	my $db = Vend::Data::database_exists_ref($table);
 	return "NON-EXISTENT DATABASE '$table' for row-edit" unless defined $db;
@@ -23,18 +25,13 @@ sub {
 		}
 	}
 
-	@columns = grep /\S/, @columns;
-
 	my @cols;
-	if(@columns) {
-		for(@columns) {
-			push(@cols, split /[\s,\0]+/, $_);
-		}
+	if($columns) {
+		@cols = split /[\s,\0]+/, $columns;
 		my %col;
 		for(@cols) {
 			$col{$_} = 1;
 		}
-
 		@cols = grep defined $col{$_}, $db->columns();
 	}
 	else {
@@ -43,6 +40,15 @@ sub {
 
 	if($acl) {
 		@cols = UI::Primitive::ui_acl_grep( $acl, 'fields', @cols);
+	}
+
+	# See if we have a textarea reference
+	my %ta;
+	if($opt->{textarea}) {
+		my @tmp = split /[\s,\0]+/, $opt->{textarea};
+		for(@tmp) {
+			$ta{$_} = 1;
+		}
 	}
 
 	my $out = '';
@@ -63,25 +69,53 @@ sub {
 				$text = $db->field($key,$_);
 			};
 			$text = 'DELETED' if $@;
-			if($meta and
-				$tmp = UI::Primitive::meta_display($table,$_,$key,$text) 
-				)
-			{
-#::logDebug("meta call: table=$table col=$_ key=$key text=$text");
-				$out .= "<TD>$tmp</TD>";
-				next;
+			my $msg = '';
+			if($meta) {
+				my $tmp;
+				my $type = UI::Primitive::meta_display(
+													$table,
+													$_,
+													$key,
+													undef,
+													undef,
+													'type',
+							);
+				if	( $type =~ /combo|checkbox|multi|date|imagedir/) {
+					$msg = '<br><small><small>unable to display with field info</small></small>';
+				}
+				elsif ( $tmp = UI::Primitive::meta_display($table,$_,$key,$text) ) {
+					$out .= "<TD>$tmp</TD>";
+					next;
+				}
 			}
-			my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
-			HTML::Entities::encode($text, '&');
-			HTML::Entities::encode($text, $DECODE_CHARS);
-			$out .= <<EOF;
-<TD><INPUT NAME="$_" SIZE=$size VALUE="$text"></TD>
+			if($ta{$_} || $text =~ /\n/) {
+				my $rows = $opt->{height} || 4;
+				$text =~ s/</&lt;/g;
+				$text =~ s/\[/&#91;/g;
+				$out .= <<EOF;
+<TD><TEXTAREA NAME="$_" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
+EOF
+			}
+			else {
+				$text =~ s/"/&quot;/g;
+				$out .= <<EOF;
+<TD><INPUT NAME="$_" SIZE=$size VALUE="$text">$msg</TD>
+EOF
+			}
+		}
+	}
+	elsif($opt->{blank}) {
+		for(@cols) {
+				$out .= <<EOF;
+<TD><INPUT NAME="$_" SIZE=$size VALUE=""></TD>
 EOF
 		}
 	}
 	else {
 		for(@cols) {
-			$out .= qq{<TH ALIGN=LEFT>$_</TH>};
+				$out .= <<EOF;
+<TH ALIGN=left>$_</TH>
+EOF
 		}
 	}
 	return $out;

@@ -1,8 +1,10 @@
 UserTag display Order table column key
+UserTag display addAttr 1
 UserTag display Interpolate 1
+UserTag display posNumber 3
 UserTag display Routine <<EOR
 sub {
-	my ($table,$column,$key) = @_;
+	my ($table,$column,$key,$opt) = @_;
 	$table = $::Values->{mv_data_table} unless $table;
 	my $db = Vend::Data::database_exists_ref($table);
 	return "NON-EXISTENT DATABASE '$table' for display" unless defined $db;
@@ -13,13 +15,15 @@ sub {
 	eval {
 		$text = $db->field($key,$column);
 	};
-	$text = $CGI::values{$column} if $@;
+	$text = $opt->{default} || $CGI::values{$column} if ! $text;
 #::logDebug("data call failed: $@") if $@;
 
 	if(! $CGI::values{ui_no_meta_display}) {
 #::logDebug("meta call: table=$table col=$column key='$key' text=$text");
 		my $out = UI::Primitive::meta_display($table,$column,$key,$text);
 #::logDebug("past meta_display, out=$out");
+		$out =~ s/<(input|select)\s+/<$1 $opt->{js} /i
+			if $opt->{js};
 		return $out if $out;
 	}
 

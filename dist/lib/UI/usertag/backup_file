@@ -7,17 +7,19 @@ sub {
 	my $file = shift;
 	my $bu_file = "backup/$file";
 	$bu_file =~ m:(.*)/: ;
-	my $bu_dir;
+	my $bu_dir = $1;
 	eval {
-		$bu_dir = $1
-			or die ::errmsg("Cannot figure out backup directory from %s", $bu_file);
+		die ::errmsg("Cannot figure out backup directory from %s", $bu_file)
+			if ! $bu_dir;
 		if (! -d $bu_dir) {
 			File::Path::mkpath($bu_dir)
 				or die ::errmsg("Cannot make backup directory %s: %s", $bu_dir, $!);
 		}
 		if (-f $bu_file) {
-			$Tag->rotate_file($bu_file)
-				or die ::errmsg("Cannot backup of backup %s: %s", $bu_file, $!);
+			my $fn = $bu_file;
+			$fn =~ s:.*/::;
+			UI::Primitive::rotate($fn, { Directory => $bu_dir } )
+				or die ::errmsg("Cannot make backup of %s: %s", $bu_file, $!);
 		}
 		File::Copy::copy($file, $bu_file)
 			or die ::errmsg("Copy %s to %s: %s", $file, $bu_file, $!);

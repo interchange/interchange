@@ -66,7 +66,7 @@ sub fn_expand_tree {
 sub {
 	my ($dir_mask, $opt) = @_;
 
-::logDebug("file-nav dir_mask: $dir_mask opt: " . ::uneval($opt));
+#::logDebug("file-nav dir_mask: $dir_mask opt: " . ::uneval($opt));
     $dir_mask = $Vend::Cfg->{Variable}{UI_ALL_FILES}
 				|| 'catalog.cfg error.log etc pages products'
 			if ! $dir_mask;
@@ -91,6 +91,12 @@ sub {
 				. ( $Vend::Cfg->{Variable}{UI_BASE} || 'admin');
 	my $this_page = $Global::Variable->{MV_PAGE};
 	my $this = Vend::Interpolate::tag_area($this_page);
+	if($this =~ /\?(.+)/) {
+		$this .= '&';
+	}
+	else {
+		$this .= '?';
+	}
 
 	my %dir = ( '' => [] );
 	my @dir;
@@ -99,27 +105,28 @@ sub {
 		my %open;
 		if($opt->{start_open}) {
 			my @open = split /\s+/, $opt->{start_open};
-::logDebug("found start_open, open=@open");
+#::logDebug("found start_open, open=@open");
 			for(@open) {
 				$open{$_} = 1;
 			}
 		}
 		else {
-::logDebug("no start_open, opts=" . ::uneval($opt));
+#::logDebug("no start_open, opts=" . ::uneval($opt));
 		}
 		$Vend::Session->{ui_pg_exp} = { %open };
 	}
 	$expand = $Vend::Session->{ui_pg_exp};
 
 	if($Vend::Session->{arg}) {
+#::logDebug("expanding $Vend::Session->{arg}");
 		$expand->{$Vend::Session->{arg}} = ! $expand->{$Vend::Session->{arg}};
 	}
 
-	my $up_img = '<img src="admin/up.gif" border=0 height=11 width=10>&nbsp;';
-	my $dn_img = '<img src="admin/down.gif" border=0 height=11 width=10>&nbsp;';
-	my $vw_img = '<img src="admin/index.gif" border=0 height=11 width=10>&nbsp;';
-	my $ed_img = '<img src="admin/layout.gif" border=0 height=11 width=10>&nbsp;';
-	my $dir_img = '<img src="admin/folder.gif" border=0 height=11 width=10>';
+	my $up_img = '<img src="admin/up.gif" border=0 height=11 width=10 alt="upload ~FN~">&nbsp;';
+	my $dn_img = '<img src="admin/down.gif" border=0 height=11 width=10 alt="download ~FN~">&nbsp;';
+	my $vw_img = '<img src="admin/index.gif" border=0 height=11 width=10 alt="view ~FN~">&nbsp;';
+	my $ed_img = '<img src="admin/layout.gif" border=0 height=11 width=10 alt="edit ~FN~">&nbsp;';
+	my $dir_img = '<img src="admin/folder.gif" border=0 height=11 width=10 alt="toggle ~FN~">';
 	$ftmpl = <<EOF;
 <img src="admin/cleardot.gif" height=1 width=%d>
 <A HREF="$base_url/do_view?mv_arg=~FN~">$vw_img</A><A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A>&nbsp;%s<BR>
@@ -139,7 +146,7 @@ EOF
 	}
 
 	$dtmpl = <<EOF;
-<IMG SRC="cleardot.gif" HEIGHT=1 WIDTH=%d><A HREF="$this?mv_arg=%s"><img src="admin/%s" ALIGN=textmiddle border=0>%s</A><BR>
+<IMG SRC="cleardot.gif" HEIGHT=1 WIDTH=%d><A HREF="${this}mv_arg=%s"><img src="admin/%s" ALIGN=textmiddle border=0>%s</A><BR>
 EOF
 
 	my @out;
