@@ -94,7 +94,7 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from options where sku='[value sku]'"]
+[query list=1 sql="select * from options where sku='[cgi item_id]'"]
 [list]
 [if-sql-data options o_group]
 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]">
@@ -124,6 +124,9 @@
 [/list]
 [/query]
 
+<BR><BR><BR>
+[button text="Commit Changes"]
+
 </TD><TD><PRE>                          </PRE></TD><TD VALIGN=TOP>
 
 <B>Create a new option:</B><BR>
@@ -132,7 +135,11 @@ Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE=""><BR>
     my @vals = split(',','[sql-param o_value]');
 [/perl][/seti]
 <TEXTAREA ROWS=5 COLS=30 NAME="opt_value_"></TEXTAREA>
+<BR>
+[button text="Create option"]
 <BR><BR>
+
+<HR>
 
 <BR><BR><B>Clone an existing option set:</B><BR>
 
@@ -148,9 +155,6 @@ Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE=""><BR>
 [/if-clone-data]
 [/list]
 </SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="Clone options"]<BR>
-
-<BR><BR><BR>
-[button text="Commit Changes"]
 </FORM>
 
 </TD></TR></TABLE>
