@@ -1,18 +1,18 @@
-Template: interchange-cat-foundation/install
+Template: interchange-cat-standard/install
 Type: boolean
 Default: false
 _Description: Create the Interchange demo catalog?
- Whether to install the demo catalog from the foundation template or let
+ Whether to install the demo catalog from the standard template or let
  you manually install it with makecat.
 
-Template: interchange-cat-foundation/purge
+Template: interchange-cat-standard/purge
 Type: boolean
 Default: false
 _Description: Remove demo catalog on package purge?
  Should all files belonging to the Interchange demo catalog removed when
  you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?
 
-Template: interchange-cat-foundation/replace
+Template: interchange-cat-standard/replace
 Type: select
 _Choices: always, ask, never
 Default: never
@@ -20,13 +20,13 @@ _Description: Policy for replacing existing demo catalogs:
  Whether to silently replace an existing demo catalog installation, ask for
  a confirmation or never touch an existing installation.
 
-Template: interchange-cat-foundation/confirm
+Template: interchange-cat-standard/confirm
 Type: boolean
 Default: false
 _Description: Replace the Interchange demo catalog?
  There seems to already exist an Interchange demo catalog.
 
-Template: interchange-cat-foundation/username
+Template: interchange-cat-standard/username
 Type: string
 Default: interchange
 _Description: Username for this catalog's administration:
@@ -34,21 +34,21 @@ _Description: Username for this catalog's administration:
  username must be at least 2 characters long and only contain letters,
  digits, underscore, @ or the dot as characters.
 
-Template: interchange-cat-foundation/password
+Template: interchange-cat-standard/password
 Type: password
 Default: pass
 _Description: Password for this catalog's administration:
- Please provide a password for administering the foundation demo catalog.
+ Please provide a password for administering the standard demo catalog.
  Choose one which can not be easily guessed. Default is pass. The password 
  must be at least 4 characters long and only contain letters, digits,
  underscore @ or the dot as characters.
 
-Template: interchange-cat-foundation/demomode
+Template: interchange-cat-standard/demomode
 Type: boolean
 Default: yes
 _Description: Enable demo mode?
 
-Template: interchange-cat-foundation/locales
+Template: interchange-cat-standard/locales
 Type: multiselect
 Choices: de_DE, nl_NL
 _Description: Additional locales for the storefront:
@@ -57,7 +57,7 @@ _Description: Additional locales for the storefront:
  footprint of the Interchange server processes, so it is recommended to
  choose only locales which are really needed.
 
-Template: interchange-cat-foundation/defaultlocale
+Template: interchange-cat-standard/defaultlocale
 Type: select
 Choices: ${LOCALES}
 Default: en_US

@@ -1,6 +1,6 @@
 #! /bin/sh -e
 #
-# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2004 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,20 +20,13 @@
 # Source debconf library
 . /usr/share/debconf/confmodule
 
-if [ "$1" = "purge" ]; then
-	db_get interchange-cat-foundation/install
-	if [ "$RET" = "true" ]; then
-		db_get interchange-cat-foundation/purge
-		if [ "$RET" = "true" ]; then
-			CATALOG=foundation
-			db_get interchange/docroot
-			DOCROOT=$RET
-			rm -rf /usr/lib/cgi-bin/ic/$CATALOG
-			rm -rf /var/lib/interchange/catalogs/$CATALOG
-			if [ "$DOCROOT" -a -d "$DOCROOT" ]; then
-				rm -rf $DOCROOT/$CATALOG			
-			fi
-		fi
+/usr/sbin/interchangeconfig USE_STANDARD=
+
+db_get interchange-cat-standard/install
+if [ "$RET" = "true" ]; then
+	if [ ! -f /var/run/interchange-install ]; then
+		# remove catalog from running server
+		/usr/sbin/interchange --remove=standard
 	fi
 fi
 

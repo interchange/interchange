@@ -125,6 +125,10 @@ install: build
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
+# install global usertags for standard demo
+	mkdir -p $(TMP)/usr/lib/interchange/usertag/standard
+	install -m 0755 dist/standard/config/*.tag $(TMP)/usr/lib/interchange/usertag/standard
+
 # make VERSION file
 	echo 'Variable MAJOR_VERSION $(IC_MAJOR_VERSION)' > $(TMP)/usr/lib/interchange/VERSION
 	echo 'Variable VERSION $(IC_VERSION)' >> $(TMP)/usr/lib/interchange/VERSION

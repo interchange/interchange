@@ -32,7 +32,8 @@ my $settingsconf = '/etc/interchange/settings.cfg';
 my %setvars = (DEBUG => 0, FULL_URL => 0, ROBOTS => 1, SOAP => 0,
 			   TRAFFIC => 'low', UI_LOCALE => 'en_US');
 my %requires = (SOAP => ['SOAP::Lite']);
-my %featvars = (UI => '', USE_FOUNDATION => '', MV_GETPPID_BROKEN => 0);
+my %featvars = (UI => '', USE_FOUNDATION => '', USE_STANDARD => '',
+				MV_GETPPID_BROKEN => 0);
 my %skipvars;
 	
 # other variables
