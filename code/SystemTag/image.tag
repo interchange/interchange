@@ -321,7 +321,7 @@ sub {
 					last MOGIT;
 				}
 
-				$mask = umask(2);
+				$mask = umask(02);
 
 				unless(-d $dir) {
 					File::Path::mkpath($dir);
