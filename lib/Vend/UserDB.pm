@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.10 2000-09-28 10:00:08 heins Exp $
+# $Id: UserDB.pm,v 1.11 2000-09-28 11:12:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -948,6 +948,8 @@ sub login {
 	}
 
 	$Vend::Session->{login_table} = $self->{DB_ID};
+	$Vend::username = $Vend::Session->{username} = $self->{USERNAME};
+	$Vend::Session->{logged_in} = 1;
 	
 	1;
 }
@@ -1090,6 +1092,8 @@ sub new_account {
 
 		$self->log('new account') if $options{'log'};
 		$self->set_values();
+		$self->login()
+			or die "Cannot log in after new account creation: $self->{ERROR}";
 	};
 
 	if($@) {
@@ -1102,8 +1106,6 @@ sub new_account {
 		return undef;
 	}
 	
-	$Vend::Session->{login_table} = $self->{DB_ID};
-
 	1;
 }
 
@@ -1253,8 +1255,6 @@ sub userdb {
 			return undef;
 		}
 		if ($status = $user->login(%options) ) {
-			$Vend::Session->{logged_in} = 1;
-			$Vend::username = $Vend::Session->{username} = $user->{USERNAME};
 			if(
 				! $Vend::Cfg->{AdminUserDB} or
 				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
