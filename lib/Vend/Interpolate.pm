@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.88 2001-06-29 19:52:56 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.89 2001-06-30 21:56:34 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.88 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.89 $, 10);
 
 @EXPORT = qw (
 
@@ -645,15 +645,13 @@ sub tag_record {
 		}
 	}
 
-	if($opt->{new}) {
-		$db->set_row($key, '');
+	my $status;
+	eval {
+		my $status = $db->set_slice($key, \@cols, \@vals);
+	};
+	if($@) {
+		return $@ if $opt->{show_error};
 	}
-	elsif($opt->{create}) {
-		$db->set_row($key, '') unless $db->record_exists($key);
-	}
-	my $settor = $db->row_settor('code', @cols);
-	return undef unless $settor;
-	my $status = defined $settor->($key, @vals);
 	return $status;
 }
 
@@ -722,7 +720,7 @@ sub catch {
 	}
 	else {
 		my $found;
-		while ($body =~ s{\[(.+?)\](.*?)\[/\1\]}{}s ) {
+		while ($body =~ s{\[/(.+?)/\](.*?)\[/\1/]}{}s ) {
 			my $re;
 			my $error = $2;
 			eval {
