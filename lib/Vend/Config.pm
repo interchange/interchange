@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.11 2001-01-19 17:21:09 heins Exp $
+# $Id: Config.pm,v 1.25.2.12 2001-01-20 18:08:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.12 $, 10);
 
 my %CDname;
 
@@ -302,6 +302,7 @@ sub global_directives {
 	['DebugFile',		  undef,     	     ''],
 	['ErrorFile',		  undef,     	     undef],
 	['SysLog',			 'hash',     	     undef],
+	['Logging',			 'integer',     	 0],
 	['CheckHTML',		  undef,     	     ''],
 	['TolerateGet',		 'yesno',     	     'No'],
 	['Variable',	  	 'variable',     	 ''],
