@@ -1,6 +1,6 @@
 UserTag import_fields Order table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.6 $
+UserTag import_fields Version $Revision: 1.7 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -229,6 +229,21 @@ EOF
 	my $key = shift @names;
 	my $i = 0;
 	my $idx = 0;
+	my $ignore_sub;
+	
+	if ($opt->{ignore_fields}) {
+		my %fmap;
+		for (my $ct = 0; $ct < @names; $ct++) {
+			$fmap{$names[$ct]} = $ct;
+		}
+		for (split(/[\0\s,]+/, $opt->{ignore_fields})) {
+			delete $fmap{$_};
+		}
+		my $code = 'sub {$a = shift; @$a = @$a[' . join(',', values(%fmap)) . '];}';
+		$ignore_sub = eval $code;
+		die "Routine to ignore fields bad: $@" if $@;
+		@names = grep {exists $fmap{$_}} @names;
+	}
 
 	######### Filters
 	##
@@ -314,6 +329,7 @@ EOF
 				next;
 			}
 		}
+		$ignore_sub->(\@f) if $ignore_sub;
 		$out .= "${tmsg}Record '$k' had too many fields, ignored.\n"
 			if @f > $idx;
 		if ( ! length($k) or ! $db->record_exists($k)) {
