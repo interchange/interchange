@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.9 2003-06-11 17:51:53 danb Exp $
+# $Id: AuthorizeNet.pm,v 2.10 2003-08-04 22:01:08 racke Exp $
 #
 # Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -34,9 +34,9 @@
 
 package Vend::Payment::AuthorizeNet;
 
-=head1 Interchange AuthorizeNet Support
+=head1 NAME
 
-Vend::Payment::AuthorizeNet $Revision: 2.9 $
+Vend::Payment::AuthorizeNet - Interchange AuthorizeNet Support
 
 =head1 SYNOPSIS
 

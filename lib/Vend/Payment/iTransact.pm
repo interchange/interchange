@@ -1,6 +1,6 @@
 # Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 2.3 2003-06-18 17:34:46 jon Exp $
+# $Id: iTransact.pm,v 2.4 2003-08-04 22:01:09 racke Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
@@ -23,9 +23,9 @@
 
 package Vend::Payment::iTransact;
 
-=head1 Interchange iTransact Support
+=head1 NAME
 
-Vend::Payment::iTransact $Revision: 2.3 $
+Vend::Payment::iTransact - Interchange iTransact Support
 
 =head1 SYNOPSIS
 

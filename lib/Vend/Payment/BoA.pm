@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.9 2003-06-18 17:34:46 jon Exp $
+# $Id: BoA.pm,v 1.10 2003-08-04 22:01:08 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -32,9 +32,9 @@
 
 package Vend::Payment::BoA;
 
-=head1 Interchange BoA Support
+=head1 NAME
 
-Vend::Payment::BoA $Revision: 1.9 $
+Vend::Payment::BoA - Interchange Bank of America Support
 
 =head1 SYNOPSIS
 

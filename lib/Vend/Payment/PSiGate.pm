@@ -1,6 +1,6 @@
 # Vend::Payment::PSiGate - Interchange PSiGate support
 #
-# $Id: PSiGate.pm,v 1.1 2003-06-20 15:12:37 mheins Exp $
+# $Id: PSiGate.pm,v 1.2 2003-08-04 22:01:08 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
@@ -39,9 +39,9 @@
 
 package Vend::Payment::PSiGate;
 
-=head1 Interchange PSiGate Support
+=head1 NAME
 
-Vend::Payment::PSiGate $Revision: 1.1 $
+Vend::Payment::PSiGate - Interchange PSiGate Support
 
 =head1 SYNOPSIS
 
