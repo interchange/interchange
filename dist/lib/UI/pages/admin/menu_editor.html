@@ -5,16 +5,16 @@ Hit action for no-content
 [goto]
 [/if]
 
-[set page_title]Menu construction[/set]
+[set page_title][L]Menu construction[/L][/set]
 [tmpn dhtml_required]1[/tmpn]
 [set ui_class]Design[/set]
 [if cgi qmenu_separate]
 [cgi name=qmenu_products set="[cgi qmenu_separate]" hide=1]
 [/if]
 [if cgi qmenu_name]
-[set page_banner]Edit the <i>[cgi qmenu_name]</i> menu[/set]
+[set page_banner][msg arg.0="<i>[cgi qmenu_name]</i>"]Edit the %s menu[/msg][/set]
 [else]
-[set page_banner]Menu constructor: Make a quick menu[/set]
+[set page_banner][L]Menu constructor: Make a quick menu[/L][/set]
 [/else]
 [/if]
 [tmpn check_publish]1[/tmpn]
@@ -411,10 +411,10 @@ __UI_META_TABLE__
 <input name=mv_action type=hidden value="back">
 &nbsp;
 &nbsp;
-<span class=s3>Menu name</span>
+<span class=s3>[L]Menu name[/L]</span>
 <select name=qmenu_name
 		onChange="if(check_publish()) { this.form.submit() }"
-		class=s3><option value="" class=s3>--select--</option>[scratch qmenu_options]</select>
+		class=s3><option value="" class=s3>[L]--select--[/L]</option>[scratch qmenu_options]</select>
 <input	type=button
 		name=submittor
 		value="[L]Load[/L]"
@@ -652,13 +652,13 @@ function set_checked_buttons (enab) {
 		dis = 1;
 		vis = 'Hidden';
 		weight = 'normal';
-		f.insbutton.value = "Append menu item";
+		f.insbutton.value = "[L]Append menu item[/L]";
 	}
 	else {
 		dis = 0;
 		vis = 'Visible';
 		weight = 'bold';
-		f.insbutton.value = "Insert menu item";
+		f.insbutton.value = "[L]Insert menu item[/L]";
 	}
 	var singles = [ f.delbutton, f.upbutton, f.downbutton ];
 	var buttons = [ singles, f.loadbutton, f.copybutton ];
@@ -940,7 +940,7 @@ function set_mode (mode) {
 		toggleItem(0, form.explode, 1);
 		tree_mode = 0;
 		lines[1][MSORT] = 'x';
-		el.value = "Set tree mode";
+		el.value = "[L]Set tree mode[/L]";
 		ch.checked = 0;
 		cht.checked = 0;
 		tel.style.visibility = 'Hidden';
@@ -1246,7 +1246,7 @@ function insRow (idx) {
 	lines[idx] = new Array;
 	for (i = 0; i < CHECK; i++)
 		lines[idx][i] = '';
-	lines[idx][MSG] = 'NEW';
+	lines[idx][MSG] = '[L]NEW[/L]';
 
 	if(tree_mode == 1) {
 		if(lines[idx - 1] != undefined) {
@@ -1290,10 +1290,10 @@ function loadForm (idx, msg, zeromsg) {
 	}
 
 	if(msg == undefined)
-		msg = 'loaded'; 
+		msg = '[L]loaded[/L]'; 
 						
 	if(zeromsg == undefined)
-		zeromsg = 'loaded';
+		zeromsg = '[L]loaded[/L]';
 
 	var l = lines[idx];
 	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
@@ -1774,7 +1774,7 @@ function motion (idx, motion, fromchecked) {
 		<input name=qmenu_text type=hidden value="">
 [output name=top_buttons]
 <span class=s3>
-Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]" class=s3>
+[L]Save to new menu[/L] <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]" class=s3>
 		<input type=submit
 				style="Visibility: Hidden;"
 				disabled=1
@@ -1784,8 +1784,8 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 		<input type=button
 				onClick="set_mode('toggle')"
 				name=treebutton
-				value="Set tree mode" class=s3>
-		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()" class=s3>
+				value="[L]Set tree mode[/L]" class=s3>
+		<input type=submit name=doit style="font-weight: bold" value="[L]Publish[/L]" onClick="check_change(1) && setOutput()" class=s3>
 		&nbsp;&nbsp;&nbsp;
 		<input type=submit
 				onClick="
@@ -1793,7 +1793,7 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 					this.form.qmenu_new.value='';
 					this.form.qmenu_name.value='';
 					"
-				value="Cancel" class=s3>
+				value="[L]Cancel[/L]" class=s3>
 </span>
 [output name=""]
 <table width="100%">
@@ -1802,25 +1802,25 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 		<input type=button
 				onClick="insRow()"
 				name=insbutton
-				value="Insert menu item">
+				value="[L]Insert menu item[/L]">
 		<input type=button
 				name=delbutton
 				style="visibility: Hidden;"
 				disabled=1
 				onClick="delRow()"
-				value="Delete menu item">
+				value="[L]Delete menu item[/L]">
 		<input type=button
 				name=upbutton
 				style="visibility: Hidden;"
 				disabled=1
 				onClick="motion(0,'up',1)"
-				value="Up">
+				value="[L]Up[/L]">
 		<input type=button
 				name=downbutton
 				style="visibility: Hidden;"
 				disabled=1
 				onClick="motion(0,'down',1)"
-				value="Down">
+				value="[L]Down[/L]">
 	</td>
 	<td>
 		<div id=treebox style="font-size: 10px; display: none">
@@ -1864,7 +1864,7 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 <textarea name=qmenu_html_create rows=20 cols=50
 onChange="this.form.qmenu_new.focus()"></textarea>
 <br>
-<input type=submit name=qmenu_create value="Create New Menu">
+<input type=submit name=qmenu_create value="[L]Create New Menu[/L]">
 [/if]
 [/loop-change 1]</div>
 [/loop]
