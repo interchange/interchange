@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.37 2002-10-05 05:26:29 mheins Exp $
+# $Id: Util.pm,v 2.38 2002-10-05 23:57:10 danb Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 BEGIN {
 	eval {
@@ -1280,9 +1280,9 @@ sub vendUrl {
 
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $can_cache and $Vend::Cookie && $opt->{no_session_id};
+		unless $can_cache and $Vend::Cookie and $opt->{no_session_id};
 	$ct = ++$Vend::Session->{pageCount}
-		unless $can_cache and $::Scratch->{mv_no_count};
+		unless $can_cache and $opt->{no_count};
 
 	if($opt->{match_security}) {
 		$opt->{secure} = $CGI::secure;
