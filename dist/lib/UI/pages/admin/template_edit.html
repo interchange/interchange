@@ -111,7 +111,7 @@ EOF
 	my $tref;
 
 	if($CGI->{ui_template_change}) {
-Log("found change of template");
+#Log("found change of template");
 		$t_name = $CGI->{ui_template_change};
 		$new = 1;
 	}
@@ -123,7 +123,7 @@ Log("found change of template");
 		$t_name = $CGI->{ui_template};
 	}
 
-Log("template reference: " . uneval($tref) );
+#Log("template reference: " . uneval($tref) );
 
 	if($t_name =~ m{/}) {
 		$t_name =~ s:(.*)/(.*)::;
@@ -293,7 +293,7 @@ EOF
 	}
 
 
-Log("t_name=$t_name");
+#Log("t_name=$t_name");
 
 	my $template = $CGI->{ui_template};
 
@@ -380,7 +380,7 @@ EOF
 	my $template_div = 0;
 
 	for(\$template_top, \$template_bot) {
-Log("looking in template, length " . length($$_));
+#Log("looking in template, length " . length($$_));
 		while( $$_ =~ m{
 				 [ \t]* 
 				 (?:
@@ -399,7 +399,7 @@ Log("looking in template, length " . length($$_));
 		{
 			my $compname = $1 || $4;
 			my $comptype = $2 || $5;
-Log("Found component $compname, group $comptype");
+#Log("Found component $compname, group $comptype");
 			my $current_content = $3 || '';
 			
 #Log ("Read component $compname=$chash->{$compname}.");

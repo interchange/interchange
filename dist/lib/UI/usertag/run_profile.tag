@@ -9,7 +9,7 @@ sub {
 	# check scratch for profile if none specified
 	$profile = $Scratch->{"profile_$check"} unless $profile;
 
-::logDebug("PROFILE(" . $Tag->var('MV_PAGE',1) . "):***$profile***");
+#::logDebug("PROFILE(" . $Tag->var('MV_PAGE',1) . "):***$profile***");
 	# test passes if no profile exists
 	return 1 if ! $profile;
 

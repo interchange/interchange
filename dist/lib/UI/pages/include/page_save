@@ -1,9 +1,9 @@
 [tmp now][time]%Y%m%d%H%M%S[/time][/tmp]
 [flag type=write table=backup][perl tables=backup]
-Log("In page save");
+#Log("In page save");
 	unless($CGI->{ui_page}) {
 		# Probably a re-get after the original post, mozilla bug?
-Log("Returning with no ui_page");
+#Log("Returning with no ui_page");
 		return;
 	}
 	my @filters = grep /^ui_filter:/, keys %$CGI;
@@ -29,7 +29,7 @@ Log("Returning with no ui_page");
 										file => $CGI->{ui_template},
 										element => 'ui_template_layout',
 									});
-Log("elements: $CGI->{ui_template_layout}");
+#Log("elements: $CGI->{ui_template_layout}");
 	}
 
 	my @keys = keys %$CGI;
@@ -56,7 +56,7 @@ Log("elements: $CGI->{ui_template_layout}");
 
 	push @layout, '[control reset=1]' if @components;
 
-Log("components: " . join ",", @components);
+#Log("components: " . join ",", @components);
 
 	if(! @components) {
 		$CGI->{ui_component_text} =~ s/\r\n/\n/g;
@@ -169,12 +169,12 @@ EOF
 	$page .= $Config->{HTMLsuffix}
 		unless $page =~ /$Config->{HTMLsuffix}$/;
 	$page = "pages/$page" if $page !~ m{^pages/|^tmp/};
-Log("final page=$page");
+#Log("final page=$page");
 	push @out, '';
 
 	my $out = join "\n", @out;
 	unless ($Tag->write_relative_file($page, $out)) {
-Log("failed to write page=$page");
+#Log("failed to write page=$page");
 		$Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
 	}
 	$Scratch->{ui_output_page} = $page; 
