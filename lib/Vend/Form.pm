@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.44 2004-06-07 03:18:19 mheins Exp $
+# $Id: Form.pm,v 2.45 2004-06-09 17:16:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 @EXPORT = qw (
 	display
@@ -424,19 +424,39 @@ sub date_widget {
 		$now += $sign eq '+' ? $adjust : -$adjust;
 	}
 
+	my $sel_extra;
+	my $opt_extra;
+	for(qw/ class style extra /) {
+		my $stag = "select_$_";
+		my $otag = "option_$_";
+		my $selapp;
+		my $optapp;
+
+		if($_ eq 'extra') {
+			$selapp = " $opt->{$stag}";
+			$optapp = " $opt->{$otag}";
+		}
+		else {
+			$selapp = qq{ $_="$opt->{$stag}"};
+			$optapp = qq{ $_="$opt->{$otag}"};
+		}
+		$sel_extra .= $opt->{$stag} ? $selapp : '';
+		$opt_extra .= $opt->{$otag} ? $optapp : '';
+	}
+
 	my @t = localtime($now || time);
 	if (not $val) {
 		$t[2]++ if $t[2] < 23;
 		$val = POSIX::strftime("%Y%m%d%H00", @t);
 	}
 	my $sel = 0;
-	my $out = qq{<SELECT NAME="$name">};
+	my $out = qq{<SELECT NAME="$name"$sel_extra>};
 	my $o;
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0">------</OPTION>';
+		$out .= '<OPTION VALUE="0"$opt_extra>------</OPTION>';
 	}
 	for(@Months) {
-		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]) . '</OPTION>';
+		$o = qq{<OPTION VALUE="$_->[0]"$opt_extra>} . errmsg($_->[1]) . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 4, 2) eq $_->[0];
@@ -445,12 +465,12 @@ sub date_widget {
 	$sel = 0;
 	$out .= qq{</SELECT>};
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name">};
+	$out .= qq{<SELECT NAME="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0">--</OPTION>';
+		$out .= '<OPTION VALUE="0"$opt_extra>--</OPTION>';
 	}
 	for(@Days) {
-		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]} . '</OPTION>';
+		$o = qq{<OPTION VALUE="$_->[0]"$opt_extra>$_->[1]} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 6, 2) eq $_->[0];
@@ -459,7 +479,7 @@ sub date_widget {
 	$sel = 0;
 	$out .= qq{</SELECT>};
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name">};
+	$out .= qq{<SELECT NAME="$name"$sel_extra>};
 	if(my $by = $opt->{year_begin} || $::Variable->{UI_DATE_BEGIN}) {
 		my $cy = $t[5] + 1900;
 		my $ey = $opt->{year_end}  || $::Variable->{UI_DATE_END} || ($cy + 10);
@@ -472,10 +492,10 @@ sub date_widget {
 		@Years = ($by .. $ey);
 	}
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0000">----</OPTION>';
+		$out .= '<OPTION VALUE="0000"$opt_extra>----</OPTION>';
 	}
 	for(@Years) {
-		$o = qq{<OPTION>$_} . '</OPTION>';
+		$o = qq{<OPTION$opt_extra>$_} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 0, 4) eq $_;
@@ -488,9 +508,9 @@ sub date_widget {
 	$val =~ s/\D+//g;
 	$val = round_to_fifteen($val);
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
-	$out .= qq{<SELECT NAME="$name">};
+	$out .= qq{<SELECT NAME="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0">--:--</OPTION>';
+		$out .= '<OPTION VALUE="0"$opt_extra>--:--</OPTION>';
 	}
 	
 	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
@@ -522,7 +542,7 @@ sub date_widget {
 				$disp_hour = sprintf("%02d:%02d", $hr, $min);
 			}
 			my $time = sprintf "%02d%02d", $hr, $min;
-			$o = sprintf qq{<OPTION VALUE="%s">%s}, $time, $disp_hour;
+			$o = sprintf qq{<OPTION VALUE="%s"$opt_extra>%s}, $time, $disp_hour;
 			($out .= $o, next) unless ! $sel and $val;
 #::logDebug("prospect=$time actual=$val");
 			$o =~ s/>/ SELECTED>/ && $sel++
