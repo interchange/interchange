@@ -267,7 +267,7 @@ mv_todo=return
 		my @items = split /\0/, $CGI->{batch_id};
 		foreach my $item (@items) {
 			if ($db->delete_record($item)) {
-				$out .= "Deleted $item from table $tab<BR>";
+				$out .= errmsg("Deleted %s from table %s", $item, $tab) . '<BR>';
 			}
 			else {
 				$out .= "Item $item not in $tab table (or delete failed)<BR>";
@@ -313,7 +313,7 @@ mv_todo=return
 		my @items = split /\0/, $CGI->{batch_id};
 		foreach my $item (@items) {
 			if ($db->delete_record($item)) {
-				$out .= "Deleted $item from table $tab<BR>";
+				$out .= errmsg("Deleted %s from table %s", $item, $tab) . '<BR>';
 			}
 			else {
 				$out .= "Item $item not in $tab table (or delete failed)<BR>";
