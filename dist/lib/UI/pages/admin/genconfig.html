@@ -55,30 +55,34 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Perl Version and Location
+	<A HREF="[area href="@@MV_PAGE@@" form="more_perl=1"]">Perl Version</A>
 	</TH>
-	<TD>-display-</TD>
+	<TD>Perl [version extended=1 perl=1 perl_config="[cgi more_perl]"]
+	</TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Location of Error Logs
 	</TH>
-	<TD>-display-</TD>
+	<TD>
+		Global: [version extended=1 global_error=1]<br>
+		Local: [version extended=1 local_error=1]
+		</TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Interchange PID
 	</TH>
-	<TD>-display-</TD>
+	<TD>[version extended=1 pid=1]</TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Interchange SUID User
 	</TH>
-	<TD>-display-</TD>
+	<TD>[version extended=1 uid=1]</TD>
 </TR>
 
 
@@ -103,14 +107,23 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Database Information<br> (what's in actual use?)
+	<A HREF="[area __UI_BASE__/dbinfo]">Database Information<a>
+	<small>
+	<small>
+	<blockquote><blockquote><div align=left>
+		[loop list="[list-databases]"]
+			<A HREF="[area __UI_BASE__/dbinfo [loop-code]]">[loop-code]<a><br>
+		[/loop]
+	</div></blockquote></blockquote>
+	</small>
+	</small>
 	</TH>
-	<TD> [version extended=1 db=1]</A></TD>
+	<TD VALIGN=top> [version extended=1 db=1]</A></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Optional Module Information<br>(include version #)
+	Optional Module Information
 	</TH>
 	<TD> [version extended=1 modules=1]</A></TD>
 </TR>
