@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.2 2000-10-20 15:26:24 racke Exp $
+# $Id: DBI.pm,v 1.19.4.3 2000-10-26 10:32:07 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.3 $, 10);
 
 use strict;
 
@@ -342,6 +342,7 @@ sub quote {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	return $s->[$DBI]->quote($value)
 		unless $field and $s->numeric($field);
+	return 0 unless $value =~ /\d/;
 	return $value;
 }
 

@@ -19,6 +19,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - expire scripts have now a -f option so they can called by cron in
   the Debian setup (expire.PL/expireall.PL: 1.8.4.1)
 - log form action errors (interchange.PL: 1.8.4.6)
+- bugfix for DBI.pm (1.19.4.3)
 
 Changes that made into the main branch:
 
