@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.58 2004-03-31 15:52:36 racke Exp $
+# $Id: DBI.pm,v 2.59 2004-04-11 18:18:43 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 use strict;
 
@@ -277,13 +277,14 @@ sub create_sql {
 	$keycol = 0 unless defined $keycol;
 	$config->{KEY_INDEX} ||= $keycol;
 	$config->{KEY} ||= $key;
+	$config->{KEY_DEF} ||= 'char (16) NOT NULL';
 
 	if ( not defined $config->{COLUMN_DEF}->{$key} ) {
 		if($config->{AUTO_SEQUENCE} and $config->{SEQUENCE_KEY}) {
 			$cols[$keycol] =~ s/\s+.*/ $config->{SEQUENCE_KEY}/;
 		}
-		else {
-			$cols[$keycol] =~ s/\s+.*/ char(16) NOT NULL/;
+		elsif(! $config->{COMPOSITE_KEY}) {
+			$cols[$keycol] =~ s/\s+.*/ $config->{KEY_DEF}/;
 		}
 	}
 
@@ -432,6 +433,7 @@ sub create {
 	}
 
 	my @index;
+	my $key_index_found;
 	if(ref $config->{INDEX}) {
 		for my $def (@{$config->{INDEX}}) {
 			my $uniq = '';
@@ -439,6 +441,7 @@ sub create {
 			$def =~ s/:\w+//g;
 			my $col = $def;
 			$col =~ s/\W.*//s;
+			$key_index_found = 1 if lc($col) eq lc($key);
 			my $template = $config->{ALTER_INDEX}
 						|| $known_capability{ALTER_INDEX}{default};
 			$template =~ s/\b_TABLE_\b/$tablename/g;
@@ -462,15 +465,17 @@ sub create {
 					);
 			$db->commit() if $config->{Transactions};
 		}
-	} elsif ($config->{AUTO_INDEX_PRIMARY_KEY}) {
+	}
+	elsif ($config->{AUTO_INDEX_PRIMARY_KEY}) {
 		# Oracle automatically creates indexes on primary keys,
 		# so we don't need to do it again
-	} else {
+	}
+	elsif(! $key_index_found) {
 		$db->do("create index ${tablename}_${key} on $tablename ($key)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 		$db->commit() if $config->{Transactions};
 	}
-
+ 
 	for(@index) {
 #::logDebug("Running: $_");
 		$db->do($_) 
