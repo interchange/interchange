@@ -10,7 +10,7 @@ Architecture: all
 Description: Interchange documentation
  Additional Interchange documentation
 
-Package: interchange-cat-construct
+Package: interchange-cat-foundation
 Architecture: all
 Depends: interchange
 Description: Sample Interchange catalog
