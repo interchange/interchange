@@ -236,19 +236,38 @@ EOF
 	if($opt->{ui_profile} or $check) {
 		$Tag->error( { all => 1 } ) if ! $CGI->{mv_form_profile};
 		my $prof = $opt->{ui_profile} || '';
+		if ($prof =~ s/^\*//) {
+			# special notation ui_profile="*whatever" means
+			# use automatic checklist-related profile
+			my $name = $prof;
+			$prof = $Scratch->{"profile_$name"} || '';
+			if ($prof) {
+				$prof =~ s/^\s*(\w+)[\s=]+required\b/$1=mandatory/mg;
+				for (grep /\S/, split /\n/, $prof) {
+					if (/^\s*(\w+)\s*=(.+)$/) {
+						my $k = $1; my $v = $2;
+						$error->{$k} = 1;
+						$error_show_var = 0 if $v =~ /\S /;
+					}
+				}
+				$prof = "&calc delete \$Values->{step_$name}\n" . $prof;
+				$opt->{ui_profile_success} = "&set=step_$name 1";
+			}
+		}
 		my $success = $opt->{ui_profile_success};
 		if(ref $check) {
-			while ( my($k, $v) = each %{$check}) {
+			while ( my($k, $v) = each %$check ) {
 				$error->{$k} = 1;
 				$v =~ s/\s+$//;
 				$v =~ s/^\s+//;
 				$v =~ s/\s+$//mg;
 				$v =~ s/^\s+//mg;
-				$error_show_var = 0 if $v =~ /\S /;
 				$v =~ s/^required\b/mandatory/mg;
-				$v =~ /^\&/m
-						or 
-					$v =~ s/^/$k=$1/mg, $v =~ s/\n/\n&and\n/g;
+				unless ($v =~ /^\&/m) {
+					$error_show_var = 0 if $v =~ /\S /;
+					$v =~ s/^/$k=/mg;
+					$v =~ s/\n/\n&and\n/g;
+				}
 				$prof .= "$v\n";
 			}
 		}
@@ -1040,9 +1059,6 @@ EOF
 <FONT COLOR="$opt->{color_fail}">\$LABEL\$</FONT><!--%s-->
 [else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
 EOF
-			}
-			else {
-				$parm->{std_label} = '$LABEL$';
 			}
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
