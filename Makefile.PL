@@ -467,7 +467,7 @@ sub initialize {
 								$MV::Default{PREFIX},
 								);
 			if ($realdir =~ /^\s*\Q$origdir/) {
-				warn "Can't install in software source directory $realdir,$origdir!\n";
+				warn "Can't install in software source directory!\n";
 				redo;
 			}
 		}
@@ -482,8 +482,8 @@ sub initialize {
 		$realdir = $MV::Default{final};
 	}
 
-	die "Can't install in software source directory! $realdir,$origdir,$'\n" if
-		! $MV::Default{force} && $realdir =~ /^\Q$origdir/;
+	die "Can't install in software source directory!\n" if
+		$realdir =~ /^\Q$origdir/;
 
 #warn "Got past realdir prompt\n" ; #if $X{RPMBUILDDIR};
 
