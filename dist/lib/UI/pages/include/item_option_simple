@@ -100,8 +100,7 @@
 [list]
 [if-sql-data options o_group]
 [calc] $Scratch->{mod_code} = q{[sql-code]}; $Scratch->{mod_code} =~ s/-/_/g; return;[/calc]
-[if scratch count][tmp count]0[/tmp][else][tmp count]1[/tmp][/else][/if]
-<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[if scratch count]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/if]">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]">
 <TR><TD VALIGN=CENTER>Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_[scratch mod_code]" VALUE="[filter entities][sql-param o_group][/filter]">
 
 <A HREF="[area href='@@MV_PAGE@@'
@@ -130,7 +129,15 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 [/perl][/tmp]
 
 <TR><TD>
-<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[scratch mod_code]">[scratch o_value]</TEXTAREA>
+<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[scratch mod_code]">[scratch o_value]</TEXTAREA><br>
+[page href="admin/flex_editor"
+		form="
+			mv_data_table=options
+			item_id=[sql-code]
+			ui_return_to=admin/item_option
+			ui_return_to=item_id=[cgi item_id]
+			ui_data_fields=code o_widget o_width o_height
+		"]Widget type edit</A>
 </TD></TR>
 </TABLE>
 [/if-sql-data]

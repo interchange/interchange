@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.70 2002-06-23 01:20:10 jon Exp $
+# $Id: Interpolate.pm,v 2.71 2002-06-25 03:26:26 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 @EXPORT = qw (
 
@@ -1823,7 +1823,7 @@ sub tag_options {
 	}
 	else {
 #::logDebug("simple options");
-		for(qw/code o_enable o_group o_value o_label o_widget price/) {
+		for(qw/code o_enable o_group o_value o_label o_widget price o_height o_width/) {
 			push @rf, ($map{$_} || $_);
 		}
 		my $fsel = $map{sku} || 'sku';
@@ -1854,6 +1854,8 @@ sub tag_options {
 								passed => $ref->[3],
 								price => $opt->{price},
 								price_data => $ref->[6],
+								height => $opt->{height} || $ref->[7],
+								width  => $opt->{width} || $ref->[8],
 								type => $opt->{type} || $ref->[5] || 'select',
 							},
 							$item || undef,
