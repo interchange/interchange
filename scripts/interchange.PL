@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.24 2002-02-16 09:39:11 mheins Exp $
+# $Id: interchange.PL,v 2.25 2002-03-18 20:11:06 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1781,7 +1781,7 @@ sub dispatch {
 
 	unless (defined $Global::Selector{$CGI::script_name}) {
 		my $msg = get_locale_message(
-						403,
+						404,
 						"Undefined catalog: %s",
 						$CGI::script_name,
 						);
