@@ -64,6 +64,11 @@ Core
 
 * Remove Vend::Server::http_log_msg which is only called for SOAP accesses.
 
+* Create way to specify that local override of a global tag should not cause
+  an error message.
+
+  		Limit  override_tag   tag1 tag2 tag3
+
 UserTag
 -------
 
@@ -75,6 +80,8 @@ UI
 * customer_mailing: Add full path for sendmail in batch, 
   using $Config->{SendMailProgram}, weed duplicate email addresses, 
   sort by email instead of last name 
+
+* let [row_edit] honor spread_width meta setting
 
 Foundation
 ----------
@@ -88,6 +95,27 @@ TableEditor
 
 * Apply Paul Vinciguerra's patch to number of rows thing, which gets multiple row
   tabs working on the tabbed display if not in ui_style mode.
+
+Menu
+----
+
+* Enhance flyout menus to have a lined-up image indicating a submenu.
+  The parameter is an image name (if not beginning with <) or
+  arbitrary HTML (if first character is <).
+
+  Use by passing the parameter:
+
+  	  submenu_image_right="[var IMAGE_DIR]/right.gif"
+
+  or
+
+  	  submenu_image_left="[image src=asterisk.gif]"
+
+  or to fake it out with some text:
+
+	submenu_image_right=|
+			<span style="font-size: smaller !important"> &nbsp; (more)</span>
+						|
 
 Options
 -------
