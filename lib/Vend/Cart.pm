@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.9 2003-06-18 17:34:44 jon Exp $
+# $Id: Cart.pm,v 2.10 2003-11-17 14:24:11 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use strict;
 
@@ -226,8 +226,7 @@ sub toss_cart {
 					$col = $tab;
 					$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 				}
-				$item->{mv_max_quantity} = ::tag_data($tab, $col, $item->{code})
-											 || '';
+				$item->{mv_max_quantity} = ::tag_data($tab, $col, $item->{code});
 
 				if(
 					length $item->{mv_max_quantity}
