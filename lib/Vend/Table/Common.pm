@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.9 2000-09-05 20:36:50 heins Exp $
+# $Id: Common.pm,v 1.10 2000-09-14 11:01:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -606,7 +606,7 @@ eval {
 #::logDebug("tabs='@tabs' columns='@na' vals='@vals' update=$update"); 
 
     my $search;
-    if ("\L$opt->{st}" eq 'db' ) {
+    if (! defined $opt->{st} or "\L$opt->{st}" eq 'db' ) {
 		for(@tabs) {
 			s/\..*//;
 		}
