@@ -8,15 +8,22 @@ Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-
 Package: interchange-cat-foundation
 Architecture: all
 Depends: libwww-perl, debconf, interchange (>=4.8.1), interchange-ui (>=4.8.1)
-Description: Sample Interchange catalog
- Sample Interchange catalog
+Description: Foundation Store, a sample Interchange catalog
+ The Foundation store is a demo catalog which you can use to
+ build your Interchange applications from. While the Foundation store
+ is designed to be relatively easy to start with, it is still a full-featured
+ demonstration of a number of Interchange capabilities. 
+ Once you understand the Foundation store and how it works you are well 
+ on your way to understanding the Interchange software.
 
 Package: interchange-ui
 Architecture: all
 Depends: ${perl:Depends}, debconf, interchange (>=4.8.1)
 Suggests: libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
-Description: Interchange administration interface
- Interchange administration interface
+Description: Interchange administration interface (UI)
+ With the Interchange administration interface, called UI, you are able
+ to perform several useful operations like page edit, user's administration
+ and view reports on an Interchange catalog.
 
 Package: interchange
 Architecture: any
