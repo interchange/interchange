@@ -1,3 +1,6 @@
+Interchange-4.5.7 changes
+
+
 
 Interchange-4.5.6 changes -- complete overhaul of UI
 
@@ -153,7 +156,9 @@ Core:
 
 * Added image copying for shared image directories (the admin).
 
+
 Interchange-4.5.0 changes -- the start of the Tallyman merge.
+
 * Many, many, changes and improvments to the user interface.
   Minimate is broken out again and made separate; the UI should
   have all of its functionality. See the UI online help for changes.
@@ -181,4 +186,3 @@ Interchange-4.5.0 changes -- the start of the Tallyman merge.
   now should work properly as default database.
 * Other changes much too numerous to mention. This will be the last
   version of this changes document; there are too many.
-
