@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.30 2004-02-02 20:53:28 mheins Exp $
+# $Id: Dispatch.pm,v 1.31 2004-02-22 19:28:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.30 $, 10);
+$VERSION = substr(q$Revision: 1.31 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -596,7 +596,11 @@ sub do_process {
 	}
 
 	if($CGI::values{mv_form_profile}) {
-		my ($status) = check_order($CGI::values{mv_form_profile}, \%CGI::values);
+		my ($status) = check_order(
+							$CGI::values{mv_form_profile},
+							\%CGI::values,
+							$CGI::values{mv_individual_profile},
+							);
 		return 1 if defined $status and ! $status;
 	}
 

@@ -106,14 +106,14 @@ EOF
 		width
 		height
 		options
-		default
+		extended.blank_default
 
 	   =Help and Check
 
 	   help
 	   help_url
+	   extended.check
 	   extended.maxlength
-	   extended.js_check
 
 	   =Database lookup
 
@@ -158,6 +158,12 @@ EOF
 		'extended.ui_sort_option' => qq{=--default--,f=Case insensitive, fr=Case insensitive/Reverse, n=Numeric, nr=Reverse Numeric},
 	}`
 
+	filter=`{
+		'extended.maxlength' => 'digits',
+		'extended.width' => 'digits',
+		'extended.height' => 'digits',
+	}`
+
 	label=`{
 		'extended.ui_more_alpha' => 'Alphabetic more links',
 		'extended.ui_sort_option' => 'Sort option',
@@ -179,10 +185,16 @@ EOF
 		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
 		'extended.data_cell_class' => 'Data cell CSS class',
 		'extended.data_cell_style' => 'Data cell CSS style',
+		'extended.maxlength' => 'Maxlength',
+		'extended.check' => 'Profile check',
+		'extended.blank_default' => 'Default value',
 	}`
 	help=`{
 		'extended.fs_data_calc' => 'Current record passed as $item',
 		'extended.fs_data_tables' => 'To have open for Safe module',
+		'extended.maxlength' => 'For text widget (HTML maxlength=NN)',
+		'extended.blank_default' => 'Applies only when empty',
+		'extended.check' => 'Standard IC mv_profile checks -- required, postcode, etc.',
 	}`
 	widget=`{
 		extended => "textarea_5_50",
@@ -191,6 +203,8 @@ EOF
 		'extended.fs_no_group' => 'yesno',
 		'extended.fs_display_filter' => 'text_50',
 		'extended.fs_data_calc' => 'textarea_4_70',
+		'extended.maxlength' => 'text_4',
+		'extended.check' => 'textarea_2_50',
 	}`
 
 	ui_style=1
@@ -199,4 +213,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.9 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.10 $ -->

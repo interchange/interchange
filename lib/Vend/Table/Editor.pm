@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.51 2004-02-13 15:01:00 mheins Exp $
+# $Id: Editor.pm,v 1.52 2004-02-22 19:28:38 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.51 $, 10);
+$VERSION = substr(q$Revision: 1.52 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1925,6 +1925,11 @@ EOF
 				$prof .= "$_=mandatory\n";
 			}
 		}
+
+		## Enable individual widget checks
+		$::Scratch->{mv_individual_profile} = 1;
+
+		## Call the profile in the form
 		$opt->{hidden}{mv_form_profile} = 'ui_profile';
 		my $fail = $opt->{mv_failpage} || $Global::Variable->{MV_PAGE};
 
@@ -3115,6 +3120,16 @@ $l_pkey</td>};
 
 	my @extra_hidden;
 	my $icount = 0;
+
+	my $reload;
+	## Find out what our errors are
+	if($CGI->{mv_form_profile} eq 'ui_profile' and $Vend::Session->{errors}) {
+		for(keys %{$Vend::Session->{errors}}) {
+			$error->{$_} = 1;
+		}
+		$reload = 1 unless $opt->{no_reload};
+	}
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -3203,6 +3218,10 @@ $l_pkey</td>};
 			$overridden = 1;
 		}
 
+		if($reload and defined $CGI::values{$col}) {
+			$currval = $CGI::values{$col};
+		}
+
 		my $namecol;
 		if($serialize) {
 #::logDebug("serialize=$serialize");
@@ -3230,6 +3249,10 @@ $l_pkey</td>};
 #::logDebug("fetched hk=$hk value=$currval");
 			$overridden = 1;
 			$namecol = $c = $serialize;
+
+			if($reload and defined $CGI::values{$namecol}) {
+				$currval = $CGI::values{$namecol};
+			}
 		}
 
 		$namecol = $col unless $namecol;

@@ -4,6 +4,7 @@ _uid
 blib
 build
 Makefile
+META.yml
 pm_to_blib
 build-stamp
 *.pdf

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.42 2004-02-11 21:32:13 mheins Exp $
+# $Id: Form.pm,v 2.43 2004-02-22 19:28:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1206,6 +1206,11 @@ if($opt->{debug}) {
 	}
 
 	$opt->{value} = $opt->{default} if ! defined $opt->{value};
+
+	if(length($opt->{blank_default}) and ! length($opt->{value}) ) {
+		$opt->{value} = $opt->{blank_default};
+	}
+
     $opt->{encoded} = encode($opt->{value}, $ESCAPE_CHARS::std);
     $opt->{value} =~ s/&#91;/\[/g if $opt->{enable_itl};
 
@@ -1264,6 +1269,12 @@ if($opt->{debug}) {
 							|| $daction{default};
 	}
 
+	if(my $c = $opt->{check}) {
+		$c = "$opt->{name}=$c" unless $c =~ /=/;
+		HTML::Entities::encode($c);
+		no warnings;
+		$opt->{append} .= qq{<input type=hidden name="mv_individual_profile" value="$c">};
+	}
 	return $sub->($opt, $data);
 }
 
