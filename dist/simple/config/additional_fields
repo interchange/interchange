@@ -102,11 +102,3 @@ Password for Postgres (if any)
 SUPERUSER
 Account name that will control this catalog
 __MVC_CATUSER__	minivend
-
-CRYPTPW
-Set to 1 to encrypt passwords, leave at 0 to NOT encrypt:
-0	1
-
-SUPASSWD
-Password for superuser account to reconfig catalog:
-pass	ceJq5Qwc3ApHQ
