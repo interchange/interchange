@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.13 2002-11-26 03:21:09 jon Exp $
+# $Id: Config.pm,v 2.2.2.14 2003-01-24 03:31:17 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -96,7 +96,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.13 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.14 $, 10);
 
 my %CDname;
 
@@ -2695,7 +2695,10 @@ sub parse_routeconfig {
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
 
-	my ($db, $table) = get_configdb($var, $value);
+	my ($db, $table);
+	eval {
+		($db, $table) = get_configdb($var, $value);
+	}
 
 	return '' if ! $db;
 
@@ -2758,7 +2761,10 @@ sub parse_dbconfig {
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
 
-	my ($db, $table) = get_configdb($var, $value);
+	my ($db, $table);
+	eval {
+		($db, $table) = get_configdb($var, $value);
+	}
 
 	return '' if ! $db;
 
