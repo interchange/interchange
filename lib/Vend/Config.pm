@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.39 2002-02-18 02:07:03 mheins Exp $
+# $Id: Config.pm,v 2.40 2002-03-05 13:42:43 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 my %CDname;
 
@@ -3263,6 +3263,22 @@ sub parse_tag {
 	}
 
 	if($p eq 'Routine' or $p eq 'PosRoutine') {
+		if (defined $c->{Source}->{$tag}->{$p}){
+			config_error(
+				errmsg(
+					"Duplicate usertag %s found",
+					$tag,
+				)
+			);
+		}
+		if (defined $C && defined $Global::UserTag->{Source}->{$tag}->{$p}){
+			config_warn(
+				errmsg(
+					"Local usertag %s overrides global definition",
+					$tag,
+				)
+			);
+		}
 
 		my $sub;
 		$c->{Source}->{$tag}->{$p} = $val;
