@@ -883,15 +883,18 @@ ui_template_name: noleft
     <tr><td>
       <br>
       <table align="center" cellpadding="10" cellspacing="10"><tr>
-      <td>
-	<INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif">	
-      </td>
       <td class="contentbar1">
-	[button
-	  name="mv_todo.submit.x"
-	  src="__THEME__/placeorder.gif"
+	[button 
+           name="mv_click" 
+	   src="__THEME__/placeorder.gif" 
+	   text="Place Order"
+	   hidetext=1
 	]
+	   mv_todo=submit
         [/button]
+      </td>
+      <td>
+	<INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif">
       </td>
       </tr></table>
         
