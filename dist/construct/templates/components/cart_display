@@ -32,10 +32,12 @@
 
 
 
-	[if-item-data inventory quantity < 1]
-<br>
-		<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
-	[/if-item-data]
+	[if-item-modifier !gift_cert]
+		[if-item-data inventory quantity < 1]
+	<br>
+			<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
+		[/if-item-data]
+	[/if-item-modifier]
 </TD>
 
 [if-item-modifier gift_cert]
