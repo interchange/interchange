@@ -1,5 +1,5 @@
 [set page_perm]page[/set]
-[set page_title]Page editor[/set]
+[set page_title][L]Page editor[/L][/set]
 [set ui_class]Content[/set]
 [set help_name]page.editor[/set]
 [set icon_name]icon_pages.gif[/set]
@@ -8,6 +8,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
@@ -25,7 +26,7 @@
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" colspan=2>
-<A HREF="[area __UI_BASE__/template_new]"><img src="layout.gif" border=0 align=textmiddle> New template</A><br><br>
+<A HREF="[area __UI_BASE__/template_new]"><img src="layout.gif" border=0 align=textmiddle> [L]New template[/L]</A><br><br>
 [file-navigator
 	initial_dir="[either]__UI_TEMPLATE_DIR__[or]templates[/either]"
 	start_open="[either]__UI_TEMPLATE_DIR__[or]templates[/either]"
