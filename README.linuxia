@@ -6,11 +6,14 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - new UI UserTag related, called from item_edit (CVS 1.12.4.3)
 - superfluous she-bang removed from MakeCat.pm (CVS 1.12.4.1)
 - new UserTag formel
-- preliminary fix for dump_structure in Config.pm (CVS 1.23.4.1)
+- insert without primary key (interchange.PL: CVS 1.8.4.4, DBI.pm: CVS 1.19.4.2)
+- replaced hardcoded name for affiliate table with UI_AFFILIATE_TABLE
+  (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3)
 
 Changes that made into the main branch:
 
 - patch to makecat.PL to make -f working (CVS 1.26.4.2, modified, 2000-10-18)
+- fix for dump_structure in Config.pm (CVS 1.23.4.1, modified, 2000-10-19)
 
 Candidates for 4.7:
 
