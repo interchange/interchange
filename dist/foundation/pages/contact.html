@@ -45,35 +45,38 @@ ui_template_name: leftonly
 
     <br>
 
-    This is a demonstartion "Contact Us" page for Interchange.  
-    Here are the values you entered when you installed this catalog:
+	<p>You can contact us the following ways:</p>
 
-    <br><br>
-
+	<p>
     <b>__COMPANY__</b><br>
     __ADDRESS__<br>
-    __CITY__<br>
+    __CITY__
+	</p>
+
+	<p>
     Phone: __PHONE__<br>
-    Fax: __FAX__<br>
-
+	[if variable FAX]
+	    Fax: __FAX__<br>
+	[/if]
     [if variable TOLLFREE]
-    Tollfree: __TOLLFREE__<br>
+    	Toll-free: __TOLLFREE__<br>
+	[/if]
+	[if variable EMAIL_INFO]
+		e-mail: <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a><br>
+	[/if]
+	</p>
 
-    <br>
+	<hr>
 
-    If you would like further information 
-    on constructing a store like this, 
-    please contact:
-    <br>
+	<p>If you would like further information on constructing a store
+	like this, please contact Red Hat E-Business Solutions:</p>
 
-    <p><a href="http://www.akopia.com">http://www.akopia.com</a></p>
-    e-mail: <a href="info@akopia.com">info@akopia.com</a>
+    <p><a href="http://www.akopia.com/">http://www.akopia.com/</a><br>
+    e-mail: <a href="info@akopia.com">info@akopia.com</a></p>
 
   </td>
 </tr>
 </table>
-
-<br><br>
 
 <!-- END CONTENT -->
 
