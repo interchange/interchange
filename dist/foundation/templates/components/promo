@@ -48,8 +48,6 @@ banner:
 		delete $Scratch->{promo_codes};
 		my $date = $Tag->time( { body => '%Y%m%d' } );
 		$ref = $Tmp->{main} or return;
-		$db = $Db{merchandising} or return;
-		my $idx = $db->config('KEY_INDEX');
 		for(@$ref) {
 			my $line = $_;
 			push(@out, $line->[0]), next if ! $line->[1];
