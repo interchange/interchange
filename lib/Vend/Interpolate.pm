@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.30 2001-03-19 19:11:32 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.31 2001-03-19 23:42:54 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.30 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.31 $, 10);
 
 @EXPORT = qw (
 
@@ -5881,6 +5881,7 @@ EOF
 		}
 		$text =~ s/{LABEL}/$opt->{std_label}/g;
 		$text =~ s/{REQUIRED\s+([^}]*)}/$opt->{required} ? $1 : ''/ge;
+		$err =~ s/\s+$//;
 	}
 	$text = '' unless defined $text;
 	$text .= '%s' unless $text =~ /\%s/;
