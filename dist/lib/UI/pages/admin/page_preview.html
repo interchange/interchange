@@ -20,6 +20,7 @@
 		if( $one eq 'UI_CONTENT') {
 			my $content = shift @insert;
 			#Log("inserting $content");
+			$content =~ s/\r?\n/\n/g;
 			push @out, $content;
 		}
 		elsif ($one =~ /^[A-Z]\w+$/) {

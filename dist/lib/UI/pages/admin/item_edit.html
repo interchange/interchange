@@ -29,6 +29,33 @@
 					icon_name=admin/icon_item.gif
 					ui_break_before=quantity,stock_message
 					']">Edit inventory</A><BR>
+[seti prod_tables] [/seti]
+[flag type=write
+      table=`   my $tmp = join " ", @{$Config->{ProductFiles}};
+                $tmp =~ s/\s+.*//;
+                $Scratch->{prod_tables} = $tmp;
+            `]
+[perl table="[scratch prod_tables]"]
+	my $db = $Db{$Scratch->{prod_tables}}
+		or return;
+	my $fields = join " ", '', $db->columns(), '';
+	return unless $fields =~ /\sblurb_begin\s/;
+	$url = $Tag->area( { href => '__UI_BASE__/flex_editor',
+						 form => qq{
+							item_id=$CGI->{item_id}
+							mv_data_table=products
+							page_title=Merchandising: $CGI->{item_id}
+							help_name=merchandising
+							ui_hide_key=1
+							ui_return_to=admin/item
+							icon_name=admin/icon_item.gif
+							ui_break_before=featured blurb_begin
+							ui_data_fields=sku featured blurb_begin blurb_end
+							},
+						});
+	return qq{<A HREF="$url">Merchandising</A>};
+[/perl]
+
 <P>
 @@UI_STD_DBEDIT_TABLE@@
 

@@ -23,9 +23,9 @@
 
 	foreach $one (@layout) {
 		if( $one eq 'UI_CONTENT') {
-			my $content = "\n<!-- BEGIN CONTENT -->\n";
-			$content .= shift @insert;
-			$content .= "\n<!-- END CONTENT -->\n";
+			my $content = shift @insert;
+			$content =~ s/\r?\n/\n/g;
+			$content = "\n<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->\n";
 			#Log("inserting $content");
 			push @out, $content;
 		}

@@ -204,7 +204,7 @@
 <tr><td width=50 align=center bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
 [calc]
-	$total_weight += ([field col=weight key="[sql-param sku]"] + 0 || 0) * [item-quantity];
+	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
 	return;
 [/calc]
 [sql-data orderline quantity]
@@ -328,7 +328,7 @@ Options: [sql-data orderline options]
 
 <tr>
 <td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<pre> </pre>
+<pre>[loop-data transactions comments]</pre>
 </td>
 </tr>
 
