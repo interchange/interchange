@@ -3,9 +3,7 @@
             Position:Relative;
             Left:0; Top:0;
             Visibility:Visible;
-			[if session browser =~ /MSIE/]
-			height: 140px;
-			[/if]
+	    height: 140px;
             z-index:1;
 	">
 	<div 
