@@ -68,6 +68,8 @@ Core
 * Add database filename in question to the fatal error in the
   Vend::Table::Common::column_index method.
 
+* Fixed auto_create_dir option in Vend::Util:writefile which didn't work.
+
 Options
 -------
 
@@ -232,6 +234,20 @@ Form
 		Wood handle
 		Plastic handle (subtract $5.00)
 
+* Add widget "filetext" to allow direct upload of a file to a database
+  field. Useful for content/article bodies that you want to edit in a
+  file but that are inconvenient to clip-past into a textarea.
+
+  The "filetext" widget is an <input type=file> followed
+  by a textarea. It shows the contents of the field in the textarea
+  and you can edit it. If you want to replace it with a file upload,
+  you just Browse to the file and upload it; it negates what is in
+  the textarea. If no file is uploaded, the textarea pertains (I guess
+  that statement is redundant).
+
+  The type=filetext widget should always be used in combination with two
+  filters, "nullselect upload".
+
 UI
 --
 
@@ -325,10 +341,27 @@ UserTags
 
 * find - New usertag in spirit of the Unix command with the same name.
 
+Filters
+-------
+
+* Add "upload" filter. Checks to see if the submitted variable
+  is a file upload, if it is it reads the file and places it in
+  $CGI->{$varname}. Otherwise uses the value of the variable.
+
+* Add "line" filter which rips off the first line of a longer text.
+
 Jobs
 ----
 
 * update_locales job added.
+
+SOAP
+----
+
+* Ensure that SOAP server adds a blank line between HTTP header
+  and HTTP body.
+
+* Log errors in soap tag to catalog log file instead of the global one.
 
 Shadow Database
 ---------------
