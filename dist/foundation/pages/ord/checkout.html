@@ -273,6 +273,12 @@ ui_template_name: noleft
               <TD ALIGN=left class="contentbar1">Shipping:</TD>
               <TD ALIGN=RIGHT class="contentbar1">[shipping]</TD>
             </TR>
+			[if value mv_handling]
+            <TR>
+              <TD ALIGN=left class="contentbar1">Handling:</TD>
+              <TD ALIGN=RIGHT class="contentbar1">[handling]</TD>
+            </TR>
+			[/if]
             <TR>
               <TD ALIGN=left class="contentbar2">TOTAL:</TD>
               <TD ALIGN=RIGHT class="contentbar2">[total-cost]</TD>
