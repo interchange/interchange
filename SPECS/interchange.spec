@@ -413,7 +413,7 @@ then
 fi
 
 missing=
-for i in MD5 MIME::Base64 URI::URL SQL::Statement Safe::Hole
+for i in Digest::MD5 MIME::Base64 URI::URL SQL::Statement Safe::Hole
 do
 	status=`perl -e "require $i and print 1;" 2>/dev/null`
 	if test "x$status" != x1

@@ -118,7 +118,7 @@ sub {
 		my %wanted = ( qw/
 					Safe::Hole       Safe::Hole
 					SQL::Statement   SQL::Statement
-					MD5              MD5
+					Digest::MD5      Digest::MD5
 					LWP::Simple      LWP
 					Tie::Watch       Tie::Watch       
 					MIME::Base64     MIME::Base64
@@ -128,7 +128,7 @@ sub {
 		my %info = (
 				'Safe::Hole'    => 'IMPORTANT: SQL and some tags will not work in embedded Perl.',
 				'SQL::Statement'=> 'IMPORTANT: UI Database editors will not work properly.',
-				'MD5'           => 'IMPORTANT: cache keys and other search-related functions will not work.',
+				'Digest::MD5'   => 'IMPORTANT: cache keys and other search-related functions will not work.',
 				'LWP::Simple'   => 'External UPS lookup and other internet-related functions will not work.',
 				'Tie::Watch'    => 'Minor: cannot set watch points in catalog.cfg.',
 				'MIME::Base64'  => 'Minor: Internal HTTP server will not work.',
