@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.11 2002-02-07 21:33:21 mheins Exp $
+# $Id: Parse.pm,v 2.12 2002-02-09 04:13:38 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -568,6 +568,7 @@ sub html_start {
     my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
 #::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	$tag =~ tr/-/_/;   # canonical
+	$Vend::CurrentTag = $tag = lc $tag;
 
 	my $buf = \$self->{_buf};
 
@@ -887,13 +888,19 @@ EOF
 
 }
 
+sub eval_die {
+	my $msg = shift;
+	$msg =~ s/\(eval\s+\d+/(tag '$Vend::CurrentTag'/;
+	die($msg, @_);
+}
+
 # syntax color '"
 
 sub start {
 	return html_start(@_) if $_[0]->{HTML};
     my($self, $tag, $attr, $attrseq, $origtext, $empty_container) = @_;
 	$tag =~ tr/-/_/;   # canonical
-	$tag = lc $tag;
+	$Vend::CurrentTag = $tag = lc $tag;
 	my $buf = \$self->{_buf};
 
 	my($tmpbuf);
@@ -1034,6 +1041,7 @@ EOF
 		}
 	}
 
+	local($SIG{__DIE__}) = \&eval_die;
 	if($hasEndTag{$tag}) {
 		# Handle embedded tags, but only if interpolate is 
 		# defined (always if using old tags)
