@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.1
 #
-# $Id: interchange.PL,v 1.15.2.26 2001-03-31 17:32:45 heins Exp $
+# $Id: interchange.PL,v 1.15.2.27 2001-04-03 12:53:59 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -239,7 +239,7 @@ use Vend::Config;
 # You might try commenting out these lines and uncommenting the ones
 # below to compact memory size
 # NOAUTOUSE
-#use Vend::Order;
+use Vend::Order;
 #use Vend::Imagemap;
 #use Vend::Error;
 #use Vend::Control;
@@ -261,17 +261,17 @@ use autouse 'Vend::Control' => qw/
 											change_catalog_directive
 											change_global_directive
 									/;
-use autouse 'Vend::Order' => qw/
-											add_items
-											check_order
-											check_required
-											cyber_charge
-   										encrypt_standard_cc
-   										mail_order
-   										onfly
-   										route_order
-   										validate_whole_cc
-   								/;
+#use autouse 'Vend::Order' => qw/
+#											add_items
+#											check_order
+#											check_required
+#											cyber_charge
+#   										encrypt_standard_cc
+#   										mail_order
+#   										onfly
+#   										route_order
+#   										validate_whole_cc
+#   								/;
 
 # END AUTOUSE
 
