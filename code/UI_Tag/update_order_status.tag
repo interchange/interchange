@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.7 2003-05-14 22:29:29 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.8 2003-08-25 18:31:14 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -34,6 +34,7 @@ sub {
 			settle_transaction
 			ship_all
 			status
+			tracking_number
 			void_transaction
 		/)
 	{
@@ -167,6 +168,10 @@ sub {
 	}
 	else {
 		$tdb->set_field($on, 'status', 'shipped');
+	}
+
+	if($opt->{tracking_number} =~ /\w/) {
+		$tdb->set_field($on, 'tracking_number', $opt->{tracking_number});
 	}
 
 	my @shiplines = grep /\S/, split /\0/, $opt->{lines_shipped};
