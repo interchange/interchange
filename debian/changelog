@@ -17,8 +17,9 @@ interchange (4.7.6-1) unstable; urgency=low
   * images are now installed to /var/www/interchange
   * docroot for catalogs added to makecat.wrapper
   * get rid of .packlist (Closes: #104747)
+  * wrappers described within README.debian
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 17 Jul 2001 21:41:03 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 21 Jul 2001 10:07:14 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
