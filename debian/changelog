@@ -1,4 +1,4 @@
-interchange (5.0.1-1) unstable; urgency=low
+interchange (5.0.1-1) unstable; urgency=high
 
   * new upstream release (Closes: #240800, upstream fix for security hole)
   * switch to gettext-based debconf templates (Closes: #235494, thanks to
