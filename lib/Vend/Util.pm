@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.6 2000-12-21 11:29:22 heins Exp $
+# $Id: Util.pm,v 1.14.2.7 2000-12-31 14:47:38 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.7 $, 10);
 
 BEGIN {
 	eval {
@@ -861,7 +861,15 @@ EOF
 		$suffix = '.html';
 		redo FINDPAGE;
 	}
-	elsif($Vend::Cfg->{Locale}) {
+  }
+
+	if(! defined $contents) {
+		$contents = readfile_db("pages/$file");
+	}
+
+	return unless defined $contents;
+	
+	if($Vend::Cfg->{Locale}) {
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
@@ -874,29 +882,34 @@ EOF
 	else {
 		$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
 	}
-  }
-  if($Vend::Cfg->{HTMLmirror}) {
-  	my $mir = $fn;
-  	$mir =~ s:([^/]+)$:.$1:;
-#::logDebug("mirror $mir");
-  	if	(
-			-f $mir
-				and 
-			file_modification_time($fn) <= file_modification_time($mir)
-		)
-	{
-		return $contents;
+
+	return $contents;
+}
+
+sub readfile_db {
+	my ($name) = @_;
+	return unless $Vend::Cfg->{FileDatabase};
+	my ($tab, $col) = split /:+/, $Vend::Cfg->{FileDatabase};
+	my $db = $Vend::Interpolate::Db{$tab} || ::database_exists_ref($tab)
+		or return undef;
+::logDebug("tab=$tab exists, db=$db");
+
+	# I guess this is the best test
+	if($col) {
+		return undef unless $db->column_exists($col);
+	}
+	elsif ( $col = $Global::Variable->{LANG} and $db->column_exists($col) ) {
+		#do nothing
 	}
 	else {
-		# We want to work anyway
-		open (MIR, ">$mir")
-			or return $contents;
-		Vend::Interpolate::vars_and_comments(\$contents, 1);
-		print MIR $contents;
-		close MIR;
+		$col = 'default';
+		return undef unless $db->column_exists($col);
 	}
-  }
-  $contents;
+
+::logDebug("col=$col exists, db=$db");
+	return undef unless $db->record_exists($name);
+::logDebug("ifile=$name exists, db=$db");
+	return $db->field($name, $col);
 }
 
 # Reads in an arbitrary file.  Returns the entire contents,
@@ -911,6 +924,10 @@ EOF
 # To ensure security in multiple catalog setups, leading
 # / is not allowed unless $Global::NoAbsolute is set.
 #
+
+# If catalog FileDatabase is enabled and there are no contents, we can retrieve
+# the file from the database.
+
 sub readfile {
     my($ifile, $no, $loc) = @_;
     my($contents);
@@ -938,15 +955,19 @@ sub readfile {
 		}
 	}
 
-    return undef if ! $file;
-    return undef if ! open(READIN, "< $file");
+	if(! $file) {
+		$contents = readfile_db($ifile);
+		return undef unless defined $contents;
+	}
+	else {
+		return undef unless open(READIN, "< $file");
+		$Global::Variable->{MV_FILE} = $file;
 
-	$Global::Variable->{MV_FILE} = $file;
-
-	binmode(READIN) if $Global::Windows;
-	undef $/;
-	$contents = <READIN>;
-	close(READIN);
+		binmode(READIN) if $Global::Windows;
+		undef $/;
+		$contents = <READIN>;
+		close(READIN);
+	}
 
 	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
 		my $key;
