@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.12 2000-11-01 13:19:24 heins Exp $
+# $Id: interchange.PL,v 1.13 2000-11-02 16:51:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -918,6 +918,7 @@ sub do_process {
 	#Now determine the action on the todo
     if (defined $Vend::Cfg->{FormAction}{$todo}) {
 		$sub = $Vend::Cfg->{FormAction}{$todo};
+		new Vend::Parse;
 	}
     elsif (not $sub = $form_action{$todo} ) {
 		interaction_error("No action passed for processing\n");
@@ -1664,6 +1665,7 @@ EOF
 		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
+		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
 		Vend::Interpolate::init_calc();
