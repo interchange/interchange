@@ -119,3 +119,23 @@ EOF
 	close (SCONF)
 		|| die ("$0: Couldn't close $configfile: $!\n");
 }
+
+
+=head1 NAME
+
+interchangeconfig - Updates Debian specific Interchange configuration files
+
+=head1 DESCRIPTION
+
+interchangeconfig reads and writes the Interchange configuration files
+/etc/interchange/features.cfg and /etc/interchange/settings.cfg.
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), racke@linuxia.de
+
+=head1 SEE ALSO
+
+interchange(1p)
+
+=cut    
