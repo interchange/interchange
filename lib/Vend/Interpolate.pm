@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.227 2004-12-14 20:55:38 racke Exp $
+# $Id: Interpolate.pm,v 2.228 2004-12-29 20:06:46 ton Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.227 $, 10);
+$VERSION = substr(q$Revision: 2.228 $, 10);
 
 @EXPORT = qw (
 
@@ -5304,6 +5304,7 @@ sub tax_vat {
 		if($t =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
 			my $rate = $1;
 			$rate /= 100 if $2;
+                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $amount = Vend::Interpolate::taxable_amount();
 			$total += ($rate * $amount);
 		}
@@ -5323,6 +5324,7 @@ sub tax_vat {
 #::logDebug("item $item->{code} cat=$cat rate=$rate");
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
 			next if $rate <= 0;
+                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = Vend::Data::item_subtotal($item);
 #::logDebug("item $item->{code} subtotal=$sub");
 			$total += $sub * $rate;
@@ -5333,6 +5335,7 @@ sub tax_vat {
 		if ($tax->{mv_shipping} > 0) {
 			my $rate = $tax->{mv_shipping};
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
+                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = tag_shipping() * $rate;
 #::logDebug("applying shipping tax rate of $rate, tax of $sub");
 			$total += $sub;
@@ -5342,6 +5345,7 @@ sub tax_vat {
 		if ($tax->{mv_handling} > 0) {
 			my $rate = $tax->{mv_handling};
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
+                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = tag_handling() * $rate;
 #::logDebug("applying handling tax rate of $rate, tax of $sub");
 			$total += $sub;
