@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.7 2000-06-23 07:40:30 heins Exp $
+# $Id: DBI.pm,v 1.8 2000-07-05 19:05:41 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use strict;
 
@@ -251,10 +251,16 @@ sub open_table {
 		}
 	}
 
-	$config->{NAME} = list_fields($db, $tablename, $config)
-		if ! $config->{NAME};
-	$config->{COLUMN_INDEX} = fields_index($config->{NAME})
-		if ! $config->{COLUMN_INDEX};
+	if(! defined $config->{EXTENDED}) {
+		$config->{NAME} = list_fields($db, $tablename, $config)
+			if ! $config->{NAME};
+		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config)
+			if ! $config->{COLUMN_INDEX};
+		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
+							||	defined $config->{FILTER_FROM}
+							||	defined $config->{FILTER_TO}
+							||	'';
+	}
 
 	$config->{NUMERIC} = {} unless $config->{NUMERIC};
 
@@ -277,7 +283,7 @@ sub open_table {
 		)
 		if ! defined $config->{KEY_INDEX};
 
-    my $s = [$config, $tablename, $key, $config->{NAME}, undef, $db];
+    my $s = [$config, $tablename, $key, $config->{NAME}, $config->{EXTENDED}, $db];
 	bless $s, $class;
 }
 
@@ -334,6 +340,7 @@ sub filter {
 sub inc_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
+	$column = $s->[$NAME][ $s->column_index($column) ]; 
 	$key = $s->[$DBI]->quote($key)
 		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
     my $sth = $s->[$DBI]->prepare(
@@ -362,6 +369,7 @@ sub column_exists {
 sub field_accessor {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
+	$column = $s->[$NAME][ $s->column_index($column) ]; 
     return sub {
         my ($key) = @_;
 		$key = $s->[$DBI]->quote($key)
@@ -450,8 +458,16 @@ sub row_hash {
 		"select * from $s->[$TABLE] where $s->[$KEY] = $key");
     $sth->execute()
 		or die("execute error: $DBI::errstr");
+
 	return $sth->fetchrow_hashref()
-		unless $s->[$CONFIG]{FILTER_FROM};
+		unless $s->[$TYPE];
+	my $ref = $sth->fetchrow_hashref();
+	return $ref unless $s->[$CONFIG]{FIELD_ALIAS};
+	my ($k, $v);
+	while ( ($k, $v) = each %{ $s->[$CONFIG]{FIELD_ALIAS} } ) {
+		$ref->{$v} = $ref->{$k};
+	}
+	return $ref;
 }
 
 sub field_settor {
@@ -472,12 +488,18 @@ sub field {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	$key = $s->[$DBI]->quote($key)
 		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
+	my $idx;
+	if( $s->[$TYPE] and $idx = $s->column_index($column) )  {
+		$column = $s->[$NAME][$idx];
+	}
 	my $query = "select $column from $s->[$TABLE] where $s->[$KEY] = $key";
-#::logDebug("DBI field: key=$key column=$column query=$query");
-    my $sth = $s->[$DBI]->prepare(
-		"select $column from $s->[$TABLE] where $s->[$KEY] = $key");
-    $sth->execute()
-		or die("execute error: $DBI::errstr");
+::logDebug("DBI field: key=$key column=$column query=$query");
+    my $sth;
+	eval {
+		$sth = $s->[$DBI]->prepare($query);
+		$sth->execute();
+	};
+	return '' if $@;
 	my $data = ($sth->fetchrow_array())[0];
 	return '' unless $data =~ /\S/;
 	$data;
@@ -553,10 +575,14 @@ sub delete_record {
 }
 
 sub fields_index {
-	my($fields) = @_;
+	my($fields, $config) = @_;
 	my %idx;
+	my $alias = $config->{FIELD_ALIAS} || {};
 	for( my $i = 0; $i < @$fields; $i++) {
 		$idx{lc $fields->[$i]} = $i;
+		next unless defined $alias->{lc $fields->[$i]};
+::logDebug("alias found: $fields->[$i] = $alias->{lc $fields->[$i]} = $i");
+		$idx{ $alias->{ lc $fields->[$i] } } = $i;
 	}
 	return \%idx;
 }
