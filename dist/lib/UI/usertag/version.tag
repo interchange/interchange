@@ -94,22 +94,22 @@ sub {
 
 	if($opt->{db}) {
 		if($Global::GDBM) {
-			push @out, "GDBM available (v$GDBM_File::VERSION)";
+			push @out, errmsg('%s available (v%s)', 'GDBM', $GDBM_File::VERSION);
 		}
 		else {
-			push @out, "No GDBM.";
+			push @out, errmsg('No %s.', 'GDBM');
 		}
 		if($Global::DB_File) {
-			push @out, "Berkeley DB_File available (v$DB_File::VERSION)";
+			push @out, errmsg('%s available (v%s)', 'Berkeley DB_File', $DB_File::VERSION);
 		}
 		else {
-			push @out, "No Berkeley DB_File.";
+			push @out, errmsg('No %s.', 'Berkeley DB_File');
 		}
 		if($Global::LDAP) {
-			push @out, "LDAP available (v$Net::LDAP::VERSION)";
+			push @out, errmsg('%s available (v%s)', 'LDAP', $Net::LDAP::VERSION);
 		}
 		if($Global::DBI and $DBI::VERSION) {
-			push @out, "DBI enabled (v$DBI::VERSION), available drivers:";
+			push @out, errmsg ('DBI enabled (v%s), available drivers:', $DBI::VERSION);
 			my $avail = join $joiner, DBI->available_drivers;
 			push @out, "<BLOCKQUOTE>$avail</BLOCKQUOTE>";
 		}
@@ -138,14 +138,14 @@ sub {
 		for( sort keys %wanted) {
 			eval "require $_";
 			if($@) {
-				my $info = $Tag->loc('', $info{$_} || "May affect program operation.");
-				push @out, "$_ " . $Tag->loc('', 'not found') . ". $info"
+				my $info = errmsg($info{$_} || "May affect program operation.");
+				push @out, "$_ " . errmsg('not found') . ". $info"
 			}
 			else {
 				no strict 'refs';
 				my $ver = ${"$_" . "::VERSION"};
 				$ver = $ver ? "v$ver" : 'no version info';
-				push @out, "$_ " . $Tag->loc('', 'found') . " ($ver).";
+				push @out, "$_ " . errmsg('found') . " ($ver).";
 			}
 		}
 	}
