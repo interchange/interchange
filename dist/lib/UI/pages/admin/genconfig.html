@@ -85,6 +85,23 @@
 </TR>
 
 <TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Last order number[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>
+		[calc]
+			my $cfn = $Variable->{MV_ORDER_COUNTER_FILE} || 'etc/order.number';
+			$Values->{new_order_number} = $Tag->file($cfn);
+			$Values->{new_order_number} =~ s/.*\n([A-Za-z0-9]+).*$/$1/s;
+			return;
+		[/calc]
+		[page __UI_BASE__/misc_order_number][value new_order_number]</A>
+	</TD>
+</TR>
+
+
+<TR>
   <TD COLSPAN=3>&nbsp;</TD>
 </TR>
 
