@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.5 2001-08-03 10:17:41 racke Exp $
+# $Id: Order.pm,v 2.6 2001-08-06 15:49:47 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1692,7 +1692,13 @@ sub add_items {
 
 	::update_quantity() if ! defined $CGI::values{mv_orderline};
 
-	my $cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
+	my $cart;
+	if($CGI::values{mv_cartname}) {
+		$cart = $::Carts->{$CGI::values{mv_cartname}} ||= [];
+	}
+	else {
+		$cart = $Vend::Items;
+	}
 
 	@items      = split /\0/, ($items), -1;
 	@quantities = split /\0/, ($quantities || delete $CGI::values{mv_order_quantity} || ''), -1;

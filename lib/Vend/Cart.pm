@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: Cart.pm,v 2.1 2001-08-06 15:49:47 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 use strict;
 
@@ -210,11 +210,6 @@ sub toss_cart {
 	# ENDTEST
 
 =cut
-
-sub get_cart {
-	my($cart) = shift or return $Vend::Items;
-	return $Vend::Items = $cart;
-}
 
 1;
 

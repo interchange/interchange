@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.0
 #
-# $Id: interchange.PL,v 2.5 2001-07-27 18:50:58 heins Exp $
+# $Id: interchange.PL,v 2.6 2001-08-06 15:49:41 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -388,7 +388,12 @@ sub update_quantity {
 		|| $CGI::values{mv_quantity_update};
 	my($h, $i, $quantity, $modifier, $cart);
 
-	$cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
+	if ($CGI::values{mv_cartname}) {
+		$cart = $::Carts->{$CGI::values{mv_cartname}} ||= [];
+	}
+	else {
+		$cart = $Vend::Items;
+	}
 
 	my @mods;
 	@mods = @{$Vend::Cfg->{UseModifier}} if $Vend::Cfg->{UseModifier};
