@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.11 2002-02-02 08:57:11 mheins Exp $
+# $Id: Primitive.pm,v 2.12 2002-02-02 17:20:12 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 $DEBUG = 0;
 
@@ -960,7 +960,7 @@ sub meta_display {
 		
 		my $w = Vend::Form::display($record);
 		my $filter;
-		if($opt->{filter}) {
+		if($record->{filter}) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$opt->{name}" VALUE="};
 			$w .= $opt->{filter};
 			$w .= '">';
