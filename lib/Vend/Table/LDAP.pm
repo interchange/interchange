@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.5 2000-09-28 16:53:49 zarko Exp $
+# $Id: LDAP.pm,v 1.6 2000-09-29 17:45:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 use strict;
 
 use vars qw(
@@ -530,11 +530,11 @@ eval {
 		for(@tabs) {
 			s/\..*//;
 		}
-        $search = new Vend::DbSearch();
+        $search = new Vend::DbSearch;
 #::logDebug("created DbSearch object: " . ::uneval($search));
 	}
 	else {
-        $search = new Vend::TextSearch();
+        $search = new Vend::TextSearch;
 #::logDebug("created TextSearch object: " . ::uneval($search));
     }
 
