@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.8 2001-09-11 11:00:08 racke Exp $
+# $Id: Data.pm,v 1.13.4.9 2002-02-18 20:22:35 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -882,8 +882,11 @@ sub import_database {
 		no strict 'refs';
 		eval { 
 			if($MVSAFE::Safe) {
-#::logDebug("Opening under Safe: $obj->{name}: table=$table_name") if $type == 9;
-				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
+                if (exists $Vend::Interpolate::Db{$class_config->{Class}}) {
+ 				    $db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
+                } else {
+                    die errmsg("no access for database %s", $table_name);
+                }
 			}
 			else {
 #::logDebug("Opening $obj->{name}: table=$table_name") if $type == 9;
