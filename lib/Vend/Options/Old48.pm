@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.6 2004-04-15 19:26:06 mheins Exp $
+# $Id: Old48.pm,v 1.7 2004-07-19 22:23:26 jon Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 =head1 NAME
 
@@ -246,7 +246,7 @@ sub display_options_matrix {
 		my $lval = $db->quote($sku, $lcol);
 
 		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $tname where $lcol = $lval AND code <> $lval $rsort";
+		$q .= " FROM $tname where $lcol = $lval AND $ccol <> $lval $rsort";
 #::logDebug("tag_options matrix query: $q");
 		my $ary = $db->query($q); 
 #::logDebug("tag_options matrix ary: " . ::uneval($ary));
@@ -311,7 +311,7 @@ sub price_options {
 		push @rf, ($map->{$_} || $_);
 	}
 
-	my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel and $rf[1] <> ''";
+	my $q = "SELECT " . join (",", @rf) . " FROM $table WHERE $fsel = $rsel";
 #::logDebug("option_cost query=$q");
 	my $ary = $db->query($q); 
 	return if ! $ary->[0];
