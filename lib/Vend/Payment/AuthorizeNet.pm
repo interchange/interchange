@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.2 2001-10-30 12:46:27 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.3 2001-11-02 13:46:38 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.2 $
+Vend::Payment::AuthorizeNet $Revision: 2.3 $
 
 =head1 SYNOPSIS
 
@@ -373,7 +373,7 @@ sub authorizenet {
                     x_State         => $actual->{b_state},
                     x_Zip			=> $actual->{b_zip},
                     x_Country		=> $actual->{b_country},
-					x_Type			=> $actual->{cyber_mode},
+					x_Type			=> $transtype,
                     x_Amount    	=> $amount,
                     x_Exp_Date  	=> $exp,
                     x_Method    	=> 'CC',
@@ -443,7 +443,7 @@ sub authorizenet {
 		}
 		 = split (/,/,$page);
     	
-#::logDebug(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	
+#::logDebug(qq{authorizenet response_reason_text=$result{x_response_reason_text} response_code: $result{x_response_code}});    	
 
     for (keys %result_map) {
         $result{$_} = $result{$result_map{$_}}
