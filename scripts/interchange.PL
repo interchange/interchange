@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.1
 #
-# $Id: interchange.PL,v 1.15 2000-11-22 18:47:22 jon Exp $
+# $Id: interchange.PL,v 1.16 2000-12-02 02:23:22 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -898,7 +898,10 @@ sub do_process {
 				my $x = $CGI::values{'mv_todo.x'};
 				my $y = $CGI::values{'mv_todo.y'};
 				my $map = $CGI::values{'mv_todo.map'};
-				$todo = Vend::Imagemap::action_map($x,$y,$map);
+				# Called with action_map and not package id
+				# since "autouse" is possibly in force...found
+				# by Jeff Carnahan
+				$todo = action_map($x,$y,$map);
 		}
 		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
 			$todo = 'submit';
