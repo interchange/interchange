@@ -8,7 +8,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 [calc] $Config->{NoSearch} = ''; return; [/calc]
 
-<div class=titlebox>Edit Preferences</div>
+<div class=titlebox>[L]Edit Preferences[/L]</div>
 
 <table style="margin-left: 20px" width="70%">
 	[table-organize columnize=1 cols=4]
@@ -62,7 +62,7 @@
 <INPUT TYPE=hidden NAME=ui_meta_specific VALUE="1">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 
-<span class="s3">Search for a preference:</span><input NAME=ui_text_qualification size=16 class=s3><INPUT TYPE=submit VALUE="[L]Search[/L]" class=s3>
+<span class="s3">[L]Search for a preference:[/L]</span><input NAME=ui_text_qualification size=16 class=s3><INPUT TYPE=submit VALUE="[L]Search[/L]" class=s3>
 </FORM>
 
 [output name=""]
@@ -70,7 +70,7 @@
 
 [if-mm super]
 	<br>
-<div class=titlebox>Table Editor Control</div>
+<div class=titlebox>[L]Table Editor Control[/L]</div>
 
 	[if type=explicit compare=`
 			return
@@ -96,13 +96,13 @@
 	[/else]
 	[/if]
 	<br>
-	[page href="__UI_BASE__/edit_metaconfig"]Configure defaults for table editor</A>
+	[page href="__UI_BASE__/edit_metaconfig"][L]Configure defaults for table editor[/L]</A>
 <br>
 [/if-mm]
 
 [if !variable UI_REGISTERED]
 <br>
-<div class=titlebox>Register</div>
+<div class=titlebox>[L]Register[/L]</div>
 <a href="http://www.icdevgroup.org/i/dev/register.html">[L]Register (optional)[/L]</a>
 [/if]
 

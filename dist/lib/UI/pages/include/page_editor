@@ -266,8 +266,8 @@ mv_nextpage=__UI_BASE__/content_preview
 <input
 	type=submit
 	onClick="return confirm(
-			'This may delete components from your configuration.' +
-			'Continue?'
+			'[L]This may delete components from your configuration.[/L]' +
+			'[L]Continue?[/L]'
 		)"
 	value="[L]Change template[/L]"
 

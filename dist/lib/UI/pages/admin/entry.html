@@ -137,6 +137,7 @@
 <!-- end initialization -->
 
 <FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
+<input type=hidden name="mv_session_id" value="[data session id]">
 
 [page	href="admin/entry_items"
 		form="
@@ -245,12 +246,12 @@
 	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
 			   onClick="this.form.action='[process-target]',
 			   			this.form.submit()"
-			   VALUE=0>remove</FONT>&nbsp;&nbsp;&nbsp;[item-code]</TD>
+			   VALUE=0>[L]remove[/L]</FONT>&nbsp;&nbsp;&nbsp;[item-code]</TD>
 	<TH class=rnorm WIDTH="2">&nbsp;</TH>
 	<TD class=rnorm VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
 	[page [item-code]][item-description]</A>
 	[if-item-field weight]&nbsp;&nbsp;&nbsp;
-	<SMALL>WEIGHT: [summary amount=`[item-quantity] * [item-field weight]`]</SMALL>
+	<SMALL>[L]WEIGHT[/L]: [summary amount=`[item-quantity] * [item-field weight]`]</SMALL>
 	[/if-item-field]
 	&nbsp;&nbsp;&nbsp;
 	[if-item-data options o_enable]
