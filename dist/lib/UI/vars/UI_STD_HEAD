@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.37 2003-01-20 17:37:18 mheins Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.38 2003-04-04 16:00:25 racke Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -144,7 +144,7 @@ Variable UI_STD_HEAD <<EOV
 	  name="[either][scratch top_menu][or]Top[/either]"
 	  superuser=super
 	  inactive=inactive
-	  localize=name
+	  localize=name,description
 	  indicator=indicator
 	  ui_security=depends_on
 	  extra_value.check_publish=`$Scratch->{check_publish}`
@@ -202,7 +202,7 @@ Variable UI_STD_HEAD <<EOV
 	expand_values=name,page
 	expand_values_form=form
 	extra_value.check_publish=`$Scratch->{check_publish}`
-	localize=name
+	localize=name,description
 	indicator=indicator
 	last_line="[if scratch third_menu]next_line[/if]"
 	indicator_page=page
@@ -273,7 +273,7 @@ Variable UI_STD_HEAD <<EOV
 	depends_on=depends_on
 	expand_values=name,page
 	expand_values_form=form
-	localize=name
+	localize=name,description
 	indicator=indicator
 	indicator_page=page
 	inactive=inactive
