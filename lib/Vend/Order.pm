@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14 2000-10-06 17:18:58 sonny Exp $
+# $Id: Order.pm,v 1.14.2.1 2000-10-20 16:38:41 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -566,12 +566,12 @@ sub map_actual {
 		$actual{$key} = $::Values->{$map{$secondary}} ||
 						$CGI::values{$map{$secondary}};
 	}
-	$actual{name}		 = "$actual{fname} $actual{lname}"
-		if ! $actual{name};
-	if(! $actual{address}) {
-		$actual{address} = "$actual{address1}";
-		$actual{address} .=  ", $actual{address2}"
-			if $actual{address2};
+	$actual{b_name}		 = "$actual{b_fname} $actual{b_lname}"
+		if $actual{b_lname};
+	if($actual{b_address1}) {
+		$actual{b_address} = "$actual{b_address1}";
+		$actual{b_address} .=  ", $actual{b_address2}"
+			if $actual{b_address2};
 	}
 	return %actual;
 }
@@ -1122,9 +1122,9 @@ sub _yes {
 }
 
 sub _postcode {
-	(_zip(@_))[0] or (_ca_postcode(@_))[0]
+	((_zip(@_))[0] or (_ca_postcode(@_))[0])
 		and return (1, $_[1], '');
-	return (undef, $var, 'not a US or Canada postal/zip code');
+	return (undef, $_[1], 'not a US or Canada postal/zip code');
 }
 
 sub _ca_postcode {
