@@ -9,8 +9,9 @@ interchange (4.7.3-0.2) unstable; urgency=low
   * UI_SECURE added to interchange.cfg
   * interchange-doc package removed (PDF's no longer part of distribution)
   * use new PreFork mode by default
+  * use new -rundir command line option
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 23 May 2001 14:36:34 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 25 May 2001 20:39:48 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
