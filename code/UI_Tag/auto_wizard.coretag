@@ -26,10 +26,19 @@ my @wanted_opts = qw/
 	thanks_title
 	top_buttons
 	widget_cell_class
+	email_from
+	email_cc
+	email_subject
+	email_template
+	continue_template
+	row_template
+	output_email
+	output_fields
+	output_repeated
 /;
 
 my %overall_opt;
-@overall_opt{@wanted_opts} = @wanted_opts;
+#@overall_opt{@wanted_opts} = @wanted_opts;
 
 sub thanks_title {
 	my ($opt, $already, $default) = @_;
@@ -723,6 +732,10 @@ sub {
 	for(keys %opts) {
 		next unless /^_/;
 		delete $opts{$_};
+	}
+
+	for ( @wanted_opts ) {
+		$opts{$_} ||= $opt->{$_};
 	}
 
 	if($CGI->{ui_wizard_action} eq 'Back') {
