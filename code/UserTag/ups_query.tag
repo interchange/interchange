@@ -37,7 +37,8 @@ sub {
 		# do nothing
 	}
 	elsif ($::Variable->{UPS_COUNTRY_REMAP} =~ /=/) {
-		Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+		my $new = Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP});
+		Vend::Util::get_option_hash(\%exception, $new);
 	}
 	else {
 		Vend::Util::hash_string($::Variable->{UPS_COUNTRY_REMAP}, \%exception);

@@ -1,6 +1,6 @@
 # Vend::Ship::QueryUPS - Interchange shipping code
 # 
-# $Id: QueryUPS.pm,v 1.3 2003-06-30 18:09:42 mheins Exp $
+# $Id: QueryUPS.pm,v 1.4 2003-06-30 18:21:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -69,7 +69,8 @@ sub calculate {
 		# do nothing
 	}
 	elsif ($::Variable->{UPS_COUNTRY_REMAP} =~ /=/) {
-		Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+		my $new = Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP});
+		Vend::Util::get_option_hash(\%exception, $new);
 	}
 	else {
 		Vend::Util::hash_string($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
