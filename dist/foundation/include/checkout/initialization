@@ -37,7 +37,7 @@
 	if(@handling) {
 			$Values->{mv_handling} = join " ", @handling;
 	}
-Debug("mv_handling=$Values->{mv_handling}");
+#Debug("mv_handling=$Values->{mv_handling}");
     my $db = $Db{country} or return;
  
     my $domestic = $Variable->{DOMESTIC_SHIPPING} || 'US CA';
