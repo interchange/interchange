@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: compile_link.PL,v 2.0.2.1 2001-08-18 13:55:17 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -200,7 +200,7 @@ sub doit {
 	return "$preamble$replace$postamble$template";
 }
 
-if($Build_dir) {
+if($Build_dir and $Build_dir ne $Self->{SRC_DIR}) {
 	if (-e $Build_dir and (! -d _ or ! -w _)) {
 		die "Cannot use $Build_dir for build directory.\n";
 	}
@@ -233,6 +233,9 @@ my @edit_files = qw/config.h tlink.pl vlink.pl/;
 
 foreach my $targ (@edit_files) {
 	my $src = "$targ.tmp";
+	die "Source file $src doesn't exist\n" if ! -e $targ;
+	die "Can't edit a directory\n"         if -d $targ;
+	die "Can't edit a directory\n"         if -d $src;
 	rename $targ, $src
 		or die "Couldn't rename $targ to $src: $!\n";
 	open (IN, "< $src")
@@ -415,7 +418,6 @@ makecat(1), http://interchange.redhat.com/
 =head1 AUTHOR
 
 Mike Heins, <mheins@redhat.com>
-
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
