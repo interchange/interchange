@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.35 2002-06-25 03:20:49 mheins Exp $
+# $Id: interchange.PL,v 2.36 2002-06-26 21:45:20 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2838,7 +2838,7 @@ sub main_loop {
 	# Parse command line options, getting mode if not -serve
 	# May actually exit in some situations
 	parse_options()
-		or die usage() . "\n";
+		or usage(), die "\n";
 
 	# Cannot run as root unless in 'make test'
 	if($> == 0 and ! $Global::Windows) {
@@ -3008,6 +3008,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 eval { main_loop(); };
 if ($@) {
 	my($msg) = ($@);
+	$Vend::Log_suppress = 1;
 	logGlobal( $msg );
 	if ($Global::DisplayErrors) {
 		print "$msg\n";
