@@ -834,7 +834,6 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
-lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
