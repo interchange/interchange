@@ -1,0 +1,36 @@
+UserTag order               Order        code quantity
+UserTag order               addAttr
+UserTag order               PosNumber    2
+UserTag order               Routine   <<EOR
+# Returns an href to place an order for the product PRODUCT_CODE.
+# If AlwaysSecure is set, goes by the page accessed, otherwise 
+# if a secure order has been started (with a call to at least
+# one secure_vendUrl), then it will be given the secure URL
+sub {
+    my($code,$quantity,$opt) = @_;
+	$opt = {} unless $opt;
+    my($r);
+	my @parms = (
+					"mv_action=refresh",
+				  );
+
+	push(@parms, "mv_order_item=$code");
+	push(@parms, "mv_order_mv_ib=$opt->{base}")
+		if($opt->{base});
+
+	push(@parms, "mv_cartname=$opt->{cart}")
+		if($opt->{cart});
+
+	push(@parms, "mv_order_quantity=$quantity")
+		if($quantity);
+
+	$opt->{form} = join "\n", @parms;
+
+	$opt->{page} = find_special_page('order')
+		unless $opt->{page};
+
+	return form_link($opt->{area}, $opt->{arg}, $opt)
+		if $opt->{area};
+	return tag_page($opt->{page}, $opt->{arg}, $opt);
+}
+EOR

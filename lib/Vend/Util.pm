@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.13 2002-01-22 02:07:08 mheins Exp $
+# $Id: Util.pm,v 2.14 2002-01-29 05:52:43 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 BEGIN {
 	eval {
@@ -106,6 +106,8 @@ $ESCAPE_CHARS::ok_in_filename =
 		'-:_.$/'
 	;
 
+my $need_escape;
+
 sub setup_escape_chars {
     my($ok, $i, $a, $t);
 
@@ -119,6 +121,9 @@ sub setup_escape_chars {
         }
         $ESCAPE_CHARS::translate[$i] = $t;
     }
+
+	my $string = "[^$ESCAPE_CHARS::ok_in_filename]";
+	$need_escape = qr{$string};
 
 }
 
@@ -377,6 +382,16 @@ sub setlocale {
         @{$Vend::Cfg->{Locale}}{@Vend::Config::Locale_keys_currency} =
                 @{$curr}{@Vend::Config::Locale_keys_currency};
     }
+
+	if(my $ref = $Vend::Cfg->{CodeDef}{LocaleChange}) {
+		$ref = $ref->{Routine};
+		if($ref->{all}) {
+			$ref->{all}->($locale, $opt);
+		}
+		if($ref->{lc $locale}) {
+			$ref->{lc $locale}->($locale, $opt);
+		}
+	}
 
     $::Scratch->{mv_locale}   = $locale    if $opt->{persist} and $locale;
     $::Scratch->{mv_currency} = $currency  if $opt->{persist} and $currency;
@@ -1165,6 +1180,8 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $can_cache and $::Scratch->{mv_no_count};
 
+	$path = escape_chars($path)
+		if $path =~ $need_escape;
     $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;

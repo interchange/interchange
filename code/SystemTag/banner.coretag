@@ -1,0 +1,72 @@
+UserTag banner              Order        category
+UserTag banner              addAttr
+UserTag banner              PosNumber    1
+UserTag banner              Routine      <<EOR
+sub {
+    my ($place, $opt) = @_;
+
+	sub tag_weighted_banner {
+		my ($category, $opt) = @_;
+		my $dir = catfile($Vend::Cfg->{ScratchDir}, 'Banners');
+		mkdir $dir, 0777 if ! -d $dir;
+		if($category) {
+			my $c = $category;
+			$c =~ s/\W//g;
+			$dir .= "/$c";
+		}
+		my $statfile =	$Vend::Cfg->{ConfDir};
+		$statfile .= "/status.$Vend::Cat";
+		my $start_time;
+		if($opt->{once}) {
+			$start_time = 0;
+		}
+		elsif(! -f $statfile) {
+			Vend::Util::writefile( $statfile, "banners initialized " . time() . "\n");
+			$start_time = time();
+		}
+		else {
+			$start_time = (stat(_))[9];
+		}
+		my $weight_file = "$dir/total_weight";
+		initialize_banner_directory($dir, $category, $opt)
+			if  (	
+					! -f $weight_file
+						or
+					(stat(_))[9] < $start_time
+				);
+		my $n = int( rand( readfile($weight_file) ) );
+		return Vend::Util::readfile("$dir/$n");
+	}
+	return tag_weighted_banner($place, $opt) if $opt->{weighted};
+
+	my $table	= $opt->{table}		|| 'banner';
+	my $r_field	= $opt->{r_field}	|| 'rotate';
+	my $b_field	= $opt->{b_field}	|| 'banner';
+	my $sep		= $opt->{separator} || ':';
+	my $delim	= $opt->{delimiter} || "{or}";
+	$place = 'default' if ! $place;
+    my $totrot;
+    do {
+		my $banner_data;
+        $totrot = tag_data($table, $r_field, $place);
+        if(! length $totrot) {
+			# No banner present
+            unless ($place =~ /$sep/ or $place eq 'default') {
+				$place = 'default';
+				redo;
+			}
+        }
+        elsif ($totrot) {
+            my $current = $::Scratch->{"rotate_$place"}++ || 0;
+            my $data = tag_data($table, $b_field, $place);
+            my(@banners) = split /\Q$delim/, $data;
+            return '' unless @banners;
+            return $banners[$current % scalar(@banners)];
+        }
+        else {
+            return tag_data($table, $b_field, $place);
+        }
+    } while $place =~ s/(.*)$sep.*/$1/;
+	return;
+}
+EOR

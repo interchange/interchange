@@ -1,0 +1,120 @@
+# This tag uses GNU diff3 to merge two texts blocks that were
+# modified from the same ancestral text together, and marks
+# conflicts that may appear. This is similar to CVS's merging
+# and conflict marking. The names the diff3 manpage uses are:
+#
+#        older
+#         / \
+#        /   \
+#       /     \
+#    mine    yours
+#
+# You supply pointers to three text blocks, either as file names or
+# database fields in the form Table::Column::Key. 'mine' can instead
+# be provided in the body, between the opening and closing tags.
+#
+# The tag returns the merged text. You can find out whether a
+# conflict was detected by providing the name of a scratch variable
+# in the 'result' option where the return code from diff3 will be placed.
+#
+# Set the 'ascii' option to allow for different newline types and
+# ignore whether the last line of the file has a newline.
+#
+# Set the 'safe_data' option to allow raw data to be pulled from the
+# database without escaping left brackets (turning [ into &#91;).
+#
+# Examples:
+#
+# [diffmerge /tmp/abcd2 /tmp/abcd1 /tmp/abcd3]
+#
+# [diffmerge
+#     yours="content::pagebody::00001"
+#     older="backup::pagebody::00001"
+#     ascii=1
+#     result=diff_result
+#     safe_data=1
+# ][scratch new_pagebody][/diffmerge]
+
+UserTag diffmerge Interpolate 1
+UserTag diffmerge hasEndTag
+UserTag diffmerge addAttr
+
+# These designations come from the diff3 manpage.
+# It seemed easier to use their names than to make up new ones.
+UserTag diffmerge Order yours older mine
+
+# But here I try to make up new ones anyway. :)
+UserTag diffmerge attrAlias <<EOA
+	current		mine
+	curr		mine
+	previous	yours
+	prev		yours
+	old			older
+EOA
+
+UserTag diffmerge Routine <<EOR
+sub {
+    my ($yours, $older, $mine, $opt, $body) = @_;
+
+    unless ($opt->{flags} =~ /^[-\s\w.]*$/) {
+        Log("diffmerge tag: Security violation with flags: $opt->{flags}");
+        return "Security violation with flags: $opt->{flags}. Logged.";
+    }
+
+	my ($minefn, $yoursfn, $olderfn, $cmd, $merge);
+	my $tmpbasename = "tmp/$Vend::SessionName";
+
+	my $data_opt = {};
+	$data_opt->{safe_data} = 1 if $opt->{safe_data};
+
+	my $asciifix = sub {
+		local $_ = shift;
+		if ($opt->{ascii}) {
+			s/\r\n?/\n/g;
+			$_ .= "\n" unless substr($_, -1, 1) eq "\n";
+		}
+		return $_;
+	};
+
+	my $putfile = sub {
+		my ($name, $passed, $fn) = @_;
+	    if ($$passed =~ /^(\w+)::(.*?)::(.*)/) {
+	        my ($table, $col, $key) = ($1, $2, $3);
+			my $data = $asciifix->( tag_data($table, $col, $key, $data_opt) );
+	        $$fn = "$tmpbasename.$name";
+	        Vend::Util::writefile(">$$fn", $data);
+	    }
+	    else {
+	        $$fn = $$passed;
+	    }
+	};
+
+	if ($body) {
+		$body = $asciifix->($body);
+		$minefn = "tmp/$Vend::SessionName.mine";
+		Vend::Util::writefile(">$minefn", $body);
+	}
+	elsif ($mine) {
+		$putfile->('mine', \$mine, \$minefn);
+	}
+
+	$putfile->('yours', \$yours, \$yoursfn);
+	$putfile->('older', \$older, \$olderfn);
+
+    $cmd = "diff3 -m $opt->{flags} $minefn $olderfn $yoursfn";
+#Debug("diffmerge command: '$cmd'");
+    $merge = `$cmd`;
+
+	if (defined $opt->{result}) {
+		unless ($opt->{result} =~ /\W/) {
+			$Scratch->{$opt->{result}} = $? >> 8;
+#Debug("diffmerge put $Scratch->{$opt->{result}} into scratch $opt->{result}");
+		}
+		else {
+			Log("diffmerge tag: Invalid 'result' option given; must be a valid name for a scratch variable");
+		}
+	}
+
+	return $merge;
+}
+EOR

@@ -1,0 +1,10 @@
+UserTag subtotal            Order        name noformat
+UserTag subtotal            attrAlias    cart name
+UserTag subtotal            InvalidateCache
+UserTag subtotal            PosNumber    2
+UserTag subtotal            Routine <<EOR
+sub {
+	my($cart, $noformat) = @_;
+	return currency( subtotal($cart), $noformat);
+}
+EOR

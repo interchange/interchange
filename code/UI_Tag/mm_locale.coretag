@@ -1,0 +1,20 @@
+UserTag mm_locale Routine <<EOR
+sub {
+	my $locale = $Values->{ui_locale} || $Tag->var('UI_LOCALE', 2);
+	my $lref;
+
+	# first delete locale settings from catalog
+	$Vend::Cfg->{Locale_repository} = {};
+
+	if ($locale && exists $Global::Locale_repository->{$locale}) {
+		$lref = $Vend::Cfg->{Locale_repository}{"$locale"} 
+			= $Global::Locale_repository->{$locale};
+		$Tag->setlocale("$locale");
+		$Tag->tmp({name => 'mv_locale'}, $locale);
+		if ($lref->{MV_LANG_DIRECTION}) {
+			$Tag->tmp({name => 'ui_language_direction'}, qq{ dir="$lref->{MV_LANG_DIRECTION}"});
+		}
+	}	
+	1;
+}
+EOR

@@ -1,0 +1,6 @@
+UserTag query               Order        sql
+UserTag query               addAttr
+UserTag query               attrAlias    base table
+UserTag query               hasEndTag
+UserTag query               PosNumber    1
+UserTag query               MapRoutine   Vend::Interpolate::query

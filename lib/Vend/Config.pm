@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.23 2002-01-24 06:41:11 jon Exp $
+# $Id: Config.pm,v 2.24 2002-01-29 05:52:43 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -31,71 +31,20 @@ require Exporter;
 
 @EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database);
 
-my $OldDirectives = q{
-	AdminDatabase
-	AdminPage
-	AsciiBackend
-	BackendOrder
-	ButtonBars
-	CheckoutFrame
-	CheckoutPage
-	DataDir
-	Delimiter
-	DescriptionTrim
-	DebugMode
-	FieldDelimiter
-	FrameFlyPage
-	FrameLinkDir
-	FrameOrderPage
-	FrameSearchPage
-	ItemLinkDir
-	ItemLinkValue
-	MsqlDB
-	MsqlProducts
-	Mv_AlinkColor
-	Mv_Background
-	Mv_BgColor
-	Mv_LinkColor
-	Mv_TextColor
-	Mv_VlinkColor
-	NewEscape
-	NewReport
-	NewTags
-	OldShipping
-	OrderFrame
-	PageCache
-	PriceDatabase
-	Random
-	ReceiptPage
-	RecordDelimiter
-	ReportIgnore
-	RetireDBM
-	Rotate
-	SafeSignals
-	SearchCache
-	SearchFrame
-	SearchOverMsg
-	SecureOrderMsg
-	SpecialFile
-	SubArgs
-	TcpPort
-	TransparentItem
-	Tracking
-};
-
 use strict;
 use vars qw(
 			$VERSION $C
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code
 			@Locale_directives_currency @Locale_keys_currency
+			$GlobalRead  $SystemCodeDone $CodeDest
 			);
 use Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 my %CDname;
 
@@ -197,6 +146,8 @@ my %UseExtended = (qw(
 					Variable			1
 				));
 
+my $StdTags;
+
 my $configfile;
 
 ### This is unset when interchange script is run, so that the default
@@ -205,15 +156,11 @@ $Vend::ExternalProgram = 1;
 
 # Report a fatal error in the configuration file.
 sub config_error {
-	my($msg) = @_;
-
-	if($msg =~ /unknown\s+directive\s+'(\w+)/i) {
-		my $check = $1;
-		if($OldDirectives =~ /\b$check\b/i) {
-			warn "MiniVend 3.x directive '$check' ignored at line $. of $configfile.\n";
-			return 1;
-		}
+	my $msg = shift;
+	if(@_) {
+		$msg = errmsg($msg, @_);
 	}
+
 	$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 			$msg,
 			$.,
@@ -230,8 +177,10 @@ sub config_error {
 }
 
 sub config_warn {
-	my($msg) = @_;
-
+	my $msg = shift;
+	if(@_) {
+		$msg = errmsg($msg, @_);
+	}
 	::logGlobal({level => 'notice'},
 				errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 						$msg,
@@ -270,6 +219,13 @@ sub global_directives {
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
+	['DeleteDirective', sub {
+							my $c = $Global::DeleteDirective || {};
+							shift;
+							my @sets = map { lc $_ } split /[,\s]+/, shift;
+							@{$c}{@sets} = map { 1 } @sets;
+							return $c;
+						 },            ''],
 	['Inet_Mode',         'yesno',            (
 												defined $Global::Inet_Mode
 												||
@@ -308,6 +264,8 @@ sub global_directives {
 	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
 	['HouseKeeping',     'integer',          60],
 	['Mall',	          'yesno',           'No'],
+	['TagGroup',		 'tag_group',		 $StdTags],
+	['TagInclude',		 'tag_include',		 ':core'],
 	['ActionMap',		 'action',			 ''],
 	['FormAction',		 'action',			 ''],
 	['MaxServers',       'integer',          10],
@@ -319,6 +277,7 @@ sub global_directives {
 	['IpHead',			 'yesno',            'No'],
 	['IpQuad',			 'integer',          '1'],
 	['TemplateDir',      'root_dir_array', 	 ''],
+	['TagDir',      	 'root_dir_array', 	 'code'],
 	['DomainTail',		 'yesno',            'Yes'],
 	['AcrossLocks',		 'yesno',            'No'],
 	['TolerateGet',		 'yesno',            'No'],
@@ -330,6 +289,7 @@ sub global_directives {
 	['AllowGlobal',		 'boolean',			 ''],
 	['AddDirective',	 'directive',		 ''],
 	['UserTag',			 'tag',				 ''],
+	['CodeDef',			 'mapped_code',		 ''],
 	['HotDBI',			 'boolean',			 ''],
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
@@ -469,6 +429,7 @@ sub catalog_directives {
 	['CookieDomain',     undef,              ''],
 	['MasterHost',		 undef,     	     ''],
 	['UserTag',			 'tag', 	    	 ''],
+	['CodeDef',			 'mapped_code',    	 ''],
 	['RemoteUser',		 undef,     	     ''],
 	['TaxShipping',		 undef,     	     ''],
 	['FractionalItems',  'yesno',			 'No'],
@@ -529,6 +490,26 @@ sub catalog_directives {
 	return $directives;
 }
 
+sub get_parse_routine {
+	my $parse = shift
+		or return undef;
+	my $routine;
+	if(ref $parse eq 'CODE') {
+		$routine = $parse;
+	}
+	else {
+		no strict 'refs';
+		$routine = \&{'parse_' . $parse};
+	}
+
+	if(ref($routine) ne 'CODE') {
+		config_error('Unknown parse routine %s', "parse_$parse");
+	}
+
+	return $routine;
+	
+}
+
 sub set_directive {
 	my ($directive, $value, $global) = @_;
 	my $directives;
@@ -540,15 +521,10 @@ sub set_directive {
 	no strict 'refs';
 	foreach $d (@$directives) {
 		next unless (lc $directive) eq (lc $d->[0]);
-		if (defined $d->[1]) {
-			$parse = 'parse_' . $d->[1];
-		}
-		else {
-			$parse = undef;
-		}
+		$parse = get_parse_routine($d->[1]);
 		$dir = $d->[0];
-		$value = &{$parse}($dir, $value)
-			if defined $parse;
+		$value = $parse->($dir, $value)
+			if $parse;
 		last;
 	}
 	return [$dir, $value] if defined $dir;
@@ -659,8 +635,9 @@ sub config {
 		foreach $d (@$directives) {
 			my $ucdir = $d->[0];
 			$directive = lc $d->[0];
+			next if $Global::DeleteDirective->{$directive};
 			$CDname{$directive} = $ucdir;
-			$parse{$directive} = 'parse_' . $d->[1] if defined $d->[1];
+			$parse{$directive} = get_parse_routine($d->[1]);
 		}
 	}
 
@@ -670,7 +647,8 @@ sub config {
 		foreach $d (@$directives) {
 			my $ucdir = $d->[0];
 			$directive = lc $d->[0];
-			$parse = $parse{$directive} || undef;
+			next if $Global::DeleteDirective->{$directive};
+			$parse = $parse{$directive};
 
 			$value = ( 
 						! defined $MV::Default{$catalog} or
@@ -681,13 +659,13 @@ sub config {
 
 			if (defined $parse and defined $value) {
 #::logDebug("parsing default directive=$directive ucdir=$ucdir parse=$parse value=$value CDname=$CDname{$directive}");
-				$value = &$parse($ucdir, $value);
+				$value = $parse->($ucdir, $value);
 			}
 			$C->{$CDname{$directive}} = $value;
 		}
 	}
 
-	my(@include) = my $catalogcfg = ($passed_file || $C->{ConfigFile});
+	my(@include) = ($passed_file || $C->{ConfigFile});
 	my $done_one;
 	my ($db, $dname, $nm);
 	my ($before, $after);
@@ -743,7 +721,7 @@ sub config {
 	}
 	# Create closure that reads and sets config values
 	my $read = sub {
-		my ($lvar, $value, $tie) = @_;
+		my ($lvar, $value, $tie, $var) = @_;
 
 		# parse variables in the value if necessary
 		if($C->{ParseVariables} and $value =~ /(?:__|\@\@)/) {
@@ -753,7 +731,7 @@ sub config {
 
 		# call the parsing function for this directive
 		$parse = $parse{$lvar};
-		$value = &$parse($CDname{$lvar}, $value) if defined $parse and ! $tie;
+		$value = $parse->($CDname{$lvar}, $value) if defined $parse and ! $tie;
 
 		# and set the $C->directive variable
 		if($tie) {
@@ -809,7 +787,7 @@ CONFIGLOOP:
 		}
 		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
 			if(defined $ifdef) {
-				config_error("Can't overlap ifdef at line $. of $configfile");
+				config_error("Can't overlap ifdef at line %s of %s", $., $configfile);
 			}
 			$ifdef = evaluate_ifdef($2,$1);
 			$begin_ifdef = $.;
@@ -831,98 +809,14 @@ CONFIGLOOP:
 			unshift @include, grep -f $_, glob($spec);
 			next CONFIGLOOP;
 		}
-		my $tie = undef;
-		s/^\s*#.*//;    # comments,
-		s/\s+$//;		#  trailing spaces
-		next if $_ eq '';
-		$Vend::config_line = $_;
-		# lines read from the config file become untainted
-		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
-		$var = $1;
-		$value = $2;
-		$lvar = lc $var;
-#::logDebug("parsing directive=$var lvar=$lvar CDname=$CDname{$lvar} parse=$parse{$lvar}");
-		my($codere) = '[-\w_#/.:]+';
 
-		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
-			my $begin  = $1 || '';
-			$begin .= "\n" if $begin;
-			my $mark  = $2;
-			my $startline = $.;
-			$value = $begin . read_here(\*CONFIG, $mark, $allcfg);
-			unless (defined $value) {
-				config_error (sprintf('%d: %s', $startline,
-					qq#no end marker ("$mark") found#));
-			}
-		}
-		elsif ($value =~ /^(.*)<&(\w+)\s*/) {                # "here sub" value
-			my $begin  = $1 || '';
-			$begin .= "\n" if $begin;
-			my $mark  = $2;
-			my $startline = $.;
-			$value = $begin . read_here(\*CONFIG, $mark, $allcfg);
-			unless (defined $value) {
-				config_error (sprintf('%d: %s', $startline,
-					qq#no end marker ("$mark") found#));
-			}
-			eval {
-				require Tie::Watch;
-			};
-			unless ($@) {
-				$tie = 1;
-			}
-			else {
-				config_warn errmsg(
-					"No Tie::Watch module installed at %s, setting %s to default.",
-								$startline,
-								$var,
-							);
-				$value = '';
-			}
-		}
-		elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
-			$value = $1 || '';
-			my $file = $3;
-			$value .= "\n" if $value;
-			unless (defined $C->{ConfigDir}) {
-				config_error
-					("$CDname{$lvar}: Can't read from file until ConfigDir defined");
-			}
-			$file = $CDname{$lvar} unless $file;
-			if($Global::NoAbsolute) {
-				config_error(<<EOF) if Vend::Util::file_name_is_absolute($file);
-Absolute filenames not allowed if NoAbsolute set. Contact administrator.
-EOF
-				config_error(
-			  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n")
-					if $file =~ m#^\.\./.*\.\.#;
-				config_error(
-			  "Symbolic links not allowed if NoAbsolute set. Contact administrator.\n")
-					if -l $file;
-			}
-			$file = "$C->{ConfigDir}/$file"
-				unless Vend::Util::file_name_is_absolute($file);
-			$file = escape_chars($file);			# make safe for filename
-			my $tmpval = readfile($file);
-			unless( defined $tmpval ) {
-				config_warn errmsg(
-						"%s: read from non-existent file %s, skipping.",
-						$CDname{$lvar},
-						$file,
-						);
-				next;
-			}
-			chomp($tmpval) unless $tmpval =~ m!.\n.!;
-			# untaint
-			$tmpval =~ /([\000-\377]*)/;
-			$value .= $1;
-		}
+		my ($lvar, $value, $var, $tie) =
+			read_config_value($_, \*CONFIG, $allcfg);
 
-		# Now we can give an unknown error
-		config_error("Unknown directive '$var'"), next unless defined $CDname{$lvar};
+		next unless $lvar;
 
 		# Use our closure defined above
-		&$read($lvar, $value, $tie);
+		$read->($lvar, $value, $tie);
 
 		# If we have passed off configuration to a database we stop here...
 		last if $C->{ConfigDatabase}->{ACTIVE};
@@ -943,8 +837,12 @@ EOF
 
 			# set directive name
 			$status = Vend::Data::set_field($db, $recno, 'directive', $nm);
-			config_error("ConfigDatabase failed for $dname, field 'directive'")
-				unless defined $status;
+			defined $status
+				or config_error(
+					"ConfigDatabase failed for %s, field '%s'",
+					$dname,
+					'directive',
+					);
 
 			# use extended value field if necessary or directed
 			if (length($value) > 250 or $UseExtended{$nm}) {
@@ -952,14 +850,22 @@ EOF
 				$extended =~ s/(\S+)\s*//;
 				$value = $1 || '';
 				$status = Vend::Data::set_field($db, $recno, 'extended', $extended);
-				config_error("ConfigDatabase failed for $dname, field 'extended'")
-					unless defined $status;
+				defined $status
+					or config_error(
+						"ConfigDatabase failed for %s, field '%s'",
+						$dname,
+						'extended',
+						);
 			}
 
 			# set value -- just a name if extended was used
 			$status = Vend::Data::set_field($db, $recno, 'value', $value);
-			config_error("Configdatabase failed for $dname, field 'value'")
-				unless defined $status;
+			defined $status
+				or config_error(
+						"ConfigDatabase failed for %s, field '%s'",
+						$dname,
+						'value',
+					);
 
 			$recno++;
 		}
@@ -994,7 +900,7 @@ EOF
 	}
 
 	if(defined $ifdef) {
-		config_error("Failed to close #ifdef on line $begin_ifdef.");
+		config_error("Failed to close #ifdef on line %s.", $begin_ifdef);
 	}
 
 } # end CONFIGLOOP
@@ -1014,13 +920,16 @@ EOF
 				my $msg = errmsg(
 					"Please specify the %s directive in the configuration file '%s'",
 					$CDname{$var},
-					$catalogcfg,
+					$configfile,
 				);
 
 				die "$msg\n";
 			}
 		}
 	}
+
+	finalize_mapped_code();
+
 	# Ugly legacy stuff so API won't break
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
 	return $C;
@@ -1046,33 +955,171 @@ sub read_here {
 	return $value;
 }
 
+use File::Find;
+sub get_system_code {
+
+	return if $CodeDest;
+	
+	# defined means don't go here anymore
+	$SystemCodeDone = '';
+	my %extmap = qw/
+		ia	ItemAction
+		fa	FormAction
+		am	ActionMap
+		oc	OrderCheck
+		ut	UserTag
+		fi	Filter
+		tag	UserTag
+		ct	CoreTag
+	/;
+
+	for( values %extmap ) {
+		$extmap{lc $_} = $_;
+	}
+
+	my @files;
+
+	my $wanted = sub {
+		return unless -f $_;
+		push @files, $File::Find::name;
+	};
+	File::Find::find($wanted, @$Global::TagDir);
+	for(@files) {
+		next if m{^\.};
+		next if m{/\.};
+		next unless m{\.(\w+)$};
+		my $ext = $1;
+		$CodeDest = $extmap{lc $ext} || 'UserTag';
+		open SYSTAG, "< $_"
+			or config_error("read system tag file %s: %s", $_, $!);
+		while(<SYSTAG>) {
+			my($lvar, $value) = read_config_value($_, \*SYSTAG);
+			next unless $lvar;
+			$GlobalRead->($lvar, $value);
+		}
+	}
+
+	undef $CodeDest;
+	# 1 means read system tag directories
+	$SystemCodeDone = 1;
+}
+
+sub read_config_value {
+	local($_) = shift;
+	return undef unless $_;
+	my ($fh, $allcfg) = @_;
+
+	my $lvar;
+	my $tie;
+
+	chomp;			# zap trailing newline,
+	s/^\s*#.*//;            # comments,
+				# mh 2/10/96 changed comment behavior
+				# to avoid zapping RGB values
+				#
+	s/\s+$//;		#  trailing spaces
+	return undef unless $_;
+
+	local($Vend::config_line);
+	$Vend::config_line = $_;
+	# lines read from the config file become untainted
+	m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
+	my $var = $1;
+	my $value = $2;
+	($lvar = $var) =~ tr/A-Z/a-z/;
+
+	config_error("Unknown directive '%s'", $lvar), next
+		unless defined $CDname{$lvar};
+
+	my($codere) = '[-\w_#/.]+';
+
+	if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
+		my $begin  = $1 || '';
+		$begin .= "\n" if $begin;
+		my $mark = $2;
+		my $startline = $.;
+		$value = $begin . read_here($fh, $mark);
+		unless (defined $value) {
+			config_error (sprintf('%d: %s', $startline,
+				qq#no end marker ("$mark") found#));
+		}
+	}
+	elsif ($value =~ /^(.*)<&(\w+)\s*/) {                # "here sub" value
+		my $begin  = $1 || '';
+		$begin .= "\n" if $begin;
+		my $mark  = $2;
+		my $startline = $.;
+		$value = $begin . read_here($fh, $mark, $allcfg);
+		unless (defined $value) {
+			config_error (sprintf('%d: %s', $startline,
+				qq#no end marker ("$mark") found#));
+		}
+		eval {
+			require Tie::Watch;
+		};
+		unless ($@) {
+			$tie = 1;
+		}
+		else {
+			config_warn(
+				"No Tie::Watch module installed at %s, setting %s to default.",
+				$startline,
+				$var,
+			);
+			$value = '';
+		}
+	}
+	elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
+		$value = $1 || '';
+		my $file = $3;
+		$value .= "\n" if $value;
+		unless (defined $Global::ConfigDir) {
+			config_error(
+				"%s: Can't read from file until ConfigDir defined",
+				$CDname{$lvar},
+			);
+		}
+		$file = $CDname{$lvar} unless $file;
+		$file = "$Global::ConfigDir/$file" unless $file =~ m!^/!;
+		$file = escape_chars($file);			# make safe for filename
+		my $tmpval = readfile($file);
+		unless( defined $tmpval ) {
+			config_warn(
+					"%s: read from non-existent file %s, skipping.",
+					$CDname{$lvar},
+					$file,
+			);
+			return undef;
+		}
+		chomp($tmpval) unless $tmpval =~ m!.\n.!;
+		$value .= $tmpval;
+	}
+	return($lvar, $value, $var, $tie);
+}
+
 # Parse the global configuration file for directives.  Each directive sets
 # the corresponding variable in the Global:: package.  E.g.
 # "DisplayErrors No" in the config file sets Global::DisplayErrors to 0.
 # Directives which have no default value ("undef") must be specified
 # in the config file.
-
 sub global_config {
-	my($directives, $d, %name, %parse, $var, $value, $lvar, $parse);
+	my(%parse, $var, $value, $lvar, $parse);
 	my($directive, $seen_catalog);
 	no strict 'refs';
 
-	$directives = global_directives();
+	%CDname = ();
+
+	my $directives = global_directives();
 
 	$Global::Structure = {} unless $Global::Structure;
 
 	# Prevent parsers from thinking it is a catalog
 	undef $C;
 
-	foreach $d (@$directives) {
+	foreach my $d (@$directives) {
 		($directive = $d->[0]) =~ tr/A-Z/a-z/;
-		$name{$directive} = $d->[0];
-		if (defined $d->[1]) {
-			$parse = 'parse_' . $d->[1];
-		}
-		else {
-			$parse = undef;
-		}
+		$CDname{$directive} = $d->[0];
+		$parse = get_parse_routine($d->[1]);
 		$parse{$directive} = $parse;
 		undef $value;
 		$value = ( 
@@ -1082,19 +1129,19 @@ sub global_config {
 				 ? $d->[2]
 				 : $MV::Default{mv_global}{$d->[0]};
 
-		if (defined $DumpSource{$name{$directive}}) {
-			$Global::Structure->{ $name{$directive} } = $value;
+		if (defined $DumpSource{$CDname{$directive}}) {
+			$Global::Structure->{ $CDname{$directive} } = $value;
 		}
 
 		if (defined $parse and defined $value) {
-			$value = &$parse($d->[0], $value);
+			$value = $parse->($d->[0], $value);
 		}
 
 		if(defined $value) {
-			${'Global::' . $name{$directive}} = $value;
+			${'Global::' . $CDname{$directive}} = $value;
 
-			$Global::Structure->{ $name{$directive} } = $value
-				unless defined $DontDump{ $name{$directive} };
+			$Global::Structure->{ $CDname{$directive} } = $value
+				unless defined $DontDump{ $CDname{$directive} };
 		}
 
 	}
@@ -1104,27 +1151,28 @@ sub global_config {
 	# Create closure for reading of value
 
 	my $read = sub {
-		my ($lvar, $value) = @_;
-		# Error out on extra parameters only if we know
-		# we are not standalone
-		unless (defined $name{$lvar}) {
-			config_error("Unknown directive '$var'");
+		my ($lvar, $value, $tie) = @_;
+
+		unless (defined $CDname{$lvar}) {
+			config_error("Unknown directive '%s'", $var);
 			return;
 		}
 
-		if (defined $DumpSource{$name{$directive}}) {
-			$Global::Structure->{ $name{$directive} } = $value;
+		if (defined $DumpSource{$CDname{$directive}}) {
+			$Global::Structure->{ $CDname{$directive} } = $value;
 		}
 
 		# call the parsing function for this directive
 		$parse = $parse{$lvar};
-		$value = &$parse($name{$lvar}, $value) if defined $parse;
+		$value = $parse->($CDname{$lvar}, $value) if defined $parse;
 
 		# and set the Global::directive variable
-		${'Global::' . $name{$lvar}} = $value;
-		$Global::Structure->{ $name{$lvar} } = $value
-			unless defined $DontDump{ $name{$lvar} };
+		${'Global::' . $CDname{$lvar}} = $value;
+		$Global::Structure->{ $CDname{$lvar} } = $value
+			unless defined $DontDump{ $CDname{$lvar} };
 	};
+
+	$GlobalRead = $read;
 	my $done_one;
 GLOBLOOP:
 	while ($configfile = shift @include) {
@@ -1164,7 +1212,11 @@ GLOBLOOP:
 		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
 #print "found $_";
 			if(defined $ifdef) {
-				config_error("Can't overlap ifdef at line $. of $configfile");
+				config_error(
+					"Can't overlap ifdef at line %s of %s",
+					$.,
+					$configfile,
+				);
 			}
 			$ifdef = evaluate_ifdef($2,$1,1);
 			$begin_ifdef = $.;
@@ -1184,57 +1236,10 @@ GLOBLOOP:
 			unshift @include, grep -f $_, glob($spec);
 			next GLOBLOOP;
 		}
-		chomp;			# zap trailing newline,
-		s/^\s*#.*//;            # comments,
-					# mh 2/10/96 changed comment behavior
-					# to avoid zapping RGB values
-					#
-		s/\s+$//;		#  trailing spaces
-		next if $_ eq '';
-		$Vend::config_line = $_;
-		# lines read from the config file become untainted
-		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
-		$var = $1;
-		$value = $2;
-		($lvar = $var) =~ tr/A-Z/a-z/;
-		my($codere) = '[-\w_#/.]+';
 
-		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
-			my $begin  = $1 || '';
-			$begin .= "\n" if $begin;
-			my $mark = $2;
-			my $startline = $.;
-			$value = $begin . read_here(\*GLOBAL, $mark);
-			unless (defined $value) {
-				config_error (sprintf('%d: %s', $startline,
-					qq#no end marker ("$mark") found#));
-			}
-		}
-		elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
-			$value = $1 || '';
-			my $file = $3;
-			$value .= "\n" if $value;
-			unless (defined $Global::ConfigDir) {
-				config_error
-					("$name{$lvar}: Can't read from file until ConfigDir defined");
-			}
-			$file = $name{$lvar} unless $file;
-			$file = "$Global::ConfigDir/$file" unless $file =~ m!^/!;
-			$file = escape_chars($file);			# make safe for filename
-			my $tmpval = readfile($file);
-			unless( defined $tmpval ) {
-				config_warn errmsg(
-						"%s: read from non-existent file %s, skipping.",
-						$name{$lvar},
-						$file,
-						);
-				next;
-			}
-			chomp($tmpval) unless $tmpval =~ m!.\n.!;
-			$value .= $tmpval;
-		}
-
-		&$read($lvar, $value);
+		my ($lvar, $value, $tie) = read_config_value($_, \*GLOBAL);
+		next unless $lvar;
+		$read->($lvar, $value, $tie);
 
 	}
 	close GLOBAL;
@@ -1245,10 +1250,10 @@ GLOBLOOP:
 	set_global_defaults();
 
 	# check for unspecified directives that don't have default values
-	foreach $var (keys %name) {
+	foreach $var (keys %CDname) {
 		last if defined $Vend::ExternalProgram;
-		if (!defined ${'Global::' . $name{$var}}) {
-			die "Please specify the $name{$var} directive in the\n" .
+		if (!defined ${'Global::' . $CDname{$var}}) {
+			die "Please specify the $CDname{$var} directive in the\n" .
 			"configuration file '$Global::ConfigFile'\n";
 		}
 	}
@@ -1257,9 +1262,14 @@ GLOBLOOP:
 	ADDTAGS: {
 		Vend::Parse::global_init;
 	}
+	undef $GlobalRead;
+
+	finalize_mapped_code();
 
 	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure and ! $Vend::ExternalProgram;
+
+	%CDname = ();
 	return 1;
 }
 
@@ -1306,20 +1316,23 @@ sub watch {
 
 # Set up an ActionMap or FormAction
 sub parse_action {
-	my ($var, $value) = @_;
+	my ($var, $value, $mapped) = @_;
 	return {} if ! $value;
 
 	return if $Vend::ExternalProgram;
 
 	my $c;
-	if(defined $C) {
+	if($mapped) {
+		$c = $mapped;
+	}
+	elsif(defined $C) {
 		$c = $C->{$var};
 	}
 	else {
 		no strict 'refs';
 		$c = ${"Global::$var"};
-		
 	}
+
 	if (defined $C and ! $c->{_mvsafe}) {
 		my $calc = Vend::Interpolate::reset_calc();
 		$c->{_mvsafe} = $calc;
@@ -1335,7 +1348,7 @@ sub parse_action {
 			if defined $Global::GlobalSub->{$_};
 		return $c;
 	}
-	elsif ( $sub !~ /^sub\b/) {
+	elsif ( ! $mapped and $sub !~ /^sub\b/) {
 		my $code = <<EOF;
 sub {
 				return Vend::Interpolate::interpolate_html(<<EndOfThisHaiRYTHING);
@@ -1354,7 +1367,7 @@ EOF
 		$c->{$name} = $c->{_mvsafe}->reval($sub);
 	}
 	if($@) {
-		config_warn(errmsg("Action '%s' did not compile correctly.", $name));
+		config_warn("Action '%s' did not compile correctly.", $name);
 	}
 	return $c;
 	
@@ -1405,7 +1418,7 @@ sub parse_autovar {
 			}
 		}
 		else {
-			config_warn(::errmsg('%s directive not parsable by AutoVariable', $name));
+			config_warn('%s directive not parsable by AutoVariable', $name);
 		}
 	}
 }
@@ -1417,6 +1430,91 @@ sub parse_autovar {
 
 sub parse_capability {
 	return parse_require(@_, 1, 1);
+}
+
+sub parse_tag_group {
+	my ($var, $setting) = @_;
+
+	my $c;
+	if(defined $C) {
+		$c = $C->{$var} || {};
+	}
+	else {
+		no strict 'refs';
+		$c = ${"Global::$var"} || {};
+	}
+	
+	$setting =~ tr/-/_/;
+	$setting =~ s/[,\s]+/ /g;
+	$setting =~ s/^\s+//;
+	$setting =~ s/\s+$//;
+
+	my @pairs = Text::ParseWords::shellwords($setting);
+
+	while(@pairs) {
+		my ($group, $sets) = splice @pairs, 0, 2;
+		my @sets = grep $_, split /\s+/, $sets;
+		my @groups = grep /:/, @sets;
+		@sets = grep $_ !~ /:/, @sets;
+		for(@groups) {
+			next unless $c->{$_};
+			push @sets, @{$c->{$_}};
+		}
+		$c->{$group} = \@sets;
+	}
+	return $c;
+}
+
+my %incmap = qw/TagInclude TagGroup/;
+sub parse_tag_include {
+	my ($var, $setting) = @_;
+
+	my $c;
+	my $g;
+	my $mapper = $incmap{$var} || 'TagGroup';
+	if(defined $C) {
+		$c = $C->{$var} || {};
+		$g = $C->{$mapper} || {};
+	}
+	else {
+		no strict 'refs';
+		$c = ${"Global::$var"} || {};
+		$g = ${"Global::$mapper"} || {};
+	}
+	
+	$setting =~ s/"/ /g;
+	$setting =~ s/^\s+//;
+	$setting =~ s/\s+$//;
+	$setting =~ s/[,\s]+/ /g;
+
+	my @incs = Text::ParseWords::shellwords($setting);
+
+	for(@incs) {
+		my @things;
+		my $not = 0;
+		if(/:/) {
+			$not = 1 if s/^!//;
+			if(! $g->{$_}) {
+				config_warn(
+					"unknown %s %s included from %s",
+					$mapper,
+					$_,
+					$var,
+				);
+			}
+			else {
+				@things = @{$g->{$_}}
+			}
+		}
+		else {
+			@things = ($_);
+		}
+		for(@things) {
+			my $not = s/^!// ? ! $not : $not;
+			$c->{$_} = not $not;
+		}
+	}
+	return $c;
 }
 
 sub parse_suggest {
@@ -1461,6 +1559,22 @@ sub parse_require {
 		$require = $C->{Sub};
 		$name = 'Sub';
 	}
+	elsif($val =~ s/^taggroup\s+//i) {
+		$require = $Global::UserTag->{Routine};
+		my @groups = grep /\S/, split /[\s,]+/, $val;
+		my @needed;
+		my $ref;
+		for (@groups) {
+			if($ref = $Global::TagGroup->{$_}) {
+				push @needed, @$ref;
+			}
+			else {
+				push @needed, $_;
+			}
+		}
+		$name = "TagGroup $val member";
+		$val = join " ", @needed;
+	}
 	elsif($val =~ s/^usertag\s+//i) {
 		$require = $Global::UserTag->{Routine};
 		$name = 'UserTag';
@@ -1501,8 +1615,8 @@ sub parse_require {
 		$vref->{"MV_REQUIRE_${uname}_$_"} = 1;
 		next if defined $require->{$_};
 		next if $testsub->($_);
-		delete $vref->{"MV_REQUIRED_${uname}_$_"};
-		$carptype->( ::errmsg($error_message, $name, $_) );
+		delete $vref->{"MV_REQUIRE_${uname}_$_"};
+		$carptype->( $error_message, $name, $_ );
 	}
 	return '';	
 }
@@ -1727,7 +1841,7 @@ sub parse_locale {
 		my($sethash);
 		if ($eval) {
 			$sethash = $safe->reval($settings)
-				or config_warn(errmsg("bad Locale setting in %s: %s", $name,$settings)),
+				or config_warn("bad Locale setting in %s: %s", $name,$settings),
 						$sethash = {};
 		}
 		else {
@@ -1796,7 +1910,7 @@ sub parse_special {
 	my(%setting) = grep /\S/, split /[\s,]+/, $settings;
 	for (keys %setting) {
 		if($Global::NoAbsolute and file_name_is_absolute($setting{$_}) ) {
-			config_warn(errmsg("Absolute file name not allowed: %s", $setting{$_}));
+			config_warn("Absolute file name not allowed: %s", $setting{$_});
 			next;
 		}
 		$C->{$item}{$_} = $setting{$_};
@@ -1988,13 +2102,13 @@ sub parse_url_sep_char {
 	}
 	elsif(length($val) > 1) {
 		config_error(
-			errmsg("%s character value '%s' longer than one character.", $var, $val)
+			"%s character value '%s' longer than one character.",
+			$var,
+			$val,
 		);
 	}
 	elsif($val !~ /[&;:]/) {
-		config_warn(
-			errmsg("%s character value '%s' not a recommended value.", $var, $val)
-		);
+		config_warn("%s character value '%s' not a recommended value.", $var, $val);
 	}
 
 	if($val eq '&') {
@@ -2105,12 +2219,18 @@ sub parse_root_dir {
 sub parse_root_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
-	$value = "$Global::VendRoot/$value"
-		unless Vend::Util::file_name_is_absolute($value);
-	$value =~ s./+$..;
+
 	no strict 'refs';
 	my $c = ${"Global::$var"} || [];
-	push @$c, $value;
+
+	my @dirs = grep /\S/, Text::ParseWords::shellwords($value);
+
+	foreach my $dir (@dirs) {
+		$dir = "$Global::VendRoot/$dir"
+			unless Vend::Util::file_name_is_absolute($dir);
+		$dir =~ s./+$..;
+		push @$c, $dir;
+	}
 	return $c;
 }
 
@@ -2496,13 +2616,13 @@ sub parse_config_db {
 			push @{$d->{$p}}, @v;
 		}
 		else {
-			config_warn errmsg(
-				"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
-							$p,
-							$val,
-							$d->{$p},
-						)
-				if defined $d->{$p};
+			defined $d->{$p}
+				and config_warn(
+						"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
+						$p,
+						$val,
+						$d->{$p},
+					);
 			$d->{$p} = $val;
 		}
 	}
@@ -2643,20 +2763,21 @@ sub parse_database {
 		}
 		elsif ($p eq 'ALIAS') {
 			if (defined $c->{$val}) {
-				config_warn("Database '$val' already exists, can't alias.");
+				config_warn("Database '%s' already exists, can't alias.", $val);
 			}
 			else {
 				$c->{$val} = $d;
 			}
 		}
 		else {
-			config_warn errmsg(
-				"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
-							$p,
-							$val,
-							$d->{$p},
-						)
-				if defined $d->{$p};
+			defined $d->{$p}
+				and
+				config_warn(
+					"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
+					$p,
+					$val,
+					$d->{$p},
+				);
 			$d->{$p} = $val;
 		}
 		$d->{HOT} = 1 if $d->{Class} eq 'MEMORY';
@@ -2676,10 +2797,9 @@ sub get_configdb {
 		parse_database('Database',"$table $file $type");
 		unless ($C->{Database}{$table}) {
 			config_warn(
-				errmsg(	"Bad $var value '%s': %s\n%s",
-						"Database $table $file $type",
-						::uneval($C->{Database}),
-						)
+				"Bad $var value '%s': %s\n%s",
+				"Database $table $file $type",
+				::uneval($C->{Database}),
 			);
 			return '';
 		}
@@ -2692,17 +2812,13 @@ sub get_configdb {
 	unless ($db = $C->{Database}{$table}) {
 		return if $Vend::ExternalProgram;
 		my $err = $@;
-		config_warn(
-			errmsg("Bad $var '%s': %s", $table, $err)
-		);
+		config_warn("Bad $var '%s': %s", $table, $err);
 		return '';
 	}
 	$db = Vend::Data::import_database($db);
 	if(! $db) {
 		my $err = $@;
-		config_warn(
-			errmsg("Bad $var '%s': %s", $table, $err)
-		);
+		config_warn("Bad $var '%s': %s", $table, $err);
 		return '';
 	}
 	return ($db, $table);
@@ -2940,6 +3056,16 @@ my %tagCanon = ( qw(
 	cannest			canNest
 	documentation	Documentation
 	endhtml			endHTML
+	gobble			Gobble
+
+	group			Group
+	actionmap		ActionMap
+	filter			Filter
+	formaction		FormAction
+	ordercheck		OrderCheck
+	usertag			UserTag
+	systemtag		SystemTag
+
 	hasendtag		hasEndTag
 	implicit		Implicit
 	inserthtml		insertHTML
@@ -2973,21 +3099,65 @@ my %tagBool = ( qw!
 				canNest		1
 				isEndAnchor	1
 				addAttr 	1
+				Filter		1
+				ItemAction	1
+				ActionMap	1
+				FormAction	1
+				OrderCheck	1
+				UserTag	    1
 				isOperator	1
 				! );
 
-# Parses the user tags
-sub parse_tag {
-	my ($var, $value) = @_;
-	my ($c, $new);
+my %current_dest;
+my %valid_dest = qw/
+					filter     Filter
+					itemaction ItemAction
+					actionmap  ActionMap
+					formaction FormAction
+					ordercheck OrderCheck
+					coretag    UserTag
+					usertag    UserTag
+				/;
 
-	return if $Vend::ExternalProgram;
+sub finalize_mapped_code {
+	my $c = $C ? $C->{CodeDef} : $Global::CodeDef;
+	my $ref;
+	my $cfg;
 
-	unless (defined $value && $value) { 
-		return {};
+	if(! $C and my $ref = $c->{Filter}) {
+		next unless $ref = $ref->{Routine};
+		for(keys %$ref) {
+			$Vend::Interpolate::Filter{$_} = $ref->{$_};
+		}
 	}
 
-	$c = defined $C ? $C->{UserTag} : $Global::UserTag;
+	if(! $C and $ref = $c->{OrderCheck} and $ref->{Routine}) {
+		$Vend::Order::OrderCheck = $ref->{Routine};
+	}
+
+	no strict 'refs';
+	for my $type (qw/ ActionMap FormAction ItemAction /) {
+		my $ref;
+		my $r;
+		next unless $r = $c->{$type};
+		next unless $ref = $r->{Routine};
+		my $cfg = $C
+				  ? ($C->{$type}		||= {})
+				  : (${"Global::$type"}	||= {})
+				  ;
+		for(keys %$ref ) {
+			$cfg->{$_} = $ref->{$_};
+		}
+	}
+}
+
+sub parse_mapped_code {
+	my ($var, $value) = @_;
+
+	return '' if ! $value;
+
+	## Can't give CodeDef a default or this will be premature
+	get_system_code() unless defined $SystemCodeDone;
 
 	my($tag,$p,$val) = split /\s+/, $value, 3;
 	
@@ -2995,11 +3165,83 @@ sub parse_tag {
 	$p = $tagCanon{lc $p};
 	$tag =~ tr/-/_/;
 	$tag =~ s/\W//g
-		and config_warn("Bad characters removed from '$tag'.");
+		and config_warn("Bad characters removed from '%s'.", $tag);
+
+	my $repos = $C ? ($C->{CodeDef} ||= {}) : ($Global::CodeDef ||= {});
+
+	my $dest = $valid_dest{lc $p} || $current_dest{$tag} || $CodeDest;
+
+	if(! $dest) {
+		config_warn("no destination for %s %s, skipping.", $var, $tag);
+		return $repos;
+	}
+	$current_dest{$tag} = $dest;
+	$repos->{$dest} ||= {};
+
+	my $c = $repos->{$dest};
+
+	if($p eq 'Routine') {
+		$c->{Routine} ||= {};
+		parse_action($var, "$tag $val", $c->{Routine});
+	}
+	elsif(defined $tagAry{$p}) {
+		my(@v) = Text::ParseWords::shellwords($val);
+		$c->{$p}{$tag} = [] unless defined $c->{$p}{$tag};
+		push @{$c->{$p}{$tag}}, @v;
+	}
+	elsif(defined $tagHash{$p}) {
+		my(%v) = Text::ParseWords::shellwords($val);
+		$c->{$p}{$tag} = {} unless defined $c->{$p}{$tag};
+		for (keys %v) {
+		  $c->{$p}{$tag}{$_} = $v{$_};
+		}
+	}
+	elsif(defined $tagBool{$p}) {
+		$c->{$p}{$tag} = 1
+			unless defined $val and $val =~ /^[0nf]/i;
+	}
+	else {
+		config_warn("%s %s scalar parameter %s redefined.", $var, $tag, $p)
+			if defined $c->{$p}{$tag};
+		$c->{$p}{$tag} = $val;
+	}
+
+	return $repos;
+}
+
+# Parses the user tags
+sub parse_tag {
+	my ($var, $value) = @_;
+	my ($new);
+
+	return if $Vend::ExternalProgram;
+
+	unless (defined $value && $value) { 
+		return {};
+	}
+
+	return parse_mapped_code($var, $value)
+		if $var ne 'UserTag';
+
+	get_system_code() unless defined $SystemCodeDone;
+
+	my $c = defined $C ? $C->{UserTag} : $Global::UserTag;
+
+	my($tag,$p,$val) = split /\s+/, $value, 3;
+	
+	# Canonicalize
+	$p = $tagCanon{lc $p};
+	$tag =~ tr/-/_/;
+	$tag =~ s/\W//g
+		and config_warn("Bad characters removed from '%s'.", $tag);
 
 	unless ($p) {
-		config_warn "Bad user tag parameter '$p' for '$tag', skipping.";
+		config_warn("Bad user tag parameter '%s' for '%s', skipping.", $p, $tag);
 		return $c;
+	}
+
+	if($CodeDest and $CodeDest eq 'CoreTag') {
+		return $c unless $Global::TagInclude->{$tag};
 	}
 
 	if($p eq 'Routine' or $p eq 'posRoutine') {
@@ -3016,11 +3258,9 @@ sub parse_tag {
 			$sub = $safe->reval($code);
 			if($@) {
 				config_warn(
-					 errmsg(
 						"UserTag '%s' subroutine failed safe check: %s",
 						$tag,
 						$@,
-						)
 				);
 				return $c;
 			}
@@ -3036,22 +3276,19 @@ sub parse_tag {
 		}
 		if($@ or $fail) {
 			config_warn(
-					 errmsg(
 						"UserTag '%s' subroutine failed compilation:\n\n\t%s",
 						$tag,
 						"$fail $@",
-						)
 			);
 			return $c;
 		}
 		else {
 			config_warn(
-				errmsg(
 					"UserTag '%s' code is not a subroutine reference",
 					$tag,
-				)
 			) unless ref($sub) =~ /CODE/;
 		}
+
 		$c->{$p}{$tag} = $sub;
 		$c->{Order}{$tag} = []
 			unless defined $c->{Order}{$tag};
@@ -3081,7 +3318,7 @@ sub parse_tag {
 			unless defined $val and $val =~ /^[0nf]/i;
 	}
 	else {
-		config_warn errmsg("UserTag %s scalar parameter %s redefined.", $tag, $p)
+		config_warn("UserTag %s scalar parameter %s redefined.", $tag, $p)
 			if defined $c->{$p}{$tag};
 		$c->{$p}{$tag} = $val;
 	}
@@ -3146,12 +3383,7 @@ sub parse_subroutine {
 		my $alt = $2;
 		$name =~ s/\s+//;
 		$alt =~ s/\s+//;
-		config_warn(
-			errmsg(
-				"%s %s: named also %s?",
-				$var, $name, $alt,
-			)
-		);
+		config_warn("%s %s: named also %s?", $var, $name, $alt);
 		
 	}
 	else {
@@ -3236,6 +3468,226 @@ sub parse_permission {
 	}
 	$_;
 }
+
+$StdTags = <<'EOF';
+				:core "
+					accessories
+					area
+					assign
+					attr_list
+					banner
+					calc
+					cart
+					catch
+					cgi
+					charge
+					checked
+					control
+					control_set
+					counter
+					currency
+					data
+					default
+					description
+					discount
+					dump
+					ecml
+					either
+					error
+					export
+					field
+					file
+					filter
+					flag
+					fly_list
+					fly_tax
+					handling
+					harness
+					html_table
+					import
+					include
+					index
+					input_filter
+					item_list
+					log
+					loop
+					mail
+					msg
+					mvasp
+					nitems
+					onfly
+					options
+					order
+					page
+					perl
+					price
+					process
+					profile
+					query
+					read_cookie
+					record
+					region
+					row
+					salestax
+					scratch
+					scratchd
+					search_region
+					selected
+					set
+					set_cookie
+					seti
+					setlocale
+					shipping
+					shipping_desc
+					soap
+					sql
+					strip
+					subtotal
+					tag
+					time
+					timed_build
+					tmp
+					total_cost
+					tree
+					try
+					update
+					userdb
+					value
+					value_extended
+					warnings
+				"
+				:base "
+						area
+						cgi
+						data
+						either
+						filter
+						flag
+						loop
+						page
+						query
+						scratch
+						scratchd
+						set
+						seti
+						tag
+						tmp
+						value
+				"
+				:commerce "
+						assign
+						cart
+						charge
+						currency
+						description
+						discount
+						ecml
+						error
+						field
+						fly_list
+						fly_tax
+						handling
+						item_list
+						nitems
+						onfly
+						options
+						order
+						price
+						salestax
+						shipping
+						shipping_desc
+						subtotal
+						total_cost
+						userdb
+				"
+				:data "
+						data
+						export
+						field
+						flag
+						import
+						index
+						query
+						record
+						sql
+				"
+				:form "
+					accessories
+					cgi
+					checked
+					error
+					flag
+					input_filter
+					msg
+					process
+					profile
+					selected
+					update
+					value_extended
+					warnings
+				"
+				:debug "
+					catch
+					dump
+					error
+					flag
+					harness
+					log
+					msg
+					tag
+					try
+					warnings
+				"
+				:file "
+					counter
+					file
+					include
+					log
+					value_extended
+				"
+				:http "
+					area
+					cgi
+					filter
+					input_filter
+					page
+					process
+					read_cookie
+					set_cookie
+					value_extended
+				"
+				:crufty "
+					banner
+					default
+					ecml
+					html_table
+					onfly
+					sql
+				"
+				:text "
+					row
+					strip
+					filter
+				"
+				:html "
+					accessories
+					checked
+					filter
+					html_table
+					process
+				"
+				:mail "
+					mail
+				"
+				:perl "
+					perl
+					calc
+					mvasp
+				"
+				:time "
+					time
+				"
+EOF
 
 1;
 

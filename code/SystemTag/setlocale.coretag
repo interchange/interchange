@@ -1,0 +1,4 @@
+UserTag setlocale           Order        locale currency
+UserTag setlocale           addAttr
+UserTag setlocale           PosNumber    2
+UserTag setlocale           MapRoutine   Vend::Util::setlocale

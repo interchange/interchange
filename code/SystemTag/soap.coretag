@@ -1,0 +1,5 @@
+UserTag soap                Order        call uri proxy
+UserTag soap                addAttr
+UserTag soap                InvalidateCache
+UserTag soap                PosNumber    3
+UserTag soap                MapRoutine   Vend::SOAP::tag_soap

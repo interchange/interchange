@@ -1,0 +1,7 @@
+UserTag region              addAttr
+UserTag region              attrAlias    args arg
+UserTag region              attrAlias    params arg
+UserTag region              attrAlias    search arg
+UserTag region              hasEndTag
+UserTag region              PosNumber    0
+UserTag region              MapRoutine   Vend::Interpolate::region

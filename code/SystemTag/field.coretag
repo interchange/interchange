@@ -1,0 +1,8 @@
+UserTag field               Order        name code
+UserTag field               attrAlias    column name
+UserTag field               attrAlias    col name
+UserTag field               attrAlias    row code
+UserTag field               attrAlias    field name
+UserTag field               attrAlias    key code
+UserTag field               PosNumber    2
+UserTag field               MapRoutine   Vend::Data::product_field

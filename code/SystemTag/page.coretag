@@ -1,0 +1,6 @@
+UserTag page                Order        href arg
+UserTag page                addAttr
+UserTag page                attrAlias    base arg
+UserTag page                Implicit     secure secure
+UserTag page                PosNumber    2
+UserTag page                MapRoutine   Vend::Interpolate::tag_page

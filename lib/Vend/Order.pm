@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.12 2001-11-08 20:19:05 mheins Exp $
+# $Id: Order.pm,v 2.13 2002-01-29 05:52:43 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -67,6 +67,7 @@ my $Tables;
 my $Fail_page;
 my $Success_page;
 my $No_error;
+use vars qw/$OrderCheck/;
 
 my %Parse = (
 
@@ -229,16 +230,26 @@ sub _format {
 
 	my (@return);
 
-	if( defined $Parse{$routine}) {
-		@return = $Parse{$routine}->($var, $val, $message);
+::logDebug("OrderCheck = $OrderCheck routine=$routine");
+	my $sub;
+	my @args;
+	if( $sub = $Parse{$routine}) {
+		@args = ($var, $val, $message);
 		undef $message;
 	}
+	elsif ($OrderCheck and $sub = $OrderCheck->{$routine}) {
+::logDebug("Using coderef OrderCheck = $sub");
+		@args = ($ref,$var,$val);
+	}
 	elsif (defined &{"_$routine"}) {
-		@return = &{'_' . $routine}($ref,$var,$val);
+		$sub = \&{"_$routine"};
+		@args = ($ref,$var,$val);
 	}
 	else {
 		return (undef, $var, errmsg("No format check routine for '%s'", $routine));
 	}
+
+	@return = $sub->(@args);
 
 	if(! $return[0] and $message) {
 		$return[2] = $message;
@@ -827,8 +838,8 @@ sub do_check {
 		}
 		$val =~ s/&#(\d+);/chr($1)/ge;
 
-		if (defined $Parse{$var}) {
-			($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m);
+		if ($Parse{$var}) {
+			($val, $var, $message) = $Parse{$var}->($ref, $val, $m);
 		}
 		else {
 			logError( "Unknown order check parameter in profile %s: %s=%s",
@@ -865,9 +876,17 @@ sub check_order {
 	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
 	$params =~ s/\\\n//g;
+
 	@Errors = ();
 	$And = 1;
 	$Fatal = $Final = 0;
+
+	my $r;
+	if( $r = $Vend::Cfg->{CodeDef}{OrderCheck} and $r = $r->{Routine}) {
+		for(keys %$r) {
+			$OrderCheck->{$_} = $r->{$_};
+		}
+	}
 
 	my($var,$val,$message);
 	my $status = 1;

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.43 2002-01-25 19:46:04 jon Exp $
+# $Id: Interpolate.pm,v 2.44 2002-01-29 05:52:43 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 @EXPORT = qw (
 
@@ -645,11 +645,20 @@ sub interpolate_html {
 	return $parse->{OUT};
 }
 
+my $Filters_initted;
+
 sub filter_value {
 	my($filter, $value, $tag, @passed_args) = @_;
 #::logDebug("filter_value: filter='$filter' value='$value' tag='$tag'");
 	my @filters = Text::ParseWords::shellwords($filter); 
 	my @args;
+
+	if(! $Filters_initted++ and my $ref = $Vend::Cfg->{CodeDef}{Filter}) {
+		while (my($k, $v) = each %{$ref->{Routine}}) {
+			$Filter{$k} = $v;
+		}
+	}
+
 	for (@filters) {
 		next unless length($_);
 		@args = @passed_args;
@@ -679,48 +688,6 @@ sub filter_value {
 	}
 #::logDebug("filter_value returns: value='$value'");
 	return $value;
-}
-
-sub tag_record {
-	my ($opt) = @_;
-	my $db = $Vend::Database{$opt->{table}};
-	return undef if ! $db;
-	$db = $db->ref();
-	# This can be called from Perl
-	my (@cols, @vals);
-	my $hash   = $opt->{col};
-	my $filter = $opt->{filter};
-
-	return undef unless defined $opt->{key};
-	my $key = $opt->{key};
-	return undef unless ref $hash;
-	undef $filter unless ref $filter;
-	@cols = keys %$hash;
-	@vals = values %$hash;
-
-	RESOLVE: {
-		my $i = -1;
-		for(@cols) {
-			$i++;
-			if(! defined $db->test_column($_) ) {
-				splice (@cols, $i, 1);
-				my $tmp = splice (@vals, $i, 1);
-				::logError("bad field %s in record update, value=%s", $_, $tmp);
-				redo RESOLVE;
-			}
-			next unless defined $filter->{$_};
-			$vals[$i] = filter_value($filter->{$_}, $vals[$i], $_);
-		}
-	}
-
-	my $status;
-	eval {
-		my $status = $db->set_slice($key, \@cols, \@vals);
-	};
-	if($@) {
-		return $@ if $opt->{show_error};
-	}
-	return $status;
 }
 
 sub try {
@@ -754,55 +721,8 @@ sub try {
 	return $out;
 }
 
-sub catch {
-	my ($label, $opt, $body) = @_;
-	$label = 'default' unless $label;
-	my $patt;
-	return pull_else($body) 
-		unless $patt = $Vend::Session->{try}{$label};
-
-	$body = pull_if($body);
-
-	if ( $opt->{exact} ) {
-		#----------------------------------------------------------------
-		# Convert multiple errors to 'or' list and compile it.
-		# Note also the " at (eval ...)" kludge to strip the line numbers
-		$patt =~ s/(?: +at +\(eval .+\).+)?\n\s*/|/g;
-		$patt =~ s/^\s*//;
-		$patt =~ s/\|$//;
-		$patt = qr($patt);
-		#----------------------------------------------------------------
-	}
-
-	my $found;
-	while ($body =~ s{
-						\[/
-							(.+?)
-						/\]
-						(.*?)
-						\[/
-						(?:\1)?/?
-						\]}{}sx ) {
-		my $re;
-		my $error = $2;
-		eval {
-			$re = qr{$1}
-		};
-		next if $@;
-		next unless $patt =~ $re;
-		$found = $error;
-		last;
-	}
-	$body = $found if $found;
-
-	$body =~ s/\s+$//;
-	$body =~ s/^\s+//;
-	return $body;
-}
-
-
 # Returns the text of a configurable database field or a 
-# variable
+# session variable
 sub tag_data {
 	my($selector,$field,$key,$opt,$flag) = @_;
 	$CacheInvalid = 1 if defined $Vend::Cfg->{DynamicData}->{$selector};
@@ -914,8 +834,8 @@ sub tag_data {
 
 %Filter = (
 	
-	'value' =>	sub { $::Values->{$_[0]} },
-	'cgi' =>	sub { $CGI::values{$_[0]} },
+	'value' =>	sub { return $::Values->{$_[0]}; },
+	'cgi' =>	sub { return $CGI::values{$_[0]}; },
 	'filesafe' =>	sub {
 						return Vend::Util::escape_chars(shift);
 				},
@@ -1062,10 +982,6 @@ sub tag_data {
 	'tabbed' =>		sub {
 						my @items = split /\r?\n/, shift;
 						return join "\t", @items;
-				},
-	'lc' =>		sub {
-					use locale;
-					return lc(shift);
 				},
 	'digits_dot' => sub {
 					my $val = shift;
@@ -1978,14 +1894,6 @@ sub tag_profile {
 	return $opt->{success};
 }
 
-sub tag_price {
-	my($code,$ref) = @_;
-	my $amount = Vend::Data::item_price($ref,$ref->{quantity} || 1);
-	$amount = discount_price($ref,$amount, $ref->{quantity})
-			if $ref->{discount};
-	return currency( $amount, $ref->{noformat} );
-}
-
 sub tag_options {
 	my ($sku, $opt) = @_;
 	my $item;
@@ -2178,16 +2086,16 @@ sub tag_options {
 							$sku,
 							'',
 							{ 
-								passed => join(",", @out),
-								type => $opt->{type} || $ref->[8] || 'select',
 								attribute => 'code',
-								name => 'mv_sku',
-								price_data => $price,
-								price => $opt->{price},
-								item => $item,
-								extra => $opt->{extra},
-								js => $opt->{js},
 								default => undef,
+								extra => $opt->{extra},
+								item => $item,
+								js => $opt->{js},
+								name => 'mv_sku',
+								passed => join(",", @out),
+								price => $opt->{price},
+								price_data => $price,
+								type => $opt->{type} || $ref->[8] || 'select',
 							},
 							$item || undef,
 						);
@@ -2221,15 +2129,15 @@ sub tag_options {
 							$sku,
 							'',
 							{ 
-								passed => $ref->[3],
-								type => $opt->{type} || $ref->[5] || 'select',
 								attribute => $ref->[2],
-								price_data => $ref->[6],
-								price => $opt->{price},
-								item => $item,
-								extra => $opt->{extra},
-								js => $opt->{js},
 								default => undef,
+								extra => $opt->{extra},
+								item => $item,
+								js => $opt->{js},
+								passed => $ref->[3],
+								price => $opt->{price},
+								price_data => $ref->[6],
+								type => $opt->{type} || $ref->[5] || 'select',
 							},
 							$item || undef,
 						);
@@ -3397,80 +3305,6 @@ sub tag_mail {
     return ($opt->{success} || $ok);
 }
 
-sub tag_weighted_banner {
-	my ($category, $opt) = @_;
-	my $dir = catfile($Vend::Cfg->{ScratchDir}, 'Banners');
-	mkdir $dir, 0777 if ! -d $dir;
-	if($category) {
-		my $c = $category;
-		$c =~ s/\W//g;
-		$dir .= "/$c";
-	}
-#::logDebug("banner category=$category dir=$dir");
-	my $statfile =	$Vend::Cfg->{ConfDir};
-	$statfile .= "/status.$Vend::Cat";
-#::logDebug("banner category=$category dir=$dir statfile=$statfile");
-	my $start_time;
-	if($opt->{once}) {
-		$start_time = 0;
-	}
-	elsif(! -f $statfile) {
-		Vend::Util::writefile( $statfile, "banners initialized " . time() . "\n");
-		$start_time = time();
-	}
-	else {
-		$start_time = (stat(_))[9];
-	}
-	my $weight_file = "$dir/total_weight";
-#::logDebug("banner category=$category dir=$dir statfile=$statfile wfile=$weight_file");
-	initialize_banner_directory($dir, $category, $opt)
-		if  (	
-				! -f $weight_file
-					or
-				(stat(_))[9] < $start_time
-			);
-	my $n = int( rand( readfile($weight_file) ) );
-#::logDebug("weight total n=$n, file=$dir/$n");
-	return Vend::Util::readfile("$dir/$n");
-}
-
-sub tag_banner {
-    my ($place, $opt) = @_;
-
-	return tag_weighted_banner($place, $opt) if $opt->{weighted};
-
-#::logDebug("banner, place=$place opt=" . ::uneval_it($opt));
-	my $table	= $opt->{table}		|| 'banner';
-	my $r_field	= $opt->{r_field}	|| 'rotate';
-	my $b_field	= $opt->{b_field}	|| 'banner';
-	my $sep		= $opt->{separator} || ':';
-	my $delim	= $opt->{delimiter} || "{or}";
-	$place = 'default' if ! $place;
-    my $totrot;
-    do {
-		my $banner_data;
-        $totrot = tag_data($table, $r_field, $place);
-        if(! length $totrot) {
-			# No banner present
-            unless ($place =~ /$sep/ or $place eq 'default') {
-				$place = 'default';
-				redo;
-			}
-        }
-        elsif ($totrot) {
-            my $current = $::Scratch->{"rotate_$place"}++ || 0;
-            my $data = tag_data($table, $b_field, $place);
-            my(@banners) = split /\Q$delim/, $data;
-            return '' unless @banners;
-            return $banners[$current % scalar(@banners)];
-        }
-        else {
-            return tag_data($table, $b_field, $place);
-        }
-    } while $place =~ s/(.*)$sep.*/$1/;
-	return;
-}
-
 # Returns the text of a user entered field named VAR.
 sub tag_value {
     my($var,$opt) = @_;
@@ -3495,40 +3329,6 @@ sub tag_value {
 	$value =~ s/</&lt;/g
 		unless $opt->{enable_html};
     return $value;
-}
-
-# Returns the contents of a file.  Won't allow any arbitrary file unless
-# NoAbsolute is not set.
-sub tag_file {
-	my ($file, $type) = @_;
-    return readfile($file, $Global::NoAbsolute)
-		unless $type;
-	return readfile($file, $Global::NoAbsolute, 0)
-		if $type eq 'raw';
-	my $text = readfile($file, $Global::NoAbsolute);
-	if($type =~ /mac/i) {
-		$text =~ tr/\n/\r/;
-	}
-	elsif($type =~ /dos|window/i) {
-		$text =~ s/\n/\r\n/g;
-	}
-	elsif($type =~ /unix/i) {
-		if($text=~ /\n/) {
-			$text =~ tr/\r/\n/;
-		}
-		else {
-			$text =~ s/\r\n/\n/g;
-		}
-	}
-	return $text;
-}
-
-# Returns the text of a user entered field named VAR.
-# Same as tag value except returns 'default' if not present
-sub tag_default {
-    my($var, $default, $opt) = @_;
-	$opt->{default} = !(length $default) ? 'default' : $default;
-    return tag_value($var, $opt);
 }
 
 sub esc {
@@ -3741,18 +3541,6 @@ sub tag_shipping_desc {
 	$mode = $mode || $::Values->{mv_shipmode} || 'default';
 	return '' unless defined $Vend::Cfg->{Shipping_desc}->{$mode};
 	$Vend::Cfg->{Shipping_desc}->{$mode};
-}
-
-# Returns the href to process the completed order form or do the search.
-
-sub tag_process {
-	my($target,$secure,$opt) = @_;
-
-	$secure = defined $secure ? $secure : $CGI::secure;
-
-	my $url = $secure ? secure_vendUrl('process') : vendUrl('process');
-	return $url unless $target;
-	return qq{$url" TARGET="$target};
 }
 
 sub tag_calc {
@@ -5213,168 +5001,6 @@ sub error_opt {
 	return undef;
 }
 
-sub tag_tree {
-	my($table, $parent, $sub, $start_item, $opt, $text) = @_;
-
-#::logDebug("tree-list: received parent=$parent sub=$sub start=$start_item");
-
-	my $db = ::database_exists_ref($table)
-		or return error_opt($opt, "Database %s doesn't exist", $table);
-	$db->column_exists($parent)
-		or return error_opt($opt, "Parent column %s doesn't exist", $parent);
-	$db->column_exists($sub)
-		or return error_opt($opt, "Subordinate column %s doesn't exist", $sub);
-
-	my $qkey = $db->quote($start_item, $parent);
-
-	my @outline = (1);
-	if(defined $opt->{outline}) {
-		$opt->{outline} =~ s/[^a-zA-Z0-9]+//g;
-		@outline = split //, $opt->{outline};
-		@outline = (qw/1 A 1 a 1 a/) if scalar @outline < 2;
-	}
-
-	my $mult = ( int($opt->{spacing}) || 10 );
-	my $keyfield = $db->config('KEY');
-	$opt->{code_field} = $keyfield if ! $opt->{code_field};
-
-	my $sort = '';
-	if($opt->{sort}) {
-		$sort .= ' ORDER BY ';
-		my @sort;
-		@sort = ref $opt->{sort}
-				?  @{$opt->{sort}}	
-				: ( $opt->{sort} );
-		for(@sort) {
-			s/\s*[=:]\s*([rnxf]).*//;
-			$_ .= " DESC" if $1 eq 'r';
-		}
-		$sort .= join ", ", @sort;
-		undef $opt->{sort};
-	}
-
-	my $qb = "select * from $table where $parent = $qkey$sort";
-	my $ary = $db->query( {
-							hashref => 1,
-							sql => $qb,
-							});
-	
-	my $memo;
-	if( $opt->{memo} ) {
-		$memo = ($::Scratch->{$opt->{memo}} ||= {});
-		my $toggle;
-		if($opt->{toggle} and $toggle = $CGI::values{$opt->{toggle}}) {
-			$memo->{$toggle} = ! $memo->{$toggle};
-		}
-	}
-
-	if($opt->{collapse} and $CGI::values{$opt->{collapse}}) {
-		$memo = {};
-		delete $::Scratch->{$opt->{memo}} if $opt->{memo};
-	}
-
-	my $explode;
-	if($opt->{full} or $opt->{explode} and $CGI::values{$opt->{explode}}) {
-		$explode = 1;
-	}
-
-	my $enable;
-
-
-	$memo = {} if ! $memo;
-
-	my $stop_sub;
-
-#::logDebug("tree-list: valid parent=$parent sub=$sub start=$start_item mult=$mult");
-
-	my @ary_stack   = ( $ary );				# Stacks the rows
-	my @above_stack = { $start_item => 1 }; # Holds the previous levels
-	my @inc_stack   = ($outline[0]);		# Holds the increment characters
-	my @rows;
-	my $row;
-
-	ARY: for (;;) {
-#::logDebug("next ary");
-		my $ary = pop(@ary_stack)
-			or last ARY;
-		my $above = pop(@above_stack);
-		my $level = scalar(@ary_stack);
-		my $increment = pop(@inc_stack);
-		ROW: for(;;) {
-#::logDebug("next row level=$level increment=$increment");
-			my $prev = $row;
-			$row = shift @$ary
-				or ($prev and $prev->{mv_last} = 1), last ROW;
-			$row->{mv_level} = $level;
-			$row->{mv_spacing} = $level * $mult;
-			$row->{mv_spacer} = $opt->{spacer} x $row->{mv_spacing}
-				if $opt->{spacer};
-			$row->{mv_increment} = $increment++;
-			push(@rows, $row);
-			my $code = $row->{$keyfield};
-			$row->{mv_toggled} = 1 if $memo->{$code};
-#::logDebug("next row sub=$sub=$row->{$sub}");
-			my $next = $row->{$sub}
-				or next ROW;
-
-			my $stop;
-			$row->{mv_children} = 1
-				if ($opt->{stop}		and ! $row->{ $opt->{stop} }	)
-				or ($opt->{continue}	and   $row->{ $opt->{continue} })
-				or ($opt->{autodetect});
-
-			$stop = 1  if ! $explode and ! $memo->{$code};
-#::logDebug("next row sub=$sub=$next stop=$stop explode=$explode memo=$memo->{$code}");
-
-			if($above->{$next} and ($opt->{autodetect} or ! $stop) ) {
-				my $fmt = <<EOF;
-Endless tree detected at key %s in table %s.
-Parent %s, would traverse to %s.
-EOF
-				my $msg = ::errmsg($fmt, $code, $table, $row->{$parent}, $next);
-				if(! $opt->{pedantic}) {
-					error_opt($opt, $msg);
-					next ROW;
-				}
-				else {
-					$opt->{log_error} = 1 unless $opt->{show_error};
-					return error_opt($opt, $msg);
-				}
-			}
-
-			my $a;
-			if ($opt->{autodetect} or ! $stop) {
-				my $key = $db->quote($next, $parent);
-				my $q = "SELECT * FROM $table WHERE $parent = $key$sort";
-#::logDebug("next row query=$q");
-				$a = $db->query(
-									{ 
-										hashref => 1,
-										sql => $q,
-									}
-						);
-				$above->{$next} = 1 if $a and scalar @{$a};
-			}
-
-			if($opt->{autodetect}) {
-				$row->{mv_children} = $a ? scalar(@$a) : 0; 
-			}
-
-			if (! $stop) {
-				push(@ary_stack, $ary);
-				push(@above_stack, $above);
-				push(@inc_stack, $increment);
-				$level++;
-				$increment = defined $outline[$level] ? $outline[$level] : 1;
-				$ary = $a;
-			}
-		}  # END ROW
-#::logDebug("last row");
-	} # END ARY
-#::logDebug("last ary, results =" . ::uneval(\@rows));
-	return labeled_list($opt, $text, {mv_results => \@rows});
-}
-
 sub query {
 	if(ref $_[0]) {
 		unshift @_, '';
@@ -5399,23 +5025,6 @@ sub query {
 		return (ref $result) ? '' : $result;
 	}
 	$db->query($opt, $text);
-}
-
-sub tag_item_list {
-	my($cart,$opt,$text) = @_;
-#::logDebug("tag_item_list: " . ::uneval(\@_));
-	my $obj = {
-				mv_results => $cart ? ($::Carts->{$cart} ||= [] ) : $Vend::Items,
-					};
-	return if ! $text;
-#::logDebug("tag_item_list obj=" . ::uneval($obj));
-#::logDebug("Vend::Items obj=" . ::uneval($Vend::Items));
-	$CacheInvalid = 1;
-	$opt->{prefix} = 'item' unless defined $opt->{prefix};
-# LEGACY
-	list_compat($opt->{prefix}, \$text);
-# END LEGACY
-	return labeled_list($opt, $text, $obj);
 }
 
 sub html_table {
@@ -6273,117 +5882,6 @@ sub read_shipping {
 
 *custom_shipping = \&shipping;
 
-# Returns 'SELECTED' when a value is present on the form
-# Must match exactly, but NOT case-sensitive
-
-sub tag_selected {
-	my ($field,$value,$opt) = @_;
-	$value = '' unless defined $value;
-	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return ' SELECTED' if ! length($ref) and $opt->{default};
-
-	if(! $opt->{case}) {
-		$ref = lc($ref);
-		$value = lc($value);
-	}
-
-	my $r = '';
-
-	return ' SELECTED' if $ref eq $value;
-	if ($opt->{multiple}) {
-		my $regex = quotemeta $value;
-		return ' SELECTED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
-	}
-
-	return '';
-}
-
-sub tag_checked {
-	my ($field,$value,$opt) = @_;
-
-	$value = 'on' unless defined $value;
-
-	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return 'CHECKED' if ! length($ref) and $opt->{default};
-
-	if(! $opt->{case}) {
-		$ref = lc($ref);
-		$value = lc($value);
-	}
-
-	return 'CHECKED' if $ref eq $value;
-
-	if ($opt->{multiple}) {
-		my $regex = quotemeta $value;
-		return 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
-	}
-
-	return '';
-}
-
-# Returns an href to place an order for the product PRODUCT_CODE.
-# If AlwaysSecure is set, goes by the page accessed, otherwise 
-# if a secure order has been started (with a call to at least
-# one secure_vendUrl), then it will be given the secure URL
- 
-sub tag_order {
-    my($code,$quantity,$opt) = @_;
-	$opt = {} unless $opt;
-    my($r);
-	my @parms = (
-					"mv_action=refresh",
-				  );
-
-	push(@parms, "mv_order_item=$code");
-	push(@parms, "mv_order_mv_ib=$opt->{base}")
-		if($opt->{base});
-
-	push(@parms, "mv_cartname=$opt->{cart}")
-		if($opt->{cart});
-
-	push(@parms, "mv_order_quantity=$quantity")
-		if($quantity);
-
-	$opt->{form} = join "\n", @parms;
-
-	$opt->{page} = find_special_page('order')
-		unless $opt->{page};
-
-	return form_link($opt->{area}, $opt->{arg}, $opt)
-		if $opt->{area};
-	return tag_page($opt->{page}, $opt->{arg}, $opt);
-}
-
-# Sets the value of a discount field
-sub tag_discount {
-	my($code, $opt, $value) = @_;
-
-	# API compatibility
-	if(! ref $opt) {
-		$value = $opt;
-		$opt = {};
-	}
-
-	if($opt->{subtract}) {
-		$value = <<EOF;
-my \$tmp = \$s - $opt->{subtract};
-\$tmp = 0 if \$tmp < 0;
-return \$tmp;
-EOF
-	}
-	elsif ($opt->{level}) {
-		$value = <<EOF;
-return (\$s * \$q) if \$q < $opt->{level};
-my \$tmp = \$s / \$q;
-return \$s - \$tmp;
-EOF
-	}
-    $Vend::Session->{discount}{$code} = $value;
-	delete $Vend::Session->{discount}->{$code}
-		unless (defined $value and $value);
-	return '';
-}
-
 # Sets the value of a scratchpad field
 sub set_scratch {
 	my($var,$val) = @_;
@@ -6397,68 +5895,6 @@ sub set_tmp {
 	push @Vend::TmpScratch, $var;
     $::Scratch->{$var} = $val;
 	return '';
-}
-
-# Returns the value of a control field named VAR.
-sub tag_control {
-	my ($name, $default, $opt) = @_;
-
-	if(! $name) {
-		# Here we either reset the index or increment it
-		# Done this way for speed, no blocks to enter other than top one
-		if($opt->{space}) {
-			$::Control = $Tmp->{$opt->{space}} ||= [];
-			return set_tmp('control_index', 0);
-		}
-		else {
-			($::Scratch->{control_index} = 0, return) if $opt->{reset};
-			return set_tmp('control_index', ++$::Scratch->{control_index});
-		}
-	}
-
-	$name = lc $name;
-	$name =~ s/-/_/g;
-	$opt ||= {};
-	if (! defined $default and $opt->{set}) {
-		$::Control->[$::Scratch->{control_index}]{$name} = $::Scratch->{$name};
-		return;
-	}
-
-	return defined $::Control->[$::Scratch->{control_index}]{$name} 
-			?  ( $::Control->[$::Scratch->{control_index}]{$name} || $default )
-			:  ( length($::Scratch->{$name}) ? ($::Scratch->{$name}) : $default )
-}
-
-# Batch sets a set of controls without affecting Scratch
-# Increments the index afterwards unless index is defined
-sub tag_control_set {
-	my ($index, $opt, $body) = @_;
-
-	my $inc;
-	unless($index) {
-		$index = $::Scratch->{control_index} || 0;
-		$inc = 1;
-	}
-	
-	while($body =~ m{\[([-\w]+)\](.*)\[/\1\]}sg) {
-		my $name = lc $1;
-		my $val = $2;
-		$name =~ s/-/_/g;
-		$::Control->[$index]{$name} = $val;
-	}
-	$::Scratch->{control_index}++;
-	return;
-}
-
-sub tag_scratchd {
-	my $var = shift;
-	return delete $::Scratch->{$var};
-}
-
-# Returns the value of a scratchpad field named VAR.
-sub tag_scratch {
-	my $var = shift;
-    return $::Scratch->{$var};
 }
 
 sub tag_lookup {
@@ -6613,401 +6049,10 @@ sub update {
 
 my $Ship_its = 0;
 
-sub set_error {
-	my ($error, $var, $opt) = @_;
-	$var = 'default' unless $var;
-	$opt = { keep => 1 } if ! $opt;
-	my $ref = $Vend::Session->{errors};
-	if($ref->{$var} and ! $opt->{overwrite}) {
-		$ref->{$var} .= errmsg(" AND ");
-	}
-	else {
-		$ref->{$var} = '';
-	}
-	
-	$ref->{$var} .= $error;
-	return tag_error($var, $opt);
-}
-
 sub push_warning {
 	$Vend::Session->{warnings} = [$Vend::Session->{warnings}]
 		if ! ref $Vend::Session->{warnings};
 	push @{$Vend::Session->{warnings}}, errmsg(@_);
-	return;
-}
-
-sub tag_warnings {
-	my($message, $opt) = @_;
-
-	if($message) {
-		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
-		push_warning($opt->{message}, @$param);
-		return unless $opt->{show};
-	}
-
-	return unless $Vend::Session->{warnings};
-
-	my $out = $opt->{header} || "";
-	$out .= '<ul><li>' if $opt->{auto};
-	if(! length($opt->{joiner})) {
-		$opt->{joiner} = $opt->{auto} ? '<li>' : "\n";
-	}
-	$out .= join $opt->{joiner}, @{$Vend::Session->{warnings}};
-	$out .= '</ul>' if $opt->{auto};
-	$out .= $opt->{footer} if length($opt->{footer});
-	delete $Vend::Session->{warnings} unless $opt->{keep};
-	return $out;
-}
-
-sub tag_error {
-	my($var, $opt) = @_;
-	$Vend::Session->{errors} = {}
-		unless defined $Vend::Session->{errors};
-	if($opt->{set}) {
-		$opt->{keep} = 1 unless defined $opt->{keep};
-		my $error = delete $opt->{set};
-		return set_error($error, $var, $opt);
-	}
-	my $err_ref = $Vend::Session->{errors};
-	my $text;
-	$text = $opt->{text} if $opt->{text};
-	my @errors;
-	my $found_error = '';
-#::logDebug("tag_error: var=$var text=$text opt=" . ::uneval($opt));
-#::logDebug("tag_error: var=$var text=$text");
-	if($opt->{all}) {
-		$opt->{joiner} = "\n" unless defined $opt->{joiner};
-		for(sort keys %$err_ref) {
-			my $err = $err_ref->{$_};
-			delete $err_ref->{$_} unless $opt->{keep};
-			next unless $err;
-			$found_error++;
-			my $string = '';
-			if ($opt->{show_label}) {
-				if ($string = $Vend::Session->{errorlabels}{$_}) {
-					$string =~ s/[:\s]+$//;
-					$string .= " ($_)" if $opt->{show_var};
-					$string .= ": ";
-				} else {
-					$string .= "($_): ";
-				}
-			} else {
-				$string .= "$_: " if $opt->{show_var};
-			}
-			$string .= $err;
-			push @errors, $string;
-		}
-#::logDebug("error all=1 found=$found_error contents='@errors'");
-		return $found_error unless $text || $opt->{show_error};
-		$text .= "%s" if $text !~ /\%s/;
-		$text = pull_else($text, $found_error);
-		return sprintf $text, join($opt->{joiner}, @errors);
-	}
-	$found_error = ! (not $err_ref->{$var});
-	my $err = $err_ref->{$var} || '';
-	delete $err_ref->{$var} unless $opt->{keep};
-#::logDebug("error found=$found_error contents='$err'");
-	return !(not $found_error)
-		unless $opt->{std_label} || $text || $opt->{show_error};
-	if($opt->{std_label}) {
-		# store the error label in user's session for later
-		# possible use in [error show_label=1] calls
-		$Vend::Session->{errorlabels}{$var} = $opt->{std_label};
-		if($text) {
-		}
-		elsif(defined $::Variable->{MV_ERROR_STD_LABEL}) {
-			$text = $::Variable->{MV_ERROR_STD_LABEL};
-		}
-		else {
-			$text = <<EOF;
-<FONT COLOR=RED>{LABEL} <SMALL><I>(%s)</I></SMALL></FONT>
-[else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
-EOF
-		}
-		$text =~ s/{LABEL}/$opt->{std_label}/g;
-		$text =~ s/{REQUIRED\s+([^}]*)}/$opt->{required} ? $1 : ''/ge;
-		$err =~ s/\s+$//;
-	}
-	$text = '' unless defined $text;
-	$text .= '%s' unless $text =~ /\%s/;
-	$text = pull_else($text, $found_error);
-	return sprintf($text, $err);
-}
-
-sub tag_msg {
-	my ($key, $opt, $body) = @_;
-	my (@args, $message, $out, $startlocale);
-
-	unless ($opt->{raw}) {
-		if (ref $opt->{arg} eq 'ARRAY') {
-			@args = @{ $opt->{arg} };
-		} elsif (ref $opt->{arg} eq 'HASH') {
-			@args = map { $opt->{arg}->{$_} } sort keys %{ $opt->{arg} };
-		} elsif (! ref $opt->{arg}) {
-			@args = $opt->{arg};
-		}
-	}
-
-	if ($opt->{locale}) {
-		# we only mess with scratch mv_locale because
-		# Vend::Util::find_locale_bit uses it to determine current locale
-		$startlocale = $::Scratch->{mv_locale};
-		Vend::Util::setlocale($opt->{locale}, undef, { persist => 1 });
-	}
-
-	if ($opt->{inline}) {
-		$message = Vend::Util::find_locale_bit($body);
-	} else {
-		$message = $body;
-	}
-
-	if ($key) {
-		if ($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$key}) {
-			$message = $Vend::Cfg->{Locale}{$key};
-		} elsif ($Global::Locale and defined $Global::Locale->{$key}) {
-			$message = $Global::Locale->{$key};
-		}
-	}
-
-	if ($opt->{raw}) {
-		$out = $message;
-	} else {
-		$out = errmsg($message, @args);
-	}
-
-	if ($opt->{locale}) {
-		$::Scratch->{mv_locale} = $startlocale;
-		Vend::Util::setlocale();
-	}
-
-	return $out;
-}
-
-sub tag_column {
-	my($spec,$text) = @_;
-	my($append,$f,$i,$line,$usable);
-	my(%def) = qw(
-					width 0
-					spacing 1
-					gutter 2
-					wrap 1
-					html 0
-					align left
-				);
-	my(%spec)	= ();
-	my(@out)	= ();
-	my(@lines)	= ();
-	
-	$spec =~ s/\n/ /g;
-	$spec =~ s/^\s+//;
-	$spec =~ s/\s+$//;
-	$spec = lc $spec;
-
-	$spec =~ s/\s*=\s*/=/;
-	$spec =~ s/^(\d+)/width=$1/;
-	%spec = split /[\s=]+/, $spec;
-
-	for(keys %def) {
-		$spec{$_} = $def{$_} unless defined $spec{$_};
-	}
-
-	if($spec{'html'} && $spec{'wrap'}) {
-		::logError("tag_column: can't have 'wrap' and 'html' specified at same time.");
-		$spec{wrap} = 0;
-	}
-
-	if(! $spec{align} or $spec{align} !~ /^n/i) {
-		$text =~ s/\s+/ /g;
-	}
-
-	my $len = sub {
-		my($txt) = @_;
-		if (1 or $spec{html}) {
-			$txt =~
-			s{ <
-				   (
-					 [^>'"] +
-						|
-					 ".*?"
-						|
-					 '.*?'
-					) +
-				>
-			}{}gsx;
-		}
-		return length($txt);
-	};
-
-	$usable = $spec{'width'} - $spec{'gutter'};
-	return "BAD_WIDTH" if  $usable < 1;
-	
-	if($spec{'align'} =~ /^[ln]/i) {
-		$f = sub {
-					$_[0] .
-					' ' x ($usable - $len->($_[0])) .
-					' ' x $spec{'gutter'};
-					};
-	}
-	elsif($spec{'align'} =~ /^r/i) {
-		$f = sub {
-					' ' x ($usable - $len->($_[0])) .
-					$_[0] .
-					' ' x $spec{'gutter'};
-					};
-	}
-	elsif($spec{'align'} =~ /^i/i) {
-		$spec{'wrap'} = 0;
-		$usable = 9999;
-		$f = sub { @_ };
-	}
-	else {
-		return "BAD JUSTIFICATION SPECIFICATION: $spec{'align'}";
-	}
-
-	$append = '';
-	if($spec{'spacing'} > 1) {
-		$append .= "\n" x ($spec{'spacing'} - 1);
-	}
-
-	if($spec{'align'} =~ /^n/i) {
-		@lines = split(/\r?\n/, $text);
-	}
-	elsif(is_yes($spec{'wrap'}) and length($text) > $usable) {
-		@lines = wrap($text,$usable);
-	}
-	elsif($spec{'align'} =~ /^i/i) {
-		$lines[0] = ' ' x $spec{'width'};
-		$lines[1] = $text . ' ' x $spec{'gutter'};
-	}
-	elsif (! $spec{'html'}) {
-		$lines[0] = substr($text,0,$usable);
-	}
-
-	foreach $line (@lines) {
-		push @out , &{$f}($line);
-		for($i = 1; $i < $spec{'spacing'}; $i++) {
-			push @out, '';
-		}
-	}
-	@out;
-}
-
-sub wrap {
-    my ($str, $width) = @_;
-    my @a = ();
-    my ($l, $b);
-
-    for (;;) {
-        $str =~ s/^ +//;
-        $l = length($str);
-        last if $l == 0;
-        if ($l <= $width) {
-            push @a, $str;
-            last;
-        }
-        $b = rindex($str, " ", $width - 1);
-        if ($b == -1) {
-            push @a, substr($str, 0, $width);
-            $str = substr($str, $width);
-        }
-        else {
-            push @a, substr($str, 0, $b);
-            $str = substr($str, $b + 1);
-        }
-    }
-    return @a;
-}
-
-sub tag_row {
-    my($width,$text) = @_;
-	my($col,$spec);
-	my(@lines);
-	my(@len);
-	my(@out);
-	my($i,$j,$k);
-	my($x,$y,$line);
-
-	$i = 0;
-	#while( $text =~ s!$QR{col}!!    ) {
-	while( $text =~ s!\[col(?:umn)?\s+
-				 		([^\]]+)
-				 		\]
-				 		([\000-\377]*?)
-				 		\[/col(?:umn)?\] !!ix    ) {
-		$spec = $1;
-		$col = $2;
-		$lines[$i] = [];
-		@{$lines[$i]} = tag_column($spec,$col);
-		# Discover X dimension
-		$len[$i] = length(${$lines[$i]}[0]);
-		if(defined ${$lines[$i]}[1] and ${$lines[$i]}[1] =~ /^<\s*input\s+/i) {
-			shift @{$lines[$i]};
-		}
-		$i++;
-	}
-	my $totlen = 0;
-	for(@len) { $totlen += $_ }
-	if ($totlen > $width) {
-		return " B A D   R O W  S P E C I F I C A T I O N - columns too wide.\n"
-	}
-
-	# Discover y dimension
-	$j = $#{$lines[0]};
-	for ($k = 1; $k < $i; $k++) {
-		$j = $#{$lines[$k]} > $j ? $#{$lines[$k]} : $j;
-	}
-
-	for($y = 0; $y <= $j; $y++) {
-		$line = '';
-		for($x = 0; $x < $i; $x++) {
-			if(defined ${$lines[$x]}[$y]) {
-				$line .= ${$lines[$x]}[$y];
-				$line =~ s/\s+$//
-					if ($i - $x) == 1;
-			}
-			elsif (($i - $x) > 1) {
-			  	$line  .= ' ' x $len[$x];
-			}
-			else {
-				$line =~ s/\s+$//;
-			}
-		}
-		push @out, $line;
-	}
-	join "\n", @out;
-}
-
-my %_assignable = (qw/
-				salestax	1
-				shipping	1
-				handling	1
-				subtotal    1
-				/);
-
-sub tag_assign {
-	my ($opt) = @_;
-	if($opt->{clear}) {
-		delete $Vend::Session->{assigned};
-		return;
-	}
-	$Vend::Session->{assigned} ||= {};
-	for(keys %$opt) {
-		next unless $_assignable{$_};
-		my $value = $opt->{$_};
-		$value =~ s/^\s+//;
-		$value =~ s/\s+$//;
-		if($value =~ /^-?\d+\.?\d*$/) {
-			$Vend::Session->{assigned}{$_} = $value;
-		}
-		else {
-			::logError(
-				"Attempted assign of non-numeric '%s' to %s. Deleted.",
-				$value,
-				$_,
-			);
-			delete $Vend::Session->{assigned}{$_};
-		}
-	}
 	return;
 }
 
@@ -7783,15 +6828,6 @@ sub subtotal {
     return $subtotal;
 }
 
-sub tag_subtotal {
-	my($cart, $noformat) = @_;
-	return currency( subtotal($cart), $noformat);
-}
-
-sub tag_salestax {
-	my($cart, $noformat) = @_;
-	return currency( salestax($cart), $noformat);
-}
 
 # Returns the total cost of items ordered.
 
@@ -7818,11 +6854,6 @@ sub total_cost {
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
     return $total;
-}
-
-sub tag_total_cost {
-	my($cart, $noformat) = @_;
-	return currency( total_cost($cart), $noformat);
 }
 
 sub tag_ups {

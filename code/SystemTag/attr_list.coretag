@@ -1,0 +1,4 @@
+UserTag attr-list           Order        hash
+UserTag attr-list           hasEndTag
+UserTag attr-list           PosNumber    1
+UserTag attr-list           MapRoutine   Vend::Interpolate::tag_attr_list
