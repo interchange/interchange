@@ -147,7 +147,7 @@
 	}
 	return if $CGI->{ui_text_qualification};
 	return unless
-	  $Variable->{CUSTOMER_VIEW_LARGE} or $Config->{Database}{transactions}{LARGE};
+	  $Variable->{CUSTOMER_VIEW_LARGE} or $Config->{Database}{userdb}{LARGE};
 	$Scratch->{ui_location} = $Tag->area( {
 									
 									href => '__UI_BASE__/flex_select',
