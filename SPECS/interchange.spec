@@ -227,16 +227,17 @@ BASEDIR=/var/lib/interchange
 for i in %build_cats
 do 
 	mkdir -p $RPM_BUILD_ROOT$CGIDIR
+	mkdir -p $RPM_BUILD_ROOT$DOCROOT/$i/images
 	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
-	MAKECATCMD="bin/makecat \
+	bin/makecat \
 		-F \
 		--cgibase=$CGIBASE \
 		--basedir=$BASEDIR \
 		--documentroot=$DOCROOT \
 		--sharedir=$DOCROOT \
 		--shareurl=/ \
-		--interchangeuser=interch \
-		--interchangegroup=interch \
+		--interchangeuser=%interchange_user \
+		--interchangegroup=%interchange_user \
 		--serverconf=$SERVERCONF \
 		--vendroot=/usr/lib/interchange \
 		--catroot=$BASEDIR/$i \
@@ -252,10 +253,8 @@ do
 		--imagedir=$DOCROOT/$i/images \
 		--imageurl=/$i/images \
 		--linkmode=UNIX \
-		--sampleurl=http://$HOST/$i
-		--catalogname=$i"
-	echo $MAKECATCMD
-	$MAKECATCMD
+		--sampleurl=http://$HOST/$i \
+		--catalogname=$i
 done
 
 find $RPM_BUILD_ROOT/var/lib/interchange -type d | xargs chmod 755
