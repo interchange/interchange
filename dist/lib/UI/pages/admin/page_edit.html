@@ -6,7 +6,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[base-url]/@@MV_PAGE@@" method=POST>
+<form action="[base-url]/@@MV_PAGE@@" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_action value=back>
 
 <table __UI_T_PROPERTIES__>
@@ -91,11 +91,11 @@
 				@order = sort keys %$r;
 			}
 			for(@order) {
-				#Log("r key $_");
 				my ($set) = $current =~ m{\[set\s+$_\](.*?)\[/set\]};
 				my $t_set = $r->{$_};
 				my $wtype = $ref->{ui_control_widget}{$_} || '';
 				my $options = $ref->{ui_control_options}{$_} || $t_set || '=No,1=Yes';
+Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
 				my $help = $ref->{ui_control_help}{$_} || '';
 
 				if($wtype) {
@@ -103,7 +103,7 @@
 											name => "ui_control_$_",
 											type => $wtype,
 											passed => $options,
-											default => $set,
+											set => $set,
 											filter => $ref->{ui_control_filter}{$_},
 											pre_filter => $ref->{ui_control_prefilter}{$_},
 										});
@@ -213,15 +213,37 @@ EOF
 		$out .= qq{<tr><td bgcolor=__UI_C_INTBLOCK__><b>$_->[0]</td><td bgcolor=__UI_C_INTBLOCK__>$_->[1]</td></tr>};
 	}
 
-	if($current) {
-		if ($current =~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is)
-		{
-			$content = $1;
-		}
-		else {
-			$content = $current;
-		}
+	my $content_input;
+	my $isfile = $Tag->value_extended(
+				{
+					name => 'ui_upload_content',
+					test => 'isfile',
+				}
+			);
+Log("upload_content=$Values->{ui_upload_content} isfile=$isfile");
+	if( $Values->{ui_upload_content}
+		and $Tag->value_extended(
+				{
+					name => 'ui_upload_content',
+					test => 'isfile',
+				}
+			)
+		)							
+	{
+Log("content from upload.");
+		$content_input = $Tag->value_extended( {
+												name => 'ui_upload_content',
+												file_contents => 1,
+												});
+Log("content from upload is:\n$content_input");
+		$content_input =~ s{(<!--\s+begin\s+content\s+-->)([^\n])}{$1\n$2}is;
+		$content_input =~ s{([^\n])(<!--\s+end\s+content\s+-->)}{$1\n$2}is;
 	}
+
+	$content = $content_input || $current || '';
+
+	$content =~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is
+		and $content = $1;
 
 	$content =~ s/\&/\&amp;/g;
 	$content =~ s/\[/&#91;/g;
@@ -236,17 +258,33 @@ EOF
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ COLSPAN=2>
+	<td bgcolor=__UI_C_INTBLOCK__ valign=top>
 	<b>Content</b>
+	<small><br><br>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<br><i>(will not reflect changes below unless saved)</I></small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>
+	<small>
+	<INPUT TYPE=file NAME=ui_upload_content><BR>
+	[button text="Upload content portion from file"]
+		mv_todo=return
+		[js]onclick="this.form.target='_self'"[/js]
+		mv_nextpage=@@MV_PAGE@@
+	[/button]</small></b>
 	</td>
 </tr>
 
+[comment]
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
+[/comment]
 
 <tr>
 	<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
+		<b>or input below:</b><br>
 		<TEXTAREA NAME=ui_content COLS=80 ROWS=20>$content</TEXTAREA>
 	</td>
 </tr>
