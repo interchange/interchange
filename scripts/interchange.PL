@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.29 2002-05-20 15:18:43 racke Exp $
+# $Id: interchange.PL,v 2.30 2002-05-25 13:27:58 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -192,6 +192,7 @@ BEGIN {
 # SQL
 	$Global::DBI =
 # END SQL
+    $Global::Shadow = 
 	0;
 
 # SQL
@@ -253,6 +254,7 @@ BEGIN {
 	$Global::Default_database = 'MEMORY'
 			unless defined $Global::Default_database;
 	require Vend::Table::InMemory;
+	require Vend::Table::Shadow;
 }
 
 

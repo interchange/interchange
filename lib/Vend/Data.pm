@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.7 2002-02-05 01:33:11 mheins Exp $
+# $Id: Data.pm,v 2.8 2002-05-25 13:27:58 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,6 +83,7 @@ BEGIN {
 		require Vend::Table::DB_File;
 	}
 	require Vend::Table::InMemory;
+	require Vend::Table::Shadow;
 }
 
 my ($Products, $Item_price);
@@ -599,6 +600,13 @@ use vars '%db_config';
 				/
 				},
 # END SQL
+		'SHADOW' => {
+				qw/
+					Extension			 shadow
+					RestrictedImport	 1
+					Class                Vend::Table::Shadow
+				/
+				},
 		'MEMORY' => {
 				qw/
 					Cacheable			 1
