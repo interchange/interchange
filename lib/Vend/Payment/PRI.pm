@@ -1,6 +1,6 @@
 # Vend::Payment::PRI - Interchange PRI support
 #
-# $Id: PRI.pm,v 1.1 2004-05-24 17:03:53 mheins Exp $
+# $Id: PRI.pm,v 1.2 2004-06-07 03:35:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -387,7 +387,7 @@ sub PRI {
 			);
 	}
 
-::logDebug("Values to be sent: " . ::uneval(%values));
+#::logDebug("Values to be sent: " . ::uneval(%values));
 
 	$opt->{submit_url} ||= 	 'https://webservices.primerchants.com/billing/TransactionCentral/processCC.asp?';
 
@@ -409,14 +409,14 @@ sub PRI {
 	$result_page =~ s/^\s*//g;
 	$result_page =~ s/\s*$//g;
 	
-::logDebug("restul_page after cleanup: $result_page");
+#::logDebug("restul_page after cleanup: $result_page");
 
 	%$result = split /[&=]/, $result_page;
 	
 	# if the Auth code contains anytihng but digits, or if it is
 	# null or a space, we failed.
 	if ( $result->{Auth} =~ /[\D\s]/ || ! $result->{Auth} ) {
-::logDebug("Transaction declined: $result->{Auth} $result->{Notes}");
+#::logDebug("Transaction declined: $result->{Auth} $result->{Notes}");
 		$result{MStatus} = 'failed';
 		if ( $result->{Notes} ) {
 			$result{MErrMsg} = "$result->{Auth} $result->{Notes}";
@@ -426,7 +426,7 @@ sub PRI {
 		}
 	}
 	else {
-::logDebug("Transaction approved: $result->{Auth}");
+#::logDebug("Transaction approved: $result->{Auth}");
 		$result{MStatus} = $result{'pop.status'} = 'success';
 		$result{'order-id'} = $opt->{order_id};
 		$::Values->{avs} = $result->{AVSCode};

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.65 2004-05-13 22:48:21 mheins Exp $
+# $Id: Order.pm,v 2.66 2004-06-07 03:35:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.65 $, 10);
+$VERSION = substr(q$Revision: 2.66 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1023,7 +1023,7 @@ sub check_order {
 		undef $individual;
 	}
 
-::logDebug("nextpage=$CGI::values{mv_nextpage}");
+#::logDebug("nextpage=$CGI::values{mv_nextpage}");
 	for my $profile (split /\0+/, $profiles) {
 
 		$status = check_order_each($profile, $vref, $individual);
@@ -1055,7 +1055,7 @@ sub check_order {
 			}
 		}
 		else {
-::logDebug("Got to status=$status on profile=$profile");
+#::logDebug("Got to status=$status on profile=$profile");
 			if($Fail_page) {
 				$np = $CGI::values{mv_nextpage} = $Fail_page;
 			}
@@ -1096,7 +1096,7 @@ sub check_order {
 	my $errors = join "\n", @Errors;
 #::logDebug("Errors after checking profile(s):\n$errors") if $errors;
 	$errors = '' unless defined $errors and ! $Success;
-::logDebug("status=$status nextpage=$CGI::values{mv_nextpage}");
+#::logDebug("status=$status nextpage=$CGI::values{mv_nextpage}");
 	return ($status, $Final, $errors);
 }
 
