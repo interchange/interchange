@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.9 2000-12-31 14:50:27 heins Exp $
+# $Id: interchange.PL,v 1.15.2.10 2001-02-02 07:35:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1202,7 +1202,6 @@ my %form_action = (
 
 					# Remove the items
 					@$Vend::Items = ();
-					put_session();
 					return 0;
 				  }
 
@@ -1584,17 +1583,22 @@ sub adjust_cgi {
 	}
 }
 
-
 sub url_history {
 	$Vend::Session->{History} = []
 		unless defined $Vend::Session->{History};
 	shift @{$Vend::Session->{History}}
 		if $#{$Vend::Session->{History}} >= $Vend::Cfg->{History};
-	if($CGI::pragma =~ /\bno-cache\b/ || $CGI::values{mv_no_cache}) {
+	if(
+		($CGI::pragma =~ /\bno-cache\b/ and ! $CGI::values{mv_force_cache})
+		or $CGI::values{mv_no_cache}
+		)
+	{
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
+		my $save = delete $CGI::values{mv_credit_card_number};
 		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
+		$CGI::values{mv_credit_card_number} = $save if length($save);
 	}
 	return;
 }
@@ -1951,14 +1955,28 @@ EOF
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
-							response( <<EOF);
+							put_session() if $Vend::HaveSession;
+							get_locale_message(500, <<EOF, $msg);
 <HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
-<PRE>$msg</PRE>
+<PRE>%s</PRE>
 </BODY></HTML>
 EOF
 							exit 0;
-						};
+		};
+	}
+	else {
+		$SIG{"__DIE__"} = sub {
+							my $msg = shift;
+							put_session() if $Vend::HaveSession;
+							get_locale_message(500, <<EOF, $msg);
+<HTML><HEAD><TITLE>Fatal Error</TITLE></HEAD><BODY>
+<H1>FATAL error</H1>
+Please contact us.
+</BODY></HTML>
+EOF
+							exit 0;
+		};
 	}
 
 # LEGACY
@@ -2861,16 +2879,17 @@ Contributions to Interchange have been made by:
     Bob Jordan         
     Brian Bullen       
     Bruce Albrecht     
-	Cameron Prince
+    Cameron Prince
     Christian Mueller
     Christopher Thompson
     Dave Adams
     Dan Busarow
     Dave Wingate
-	Dennis Cronin
+    Dennis Cronin
     Don Grodecki       
     Frank Bonita       
     Gunnar Hellekson   
+    Hans-Joachim Leidinger
     Heinz Wittenbecher
     Jason Holt
     Jeff Carnahan
