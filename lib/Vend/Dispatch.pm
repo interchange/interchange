@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.47 2005-01-25 01:02:59 jon Exp $
+# $Id: Dispatch.pm,v 1.48 2005-01-29 18:30:01 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.47 $, 10);
+$VERSION = substr(q$Revision: 1.48 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1311,57 +1311,6 @@ EOF
 		$Vend::ValuesSpace = $vspace;
 	}
 
-	if (
-		my $dspace = defined $::Variable->{MV_DISCOUNT_SPACE}
-			? $CGI::values{$::Variable->{MV_DISCOUNT_SPACE}} || $CGI::values{mv_discount_space}
-			: $CGI::values{mv_discount_space}
-	) {
-		# The 'main' is the default space; this allows us to easily tie the discount space
-		# to the cart namespace.
-#::logDebug("Dispatch: discount space is '$dspace'");
-		if ($dspace eq 'main') {
-			$::Discounts = $Vend::Session->{discount_space}{$dspace} = $Vend::Session->{discount} ||= {};
-		}
-		else {
-			$::Discounts = $Vend::Session->{discount_space}{$dspace} ||= {};
-		}
-		$Vend::DiscountSpace = $dspace;
-	}
-	else {
-		$Vend::DiscountSpace = 'main';
-		if (defined $Vend::Session->{discount}) {
-			$::Discounts = $Vend::Session->{discount_space}{main} = $Vend::Session->{discount};
-		}
-		else {
-			$::Discounts = undef;
-		}
-	}
-
-	if($Vend::Cfg->{CookieLogin} and ! $Vend::Session->{logged_in}) {
-		COOKIELOGIN: {
-			my $username;
-			my $password;
-			last COOKIELOGIN
-				if  exists  $CGI::values{mv_username}
-				and defined $CGI::values{mv_username};
-			last COOKIELOGIN
-				unless $username = Vend::Util::read_cookie('MV_USERNAME');
-			last COOKIELOGIN
-				unless $password = Vend::Util::read_cookie('MV_PASSWORD');
-			$CGI::values{mv_username} = $username;
-			$CGI::values{mv_password} = $password;
-			my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
-			local(%SIG);
-			undef $SIG{__DIE__};
-			eval {
-				Vend::UserDB::userdb('login', profile => $profile );
-			};
-			if($@) {
-				$Vend::Session->{failure} .= $@;
-			}
-		}
-	}
-
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 
 	if ($CGI::values{mv_pc} =~ /\D/) {
@@ -1425,31 +1374,20 @@ EOF
 		}
 		$Vend::FinalPath =~ s{/$Vend::Cfg->{ProcessPage}/page/}{/};
 	}
-	my $locale;
-	if($locale = $::Scratch->{mv_language}) {
+
+	if(my $locale = $::Scratch->{mv_language}) {
 		$Global::Variable->{LANG}
 			= $::Variable->{LANG} = $locale;
 	}
-
-	if ($Vend::Cfg->{Locale}								and
-		$locale = $::Scratch->{mv_locale}	and
-		defined $Vend::Cfg->{Locale_repository}->{$locale}
-		)
-	{ 
-		$Global::Variable->{LANG}
-				= $::Variable->{LANG}
-				= $::Scratch->{mv_language}
-				= $locale
-			 if ! $::Scratch->{mv_language};
-		Vend::Util::setlocale(	$locale,
-								($::Scratch->{mv_currency} || undef),
-								{ persist => 1 }
-							);
-	}
 # END LEGACY
 
-	run_macro($Vend::Cfg->{Autoload});
-#show_times("end global Autoload macro") if $Global::ShowTimes;
+	if(my $ary = $Vend::Cfg->{DispatchRoutines}) {
+		for(@$ary) {
+			$_->();
+		}
+	}
+
+#show_times("end dispatch routines (Autoload, etc.)") if $Global::ShowTimes;
 
 	for my $macro ( $Vend::Cfg->{Filter}, $Vend::Session->{Filter}) {
 		next unless $macro;

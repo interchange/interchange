@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.151 2004-11-04 11:23:56 racke Exp $
+# $Id: Config.pm,v 2.152 2005-01-29 18:30:01 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,6 +38,7 @@ use vars qw(
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code
 			%ContainerSave %ContainerTrigger %ContainerSpecial %ContainerType
+			%Default %Dispatch_code %Dispatch_priority
 			@Locale_directives_currency @Locale_keys_currency
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			);
@@ -48,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.151 $, 10);
+$VERSION = substr(q$Revision: 2.152 $, 10);
 
 my %CDname;
 my %CPname;
@@ -551,6 +552,8 @@ sub catalog_directives {
 	['DescriptionField', undef,              'description'],
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
+	['DiscountSpaces',	 'yesno',            'no'],
+	['DiscountSpaceVar', 'word',             'no'],
 	['Jobs',		 	 'hash',     	 	 ''],
 	['Shipping',         'locale',           ''],
 	['Accounting',	 	 'locale',     	 	 ''],
@@ -1587,12 +1590,12 @@ sub watch {
 
 	my ($ref, $orig);
 #::logDebug("Contents of $name: " . uneval_it($C->{$name}));
-	if(ref($C->{$name}) =~ /ARRAY/) {
+	if(CORE::ref($C->{$name}) =~ /ARRAY/) {
 #::logDebug("watch ref=array");
 		$ref = $C->{$name};
 		$orig = [ @{ $C->{$name} } ];
 	}
-	elsif(ref($C->{$name}) =~ /HASH/) {
+	elsif(CORE::ref($C->{$name}) =~ /HASH/) {
 #::logDebug("watch ref=hash");
 		$ref = $C->{$name};
 		$orig = { %{ $C->{$name} } };
@@ -2034,6 +2037,15 @@ sub parse_varname {
 	return 1;
 }
 
+sub parse_word {
+	my($name, $val) = @_;
+
+	return '' unless $val;
+	unless ($val =~ /^\w+$/) {
+		config_error("Illegal non-word value in '%s' for %s", $val, $name);
+	}
+	return $val;
+}
 
 # Allow addition of a new catalog directive
 sub parse_directive {
@@ -2337,6 +2349,77 @@ my %IllegalValue = (
 						}
 );
 
+my @Dispatches;
+
+%Dispatch_priority = (
+	CookieLogin => 1,
+	Locale => 2,
+	DiscountSpaces => 5,
+	Autoload => 9,
+);
+
+%Dispatch_code = (
+	Autoload => sub {
+#::logDebug("Doing Autoload dispatch...");
+		Vend::Dispatch::run_macro($Vend::Cfg->{Autoload});
+	},
+	CookieLogin => sub {
+#::logDebug("Doing CookieLogin dispatch....");
+		if(! $Vend::Session->{logged_in}) {
+			COOKIELOGIN: {
+				my $username;
+				my $password;
+				last COOKIELOGIN
+					if  exists  $CGI::values{mv_username}
+					and defined $CGI::values{mv_username};
+				last COOKIELOGIN
+					unless $username = Vend::Util::read_cookie('MV_USERNAME');
+				last COOKIELOGIN
+					unless $password = Vend::Util::read_cookie('MV_PASSWORD');
+				$CGI::values{mv_username} = $username;
+				$CGI::values{mv_password} = $password;
+				my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
+				local(%SIG);
+				undef $SIG{__DIE__};
+				eval {
+					Vend::UserDB::userdb('login', profile => $profile );
+				};
+				if($@) {
+					$Vend::Session->{failure} .= $@;
+				}
+			}
+		}
+	},
+	Locale => sub {
+#::logDebug("Doing Locale dispatch...");
+		my $locale = $::Scratch->{mv_locale}
+			or return;
+
+		if(! $::Scratch->{mv_language}) {
+			$Global::Variable->{LANG}
+					= $::Variable->{LANG}
+					= $::Scratch->{mv_language}
+					= $locale;
+		}
+
+		return unless defined $Vend::Cfg->{Locale_repository}{$locale};
+
+		Vend::Util::setlocale(  $locale,
+								($::Scratch->{mv_currency} || undef),
+								{ persist => 1 }
+							);
+	},
+	DiscountSpaces => sub {
+#::logDebug("Doing DiscountSpaces dispatch...");
+	   if ($CGI::values{$Vend::Cfg->{DiscountSpaceVar}}) {
+           $Vend::DiscountSpace = $CGI::values{$Vend::Cfg->{DiscountSpaceVar}};
+		   $::Discounts
+				= $Vend::Session->{discount}
+				= $Vend::Session->{discount_space}{$Vend::DiscountSpace}
+				||= {};
+        }
+    },
+);
 
 # Set up defaults for certain directives
 my $Have_set_global_defaults;
@@ -2398,7 +2481,7 @@ sub set_default_search {
 	return 1;
 }
 
-my %Default = (
+%Default = (
 		## This rather extensive default setting is not typical for IC,
 		## but performance in pricing routines demands it
 		Options => sub {
@@ -2569,8 +2652,21 @@ my %Default = (
 								$C->{Locale} = $repos->{$C->{LastLocale}};
 							}
 						}
+
+						push @Dispatches, 'Locale';
 						return 1;
 					},
+
+		DiscountSpaces => sub {
+					return 1 unless $C->{DiscountSpaces};
+					push @Dispatches, 'DiscountSpaces';
+					return 1;
+		},
+		CookieLogin => sub {
+					return 1 unless $C->{CookieLogin};
+					push @Dispatches, 'CookieLogin';
+					return 1;
+		},
 		ProductFiles => \&set_default_search,
 		VendRoot => sub {
 			my @paths = map { quotemeta $_ }
@@ -2579,6 +2675,11 @@ my %Default = (
 							@{$Global::TemplateDir || []};
 			my $re = join "|", @paths;
 			$C->{AllowedFileRegex} = qr{^($re)};
+			return 1;
+		},
+		Autoload => sub {
+			return 1 unless $C->{Autoload};
+			push @Dispatches, 'Autoload';
 			return 1;
 		},
 );
@@ -2601,6 +2702,7 @@ sub set_readonly_config {
 }
 
 sub set_defaults {
+	@Dispatches = ();
 	for(keys %Default) {
 		my ($status, $error) = $Default{$_}->($C->{$_});
 		next if $status;
@@ -2611,6 +2713,10 @@ sub set_defaults {
 					$error
 				)
 		);
+	}
+	@Dispatches = sort { $Dispatch_priority{$a} cmp $Dispatch_priority{$b} } @Dispatches;
+	for(@Dispatches) {
+		push @{ $C->{DispatchRoutines} ||= [] }, $Dispatch_code{$_};
 	}
 	$Have_set_global_defaults = 1;
 	return;
