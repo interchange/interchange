@@ -1,5 +1,6 @@
 Database  affiliate  affiliate.txt __SQLDSN__
 Database  affiliate  UPPERCASE  1
+Database  affiliate  AUTO_NUMBER  A00000
 ifdef SQLUSER
 Database  affiliate  USER         __SQLUSER__
 endif
