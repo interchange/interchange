@@ -195,11 +195,11 @@ EOF
 	if($indicator) {
 		if($rev) {
 			$fc = q{__UI_C_TITLEBARTXT__}
-				if ! ($CGI->{$indicator} || $Values->{$indicator});
+				if !  (defined $CGI->{$indicator} ? $CGI->{$indicator} : $Values->{$indicator});
 		}
 		else {
 			$fc = q{__UI_C_TITLEBARTXT__}
-				if ($CGI->{$indicator} || $Values->{$indicator});
+				if (defined $CGI->{$indicator} ? $CGI->{$indicator} : $Values->{$indicator});
 		}
 	}
 	elsif($Tag->var('MV_PAGE', 1) eq $page) {
