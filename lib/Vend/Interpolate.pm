@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.90 2001-06-30 22:15:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.91 2001-07-01 05:06:30 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.90 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.91 $, 10);
 
 @EXPORT = qw (
 
@@ -6364,6 +6364,55 @@ EOF
 	$text .= '%s' unless $text =~ /\%s/;
 	$text = pull_else($text, $found_error);
 	return sprintf($text, $err);
+}
+
+sub tag_msg {
+	my ($key, $opt, $body) = @_;
+	my (@args, $message, $out, $startlocale);
+
+	unless ($opt->{raw}) {
+		if (ref $opt->{arg} eq 'ARRAY') {
+			@args = @{ $opt->{arg} };
+		} elsif (ref $opt->{arg} eq 'HASH') {
+			@args = map { $opt->{arg}->{$_} } sort keys %{ $opt->{arg} };
+		} elsif (! ref $opt->{arg}) {
+			@args = $opt->{arg};
+		}
+	}
+
+	if ($opt->{locale}) {
+		# we only mess with scratch mv_locale because
+		# Vend::Util::find_locale_bit uses it to determine current locale
+		$startlocale = $::Scratch->{mv_locale};
+		Vend::Util::setlocale($opt->{locale}, undef, { persist => 1 });
+	}
+
+	if ($opt->{inline}) {
+		$message = Vend::Util::find_locale_bit($body);
+	} else {
+		$message = $body;
+	}
+
+	if ($key) {
+		if ($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$key}) {
+			$message = $Vend::Cfg->{Locale}{$key};
+		} elsif ($Global::Locale and defined $Global::Locale->{$key}) {
+			$message = $Global::Locale->{$key};
+		}
+	}
+
+	if ($opt->{raw}) {
+		$out = $message;
+	} else {
+		$out = errmsg($message, @args);
+	}
+
+	if ($opt->{locale}) {
+		$::Scratch->{mv_locale} = $startlocale;
+		Vend::Util::setlocale();
+	}
+
+	return $out;
 }
 
 sub tag_column {

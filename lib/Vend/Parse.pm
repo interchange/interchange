@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.27 2001-06-29 03:20:56 heins Exp $
+# $Id: Parse.pm,v 1.12.2.28 2001-07-01 05:06:30 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.27 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.28 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -48,7 +48,7 @@ my($CurrentSearch, $CurrentCode, $CurrentDB, $CurrentWith, $CurrentItem);
 my(@SavedSearch, @SavedCode, @SavedDB, @SavedWith, @SavedItem);
 
 my %PosNumber =	( qw!
-                    
+
 				accessories      2
 				and              1
 				area             2
@@ -94,6 +94,7 @@ my %PosNumber =	( qw!
 				log              1
 				loop             1
 				mail             1
+				msg				 1
 				mvasp            1
 				nitems           1
 				onfly            2
@@ -188,6 +189,7 @@ my %Order =	(
 				page			=> [qw( href arg )],
 				perl			=> [qw( tables )],
 				mail			=> [qw( to )],
+				msg				=> [qw( key )],
 				mvasp			=> [qw( tables )],
 				options			=> [qw( code )],
 				price			=> [qw( code )],
@@ -261,6 +263,7 @@ my %addAttr = (
 					onfly			1
 					page            1
 					mail            1
+					msg				1
 					mvasp           1
 				    nitems			1
 				    options			1
@@ -313,6 +316,7 @@ my %hasEndTag = (
                         log             1
                         loop            1
                         mail            1
+						msg				1
                         mvasp           1
                         perl            1
                         query           1
@@ -530,6 +534,7 @@ my %Routine = (
 				page			=> \&Vend::Interpolate::tag_page,
 				perl			=> \&Vend::Interpolate::tag_perl,
 				mail			=> \&Vend::Interpolate::tag_mail,
+				msg				=> \&Vend::Interpolate::tag_msg,
 # MVASP
 				mvasp			=> \&Vend::Interpolate::mvasp,
 # END MVASP
@@ -744,6 +749,7 @@ my %attrAlias = (
 	 item_list	       	=> { cart => 'name', },
 	 tag		       	=> { description => 'arg', },
 	 log		       	=> { arg => 'file', },
+	 msg				=> { lc => 'inline', },
 );
 
 my %Alias = (
@@ -830,6 +836,7 @@ my %Interpolate = (
 						calc		1
 						currency	1
 						import		1
+						msg			1
 						row			1
 						seti		1
 						tmp			1
