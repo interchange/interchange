@@ -1,5 +1,6 @@
 Variable UI_STD_INIT <<EOV
-[perl]
+[flag type=write table=variable]
+[perl tables="variable"]
 	# determine catalog URL before mangling config URLs
 	$Scratch->{ui_catalog_url} = $Tag->area('index');
 
