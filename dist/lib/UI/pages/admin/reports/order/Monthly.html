@@ -119,7 +119,7 @@ EOF
 	foreach $line (@{$Tmp->{main}}) {
 		my ($month) = substr($line->{order_date}, 0, 8);
 		my $id = $line->{affiliate};
-		$id .= "\0$line->{campaign}";
+		$id .= "\0$line->{$Scratch->{campaign_field}}";
 		$month{$month}++;
 		$master->{$month} = { } if ! $master->{$month};
 		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
