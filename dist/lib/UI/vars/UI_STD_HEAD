@@ -563,6 +563,7 @@ A:visited.ctitle {
 [menu
 	name="[scratch ui_class]"
 	superuser=super
+	exclude_on=exclude_on
 	depends_on=depends_on
 	expand_values=name,page,form
 	localize=name
