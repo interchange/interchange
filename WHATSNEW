@@ -140,6 +140,13 @@ mod_interchange
 * Fixed a weird bug where empty HTTP variables were being passed
   under certain circumstances.
 
+* Fixed a bug reported by Jeff Dafoe.  The request information
+  enabled Interchange to show the correct page but prevented it
+  from storing the request in the session's history.  The problem
+  only showed itself when Interchange's [history-scan] tag was used.
+  As almost no page history was saved, [history-scan] sent the user
+  to the default page (usually index) most of the time. 
+
 
 ------------------------------------------------------------------------------
 
