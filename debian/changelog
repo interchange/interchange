@@ -10,8 +10,9 @@ interchange (4.6.2-0) unstable; urgency=low
   * example added to catalogs.cfg
   (suggested by Heiko Schlittermann <heiko@schlittermann.de>)
   * better handling of documentation
+  * new route options locale and sub
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Dec 2000 17:04:45 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 10 Dec 2000 20:03:04 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
