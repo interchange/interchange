@@ -1,8 +1,9 @@
-interchange (4.6.5-1.1) unstable; urgency=low
+interchange (4.6.5-1.2) unstable; urgency=low
 
   * backport of error message display within UI pages
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 13 May 2001 10:19:47 +0200
+  * upstream fix for bad username error message added
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 18 May 2001 20:08:54 +0200
 
 interchange (4.6.5-1) unstable; urgency=high
 
