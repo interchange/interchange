@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.28 2003-04-04 12:50:20 racke Exp $
+# $Id: Shadow.pm,v 1.29 2003-04-04 14:18:24 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.28 $, 10);
+$VERSION = substr(q$Revision: 1.29 $, 10);
 
 # TODO
 #
@@ -299,7 +299,6 @@ sub _parse_config_line {
 	my %map_options = (fallback => 1);
 	my ($map_table, $map_column);
 
-	::logError("Calling config: $p $val");
 	if (@f < 2) {
 		Vend::Config::config_error("At least two parameters needed for $p.");
 	}
