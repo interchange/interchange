@@ -94,6 +94,8 @@ sub {
 	if($check = $file_func{$func}) {
 		$status = 1, last CHECKIT unless $record->{$check};
 		my $file = $field || $Global::Variable->{MV_PAGE};
+		# strip trailing slashes for checks on directories
+		$file =~ s%/+$%%;                     
 		my @files =  UI::Primitive::list_glob($record->{$check}, $opt->{prefix});
 #::logDebug("if-mm file/page: file=$file set=@files");
 		if(! @files) {
