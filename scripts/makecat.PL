@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.8 2001-09-02 17:11:32 racke Exp $
+# $Id: makecat.PL,v 2.9 2001-09-04 20:16:47 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -127,7 +127,7 @@ my $Configfile;
 my $Cfg;
 my $Logfile = 'makecat.log';
 my $catalog_name;
-my %Conf;
+use vars qw( %Conf );
 my $Inetmode;
 my $Windows;
 my $pid;
@@ -2281,7 +2281,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.8 2001-09-02 17:11:32 racke Exp $
+# $Id: makecat.PL,v 2.9 2001-09-04 20:16:47 jon Exp $
 
 =head1 INTRODUCTION
 
