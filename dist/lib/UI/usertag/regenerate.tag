@@ -38,6 +38,10 @@ sub regen_build {
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
 	};
+	my ($key, $value);
+	while (($key, $value) = each (%{$Vend::Cfg->{StaticSessionDefault}})) {
+        $Vend::Session->{$key} = $value;
+	}
 	$CGI::values = ();
 	($Vend::Session->{arg} = $Vend::Argument = $CGI::values{mv_arg} = $regen_arg)
 		if $regen_arg;

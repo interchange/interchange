@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.6 2001-10-06 06:06:35 mheins Exp $
+# $Id: Config.pm,v 2.7 2001-10-07 11:55:29 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 my %CDname;
 
@@ -482,7 +482,9 @@ sub catalog_directives {
 	['StaticDepth',		 undef,     	     '1'],
 	['StaticFly',		 'yesno',     	     'No'],
 	['StaticLogged',	 'yesno',     	     'No'],
-	['StaticDir',		 undef,     	     ''], 
+	['StaticDir',		 undef,     	     ''],
+	['StaticIndex',		 undef,     	     ''], 					  
+	['StaticSessionDefault',	 'hash',     ''],
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['UserDB',			 'locale',	     	 ''], 

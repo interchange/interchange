@@ -37,7 +37,7 @@
 [set pages][/set]
 [calc]
 	# Find the list of pages not defined "NoCache"
-	$Values->{ui_initial_page} = $Config->{SpecialPage}{catalog};
+	$Values->{ui_initial_page} = $Config->{StaticIndex} || $Config->{SpecialPage}{catalog};
 	@pages = split /\s+/, $Tag->list_pages();
 	my $check = $Config->{NoCache};
 	for(@pages) {
