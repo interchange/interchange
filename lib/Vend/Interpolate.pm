@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.160 2003-04-29 18:13:47 mheins Exp $
+# $Id: Interpolate.pm,v 2.161 2003-05-05 22:29:27 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.160 $, 10);
+$VERSION = substr(q$Revision: 2.161 $, 10);
 
 @EXPORT = qw (
 
@@ -2177,14 +2177,7 @@ sub log {
 
 	$file = Vend::Util::escape_chars($file);
 	unless(Vend::File::allowed_file($file)) {
-		my $msg = $Vend::File::errstr
-				|| errmsg(
-								"%s: Can't use file '%s' with NoAbsolute set",
-								'log',
-								$file,
-							);
-		::logError($msg);
-		::logGlobal({ level => 'auth'}, $msg);
+		Vend::File::log_file_violation($file, 'log');
 		return undef;
 	}
 
@@ -2411,14 +2404,7 @@ sub tag_counter {
 	}
 
 	unless (allowed_file($file)) {
-		my $msg = $Vend::File::errstr
-				|| errmsg(
-								"%s: Can't use file '%s' with NoAbsolute set",
-								'counter',
-								$file,
-							);
-		::logError($msg);
-		::logGlobal({ level => 'auth'}, $msg);
+		log_file_violation ($file, 'counter');
 		return undef;
 	}
 	
@@ -5079,13 +5065,7 @@ sub fly_page {
 
 	unless (defined $page) {
 		unless( allowed_file($selector) ) {
-			my $msg = errmsg(
-							"%s: Can't use file '%s' with NoAbsolute set",
-							'fly_page',
-							$selector,
-						);
-			::logError($msg);
-			::logGlobal({ level => 'auth'}, $msg);
+			log_file_violation($selector, 'fly_page');
 			return undef;
 		}
 		$page = readin($selector);
@@ -5616,13 +5596,7 @@ sub timed_build {
 
     $file = Vend::Util::escape_chars($file);
     if(! $opt->{auto} and ! allowed_file($file)) {
-		my $msg = errmsg(
-						"%s: Can't use file '%s' with NoAbsolute set",
-						'timed_build',
-						$file,
-					);
-		::logError($msg);
-		::logGlobal({ level => 'auth'}, $msg);
+		log_file_violation($file, 'timed_build');
 		return undef;
     }
 

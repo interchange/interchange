@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.8 2003-04-10 14:16:02 mheins Exp $
+# $Id: File.pm,v 2.9 2003-05-05 22:29:27 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,6 +38,7 @@ require Exporter;
 	file_name_is_absolute
 	get_filename
 	lockfile
+	log_file_violation
 	readfile
 	readfile_db
 	set_lock_type
@@ -52,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -172,10 +173,7 @@ sub readfile {
     local($/);
 
 	unless(allowed_file($ifile)) {
-		my $msg = $Vend::File::errstr
-				|| ::errmsg("Can't read file '%s' with NoAbsolute set" , $ifile);
-		::logError($msg);
-		::logGlobal({ level => 'auth'}, $msg);
+		log_file_violation($ifile);
 		return undef;
 	}
 
@@ -693,6 +691,24 @@ sub allowed_file {
 	
 #::logDebug("allowed_file check for $fn: $status");
 	return $status;
+}
+
+sub log_file_violation {
+	my ($file, $action) = @_;
+	my $msg;
+
+	unless ($msg = $Vend::File::errstr) {
+		if ($action) {
+			$msg = ::errmsg ("%s: Can't use file '%s' with NoAbsolute set",
+							 $action, $file);
+		} else {
+			$msg = ::errmsg ("Can't use file '%s' with NoAbsolute set",
+							 $file);
+		}
+	}
+
+	::logError($msg);
+	::logGlobal({ level => 'auth'}, $msg);
 }
 
 1;
