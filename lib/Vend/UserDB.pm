@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13 2000-10-05 19:41:51 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.1 2000-11-30 02:37:46 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.1 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -760,8 +760,8 @@ sub delete_preferences {
 sub delete_nickname {
 	my($self, $name, @fields) = @_;
 
-	die "no fields?" unless @fields;
-	die "no name?" unless $name;
+	die ::errmsg("no fields?") unless @fields;
+	die ::errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -788,8 +788,8 @@ sub delete_nickname {
 sub set_hash {
 	my($self, $name, @fields) = @_;
 
-	die "no fields?" unless @fields;
-	die "no name?" unless $name;
+	die ::errmsg("no fields?") unless @fields;
+	die ::errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -800,7 +800,7 @@ sub set_hash {
 	$::Values->{$nick_field} = $nick;
 	$CGI::values{$nick_field} = $nick if $self->{CGI};
 
-	die "no nickname?" unless $nick;
+	die ::errmsg("no nickname?") unless $nick;
 
 	$self->{$name}{$nick} = {} unless $self->{OPTIONS}{keep}
 							   and    defined $self->{$name}{$nick};
@@ -830,8 +830,8 @@ sub get_hash {
 	my ($nick, $s);
 
 	eval {
-		die "no name?"					unless $name;
-		die "$field_name field not present to get $name\n"
+		die ::errmsg("no name?")					unless $name;
+		die ::errmsg("%s field not present to get %s", $field_name, $name) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
 		$s = $self->{DB}->field( $self->{USERNAME}, $field_name);
@@ -908,7 +908,7 @@ sub login {
 			$self->{PASSWORD} = lc $self->{PASSWORD};
 			$self->{USERNAME} = lc $self->{USERNAME};
 		}
-		die "Username does not exist.\n"
+		die ::errmsg("Username does not exist.") . "\n"
 			unless $self->{DB}->record_exists($self->{USERNAME});
 		my $db_pass = $self->{DB}->field(
 						$self->{USERNAME},
@@ -918,7 +918,7 @@ sub login {
 		if($self->{CRYPT}) {
 			$self->{PASSWORD} = crypt($pw,$db_pass);
 		}
-		die "Password mismatch.\n"
+		die ::errmsg("Password mismatch.") . "\n"
 			unless $self->{PASSWORD} eq $db_pass;
 
 		if($self->{PRESENT}->{ $self->{LOCATION}{EXPIRATION} } ) {
@@ -930,10 +930,10 @@ sub login {
 						$self->{USERNAME},
 						$self->{LOCATION}{EXPIRATION},
 						);
-			die "Expiration date not set.\n" 
+			die ::errmsg("Expiration date not set.") . "\n"
 				if ! $exp and $self->{EMPTY_EXPIRE_FATAL};
 			if($exp and $exp < $cmp) {
-				die "Expired $exp.\n";
+				die ::errmsg("Expired %s.", $exp) . "\n";
 			}
 		}
 
@@ -1155,7 +1155,7 @@ sub get_cart {
 		$to = $Vend::Items;
 	}
 
-#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval($from));
+#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval_it($from));
 
 	my $field_name = $self->{LOCATION}->{CARTS};
 	my $cart = [];
@@ -1171,7 +1171,7 @@ sub get_cart {
 
 		my @carts = split /\0/, $from;
 		my $d = $ready->reval($s);
-#::logDebug ("saved carts=" . ::uneval($d));
+#::logDebug ("saved carts=" . ::uneval_it($d));
 
 		die "eval failed?"				unless ref $d;
 
@@ -1186,7 +1186,7 @@ sub get_cart {
 		$self->{ERROR} = $@;
 		return undef;
 	}
-#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval($cart));
+#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval_it($cart));
 	@$to = @$cart;
 
 }
