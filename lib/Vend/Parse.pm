@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.15 2001-04-05 02:24:03 heins Exp $
+# $Id: Parse.pm,v 1.12.2.16 2001-04-05 03:11:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.16 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -59,6 +59,7 @@ my %PosNumber =	( qw!
 				bounce           2
 				cart             1
 				cgi              1
+				charge           1
 				checked          2
 				control          2
 				control_set      1
@@ -144,6 +145,7 @@ my %Order =	(
 				catch			=> [qw( label )],
 				cgi				=> [qw( name  )],
 				currency		=> [qw( convert noformat )],
+				charge			=> [qw( route )],
 				checked			=> [qw( name value )],
 				counter			=> [qw( file )],
 				data			=> [qw( table field key )],
@@ -231,6 +233,7 @@ my %addAttr = (
 					area            1
 					banner          1
 					catch           1
+					charge          1
 					checked         1
 					counter         1
 					control         1
@@ -329,6 +332,7 @@ my %InvalidateCache = (
 			qw(
 				cgi			1
 				cart		1
+				charge		1
 				checked		1
 				counter		1
 				default		1
@@ -433,6 +437,7 @@ my %Routine = (
 				cart			=> \&Vend::Interpolate::tag_cart,
 				catch			=> \&Vend::Interpolate::catch,
 				cgi				=> \&Vend::Interpolate::tag_cgi,
+				charge			=> \&Vend::Order::charge,
 				checked			=> \&Vend::Interpolate::tag_checked,
 				control			=> \&Vend::Interpolate::tag_control,
 				control_set		=> \&Vend::Interpolate::tag_control_set,

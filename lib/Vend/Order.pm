@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.14 2001-03-31 14:09:26 heins Exp $
+# $Id: Order.pm,v 1.18.2.15 2001-04-05 03:11:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.15 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -56,6 +56,7 @@ use Vend::Interpolate;
 use Vend::Session;
 use Vend::Data;
 use Text::ParseWords;
+use strict;
 
 my @Errors = ();
 my $Fatal = 0;
@@ -63,12 +64,10 @@ my $And;
 my $Final = 0;
 my $Success;
 my $Profile;
+my $Tables;
 my $Fail_page;
 my $Success_page;
 my $No_error;
-
-sub _length {
-}
 
 my %Parse = (
 
@@ -79,11 +78,13 @@ my %Parse = (
 	'&and'       	=>	\&_and_check,
 	'&or'       	=>	\&_or_check,
 	'&format'		=> 	\&_format,
+	'&tables'		=> 	sub { $Tables = $_[1]; return 1; },
 	'&noerror'		=> 	sub { $No_error = $_[1] },
 	'&success'		=> 	sub { $Success_page = $_[1] },
 	'&fail'         =>  sub { $Fail_page    = $_[1] },
 	'&final'		=>	\&_final,
 	'&calc'			=>  sub { Vend::Interpolate::tag_calc($_[1]) },
+	'&perl'			=>  sub { Vend::Interpolate::tag_perl($Tables, {}, $_[1]) },
 	'&test'			=>	sub {		
 								my($ref,$params) = @_;
 								$params =~ s/\s+//g;
@@ -133,6 +134,7 @@ my %Parse = (
 								s/^!\s*// and $negate = 1;
 								my $op = $negate ? "!~" :  '=~';
 								my $regex = qr($_);
+								my $status;
 								if($negate) {
 									$status = ($value !~ $regex);
 								}
@@ -230,7 +232,7 @@ sub _format {
 
 sub chain_checks {
 	my ($or, $ref, $checks, $err) = @_;
-	my ($var, $val, $mess);
+	my ($var, $val, $mess, $message);
 	my $result = 1;
 	$mess = "$checks $err";
 	while($mess =~ s/(\S+=\w+)[\s,]*//) {
@@ -530,7 +532,7 @@ sub encrypt_standard_cc {
 
 #::logDebug ("encrypt_standard_cc: $num $month/$year $type");
 	# error will be pushed on this if present
-	@return = (
+	my @return = (
 				'',			# 0- Whether it is valid
 				'',			# 1- Encrypted credit card information
 				'',			# 2- Month
@@ -647,11 +649,49 @@ sub testsendmserver {
 		$out .= "$_=$options{$_}\n";
 	}
 	logError("Test CyberCash sendmserver:\n$out\n");
-	return ('MStatus', 'success', 'order-id', 1);
+	my $oid;
+	eval {
+		$oid = Vend::Interpolate::tag_counter(
+					"$Vend::Cfg->{ScratchDir}/internal_test.payment.number"
+					);
+	};
+	return ('MStatus', 'success', 'order-id', $oid || 'COUNTER_FAILED');
+}
+
+
+my $pay_opt;
+
+my %payopt_remap = (
+	qw/
+		MV_PAYMENT_ACCOUNT   account
+		MV_PAYMENT_CURRENCY  currency
+		MV_PAYMENT_HOST      host
+		MV_PAYMENT_ID        account
+		MV_PAYMENT_MODE      mode
+		MV_PAYMENT_PORT      port
+		MV_PAYMENT_PRECISION precision
+		MV_PAYMENT_REFERER   referer
+		MV_PAYMENT_REMAP     remap
+		MV_PAYMENT_SECRET    secret
+		MV_PAYMENT_SCRIPT	 script
+		MV_PAYMENT_SERIAL    remap
+		MV_PAYMENT_SERVER    server
+	/
+);
+
+sub charge_param {
+	my (@names) = @_;
+	foreach my $name (@names) {
+		my $lname = $payopt_remap{$name} || 'NOT_USED';
+		return $pay_opt->{$name}		if defined $pay_opt->{$name};
+		return $pay_opt->{$lname}		if defined $pay_opt->{$lname};
+		return $pay_opt->{"\L$name"}	if defined $pay_opt->{"\L$name"};
+		return $::Variable->{$name}		if defined $::Variable->{$name};
+	}
+	return undef;
 }
 
 sub map_actual {
-
 	# Allow remapping of payment variables
 	my %map = qw(
 		mv_credit_card_number       mv_credit_card_number
@@ -682,12 +722,14 @@ sub map_actual {
 	);
 
 	# Allow remapping of the variable names
-	my $remap = $::Variable->{MV_PAYMENT_REMAP} || $::Variable->{CYBER_REMAP};
-	$remap =~ s/^\s+//;
-	$remap =~ s/\s+$//;
-	my (%remap) = split /[\s=]+/, $remap;
-	for (keys %remap) {
-		$map{$_} = $remap{$_};
+	my $remap;
+	if( $remap	= charge_param('MV_PAYMENT_REMAP', 'CYBER_REMAP') ) {
+		$remap =~ s/^\s+//;
+		$remap =~ s/\s+$//;
+		my (%remap) = split /[\s=]+/, $remap;
+		for (keys %remap) {
+			$map{$_} = $remap{$_};
+		}
 	}
 
 	my %actual;
@@ -714,12 +756,27 @@ sub map_actual {
 }
 
 sub charge {
-	my ($charge_type) = @_;
+	my ($charge_type, $opt) = @_;
+
+	my $pay_route;
+	if($Vend::Cfg->{Route}) {
+		$pay_route = $Vend::Cfg->{Route_repository}{$charge_type}
+					|| $Vend::Cfg->{Route};
+	}
+	else {
+		$pay_route = {};
+	}
+
+
+	$pay_opt = { %$pay_route };
+	for(keys %$opt) {
+		$pay_opt->{$_} = $opt->{$_};
+	}
+
 	my (%actual) = map_actual();
 
 #::logDebug ("cyber_charge, mode val=$::Values->{mv_cyber_mode} cgi=$CGI::values{mv_cyber_mode} actual=$actual{cyber_mode}");
-	my $currency =  $::Variable->{MV_PAYMENT_CURRENCY}
-					|| $::Variable->{CYBER_CURRENCY}
+	my $currency =  charge_param(qw/MV_PAYMENT_CURRENCY CYBER_CURRENCY/)
 					|| 'usd';
 	$actual{mv_credit_card_exp_month} =~ s/\D//g;
 	$actual{mv_credit_card_exp_month} =~ s/^0+//;
@@ -731,18 +788,46 @@ sub charge {
 	my $exp = $actual{mv_credit_card_exp_month} . '/' .
 			  $actual{mv_credit_card_exp_year};
 
+	$actual{cyber_mode} = charge_param('mode')
+						||	$actual{cyber_mode}
+						|| 'mauthcapture';
+	
 	$actual{cyber_mode} = 'mauthcapture'
-		unless $actual{cyber_mode};
+			unless $actual{cyber_mode};
+
+	$pay_opt->{counter} = charge_param('MV_PAYMENT_COUNTER');
 
 	my($orderID);
-	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
 	# We'll make an order ID based on date, time, and PID
 
 	# $mon is the month index where Jan=0 and Dec=11, so we use
 	# $mon+1 to get the more familiar Jan=1 and Dec=12
-	$orderID = sprintf("%02d%02d%02d%02d%02d%05d",
-			$year + 1900,$mon + 1,$mday,$hour,$min,$$);
+	if($pay_opt->{order_id}) {
+		$orderID = $pay_opt->{order_id}
+	}
+	else {
+		my(@t) = gmtime(time());
+		if($pay_opt->{counter}) {
+			$pay_opt->{order_id} = $orderID = Vend::Interpolate::tag_counter(
+							$pay_opt->{counter},
+							{ start => POSIX::strftime('%Y%m%d', @t) },
+						);
+		}
+		else {
+			my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = @t;
+			$pay_opt->{order_id} = $orderID = sprintf(
+										"%02d%02d%02d%02d%02d%05d",
+										$year + 1900,
+										$mon + 1,
+										$mday,
+										$hour,
+										$min,
+										$$
+									);
+		}
+	}
+
 
 	# The following characters are illegal in an order ID:
 	#    : < > = + @ " % = &
@@ -750,47 +835,79 @@ sub charge {
 	# If you want, you could use a line similar to the following
 	# to remove these illegal characters:
 
-	$orderID =~ tr/:<>=+\@\"\%\&/_/d;
+	$orderID =~ tr/:<>=+\@\"\%\&/_/d unless $pay_opt->{order_id};
 
-	#
-	# Or use something like the following line to only allow
-	# alphanumeric and dash, converting other characters to underscore:
-	#    $orderID =~ tr/A-Za-z0-9\-/_/c;
+	my $precision = charge_param(qw/MV_PAYMENT_PRECISION CYBER_PRECISION/) || 2;
+	my $amount = Vend::Interpolate::total_cost();
+	$amount = round_to_frac_digits($amount, $precision);
+	$pay_opt->{total_cost} = $amount;
+	$pay_opt->{amount} = "$currency $amount";
 
-	# Our test order ID only contains digits, so we don't have
-	# to strip any characters here. You might have to if you
-	# use a different scheme.
-
-	my $precision = $::Variable->{CYBER_PRECISION} || 2;
-	$amount = Vend::Interpolate::total_cost();
-	$amount = sprintf("%.${precision}f", $amount);
-	$amount = "$currency $amount";
+	# If we have a previous payment amount, delete it but push it on a stack
+	# 
+	my $stack = $Vend::Session->{payment_stack} || [];
+	delete $Vend::Session->{payment_result};
+	delete $Vend::Session->{cybercash_result};
 
 	my %result;
 
-	if($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
-		my ($sub, @args);
+	# See if we are calling a defined GlobalSub payment mode
+	$pay_opt->{gateway} = $charge_type if ! $opt->{gateway};
+	my $sub = $Global::GlobalSub->{$pay_opt->{gateway}} || undef;
+
+	if($sub) {
+		# Calling a defined GlobalSub payment mode
+		# Arguments are the passed option hash (if any) and the route hash
+		eval {
+			%result = $sub->($pay_opt);
+		};
+		if($@) {
+			my $msg = errmsg(
+						"payment routine '%s' returned error: %s",
+						$charge_type,
+						$@,
+			);
+			::logError($msg);
+			$result{MStatus} = 'died';
+			$result{MErrMsg} = $msg;
+		}
+	}
+	elsif($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
+		# MV4 and IC4.6.x methods
+		my (@args);
 		@args = Text::ParseWords::shellwords($2) if $2;
 		if(! defined ($sub = $Global::GlobalSub->{$1}) ) {
 			::logError("bad custom payment GlobalSub: %s", $1);
 			return undef;
 		}
-		%result = $sub->(@args);
-		$Vend::Session->{payment_result} =
-			$Vend::Session->{cybercash_result} = \%result;
+		eval {
+			%result = $sub->(@args);
+		};
+		if($@) {
+			my $msg = errmsg(
+						"payment routine '%s' returned error: %s",
+						$charge_type,
+						$@,
+			);
+			::logError($msg);
+			$result{MStatus} = $msg;
+		}
 	}
-	elsif ($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
-		my $status = $1 || 'success';
+	elsif (
+			$actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/
+				or 
+			$charge_type =~ /^internal_test(?:[ _]+(.*))?/
+		  )
+	{
+
+		# Test mode....
+
+		my $status = $1 || charge_param('result') || undef;
 		# Interchange test mode
-		my %payment = (
-			'host' => $::Variable->{CYBER_HOST} || 'localhost',
-			'port' => $::Variable->{CYBER_PORT} || 8000,
-			'secret' => $::Variable->{CYBER_SECRET} || '',
-			'config' => $::Variable->{CYBER_CONFIGFILE} || '',
-		);
+		my %payment = ( %$pay_opt );
 		&testSetServer ( %payment );
 		%result = testsendmserver(
-					$actual{cyber_mode},
+			$actual{cyber_mode},
 			'Order-ID'     => $orderID,
 			'Amount'       => $amount,
 			'Card-Number'  => $actual{mv_credit_card_number},
@@ -802,11 +919,11 @@ sub charge {
 			'Card-Country' => $actual{b_country},
 			'Card-Exp'     => $exp,
 		);
-		$result{MStatus} = $status;
-		$Vend::Session->{payment_result} =
-			$Vend::Session->{cybercash_result} = \%result;
+		$result{MStatus} = $status if defined $status;
 	}
 	elsif ($Vend::CC3) {
+		no strict;
+		# Old cybercash stuff
 		# Live interface operations follow
 		$Vend::CC3server = 1;
 
@@ -817,7 +934,7 @@ sub charge {
 			$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
 			::logError(
 				"Failed to initialize CyberCash from file %s: %s",
-				$Variable->{CYBER_CONFIGFILE},
+				$::Variable->{CYBER_CONFIGFILE},
 				$Vend::Session->{cybercash_error},
 				);
 			return undef;
@@ -833,7 +950,7 @@ sub charge {
 				$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
 				return undef;
 			}
-			$sendurl = $::Variable->{CYBER_HOST} . 'directcardpayment.cgi';
+			my $sendurl = $::Variable->{CYBER_HOST} . 'directcardpayment.cgi';
 
 			my %paymentNVList;
 			$paymentNVList{'mo.cybercash-id'} = $Config{CYBERCASH_ID};
@@ -852,15 +969,13 @@ sub charge {
 			$paymentNVList{'cpi.card-zip'} = $actual{b_zip};
 			$paymentNVList{'cpi.card-country'} = $actual{b_country};
 
-			my (  $POPref, $tokenlistref, %tokenlist );
-			($POPref, $tokenlistref ) = 
+			my (%tokenlist);
+			my ($POPref, $tokenlistref ) = 
 							  doDirectPayment( $sendurl, \%paymentNVList );
 			
-			$result{MStatus}    = $POPref->{'pop.status'};
-			$result{MErrMsg}     = $POPref->{'pop.error-message'};
-			$result{'order-id'} = $POPref->{'pop.order-id'};
-
-			$Vend::Session->{cybercash_result} = $POPref;
+			$POPref->{MStatus}  = $POPref->{'pop.status'};
+			$POPref->{MErrMsg}  = $POPref->{'pop.error-message'};
+			$POPref->{'order-id'} = $POPref->{'pop.order-id'};
 
 			# other values found in POP which might be used in some way:
 			#		$POP{'pop.auth-code'};
@@ -870,34 +985,68 @@ sub charge {
 			#		$POP{'pop.sign'};
 			#		$POP{'pop.avs_code'};
 			#		$POP{'pop.price'};
+
+			%result = %$POPref;
 		}
 	}
+	else {
+		my $msg = errmsg("Unknown charge type: %s", $charge_type);
+		::logError($msg);
+		$result{MStatus} = $msg;
+	}
 
-	if($result{MStatus} !~ /^success/) {
-		$Vend::Session->{cybercash_error} = $result{MErrMsg};
+	push @$stack, \%result;
+	$Vend::Session->{payment_result}
+		= $Vend::Session->{cybercash_result}
+		= \%result;
+	$Vend::Session->{payment_stack} = $stack;
+
+	my $svar = charge_param('success_variable') || 'MStatus';
+	my $evar = charge_param('error_variable')   || 'MErrMsg';
+
+	if($result{$svar} !~ /^success/) {
+		$Vend::Session->{payment_error} =
+			$Vend::Session->{cybercash_error} = $result{$evar};
 		return undef;
 	}
-	elsif($result{MStatus} =~ /success-duplicate/) {
-		$Vend::Session->{cybercash_error} = $result{MErrMsg};
+	elsif($result{$svar} =~ /success-duplicate/) {
+		$Vend::Session->{cybercash_error} = $result{$svar};
 	}
 	else {
-		$Vend::Session->{cybercash_error} = '';
+		delete $Vend::Session->{cybercash_error};
+		delete $Vend::Session->{payment_error};
 	}
+
 	$Vend::Session->{payment_id} =
 		$Vend::Session->{cybercash_id} = $result{'order-id'};
-	if($Vend::Cfg->{EncryptProgram} =~ /(pgp|gpg)/) {
-		$CGI::values{mv_credit_card_force} = 1;
-		(
-			$::Values->{mv_credit_card_valid},
-			$::Values->{mv_credit_card_info},
-			$::Values->{mv_credit_card_exp_month},
-			$::Values->{mv_credit_card_exp_year},
-			$::Values->{mv_credit_card_exp_all},
-			$::Values->{mv_credit_card_type},
-			$::Values->{mv_credit_card_error}
-		)	= encrypt_standard_cc(\%CGI::values);
+
+	my $encrypt = charge_param('encrypt');
+	$encrypt = 1 unless defined $encrypt;
+
+	if($encrypt) {
+		my $prog = charge_param('encrypt_program') || $Vend::Cfg->{EncryptProgram};
+		if($prog =~ /pgp|gpg/) {
+			local($Vend::Cfg->{Encrypt_program});
+			$Vend::Cfg->{Encrypt_program} = $prog;
+			$CGI::values{mv_credit_card_force} = 1;
+			(
+				$::Values->{mv_credit_card_valid},
+				$::Values->{mv_credit_card_info},
+				$::Values->{mv_credit_card_exp_month},
+				$::Values->{mv_credit_card_exp_year},
+				$::Values->{mv_credit_card_exp_all},
+				$::Values->{mv_credit_card_type},
+				$::Values->{mv_credit_card_error}
+			)	= encrypt_standard_cc(\%CGI::values);
+		}
 	}
-	::logError("Order id: %s\n", $Vend::Session->{cybercash_id});
+	::logError(
+				"Order id for charge type %s: %s",
+				$charge_type,
+				$Vend::Session->{cybercash_id},
+			)
+		unless $pay_opt->{no_log};
+	return \%result if $pay_opt->{hash};
 	return $result{'order-id'};
 }
 
@@ -1073,11 +1222,11 @@ sub pgp_encrypt {
 
 sub do_check {
 		local($_) = shift;
-
+#::logDebug("do_check param: $_");
 		my $ref = \%CGI::values;
 		my $vref = shift || $::Values;
 
-		$parameter = $_;
+		my $parameter = $_;
 		my($var, $val, $m, $message);
 		if (/^&/) {
 			($var,$val) = split /[\s=]+/, $parameter, 2;
@@ -1092,7 +1241,7 @@ sub do_check {
 				  );
 		}
 		else {
-			logError("Unknown order check '%s' in profile %s", $parameter, $profile);
+			logError("Unknown order check '%s' in profile %s", $parameter, $Profile);
 			return undef;
 		}
 		$val =~ s/&#(\d+);/chr($1)/ge;
@@ -1139,18 +1288,30 @@ sub check_order {
 	$And = 1;
 	$Fatal = $Final = 0;
 
-	my($var,$val);
+	my($var,$val,$message);
 	my $status = 1;
 	my(@param) = split /[\r\n]+/, $params;
 	my $m;
 	my $join;
+	my $here;
 	my $last_one = 1;
 #::logDebug("complete profile:\n$params\n");
 
 	for(@param) {
+		if(/^$here$/) {
+			$_ = $join;
+			undef $here;
+			undef $join;
+		}
+		($join .= "$_\n", next) if $here;
 		if($join) {
 			$_ = "$join$_";
 			undef $join;
+		}
+		if(s/<<(\w+);?\s*$//) {
+			$here = $1;
+			$join = "$_\n";
+			next;
 		}
 		next unless /\S/;
 		next if /^\s*#/;
@@ -1757,8 +1918,9 @@ sub route_order {
 			track_order($::Values->{mv_order_number}, $page);
 		}
 		if ($route->{track}) {
-			Vend::Util::writefile($route->{track}, $page)
-				or ::logError("route tracking error writing $route->{track}: $!");
+			my $fn = escape_chars($route->{track});
+			Vend::Util::writefile($fn, $page)
+				or ::logError("route tracking error writing %s: %s", $fn, $!);
 			my $mode = $route->{track_mode} || '';
 			if ($mode =~ s/^0+//) {
 				chmod oct($mode), $fn;

@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.38 2001-04-05 02:15:21 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.39 2001-04-05 03:11:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.38 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.39 $, 10);
 
 @EXPORT = qw (
 
@@ -6562,7 +6562,7 @@ sub tag_shipping {
 	else {
 		$out = 0;
 		for(@modes) {
-			$out += shipping($_, $opt);
+			$out += shipping($_, $opt) || 0;
 		}
 		$out = Vend::Util::round_to_frac_digits($out);
 		$out = currency($out, $opt->{noformat}, $opt->{convert});
