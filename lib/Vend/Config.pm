@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.102 2003-03-31 20:32:55 ramoore Exp $
+# $Id: Config.pm,v 2.103 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -44,9 +44,10 @@ use Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
+use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.102 $, 10);
+$VERSION = substr(q$Revision: 2.103 $, 10);
 
 my %CDname;
 
@@ -212,6 +213,7 @@ sub global_directives {
 
 	['RunDir',			 'root_dir',     	 $Global::RunDir || 'etc'],
 	['DebugFile',		  undef,     	     ''],
+	['CatalogUser',		 'hash',			 ''],
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
 	['ConfigParseComments',	'yesno',		'Yes'],
@@ -2379,6 +2381,15 @@ my %Default = (
 						return 1;
 					},
 		ProductFiles => \&set_default_search,
+		VendRoot => sub {
+			my @paths = map { quotemeta $_ }
+							$C->{VendRoot},
+							@{$C->{TemplateDir} || []},
+							@{$Global::TemplateDir || []};
+			my $re = join "|", @paths;
+			$C->{AllowedFileRegex} = qr{^($re)};
+			return 1;
+		},
 );
 
 sub set_global_defaults {

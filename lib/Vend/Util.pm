@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.55 2003-03-27 16:52:59 mheins Exp $
+# $Id: Util.pm,v 2.56 2003-04-01 04:12:32 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -57,6 +57,7 @@ require Exporter;
 	logGlobal
 	logOnce
 	logtime
+	parse_locale
 	random_string
 	readfile
 	readin
@@ -83,9 +84,10 @@ use Errno;
 use Text::ParseWords;
 require HTML::Entities;
 use Safe;
+use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -677,68 +679,6 @@ eval {
 *uneval_file = defined $Fast_uneval_file  ? $Fast_uneval_file  : \&uneval_it_file;
 *uneval      = defined $Pretty_uneval     ? $Pretty_uneval     : \&uneval_it;
 
-sub writefile {
-    my($file, $data, $opt) = @_;
-
-	$file = ">>$file" unless $file =~ /^[|>]/;
-	if (ref $opt and $opt->{umask}) {
-		$opt->{umask} = umask oct($opt->{umask});
-	}
-    eval {
-		unless($file =~ s/^[|]\s*//) {
-			if (ref $opt and $opt->{auto_create_dir}) {
-				my $dir = $file;
-				$dir =~ s/>+//;
-
-				## Need to make this OS-independent, requires File::Spec support
-				$dir =~ s:[\r\n]::g;   # Just in case
-				$dir =~ s:(.*)/.*:$1: or $dir = '';
-				if($dir and ! -d $dir) {
-					File::Path::mkpath($dir);
-				}
-			}
-			# We have checked for beginning > or | previously
-			open(MVLOGDATA, $file) or die "open\n";
-			lockfile(\*MVLOGDATA, 1, 1) or die "lock\n";
-			seek(MVLOGDATA, 0, 2) or die "seek\n";
-			if(ref $data) {
-				print(MVLOGDATA $$data) or die "write to\n";
-			}
-			else {
-				print(MVLOGDATA $data) or die "write to\n";
-			}
-			unlockfile(\*MVLOGDATA) or die "unlock\n";
-		}
-		else {
-            my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
-			open(MVLOGDATA, "|-") || exec @args;
-			if(ref $data) {
-				print(MVLOGDATA $$data) or die "pipe to\n";
-			}
-			else {
-				print(MVLOGDATA $data) or die "pipe to\n";
-			}
-		}
-		close(MVLOGDATA) or die "close\n";
-    };
-
-	my $status = 1;
-    if ($@) {
-		::logError ("Could not %s file '%s': %s\nto write this data:\n%s",
-				$@,
-				$file,
-				$!,
-				$data,
-				);
-		$status = 0;
-    }
-
-    if (ref $opt and defined $opt->{umask}) {                                        
-        $opt->{umask} = umask oct($opt->{umask});                                    
-    }
-
-	return $status;
-}
 
 
 # Log data fields to a data file.
@@ -780,11 +720,6 @@ sub logData {
 }
 
 
-sub file_modification_time {
-    my ($fn, $tolerate) = @_;
-    my @s = stat($fn) or ($tolerate and return 0) or die "Can't stat '$fn': $!\n";
-    return $s[9];
-}
 
 sub quoted_comma_string {
 	my ($text) = @_;
@@ -1198,97 +1133,6 @@ EOF
 	return ($contents, $record);
 }
 
-sub readfile_db {
-	my ($name) = @_;
-	return unless $Vend::Cfg->{FileDatabase};
-	my ($tab, $col) = split /:+/, $Vend::Cfg->{FileDatabase};
-	my $db = $Vend::Interpolate::Db{$tab} || ::database_exists_ref($tab)
-		or return undef;
-#::logDebug("tab=$tab exists, db=$db");
-
-	# I guess this is the best test
-	if($col) {
-		return undef unless $db->column_exists($col);
-	}
-	elsif ( $col = $Global::Variable->{LANG} and $db->column_exists($col) ) {
-		#do nothing
-	}
-	else {
-		$col = 'default';
-		return undef unless $db->column_exists($col);
-	}
-
-#::logDebug("col=$col exists, db=$db");
-	return undef unless $db->record_exists($name);
-#::logDebug("ifile=$name exists, db=$db");
-	return $db->field($name, $col);
-}
-
-# Reads in an arbitrary file.  Returns the entire contents,
-# or undef if the file could not be read.
-# Careful, needs the full path, or will be read relative to
-# VendRoot..and will return binary. Should be tested by
-# the user.
-
-# Will also look in the *global* TemplateDir. (No need for the
-# extra overhead of local TemplateDir, probably also insecure.)
-#
-# To ensure security in multiple catalog setups, leading /
-# is not allowed if the second subroutine argument passed
-# (caller usually sends $Global::NoAbsolute) is true.
-
-# If catalog FileDatabase is enabled and there are no contents, we can retrieve
-# the file from the database.
-
-sub readfile {
-    my($ifile, $no, $loc) = @_;
-    my($contents);
-    local($/);
-
-	if($no and (file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
-		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
-		::logGlobal({ level => 'auth'}, "Can't read file '%s' with NoAbsolute set" , $ifile );
-		return undef;
-	}
-
-	my $file;
-
-	if (file_name_is_absolute($ifile) and -f $ifile) {
-		$file = $ifile;
-	}
-	else {
-		for( ".", @{$Global::TemplateDir} ) {
-			next if ! -f "$_/$ifile";
-			$file = "$_/$ifile";
-			last;
-		}
-	}
-
-	if(! $file) {
-		$contents = readfile_db($ifile);
-		return undef unless defined $contents;
-	}
-	else {
-		return undef unless open(READIN, "< $file");
-		$Global::Variable->{MV_FILE} = $file;
-
-		binmode(READIN) if $Global::Windows;
-		undef $/;
-		$contents = <READIN>;
-		close(READIN);
-	}
-
-	if (
-		$Vend::Cfg->{Locale}
-			and
-		(defined $loc ? $loc : $Vend::Cfg->{Locale}->{readfile} )
-		)
-	{
-		parse_locale(\$contents);
-	}
-    return $contents;
-}
-
 sub is_yes {
     return( defined($_[0]) && ($_[0] =~ /^[yYtT1]/));
 }
@@ -1446,107 +1290,6 @@ my $flock_LOCK_SH = 1;          # Shared lock
 my $flock_LOCK_EX = 2;          # Exclusive lock
 my $flock_LOCK_NB = 4;          # Don't block when locking
 my $flock_LOCK_UN = 8;          # Unlock
-
-sub flock_lock {
-    my ($fh, $excl, $wait) = @_;
-    my $flag = $excl ? $flock_LOCK_EX : $flock_LOCK_SH;
-
-    if ($wait) {
-        flock($fh, $flag) or die "Could not lock file: $!\n";
-        return 1;
-    }
-    else {
-        if (! flock($fh, $flag | $flock_LOCK_NB)) {
-            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
-				return 0;
-            }
-            else {
-                die "Could not lock file: $!\n";
-            }
-        }
-        return 1;
-    }
-}
-
-sub flock_unlock {
-    my ($fh) = @_;
-    flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
-}
-
-sub fcntl_lock {
-    my ($fh, $excl, $wait) = @_;
-    my $flag = $excl ? F_WRLCK : F_RDLCK;
-    my $op = $wait ? F_SETLKW : F_SETLK;
-
-	my $struct = pack('sslli', $flag, 0, 0, 0, $$);
-
-    if ($wait) {
-        fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
-        return 1;
-    }
-    else {
-        if (fcntl($fh, $op, $struct) < 0) {
-            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
-                return 0;
-            }
-            else {
-                die "Could not lock file: $!\n";
-            }
-        }
-        return 1;
-    }
-}
-
-sub fcntl_unlock {
-    my ($fh) = @_;
-	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
-	if (fcntl($fh, F_SETLK, $struct) < 0) {
-		if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
-			return 0;
-		}
-		else {
-			die "Could not un-fcntl_lock file: $!\n";
-		}
-	}
-	return 1;
-}
-
-my $lock_function = \&flock_lock;
-my $unlock_function = \&flock_unlock;
-
-sub set_lock_type {
-	if ($Global::LockType eq 'none') {
-		logDebug("using NO locking");
-		$lock_function = sub {1};
-		$unlock_function = sub {1};
-	}
-	elsif ($Global::LockType =~ /fcntl/i) {
-		logDebug("using fcntl(2) locking");
-		$lock_function = \&fcntl_lock;
-		$unlock_function = \&fcntl_unlock;
-	}
-	else {
-		$lock_function = \&flock_lock;
-		$unlock_function = \&flock_unlock;
-	}
-	return; # VOID
-}
- 
-sub lockfile {
-    &$lock_function(@_);
-}
-
-sub unlockfile {
-    &$unlock_function(@_);
-}
-
-### Still necessary, sad to say.....
-if($Global::Windows) {
-	set_lock_type('none');
-}
-elsif($^O =~ /hpux/) {
-	set_lock_type('fcntl');
-}
 
 # Returns the total number of items ordered.
 # Uses the current cart if none specified.
@@ -2025,223 +1768,6 @@ sub read_cookie {
  	return unescape_chars($1);
 }
 
-# Return a quasi-hashed directory/file combo, creating if necessary
-sub exists_filename {
-    my ($file,$levels,$chars, $dir) = @_;
-	my $i;
-	$levels = 1 unless defined $levels;
-	$chars = 1 unless defined $chars;
-	$dir = $Vend::Cfg->{ScratchDir} unless $dir;
-    for($i = 0; $i < $levels; $i++) {
-		$dir .= "/";
-		$dir .= substr($file, $i * $chars, $chars);
-		return 0 unless -d $dir;
-	}
-	return -f "$dir/$file" ? 1 : 0;
-}
-
-# Return a quasi-hashed directory/file combo, creating if necessary
-sub get_filename {
-    my ($file,$levels,$chars, $dir) = @_;
-	my $i;
-	$levels = 1 unless defined $levels;
-	$chars = 1 unless defined $chars;
-	$dir = $Vend::Cfg->{ScratchDir} unless $dir;
-    for($i = 0; $i < $levels; $i++) {
-		$dir .= "/";
-		$dir .= substr($file, $i * $chars, $chars);
-		mkdir $dir, 0777 unless -d $dir;
-	}
-    die "Couldn't make directory $dir (or parents): $!\n"
-		unless -d $dir;
-    return "$dir/$file";
-}
-
-# These were stolen from File::Spec
-# Can't use that because it INSISTS on object
-# calls without returning a blessed object
-
-my $abspat = $^O =~ /win32/i ? qr{^([a-zA-Z]:)?[\\/]} : qr{^/};
-my $relpat = qr{\.\.[\\/]};
-
-sub file_name_is_absolute {
-    my($file) = @_;
-    $file =~ $abspat;
-}
-
-sub absolute_or_relative {
-    my($file) = @_;
-    $file =~ $abspat or $file =~ $relpat;
-}
-
-sub win_catfile {
-    my $file = pop @_;
-    return $file unless @_;
-    my $dir = catdir(@_);
-    $dir =~ s/(\\\.)$//;
-    $dir .= "\\" unless substr($dir,length($dir)-1,1) eq "\\";
-    return $dir.$file;
-}
-
-sub unix_catfile {
-    my $file = pop @_;
-    return $file unless @_;
-    my $dir = catdir(@_);
-    for ($dir) {
-	$_ .= "/" unless substr($_,length($_)-1,1) eq "/";
-    }
-    return $dir.$file;
-}
-
-sub unix_path {
-    my $path_sep = ":";
-    my $path = $ENV{PATH};
-    my @path = split $path_sep, $path;
-    foreach(@path) { $_ = '.' if $_ eq '' }
-    @path;
-}
-
-sub win_path {
-    local $^W = 1;
-    my $path = $ENV{PATH} || $ENV{Path} || $ENV{'path'};
-    my @path = split(';',$path);
-    foreach(@path) { $_ = '.' if $_ eq '' }
-    @path;
-}
-
-sub win_catdir {
-    my @args = @_;
-    for (@args) {
-	# append a slash to each argument unless it has one there
-	$_ .= "\\" if $_ eq '' or substr($_,-1) ne "\\";
-    }
-    my $result = canonpath(join('', @args));
-    $result;
-}
-
-sub win_canonpath {
-    my($path) = @_;
-    $path =~ s/^([a-z]:)/\u$1/;
-    $path =~ s|/|\\|g;
-    $path =~ s|\\+|\\|g ;                          # xx////xx  -> xx/xx
-    $path =~ s|(\\\.)+\\|\\|g ;                    # xx/././xx -> xx/xx
-    $path =~ s|^(\.\\)+|| unless $path eq ".\\";   # ./xx      -> xx
-    $path =~ s|\\$|| 
-             unless $path =~ m#^([a-z]:)?\\#;      # xx/       -> xx
-    $path .= '.' if $path =~ m#\\$#;
-    $path;
-}
-
-sub unix_canonpath {
-    my($path) = @_;
-    $path =~ s|/+|/|g ;                            # xx////xx  -> xx/xx
-    $path =~ s|(/\.)+/|/|g ;                       # xx/././xx -> xx/xx
-    $path =~ s|^(\./)+|| unless $path eq "./";     # ./xx      -> xx
-    $path =~ s|/$|| unless $path eq "/";           # xx/       -> xx
-    $path;
-}
-
-sub unix_catdir {
-    my @args = @_;
-    for (@args) {
-	# append a slash to each argument unless it has one there
-	$_ .= "/" if $_ eq '' or substr($_,-1) ne "/";
-    }
-    my $result = join('', @args);
-    # remove a trailing slash unless we are root
-    substr($result,-1) = ""
-	if length($result) > 1 && substr($result,-1) eq "/";
-    $result;
-}
-
-
-my $catdir_routine;
-my $canonpath_routine;
-my $catfile_routine;
-my $path_routine;
-
-if($^O =~ /win32/i) {
-	$catdir_routine = \&win_catdir;
-	$catfile_routine = \&win_catfile;
-	$path_routine = \&win_path;
-	$canonpath_routine = \&win_canonpath;
-}
-else {
-	$catdir_routine = \&unix_catdir;
-	$catfile_routine = \&unix_catfile;
-	$path_routine = \&unix_path;
-	$canonpath_routine = \&unix_canonpath;
-}
-
-sub path {
-	return &{$path_routine}(@_);
-}
-
-sub catfile {
-	return &{$catfile_routine}(@_);
-}
-
-sub catdir {
-	return &{$catdir_routine}(@_);
-}
-
-sub canonpath {
-	return &{$canonpath_routine}(@_);
-}
-
-#print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
-#print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
-#print "canonpath a/b//../../c --> " . canonpath('a/b/../../c') . "\n";
-#print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
-#print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
-#print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
-
-#my $MIME_Lite;
-#eval {
-#	require MIME::Lite;
-#	$MIME_Lite = 1;
-#	require Net::SMTP;
-#};
-#
-#sub mime_lite_send {
-#	my ($opt, $body) = @_;
-#
-#	if(! $MIME_Lite) {
-#		return send_mail(
-#			$opt->{to},
-#			$opt->{subject},
-#			$body,
-#			$opt->{reply},
-#			undef,
-#			split /\n+/, $opt->{extra}
-#			);
-#	}
-#
-#	my %special = qw/
-#		as_string 1
-#		internal  1
-#	/;
-#	my $mime = new MIME::Lite;;
-#
-#	my @ary;
-#	my $popt = {};
-#	my $mopt = {};
-#	for(keys %$opt) {
-#		if(ref $opt->{$_}) {
-#			push @ary, [ $_, delete $opt->{$_} ];
-#		}
-#		if($special{$_}) {
-#			$popt->{$_} = delete $opt->{$_};
-#		}
-#		my $m = $_;
-#		s/_/-/g;
-#		s/(\w+)/\L\u$1/g;
-#		s/-/_/g;
-#		$mopt->{$_} = $opt->{$m};
-#	}
-#
-#}
-
 sub send_mail {
 	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
 
@@ -2418,22 +1944,21 @@ sub send_mail {
 	$ok;
 }
 
-sub get_cfg_header {
-	my ($file) = @_;
-	my $cfg = {};
-	local ($_, *IN);
-	unless (open IN, "<$file") {
-		my @msg = ("Can't open config file '%s': %s\n", $file, $!);
-		logError(@msg);
-		return { error => errmsg(@msg) };
-	}
-	while (<IN>) {
-		($cfg->{position} = $1, last) if /^\s*#\s*position\s*:\s*(\d+)/i;
-	}
-	close IN;
-	return $cfg;
-}
-
+### Provide stubs for former Vend::Util functions relocated to Vend::File
+*canonpath = \&Vend::File::canonpath;
+*catdir = \&Vend::File::catdir;
+*catfile = \&Vend::File::catfile;
+*exists_filename = \&Vend::File::exists_filename;
+*file_modification_time = \&Vend::File::file_modification_time;
+*file_name_is_absolute = \&Vend::File::file_name_is_absolute;
+*get_filename = \&Vend::File::get_filename;
+*lockfile = \&Vend::File::lockfile;
+*path = \&Vend::File::path;
+*readfile = \&Vend::File::readfile;
+*readfile_db = \&Vend::File::readfile_db;
+*set_lock_type = \&Vend::File::set_lock_type;
+*unlockfile = \&Vend::File::unlockfile;
+*writefile = \&Vend::File::writefile;
 
 1;
 __END__

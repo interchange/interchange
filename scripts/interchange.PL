@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.67 2003-02-02 21:04:23 racke Exp $
+# $Id: interchange.PL,v 2.68 2003-04-01 04:12:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -223,6 +223,7 @@ BEGIN {
 
 
 use Vend::Util;
+use Vend::File;
 use Vend::Server;
 use Vend::Session;
 use Vend::Config;

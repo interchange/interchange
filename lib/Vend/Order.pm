@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.47 2003-03-29 22:11:08 mheins Exp $
+# $Id: Order.pm,v 2.48 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -50,6 +50,7 @@ push @EXPORT, qw (
 );
 
 use Vend::Util;
+use Vend::File;
 use Vend::Interpolate;
 use Vend::Session;
 use Vend::Data;
@@ -796,15 +797,20 @@ sub mail_order {
 	my($subject);
 # LEGACY
 	if ($::Values->{mv_order_report}) {
-		if($Global::NoAbsolute and (file_name_is_absolute($::Values->{mv_order_report}) or $::Values->{mv_order_report} =~ m#\.\./.*\.\.#)) {
-			::logError("Can't use file '%s' with NoAbsolute set", $::Values->{mv_order_report});
-			::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $::Values->{mv_order_report});
+		unless( allowed_file($::Values->{mv_order_report}) ) {
+			my $msg = errmsg(
+							"%s: Can't use file '%s' with NoAbsolute set",
+							'mail_order',
+							 $::Values->{mv_order_report},
+						);
+			::logError($msg);
+			::logGlobal({ level => 'auth'}, $msg);
 			return undef;
 		}
 		$body = readin($::Values->{mv_order_report})
 	}
 # END LEGACY
-	$body = readfile($Vend::Cfg->{OrderReport}, $Global::NoAbsolute)
+	$body = readfile($Vend::Cfg->{OrderReport})
 		if ! $body;
 	unless (defined $body) {
 		::logError(
@@ -817,9 +823,14 @@ trying one more time. Fix this.},
 				$Vend::Cfg->{OrderReport},
 				$::Values->{mv_order_report},
 			);
-		if($Global::NoAbsolute and (file_name_is_absolute($Vend::Cfg->{OrderReport}) or $Vend::Cfg->{OrderReport} =~ m#\.\./.*\.\.#)) {
-			::logError("Can't use file '%s' with NoAbsolute set", $Vend::Cfg->{OrderReport});
-			::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $Vend::Cfg->{OrderReport});
+		unless( allowed_file($Vend::Cfg->{OrderReport}) ) {
+			my $msg = errmsg(
+							"%s: Can't use file '%s' with NoAbsolute set",
+							'mail_order',
+							$Vend::Cfg->{OrderReport},
+						);
+			::logError($msg);
+			::logGlobal({ level => 'auth'}, $msg);
 			return undef;
 		}
 		$body = readin($Vend::Cfg->{OrderReport});
@@ -1690,7 +1701,7 @@ sub route_order {
 		}
 		else {
 			$pagefile = $route->{'report'} || $main->{'report'};
-			$page = readfile($pagefile, $Global::NoAbsolute);
+			$page = readfile($pagefile);
 		}
 		die errmsg(
 			"No order report %s or %s found.",

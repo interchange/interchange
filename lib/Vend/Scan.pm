@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.17 2002-10-18 07:10:46 mheins Exp $
+# $Id: Scan.pm,v 2.18 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,10 +29,11 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 use strict;
 use Vend::Util;
+use Vend::File;
 use Vend::Interpolate;
 use Vend::Data qw(product_code_exists_ref column_index);
 use Vend::TextSearch;
@@ -879,7 +880,7 @@ sub _file_security {
 	$passed = [] unless $passed;
 	my(@files) = grep /\S/, split /\s*[,\0]\s*/, $param, -1;
 	for(@files) {
-		my $ok = (file_name_is_absolute($_) or /\.\./) ? 0 : 1;
+		my $ok = allowed_file($_);
 		if(!$ok) {
 			$ok = 1 if $_ eq $::Variable->{MV_SEARCH_FILE};
 			$ok = 1 if $::Scratch->{$_};

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.153 2003-03-26 14:16:32 mheins Exp $
+# $Id: Interpolate.pm,v 2.154 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.153 $, 10);
+$VERSION = substr(q$Revision: 2.154 $, 10);
 
 @EXPORT = qw (
 
@@ -92,6 +92,7 @@ my $tag_wrapped;
 
 use strict;
 use Vend::Util;
+use Vend::File;
 use Vend::Data;
 use Vend::Form;
 require Vend::Cart;
@@ -1890,7 +1891,7 @@ sub tag_perl {
 		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
 	}
 
-	$body = readfile($opt->{file}, $Global::NoAbsolute) . $body
+	$body = readfile($opt->{file}) . $body
 		if $opt->{file};
 
 	$body =~ tr/\r//d if $Global::Windows;
@@ -2189,10 +2190,15 @@ sub log {
 	}
 
 	$file = Vend::Util::escape_chars($file);
-	if($Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
-		::logError("Can't use file '%s' with NoAbsolute set", $file);
-		::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
-		return '';
+	unless(Vend::File::allowed_file($file)) {
+		my $msg = errmsg(
+						"%s: Can't use file '%s' with NoAbsolute set",
+						'log',
+						$file,
+					);
+		::logError($msg);
+		::logGlobal({ level => 'auth'}, $msg);
+		return undef;
 	}
 
 	$file = ">$file" if $opt->{create};
@@ -2417,6 +2423,17 @@ sub tag_counter {
 		return $val if defined $val;
 	}
 
+	unless (allowed_file($file)) {
+		my $msg = errmsg(
+						"%s: Can't use file '%s' with NoAbsolute set",
+						'counter',
+						$file,
+					);
+		::logError($msg);
+		::logGlobal({ level => 'auth'}, $msg);
+		return undef;
+	}
+	
     $file = $Vend::Cfg->{VendRoot} . "/$file"
         unless Vend::Util::file_name_is_absolute($file);
     my $ctr = new Vend::CounterFile $file, $opt->{start} || undef;
@@ -4922,7 +4939,7 @@ sub tag_loop_list {
 	}
 	elsif ($opt->{file}) {
 #::logDebug("loop resolve file");
-		$list = Vend::Util::readfile($opt->{file}, $Global::NoAbsolute);
+		$list = Vend::Util::readfile($opt->{file});
 		$opt->{lr} = 1 unless
 						defined $opt->{lr}
 						or $opt->{quoted};
@@ -5074,10 +5091,15 @@ sub fly_page {
 #::logDebug("fly_page: selector=$selector");
 
 	unless (defined $page) {
-		if($Global::NoAbsolute and (file_name_is_absolute($selector) or $selector =~ m#\.\./.*\.\.#)) {
-			::logError("Can't use file '%s' with NoAbsolute set", $selector);
-			::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $selector);
-			return '';
+		unless( allowed_file($selector) ) {
+			my $msg = errmsg(
+							"%s: Can't use file '%s' with NoAbsolute set",
+							'fly_page',
+							$selector,
+						);
+			::logError($msg);
+			::logGlobal({ level => 'auth'}, $msg);
+			return undef;
 		}
 		$page = readin($selector);
 		if (defined $page) {
@@ -5606,10 +5628,15 @@ sub timed_build {
 	}
 
     $file = Vend::Util::escape_chars($file);
-    if(!$opt->{auto} and $Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
-		::logError("Can't use file '%s' with NoAbsolute set", $file);
-		::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
-		return '';
+    if(! $opt->{auto} and ! allowed_file($file)) {
+		my $msg = errmsg(
+						"%s: Can't use file '%s' with NoAbsolute set",
+						'timed_build',
+						$file,
+					);
+		::logError($msg);
+		::logGlobal({ level => 'auth'}, $msg);
+		return undef;
     }
 
     if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {

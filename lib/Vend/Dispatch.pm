@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.12 2003-03-14 16:25:13 racke Exp $
+# $Id: Dispatch.pm,v 1.13 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -344,11 +344,7 @@ EOF
 
 	$Vend::StatusLine = "Content-Type: " .
 						($CGI::values{mv_content_type} || 'application/octet-stream');
-	::response(	Vend::Util::readfile (
-					$CGI::values{mv_data_file},
-					$Global::NoAbsolute,
-				)
-			);
+	::response(	Vend::Util::readfile ($CGI::values{mv_data_file}) );
 	return 0;
 }
 

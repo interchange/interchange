@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.26 2003-03-31 15:42:36 mheins Exp $
+# $Id: Data.pm,v 2.27 2003-04-01 04:12:32 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -302,10 +302,8 @@ sub import_text {
 
 	if($options->{file}) {
 		$fn = $options->{file};
-		if( $Global::NoAbsolute) {
-			die "No absolute file names like '$fn' allowed.\n"
-				if Vend::Util::file_name_is_absolute($fn);
-		}
+		Vend::File::allowed_file($fn)
+			or die "No absolute file names like '$fn' allowed.\n";
 	}
 	else {
 		Vend::Util::writefile($fn, $text)
@@ -874,10 +872,11 @@ sub import_database {
 	($base,$path,$tail) = fileparse $database_txt, '\.[^/.]+$';
 
 	if(Vend::Util::file_name_is_absolute($database_txt)) {
-		if ($Global::NoAbsolute) {
+		unless (allowed_file($database_txt)) {
 			my $msg = errmsg(
-							"Security violation for NoAbsolute, trying to import %s",
-							$database_txt);
+							"Security violation, trying to import %s",
+							$database_txt,
+							);
 			logError( $msg );
 			die "Security violation.\n";
 		}

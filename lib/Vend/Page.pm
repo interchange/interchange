@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.9 2003-01-14 02:25:53 mheins Exp $
+# $Id: Page.pm,v 2.10 2003-04-01 04:12:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 my $wantref = 1;
 
@@ -63,8 +63,11 @@ sub display_special_page {
 		};
 
 	$subject = $subject || 'unspecified error';
+
+	my $noname = $name;
+	$noname =~ s:^\.\./::;
 	
-	$page = readfile($name, $Global::NoAbsolute, 1) || readin($name);
+	$page = readfile($noname, $Global::NoAbsolute, 1) || readin($name);
 
 	die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
