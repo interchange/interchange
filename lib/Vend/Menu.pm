@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.29 2003-05-10 20:44:18 mheins Exp $
+# $Id: Menu.pm,v 2.30 2003-05-10 22:06:14 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1254,7 +1254,12 @@ sub tree_link {
 		unless($row->{form} =~ /[\r\n]/) {
 			$row->{form} = join "\n", split $Global::UrlSplittor, $row->{form};
 		}
-		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
+		my $add = ($::Scratch->{mv_add_dot_html} && $row->{page} !~ /\.\w+$/) || 0;
+		$row->{href} = Vend::Tags->area({
+							href => $row->{page},
+							form => $row->{form},
+							add_dot_html => $add,
+						});
 	}
 	$row->{name} =~ s/ /&nbsp;/g;
 	$opt->{toggle_base_url} ||= Vend::Tags->history_scan(
@@ -1353,10 +1358,13 @@ sub tree_line {
 			$form = join "\n", split $Global::UrlSplittor, $form;
 		}
 
+		my $add = ($::Scratch->{mv_add_dot_html} && $row->{page} !~ /\.\w+$/) || 0;
+
 		$row->{page} = Vend::Tags->area({
 								href => $row->{page},
 								form => $form,
 								no_count => $opt->{timed},
+								add_dot_html => $add,
 								no_session_id => $opt->{timed}
 							});
 
@@ -1436,7 +1444,14 @@ EOF
 		unless($row->{form} =~ /[\r\n]/) {
 			$row->{form} = join "\n", split $Global::UrlSplittor, $row->{form};
 		}
-		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
+		my $add = $::Scratch->{mv_add_dot_html} && $row->{page} !~ /\.\w+$/;
+
+		$row->{href} = Vend::Tags->area(
+								{
+									href => $row->{page},
+									form => $row->{form},
+									add_dot_html => $add,
+								});
 	}
 	extra_value($opt->{extra_value}, $row)
 			if $opt->{extra_value};
