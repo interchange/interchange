@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.181 2003-07-07 22:24:04 ramoore Exp $
+# $Id: Interpolate.pm,v 2.182 2003-07-14 09:47:26 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.181 $, 10);
+$VERSION = substr(q$Revision: 2.182 $, 10);
 
 @EXPORT = qw (
 
@@ -1797,7 +1797,7 @@ sub tag_perl {
 	}
 
 	if ($MVSAFE::Safe) {
-		logGlobal({ level => 'alert' }, "Attempt to call perl from within Safe.");
+#::logDebug("tag_perl: Attempt to call perl from within Safe.");
 		return undef;
 	}
 
