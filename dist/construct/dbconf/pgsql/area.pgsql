@@ -1,10 +1,10 @@
 Database  area  area.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  area  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  area  PASS         __SQLPASS__
-#endif
+endif
 Database  area  DEFAULT_TYPE text
 Database  area  COLUMN_DEF   "code=VARCHAR(12) NOT NULL PRIMARY KEY"
 Database  area  COLUMN_DEF   "name=VARCHAR(128) DEFAULT '' NOT NULL"

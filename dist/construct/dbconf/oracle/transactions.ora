@@ -1,11 +1,11 @@
 Database  transactions  transactions.txt __SQLDSN__
 Database  transactions  UPPERCASE  1
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  transactions  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  transactions  PASS         __SQLPASS__
-#endif
+endif
 Database  transactions  transactions.raw  SQL
 Database  transactions  DEFAULT_TYPE VARCHAR2(128)
 Database  transactions  COLUMN_DEF   "code=VARCHAR2(14) PRIMARY KEY"

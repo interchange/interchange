@@ -63,7 +63,7 @@ sub {
 	}
 
 	$out .= $extra if $extra;
-	$out .= "ui_return_to=
+	$out .= "ui_return_to=";
 
     $::Scratch->{ui_location} = $Tag->area({
                                     href => $page,

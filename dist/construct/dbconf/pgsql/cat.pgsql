@@ -1,10 +1,10 @@
 Database  cat  cat.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  cat  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  cat  PASS         __SQLPASS__
-#endif
+endif
 Database  cat  DEFAULT_TYPE text
 Database  cat  COLUMN_DEF   "code=char(20) NOT NULL PRIMARY KEY"
 Database  cat  COLUMN_DEF   "sel=char(64) DEFAULT '' NOT NULL"

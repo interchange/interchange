@@ -1,3 +1,11 @@
+# This is a new option that ignores C-style directives like #ifdef,
+# #endif, #include, and only parses plain ifdef, endif, include, etc.
+# It can be turned on and off repeatedly as needed. When it's off,
+# you can now be confident that a line starting with a # is a comment.
+# This directive affects the entire global configuration, so check any
+# files you include if you're upgrading.
+ConfigParseComments No
+
 #Catalog   construct /var/lib/interchange/catalogs/construct /cgi-bin/construct
 
 # Set to 1 to include UI
@@ -14,26 +22,26 @@ Environment  MOD_PERL
 
 # You can set the Variable DEBUG above then tail -f the DebugFile
 # You can also see Interchange and catalog data structures
-#ifdef @DEBUG
+ifdef @DEBUG
 Message Sending debug to /tmp/icdebug.
 DebugFile /tmp/icdebug
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
 Variable  TEST_VARIABLE Test of global variable OK.
-#endif
+endif
 
-#ifdef TRAFFIC =~ /low/i
+ifdef TRAFFIC =~ /low/i
 Message Low traffic settings.
 HouseKeeping 3
 MaxServers   5
 PIDcheck     300
-#endif
+endif
 
-#ifdef TRAFFIC =~ /high/i
+ifdef TRAFFIC =~ /high/i
 Message High traffic settings.
 HouseKeeping 2
 MaxServers   10
 PIDcheck     120
-#endif
+endif
 
 # No real downside to adding this....
 Mall       Yes
@@ -45,16 +53,16 @@ SafeUntrap  rand
 TcpMap 7786 -
 
 # Uses value of UI variable above
-#ifdef UI
+ifdef UI
 Message Calling UI....
 Variable UI_TAG_TITLE_BAR 1
-#include lib/UI/ui.cfg
-#endif
+include lib/UI/ui.cfg
+endif
 
 #### Now including individual usertag files
 
-#include usertag/*
+include usertag/*
 
 
 ### Include if you want non-English error messages. Not complete.
-# #include locale.error
+# include locale.error

@@ -1,11 +1,11 @@
 # Interchange database definition
 Database  pricing  pricing.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  pricing  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  pricing  PASS         __SQLPASS__
-#endif
+endif
 Database  pricing  KEY          sku
 Database  pricing  COLUMN_DEF   "q2=VARCHAR(12)"
 Database  pricing  COLUMN_DEF   "price_group=VARCHAR(12) DEFAULT '' NOT NULL"

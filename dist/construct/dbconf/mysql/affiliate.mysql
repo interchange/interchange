@@ -1,9 +1,9 @@
 Database  affiliate  affiliate.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  affiliate  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  affiliate  PASS         __SQLPASS__
-#endif
+endif
 Database  affiliate  COLUMN_DEF   "code=char(12) NOT NULL PRIMARY KEY"
 Database  affiliate  DEFAULT_TYPE text

@@ -1,4 +1,4 @@
-#ifndef USERTAG_BUTTON
+ifndef USERTAG_BUTTON
 Variable USERTAG_BUTTON 1
 UserTag button Order name src text
 UserTag button addAttr
@@ -170,4 +170,4 @@ EOF
 	return $out;
 }
 EOR
-#endif
+endif
