@@ -10,6 +10,17 @@
 		Spreadsheet Edit: [cgi mv_data_table]
 	[/either]
 [/seti]
+[seti page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		Spreadsheet Edit: [page href=__UI_BASE__/db_metaconfig_spread
+								form="
+									ui_table=[cgi mv_data_table]
+									ui_view=[cgi ui_meta_view]
+								"][cgi mv_data_table]
+	[/either]
+[/seti]
 [set ui_class]Admin[/set]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]icon_config.gif[/either][/seti]
