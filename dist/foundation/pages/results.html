@@ -86,14 +86,13 @@ ui_template_name: leftright
 [/calc]
 	[bounce href="[history-scan exclude=nothing]"]
 [/set]
-[tmp cross_sale][value-extended name=mv_searchspec index=0][/tmp]
 
 [on-match]
 <FORM ACTION="[area nothing]" METHOD=POST>
-<input type=hidden name=mv_session_id value="[data session id]">
-<INPUT TYPE=hidden  NAME="mv_action" VALUE="refresh">
-<INPUT TYPE=hidden  NAME="mv_separate_items"  VALUE="0">
-<INPUT TYPE=hidden  NAME="mv_click" VALUE="munge_quantity">
+<INPUT TYPE=hidden NAME=mv_session_id value="[data session id]">
+<INPUT TYPE=hidden NAME=mv_action VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_separate_items VALUE=0>
+<INPUT TYPE=hidden NAME=mv_click VALUE=munge_quantity>
 [/on-match]
 
 <table width="90%" border="0" cellspacing="0" cellpadding="3">
@@ -164,14 +163,14 @@ EOF
 [no-match]
 <BR><BR>
 <BLOCKQUOTE>
-Sorry, no matches for <B>[calc]
-			my $joiner = ' AND ';
-			$joiner = ' OR ' if
-					defined $Search->{''}->{mv_orsearch}[0]
-					and $Search->{''}->{mv_orsearch}[0];
-			my @str = grep /\D/, @{$Values->{mv_searchspec}};
-			return join $joiner, @str;
-			[/calc]
+[comment]
+	Don't show the search string if it was empty, since it looks weird
+	and the user will see the error below anyway.
+[/comment]
+[tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
+[if scratch matchstring]
+Sorry, no matches for <B>[scratch matchstring]</B>.
+[/if]
 [if value mv_search_error]
 <P>
 <B>
