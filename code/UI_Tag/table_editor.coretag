@@ -138,7 +138,6 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my @messages;
 	my @errors;
 
-#Debug("labels=" . uneval($opt->{label}));
 	FORMATS: {
 		no strict 'refs';
 		my $ref;
@@ -186,7 +185,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $span = $rowdiv * 2;
 	my $oddspan = $span - 1;
 	my $def = $opt->{default_ref} || $::Values;
-#::logDebug("view=$opt->{ui_meta_view}, default_ref: " . uneval($def));
+
 	$opt->{table_width} = '60%' if ! $opt->{table_width};
 	$opt->{left_width} = '30%' if ! $opt->{left_width};
 	if (! $opt->{inner_table_width}) {
@@ -223,8 +222,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $widget      = $opt->{widget};
 	my $width       = $opt->{width};
 	my $pmeta       = $opt->{meta};
-#::logDebug("widget=" . ::uneval_it($widget) );
-#::logDebug("label=" . ::uneval_it($label) );
+
 
 	#my $blabel      = $opt->{begin_label} || '<b>';
 	#my $elabel      = $opt->{end_label} || '</b>';
@@ -390,10 +388,8 @@ EOF
 		foreach my $row (@hmap) {
 			my @keys = grep $_ =~ $row->[0], @cgi;
 			for(@keys) {
-#::logDebug("found key $_");
 				/^ui_\w+:(\S+)/
 					and $row->[1]->{$1} = $CGI->{$_};
-#::logDebug("set $1=$_");
 			}
 		}
 		$table = $opt->{mv_data_table};
@@ -512,7 +508,6 @@ EOF
 
 	$opt->{clear_image} = "bg.gif" if ! $opt->{clear_image};
 
-#::logDebug("table-editor opt: " . ::uneval($opt));
 	my $die = sub {
 		::logError(@_);
 		$Scratch->{ui_error} .= "<BR>\n" if $Scratch->{ui_error};
@@ -553,10 +548,8 @@ EOF
 
 	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
 	$opt->{ui_data_fields} =~ s/\r/\n/g;
-#::logDebug("ui_data_fields=$opt->{ui_data_fields}");
 
 	if($opt->{ui_data_fields} =~ /\n\n/) {
-#::logDebug("Found break fields");
 		my @breaks;
 		my @break_labels;
 		while ($opt->{ui_data_fields} =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w[:.\w]+)/\n$2/) {
@@ -565,10 +558,8 @@ EOF
 		}
 		$opt->{ui_break_before} = join(" ", @breaks)
 			if ! $opt->{ui_break_before};
-#::logDebug("break_before=$opt->{ui_break_before}");
 		$opt->{ui_break_before_label} = join(",", @break_labels)
 			if ! $opt->{ui_break_before_label};
-#::logDebug("break_before_label=$opt->{ui_break_before_label}");
 	}
 
 	$opt->{ui_data_fields} ||= $opt->{mv_data_fields};
@@ -826,11 +817,10 @@ EOF
 	$opt->{mv_update_empty} = 1 unless defined $opt->{mv_update_empty};
 
 	my $url_base = $opt->{secure} ? $Config->{SecureURL} : $Config->{VendURL};
-#Debug("Urlbase=$url_base");
+
 	$opt->{href} = "$url_base/ui" if ! $opt->{href};
 	$opt->{href} = "$url_base/$opt->{href}"
 		if $opt->{href} !~ m{^(https?:|)/};
-#Debug("href=$opt->{href}");
 
 	my $sidstr;
 	if ($opt->{get}) {
@@ -1124,7 +1114,6 @@ EOF
 	my %break;
 	my %break_label;
 	if($opt->{ui_break_before}) {
-#::logDebug("Have a break_before");
 		my @tmp = grep /\S/, split /[\s,\0]+/, $opt->{ui_break_before};
 		@break{@tmp} = @tmp;
 		if($opt->{ui_break_before_label}) {
@@ -1141,7 +1130,6 @@ EOF
 
 	my $passed_fields = $opt->{ui_data_fields};
 
-#::logDebug("extra=" . ::uneval($extra));
 	my @extra_cols;
 	my %email_cols;
 	my %ok_col;
@@ -1220,24 +1208,74 @@ EOF
 
 	my @data_enable = ($opt->{mv_blob_pointer}, $opt->{mv_blob_field});
 	my @ext_enable;
- 	my $row_template = $opt->{row_template} || <<EOF;
-   <td class=clabel width="$opt->{left_width}"> 
-     $blabel\$LABEL\$$elabel~META~
-   </td>
-   <td class=cdata> 
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td class=cwidget> 
-           \$WIDGET\$
-         </td>
-         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELP_URL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELP_URL}</FONT></td>
-       </tr>
-     </table>
-   </td>
+ 
+    # Init the cell stuff
+    my %td_extra;
+    my %td_default = (
+                    widget_cell_class	=> 'cwidget',
+                    label_cell_class	=> 'clabel',
+                    data_cell_class		=> 'cdata',
+                    help_cell_class		=> 'chelp',
+    );
+ 
+	 for my $ctype (qw/label data widget help/) {
+		 $td_extra{$ctype} = '';
+		 for my $ptype (qw/class style align valign width/) {
+			 my $parm = $ctype . '_cell_' . $ptype;
+			 if(defined $opt->{$parm}) {
+				 $td_extra{$ctype} .= qq{ $ptype="$opt->{$parm}"};
+			 }
+			 elsif ($td_default{$parm}) {
+				 $td_extra{$ctype} .= qq{ $ptype="$td_default{$parm}"};
+			 }
+		 }
+		 if(my $thing = $opt->{$ctype . "_cell_extra"}) {
+				 $td_extra{$ctype} .= " $thing";
+		 }
+	 }
+ 
+	 if($opt->{left_width} and ! $opt->{label_cell_width}) {
+			 $td_extra{label} .= qq{ width="$opt->{left_width}"};
+	 }
+ 
+	 my $row_template = $opt->{row_template};
+	 $opt->{meta_anchor} ||= errmsg('meta');
+	 $opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
+       
+	 if(! $row_template) {
+			 if($opt->{simple_row}) {
+					 $opt->{help_anchor} ||= 'help';
+					 $row_template = <<EOF;
+  <td$td_extra{label}> 
+	\$LABEL\$
+  </td>
+  <td$td_extra{widget}>\$WIDGET\${HELP_EITHER}&nbsp;<a href="\$HELP_URL\$" title="\$HELP\$">$opt->{help_anchor}</a>{/HELP_EITHER}&nbsp;{META_URL}<a href="\$META_URL\$">$opt->{meta_anchor}</A>{/META_URL}
+  </td>
 EOF
+			 }
+			 else {
+					 $row_template = <<EOF;
+ <td$td_extra{label}> 
+   $blabel\$LABEL\$$elabel~META~
+ </td>
+ <td$td_extra{data}>
+   <table cellspacing=0 cellmargin=0 width="100%">
+	 <tr> 
+	   <td$td_extra{widget}>
+		 \$WIDGET\$
+	   </td>
+	   <td$td_extra{help}>~TKEY~<i>\$HELP\$</i>{HELP_URL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELP_URL}</FONT></td>
+	 </tr>
+   </table>
+ </td>
+EOF
+			}
+	}
+
 	$row_template =~ s/~OPT:(\w+)~/$opt->{$1}/g;
 	$row_template =~ s/~BLABEL~/$blabel/g;
 	$row_template =~ s/~ELABEL~/$elabel/g;
+    $row_template =~ s/~([A-Z]+)_EXTRA~/$td_extra{lc $1}/g;
 
 	my %serialize;
 	my %serial_data;
@@ -1539,6 +1577,8 @@ EOF
 		}
 
 		my $meta = '';
+              my $meta_url;
+              my $meta_url_specific;
 		my $template = $row_template;
 		if($error->{$c}) {
 			my $parm = {
@@ -1555,6 +1595,65 @@ EOF
 			}
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
+
+		if($show_meta) {
+			$opt->{meta_prepend} = '<br><font size=1>'
+					unless defined $opt->{meta_prepend};
+
+			$opt->{meta_anchor} ||= errmsg('meta');
+			$opt->{meta_extra} = " $opt->{meta_extra}"
+					if $opt->{meta_extra};
+			$opt->{meta_extra} ||= "";
+			$opt->{meta_extra} .= qq{ class="$opt->{meta_class}"}
+					if $opt->{meta_class};
+			# Get global variables
+			my $base = $Tag->var('UI_BASE', 1) || 'admin';
+			my $page = $Tag->var('MV_PAGE', 1);
+			my $id = $t . "::$c";
+			$id = $opt->{ui_meta_view} . "::$id"
+					if $opt->{ui_meta_view} and $opt->{ui_meta_view} ne 'metaconfig';
+
+			my $return = <<EOF;
+ui_return_to=$page
+ui_return_to=item_id=$opt->{item_id}
+ui_return_to=ui_meta_view=$opt->{ui_meta_view}
+ui_return_to=mv_return_table=$t
+mv_return_table=$table
+ui_return_stack=$CGI->{ui_return_stack}
+EOF
+
+			$meta_url = $Tag->area({
+									href => "$base/meta_editor",
+									form => qq(
+												item_id=$id
+												$return
+											  ),
+								  });
+			my $meta_specific = '';
+			if($opt->{ui_meta_specific}) {
+				  my $meta_specific_url = $Tag->area({
+											  href => "$base/meta_editor",
+											  form => qq(
+												  item_id=${t}::${c}::$key
+												  $return
+												  ),
+											  });
+				  $opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
+				  $meta_specific = <<EOF;
+<br><a href="$meta_specific_url"$opt->{meta_extra}>$opt->{meta_anchor_specific}</A>
+EOF
+			}
+													
+			$opt->{meta_apppend} = '</FONT>'
+				  unless defined $opt->{meta_append};
+
+			$meta = <<EOF;
+$opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra}>$opt->{meta_anchor}</A>
+$meta_specific$opt->{meta_append}
+EOF
+
+		}
+
 		$template =~ s/~TKEY~/$tkey_message || ''/eg;
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
 		my $display = $Tag->display({
@@ -1572,6 +1671,7 @@ EOF
 										label => $label->{$c},
 										key => $key,
 										meta => $pmeta->{$c},
+                                                                              meta_url => $meta_url,
 										name => $namecol,
 										override => $overridden,
 										passed => $passed->{$c},
@@ -1596,42 +1696,6 @@ EOF
 			next;
 		}
 
-		if($show_meta) {
-			$meta .= '<BR><FONT SIZE=1>';
-			# Get global variables
-			my $base = $Tag->var('UI_BASE', 1);
-			my $page = $Tag->var('MV_PAGE', 1);
-			my $id = $t . "::$c";
-			$id = $opt->{ui_meta_view} . "::$id"
-				if $opt->{ui_meta_view} and $opt->{ui_meta_view} ne 'metaconfig';
-
-			my $return = <<EOF;
-ui_return_to=$page
-ui_return_to=item_id=$opt->{item_id}
-ui_return_to=ui_meta_view=$opt->{ui_meta_view}
-ui_return_to=mv_return_table=$t
-mv_return_table=$table
-ui_return_stack=$CGI->{ui_return_stack}
-EOF
-
-			$meta .= $Tag->page(
-							{	href => "$base/meta_editor",
-								form => qq{
-										item_id=$id
-										$return
-										}
-							});
-			$meta .= 'meta</A>';
-			$meta .= '<br>' . $Tag->page(
-							{	href => "$base/meta_editor",
-								form => qq{
-										item_id=${t}::${c}::$key
-										$return
-										}
-							}) . 'item-specific meta</A></FONT>'
-				if $opt->{ui_meta_specific};
-			$meta .= '</FONT>';
-		}
 		$display =~ s/\~META\~/$meta/g;
 		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
         

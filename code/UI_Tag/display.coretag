@@ -283,11 +283,14 @@ EOF
 		HELP		=> $opt->{applylocale}
 						? errmsg($record->{help})
 						: $record->{help},
+              META_URL        => $opt->{meta_url},
 		HELP_URL	=> $record->{help_url},
 		LABEL		=> $opt->{applylocale}
 						? errmsg($record->{label})
 						: $record->{label},
 	);
+
+      $sub{HELP_EITHER} = $sub{HELP} || $sub{HELP_URL};
 
 	if($array_return) {
 		return ($w, $sub{LABEL}, $sub{HELP}, $record->{help_url});
@@ -296,6 +299,7 @@ EOF
 		# Strip the {TAG} {/TAG} pairs if nothing there
 		$template =~ s#{([A-Z_]+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;
 		# Insert the TAG
+              $sub{HELP_URL} ||= 'javascript:void(0)';
 		$template =~ s/\$([A-Z_]+)\$/$sub{$1}/g;
 		return $template;
 	}
