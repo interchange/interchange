@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.6 2002-11-15 13:43:10 mheins Exp $
+# $Id: Dispatch.pm,v 1.7 2002-11-18 16:55:15 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1196,6 +1196,10 @@ EOF
 
 	$Vend::Calc_initialized = 0;
 	$CGI::values{mv_session_id} = $Vend::Session->{id} = $Vend::SessionID;
+	if(my $vspace = $CGI::values{mv_values_space}) {
+		$Vend::Session->{values_repository} ||= {};
+		$::Values = $Vend::Session->{values_repository}{$vspace} ||= {};
+	}
 
 	if($Vend::Cfg->{CookieLogin}) {
 		COOKIELOGIN: {

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.37 2002-11-18 16:33:47 mheins Exp $
+# $Id: Order.pm,v 2.38 2002-11-18 16:55:15 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1222,7 +1222,7 @@ sub _email_only {
 
 # Contributed by Ton Verhagen -- April 15, 2000
 sub _isbn {
-	# $ref is to Vend::Session->{'values'} hash (well, actually ref to %CGI::values)
+	# $ref is to $::Values hash (well, actually ref to %CGI::values)
 	# $var is the passed name of the variable
 	# $val is current value of checked variable
 	# This routine will return 1 if isbn is ok, else returns 0

@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.2 2002-09-16 23:06:31 mheins Exp $
+# $Id: SOAP.pm,v 2.3 2002-11-18 16:55:15 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -211,11 +211,9 @@ sub Values {
 	shift;
 	open_soap_session();
 	my $putref;
-	my $ref = $Vend::Session->{values};
+	my $ref = $::Values ||= {};
 #::logDebug("ref from session is " . ::uneval($ref));
 	if($putref = shift) {
-		$ref = $Vend::Session->{values} = {}
-			if ! ref($ref);
 		%{$ref} = %{$putref};
 	}
 	close_soap_session();

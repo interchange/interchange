@@ -1,6 +1,6 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.2 2002-06-17 22:24:11 jon Exp $
+# $Id: WellsFargo.pm,v 1.3 2002-11-18 16:55:15 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::WellsFargo;
 
 =head1 Interchange WellsFargo Support
 
-Vend::Payment::WellsFargo $Revision: 1.2 $
+Vend::Payment::WellsFargo $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -463,7 +463,7 @@ sub wellsfargo {
         Ecom_payment_card_expdate_year	=> $actual->{mv_credit_card_exp_year},
         Ecom_payment_card_expdate_month	=> $actual->{mv_credit_card_exp_month},
         Ecom_payment_card_number	=> $actual->{mv_credit_card_number},
-        Ecom_payment_card_type		=> "\U$Vend::Session->{values}->{mv_credit_card_type}",
+        Ecom_payment_card_type		=> "\U$::Values->{mv_credit_card_type}",
         Ecom_payment_card_verification	=> 123,
     );
 
