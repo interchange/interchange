@@ -67,6 +67,7 @@ Click here for more information on this product	Click here for more information 
 Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.
 Code	Code			
 Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
+Color		Farbe		
 Comment	Comment			Commentaar
 Comments on %s		Meinungen zu		
 Comment on this product.	Comment on this product.	Meinung zu diesem Produkt		Geef uw mening over dit product.
@@ -266,7 +267,8 @@ SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM
 SHIPPING	SHIPPING			VERZENDING
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
 SIZE	SIZE			MAAT
-SKU	SKU			Art.Nr.
+Size		Größe
+SKU	SKU	Art.-Nr.		Art.Nr.
 STATUS	STATUS			STATUS
 STOCK_ALERT_PAR1	Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature         and you are not in any way obligated to purchase the item.			Als U onderstaand formulier invult zullen wij U berichten zodra het door U geselecteerde artikel weer voorradig is. Dit is een aanvullende dienst en U bent op geen enkele wijze verplicht om het artikel te kopen.
 STOCK_ALERT_PAR2	You may also pre-order the item. When the item becomes available, you will be        notified via email and the order will be shipped the same day.			U mag het product ook vooruit bestellen. Zodra het product op voorraad is sturen wij U een kennisgeving per email en het artikel zal dezelfde dag worden verzonden. 
@@ -282,9 +284,9 @@ Saved Carts	Saved Carts			Opgeslagen winkelwagen
 Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders
 Search	Search			Zoeken
 Search Go	Search Go			Zoek nu
-Search by Category	Search by Category			Zoek op categorie
-Search by Field	Search by Field			Zoek op veld
-Search for	Search for			Zoek voor
+Search by Category	Search by Category	Suche nach Kategorie		Zoek op categorie
+Search by Field	Search by Field	Suche nach Feld		Zoek op veld
+Search for	Search for	Suchen nach		Zoek voor
 Search results	Search results	Suchergebnisse		Zoekresultaten
 See also	See also			Zie ook
 See also...	See also...			Zie ook...
@@ -385,6 +387,7 @@ We need to have some fields entered to be able to process your order. Please %sg
 We will contact you once your selected item becomes available.	We will contact you once your selected item becomes available.			Wij nemen contact met U op zodra de door U geselecteerde artikelen beschikbaar zijn.
 We will wait for a check sent to us referencing the order number you receive on your receipt.	We will wait for a check sent to us referencing the order number you receive on your receipt.			
 We would also like you to take our	We would also like you to take our			Wij stellen het zeer op prijs als u deelneemt aan ons
+Weight		Gewicht		
 Welcome	Welcome	Willkommen		Welkom
 Welcome Affiliate Program Visitor	Welcome Affiliate Program Visitor			
 Welcome back	Welcome back			Welkom terug
@@ -414,7 +417,7 @@ Your request has been sent sucessfully.	Your request has been sent sucessfully.	
 Your session information has been canceled.	Your session information has been canceled.			
 Zip Code	Zip Code	Postleitzahl		Postcode
 Zip/Postal Code	Zip/Postal Code	Postleitzahl		Postcode
-all fields	all fields			alle velden
+all fields	all fields	allen Feldern		alle velden
 buy now	buy now			koop nu
 by	by			door
 contact us	contact us			neem contact met ons op
@@ -426,7 +429,7 @@ e-mail	e-mail
 edit	edit			bewerk
 frac_digits	2	2	2	2
 in	in			in
-in the category	in the category			in categorie
+in the category	in the category	in der Kategorie		in categorie
 log in	log in			Aanmelden
 mon_decimal_point	.	,	,	.
 mon_thousand_sep		 		
