@@ -263,6 +263,7 @@ dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
 dist/etc/jobs/i18n/update_locales
+dist/etc/jobs/merchandising/topsellers
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
 dist/foundation/config/additional_fields
