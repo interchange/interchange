@@ -118,10 +118,11 @@ sub authorizenet {
  
     # $mon is the month index where Jan=0 and Dec=11, so we use 
     # $mon+1 to get the more familiar Jan=1 and Dec=12 
-    $orderID = sprintf("%02d%02d%02d%02d%02d%05d%s", 
-            $year + 1900,$mon + 1,$mday,$hour,$min,$Vend::SessionName); 
+    $orderID = sprintf("%04d%02d%02d%02d%02d%05d%s", 
+            $year + 1900,$mon + 1,$mday,$hour,$min,$$,$Vend::SessionName); 
              
     my %query = ( 
+#                    x_Test_Request	=> $::Variable->{MV_PAYMENT_TEST},
                     x_Card_Num		=> $actual{mv_credit_card_number}, 
                     x_First_Name    => $actual{b_fname}, 
                     x_Last_Name     => $actual{b_lname},
@@ -197,7 +198,7 @@ sub authorizenet {
     	$avs_code, 
     	$trans_id) = split (/,/,$page); 
     	 
-#::logError(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	 
+::logError(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	 
  
     my %result; 
     if ($response_code == 1) { 
@@ -208,6 +209,7 @@ sub authorizenet {
 		$result{'auth_code'} = $auth_code;
     } else { 
     	$result{MStatus} = 'failure'; 
+    	$Vend::Session->{MStatus} = 'failure'; 
  
 		# NOTE: A lot more AVS codes could be checked for here.  
     	if ($avs_code eq 'N') { 
@@ -218,6 +220,7 @@ sub authorizenet {
 					$response_reason_text,
 					);
     	} 
+		$Vend::Session->{payment_error} = $result{MErrMsg};
     } 
      
     return (%result); 
