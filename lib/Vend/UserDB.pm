@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.20 2001-04-12 08:14:41 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.21 2001-04-19 11:25:43 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.20 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.21 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1043,11 +1043,18 @@ sub login {
 		username_cookies($self->{USERNAME}, $pw) 
 			if $Vend::Cfg->{CookieLogin};
 
-		$self->{DB}->set_field( $self->{USERNAME},
-								$self->{LOCATION}{LAST},
-								time()
-								)
-			if $self->{LOCATION}{LAST} ne 'none';
+		if ($self->{LOCATION}{LAST} ne 'none') {
+			eval {
+				$self->{DB}->set_field( $self->{USERNAME},
+										$self->{LOCATION}{LAST},
+										time()
+									  );
+			};
+			if ($@) {
+				::logError ("Failed to record timestamp in UserDB: %s", $@);
+				die $stock_error, "\n";
+			}
+		}
 		$self->log('login') if $options{'log'};
 		
 		$self->get_values() unless $self->{OPTIONS}{no_get};
