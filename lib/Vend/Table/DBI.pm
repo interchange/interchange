@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.25 2001-04-13 14:23:09 racke Exp $
+# $Id: DBI.pm,v 1.25.2.26 2001-04-13 17:56:58 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.26 $, 10);
 
 use strict;
 
@@ -510,10 +510,7 @@ sub open_table {
 
 sub suicide {
 	my $s = shift;
-# FIXME: the following statement fails on startup with:
-# delete argument is not a HASH element or slice
-# (Perl 5.005_03, DBI 1.14)	
-#	delete $s->[$DBI];
+	undef $s->[$DBI];
 }
 
 sub close_table {
