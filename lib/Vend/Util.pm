@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.24 2001-04-11 08:09:15 heins Exp $
+# $Id: Util.pm,v 1.14.2.25 2001-04-11 22:09:01 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -80,7 +80,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.24 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.25 $, 10);
 
 BEGIN {
 	eval {
@@ -1475,7 +1475,7 @@ sub find_special_page {
 
 sub logDebug {
 	return unless $Global::DebugFile;
-	print caller() . ':debug: ', @_, "\n";
+	print caller() . ':debug: ', errmsg(@_), "\n";
 }
 
 sub errmsg {
