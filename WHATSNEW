@@ -8,8 +8,10 @@
 
 Interchange 4.9.2 not yet released
 
+
 Core
 ----
+
 * New ability to run Interchange entirely inside Apache and mod_perl.
   See POD documentation inside scripts/ic_mod_perl.PL for details.
 
@@ -102,8 +104,10 @@ Core
 
 * Add Filter alias e = encode_entites.
 
+
 Extensions
 ----------
+
 * Various Quickbooks updates:
 
   - Fixed: When an auto-created user orders from the same company as an
@@ -125,6 +129,13 @@ Extensions
 
   - Optionally cause Quickbooks invoice number to be blank, to keep
     Quickbook's invoice number progression unmodified.
+
+
+Payment
+-------
+
+* Support for TrustCommerce added.
+* Support for the Mainstreet Credit Verificatiion Engine (MCVE) added.
 
 
 ------------------------------------------------------------------------------
