@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.15 2003-04-27 15:52:30 mheins Exp $
+# $Id: Dispatch.pm,v 1.16 2003-04-28 15:25:32 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -164,6 +164,9 @@ sub parse_click {
 	mv_click  1
 	mv_nextpage  1
 	mv_failpage  1
+	mv_password  1
+	mv_verify  1
+	mv_password_old  1
 	mv_successpage  1
 	mv_more_ip  1
 	mv_credit_card_number  1
