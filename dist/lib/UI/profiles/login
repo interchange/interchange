@@ -1,7 +1,7 @@
 __NAME__ MMLogin
 mv_todo=return
 [if type=explicit compare="[userdb function=login profile=ui]"]
-mv_nextpage=__UI_BASE__/index
+mv_nextpage=[either][cgi mv_nextpage][or]__UI_BASE__/index[/either]
 [else]
 mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]
 [/else]
