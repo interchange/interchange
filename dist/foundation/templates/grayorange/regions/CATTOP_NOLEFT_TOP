@@ -3,7 +3,7 @@
 [if scratch members_only]
     [set members_only][/set]
     [if !session logged_in]
-    [set mv_successpage]@@MV_PAGE@@[/set]
+    [seti mv_successpage][var MV_PAGE 1][/seti]
     [bounce page=login]
     [/if]
 [/if]
