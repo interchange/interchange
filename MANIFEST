@@ -520,6 +520,7 @@ dist/lib/UI/pages/include/order_delete_archive
 dist/lib/UI/pages/include/page_editor
 dist/lib/UI/pages/include/table_populator
 dist/lib/UI/pages/include/template_editor
+dist/lib/UI/pages/include/templates/ui_print1
 dist/lib/UI/pages/include/templates/ui_type1
 dist/lib/UI/pages/include/templates/ui_type2
 dist/lib/UI/pages/include/templates/ui_type3
