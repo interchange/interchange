@@ -1,6 +1,6 @@
 # Vend::Ship::QueryUPS - Interchange shipping code
 # 
-# $Id: QueryUPS.pm,v 1.2 2003-06-18 17:34:46 jon Exp $
+# $Id: QueryUPS.pm,v 1.3 2003-06-30 18:09:42 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -62,6 +62,20 @@ sub calculate {
 	}
 
 	$country = uc $country;
+
+    my %exception = ( UK => 'GB');
+
+	if(! $::Variable->{UPS_COUNTRY_REMAP} ) {
+		# do nothing
+	}
+	elsif ($::Variable->{UPS_COUNTRY_REMAP} =~ /=/) {
+		Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+	}
+	else {
+		Vend::Util::hash_string($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+	}
+
+	$country = $exception{$country} if $exception{$country};
 
 	# In the U.S., UPS only wants the 5-digit base ZIP code, not ZIP+4
 	$country eq 'US' and $zip =~ /^(\d{5})/ and $zip = $1;
