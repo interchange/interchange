@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.93 2003-01-12 06:47:09 jon Exp $
+# $Id: Config.pm,v 2.94 2003-01-13 22:57:51 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.93 $, 10);
+$VERSION = substr(q$Revision: 2.94 $, 10);
 
 my %CDname;
 
@@ -3007,7 +3007,7 @@ sub parse_database {
 		}
 		if    ($d->{'type'} eq '8')	{ $d->{Class} = 'DBI'						}
 		elsif ($d->{'type'} eq '9') { $d->{Class} = 'LDAP'						}
-		else 						{ $d->{Class} = $Global::Default_database	}
+		else 						{ $d->{Class} ||= $Global::Default_database	}
 
 		if($C->{DatabaseDefault}) {
 			while ( my($k, $v) = each %{$C->{DatabaseDefault}}) {
