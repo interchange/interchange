@@ -55,11 +55,11 @@ function open_quicklinks() {
 <td valign=top>
 <br><br><br>
 <div align=center>
-<table width="75%" border="1" cellspacing=0 cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF">
+<table width="90%" border="1" cellspacing=0 cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF">
 <tr>
 <td bgcolor="#FFFFFF">
 <br>						
-<table width="90%" border="0" cellspacing=5 cellpadding=2 align="center">
+<table width="100%" border="0" cellspacing=3 cellpadding=2 align="center">
 
 [calc]
 	my $data = q{[version extended=1 modules=1 joiner="<P>"]};
@@ -92,9 +92,8 @@ perl -MCPAN -e 'install Bundle::Interchange'
 EOF
 [/calc]
 
-
-[if-mm advanced order]
 <tr>
+[if-mm advanced order]
 <td valign="top">
 <font color="#000066">
 <img src="@_UI_IMG_@admin/icon_orders.gif">
@@ -102,8 +101,15 @@ EOF
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/order]">Orders</a></font>
+&nbsp;<a href="[area __UI_BASE__/order]">Orders</a></font>
 </b>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order show_pending=1]">Pending</a><br>
+&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order show_archived=1]">Archived</a>
+</font>
+[/if]
 </font>
 </td>
 <td valign="top">
@@ -111,53 +117,14 @@ EOF
 View and manage incoming orders, archive and access past orders 
 </font>
 </td>
-</tr>
-[/if-mm]
-
-[if-mm advanced userdb]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_people.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/customer]">Customers</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View and manage customer information and order history 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced item]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_item.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/item]">Items</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Add and edit items displayed for sale on the site 
-</font>
-</td>
-</tr>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
 
 [if-mm advanced page]
-<tr>
 <td valign="top">
 <font color="#000066">
 <img src="@_UI_IMG_@admin/icon_pages.gif">
@@ -165,8 +132,15 @@ Add and edit items displayed for sale on the site
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/page]">Content</a></font>
+&nbsp;<a href="[area __UI_BASE__/page]">Content</a></font>
 </b>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/page]">Page</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/genupload]">File Xfer</a>
+</font>
+[/if]
 </font>
 </td>
 <td valign="top">
@@ -174,11 +148,48 @@ Add and edit items displayed for sale on the site
 Create, edit, upload and download pages 
 </font>
 </td>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
+[/if-mm]
 </tr>
+
+<tr>
+[if-mm advanced userdb]
+<td valign="top">
+<font color="#000066">
+<img src="@_UI_IMG_@admin/icon_people.gif">
+</td>
+<td valign="top">
+<b>
+<font face="Arial, Helvetica, sans-serif">
+&nbsp;<a href="[area __UI_BASE__/customer]">Customers</a></font>
+</b>
+</font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/customer_bill"]">Billing</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/customer_ship"]">Shipping</a>
+</font>
+[/if]
+</font>
+</td>
+<td valign="top">
+<font size="-1" face="Arial, Helvetica, sans-serif">
+View and manage customer information and order history 
+</font>
+</td>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
 
 [if-mm advanced sitedesign]
-<tr>
 <td valign="top">
 <font color="#000066">
 <img src="@_UI_IMG_@admin/icon_design.gif">
@@ -186,41 +197,63 @@ Create, edit, upload and download pages
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/layout]">Design</a></font>
+&nbsp;<a href="[area __UI_BASE__/layout]">Design</a></font>
 </b>
 </font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/layout]">Layout</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/search_wizard]">Search</a>
+</font>
+[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
 Organize site navigation, manage site layout 
 </font>
 </td>
-</tr>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
+</tr>
 
-[if-mm advanced item]
 <tr>
+[if-mm advanced item]
 <td valign="top">
 <font color="#000066">
-<img src="@_UI_IMG_@admin/icon_merch.gif">
+<img src="@_UI_IMG_@admin/icon_item.gif">
 </td>
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/merchandising]">Merchandising</a></font>
+&nbsp;<a href="[area __UI_BASE__/item]">Items</a></font>
 </b>
 </font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/item]">List</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/item_edit]">New</a>
+</font>
+[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
-Set up quantity pricing, up-sell, promotions, and affiliates 
+Add and edit items displayed for sale on the site 
 </font>
 </td>
-</tr>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
 
 [if-mm advanced stats]
-<tr>
 <td valign="top">
 <font color="#000066">
 <img src="@_UI_IMG_@admin/icon_stats.gif">
@@ -228,20 +261,63 @@ Set up quantity pricing, up-sell, promotions, and affiliates
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/genreport]">Reporting</a></font>
+&nbsp;<a href="[area __UI_BASE__/genreport]">Reporting</a></font>
 </b>
 </font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/orderstats]">Orders</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/trafficstats]">Traffic</a>
+</font>
+[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
 View statistics on orders and site traffic, create custom reports 
 </font>
 </td>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
+[/if-mm]
 </tr>
+
+<tr>
+[if-mm advanced item]
+<td valign="top">
+<font color="#000066">
+<img src="@_UI_IMG_@admin/icon_merch.gif">
+</td>
+<td valign="top">
+<b>
+<font face="Arial, Helvetica, sans-serif">
+&nbsp;<a href="[area __UI_BASE__/merchandising]">Merchandising</a></font>
+</b>
+</font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/merchandising]">Product</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/affiliates]">Affiliate</a>
+</font>
+[/if]
+</td>
+<td valign="top">
+<font size="-1" face="Arial, Helvetica, sans-serif">
+Set up quantity pricing, up-sell, promotions, and affiliates 
+</font>
+</td>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
 
 [if-mm advanced techadmin]
-<tr>
 <td valign="top">
 <font color="#000066">
 <img src="@_UI_IMG_@admin/icon_config.gif">
@@ -249,17 +325,29 @@ View statistics on orders and site traffic, create custom reports
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;&nbsp;<a href="[area __UI_BASE__/genconfig]">Administration</a></font>
+&nbsp;<a href="[area __UI_BASE__/genconfig]">Administration</a></font>
 </b>
 </font>
+[if 0]
+<br>
+<font face="Arial, Helvetica, sans-serif" size="-1">
+&nbsp;&nbsp;<a href="[area __UI_BASE__/tax]">Tax</a><br>
+&nbsp;&nbsp;<a href="[area __UI_BASE__/ship]">Shipping</a>
+</font>
+[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
 Administrator and developer-oriented tools 
 </font>
 </td>
-</tr>
+[else]
+<td></td>
+<td></td>
+<td></td>
+[/else]
 [/if-mm]
+</tr>
 
 </table>
 <br>						
