@@ -1,40 +1,42 @@
-<html>
-<head>
-<title>Construct Something -- Recurring Orders</title>
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
+ui_template_description: Page with top/left areas.
 
-__TOP__
+page_title: 
+	description: Page title
 
-          <tr> 
-            <td> 
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td><img src="images/navigation/d.gif" width="600" height="2" align="top"></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr> 
-            <td> 
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td width="131" bgcolor="#999999"><img src="images/navigation/d1.gif" width="131" height="20"></td>
-                  <td width="12" valign="top"> 
-                    <div align="left"><img src="images/navigation/d2.gif" width="10" height="20"></div>
-                  </td>
-                  <td width="457"> 
-                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">
-					Recurring Orders
-					</font><font color="#0099FF" size="1"> </font></font></b></i></div>
-                  </td>
-                </tr>
-                <tr> 
-                  <td bgcolor="#999999" valign="top" width="131"> 
-				  
-__LEFT__
-				  
-                  </td>
-                  <td width="12">&nbsp;</td>
-                  <td width="457" bgcolor="#FFFFFF" valign="top">
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+component_before:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component after content
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+[/comment]
+[set page_title]__COMPANY__ -- Recurring Orders[/set]
+[set page_banner]Recurring Orders[/set]
+
+__LEFTONLY_TOP__
+
+<!-- BEGIN CONTENT -->
 
 <table cellpadding="0" cellspacing="0" border="0">
 
@@ -108,8 +110,8 @@ return;
 [/if]
 	</TD>
 	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
-	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
-	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
+	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
+	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
 </TR>
 <TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
 <TR bgcolor="[scratch color]">
@@ -203,21 +205,7 @@ Please use the form below to add items to your recurring order.
 </tr>
 </table>
 					
-                  </td>
-                </tr>
-                <tr> 
-                  <td bgcolor="#999999" width="131"><img src="images/navigation/poweredby.gif" width="131" height="61"></td>
-                  <td width="12">&nbsp;</td>
-                  <td valign="top" width="457">&nbsp;</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-</div>
-</body>
-</html>
+
+<!-- END CONTENT -->
+
+__LEFTONLY_BOTTOM__

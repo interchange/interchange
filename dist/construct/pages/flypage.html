@@ -1,41 +1,51 @@
-<html>
-<head>
-<title>Construct Something -- Product Views All</title>
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
+ui_template_description: Page with top/left/right areas.
 
-__TOP__
+page_title: 
+	description: Page title
 
-          <tr> 
-            <td> 
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
-                  <td width="10" valign="top"> 
-                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
-                  </td>
-                  <td width="313"> 
-                    <div align="left"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"><b><font size="1"><i>Everything 
-                      you need to construct something!</i></font></b></font></font><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF"> 
-                      </font></font></font><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"></font></font></font></div>
-                  </td>
-                  <td width="146"><img src="navigation/d3.gif" width="146" height="20"></td>
-                </tr>
-                <tr> 
-                  <td bgcolor="#999999" valign="top"> 
-				  
-__LEFT__
-				  
-                  </td>
-                  <td>&nbsp;</td>
-                  <td valign="top">
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+component_before:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component after content
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+[/comment]
+
+[set page_banner][item-description][/set]
+[set bgcolor]#FFFFFF[/set]
+[set component_before][/set]
+[set component_after]random[/set]
+[set members_only]0[/set]
+[set page_title]__COMPANY__ -- [item-description][/set]
+__LEFTRIGHT_TOP__
+
+<!-- BEGIN CONTENT -->
 
                     <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
                       <tr> 
                         <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[data table=cat col=banner_text key=`
-			$tmp = q{[item-data products category]};
-			$tmp =~ s/[,\s].*//;
-			return $tmp;
-		`]</font></i></b></font></td>
+                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[item-data products category]</font></i></b></font></td>
                         <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
                       </tr>
                     </table>
@@ -67,7 +77,7 @@ __LEFT__
                                       <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">[item-price]</font></td>
                                     </tr>
                                     <tr> 
-                                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+                                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif"> </font></td>
                                     </tr>
 									
 [seti count][data table=inventory column=quantity key='[item-code]'][/seti]
@@ -83,7 +93,7 @@ __LEFT__
 [/else]
 [/if]									
                                     <tr> 
-                                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+                                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif"> </font></td>
                                     </tr>
 
                                     <tr> 
@@ -112,38 +122,9 @@ __LEFT__
                           </div>
                         </td>
                       </tr>
-					  
-					  __SPECIALS__
-					  
-                    </table><br>
-					
-					
-                    <p>&nbsp;</p>
-                  </td>
-                  <td valign="top" align="center"> 
+				   </table>
 
-__RIGHT__
-				  
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr> 
-                  <td bgcolor="#999999"><img src="navigation/poweredby.gif" width="131" height="61"></td>
-                  <td>&nbsp;</td>
-                  <td valign="top">&nbsp;</td>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</div>
-</body>
-</html>
+
+<!-- END CONTENT -->
+
+__LEFTRIGHT_BOTTOM__
