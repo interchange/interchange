@@ -3,7 +3,7 @@ UserTag selected            addAttr
 UserTag selected            InvalidateCache
 UserTag selected            PosNumber    2
 UserTag selected            Routine <<EOR
-# Returns 'SELECTED' when a value is present on the form
+# Returns ' SELECTED' when a value is present on the form
 # Must match exactly, but NOT case-sensitive
 sub {
 	my ($field,$value,$opt) = @_;
