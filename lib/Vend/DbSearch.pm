@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.0.2.1 2001-10-17 20:10:46 jon Exp $
+# $Id: DbSearch.pm,v 2.0.2.2 2001-10-18 02:12:32 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 use Search::Dict;
 use strict;
@@ -73,7 +73,11 @@ sub init {
 
 	@{$s}{keys %Default} = (values %Default);
 	$s->{mv_all_chars}	        = [1];
-	$s->{mv_base_directory}     = $Vend::Cfg->{ProductDir};
+	
+	### This is a bit of a misnomer, for really it is the base table
+	### that we will use if no base=table param is specified
+	$s->{mv_base_directory}     = $Vend::Cfg->{ProductFiles}[0];
+
 	$s->{mv_begin_string}       = [];
 	$s->{mv_case}               = [];
 	$s->{mv_column_op}          = [];
