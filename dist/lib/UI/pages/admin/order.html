@@ -22,7 +22,7 @@ td {font-family:arial,sans-serif}
 	delete $Scratch->{ui_location};
 	my $db = $Db{transactions};
 	if(! $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
+		$Scratch->{ui_error} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
 		$Scratch->{ui_location} = "__UI_BASE__/error";
 		return;
 	}
