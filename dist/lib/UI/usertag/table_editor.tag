@@ -55,7 +55,7 @@ sub {
 			$string =~ s/^\s+//gm;
 			$string =~ s/\s+$//gm;
 #::logDebug("te_hash $_ now = $string");
-			while($string =~ m/^(.+?)=\s*(.+)/g) {
+			while($string =~ m/^(.+?)=\s*(.+)/mg) {
 				$ref->{$1} = $2;
 #::logDebug("te_hash $1 = $2");
 			}
