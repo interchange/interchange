@@ -1,7 +1,196 @@
-[set page_title]Welcome to Interchange[/set]
 [set help_name]main[/set]
-[set icon_name]admin/icon_regen.gif[/set]
-@@UI_STD_HEAD@@
+
+[if-mm !logged_in]
+	[if !scratch no_login_required]
+		[bounce page="__UI_BASE__/login"]
+	[/if]
+[/if-mm]
+[set no_login_required][/set]
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+<title>
+Interchange Administration
+</title>
+[scratch meta_header][set meta_header][/set]
+<style type="text/css">
+<!--
+ a:active { text-decoration: none }
+ a:link { text-decoration: none }
+ a:visited { text-decoration: none }
+  -->
+</style>
+
+[seti window_name][tag time]%s[/tag][/seti]
+
+<script language="JavaScript1.2">
+<!--
+function open_help(url) {
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=630,height=480";
+  window.open(url, 'Help', opts);
+}
+
+[calc]
+	my $browser = $Session->{browser};
+	if($browser =~ /msie.*mac/i) {
+		$Scratch->{ql_width} = 140;
+		$Scratch->{ql_height} = 640;
+	}
+	elsif($browser =~ /mozilla.*mac/i) {
+		$Scratch->{ql_width} = 140;
+		$Scratch->{ql_height} = 640;
+	}
+	elsif($browser =~ /msie.*windows/i) {
+		$Scratch->{ql_width} = 170;
+		$Scratch->{ql_height} = 700;
+	}
+	elsif($browser =~ /mozilla.*windows/i) {
+		$Scratch->{ql_width} = 170;
+		$Scratch->{ql_height} = 700;
+	}
+	else {
+		$Scratch->{ql_width} = 145;
+		$Scratch->{ql_height} = 620;
+	}
+	return;
+[/calc]
+
+function open_quicklinks() {
+  window.name = "mainwindow[scratch window_name]";
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=[scratch ql_width],height=[scratch ql_height]";
+  window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
+}
+
+// -->
+</script>
+
+</head>
+<body bgcolor="__UI_C_BG__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
+
+<!-- ----- BEGIN TITLEBAR ----- -->
+
+<table width=__UI_OVERALL_WIDTH__ height=22 bgcolor=__UI_C_TITLEBARBG__ border=0 cellpadding=0 cellspacing=0>
+
+<tr height="22">
+<td width=12 align=left valign=top height=22><img src="admin/curve_left.gif" width=12 height=22 align=top></td>
+
+<td valign="middle" height="22">
+
+
+[if-mm advanced order]
+<img src="admin/cleardot.gif" width="12">
+<a href="[area admin/order]">
+<img src="admin/icon_orders.gif" height="16" width="16" border="0">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+ &nbsp;Orders
+</font></a>
+[/if-mm]
+
+[if-mm advanced userdb]
+<img src="admin/cleardot.gif" width="12">
+<a href="[area admin/customer]">
+<img src="admin/icon_people.gif" height="16" width="16" border="0">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+ &nbsp;Customers
+</font></a>
+[/if-mm]
+
+
+[if-mm advanced item]
+<img src="admin/cleardot.gif" width="22">
+<a href="[area admin/item]">
+<img src="admin/icon_item.gif" height="16" width="16" border="0" >
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+&nbsp;Items
+</font></a>
+[/if-mm]
+
+
+[if-mm advanced stats]
+<img src="admin/cleardot.gif" width="22">
+<a href="[area admin/genstats]">
+<img src="admin/icon_stats.gif" height="16" width="16" border="0" >
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+&nbsp;Statistics
+</font></a>
+[/if-mm]
+
+
+<img src="admin/cleardot.gif" width="22">
+
+[if-mm advanced reconfig]
+<a href="[area admin/reconfig]">
+<img src="admin/icon_regen.gif" height="16" width="16" border="0" >
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+&nbsp;Apply Changes
+</font></a>
+[/if-mm]
+</td>
+
+<td align="right" valign="middle" height="22">
+<a href="javascript:open_quicklinks()">
+<img src="admin/icon_pages.gif" height="16" width="16" border="0">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+Quicklinks
+</font>
+</a>
+
+<img src="admin/cleardot.gif" width="22">
+
+<a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')">
+<img src="admin/icon_help.gif" height="16" width="16" border="0" >
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+Help
+</font></a>
+</td>
+
+<td width="12" align="right" height="22" valign="top"><img align="top" src="admin/curve_right.gif" border="0" width="12" height="22"></td>
+
+</tr>
+<!-- ----- END TITLEBAR ----- -->
+</table>
+<table cellpadding=2 cellspacing=0 width=__UI_OVERALL_WIDTH__ bgcolor=__UI_C_TITLEBARBG__ border=0>
+<tr>
+<td>
+	<table cellpadding=0 cellspacing=0 width=100% bgcolor=__UI_T_BG__ border=0>
+	<tr>
+	<td colspan=2 align="center">
+       <table width=90% cellpadding=0 cellspacing=0 border=0>
+       <tr>
+       <td>
+          <br><br>
+	   &nbsp;</td></tr>
+		</table>
+        </td>
+	</tr>
+	<tr>
+	<td colspan="2">
+	<style type="text/css">
+	<!--
+	 td{font-family:arial, helvetica, sans-serif; font-size:9pt}
+	   -->
+   </style>
+   <center>
+[comment] Clear these puppies [/comment]
+[calc]
+	for (qw/
+				page_title
+				page_banner
+				icon_name
+				help_name
+				page_perm
+				table_perm
+		/) { delete $Scratch->{$_} }
+	return;
+[/calc]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
