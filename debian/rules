@@ -88,8 +88,9 @@ install: build
 	cp debian/interchangeconfig $(TMP)/usr/sbin/interchangeconfig
 	mkdir -p $(TMP)/usr/bin
 	cp debian/makecat.wrapper $(TMP)/usr/bin/makecat
+	cp eg/te $(TMP)/usr/bin
 	chmod +x $(TMP)/usr/sbin/interchange $(TMP)/usr/sbin/interchangeconfig \
-		$(TMP)/usr/bin/makecat
+		$(TMP)/usr/bin/makecat $(TMP)/usr/bin/te
 # Setup configuration directory
 	mkdir -p $(TMP)/etc/interchange/
 	cp debian/interchange.cfg debian/catalogs.cfg debian/makecat.cfg \
