@@ -53,17 +53,17 @@ sub {
 
 	if($src) {
 		my $dr = $::Variable->{DOCROOT};
-		my $id = $::Variable->{IMAGE_DIR} || $Vend::Cfg->{ImageDir};
+		my $id = $Tag->image( { dir_only => 1 } );
 		$id =~ s:/+$::;
 		$id =~ s:/~[^/]+::;
-		if(	$src =~ m{^http:}i ) {
+		if(	$src =~ m{^https?:}i ) {
 				$image = $src;
 		}
 		elsif( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
 				$image = $src;
 		}
 		elsif( $dr and $src =~ m{^/} and -f "$dr/$src" ) {
-				$image = "$::Variable->{IMAGE_DIR}/$src";
+				$image = "$id/$src";
 		}
 	}
 
