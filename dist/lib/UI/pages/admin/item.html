@@ -386,6 +386,7 @@ EOF
 	for(@special) {
 		my $display = $_;
 		$display =~ s/\s*;\s*(.*)//;
+		$display = errmsg($display);
 		my $sort = $1; 
 		if($sort) {
 			my $cgi = $CGI->{ui_special_sort};
