@@ -36,7 +36,7 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-[if !value return_items]
+[if !cgi return_items]
 
 [L]No items were selected for return.[/L]
 <br><br>
@@ -50,22 +50,26 @@ ui_template_name: leftonly
 
 [perl tables="orderline"]
 
-my @items = split /\0/, $Values->{return_items};
+my @items = split /\0/, $CGI->{return_items};
 my $num_items = @items;
 $Scratch->{ret_num_items} = $num_items;
 
 my $count = 0;
 my $amount3 = 0;
 my $total_qty = 0;
+my $detail;
 
 foreach (@items) {
 
 my $code = @items[$count];
+$detail .= $Tag->data('orderline', 'sku', $code) . "\t";
 my $qty1 = $Tag->data('orderline', 'quantity', $code);
 my $amount1 = $Tag->data('orderline', 'price', $code);
 my $code = "qty-$code";
 my $qty2 = $Values->{$code};
+$detail .= "$qty2\t";
 my $amount2 = $amount1 * $qty2;
+$detail .= $Tag->currency( {}, $amount2 ) . "\n";
 $amount3 = $amount2 + $amount3;
 $total_qty = $qty2 + $total_qty;
 
@@ -80,17 +84,21 @@ $Scratch->{qty_over} = 1;
 	
 $count ++;
 }
-
+$Tag->tmp( { name => 'return_detail' }, $detail );
 
 [/perl]
 
 [if scratch qty_over]
-
-[L]You may not return more items than you originally purchased.[/L]
-<br><br>
-[L]Please use your browser's back to enter a more appropriate value.[/L]
-<br><br>
-
+	[L]You may not return more items than you originally purchased.[/L]
+	<br><br>
+	[L]Please use your browser's back to enter a more appropriate value.[/L]
+	<br><br>
+[elsif scratch total_qty == 0]
+	[L]You need to indicated the quantity of items you wish to return.[/L]
+	<br><br>
+	[L]Please use your browser's back to enter a more appropriate value.[/L]
+	<br><br>
+[/elsif]
 [else]					  
 
 [seti rma_number][counter etc/rma.number][/seti]
@@ -141,7 +149,27 @@ __CITY__<br><br>
 </tr>
 </table>
 
+
+<table border="1" cellspacing="0" cellpadding="3">
+<tr>
+	<th colspan=4>[L]Returned Items Detail[/L]</th>
+<tr>
+	<td>[L]SKU[/L]</td>
+	<td align=right>[L]Quantity[/L]</td>
+	<td align=right>[L]Extension[/L]</td>
+</tr>
+[loop delimiter="\n" arg="[scratch return_detail]"]
+	<tr>
+	[loop prefix=line delimiter="\t" arg="[loop-code]"]
+		<td>[line-code]</td>
+	[/loop]
+	</tr>
+[/loop]
+</table>
+
 <p>&nbsp; </p>
+
+
 
 [set name=return1 interpolate=1]
 
@@ -168,9 +196,43 @@ __CITY__<br><br>
 [L]Item Quantity[/L]: [scratch total_qty]
 [L]Credit Amount[/L]: [currency][scratch return_credit][/currency]
 					
+[row 80]
+[column width=25][/column]
+[column width=30]
+	[L]Returned Items Detail[/L]
+[/column]
+[column width=25][/column]
+[/row]
+[row 80]
+[column width=18][/column]
+[column width=15 align=left]
+	[L]SKU[/L]
+[/column]
+[column width=15 align=left]
+	[L]Quantity[/L]
+[/column]
+[column width=15 align=left]
+	[L]Extension[/L]
+[/column]
+[/column width=17][/column]
+[/row]
+[loop delimiter="\n" arg="[scratch return_detail]"]
+[row 80]
+[column width=18][/column]
+	[loop prefix=line delimiter="\t" arg="[loop-code]"]
+	[column width=15 align=left]
+		[line-code]
+	[/column]
+	[/loop]
+[/column width=17][/column]
+[/row]
+[/loop]
+
 [/email]
 
+
 [/set]
+
 
 [set name=return1 interpolate=1]
 
@@ -203,7 +265,40 @@ __CITY__
 [L]Item Quantity[/L]: [scratch total_qty]
 [L]Credit Amount[/L]: [currency][scratch return_credit][/currency]
 					
+[row 80]
+[column width=25][/column]
+[column width=30]
+	[L]Returned Items Detail[/L]
+[/column]
+[column width=25][/column]
+[/row]
+[row 80]
+[column width=18][/column]
+[column width=15 align=left]
+	[L]SKU[/L]
+[/column]
+[column width=15 align=left]
+	[L]Quantity[/L]
+[/column]
+[column width=15 align=left]
+	[L]Extension[/L]
+[/column]
+[/column width=17][/column]
+[/row]
+[loop delimiter="\n" arg="[scratch return_detail]"]
+[row 80]
+[column width=18][/column]
+	[loop prefix=line delimiter="\t" arg="[loop-code]"]
+	[column width=15 align=left]
+		[line-code]
+	[/column]
+	[/loop]
+[/column width=17][/column]
+[/row]
+[/loop]
+
 [/email]
+
 
 [/set]
 

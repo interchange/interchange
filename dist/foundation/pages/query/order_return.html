@@ -104,7 +104,16 @@ hide=1]
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-]<input type="checkbox" name="return_items" value="[sql-param code]">	<input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]">	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size][L]SIZE[/L]-->[sql-param size][/if-sql-data][if-sql-data orderline color] [L]COLOR[/L]-->[sql-param color][/if-sql-data][calc]
+][calc]
+	my ($out, $i);
+	$out = qq{<select name="qty-[sql-param code]">};
+	for ($i = 0; $i <= [sql-param quantity]; $i++) {
+		$out .= qq{<option value="$i">$i};
+	}
+	$out .= q{</select>};
+	$Tag->tmp( { name => 'return_qty' }, $out );
+	return;
+[/calc]<input type="checkbox" name="return_items" value="[sql-param code]">	[scratch return_qty]	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size][L]SIZE[/L]-->[sql-param size][/if-sql-data][if-sql-data orderline color] [L]COLOR[/L]-->[sql-param color][/if-sql-data][calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
