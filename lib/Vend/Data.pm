@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.6 2000-08-06 19:40:02 heins Exp $
+# $Id: Data.pm,v 1.7 2000-09-05 20:39:07 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -459,7 +459,10 @@ sub read_salestax {
     my($code, $percent);
 
 	return unless $Vend::Cfg->{SalesTax};
-	my $file = Vend::Util::catfile($Vend::Cfg->{ProductDir}, "salestax.asc");
+	my $file = $Vend::Cfg->{Special}{'salestax.asc'};
+	$file = Vend::Util::catfile($Vend::Cfg->{ProductDir}, "salestax.asc")
+		unless $file;
+
 	$Vend::Cfg->{SalesTaxTable} = {};
     -f $file and open(Vend::SALESTAX, "< $file") or do {
 					logError( "Could not open salestax file %s: %s" ,
