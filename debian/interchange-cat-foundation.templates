@@ -39,3 +39,31 @@ Description: Replace the Interchange demo catalog ?
  There seems to already exist an Interchange demo catalog. 
 Description-de: Interchange Demokatalog ersetzen ?
  Es ist bereits ein Demokatalog vorhanden.
+
+Template: interchange-cat-foundation/username
+Type: string
+Default: interchange
+Description: What is the username for the administration of this catalog ?
+ Please provide an username for administering the demo catalog. The username
+ must be at least 2 characters long and only contain letters, digits, 
+ underscore, @ or the dot as characters.
+Description-de: Was ist der Benutzername für die Adminstration dieses Katalogs ?
+ Bitte einen Benutzernamen für die Verwaltung des Demokatalogs eingeben.
+ Der Benutzername muß mindestens zwei Zeichen lang sein und nur Buchstaben,
+ Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
+	
+Template: interchange-cat-foundation/password
+Type: password
+Default: pass
+Description: What is the password for the administration of this catalog ?
+ Please provide a password for administering the foundation demo
+ catalog. Choose one which can not be easily guessed. Default is pass.
+ The password  must be at least 4 characters long and only contain letters, 
+ digits, underscore @ or the dot as characters.
+Description-de: Was ist das Passwort für die Adminstration dieses Katalogs ?
+ Bitte ein Passwort für die Verwaltung des Demokatalogs eingeben. Das 
+ ausgewählte sollte nicht leicht erraten werden können. Das Wort pass
+ ist die Voreinstellung.
+ Das Passwort muß mindestens vier Zeichen lang sein und nur Buchstaben,
+ Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
+
