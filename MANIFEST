@@ -940,6 +940,7 @@ dist/lib/UI/pages/admin/customer_select.html
 dist/lib/UI/pages/admin/customer_ship.html
 dist/lib/UI/pages/admin/customer_view.html
 dist/lib/UI/pages/admin/db_metaconfig.html
+dist/lib/UI/pages/admin/db_newview.html
 dist/lib/UI/pages/admin/dbconfig.html
 dist/lib/UI/pages/admin/dbdownload.html
 dist/lib/UI/pages/admin/dbinfo.html
