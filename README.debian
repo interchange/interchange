@@ -6,10 +6,10 @@ This document contains information about the Interchange Debian packages.
 Status
 ------
 
-The Interchange Debian packages are experimental and should not used
+The Interchange Debian packages are experimental and should not be used
 on production systems. They may hose your installation. You have been
 warned! Please note that these packages contain several modifications 
-not (yet) approved by Akopia.
+not (yet) included by Red Hat in the standard Interchange distribution.
 
 Feedback
 --------

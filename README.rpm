@@ -1,111 +1,95 @@
-NAME
-    README.rpm - Interchange RPM for Redhat Systems
+-----------------------------------------------------------------------------
 
-VERSION
-    4.7.x
+ Interchange RPM packages for Red Hat Linux and compatible operating systems
 
-SYNOPSIS
-    rpm -Uvh interchange-*.rpm
+-----------------------------------------------------------------------------
 
-DESCRIPTION
-    The Interchange RPM is designed to integrate Interchange with a
-    stock Red Hat Linux installation. It places logs and run files in
-    fairly standard locations, i.e.:
+The Interchange RPM packages integrate Interchange with a Red Hat Linux
+or compatible operating system. Files are installed in the usual Linux
+Standard Base locations:
 
-    Configuration
-        Configuration file is /etc/interchange.cfg. It is only writable by
-        root.
+Configuration: The global Interchange configuration file is
+/etc/interchange.cfg. It is only writable by root.
 
-    Data
-        Catalog directories, at least the demos, are located in
-        /var/lib/interchange.
+Data: Catalog directories, at least for the demo, are located in
+/var/lib/interchange.
 
-    Invocation
-        Invocation is the normal /etc/rc.d startup method. Interchange
-        installs to be active in run levels 3, 4, and 5; to be killed in
-        all.
+Invocation: Invocation is the normal /etc/rc.d startup method. Interchange
+installs to be active in run levels 3, 4, and 5; to be killed in all.
 
-        IMPORTANT NOTE: Do not expect /usr/lib/interchange/bin/restart to
-        work!
+Run: Run files go in /var/run/interchange. This includes the UNIX-domain
+socket and catalog status files. The subdirectory is needed to allow
+the Interchange user ID to write/create files.
 
-        Interchange uses a special invocation script, located at
-        /usr/sbin/interchange, to start the Interchange server. This is
-        called by /etc/rc.d/init.d/interchange.
+Logs: Logs go in /var/log/interchange. The subdirectory is needed to
+allow the Interchange user ID to write/create files. Interchange drops
+a file in /etc/logrotate.d to do log rotation.
 
-    Run
-        Run files go in /var/run/interchange. The subdirectory is needed
-        to allow the Interchange user ID to write/create files.
 
-    Logs
-        Logs go in /var/log/interchange. The subdirectory is needed to
-        allow the Interchange user ID to write/create files.
+APACHE ASSUMPTIONS
 
-ASSUMPTIONS
-    The Interchange RPM makes several assumptions:
+Interchange relies upon the following things in the Apache installation:
 
-    Stock Apache
-        Interchange relies upon the following things in the Apache
-        installation:
+-- One of the following two default setups:
 
-         For Red Hat Linux 6.x (and Linux-Mandrake):
-         -- Server root in /home/httpd
-         -- ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
+   DocumentRoot /var/www/html
+   ScriptAlias  /cgi-bin/ /var/www/cgi-bin/
 
-         For Red Hat Linux 7.x:
-         -- Server root in /var/www
-         -- ScriptAlias /cgi-bin/ /var/www/cgi-bin/
+   or
 
-         In general:
-         -- Hostname as revealed by `hostname` is the ServerName
-         -- SuExec not enabled
+   DocumentRoot /home/httpd/html
+   ScriptAlias  /cgi-bin/ /home/httpd/cgi-bin/
 
-        If you have suEXEC enabled, you are responsible for changing
-        permissions and running parameters appropriately. You can typically
-        disable suEXEC by running `chmod u-s /usr/bin/suexec'.
+-- ServerName must be the same as what is revealed by `hostname` when
+   the foundation RPM is installed. If it is not, temporarily change
+   the hostname with a command like 'hostname new.host.name' and then
+   install the foundation RPM. Afterwards you can change the hostname
+   back to normal.
 
-        If you want to continue to use suEXEC, you will have to compile the
-        appropriate INET mode link program and use it instead of VLINK.
+-- suEXEC not enabled. If you have suEXEC enabled, you are responsible
+   for changing permissions and running parameters appropriately. You
+   can typically disable suEXEC by running `chmod u-s /usr/bin/suexec'.
+   If you want to continue to use suEXEC, you will have to compile the
+   appropriate INET mode link program and use it instead of vlink.
 
-    Logs
-        Logs are located in /var/log/interchange. Interchange drops a file
-        in /etc/logrotate.d to do log rotation.
 
-    Run files
-        To place the logs, configuration, and run files in standard
-        Red Hat/LSB locations, Interchange relies on a special invocation
-        from /usr/sbin/interchange. In other words, don't expect
-        /usr/lib/interchange/bin/restart to work.
+INSTALL
 
-        Interchange will be started by this command (executed as root):
+rpm -Uvh interchange-*.rpm interchange-foundation-*.rpm
 
-            /etc/rc.d/init.d/interchange start
 
-        and will be re-started by this command (executed as root):
+STARTING/RESTARTING INTERCHANGE
 
-            /etc/rc.d/init.d/interchange restart
+Interchange, as installed from the RPM, needs a special invocation from
+/usr/sbin/interchange. This is because the locations of configuration,
+run, and log files differ from the places Interchange has traditionally
+expected them.
 
-        or possibly (executed as either root or the 'interch' user):
+As either the 'interch' user or the root user you should start or restart
+interchange with this command:
 
-            /usr/sbin/interchange -r
+/usr/sbin/interchange -r
 
-        The run files, i.e. UNIX-domain socket, catalog status files, will
-        be placed in /var/run/interchange. That directory must be
-        owned/writable by the interchange user ID.
+NOTE: Contrary to other documentation, you SHOULD NOT use 'bin/restart'
+or directly call 'bin/interchange' to start or restart Interchange when
+you use the RPM installation.
 
-USING INTERCHANGE
-    When the installation finishes, you should be able to access the
-    installed demo catalog:
 
-            http://localhost/construct/
+USING THE DEMO
 
-    The initial user name is "interchange", and the password is "pass".
-    CHANGE IT.
+If you installed the foundation RPM, you should be able to access the
+installed demo catalog (using your own hostname, of course):
 
-SEE ALSO
-    Documentation and other information on Interchange is at:
+http://hostname/foundation/
 
-            http://developer.akopia.com/
+The initial administrative user name is "interch", and the password is
+"pass". CHANGE IT.
 
-AUTHOR
-    Mike Heins, <heins@akopia.com>. Questions should be directed to the
-    Interchange user list, <interchange-users@lists.akopia.com>.
+If you did not install the foundation RPM, you can build a catalog on
+your own by running /usr/lib/interchange/bin/makecat as root.
+
+
+MORE INFORMATION
+
+http://developer.akopia.com/ has complete documentation, user mailing
+list information, and other resources.
