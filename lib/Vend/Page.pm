@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5 2000-08-06 19:48:42 heins Exp $
+# $Id: Page.pm,v 1.5.2.1 2000-10-06 19:49:24 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5.2.1 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -62,7 +62,7 @@ sub display_special_page {
     die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
     $page =~ s#\[subject\]#$subject#ig;
-    return ::response(::interpolate_html($page, 1));
+    return Vend::Server::response(::interpolate_html($page, 1));
 }
 
 # Displays the catalog page NAME.  If the file is not found, displays
@@ -94,7 +94,7 @@ sub display_page {
 	}
 
     if (defined $page) {
-		::response(::interpolate_html($page, 1));
+		Vend::Server::response(::interpolate_html($page, 1));
 		return 1;
     }
 	else {
