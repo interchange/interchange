@@ -241,16 +241,6 @@ products              => sub {
 shipzip             => 'UPS_ORIGIN',
 shoppass           => sub {
 						$udb->set_field(
-                                                                $Values->{adminuser},
-                                                                'password',
-                                                                $Values->{adminpass},
-                                                                );
-                                                $udb->set_field(
-                                                                $Values->{adminuser},
-                                                                'fname',
-                                                                "Admin",
-                                                                );
-						$udb->set_field(
 								$Values->{shopuser},
 								'password',
 								$Values->{shoppass},
