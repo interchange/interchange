@@ -5,6 +5,9 @@
     A:link, A:active, A:visited {
       color: #CC0000;
     }
+    .contentbar1 {
+      background-color: #DDDDDD;
+    }
   </style>
 </head>
 
@@ -12,23 +15,24 @@
 
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-  <td align="center">
+  <td align="center" colspan="2">
     <img src="__MVC_IMAGEURL__/navigation/a1.gif">
-  </td>
-</tr>
-<tr>
-  <td align="center">
     <p>
     <big>Welcome to __MVC_COMPANY__!</big>
-    <P>
-    <B><A HREF="__MVC_CGIURL__/index.html">Enter as customer</A></B>
-    <P>
-    <B><A HREF="__MVC_CGIURL__/admin/index.html">Admin interface</A></B>
-    <P>
+    <p>
+  </td>
+</tr>
+<tr class="contentbar1">
+  <td width="40%" align="center">
+    <A HREF="__MVC_CGIURL__/index.html">Enter as customer</A>
+  </td>
+  <td width="40%" align="center">
+    <A HREF="__MVC_CGIURL__/admin/index.html">Admin interface</A>
   </td>
 </tr>
 <tr>
-  <td>
+  <td colspan="2">
+    <br>
     <B>If the above links do not work</B>, the Interchange server may not
     be running.  Try one of these to restart it:</b>
     <UL>
@@ -39,7 +43,7 @@
   </td>
 </tr>
 <tr>
-  <td>
+  <td class="contentbar1" colspan="2">
     This is the "foundation" demonstration of the Interchange electronic
     catalog system. Links that will help you to use this software:
     <P>
