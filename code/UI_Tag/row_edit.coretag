@@ -2,7 +2,7 @@ UserTag row-edit HasEndTag
 UserTag row-edit Order key table size columns
 UserTag row-edit addAttr
 UserTag row-edit Interpolate 1
-UserTag row-edit Version $Revision: 1.8 $
+UserTag row-edit Version $Revision: 1.9 $
 UserTag row-edit Routine <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;
@@ -78,10 +78,10 @@ sub {
 	if($columns ||= $view->{spread_cols} || $view->{attribute}) {
 		@cols = split /[\s,\0]+/, $columns;
 		my %col;
-		for(@cols) {
+		for($db->columns()) {
 			$col{$_} = 1;
 		}
-		@cols = grep defined $col{$_}, $db->columns();
+		@cols = grep defined $col{$_}, @cols;
 	}
 	else {
 		@cols = $db->columns();
