@@ -1,7 +1,7 @@
 [if !session admin]
 [or !session logged_in]
 [then]
-	[set violation]Must be logged in as admin.[/set]
+	[set ui_error]Must be logged in as admin.[/set]
 	[bounce page="__UI_BASE__/error"]
 [/then]
 [/if]
