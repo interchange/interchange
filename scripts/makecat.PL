@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.5 2001-02-07 12:25:04 heins Exp $
+# $Id: makecat.PL,v 1.32.4.6 2001-02-22 00:09:36 jon Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -564,9 +564,9 @@ my %History = (
 						unshift(@dir, 'barry')
 							if  -f 'barry/catalog.cfg'
 							and $catalog_name =~ /^barry/;
-						unshift(@dir, 'simple')
-							if  -f 'simple/catalog.cfg'
-							and $catalog_name =~ /^simp/;
+						unshift(@dir, 'art')
+							if  -f 'art/catalog.cfg'
+							and $catalog_name =~ /^art/;
 						return @dir;
 					},
 
@@ -2166,7 +2166,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.5 2001-02-07 12:25:04 heins Exp $
+# $Id: makecat.PL,v 1.32.4.6 2001-02-22 00:09:36 jon Exp $
 
 =head1 INTRODUCTION
 
