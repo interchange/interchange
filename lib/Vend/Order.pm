@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.58 2003-07-27 19:47:58 mheins Exp $
+# $Id: Order.pm,v 2.59 2003-07-28 14:13:28 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2112,6 +2112,9 @@ sub update_quantity {
 		foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i modifiers: " . ::uneval($cart->[$i]));
 #::logDebug(qq{CGI value=$CGI::values{"$h$i"}});
+			next if
+				!   defined $CGI::values{"$h$i"}
+				and defined $cart->[$i]{$h};
 			$modifier = $CGI::values{"$h$i"}
 					  || (defined $cart->[$i]{$h} ? '' : undef);
 #::logDebug("line $i modifier $h now $modifier");
