@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.12 2001-02-07 12:15:24 heins Exp $
+# $Id: interchange.PL,v 1.15.2.13 2001-02-26 01:21:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -152,8 +152,9 @@ use Fcntl;
 # BSD, among others, defines sendmail to be in /usr/sbin, and
 # we want to make sure the program is there. Insert the location
 # of you sendmail binary (the configure script should do this)
+$Global::SendMailLocation = '' if ! $Global::SendMailLocation;
 $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
-	(-x $Global::SendMailLocation and $Global::SendMailLocation) ||
+	($Global::SendMailLocation and -x $Global::SendMailLocation and $Global::SendMailLocation) ||
 	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
 	(-x '/usr/sbin/sendmail' and '/usr/sbin/sendmail') ||
 	'';
@@ -258,8 +259,6 @@ use autouse 'Vend::Control' => qw/
 											signal_add
 											signal_remove
 											control_interchange
-											change_catalog_directive
-											change_global_directive
 											remove_catalog
 											add_catalog
 											change_catalog_directive
@@ -309,7 +308,6 @@ sub http {
 
 sub response {
 	my ($output) = @_;
-	return 1 if $Vend::BuildingPages;
 	my $out = ref $output ? $output : \$output;
 	if (defined $Vend::CheckHTML) {
 		require Vend::External;
@@ -1395,27 +1393,6 @@ sub config_named_catalog {
 
 	eval {
 		$Vend::Cfg = $c;	
-# STATICPAGE
-	READSTATIC: {
-			my $basedir = $c->{PageDir};
-			if ($c->{Static}) {
-				last READSTATIC if $c->{StaticDBM};
-				last READSTATIC if ! -f "$basedir/.static";
-				print "loading static page names..." unless $Vend::Quiet;
-				last READSTATIC if $c->{StaticDBM};
-				open STATICPAGE, "< $basedir/.static"
-					or warn <<EOF;
-Couldn't read static page status file $basedir/.static: $!
-EOF
-				while(<STATICPAGE>) {
-					chomp;
-					s/\t(.*)//;
-					$c->{StaticPage}->{$_} = $1 || '';
-				}
-				close STATICPAGE;
-			}
-		}
-# END STATICPAGE
 		$::Variable = $Vend::Cfg->{Variable};
 		Vend::Data::read_salestax();
 		Vend::Data::read_shipping();
@@ -1463,7 +1440,6 @@ EOF
 	};
 
 	undef $Vend::Cfg;
-	undef $Vend::BuildingPages;  # In case of eval error
     if($@) {
 		my $msg = $@;
 		$msg =~ s/\s+$//;
@@ -1479,7 +1455,7 @@ EOF
 	}
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
-	delete $c->{Source} unless $Global::KeepSource;
+	#delete $c->{Source} unless $Global::KeepSource;
 	my $stime = scalar localtime();
 	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
@@ -1514,7 +1490,7 @@ sub tie_static_dbm {
 	if($Global::GDBM) {
         my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
         $flags = &GDBM_NEWDB
-            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm" || $Vend::BuildingPages);
+            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm");
         tie(%Vend::StaticDBM,
             'GDBM_File',
             "$Vend::Cfg->{StaticDBM}.gdbm",
@@ -1782,8 +1758,8 @@ EOF
 	{
 		$sessionid = $1
 			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
-		$CGI::cookiehost = $3 || undef;
-		$CGI::cookieuser = $4 || undef;
+		$CGI::cookiehost = $3;
+		$CGI::cookieuser = $4;
 		$from_cookie = 1;
     }
 
@@ -2169,16 +2145,23 @@ sub dontwarn {
 # STATICPAGE
 	$File::Find::name +
 	$File::Find::prune +
+	$File::Find::prune +
 	<DATA> + 
 # END STATICPAGE
 	$Global::AdminSub +
 	$Global::DomainTail +
 	$Global::FullUrl +
     $Global::HitCount +
+    $Global::ProfilesName +
+    $Global::Profiles +
+    $Global::LockoutCommand +
     $Global::LockoutCommand +
 	$Global::IpHead +
 	$Vend::CheckHTML +
 	$Vend::Action +
+	$Vend::CC2 +
+	$Vend::CC3 +
+	$Vend::CC3server +
 	$CGI::server_name +
 	$CGI::content_type +
 	$CGI::http_host +
@@ -2247,10 +2230,6 @@ Add a catalog to the system. Information taken from the input file
 The information is in the form of a standard Interchange catalog line,
 and must be in the single-line format.
 
-=item C<-b catalog, --build=catalog>
-
-Build static page tree for C<catalog>.
-
 =item -d dir, --dir=dir
 
 Directory for VendRoot. This is where the Interchange configuration file
@@ -2264,10 +2243,6 @@ Exclude catalog from this startup.
 =item -f file, --config=file
 
 Configuration file to use (default is interchange.cfg in VendRoot).
-
-=item --files spec
-
-File specification to build (perl regexp OK) for static page tree
 
 =item -h, --help
 
@@ -2368,8 +2343,6 @@ Command line options (first letter will usually work):
 
      --add=catalog         remove a catalog from operation, parms taken
                            from the standard input
-     -b catalog
-        --build=catalog    build static page tree for catalog
      -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
@@ -2456,7 +2429,6 @@ sub parse_options {
 						die "Can't set two modes -$mode and -$Vend::mode.\n"
 								if $Vend::saw_mode;
 						$Vend::saw_mode = 1;
-						$Vend::CatalogToBuild{$val} = 1 if $mode eq 'build';
 						$Vend::mode = $mode;
 					};
 
@@ -2468,18 +2440,17 @@ sub parse_options {
 	my %optctl = (
 
 		DEBUG 		    => \$Global::DEBUG,
-		build           => $modesub,
 		reconfig        => $rcfgsub,
 		confdir         => \$Global::ConfDir,
 		configfile      => \$Global::ConfigFile,
 		dir          	=> \$Global::VendRoot,
 		exclude         => \%Vend::CatalogToSkip,
-		files	        => \$Vend::BuildSpec,
 		help            => sub { usage(); exit 0 },
 		inetmode        => \$Global::Inet_Mode,
 		log             => \$Global::ErrorFile,
 		quiet			=> \$Vend::Quiet,
 		pidfile			=> \$Global::PIDfile,
+		soappidfile		=> \$Global::SOAP_PIDfile,
 		serve           => $modesub,
 
 		test			=> $modesub,
@@ -2544,12 +2515,10 @@ sub parse_options {
 		DEBUG|D:i
 		Ignore
 		add|a=s
-		build|b=s
 		confdir=s
 		configfile|config|c|f=s
 		dir|vendroot|d=s
 		exclude|e=s
-		files=s
 		help|h
 		inetmode|inet|i
 		kill:s
@@ -2603,6 +2572,7 @@ sub main_loop {
 	# options or the interchange.cfg file
 	$Global::ConfDir = "$Global::VendRoot/etc";
 	$Global::PIDfile = "$Global::ConfDir/$Global::ExeName.pid";
+	$Global::SOAP_PIDfile = "$Global::ConfDir/$Global::ExeName.soap.pid";
 
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
 
@@ -2696,9 +2666,6 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 		foreach $name (sort keys %Global::Catalog) {
 			$g =  $Global::Catalog{$name};
 			next if defined $Vend::CatalogToSkip{$g->{'name'}};
-			next if
-				$Vend::mode eq 'build' and
-				! defined $Vend::CatalogToBuild{$g->{'name'}};
 			print "Configuring catalog " . $g->{'name'} . '...'
 				unless $Vend::Quiet or $g->{name} eq '_mv_admin';
 			if (exists $Global::Selector{$g->{'script'}}) {
@@ -2739,27 +2706,14 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 						warn "Alias $_ used a second time, skipping.\n";
 						next;
 					}
-					elsif (m![^\w-_:~#/.]!) {
+					elsif (m![^-\w_:~#/.]!) {
 						warn "Bad alias $_, skipping.\n";
 					}
 					$Global::Selector{$_} = $c;
 					$Global::SelectorAlias{$_} = $g->{'script'};
 				}
 			}
-# STATICPAGE
-			# This is probably not useful any more.....use the
-			# regen feature of the UI.
-			if ($Vend::CatalogToBuild{$g->{name}}) {
-				require Vend::Misc::Static;
-				eval {
-					Vend::Misc::Static::build_all($g->{name});
-				};
-				if($@) {
-					die "Error building pages: $@\n";
-				}
-				undef $Vend::BuildingPages;
-			}
-# END STATICPAGE
+
 			print "done.\n"  unless $Vend::Quiet or $g->{name} =~ /^_/;
 		}
 	}
@@ -2792,10 +2746,6 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 		# This should never return unless killed or a catastrophic error
         Vend::Server::run_server();
 	}
-	elsif ($Vend::mode eq 'test' || $Vend::mode eq 'build') {
-				# Blank by design, this option only tests config files
-				# or builds catalogs
-	}
 	else {
 		die "No mode!\n";
 	}
@@ -2810,7 +2760,7 @@ if ($@) {
 	if ($Global::DisplayErrors) {
 		print "$msg\n";
 	}
-	die "$msg\n" if $Vend::ForeGround;
+	die "$msg\n" if $Vend::Foreground;
 }
 
 =head1 SEE ALSO
