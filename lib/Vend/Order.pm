@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6 2001-08-06 15:49:47 heins Exp $
+# $Id: Order.pm,v 2.6.2.1 2001-09-19 08:45:56 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1503,7 +1503,7 @@ sub route_order {
 			push @out, $ary;
 		}
 		else {
-			die "Empty order routing $c (and not explicitly empty)";
+			die "Empty order routing $c (and not explicitly empty).\nEither attach or email are required in the route setting.\n";
 		}
 		if ($route->{supplant}) {
 			track_order($::Values->{mv_order_number}, $page);
