@@ -89,7 +89,7 @@ comments: [value filter=mac name=gift_note]
 affiliate: [data session source]
 campaign: [value campaign]
 parent: __PARENT__
-po_number: [value filter=strip po_number] 
+po_number: [value filter=strip name=po_number] 
 [/import]
 
 [if value mv_payment_mode eq purchase_order]
