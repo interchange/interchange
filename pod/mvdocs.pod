@@ -12267,7 +12267,7 @@ The file which will contain the Interchange server process ID -- so that it
 can be read to determine which proces should be sent a signal for stopping
 or reconfiguring the server.
 
-    PIDfile  /var/run/mvend/minivend.pid
+    PIDfile  /var/run/interchange/interchange.pid
 
 This file must be writable by the Interchange server user ID, of course.
 
@@ -12299,13 +12299,13 @@ must be read from a tracking file, log, or by other means.
 The name of the file which is used for UNIX-domain socket communications.
 Must be in a directory where the Interchange user has write permission.
 
-    SocketFile  /var/run/mvend/minivend.socket
+    SocketFile  /var/run/interchange/interchange.socket
 
 Default is C<etc/socket> or the value of the environment variable
 MINIVEND_SOCKET.  If set, it will override the environment. You can
 set it on the command line as well:
 
-    bin/minivend -r SocketFile=/tmp/mv.socket
+    bin/interchange -r SocketFile=/tmp/mv.socket
 
 =head2 SocketPerms
 
@@ -12313,7 +12313,7 @@ The permissions (prepend a 0 to use octal notation) that should be used
 for the UNIX-domain socket. You might temporarily set this to 666 on
 the command line to debug a permission problem on C<vlink>.
 
-    bin/minivend -r SocketPerms=0666
+    bin/interchange -r SocketPerms=0666
 
 =head2 SubCatalog
 
@@ -12370,13 +12370,13 @@ by the Interchange server. Default is 7786>
 
 To use the internal HTTP server (perhaps only for password-protected
 queries), you can map a catalog to a port. If you had three catalogs
-running on the server I<www.minivend.com>, named C<simple>, C<sample>,
+running on the server I<www.akopia.com>, named C<simple>, C<sample>,
 and C<search>, you might have in the directive:
 
     TcpMap    7786 -  7787 simple 7788 sample 7789 search
 
 NOTE: To map large numbers of ports, you can use the <<MARKER here
-document notation in minivend.cfg.
+document notation in interchange.cfg.
 
 With this in effect, the internal HTTP server would map the following
 addresses:
