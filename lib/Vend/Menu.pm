@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.38 2004-01-09 17:20:31 mheins Exp $
+# $Id: Menu.pm,v 2.39 2004-03-01 19:04:23 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 use Vend::Util;
 use strict;
@@ -715,8 +715,10 @@ EOF
 		var html = "<table cellpadding=0 cellspacing=0 border=0>";
 
 		var idx = -1;
+		var digid = obj.id;
+		digid = digid.replace(/^$vpf/, '');
 		for(var j = 0; j < ${vpf}lines.length; j++) {
-			if(${vpf}lines[j][0] == obj.id) {
+			if(${vpf}lines[j][0] == digid) {
 				idx = j;
 				break;
 			}
