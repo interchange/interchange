@@ -533,7 +533,8 @@ sub initialize {
 		# New install_file routine
 		chdir 'dist';
 		for (@re_dir) {
-			mkdir $_, 0777;
+			mkdir $_, 0777
+			 or @re_copy = ();
 		}
 		while ($_ = shift @re_copy ) {
 			my $from = $_;
