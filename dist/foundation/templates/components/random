@@ -43,7 +43,7 @@ banner:
   </td>
 </tr>
 <tr>
-  <td> 
+  <td align="center"> 
     <br>
     [calc]
   	my $n = [control cols 2];
@@ -60,15 +60,15 @@ banner:
 					ra=yes
 					ml=[control pool 1000]
 				"]
-      <TD width="[scratch width_percent]" valign="top"> 
+      <TD width="[scratch width_percent]" valign="top" align="center"> 
 	<table border="0" cellspacing="0" cellpadding="0" width="75%">
 	<tr> 
-	  <td width="75%" id=rv class="contentbar2" nowrap align="center">
-	    &nbsp;[loop-description]
+	  <td width="75%" id=rv class="contentbar1" nowrap align="center">
+	    &nbsp;<b>[loop-description]</b>
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv nowrap align="center" class="contentbar1">
+	  <td id=rv nowrap align="center">
 	    <a href="[area [loop-code]]">More Info</a>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
@@ -80,7 +80,7 @@ banner:
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv align="center" class="contentbar1">
+	  <td id=rv align="center">
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>
