@@ -1,0 +1,28 @@
+Contact
+=======
+
+UI internationalization is mainly a project of
+Stefan Hornburg (Racke) <racke@linuxia.de>. Please
+contact him first, if you have any questions or
+translations.
+
+Adding new languages
+====================
+
+Just drop a file $LOCALE.cfg in this directory, which contains
+a value for MV_LANG_NAME and add the file to the MANIFEST.
+
+UI Translations
+===============
+
+German (de_DE):
+Stefan Hornburg (Racke) <racke@linuxia.de>
+
+Danish (da_DK):
+Kim Lauritz Christensen <kim@hambrosalle.dk>
+
+Dutch (nl_NL):
+Ton Verhagen <ton@verhagen.net>
+
+Swedish (sv_SE):
+Tommi Labermo <tommi.labermo@surfnet.fi>
