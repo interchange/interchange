@@ -16,10 +16,10 @@ sub {
 	$text = $CGI::values{$column} if $@;
 #::logDebug("data call failed: $@") if $@;
 
-	if($::Values->{ui_meta_display}) {
-#::logDebug("meta call: table=$table col=$column key='$key' text=$text");
+	if(! $::Values->{ui_no_meta_display}) {
+::logDebug("meta call: table=$table col=$column key='$key' text=$text");
 		my $out = UI::Primitive::meta_display($table,$column,$key,$text);
-#::logDebug("past meta_display, out=$out");
+::logDebug("past meta_display, out=$out");
 		return $out if $out;
 	}
 

@@ -5,7 +5,7 @@
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
 [set error_message]Not authorized for order administration. Contact administrator?[/set]
-[bounce page="@@MM_BASE@@/error"]
+[bounce page="@@UI_BASE@@/error"]
 [/if-mm]
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -13,7 +13,7 @@
 	my $db = $Db{transactions};
 	if(! $db) {
 		$Scratch->{error_message} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
-		$Scratch->{ui_location} = "@@MM_BASE@@/error";
+		$Scratch->{ui_location} = "@@UI_BASE@@/error";
 		return;
 	}
 
@@ -31,12 +31,12 @@
 		$action_col = 'deleted';
 	}
 	elsif($CGI->{vieworder} and ! $CGI->{viewnext}) {
-		$Scratch->{ui_location} = $Tag->area('@@MM_BASE@@/order_view', $CGI->{order});
+		$Scratch->{ui_location} = $Tag->area('@@UI_BASE@@/order_view', $CGI->{order});
 	}
 	elsif($CGI->{deletebogusorder}) {
 	}
 	elsif($CGI->{xload}) {
-		$Scratch->{ui_location} = $Tag->area('@@MM_BASE@@/dbdownload');
+		$Scratch->{ui_location} = $Tag->area('@@UI_BASE@@/dbdownload');
 	}
 
 	if($action_col) {
@@ -75,7 +75,7 @@
 		if ($ordnum) {
 			$Scratch->{ui_location} = $Tag->area(
 									{
-										href => '@@MM_BASE@@/order_view',
+										href => '@@UI_BASE@@/order_view',
 										form => "order=$ordnum",
 									}
 									);
@@ -127,7 +127,7 @@
 
 <!-- ----- Show the archive/pending buttons ----- -->
 
-<form action="[area @@MM_BASE@@/order]" method=POST>
+<form action="[area @@UI_BASE@@/order]" method=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
 <input type=hidden name=archive value="false">
@@ -231,4 +231,4 @@
 <!-- ----- END REAL STUFF ----- -->
 
 @@UI_STD_FOOTER@@
-<!-- page: @@MM_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ -->

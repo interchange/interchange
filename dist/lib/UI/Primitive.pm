@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -70,7 +70,7 @@ sub ui_acl_enabled {
 	return $default unless $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $uid = $Vend::Session->{username} || $CGI::remote_user;
-	if(! $db->record_exists($uid) ) {
+	if(! $uid or ! $db->record_exists($uid) ) {
 		return 0;
 	}
 	$Vend::Session->{ui_username} = $uid;
@@ -190,6 +190,11 @@ sub ui_acl_global {
 		my $keyname = $CGI->{mv_data_key};
 		my @codes = grep /\S/, split /\0/, $CGI->{$keyname};
 		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
+		if ($CGI->{mv_auto_export} and $Tag->if_mm('!export', undef, { table => $target }, 1) ) {
+			$::Scratch->{ui_failure} = "Unauthorized to export table $target";
+			$CGI->{mv_todo} = 'return';
+			return;
+		}
 		if ($Tag->if_mm('!edit', undef, { table => $target }, 1) ) {
 			$::Scratch->{ui_failure} = "Unauthorized to edit table $target";
 			$CGI->{mv_todo} = 'return';
@@ -215,6 +220,110 @@ sub ui_acl_global {
 
 }
 
+sub list_keys {
+	my $table = shift;
+	my $opt = shift;
+#::logDebug("list-keys $table");
+	$table = $::Values->{mv_data_table}
+		unless $table;
+#::logDebug("list-keys $table");
+	my @keys;
+	my $record;
+	if(! ($record = $Vend::Minimate_entry) ) {
+		$record =  ui_acl_enabled();
+	}
+
+	my $acl;
+	my $keys;
+	if($record) {
+#::logDebug("list_keys: record=$record");
+		$acl = get_ui_table_acl($table);
+#::logDebug("list_keys table=$table: acl=$acl");
+		if($acl and $acl->{yes_keys}) {
+#::logDebug("list_keys table=$table: yes.keys enabled");
+			@keys = grep /\S/, split /\s+/, $acl->{yes_keys};
+		}
+	}
+	unless (@keys) {
+		my $db = Vend::Data::database_exists_ref($table);
+		return '' unless $db;
+		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+		my $keyname = $db->config('KEY');
+		if($db->config('LARGE')) {
+			return ::errmsg('--not listed, too large--');
+		}
+		my $query = "select $keyname from $table order by $keyname";
+#::logDebug("list_keys: query=$query");
+		$keys = $db->query(
+						{
+							query => $query,
+							ml => $::Variable->{MINIMATE_KEY_LIMIT} || 500,
+							st => 'db',
+						}
+					);
+		if(defined $keys) {
+			@keys = map {$_->[0]} @$keys;
+		}
+		else {
+			my $k;
+			while (($k) = $db->each_record()) {
+				push(@keys, $k);
+			}
+			if( $db->numeric($db->config('KEY')) ) {
+				@keys = sort { $a <=> $b } @keys;
+			}
+			else {
+				@keys = sort @keys;
+			}
+		}
+#::logDebug("list_keys: query=returned " . ::uneval(\@keys));
+	}
+	if($acl) {
+#::logDebug("list_keys acl: ". ::uneval($acl));
+		@keys = UI::Primitive::ui_acl_grep( $acl, 'keys', @keys);
+	}
+	my $joiner = $opt->{joiner} || "\n";
+	return join($joiner, @keys);
+}
+
+sub list_tables {
+	my $opt = shift;
+	my @dbs;
+	my $d = $Vend::Cfg->{Database};
+	@dbs = sort keys %$d;
+	my @outdb;
+	my $record =  ui_acl_enabled();
+	undef $record
+		unless ref($record)
+			   and $record->{yes_tables} || $record->{no_tables};
+
+	for(@dbs) {
+		next if $::Values->{ui_tables_to_hide} =~ /\b$_\b/;
+		if($record) {
+			next if $record->{no_tables}
+				and ui_check_acl($_, $record->{no_tables});
+			next if $record->{yes_tables}
+				and ! ui_check_acl($_, $record->{yes_tables});
+		}
+		push @outdb, $_;
+	}
+
+	@dbs = $opt->{nohide} ? (@dbs) : (@outdb);
+	$opt->{joiner} = " " if ! $opt->{joiner};
+	
+	my $string = join $opt->{joiner}, grep /\S/, @dbs;
+	if(defined $::Values->{mv_data_table}) {
+		return $string unless $d->{$::Values->{mv_data_table}};
+		my $size = -s $Vend::Cfg->{ProductDir} .
+						"/" .  $d->{$::Values->{mv_data_table}}{'file'};
+		$size = 3_000_000 if $size < 1;
+		$::Values->{ui_too_large} = $size > 100_000 ? 1 : '';
+		$::Values->{ui_way_too_large} = $size > 2_000_000 ? 1 : '';
+		local($_) = $::Values->{mv_data_table};
+		$::Values->{ui_rotate_spread} = $::Values->{ui_tables_to_rotate} =~ /\b$_\b/;
+	}
+	return $string;
+}
 
 sub list_images {
 	my ($base) = @_;
@@ -350,44 +459,60 @@ sub rotate {
 sub meta_display {
 	my ($table,$column,$key,$value,$meta_db) = @_;
 
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
-	return undef if $key =~ /::/;
-
+::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{MINIMATE_META} || 'mv_metadata' if ! $meta_db;
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
+::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
-#::logDebug("metadisplay: got meta ref=$meta");
+::logDebug("metadisplay: got meta ref=$meta");
 	my (@tries) = "${table}::$column";
 	if($key) {
 		unshift @tries, "${table}::${column}::$key", "${table}::$key";
 	}
 	for $metakey (@tries) {
-#::logDebug("enter metadisplay record $metakey");
+::logDebug("enter metadisplay record $metakey");
 		next unless $meta->record_exists($metakey);
 		$meta = $meta->ref();
 		my $record = $meta->row_hash($metakey);
-#::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
+::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
+		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
+			PASS: {
+				my $passed = $record->{options};
+				if($passed eq 'tables') {
+					$record->{passed} = list_tables({ joiner => ',' });
+				}
+				elsif($passed =~ /^columns(::(\w+))?$/) {
+					my $tname = $2 || $record->{db} || $table;
+					my $db = $Vend::Database{$tname};
+					$record->{passed} = join (',', $db->columns())
+						if $db;
+				}
+				elsif($passed =~ /^keys(::(\w+))?$/) {
+					my $tname = $2 || $record->{db} || $table;
+					$record->{passed} = list_keys($tname, { joiner => ',' });
+				}
+			}
+		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
-#::logDebug("metadisplay lookup");
+::logDebug("metadisplay lookup");
 			LOOK: {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
 				my $query = "select DISTINCT $fld FROM $dbname ORDER BY $fld";
-#::logDebug("metadisplay lookup, query=$query");
+::logDebug("metadisplay lookup, query=$query");
 				my $ary = $db->query($query);
 				last LOOK unless ref($ary) && @{$ary};
-#::logDebug("metadisplay lookup, query succeeded");
+::logDebug("metadisplay lookup, query succeeded");
 				undef $record->{type} unless $record->{type} =~ /multi|combo/;
 				$record->{passed} = join ",",
 									map
 										{ $_->[0] =~ s/,/&#44;/g; $_->[0]}
 									@$ary;
-#::logDebug("metadisplay lookup, passed=$record->{passed}");
+::logDebug("metadisplay lookup, passed=$record->{passed}");
 			}
 		}
 		elsif ($record->{type} eq 'imagedir') {
@@ -397,6 +522,28 @@ sub meta_display {
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
 		}
+
+		if($record->{height}) {
+			if($record->{type} =~ /multi/i) {
+				$record->{type} = "MULTIPLE SIZE=$record->{height}";
+			}
+			elsif ($record->{type} =~ /textarea/i) {
+				my $width = $record->{width} || 80;
+				$record->{type} = "textarea_" . $record->{height} . '_' . $width;
+			}
+		}
+		elsif ($record->{width}) {
+			if($record->{type} =~ /textarea/) {
+				$record->{type} = "textarea_2_" . $record->{width};
+			}
+			elsif($record->{type} =~ /text/) {
+				$record->{type} = "text_$record->{width}";
+			}
+			elsif($record->{type} =~ /radio|check/) {
+				$record->{type} =~ s/(left|right)[\s_]*\d*/$1 $record->{width}/;
+			}
+		}
+
 		$opt = {
 			attribute	=> ($record->{'attribute'}	|| $column),
 			table		=> ($record->{'db'}			|| $meta_db),

@@ -3,7 +3,7 @@
 [set page_title][L]Format field[/L][/set]
 [if-mm !super]
 [set error_message]Not authorized to format fields.[/set]
-[bounce href="[area @@MM_BASE@@/error]"]
+[bounce href="[area @@UI_BASE@@/error]"]
 [/if-mm]
 
 [if session arg]
@@ -80,7 +80,7 @@
 		$CGI->{filter} = 'nullselect';
 	}
 	$CGI->{mv_todo} = 'set';
-	$CGI->{mv_nextpage} = '@@MM_BASE@@/format_meta';
+	$CGI->{mv_nextpage} = '@@UI_BASE@@/format_meta';
 	$Session->{arg} = $table;
 	$Scratch->{mv_data_enable} = 1;
 	return;

@@ -25,7 +25,7 @@ function open_help(url) {
 function open_quicklinks() {
   window.name = "mainwindow[scratch window_name]";
   opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=120,height=470";
-  window.open('[area href="@@MM_BASE@@/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
+  window.open('[area href="@@UI_BASE@@/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
 }
 
 // -->
@@ -46,7 +46,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/order]">
+<a href="[area @@UI_BASE@@/order]">
 <img src="admin/icon_orders.gif" height="16" width="16" border="0" 
  align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
@@ -56,7 +56,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/page]">
+<a href="[area @@UI_BASE@@/page]">
 <img src="admin/icon_pages.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
@@ -65,7 +65,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/item]">
+<a href="[area @@UI_BASE@@/item]">
 <img src="admin/icon_item.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
@@ -74,7 +74,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/genconfig]">
+<a href="[area @@UI_BASE@@/genconfig]">
 <img src="admin/icon_config.gif" height="16" width="16" border="0" 
  align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
@@ -84,7 +84,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/genstats]">
+<a href="[area @@UI_BASE@@/genstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
@@ -93,7 +93,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
-<a href="[area @@MM_BASE@@/reconfig]">
+<a href="[area @@UI_BASE@@/reconfig]">
 <img src="admin/icon_regen.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">

@@ -1,5 +1,5 @@
 [if-mm function="!tables" table="products"]
-[bounce page="@@MM_BASE@@/error"]
+[bounce page="@@UI_BASE@@/error"]
 [/if-mm]
 
 [set page_title]Item editor[/set]
@@ -23,9 +23,9 @@ Item editor
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[area @@MM_BASE@@/item_edit]" method="post">
+<form action="[area @@UI_BASE@@/item_edit]" method="post">
 <INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MM_BASE@@/item_edit">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@UI_BASE@@/item_edit">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[calc]$Config->{ProductFiles}[0][/calc]">
 <INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either]__UI_ITEM_FIELDS__[or]description image comment size color sku price weight category[/either]">
 <INPUT TYPE=hidden NAME=ui_break_before VALUE="[either]__UI_ITEM_BREAK__[or]description image sku category[/either]">
