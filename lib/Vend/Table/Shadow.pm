@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.23 2003-03-21 16:37:31 racke Exp $
+# $Id: Shadow.pm,v 1.24 2003-03-27 17:06:18 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.23 $, 10);
+$VERSION = substr(q$Revision: 1.24 $, 10);
 
 # TODO
 #
@@ -246,10 +246,64 @@ sub each_nokey {
 	}
 }
 
+sub query {
+	my($s, $opt, $text, @arg) = @_;
+
+	if ($opt->{query}) {
+		# we try to analyse the query
+		my $qref = $s->_parse_sql($opt->{query});
+
+		if (@{$qref->{tables}} > 1) {
+			die errmsg("Vend::Shadow::query can handle only one table");
+		}
+
+		my $table = $qref->{tables}->[0];
+		my $db;
+		
+		if ($table ne $s->[$TABLE]) {
+			# pass query to other table, but preserve the query info
+			$opt->{queryinfo} = $qref;
+			unless ($db = Vend::Data::database_exists_ref($table)) {
+				die errmsg("Table %s not found", $table);
+			}
+			return $db->query($opt, $text, @arg);
+		}
+	}
+}
+
 sub reset {
 	my ($s, $key) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->[$OBJ]->reset();
+}
+
+sub _parse_sql {
+	my ($s, $query) = @_;
+	my (%sqlinfo);
+	
+	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
+		unless defined &SQL::Statement::new;
+
+	my ($parser, $stmt);
+	
+	$parser = SQL::Parser->new('Ansi');
+	eval {
+		$stmt = SQL::Statement->new($query, $parser);
+	};
+	
+	if ($@) {
+		die errmsg("Bad SQL statement: %s\nQuery was: %s", $@, $query);
+	}
+
+	$sqlinfo{command} = $stmt->command();
+	for ($stmt->tables()) {
+		push (@{$sqlinfo{tables}}, $_->name());
+	}
+	for ($stmt->columns()) {
+		push (@{$sqlinfo{columns}}, $_->name());
+	}
+
+	\%sqlinfo;		   
 }
 
 # _map_field returns the shadowed database and column for a given field
