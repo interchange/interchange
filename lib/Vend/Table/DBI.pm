@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.9 2001-01-19 15:19:05 heins Exp $
+# $Id: DBI.pm,v 1.25.2.10 2001-01-19 16:11:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.10 $, 10);
 
 use strict;
 
@@ -348,21 +348,32 @@ sub open_table {
 
 	$db = $DBI_connect_cache{ $config->{dsn_id} };
 	if($db and ! defined $DBI_connect_bad{$config->{dsn_id}} ) {
-::logDebug("checking connection on $config->{dsn_id}");
+		my $status;
 		eval {
-			$DBI_connect_bad{ $config->{dsn_id} } = ! $db->ping();
+			$status = $db->ping();
 		};
+#::logDebug("checking connection on $config->{dsn_id} status=$status");
+		if(! $status) {
+			undef $db;
+			$DBI_connect_bad{ $config->{dsn_id} } = 1;
+			undef $DBI_connect_cache{ $config->{dsn_id} };
+		}
+		else {
+			$DBI_connect_bad{ $config->{dsn_id} } = 0;
+		}
 	}
 
+	my $bad =  $DBI_connect_bad{$config->{dsn_id}};
 	my $alt_index = 0;
 
-	if (! $db or $DBI_connect_bad{$config->{dsn_id}} ) {
-#::logDebug("connecting to " . ::uneval(\@call));
+	if (! $db or $bad ) {
+#::logDebug("bad=$bad connecting to " . ::uneval(\@call));
 		eval {
-			$db = DBI->connect( @call );
+			$db = DBI->connect( @call ) unless $bad;
 		};
-#::logDebug("DBI didn't die");
+#::logDebug("$config->{name}: DBI didn't die, bad=$bad");
 		if(! $db) {
+			$DBI_connect_bad{$config->{dsn_id}} = 1;
 			if($config->{ALTERNATE_DSN}[$alt_index]) {
 				for(qw/DSN USER PASS/) {
 					$config->{$_} = $config->{"ALTERNATE_$_"}[$alt_index];
@@ -386,10 +397,10 @@ sub open_table {
 		}
 		$DBI_connect_bad{$config->{dsn_id}} = 0;
 		$DBI_connect_cache{$config->{dsn_id}} = $db;
-::logDebug("$config->{name} connected to $config->{dsn_id}");
+#::logDebug("$config->{name} connected to $config->{dsn_id}");
 	}
 	else {
-::logDebug("$config->{name} using cached connection $config->{dsn_id}");
+#::logDebug("$config->{name} using cached connection $config->{dsn_id}");
 	}
   }
 
