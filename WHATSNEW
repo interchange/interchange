@@ -267,8 +267,8 @@ UI
   and have to re-enter custom view information that is already
   present in a modified base meta display.
 
-* Add check for existence of the extended column and display of merge
-  errors to merge_meta page.
+* Add check for existence of the extended/default columns
+  and display of merge errors to merge_meta page.
 
 Payment
 -------
