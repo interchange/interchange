@@ -46,9 +46,9 @@ mv_todo=return
 </td>
 <td>
 <select name="ui_template" size=1>
-<option value=> Select a page template
 [calc]
 	@files = $Tag->list_glob('templates/*');
+    $selected = ' SELECTED';
 	for(@files) {
 		next unless -f $_;
 		my $name = $_;
@@ -69,7 +69,8 @@ mv_todo=return
 			}
 		}
 		#Log("ref is " . $Tag->uneval( { ref => $ref } ));
-		push @out, qq{<OPTION VALUE="$_">$ref->{ui_template_description}};
+		push @out, qq{<OPTION VALUE="$_"$selected>$ref->{ui_template_description}};
+        $selected = '';
 	}
 	return join "\n", @out;
 [/calc]
