@@ -19,12 +19,18 @@ Core
     execution time, it allows ITL to be run without the hassles of having
     to deal with HTTP.
   - Use $Vend::Cfg->{Cron} for setup.
-  - Emails either to command line address or $Vend::Cfg->{Cron}{email}.
-  - Logs to $Vend::Cfg->{Cron}{log}.
+  - Emails either to command line address or $Vend::Cfg->{Cron}{email}
+	(only if the cron job supplies output). Uses the $Vend::Cfg->{Cron}
+	variables subject, from, reply_to and extra_headers.
+  - Logs to $Vend::Cfg->{Cron}{log}
+	(only if the cron job supplies output).
   - Can add session dump when $Vend::Cfg->{Cron}{add_session}.
   - Base directory set by $Vend::Cfg->{Cron}{base_directory}, defaults
-    to etc/cron.
-
+    to etc/cron. If $Vend::Cfg->{Cron}{use_global} is set, 
+    the same directory in $Global::ConfDir is scanned too.
+  - The macros $Vend::Cfg->{initialize} and $Vend::Cfg->{autoload} are
+    executed once resp. before each job.
+ 
 * Add First and Last links to more-list, with ability to customize via
   [first-anchor] and [last-anchor] containers.
 
