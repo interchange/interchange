@@ -28,6 +28,24 @@
 		return;
 	[/calc]
 [/if]
+[perl tables="[cgi mv_data_table]"]
+my $tab = $CGI->{mv_data_table};
+my $db = $Db{$tab};
+
+if(! ref $db) {
+	$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
+	$Scratch->{ui_location} = "__UI_BASE__/error";
+	return;
+}
+if ($CGI->{ui_new_item} && $db->config('AUTO_INCREMENT')) {
+	$CGI->{item_id} = '';
+}
+[/perl]
+
+[if scratch ui_location]
+	[bounce href=`delete $Scratch->{ui_location}`]
+[/if]
+
 @_UI_STD_DBEDIT_HEAD_@
 
 [seti page_title]Item editor: [cgi item_id][/seti]
