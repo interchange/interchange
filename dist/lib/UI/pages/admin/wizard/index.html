@@ -1,6 +1,13 @@
 [set page_title]Catalog Wizard[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.index[/set]
+[if cgi give_help]
+	[set ui_message]
+	<BLOCKQUOTE>The build of your new store was successful. Now log in for the first
+	time to the new store, using the same username and password you did
+	for the initial screen.</BLOCKQUOTE>
+	[/set]
+[/if]
 @_UI_STD_HEAD_@
 
 <p>The Catalog Wizard gets you started with the Interchange e-commerce
