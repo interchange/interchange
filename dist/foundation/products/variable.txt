@@ -75,6 +75,7 @@ TOLLFREE	__MVC_TOLLFREE__	Company
 UI_ABOUT_LOGIN_URL	http://www.icdevgroup.org/	Admin layout
 UI_ABOUT_NORMAL_URL	http://www.icdevgroup.org/	Admin layout
 UI_ADMIN_TABLES	mv_metadata locale variable ichelp route access	Admin control
+UI_BACKUP_TABLES	affiliate area cat country inventory locale merchandising options order_returns orderline pricing products state survey transactions tree userdb variants	Database
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_CLONE_TABLES	products* pricing* inventory merchandising options:sku	Item display
 UI_COMPONENT_DIR	templates/components	Directories and Paths

@@ -44,7 +44,9 @@ sub {
 	for my $table (@tables) {
 		my $unlink;
 		my $db = Vend::Data::database_exists_ref($table);
-		my $file = "$backup_dir/" . $db->config('file');
+		my $fn = $db->config('file');
+		$fn =~ s:.*/::;
+		my $file = "$backup_dir/$fn";
 		my $status;
 		eval {
 			$status = export(

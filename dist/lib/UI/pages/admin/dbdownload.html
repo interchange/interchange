@@ -33,10 +33,11 @@
 [if file backup/DBDOWNLOAD.xls]
 	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.xls'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.xls"
+	      add_dot_html=0
 			form="
 				mv_data_file=backup/DBDOWNLOAD.xls
 				mv_todo=deliver
-			"][L]Download XLS file[/L] ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
+			"][L]Download XLS file[/L] ([file-info name="backup/DBDOWNLOAD.xls" date=1], [file-info name="backup/DBDOWNLOAD.xls" size=1] bytes)</A><BR>
 [/if]
 
 [if scratch ui_error]
@@ -56,13 +57,37 @@
 &nbsp;
 <p>
 
+[perl tables=mv_metadata]
+	my @tabs = $Tag->list_databases();
+	%backup = ();
+	if($Variable->{UI_BACKUP_TABLES}) {
+		my @backs = grep /\S/, split /[\s,\0]+/, $Variable->{UI_BACKUP_TABLES};
+		@backup{@backs} = @backs;
+	}
+	else {
+		for(@tabs) {
+			my $meta = $Tag->meta_record($_);
+			if(defined $meta->{backup}) {
+				$backup{$_} = $meta->{backup};
+			}
+			else {
+				$backup{$_} = ! $meta->{display_filter};
+			}
+		}
+	}
+	return;
+[/perl]
+
 <TABLE>
 <TR>
 <TD VALIGN=top>
 What data would you like to export?
 <blockquote>
 [loop list="[list-databases]"]
-<INPUT type=checkbox value="[loop-code]" name="ui_do_export" [if-loop-data __UI_META_TABLE__ display_filter][else]CHECKED[/else][/if-loop-data]> [loop-code]
+<INPUT type=checkbox value="[loop-code]" name="ui_do_export" [loop-calc]
+	return 'CHECKED' if $backup{'[loop-code]'};
+	return;
+[/loop-calc]> [loop-code]
 	[if-loop-data __UI_META_TABLE__ name]
 		(<small>[loop-data __UI_META_TABLE__ name]</small>)
 	[/if-loop-data]
