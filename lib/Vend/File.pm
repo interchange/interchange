@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.7 2003-04-05 08:43:05 danb Exp $
+# $Id: File.pm,v 2.8 2003-04-10 14:16:02 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,7 +52,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -665,7 +665,12 @@ sub allowed_file {
 		absolute_or_relative($fn)
 		)
 	{
-		$status = $write ? check_user_write($fn) : check_user_read($fn);
+		if($Vend::admin and ! $write and $fn =~ /^$Global::RunDir/) {
+			$status = 1;
+		}
+		else {
+			$status = $write ? check_user_write($fn) : check_user_read($fn);
+		}
 	}
 	if($status and $Global::FileControl) {
 		$status &= file_control($fn, $write, 1, caller(0))
