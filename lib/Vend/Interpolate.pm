@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.68 2001-06-08 05:41:56 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.69 2001-06-08 15:45:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.68 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.69 $, 10);
 
 @EXPORT = qw (
 
@@ -3285,7 +3285,7 @@ sub form_link {
 	$arg = '' if ! $arg;
 	$arg = "mv_arg=$arg\n" if $arg && $arg !~ /\n/; 
 	$extra .= $arg . $opt->{form};
-	$extra = escape_mv('&', $extra, 1);
+	$extra = escape_mv($Global::UrlJoiner, $extra, 1);
 	return $href . '?' . $extra;
 }
 

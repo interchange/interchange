@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.39 2001-05-25 17:04:43 jon Exp $
+# $Id: Server.pm,v 1.8.2.40 2001-06-08 15:45:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.39 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.40 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -189,6 +189,8 @@ EOF
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})
 			: ($Global::IV, $Global::VN, $Global::IgnoreMultiple);
 
+#::logDebug("CGI::query_string=" . $CGI::query_string);
+#::logDebug("entity=" . ${$h->{entity}});
 	if ("\U$CGI::request_method" eq 'POST') {
 		parse_post(\$CGI::query_string)
 			if $Global::TolerateGet;
@@ -221,7 +223,7 @@ sub parse_post {
 	undef %CGI::values;
 	return unless length $$sref;
 	if ($CGI::content_type =~ /^multipart/i) {
-		return parse_multipart($sref) if  $CGI::useragent !~ /MSIE\s+5/i;
+		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
 		# even though it's sent as non-multipart data
@@ -230,7 +232,7 @@ sub parse_post {
 		$boundary = "--$boundary";
 		return parse_multipart($sref) if $$sref =~ /^\s*$boundary\s+/;
 	}
-	@pairs = split(/&/, $$sref);
+	@pairs = split($Global::UrlSplittor, $$sref);
 	if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32})? ; /x)  {
 		@CGI::values{qw/ mv_session_id mv_arg mv_pc /}
 			= split /;/, $pairs[0], 3;
@@ -277,7 +279,7 @@ sub parse_post {
 		}
 	}
 	if (! $redo and "\U$CGI::request_method" eq 'POST') {
-		@pairs = split(/&/, $CGI::query_string);
+		@pairs = split $Global::UrlSplittor, $CGI::query_string;
 		if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32}) ; /x)  {
 			my (@old) = split /;/, $pairs[0], 3;
 			$CGI::values{mv_session_id} = $old[0]

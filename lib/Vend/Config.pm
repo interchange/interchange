@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.48 2001-06-06 10:20:57 racke Exp $
+# $Id: Config.pm,v 1.25.2.49 2001-06-08 15:45:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.48 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.49 $, 10);
 
 my %CDname;
 
@@ -323,6 +323,7 @@ sub global_directives {
 	['SysLog',			 'hash',     	     undef],
 	['Logging',			 'integer',     	 0],
 	['CheckHTML',		  undef,     	     ''],
+	['UrlSepChar',		 'url_sep_char',     '&'],
 	['Variable',	  	 'variable',     	 ''],
 	['Profiles',	  	 'profile',     	 ''],
 	['Catalog',			 'catalog',     	 ''],
@@ -1214,6 +1215,9 @@ GLOBLOOP:
 	$done_one = 1;
 } # end GLOBLOOP;
 
+	# Do some cleanup
+	set_global_defaults();
+
 	# check for unspecified directives that don't have default values
 	foreach $var (keys %name) {
 		last if defined $Vend::ExternalProgram;
@@ -1940,6 +1944,10 @@ my %Default = (
 		ProductFiles => \&set_default_search,
 );
 
+sub set_global_defaults {
+	## Nothing here currently
+}
+
 sub set_defaults {
 	for(keys %Default) {
 		my ($status, $error) = $Default{$_}->($C->{$_});
@@ -1955,6 +1963,39 @@ sub set_defaults {
 	$Have_set_global_defaults = 1;
 	return;
 }
+
+sub parse_url_sep_char {
+	my($var,$val) = @_;
+
+	$val =~ s/\s+//g;
+
+	if($val =~ /[\w%]/) {
+		config_error(
+			errmsg("%s character value '%s' must not be word character or %%.", $var, $val)
+		);
+	}
+	elsif(length($val) > 1) {
+		config_error(
+			errmsg("%s character value '%s' longer than one character.", $var, $val)
+		);
+	}
+	elsif($val !~ /[&;:]/) {
+		config_warn(
+			errmsg("%s character value '%s' not a recommended value.", $var, $val)
+		);
+	}
+
+	if($val eq '&') {
+		$Global::UrlJoiner = $Global::Variable->{MV_HTML4_COMPLIANT} ? '&amp;' : '&';
+		$Global::UrlSplittor = qr/\&/;
+	}
+	else {
+		$Global::UrlJoiner = $val;
+		$Global::UrlSplittor = qr/[&$val]/o;
+	}
+	return $val;
+}
+
 
 sub check_legal {
 	my ($directive, $value) = @_;

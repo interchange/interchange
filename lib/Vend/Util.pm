@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.32 2001-05-29 14:21:19 heins Exp $
+# $Id: Util.pm,v 1.14.2.33 2001-06-08 15:45:37 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.32 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.33 $, 10);
 
 BEGIN {
 	eval {
@@ -115,6 +115,7 @@ sub setup_escape_chars {
         }
         $ESCAPE_CHARS::translate[$i] = $t;
     }
+
 }
 
 # Replace any characters that might not be safe in a filename (especially
@@ -1069,7 +1070,7 @@ sub vendUrl {
 
 	}
 	return $r unless @parms;
-    return $r . '?' . join("&", @parms);
+    return $r . '?' . join($Global::UrlJoiner, @parms);
 } 
 
 sub secure_vendUrl {
@@ -1080,8 +1081,10 @@ sub change_url {
 	my $url = shift;
 	return $url if $url =~ m{^(?:\w+:)?/};
 #::logDebug("changed $url");
+	my $arg;
 	my @args;
-	($url, @args) = split /[?&]/, $url;
+	($url, $arg) = split /[?&]/, $url, 2;
+	@args = split $Global::UrlSplittor, $url;
 	return Vend::Interpolate::tag_area( $url, '', {
 											form => join "\n", @args,
 										} );

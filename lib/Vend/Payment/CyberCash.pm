@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: CyberCash.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
+# $Id: CyberCash.pm,v 1.1.2.3 2001-06-08 15:45:38 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -26,11 +26,11 @@
 
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
 
 =head1 Interchange CyberCash Support
 
-Vend::Payment::CyberCash $Revision: 1.1.2.2 $
+Vend::Payment::CyberCash $Revision: 1.1.2.3 $
 
 =head1 SYNOPSIS
 
@@ -247,7 +247,7 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Stosberg <mark@summersault.com> and Mike Heins <mheins@redhat.com>.
+Mike Heins <mheins@redhat.com>
 
 =head1 CREDITS
 
