@@ -24,9 +24,13 @@ if [ "$1" = "remove" ]; then
 	# If only interchange-ui is installed, we need to stop
 	# the server first
 
-	/etc/init.d/interchange stop
+	if [ -x /etc/init.d/interchange ]; then
+		/etc/init.d/interchange stop
+	fi
 
-	/usr/sbin/interchangeconfig UI= USE_FOUNDATION=
+	if [ -x /usr/sbin/interchangeconfig ]; then
+		/usr/sbin/interchangeconfig UI= USE_FOUNDATION=
+	fi
 	
 	# We use the file /var/run/interchange-install to record 
 	# the installed interchange packages, so only one server
@@ -53,7 +57,9 @@ if [ "$1" = "remove" ]; then
 		fi
 	fi
 
-	/etc/init.d/interchange start
+	if [ -x /etc/init.d/interchange ]; then
+		/etc/init.d/interchange start
+	fi
 
 	# Don't wait on Interchange to close file handles
 	db_stop

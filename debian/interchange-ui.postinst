@@ -45,7 +45,9 @@ if [ -f /var/run/interchange-install ]; then
 	fi
 fi
 
-/etc/init.d/interchange start
+if [ -x /etc/init.d/interchange ]; then
+	/etc/init.d/interchange start
+fi
 
 # Don't wait on Interchange to close file handles
 db_stop
