@@ -167,7 +167,7 @@ function visible (index, base) {
 <td valign=top>
 <form name=overall action="[area @@MV_PAGE@@]" method=POST>
 
-<h3 id=silent_display>Template Attributes</h3>
+<h3 id="silent_display">Template Attributes</h3>
 <div align=right>
 	Description: <input name=ui_label size=30 value="[tem-param ui_label]"><BR>
 	<input type=submit

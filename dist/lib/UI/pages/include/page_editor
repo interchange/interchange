@@ -4,6 +4,7 @@
 <script language=JavaScript>
 function changed (code, field) {
 	var name = "changed_" + code;
+	silent_revert();
 	cbox = document.getElementById(name);
 	if(cbox != undefined)
 		cbox.checked = true;
@@ -11,9 +12,26 @@ function changed (code, field) {
 
 function submitted (code) {
 	var name = "changed_" + code;
+	silent_revert();
 	cbox = document.getElementById(name);
 	if(cbox != undefined)
 		cbox.checked = false;
+	return true;
+}
+
+function silent_revert () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML = '[L]Page Attributes/Controls[/L]';
+	return true;
+}
+
+// Don't remove this, called with forms genned by UI::ContentEditor
+function silent_submit () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML
+		= '[L]Page Attributes/Controls[/L] <span class=cmessage>[L]Change saved[/L]</span>';
 	return true;
 }
 
@@ -28,6 +46,7 @@ function change_alert (code) {
 
 function check_change () {
 	var el;
+	silent_revert();
 	el = document.getElementById('changed_[page-param ui_name]');
 	if(el != undefined && el.checked == true) {
 		return change_alert('the page controls');
@@ -185,12 +204,12 @@ function visible (index, base) {
 	<form name=overall action="[area @@MV_PAGE@@]" method=POST>
 	<input type=hidden name=ui_content_op value="modify">
 	<input type=hidden name=ui_name value="[page-param ui_name]">
-	<input type=hidden name=ui_type value=page
+	<input type=hidden name=ui_type value=page>
 	<input type=hidden name=mv_action value="back">
 		<table width="100%" cellpadding=0 cellspacing=0 cellmargin=3>
 		<tr>
 			<td id=clicker>
-	<h3>Page Attributes/Controls</h3>
+	<h3 id="silent_display">Page Attributes/Controls</h3>
 			Name: <b>[page-param ui_name]</b><BR>
 			Source: [page-param ui_source]
 		[page-sub foo_sub]
@@ -227,7 +246,7 @@ mv_nextpage=__UI_BASE__/content_preview
 <input
 	style="font-weight: bold"
 	type=submit onClick="return check_change()"
-	name=mv_click
+	name="mv_click"
 	value="[L]Publish[/L]"
 > &nbsp;
 <input
@@ -236,14 +255,13 @@ mv_nextpage=__UI_BASE__/content_preview
 			'This will destroy all edits you have made to this page '
 			+ 'since the last Publish operation.\n Are you sure?'
 		)"
-	name=mv_click
+	name="mv_click"
 	value="[L]Cancel[/L]"
 > &nbsp;
 <input
 	type=submit
-	onClick="return check_change()"
-	name=mv_click
-	value="[L]Preview[/L]"
+	name="mv_click"
+	value="Preview"
 > &nbsp;
 <input
 	type=submit
