@@ -34,6 +34,7 @@ function addItemCheckbox(selector, receptor, joiner) {
 		rf=$k,$Config->{DescriptionField},category
 		tf=category,$Config->{DescriptionField}
 	);
+	return;
 [/calc]
 [search-region more=1 arg="
 			ra=yes
@@ -82,7 +83,7 @@ function addItemCheckbox(selector, receptor, joiner) {
 		TYPE=checkbox
 		NAME=item[item-increment]
 		VALUE="[item-code]"
-		onClick="addItemCheckbox(this.form.item[item-increment], this.form.[cgi tstring], 1)">[item-pos 1]</BR>
+		onClick="addItemCheckbox(this.form.item[item-increment], this.form.[cgi tstring], 1)">[item-code] - [item-pos 1]</BR>
 	[/search-list]
 	</BLOCKQUOTE></SMALL>
 	</TD>
