@@ -10,7 +10,7 @@ die "No tests defined for Windows\n" if $^O =~ /win32/i;
 $ENV{MINIVEND_ROOT} = "$cur_dir/blib";
 $ENV{MINIVEND_PORT} = 8786 unless defined $ENV{MINIVEND_PORT};
 
-open(CONFIG, ">$ENV{MINIVEND_ROOT}/minivend.cfg")
+open(CONFIG, ">$ENV{MINIVEND_ROOT}/interchange.cfg")
 	or die "open: $!\n";
 
 print CONFIG <<EOF;
@@ -74,7 +74,7 @@ $testnum++;
 
 print "server/startup........";
 for(1 .. 5) {
-	open(PID, "$ENV{MINIVEND_ROOT}/etc/minivend.pid") or sleep $_, next;
+	open(PID, "$ENV{MINIVEND_ROOT}/etc/interchange.pid") or sleep $_, next;
 	$pid = <PID>;
 	$pid =~ s/\D+//g;
 	last;
@@ -262,7 +262,7 @@ if ( system qq{$Config{'perlpath'} blib/script/interchange -q -stop} ) {
 my $pid_there;
 
 for(1 .. 5) {
-	$pid_there = -f 'blib/etc/minivend.pid';
+	$pid_there = -f 'blib/etc/interchange.pid';
 	last unless $pid_there;
 	sleep 1;
 }
