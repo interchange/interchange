@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.8 2001-01-19 15:18:55 heins Exp $
+# $Id: Data.pm,v 1.17.2.9 2001-01-28 08:35:01 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -614,8 +614,12 @@ sub tie_database {
 		copyref($Global::Database, $Vend::Cfg->{Database});
 	}
     while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
+		if(! $data->{name}) {
+#::logDebug("Screwed up database: " . ::uneval( $data) );
+			next;
+		}
 		if( $data->{type} > 6 or $data->{HOT} ) {
-#::logDebug("Importing $data->{name}...");
+#::logDebug("Importing '$data->{name}'...");
 			eval {
 				$Vend::Database{$name} = import_database($data);
 			};
@@ -626,6 +630,7 @@ sub tie_database {
 			}
 		}
 		else {
+#::logDebug("Tieing '$data->{name}'...");
 			if($data->{GUESS_NUMERIC}) {
 				my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
