@@ -122,7 +122,7 @@ sub survey_log_generate_final {
 
 sub gen_email_header {
 	my ($wizname, $ref, $opt, $fnames) = @_;
-	my $subject = errmsg($opt->{email_subject} || "Reponse to %s", $wizname);
+	my $subject = errmsg($opt->{email_subject} || "Response to %s", $wizname);
 	my $from_addr = $opt->{email_from};
 	my $cc_addr = $opt->{email_cc};
 	for(qw/ EMAIL_SURVEY EMAIL_INFO EMAIL_SERVICE /) {
