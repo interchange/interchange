@@ -1,9 +1,0 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
-1	left	Hand Tools	all	03		1										
-2	left	Measuring Tools	all	03		2										
-3	left	Ladders	all	04		3										
-4	left	Safety Equipment	all	04		4										
-5	left	Tool Storage	all	04		5										
-6	left	Painting Supplies	all	05		6										
-7	left	Hardware	all	06		7										
-8	left	Miscellaneous	all	06		8										

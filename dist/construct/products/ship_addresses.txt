@@ -1,4 +1,0 @@
-code	user	entry	addr_nick	company	fname	lname	address_1	address_2	city	state	zip	country
-1	test	1	iellc	Internet Experts, L.L.C.	Cameron	Prince	P.O. Box 5377		Decatur	AL	35601	US
-2	bobospeew	1	Site3	Yo Mamma Construction	bobo	schleprock	123 main street		yourtown	VA	20190	USA
-3	bobospeew	1	Site3	Yo Mamma Construction	bobo	schleprock	123 main street		yourtown	VA	20190	USA

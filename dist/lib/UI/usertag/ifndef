@@ -1,8 +1,0 @@
-UserTag ifndef hasEndTag   1
-UserTag ifndef Interpolate 1
-UserTag ifndef routine <<EOR
-sub {
-	return $_[1] unless $_[0];
-}
-EOR
-
