@@ -307,6 +307,7 @@ sub initialize {
 		dump
 		expire
 		expireall
+		findtags
 		ic_mod_perl
 		interchange
 		localize
