@@ -285,7 +285,7 @@ You can reply one of:
 		y -- Use for both sessions and databases
 
 It is recommended that all installations reply S unless there is a need for
-improved performance in Minivend DBM databases.
+improved performance in Interchange DBM databases.
 
 If you reply YES and you use any GDBM or DB_File databases
 they will NEED TO BE REMADE for ALL CATALOGS using this
@@ -589,9 +589,9 @@ EOF
 			$msg .= <<EOF;
 
 
-If you have not modified any Minivend usertags, software programs, or libraries,
-it is usually safe to remove them, but you might copy them somewhere just in
-case you forgot something you changed.
+If you have not modified any Interchange usertags, software programs, or
+libraries, it is usually safe to remove them, but you might copy them somewhere
+just in case you forgot something you changed.
 EOF
 			print $msg;
 
@@ -667,7 +667,7 @@ EOF
 		die join "\n", @msgs, '', <<EOF;
 These modules must be installed to run Interchange. Try:
 
-	perl -MCPAN -e 'install Bundle::Minivend'
+	perl -MCPAN -e 'install Bundle::Interchange'
 
 or use normal Perl procedures to install them.
 EOF

@@ -66,8 +66,8 @@ ASSUMPTIONS
     Run files
         To place the logs, configuration, and run files in standard
         Redhat/LSB locations, Interchange relies on a special invocation
-        from /usr/local/bin/minivend. In other words, don't expect
-        /usr/local/minivend/bin/restart to work.
+        from /usr/local/bin/interchange. In other words, don't expect
+        /usr/local/interchange/bin/restart to work.
 
         Interchange will be started by this command:
 

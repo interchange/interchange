@@ -456,7 +456,7 @@ ask.
 <--That is, after you START or RESTART the Interchange server.  8-)
 <--It is best done with:
 <--
-<--        /home/user/mvend/bin/minivend -r
+<--        /home/user/mvend/bin/interchange -r
 <--
 <--For session expiration, you might want to place a line like this in your
 <--crontab:
@@ -469,7 +469,7 @@ ask.
     That's it.  The demo store should be installed and ready to go.  Now
     you want to start the Interchange server:
 
-        /home/user/mvend/bin/minivend -r
+        /home/user/mvend/bin/interchange -r
 
     You should see something like this:
 
@@ -586,7 +586,7 @@ The adminstrative side
             in the site.
 
         Table import/export
-            Tables can be imported into or experted from the minivend
+            Tables can be imported into or experted from the interchange
             database.  Some of the tables you might want to import or
             export:  inventory, pricing, shipping info.
 
@@ -626,6 +626,6 @@ In future versions of this document:
 where everything went
 What's going on underneath the hood?
 Anatomy of a catalog
-Anatomy of a minivend page
+Anatomy of a interchange page
 
 
