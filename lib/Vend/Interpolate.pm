@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.25 2000-09-27 18:10:15 zarko Exp $
+# $Id: Interpolate.pm,v 1.26 2000-09-30 09:40:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.26 $, 10);
 
 @EXPORT = qw (
 
@@ -1853,7 +1853,12 @@ sub log {
 	my $status;
 
 	$file = $opt->{file} || $Vend::Cfg->{LogFile};
+	if($file =~ s/^\s*>\s*//) {
+		$opt->{create} = 1;
+	}
 	$file = Vend::Util::escape_chars($file);
+
+	$file = ">$file" if $opt->{create};
 
 	unless($opt->{process} =~ /\bnostrip\b/i) {
 		$data =~ s/\r\n/\n/g;
@@ -2755,12 +2760,6 @@ sub tag_sort_hash {
 }
 
 my %Prev;
-
-sub compile_sub {
-}
-
-sub check_sub {
-}
 
 sub check_change {
 	my($name, $value, $text, $substr) = @_;
