@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.40 2004-07-15 17:27:00 mheins Exp $
+# $Id: Menu.pm,v 2.41 2005-02-14 13:06:28 racke Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 use Vend::Util;
 use strict;
@@ -309,7 +309,7 @@ my %transform = (
 				$status = Vend::Interpolate::tag_calc($1);
 			}
 			elsif ($indicator =~ /\[/s) {
-				$status = interpolate_html($indicator);
+				$status = Vend::Interpolate::interpolate_html($indicator);
 				$status =~ s/\s+//g;
 			}
 			if($rev xor $status) {
