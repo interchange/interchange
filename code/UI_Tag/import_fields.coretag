@@ -1,4 +1,3 @@
-
 UserTag import_fields Order table
 UserTag import_fields addAttr
 UserTag import_fields Routine <<EOR
@@ -178,13 +177,13 @@ EOF
   TABLE: {
 	if(! $table) {
 		$table = <UPDATE>;
-		chomp $table;
+		$table =~ s/\r?\n$//;
 		$change_sub->($table);
 	}
 #::logDebug("db now=$db");
 	if(! $opt->{fields}) {
 		$fields = <UPDATE>;
-		chomp $fields;
+		$fields =~ s/\r?\n$//;
 		$fields =~ s/$delimiter/ /g;
 		$out .= "${tmsg}Using fields from file: '$fields'\n";
 	}
@@ -212,7 +211,7 @@ EOF
 	my $delcount = 0;
 	my $addcount = 0;
 	while(<UPDATE>) {
-		chomp;
+		s/\r?\n$//;
 		$totcount++;
 		($k, @f) = split /$delimiter/o, $_;
 		if(/^\f(\w+)$/) {
