@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.4 2000-09-20 19:58:01 zarko Exp $
+# $Id: config_prog.PL,v 1.5 2000-09-25 16:31:02 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -51,8 +51,13 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-use Getopt::Long;
+use strict;
 use Config;
+use Getopt::Long;
+
+Getopt::Long::config(qw/permute/);
+
+### END CONFIGURATION VARIABLES
 
 my $prog = $0;
 $prog =~ s:.*/::;
@@ -84,8 +89,6 @@ my $Self = {
 	INSTALLBIN => '/usr/local/interchange/bin',
 #	INSTALLBIN => '~_~INSTALLBIN~_~',
 };
-
-Getopt::Long::config(qw/permute/);
 
 my $Output;
 my $Force;
@@ -153,7 +156,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.4 2000-09-20 19:58:01 zarko Exp $
+$Id: config_prog.PL,v 1.5 2000-09-25 16:31:02 zarko Exp $
 
 =head1 DESCRIPTION
 
