@@ -1,3 +1,7 @@
+[if !scratch ui_frames]
+[set window_override]1[/set]
+[/if]
+[set ui_frames][/set]
 [set help_name]main[/set]
 
 [if-mm !logged_in]
@@ -22,7 +26,6 @@ Interchange Administration
   -->
 </style>
 
-[seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
 
 <script language="JavaScript1.2">
 <!--
@@ -56,11 +59,15 @@ function open_help(url) {
 	return;
 [/calc]
 
+[if !scratch window_override]
+[seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
+
 function open_quicklinks() {
   window.name = "mainwindow[scratch window_name]";
   opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=[scratch ql_width],height=[scratch ql_height]";
   window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
 }
+[/if]
 
 // -->
 </script>
@@ -121,6 +128,7 @@ function open_quicklinks() {
 [/if-mm]
 
 
+[if !scratch window_override]
 <img src="admin/cleardot.gif" width="22">
 
 [if-mm advanced reconfig]
@@ -141,6 +149,7 @@ function open_quicklinks() {
 Quicklinks
 </font>
 </a>
+[/if]
 
 <img src="admin/cleardot.gif" width="22">
 
@@ -402,6 +411,7 @@ Help
 </tr>
 
 
+[if !scratch window_override]
 
 <tr>
 
@@ -418,6 +428,7 @@ Help
 <a href="javascript:open_quicklinks()">Quicklinks</a>
 
 </b>
+<small>(<a href="[area __UI_BASE__/fr_index]"><U>framed</U></a>)</small>
 
 </font>
 
@@ -438,7 +449,7 @@ including site design and advanced configuration options.
 </td>
 
 </tr>
-
+[/if]
 
 
 

@@ -24,7 +24,7 @@
 						/;
 	my (%wantmap) = qw/
 						search_table		fi
-						search_table		st
+						search_type 		st
 						allow_regex		    ac
 						search_template		sp
 						unique_only			un
@@ -41,12 +41,14 @@
 		@lines = grep /\S/, split /\n/, $CGI->{ui_searchblob};
 		@lines = map { s/^\s+//; s/\s+$//; $_ } @lines;
 		for(@lines) {
-#Log("processing searchblob line $_");
+Log("processing searchblob line $_");
 			my($k, $v) = split /\s*=\s*/, $_, 2;
+Log("searchblob $k=$v");
 			my $keyname;
 			if ($keyname = delete($wantmap{$k}) ) {
 				$v = ! $v if $want_invert{$k};
 				$saved->{$keyname} = $v;
+Log("searchblob immediate $keyname=$v");
 			}
 			else {
 				push @rescan, [$k, $v];
@@ -73,20 +75,28 @@
 					to  sort_option
 					/
 	);
+
 	my %count_rescan;
 	my $r;
 	foreach $r (@rescan) {
-		my $keyname = $remap{$r->[0]} . ($count_rescan{$r->[0]}++ || 0);
+		my $keyname = $remap{$r->[0]};
+		if(! $keyname) {
+			Log("Unknown searchblob parm $r->[0]");
+			next;
+		}
+		$keyname .= ($count_rescan{$r->[0]}++ || 0);
 		if($r->[0] eq 'sf') {
 			my ($kn, $tab);
 			if( $r->[1] =~ s/(\w+)://) {
 				$tab = $1;
 				$kn = $keyname;
 				$kn =~ s/search_field/search_table/;
+Log("searchblob table rescan $kn=$tab");
 				$saved->{$kn} = $tab;
 			}
 			else {
 				my $kn = $keyname;
+Log("searchblob table rescan $kn=$saved->{search_table}");
 				$kn =~ s/search_field/search_table/;
 				$saved->{$kn} = $saved->{search_table};
 			}
@@ -97,7 +107,7 @@
 			$kn =~ s/search_field/search_table/;
 			$saved->{$remap{$kn}} = $tab;
 		}
-#Log("processing searchblob rescan $keyname = $r->[1]");
+Log("searchblob rescan $keyname=$r->[1]");
 		$saved->{$keyname} = $r->[1];
 	}
 

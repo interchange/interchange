@@ -49,8 +49,6 @@ Variable UI_STD_HEAD <<EOV
   -->
 </style>
 
-[seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
-
 <script language="JavaScript1.2">
 <!--
 function open_help(url) {
@@ -83,12 +81,17 @@ function open_help(url) {
 	return;
 [/calc]
 
+[if !scratch window_override]
+[seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
+
 function open_quicklinks() {
   window.name = "mainwindow[scratch window_name]";
   opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=[scratch ql_width],height=[scratch ql_height]";
   window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
 }
+[/if]
 
+[/set]
 // -->
 </script>
 
@@ -161,6 +164,7 @@ function open_quicklinks() {
 </td>
 
 <td align="right" valign="middle" height="22">
+[if !scratch window_override]
 <a href="javascript:open_quicklinks()">
 <img src="admin/icon_pages.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
@@ -170,6 +174,7 @@ Quicklinks
 </a>
 
 <img src="admin/cleardot.gif" width="22">
+[/if]
 
 <a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')">
 <img src="admin/icon_help.gif" height="16" width="16" border="0" >

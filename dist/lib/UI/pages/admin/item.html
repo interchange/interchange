@@ -75,15 +75,20 @@ sku=new
 	text="Delete item"
 	src="admin/dalete.gif"
 	alt="Delete the item from the database"
-	confirm="Are you sure you want to delete this item?"
+	confirm="Are you sure you want to delete this item from [either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]?"
+	
 ]
-	[tag flag write]inventory pricing products[/tag]
+	[loop list="[either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]"]
+	[flag type=write table="[loop-code]"]
+	[/loop]
 	mv_nextpage=__UI_BASE__/item
 	[if-mm advanced item=d]
-		[perl tables="inventory pricing products"]
+		[perl tables="[either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]"]
 			my ($item) = $CGI->{item_id};
+			my $tabs = $Variable->{UI_ITEM_EXPUNGE} || q/products pricing inventory/;
+			my @tabs = split /[\s\0,]+/, $tabs;
 			my $out;
-			for(qw/products pricing inventory/) {
+			for(@tabs) {
 				next unless $Db{$_};
 				if ($Db{$_}->delete_record($item)) {
 					$out .= "Deleted $item from $_ table<BR>";
