@@ -113,13 +113,13 @@
                      mv_action=back
                      mv_nextpage=@@MV_PAGE@@
                     '
-         ]"><IMG SRC="delete.gif" ALT="Delete" ALIGN=CENTER BORDER=0></A>
-<br>Label: <INPUT TYPE=text SIZE=20 NAME="opt_label_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
+         ]"><IMG SRC="delete.gif" ALT="[L]Delete[/L]" ALIGN=CENTER BORDER=0></A>
+<br>[L]Label[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_label_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
 <INPUT TYPE=hidden NAME="reset_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
 <script><!--
 document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[sql-param o_group]} ? 'CHECKED' : undef;[/sql-calc]\n' +
 '	onClick="if (this.checked) { this.form.opt_label_[scratch mod_code].value = this.form.opt_group_[scratch mod_code].value; } else { this.form.opt_label_[scratch mod_code].value = this.form.reset_[scratch mod_code].value; }">\n' +
-'<font size=2>Set label to name</font>');
+'<font size=2>[L]Set label to name[/L]</font>');
 // -->
 </script>
 </TD></TR>
@@ -138,28 +138,28 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 [/query]
 
 <BR><BR><BR>
-[button text="Commit Changes"]
+[button text="[L]Commit Changes[/L]"]
 
 </TD><TD><PRE>                          </PRE></TD><TD VALIGN=TOP>
 
-<B>Create a new option:</B><BR>
-Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE="">
-<br>Label: <INPUT TYPE=text SIZE=20 NAME="opt_label_">
+<B>[L]Create a new option[/L]:</B><BR>
+[L]Name[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE="">
+<br>[L]Label[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_label_">
 <script><!--
 document.write('<br><INPUT TYPE=checkbox\n' +
 '	onClick="if (this.checked) { this.form.opt_label_.value = this.form.opt_group_.value; } else { this.form.opt_label_.value = \'\'; }">\n' +
-'<font size=2>Set label to name</font>');
+'<font size=2>[L]Set label to name[/L]</font>');
 // -->
 </script>
 <BR>
 <TEXTAREA ROWS=5 COLS=30 NAME="opt_value_"></TEXTAREA>
 <BR>
-[button text="Create option"]
+[button text="[L]Create option[/L]"]
 <BR><BR>
 
 <HR>
 
-<BR><BR><B>Clone an existing option set:</B><BR>
+<BR><BR><B>[L]Clone an existing option set[/L]:</B><BR>
 
 [query
 	list=1
@@ -173,7 +173,7 @@ document.write('<br><INPUT TYPE=checkbox\n' +
 <OPTION VALUE="[clone-code]">[clone-filter 20][clone-description][/clone-filter]
 [/if-clone-data]
 [/list]
-</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="Clone options"]<BR>
+</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="[L]Clone options[/L]"]<BR>
 </FORM>
 
 </TD></TR></TABLE>
