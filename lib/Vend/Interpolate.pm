@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.205 2004-02-17 15:58:28 jon Exp $
+# $Id: Interpolate.pm,v 2.206 2004-03-03 16:07:30 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.205 $, 10);
+$VERSION = substr(q$Revision: 2.206 $, 10);
 
 @EXPORT = qw (
 
@@ -4431,7 +4431,7 @@ sub iterate_hash_list {
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
-		$item->{mv_ip} = $i;
+		$item->{mv_ip} = $opt->{reverse} ? ($end - $i) : $i;
 		if($opt->{modular}) {
 			if($opt->{master}) {
 				next unless $item->{mv_mi} eq $opt->{master};
