@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.38 2001-04-16 07:43:05 heins Exp $
+# $Id: interchange.PL,v 1.15.2.39 2001-04-25 15:29:09 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -298,6 +298,10 @@ if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
 	sleep 1;
 	warn errmsg("The security problems are on your head, though. Continuing...\n");
 }
+
+## This was set to 1 in Vend::Config, so that external programs calling it
+## would act properly by default
+undef $Vend::ExternalProgram;
 
 my $H;
 sub http {
@@ -1714,7 +1718,6 @@ EOF
 			unless $Vend::Cfg->{Static};
 	}
 	$::Variable = $Vend::Cfg->{Variable};
-
 
 	if (defined $Global::SelectorAlias{$CGI::script_name}
 		and ! defined $Vend::InternalHTTP                 )
