@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.14 2002-02-18 02:07:03 mheins Exp $
+# $Id: Parse.pm,v 2.15 2002-03-04 23:45:17 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -78,8 +78,8 @@ my %addAttr = (
 my %hasEndTag = (
 
 				qw(
-                        if              1
-                        unless          1
+					if              1
+					unless          1
 					restrict		1
 				)
 			);
@@ -175,6 +175,8 @@ $Routine{restrict} = sub {
 
 	my $save_restrict = $Vend::restricted;
 
+	$opt->{log} ||= 'all';
+
 	my $default;
 	if("\L$opt->{policy}" eq 'allow') {
 		# Accept all, deny only ones defined in disable
@@ -194,7 +196,6 @@ $Routine{restrict} = sub {
 		tr/-/_/;
 	}
 
-
 	my %restrict;
 	for(keys %Routine) {
 		$restrict{$_} = $default;
@@ -206,9 +207,10 @@ $Routine{restrict} = sub {
 
 	$Vend::Cfg->{AdminSub} = \%restrict;
 	$Vend::restricted = join " ",
-			'default=', $opt->{policy},
-			'enable=', join(",", @enable),
-			'disable=', join(",", @disable),
+			'default=' . $opt->{policy},
+			'enable=' . join(",", @enable),
+			'disable=' . join(",", @disable),
+			'log=' . $opt->{log},
 			;
 	my $out;
 	eval {
@@ -267,6 +269,7 @@ my %Interpolate = (
 			);
 
 my %NoReparse = ( qw/
+					restrict		1
 				/ );
 
 my %Gobble = ( qw/
@@ -327,7 +330,7 @@ sub do_tag {
 	my $tag = shift;
 #::logDebug("Parse-do_tag: tag=$tag caller=" . caller() . " args=" . ::uneval_it(\@_) );
 	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
-	
+
 		if($Vend::restricted) {
 			die errmsg(
 					"Tag '%s' in execution-restricted area: %s",
@@ -516,13 +519,19 @@ sub start {
 
 	my($tmpbuf);
 	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
-	
+
 		if($Vend::restricted) {
-			::logError(
-				"Restricted tag (%s) attempted during restriction '%s'",
-				$origtext,
-				$Vend::restricted,
+			my $log = 'all';
+			$Vend::restricted =~ /\blog=(\w+)/ and $log = lc $1;
+			undef $log if $log eq 'none' or
+				($log eq 'once' and $Vend::restricted_err{$origtext}++);
+			if ($log) {
+				::logError(
+					"Restricted tag (%s) attempted during restriction '%s'",
+					$origtext,
+					$Vend::restricted,
 				);
+			}
 			$self->{OUT} .= $origtext;
 			return 1;
 		}
