@@ -14,58 +14,52 @@ upsell_in_cart:
 [/comment]
 
 <!-- BEGIN COMPONENT [control component cart] -->
+
+<table width="95%">
+<tr>
+  <td align="centeR">
+
 [if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
+
 [elsif scratch tried]
-You must have cookies set to leave the basket. Check out now or forever
-lose your shopping cart.
+    You must have cookies set to leave the basket. Check out now or forever
+    lose your shopping cart.
 [/elsif]
+
 [else]
 [set tried]1[/set]
 [bounce href="[area ord/basket]"]
 [/else]
+
 [/if]
 
-<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
-<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
-<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
-<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
-<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
- <br>
-  <table width="450" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+    <FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
+    <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+    <INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
+    <INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
+    <INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
+    <INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
+    <br>
+    <table>
     <tr>
       <td>
 
-  <table width="450" border="0" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
-		<TR VALIGN=TOP class=rheader>
-                        <td width="9%" class=cheader>Remove</td>
-                        <td width="13%" class=cheader align=center> 
-                          SKU
-                        </td>
-                        <td width="27%" class=cheader> 
-                          Description
-                        </td>
-                        <td width="13%" class=cheader align=center>
-                          Quantity
-                        </td>
-                        <td width="19%" class=cheader align=right> 
-                          Price
-                        </td>
-                        <td width="19%" class=cheader align=right> 
-                          Extension
-                        </td>
-		</TR>
+        <table cellspacing="0" cellpadding="2">
+	<TR class="contentbar2">
+          <td class="contentbar2"><b>&nbsp;Remove</b></td>
+          <td class="contentbar2" align="center"><b>SKU</b></td>
+          <td class="contentbar2"><b>Description</b></td>
+          <td class="contentbar2"><b>Quantity</b></td>
+          <td class="contentbar2" align="center"><b>Price</b></td>
+          <td class="contentbar2"><b>Extension&nbsp;</b></td>
+	</TR>
 	<TBODY>
-
-
+	
 [if items]
 [then]
 [item-list modular=1]
 
 [item-change 2][condition]2[/condition]
-[else]
-<TR bgcolor="__BARCONTRAST__"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></td></TR>
-[/else]
 [/item-change 2]
 
 [item-calc]
@@ -73,7 +67,7 @@ lose your shopping cart.
 	delete $Scratch->{subitems[item-increment]};
 	my $master = '[item-modifier mv_mi]';
 #Log("Checking master item $master");
-	$row_class = ++$count % 2 ?  'cartrow' : 'cartalt';
+	$row_class = ++$count % 2 ?  'maincontent' : 'contentbar1';
 	my $item = '[item-increment]';
 	my $up = q{[item-data merchandising upsell_to]};
 	my $cr = q{[item-data merchandising cross_sell]};
@@ -101,19 +95,16 @@ lose your shopping cart.
 	return;
 [/item-calc]
 
-<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
-	<TD align=center valign=top>
-	<span style="font-size: smaller"><INPUT TYPE=checkbox NAME="[quantity-name]"
-			   onClick="this.form.action='[process-target]',
-			   			this.form.submit()"
-			   VALUE=0></span></TD>
-	<TD valign=top>[item-sku]</TD>
-	<td valign=top>[page [item-code]][item-description]</A>
+	<TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
+	  <TD align=center>
+	    <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+	  </TD>
+	  <TD><b>[item-sku]</b></TD>
+	  <td>[page [item-code]]<b>[item-description]</b></A>
 	[if scratch dealer]
 	[if-item-data pricing sku]
-		<BR>[page quantity [item-code]]
-			<span style="color: __CONTRAST__">QUANTITY PRICING</span>
-			</A>
+	    <BR>[page quantity [item-code]]
+	    QUANTITY PRICING</A>
 	[/if-item-data]
 	[/if]
 	[if-item-field weight]
@@ -134,10 +125,12 @@ lose your shopping cart.
 		@ary = grep ! $in_basket{$_}, @ary;
 		return '' unless @ary;
 		my $out = <<'EOF';
-	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
-		<TR class=sheader><TD>Customers who bought this item also bought:</TD>
-		</TR><TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
-		<TD>
+	    <TABLE>
+	    <TR class="contentbar2">
+              <TD>Customers who bought this item also bought:</TD>
+	    </TR>
+            <TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
+	      <TD>
 EOF
 		for(@ary) {
  			my $desc = tag_data( 'products', 'description', $_);
@@ -155,17 +148,16 @@ EOF
 	[set upsell_found][/set]
 	[loop list="[item-data merchandising upsell_to]"]
 	[if scratch upsell_found]
-	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
-		<TR class=sheader>
-			<TD __HEADERBG__>
-			<span style="font-size: smaller">
-				Other items you may like:
-			</span>
-			<TD __HEADERBG__>
-			</TD>
-		</TR>
-		<TR>
-			<TD class=listing>
+	    <TABLE CELLPADDING=0 CELLSPACING=0>
+	    <TR class="contentbar2">
+	      <TD class="contentbar1">
+		Other items you may like:
+	      </TD>
+	      <TD class="contentbar1">
+	      </TD>
+	    </TR>
+	    <TR>
+	      <TD class="contentbar1">
 	[list]
 	[loop-calc]
 		@ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
@@ -174,74 +166,57 @@ EOF
 		return q{<A HREF="[area [loop-code]]">[loop-description]</A><BR>};
 	[/loop-calc]
 	[/list]
-
-		</TD>
-		</TR>
-	</table>
+	      </TD>
+	    </TR>
+	    </table>
 	[/if]
 	[/loop]
 [/if]
 
-<br>
-
+	    <br>
 
 	[if-item-data options o_enable]
 		[if-item-data !options o_modular]
-			<span style="font-size: 8pt">
 			[table-organize cols=4 table=' ' font="size=1" pretty=1]
 			[item-options td=1 label=1 bold=1 price=1]
 			[/table-organize]
-			</span>
 		[/if-item-data]
 	[/if-item-data]
 
-</TD>
+	  </TD>
 
 [input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
 
 [if-item-field gift_cert]
-	<TD ALIGN=CENTER><small>Amount of gift:</small></TD>
-	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=7></TD>
-	<TD ALIGN=right>
-		<span style="font-size: smaller">
-			[item-subtotal]
-		</span>
-	</TD>
+	  <TD ALIGN=CENTER><small>Amount of gift:</small></TD>
+	  <TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=7></TD>
+	  <TD ALIGN=right>
+	    [item-subtotal]
+	  </TD>
 [else]
-	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
+	  <TD ALIGN=CENTER>
+	    <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
+	  </TD>
 	[if discount [item-code]]
-		<TD ALIGN=right>
-		<span style="font-size: smaller">
-			Regular price <STRIKE>[item-price]</STRIKE>
-		<BR>
-			<B>Your price [discount-price]<br>
-			<span style="color: __CONTRAST__">
-			You save [item-difference]
-			</span>
-		</span>
-		</TD>
-		<TD ALIGN=right>
-			<span style="font-size: smaller">
-				<strike>[item-subtotal]</strike><br>
-			<B>[item-discount-subtotal]<BR>
-			<span style="color: __CONTRAST__">
-			You save [item-discount]
-			</span>
-			</b>
-			</span>
-		</TD>
+	  <TD ALIGN=right>
+	    Regular price <STRIKE>[item-price]</STRIKE>
+	    <BR>
+	    <B>Your price: [discount-price]<br>
+	    You save: [item-difference]
+	  </TD>
+	  <TD ALIGN=right>
+	    <strike>[item-subtotal]</strike><br>
+	    <B>[item-discount-subtotal]<BR>
+	    You save: [item-discount]</b>
+	  </TD>
 	[else]
-	<TD ALIGN=right>
-			[item-price]
-	</TD>
-	<TD ALIGN=right>
-			[item-subtotal]
-	</TD>
+	  <TD ALIGN=right>[item-price]</TD>
+	  <TD ALIGN=right>[item-subtotal]</TD>
 	[/else]
 	[/if]
 [/else]
 [/if-item-field]
-</TR>
+	</TR>
 
 [if scratch subitems[item-increment]]
 	[calc]
@@ -261,18 +236,17 @@ EOF
 	my $half = int(scalar(@lines) / 2);
 	my $first = join "<BR>", splice @lines, 0, $half;
 	my $last = join "<BR>", @lines;
+
 	return <<EOF;
 <TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
-<TD COLSPAN=3 align="left" WIDTH="50%" VALIGN=top>
-	<span style="font-size: smaller">
-$first<BR>
-<A HREF="$modify">modify</A>
-</span>
-</td>
-<TD COLSPAN=3 align="left" WIDTH="50%" VALIGN=top>
-	<span style="font-size: smaller">
-$last</span>
-<td>&nbsp;</td>
+  <TD COLSPAN=3 align="left">
+    $first<BR>
+    <A HREF="$modify">modify</A>
+  </td>
+  <TD COLSPAN=3 align="left">
+    $last
+  </td>
+  <td>&nbsp;</td>
 </TR>
 EOF
 	[/calc]
@@ -290,116 +264,139 @@ EOF
 			textarea=1
 			widget=links]
 [address]
-<TR BGCOLOR="[scratch color]">
+
+	<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
+
 [if cgi edit_addresses]
-<TD>&nbsp;</TD>
-<TD>&nbsp;</td>
-<TD>
-<SMALL><SMALL>
-<INPUT TYPE=hidden NAME="[modifier-name mv_an]" VALUE="{mv_an}">
-{textarea}
-</SMALL>
-</SMALL>
-</TD>
-<TD><INPUT TYPE=submit VALUE=Save></TD>
+	  <TD>&nbsp;</TD>
+	  <TD>&nbsp;</td>
+	  <TD>
+	    <SMALL>
+	    <INPUT TYPE=hidden NAME="[modifier-name mv_an]" VALUE="{mv_an}">
+	    {textarea}
+	    </SMALL>
+	  </TD>
+	  <TD><INPUT TYPE=submit VALUE=Save></TD>
 [else]
-<TD COLSPAN=2><SMALL><SMALL>Retrieve:<BR>
-{address_book}
-</TD>
-<TD>
-<SMALL><SMALL>
-{mv_ad}<INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
-</SMALL>
-</SMALL>
-</TD>
-<TD>&nbsp;</TD>
+	  <TD COLSPAN=2>
+	    <SMALL>Retrieve:<BR>
+	    {address_book}
+	    </small>
+	  </TD>
+	  <TD>
+	    <SMALL>
+	    {mv_ad}<INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
+	    </SMALL>
+	  </TD>
+	  <TD>&nbsp;</TD>
 [/else]
 [/if]
-<TD>&nbsp;</TD>
-<TD>&nbsp;</TD>
-</TR>
+	  <TD>&nbsp;</TD>
+	  <TD>&nbsp;</TD>
+	</TR>
 [/address]
 [/item-tag-address]
 
 [if session logged_in]
-<TR class=rheader><TD ALIGN=CENTER COLSPAN=6>
+
+	<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
+	  <TD ALIGN="right" COLSPAN="6" valign="top">
 		[if value separate_addresses]
 
 		[page href="@@MV_PAGE@@" form="
 			separate_addresses=0
 			mv_action=return
-		"]<FONT COLOR="__BARTEXT__">Same shipping address</FONT></A>&nbsp;&nbsp;&nbsp;
-		[page href="@@MV_PAGE@@" form="edit_addresses=1"]<FONT COLOR="__BARTEXT__" SIZE=1>Edit address</FONT></A>&nbsp;&nbsp;&nbsp;
-		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]<FONT COLOR="__BARTEXT__" SIZE=1>Add address</FONT></A>
+		"]Same shipping address</A>&nbsp;&nbsp;&nbsp;
+		[page href="@@MV_PAGE@@" form="edit_addresses=1"]<small>Edit address</small></A>&nbsp;&nbsp;&nbsp;
+		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]<small>Add address</small></A>
 		[else]
 		[page href="@@MV_PAGE@@" form="
 			separate_addresses=1
 			mv_action=return
-		"]<FONT COLOR="__BARTEXT__" SIZE=1>Separate shipping addresses</FONT></A>
+		"]Separate shipping addresses</A>
 		[/else]
 		[/if]
-</td></TR>
+	  </td>
+	</TR>
+
 [/if]
 
 [/item-list]
 [/then]
 [else]
-	<TR><TD ALIGN=CENTER COLSPAN=6>
-		<H3>No items at the moment.</H3>
-	</TD></TR>
+
+	<TR>
+	  <TD ALIGN=CENTER COLSPAN=6 class="contentbar1">
+	    <b>No items at the moment.</b>
+	  </TD>
+	</TR>
+
 [/else]
 [/if]
-</TBODY>
-</table>
 
-</td></tr></table>
-<br>
+        </TBODY>
+        </table>
 
-<br clear=left>
-<table cellpadding="1" cellpadding="1" align="right" border="0">  
-<tr>
-<td>
-					 <table border="0" cellspacing="0" cellpadding="2">
-                      <tr> 
-					  <td>
-                          <div align="center">
-						  <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
-                          </div>
-					  </td>
-                        <td width="34%">
-[if type=explicit compare="[control continue_shopping]"]
-                          <div align="center">
-						  
-    [button
-	text="Continue shopping"
-     	src="continue_shopping.gif"
-		hidetext=1
-		form=basket
-	]
-     [bounce page=index]
-     mv_nextpage=nothing
-    [/button]
+      </td>
+    </tr>
+    </table>
 
-                          </div>
-[/if]
+    <br>
 
-                        </td>
-						</tr>
-						<tr>
-						<td colspan="4" align="right">
+    <table border="0" width="60%">  
+    <tr>
+      <td>
 
-    [button
+	<table border="0" width="100%">
+        <tr> 
+	  <td>
+	    <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
+	  </td>
+	  <td align="left">
+    		[button
 		text="Check out"
-     	src="checkout_button.gif"
-		extra="class=rheader"
+     		src="checkout_button.gif"
+		extra="class=contentbar1"
 		hidetext=1
 		form=basket
-	]
-	mv_todo=return
-	mv_nextpage=ord/checkout
-	[/button]
-<BR>
-
+		]
+			mv_todo=return
+			mv_nextpage=ord/checkout
+		[/button]
+	  </td>
+	  <td align="center">
+	    [if type=explicit compare="[control continue_shopping]"]
+    	      [button
+		text="Continue shopping"
+     		src="continue_shopping.gif"
+		hidetext=1
+		form=basket
+	      ]
+     	  		[bounce page=index]
+        		mv_nextpage=nothing
+    	      [/button]
+	    [/if]
+	  </td>
+      	  <td align="Right">
+            <table cellspacing="0" cellpadding="4">
+            <tr> 
+              <td align=right class="contentbar1">
+                Shipping Weight:
+              </td>
+              <td class="contentbar2" align="right">[summary format="%s" total=1]</td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                <b>Subtotal:</b>
+              </td>
+              <td class="contentbar2" align=right><b>[subtotal]</b></td>
+            </tr>
+	    </table>
+	  </td>
+	</tr>
+	<tr>
+	  <td colspan="4" align="center">
+	  <br>
   [set Save Cart]
    mv_todo=return
    mv_nextpage=ord/basket
@@ -413,37 +410,33 @@ EOF
 
 [if session logged_in][then]
   [if value save_cart eq 'recurring']
-    <FORM ACTION="[process-target]" METHOD=POST>
-    <FONT SIZE="-1">
-    To save this recurring order, give it a nickname, then press 'Save Cart'.
-    Nickname:
-    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
-    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="1">
-    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="recurring">
-    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
-    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-    <INPUT TYPE=SUBMIT VALUE="Save Cart">
-    </FONT>
-    </FORM>
+    	    <FORM ACTION="[process-target]" METHOD=POST>
+    	    To save this recurring order, give it a nickname, then press 'Save Cart'.<br>
+    	    Nickname:
+    	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
+    	    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="1">
+    	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="recurring">
+    	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
+    	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
+    	    <INPUT TYPE=SUBMIT VALUE="Save Cart">
+    	    </FORM>
   [elsif value save_cart eq 'cart']
-    <FORM ACTION="[process-target]" METHOD=POST>
-    <FONT SIZE="-1">
-    To save this cart, give it a nickname, then press 'Save Cart'.
-    Nickname:
-    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
-    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="0">
-    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="cart">
-    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
-    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-    <INPUT TYPE=SUBMIT VALUE="Save Cart">
-    </FONT>
-    </FORM>
+    	    <FORM ACTION="[process-target]" METHOD=POST>
+    	    To save this cart, give it a nickname, then press 'Save Cart'.<br>
+    	    Nickname:
+    	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
+    	    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="0">
+    	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="cart">
+    	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
+    	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
+    	    <INPUT TYPE=SUBMIT VALUE="Save Cart">
+	    </FORM>
   [/elsif]
   [else]
       [button
           text="Save This Cart"
           src="save_cart_button.gif"
-          extra="class=rheader"
+          extra="class=contentbar2"
           hidetext=1
           form=basket
           mv_check="Save This Cart"
@@ -455,7 +448,7 @@ EOF
       [button
           text="Set As Recurring Order"
           src="recurring_order_button.gif"
-          extra="class=rheader"
+          extra="class=contentbar2"
           hidetext=1
           form=basket
           mv_check="Set As Recurring Order"
@@ -468,34 +461,18 @@ EOF
   [/else]
   [/if]
 [/then][/if]
-
-					
-						</td>				
-
 						
-                      </tr>
-                    </table>
+	  </td>					
+        </tr>
+        </table>
 
-			</td><td align="right">
-                    <table border="0" cellspacing="2" cellpadding="2" align="right">
-                      <tr> 
-                        <td nowrap align=right class=clisting>
-                          Shipping Weight:
-                        </td>
-                        <td class=cartrow align="right">[summary format="%s" total=1]</td>
-                      </tr>
-                      <tr>
-                        <td align="right">
-                          Subtotal:
-                        </td>
-                        <td class=cartrow align=right>[subtotal]</td>
-                      </tr>
-					  </table>
+      </td>
+    </tr>
+    </TABLE>
+    </FORM>
 
-</td>
+  </td>
 </tr>
-</TABLE>
-</FORM>
-<br clear=all>
+</table>
 
 <!-- END COMPONENT [control component cart] -->
