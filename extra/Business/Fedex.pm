@@ -48,7 +48,7 @@ and zip code
 
 This module let you fetch Federal Express shipping rates from and to any country.
 
-The module makes a HTTP request at http://rate.dmz.fedex.com/servlet/RateFinderServlet?orig_country=US&language=english
+The module makes a HTTP request at http://www.fedex.com/servlet/RateFinderServlet?orig_country=US&language=english
 and parses the output into an array of hashes, see services method.
 
 =cut
@@ -64,11 +64,11 @@ $VERSION = 0.01;
 $Debug = 1;
 
 # fedex servlet we use
-my $Getratecgi = "http://rate.dmz.fedex.com/servlet/RateFinderServlet";
+my $Getratecgi = "http://www.fedex.com/servlet/RateFinderServlet";
 
 
 # as per form at
-# http://rate.dmz.fedex.com/servlet/RateFinderServlet?orig_country=US&language=english
+# http://www.fedex.com/servlet/RateFinderServlet?orig_country=US&language=english
 my %Packagings = (
 		'Envelope' => '6',
 		'Pak' => '2',
