@@ -26,10 +26,8 @@ fields that have not been completed will be displayed in red.
 	no_bottom=1
    	row_template="[scratch row_template]"
 
-	ui_profile="*finalize"
-
 	mv_nextpage=__UI_BASE__/wizard/step_preview
-	mv_prevpage=__UI_BASE__/wizard/step_index
+	mv_prevpage=__UI_BASE__/wizard/step_products
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
 	ui_data_key=code
@@ -142,7 +140,7 @@ fields that have not been completed will be displayed in red.
 	label.style="Base catalog style"
 	help.style="The base template for your catalog"
 	widget.style=select
-	passed.style=`construct=Construct Something, foundation=Foundation, art=Art Store, barry=Barry's Books`
+	passed.style="construct=Construct Something, foundation=Foundation, art=Art Store, barry=Barry's Books"
 
 	label.taxlocation="Tax location"
 	help.taxlocation="The location this tax applies to (often a state, possibly a country)"
