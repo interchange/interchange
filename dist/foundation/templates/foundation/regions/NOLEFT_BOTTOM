@@ -1,0 +1,9 @@
+    <!--- continued from NOLEFT_TOP --->
+
+    [include file="templates/components/[control component none]"][control]
+  </td>
+</tr>
+</table>
+
+</body>
+</html>
