@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.30 2003-04-04 16:53:28 racke Exp $
+# $Id: Shadow.pm,v 1.31 2003-04-08 13:41:03 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.30 $, 10);
+$VERSION = substr(q$Revision: 1.31 $, 10);
 
 # TODO
 #
@@ -201,10 +201,19 @@ sub foreign {
 
 sub field {
 	my ($s, $key, $column) = @_;
-	my ($map, $locale, $db);
 
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->_map_column($key, $column);
+}
+
+sub set_field {
+	my ($s, $key, $column, $value) = @_;
+
+	$s = $s->import_db() unless defined $s->[$OBJ];
+
+	# usually we want to operate on the original table
+	::logDebug("SET_FIELD: $key $column $value");
+	$s->[$OBJ]->set_field($key, $column, $value);
 }
 
 sub ref {
@@ -281,6 +290,34 @@ sub query {
 				die errmsg("Table %s not found", $table);
 			}
 			return $db->query($opt, $text, @arg);
+		} else {
+			# check if one of the queried fields is shadowed
+			my (@map_matches, @map_entries);
+			unless (@map_matches = $s->_map_entries($qref->{columns}, \@map_entries)) {
+				return $s->[$OBJ]->query($opt, $text, @arg);				
+			}
+			# scan columns for key field
+			my $keyname = $s->[$OBJ]->config('KEY');
+			my $keypos;
+			for (my $i = 0; $i < @{$qref->{columns}}; $i++) {
+				if ($keyname eq $qref->{columns}->[$i]) {
+					$keypos = $i;
+					last;
+				}
+			}
+			unless (defined $keypos) {
+				die "key not in query, cannot handle";
+			}
+			# replace shadowed fields
+			my ($pos, $name, $row, $map_entry);
+			my $result = $s->[$OBJ]->query($opt, $text, @arg);
+			for $row (@$result) {
+				for $pos (@map_matches) {
+					($name, $map_entry) = @{$map_entries[$pos]};
+					$row->[$pos] = $s->_map_column($row->[$keypos], $name, 1, $row->[$pos], $map_entry);
+				}
+			}
+			return $result;
 		}
 	}
 }
@@ -386,6 +423,20 @@ sub _parse_sql {
 	\%sqlinfo;		   
 }
 
+sub _map_entries {
+	my ($s, $colsref, $entriesref) = @_;
+	my @matches;
+	my $locale = $::Scratch->{mv_locale};
+	
+	for (my $i = 0; $i < @$colsref; $i++) {
+		if (exists $s->[$CONFIG]->{MAP}->{$colsref->[$i]}->{$locale}) {
+			$entriesref->[$i] = [$colsref->[$i], $s->[$CONFIG]->{MAP}->{$colsref->[$i]}];
+			push (@matches, $i);
+		}
+	}
+	return @matches;
+}
+
 # _map_field returns the shadowed database and column for a given field
 sub _map_field {
 	my ($s, $column) = @_;
@@ -434,13 +485,16 @@ sub _map_array {
 }
 
 sub _map_column {
-	my ($s, $key, $column, $done, $orig) = @_;
-	my ($map, $mapentry, $db, $value);
+	my ($s, $key, $column, $done, $orig, $mapentry) = @_;
+	my ($map, $db, $value);
 
 	my $locale = $::Scratch->{mv_locale} || 'default';
 
-	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+	if (! $mapentry && exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
 		$mapentry = $s->[$CONFIG]->{MAP}->{$column};
+	}
+
+	if ($mapentry) {
 		$map = $mapentry->{$locale};
 		if (exists $map->{lookup_table}) {
 			my ($db_lookup, $lookup_key);
