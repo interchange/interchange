@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.73 2002-06-27 22:24:10 jon Exp $
+# $Id: Interpolate.pm,v 2.74 2002-07-03 15:01:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.73 $, 10);
+$VERSION = substr(q$Revision: 2.74 $, 10);
 
 @EXPORT = qw (
 
@@ -1621,6 +1621,7 @@ sub tag_options {
 #::logDebug("entering tag_options for $sku");
 
 	$opt = get_option_hash($opt);
+
 	my $table = $opt->{table} || $::Variable->{MV_OPTION_TABLE} || 'options';
 
 	if($opt->{report}) {
@@ -1645,8 +1646,9 @@ sub tag_options {
 	my $inv_func;
 	if($opt->{inventory}) {
 		my ($t, $c) = split /[.:]+/, $opt->{inventory};
-		if($db = database_exists_ref($t)) {
-			$inv_func = $db->field_accessor($c);
+		my $idb;
+		if($idb = database_exists_ref($t)) {
+			$inv_func = $idb->field_accessor($c);
 		}
 	}
 
@@ -1665,6 +1667,24 @@ sub tag_options {
 		}
 		delete @{$record}{@del};
 		@{$record}{keys %rec} = (values %rec);
+	}
+
+	my $rsort = '';
+	$map{o_sort} ||= 'o_sort';
+	if($opt->{sort}) {
+		$map{o_sort} = $opt->{sort_field} if $opt->{sort_field};
+
+		if(! defined $db->test_column($map{o_sort}) ) {
+			logError(
+				"item-options sort column '%s' non-existent, unsorted",
+				$map{o_sort},
+			);
+		}
+		else {
+			$rsort = " ORDER BY $map{o_sort}";
+			my $sopt = $opt->{sort_option} || '';
+			$rsort .= " DESC" if $sopt =~ /^(r(?:ev(?:erse)?)?|desc(?:ending)?)/i;
+		}
 	}
 
 	return if ! $record->{o_enable};
@@ -1698,11 +1718,12 @@ sub tag_options {
 		}
 		my $fsel = $map{sku} || 'sku';
 		my $rsel = $db->quote($sku, $fsel);
-		my $rsort = $map{o_sort} || 'o_sort';
+		$rsort ||= " ORDER BY $map{o_sort}";
 		
 		my $q = "SELECT " .
 				join (",", @rf) .
-				" FROM $table where $fsel = $rsel ORDER BY $rsort";
+				" FROM $table where $fsel = $rsel $rsort";
+#::logDebug("tag_options separate query: $q");
 		my $ary = $db->query($q); 
 		my $ref;
 		my $i = 0;
@@ -1774,10 +1795,11 @@ sub tag_options {
 		my $lcol = $map{sku} || 'sku';
 		my $lval = $db->quote($sku, $lcol);
 
-		my $rsort = $map{o_sort} || 'o_sort';
+		$rsort ||= " ORDER BY $map{o_sort}";
 		
 		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $table where $lcol = $lval ORDER BY $rsort";
+		$q .= " FROM $table where $lcol = $lval $rsort";
+#::logDebug("tag_options matrix query: $q");
 		my $ary = $db->query($q); 
 		my $ref;
 		my $price = {};
@@ -1817,6 +1839,7 @@ sub tag_options {
 							$item || undef,
 						);
 		$out .= "</td>" if $opt->{td};
+#::logDebug("matrix option returning $out");
 	}
 	elsif($record->{o_modular}) {
 #::logDebug("modular options");
@@ -1830,6 +1853,8 @@ sub tag_options {
 		my $rsel = $db->quote($sku, $fsel);
 		
 		my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
+		$q .= $rsort;
+#::logDebug("tag_options simple query: $q");
 		my $ary = $db->query($q); 
 		my $ref;
 		foreach $ref (@$ary) {
