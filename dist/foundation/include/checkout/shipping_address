@@ -1,0 +1,174 @@
+<table cellspacing=0 cellpadding=0 width="100%">
+  <tr>
+	<td>
+	  <table border=0 align="center" cellspacing=0 width="100%">
+		<tr>
+		  <td colspan="4">&nbsp;</td>
+		</tr>
+		<tr class="contentbar2">
+		  <td class="contentbar2" colspan=4>
+			<b>&nbsp;Shipping Address<b> <i>(primary)</i>
+		  </td>
+		</tr>
+		<tr>
+		  <td colspan="4" class="contentbar1">&nbsp;</td>
+		</tr>
+		<tr>
+		  <td align=right class="contentbar1">
+			[error name=fname std_label="First Name" required=1]
+		  </td>
+		  <td align=left class="contentbar1">
+			<INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
+		  </td>
+		  <td align="right" class="contentbar1">[error name=lname std_label="Last Name" required=1]</td>
+		  <td align="left" class="contentbar1"><INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
+		</tr>
+		<tr>
+		  <td align="right" class="contentbar1">
+			[error name=company std_label=Company required="[scratch dealer]"]
+		  </td>
+		  <td align="left" class="contentbar1" colspan=3>
+			<INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
+		  </td>
+		</tr>
+		<tr>
+		  <td align="right" class="contentbar1">[error name=address1 std_label=Address required=1]
+		</td>
+		<td align="left" colspan=3 class="contentbar1">
+		  <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="40" maxlength="64">
+		</td>
+	  </tr>
+	  <tr>
+		<td class="contentbar1">&nbsp;</td>
+		<td class="contentbar1" align="left" colspan=3>
+		  <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="40" maxlength="64">
+		</td>
+	  </tr>
+	  <tr class="contentbar1">
+		<td align="right" class="contentbar1">
+		  [error name=city std_label="City" required=1]
+		</td>
+		<td class="contentbar1" colspan=3>
+		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
+		</td>
+	  </tr>
+	  <tr>
+		<td class="contentbar1" align=right>
+			[error name=state std_label="State/Province" required=1]
+		</td>
+		<td align="left" class="contentbar1" colspan=3>
+		  [loop search="
+			fi=state.txt
+			sf=country
+			se=[default country US]
+			rf=state,name,country
+			un=yes
+			tf=sorder,name
+			ml=100
+		  "
+		  option=state]
+		  [on-match]<SELECT onChange="check_tax(this.form)" NAME=state>[/on-match]
+		  [list]
+		  [loop-change 1][condition][loop-param country][/condition]
+		  <OPTGROUP LABEL="[data table=country col=name key='[loop-param country]']">
+		  [/loop-change 1]
+		  <OPTION VALUE="[loop-code]">[loop-pos 1]
+		  [/list]
+		  [on-match]</SELECT>[/on-match]
+		  [no-match]<INPUT NAME=state VALUE="[value state]" SIZE=20>[/no-match]
+		  [/loop]
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right" class="contentbar1">
+		  [error name=zip std_label="Zip/Postal Code" required=1] 
+		</td>
+		<td class="contentbar1" colspan=3>
+		  <INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size="10" maxlength="10">
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right" class="contentbar1">
+		  [error name=email std_label="Email Address" required=1]
+		</td>
+		<td class="contentbar1" colspan=3>
+		  <INPUT TYPE=text NAME=email VALUE="[value email]" size="30">
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right" class="contentbar1">
+		  Country
+		</td>
+		<td colspan="3" class="contentbar1">
+		  <SELECT NAME=country onChange="this.form.submit()">
+		  [if value country =~ /(^$|US|CA)/]
+		  <OPTION VALUE="US"> United States
+		  <OPTION [selected country CA] VALUE="CA"> Canada
+		  <OPTION VALUE="JP"> Other
+		  [else]
+		  [loop option=country search="
+			ra=yes
+			fi=country
+			st=db
+			rf=code,name
+			ml=1000
+			tf=name
+		  "]
+		  <OPTION VALUE="[loop-code]"> [loop-data country name] 
+		  [/loop]
+		  [/else]
+		  [/if]
+		  </SELECT>
+		  <small>(will update display)</small>
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right" class="contentbar1">
+		  [error name=phone_day std_label="Daytime Phone" required=1]
+		</td>
+		<td class="contentbar1">
+		  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
+		</td>
+		<td align="right" class="contentbar1">
+		  [error name=phone_night std_label="Evening Phone"]
+		</td>
+		<td align="left" class="contentbar1">
+		  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
+		</td>
+	  </tr>
+	  [if session ship_message]                                                       
+	  <tr>
+		<td class="contentbar1">&nbsp;</td>
+		<td colspan="3" class="contentbar1">
+		  <B>Note:</B> [data session ship_message]
+		</td>
+	  </tr>
+	  [/if]                                                   
+	  <tr>
+		<td align="right" class="contentbar1">
+		  <b>Shipping method</b>
+		</td>
+		<td colspan="3" class="contentbar1">
+		  <SELECT NAME=mv_shipmode>
+		  [shipping
+			label=1
+			mode=|[data table=country key='[default country US]' col=shipmodes]|
+		  ]
+		  </SELECT>
+		</td>
+	  </tr>
+	  <tr>
+		<td class="contentbar1">&nbsp;</td>
+		<td colspan="3" class="contentbar1">
+		  <i>We need the <b>bold fields</b> to process your order</i>
+		</td>
+	  </tr>
+	  <tr>
+		<td class="contentbar1" colspan=4>&nbsp;</td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+
+
