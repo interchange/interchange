@@ -14,8 +14,9 @@ interchange (4.9.7-0.8) unstable; urgency=low
     postinst script (thanks to Doug Alcorn <doug@lathi.net> for reporting
     the problem)
   * remove configuration files handled by interchangeconfig on purge
+  * protect against scripts ending up in /usr/lib/interchange
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 15 Apr 2003 13:30:02 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 15 Apr 2003 21:24:20 +0200
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 
