@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.7 2001-10-31 22:22:35 mheins Exp $
+# $Id: Util.pm,v 2.8 2001-11-15 11:15:22 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -79,7 +79,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 BEGIN {
 	eval {
@@ -203,7 +203,8 @@ sub round_to_frac_digits {
 		# use what we were given
 	}
 	elsif ( $Vend::Cfg->{Locale} ) {
-		$digits = $Vend::Cfg->{Locale}{frac_digits} || 2;
+		$digits = $Vend::Cfg->{Locale}{frac_digits};
+		$digits = 2 if ! defined $digits;
 	}
 	else {
 		$digits = 2;
