@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.7 2000-09-23 19:26:06 heins Exp $
+# $Id: MakeCat.pm,v 1.8 2000-09-24 04:21:03 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,32 +61,32 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 $Force = 0;
 $History = 0;
 my %Pretty = qw(
 
-	aliases         Aliases
-	basedir         BaseDir
-	catuser			CatUser
-	cgibase         CgiBase
-	cgidir          CgiDir
-	cgiurl          CgiUrl
-	demotype        DemoType
-	documentroot    DocumentRoot
-	imagedir        ImageDir
-	imageurl        ImageUrl
-	mailorderto     MailOrderTo
-	interchangeuser	InterchangeUser
-	nterchangegroup	InterchangeGroup
-	samplehtml      SampleHtml
-	sampledir       SampleDir
-	sampleurl       SampleUrl
-	serverconf      ServerConf
-	servername      ServerName
-	catroot         CatRoot
-	vendroot        VendRoot
+	aliases				Aliases
+	basedir				BaseDir
+	catuser				CatUser
+	cgibase				CgiBase
+	cgidir				CgiDir
+	cgiurl				CgiUrl
+	demotype			DemoType
+	documentroot		DocumentRoot
+	imagedir			ImageDir
+	imageurl			ImageUrl
+	mailorderto			MailOrderTo
+	interchangeuser		InterchangeUser
+	interchangegroup	InterchangeGroup
+	samplehtml			SampleHtml
+	sampledir			SampleDir
+	sampleurl			SampleUrl
+	serverconf			ServerConf
+	servername			ServerName
+	catroot				CatRoot
+	vendroot			VendRoot
 
 );
  
