@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.29 2002-01-31 07:27:42 kwalsh Exp $
+# $Id: Config.pm,v 2.30 2002-02-01 01:39:52 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 my %CDname;
 
@@ -978,20 +978,19 @@ sub get_system_code {
 	}
 
 	my @files;
-
 	my $wanted = sub {
-		return unless -f $_;
-		push @files, $File::Find::name;
+		return if (m{^\.} || ! -f $_);
+		return unless m{^[^.]+\.(\w+)$};
+		my $ext = $extmap{lc $1} or return;
+		push @files, [ $File::Find::name, $ext ];
 	};
 	File::Find::find($wanted, @$Global::TagDir);
-	for(@files) {
-		next if m{^\.};
-		next if m{/\.};
-		next unless m{/[^.]+\.(\w+)$};
 
-		$CodeDest = $extmap{lc $1} or next;
-		open SYSTAG, "< $_"
-			or config_error("read system tag file %s: %s", $_, $!);
+	for(@files) {
+		$CodeDest = $_->[1];
+
+		open SYSTAG, "< $_->[0]"
+			or config_error("read system tag file %s: %s", $_->[0], $!);
 		while(<SYSTAG>) {
 			my($lvar, $value) = read_config_value($_, \*SYSTAG);
 			next unless $lvar;
