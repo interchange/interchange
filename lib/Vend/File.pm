@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.6 2003-04-05 01:58:48 mheins Exp $
+# $Id: File.pm,v 2.7 2003-04-05 08:43:05 danb Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,7 +52,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -305,12 +305,12 @@ my $unlock_function = \&flock_unlock;
 
 sub set_lock_type {
 	if ($Global::LockType eq 'none') {
-		logDebug("using NO locking");
+		::logDebug("using NO locking");
 		$lock_function = sub {1};
 		$unlock_function = sub {1};
 	}
 	elsif ($Global::LockType =~ /fcntl/i) {
-		logDebug("using fcntl(2) locking");
+		::logDebug("using fcntl(2) locking");
 		$lock_function = \&fcntl_lock;
 		$unlock_function = \&fcntl_unlock;
 	}
