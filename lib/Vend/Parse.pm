@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.16 2001-04-05 03:11:31 heins Exp $
+# $Id: Parse.pm,v 1.12.2.17 2001-04-09 06:39:20 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.17 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -437,7 +437,7 @@ my %Routine = (
 				cart			=> \&Vend::Interpolate::tag_cart,
 				catch			=> \&Vend::Interpolate::catch,
 				cgi				=> \&Vend::Interpolate::tag_cgi,
-				charge			=> \&Vend::Order::charge,
+				charge			=> \&Vend::Payment::charge,
 				checked			=> \&Vend::Interpolate::tag_checked,
 				control			=> \&Vend::Interpolate::tag_control,
 				control_set		=> \&Vend::Interpolate::tag_control_set,
