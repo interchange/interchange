@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.11 2001-03-06 17:24:51 heins Exp $
+# $Id: Order.pm,v 1.18.2.12 2001-03-21 16:12:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.12 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1772,6 +1772,7 @@ sub route_order {
 							$c,
 							$err,
 						);
+			push @route_failed, @route_complete;
 			push @route_failed, $c;
 			next BUILD if $route->{continue};
 			@route_complete = ();
