@@ -1,8 +1,11 @@
 interchange (5.0.0-1) unstable; urgency=low
 
   * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  4 Dec 2003 18:18:46 +0100
+  * Interchange variable MV_GETPPID_BROKEN has been added to
+    /etc/interchange/features.cfg in order to start Interchange properly
+    on systems with threaded Perl (Closes: #221939)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat,  6 Dec 2003 00:57:21 +0100
 
 interchange (4.9.9-1) unstable; urgency=low
 

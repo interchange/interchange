@@ -90,10 +90,10 @@ echo DOCROOT=$RET >> $INITCFG
 db_get interchange/gpghome
 echo GPGHOME=$RET >> $INITCFG
 
-echo PERLTHREADS="$PERLTHREADS" >> $INITCFG
-
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf
+# Additionally we place a variable to help Interchange
+# running on installations with threaded Perls.
 
 db_get interchange/debug
 if [ "$RET" = true ]; then
@@ -109,7 +109,14 @@ else
 fi
 db_get interchange/traffic
 TRAFFIC="$RET"
-/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL TRAFFIC=$RET
+
+if [ "$PERLTHREADS" ]; then
+	HASTHREADS=1
+else
+	HASTHREADS=0
+fi
+
+/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL TRAFFIC=$RET MV_GETPPID_BROKEN=$HASTHREADS
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange

@@ -108,6 +108,13 @@ i18n
 
 * Add and improve foundation and UI translations.
 
+Debian
+------
+
+* Add Interchange variable MV_GETPPID_BROKEN to
+  /etc/interchange/features.cfg in order to start Interchange 
+  properly on systems with threaded Perl (Closes: #221939)
+
 
 ------------------------------------------------------------------------------
 
