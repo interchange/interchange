@@ -148,8 +148,6 @@ sub {
                     MIME::Base64            MIME::Base64
                     Spreadsheet::ParseExcel Spreadsheet::ParseExcel
                     Spreadsheet::WriteExcel Spreadsheet::WriteExcel
-                    Term::ReadKey           Term::ReadKey
-                    Term::ReadLine::Perl    Term::ReadLine::Perl
                     Tie::ShadowHash         Tie::ShadowHash
                     URI::URL                URI::URL
 
