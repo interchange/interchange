@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.126 2002-11-07 15:46:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.127 2002-11-08 21:48:18 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.126 $, 10);
+$VERSION = substr(q$Revision: 2.127 $, 10);
 
 @EXPORT = qw (
 
@@ -1196,7 +1196,7 @@ sub input_filter {
 	}
 	$opt->{routine} = $routine if $routine =~ /\S/;
 	$Vend::Session->{Filter} = {} if ! $Vend::Session->{Filter};
-	$Vend::Session->{Filter}{$varname} = $opt;
+	$Vend::Session->{Filter}{$varname} = $opt->{op} if $opt->{op};
 	return;
 }
 
