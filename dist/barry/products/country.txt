@@ -185,7 +185,7 @@ VU	VU	air_D surf_D	Vanuatu
 WF	WF	air_F surf_F	Wallis and Furuna Islands
 WS	WS	air_D surf_D	Western Samoa
 XB	XB	air_E surf_E	Bosnia-Herzegovina
-XD	XD	air_F surf_F	Burma
+MM	MM	air_F surf_F	Myanmar (Burma)
 XE	XE	air_F surf_F	Corsica
 XO	XO	air_D surf_D	Pitcairn Island
 XS	XS	air_E surf_E	Serbia-Montenegro
