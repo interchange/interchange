@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.18 2001-02-13 14:29:28 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.19 2001-02-13 14:30:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.19 $, 10);
 
 @EXPORT = qw (
 
@@ -4331,7 +4331,7 @@ my $once = 0;
 		$run =~ s:$B$QR{_options}:
 						tag_options($code,$1):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
-		$run =~ s:$B$QR{_description}:product_description($code):ige;
+		$run =~ s:$B$QR{_description}:ed(product_description($code)):ige;
 		$run =~ s:$B$QR{_field}:ed(product_field($1, $code)):ige;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
