@@ -1,4 +1,9 @@
-UserTag  global-value  Order  name
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: global_value.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag  global-value  Order   name
+UserTag  global-value  Version $Revision: 1.3 $
 UserTag  global-value  Routine <<EOR
 sub {
 	my $thing = shift;
@@ -7,4 +12,3 @@ sub {
 	return ${$thing};
 }
 EOR
-

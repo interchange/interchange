@@ -1,8 +1,13 @@
-UserTag flex-select Order table
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: flex_select.coretag,v 1.12 2005-02-14 00:42:53 docelic Exp $
+
+UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Routine <<EOR
+UserTag flex-select Version    $Revision: 1.12 $
+UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/
 	help_name

@@ -1,6 +1,11 @@
-UserTag image-collate Order archive
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: image_collate.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag image-collate Order    archive
 UserTag image-collate addAttr
-UserTag image-collate Routine <<EOR
+UserTag image-collate Version  $Revision: 1.3 $
+UserTag image-collate Routine  <<EOR
 sub {
 	my ($archive, $opt) = @_;
 
@@ -201,4 +206,3 @@ sub {
 	return $out;
 }
 EOR
-

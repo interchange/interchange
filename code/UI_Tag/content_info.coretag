@@ -1,6 +1,11 @@
-UserTag content-info Order dir
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: content_info.coretag,v 1.3 2005-02-14 00:42:52 docelic Exp $
+
+UserTag content-info Order     dir
 UserTag content-info addAttr
-UserTag content-info Routine <<EOR
+UserTag content-info Version   $Revision: 1.3 $
+UserTag content-info Routine   <<EOR
 use UI::ContentEditor;
 sub {
 	UI::ContentEditor::content_info(@_);

@@ -1,6 +1,11 @@
-UserTag export-database Order table file type
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: export_database.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag export-database Order    table file type
 UserTag export-database addAttr
-UserTag export-database Routine <<EOR
+UserTag export-database Version  $Revision: 1.2 $
+UserTag export-database Routine  <<EOR
 sub {
 		my($table, $file, $type, $opt) = @_;
 		delete $::Values->{ui_export_database}
@@ -34,4 +39,3 @@ sub {
 							);
 }
 EOR
-

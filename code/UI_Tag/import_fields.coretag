@@ -1,6 +1,10 @@
-UserTag import_fields Order table
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: import_fields.coretag,v 1.11 2005-02-14 00:42:53 docelic Exp $
+
+UserTag import_fields Order   table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.10 $
+UserTag import_fields Version $Revision: 1.11 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -446,4 +450,3 @@ EOF
 	return;
 }
 EOR
-

@@ -1,4 +1,9 @@
-UserTag reconfig Order name table file
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: reconfig.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag reconfig Order   name table file
+UserTag reconfig Version $Revision: 1.3 $
 UserTag reconfig Routine <<EOR
 use strict;
 sub {
@@ -29,4 +34,3 @@ sub {
 	return 1;
 }
 EOR
-

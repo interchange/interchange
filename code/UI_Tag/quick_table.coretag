@@ -1,7 +1,12 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: quick_table.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag quick_table Order        border
 UserTag quick_table HasEndTag
 UserTag quick_table Interpolate
-UserTag quick_table Order   border
-UserTag quick_table Routine <<EOR
+UserTag quick_table Version      $Revision: 1.2 $
+UserTag quick_table Routine      <<EOR
 sub {
 	my ($border,$input) = @_;
 	$border = " BORDER=$border" if $border;
@@ -22,4 +27,3 @@ sub {
 	$out .= '</TABLE>';
 }
 EOR
-

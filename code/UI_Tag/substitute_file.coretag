@@ -1,7 +1,12 @@
-UserTag substitute_file Order file
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: substitute_file.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag substitute_file Order      file
 UserTag substitute_file addAttr
 UserTag substitute_file hasEndTag
-UserTag substitute_file Routine <<EOR
+UserTag substitute_file Version    $Revision: 1.2 $
+UserTag substitute_file Routine    <<EOR
 ## This is a stupid thing to make 5.6.1 and File::Copy
 ## compatible with Safe
 require File::Copy;

@@ -1,7 +1,12 @@
-UserTag diff Order current previous
-UserTag diff attrAlias curr current prev previous
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: diff.coretag,v 1.2 2005-02-14 00:42:52 docelic Exp $
+
+UserTag diff Order       current previous
+UserTag diff attrAlias   curr current prev previous
 UserTag diff addAttr
-UserTag diff Routine <<EOR
+UserTag diff Version     $Revision: 1.2 $
+UserTag diff Routine     <<EOR
 sub {
     my ($curr, $prev, $opt) = @_;
 

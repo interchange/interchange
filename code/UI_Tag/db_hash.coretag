@@ -1,7 +1,12 @@
-UserTag db-hash Order table column key
-UserTag db-hash PosNumber 3
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: db_hash.coretag,v 1.3 2005-02-14 00:42:52 docelic Exp $
+
+UserTag db-hash Order      table column key
+UserTag db-hash PosNumber  3
 UserTag db-hash addAttr
-UserTag db-hash Routine <<EOR
+UserTag db-hash Version    $Revision: 1.3 $
+UserTag db-hash Routine    <<EOR
 sub {
 	my($table, $col, $key, $opt) = @_;
 	$col =~ s/:+(.*)//s;

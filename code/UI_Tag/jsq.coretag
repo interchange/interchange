@@ -1,12 +1,13 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: jsq.coretag,v 1.5 2004-11-08 18:27:54 mheins Exp $
+# $Id: jsq.coretag,v 1.6 2005-02-14 00:42:53 docelic Exp $
 
 UserTag jsquote Alias jsq
 UserTag jsq hasEndTag
 UserTag jsq NoReparse
 UserTag jsq PosNumber 0
-UserTag jsq Routine <<EOR
+UserTag jsq Version   $Revision: 1.6 $
+UserTag jsq Routine   <<EOR
 sub {
 	my $text = shift;
 	$text =~ s/^[ \t\r]*\n//;
@@ -23,4 +24,3 @@ sub {
 	return join (" +\n", @lines);
 }
 EOR
-

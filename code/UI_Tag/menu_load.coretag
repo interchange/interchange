@@ -1,7 +1,11 @@
-UserTag menu-load Order type
-UserTag menu-load addAttr
-UserTag menu-load Routine <<EOR
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: menu_load.coretag,v 1.7 2005-02-14 00:42:53 docelic Exp $
 
+UserTag menu-load Order    type
+UserTag menu-load addAttr
+UserTag menu-load Version  $Revision: 1.7 $
+UserTag menu-load Routine  <<EOR
 sub old_link {
   my ($row, $nrow) = @_;
 #Debug("row link_type='$row->{link_type}'");
@@ -558,4 +562,3 @@ sub {
 	return join "\n", @out, '';
 }
 EOR
-

@@ -1,6 +1,11 @@
-UserTag list-keys Order table
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: list_keys.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag list-keys Order    table
 UserTag list-keys addAttr
-UserTag list-keys Routine <<EOR
+UserTag list-keys Version  $Revision: 1.3 $
+UserTag list-keys Routine  <<EOR
 sub {
 	my $table = shift;
 #::logDebug("list-keys $table");
@@ -66,4 +71,3 @@ sub {
 	return join("\n", @keys);
 }
 EOR
-

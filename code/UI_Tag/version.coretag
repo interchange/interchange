@@ -1,9 +1,14 @@
-UserTag version Order extended
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: version.coretag,v 1.9 2005-02-14 00:42:53 docelic Exp $
+
+UserTag version Order      extended
 UserTag version attrAlias  module_test modtest
 UserTag version attrAlias  moduletest modtest
 UserTag version attrAlias  require modtest
 UserTag version addAttr
-UserTag version Routine <<EOR
+UserTag version Version    $Revision: 1.9 $
+UserTag version Routine    <<EOR
 sub {
 	return $::VERSION unless shift;
 	my $opt = shift;

@@ -1,9 +1,13 @@
-UserTag list_glob Order spec prefix
-UserTag list_glob PosNumber 2 
-UserTag list_glob Routine <<EOR
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: list_glob.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag list_glob Order      spec prefix
+UserTag list_glob PosNumber  2 
+UserTag list_glob Version    $Revision: 1.2 $
+UserTag list_glob Routine    <<EOR
 sub {
 	my @files = UI::Primitive::list_glob(@_);
 	return (wantarray ? @files : join "\n", @files);
 }
 EOR
-

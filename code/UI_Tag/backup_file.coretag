@@ -1,6 +1,11 @@
-UserTag backup-file Order file
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: backup_file.coretag,v 1.3 2005-02-14 00:42:52 docelic Exp $
+
+UserTag backup-file Order     file
 UserTag backup-file AddAttr
-UserTag backup-file Routine <<EOR
+UserTag backup-file Version   $Revision: 1.3 $
+UserTag backup-file Routine   <<EOR
 require File::Copy;
 require File::Path;
 require File::Basename;

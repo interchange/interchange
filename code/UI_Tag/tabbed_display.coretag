@@ -1,8 +1,13 @@
-UserTag tabbed-display PosNumber 0
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: tabbed_display.coretag,v 1.4 2005-02-14 00:42:53 docelic Exp $
+
+UserTag tabbed-display PosNumber     0
 UserTag tabbed-display addAttr 
 UserTag tabbed-display hasEndTag 
 UserTag tabbed-display Interpolate 
 UserTag tabbed-display NoReparse 
+UserTag tabbed-display Version       $Revision: 1.4 $
 UserTag tabbed-display Documentation <<EOD
 =head1 NAME
 
@@ -147,10 +152,8 @@ The tabbed_display tag can be used in embedded Perl as well.
     });
 
 =cut
-
 EOD
-
-UserTag tabbed-display Routine <<EOR
+UserTag tabbed-display Routine       <<EOR
 sub {
 	my $opt = shift;
 	my $body = shift;
@@ -201,4 +204,3 @@ sub {
 	return Vend::Table::Editor::tabbed_display($tit, $cont, $opt);
 }
 EOR
-

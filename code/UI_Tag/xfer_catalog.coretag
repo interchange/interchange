@@ -1,6 +1,11 @@
-UserTag xfer-catalog Order file
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: xfer_catalog.coretag,v 1.5 2005-02-14 00:42:53 docelic Exp $
+
+UserTag xfer-catalog Order     file
 UserTag xfer-catalog addAttr
-UserTag xfer-catalog Routine <<EOR
+UserTag xfer-catalog Version   $Revision: 1.5 $
+UserTag xfer-catalog Routine   <<EOR
 sub {
 	my ($file, $opt) = @_;
 	my %dsn;

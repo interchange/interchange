@@ -1,7 +1,12 @@
-UserTag content-editor Order name
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: content_editor.coretag,v 1.4 2005-02-14 00:42:52 docelic Exp $
+
+UserTag content-editor Order      name
 UserTag content-editor addAttr
 UserTag content-editor hasEndTag
-UserTag content-editor Routine <<EOR
+UserTag content-editor Version    $Revision: 1.4 $
+UserTag content-editor Routine    <<EOR
 use UI::ContentEditor;
 sub {
 	return UI::ContentEditor::editor(@_);

@@ -1,6 +1,11 @@
-UserTag content-modify Order op name type
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: content_modify.coretag,v 1.2 2005-02-14 00:42:52 docelic Exp $
+
+UserTag content-modify Order    op name type
 UserTag content-modify addAttr
-UserTag content-modify Routine <<EOR
+UserTag content-modify Version  $Revision: 1.2 $
+UserTag content-modify Routine  <<EOR
 use UI::ContentEditor;
 sub {
 	return UI::ContentEditor::content_modify(@_);

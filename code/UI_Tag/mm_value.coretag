@@ -1,6 +1,11 @@
-UserTag mm-value Order field table
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: mm_value.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag mm-value Order     field table
 UserTag mm-value addAttr
-UserTag mm-value Routine <<EOR
+UserTag mm-value Version   $Revision: 1.2 $
+UserTag mm-value Routine   <<EOR
 sub {
 	my($field, $table, $opt, $text) = @_;
 
@@ -43,4 +48,3 @@ sub {
 	}
 }
 EOR
-

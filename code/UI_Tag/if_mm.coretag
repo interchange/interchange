@@ -1,9 +1,13 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: if_mm.coretag,v 1.4 2005-02-14 00:42:53 docelic Exp $
 
-UserTag if-mm Order function name
+UserTag if-mm Order      function name
 UserTag if-mm addAttr
-UserTag if-mm attrAlias key name
+UserTag if-mm attrAlias  key name
 UserTag if-mm hasEndTag
-UserTag if-mm Routine <<EOR
+UserTag if-mm Version    $Revision: 1.4 $
+UserTag if-mm Routine    <<EOR
 sub {
 	my($func, $field, $opt, $text) = @_;
 
@@ -184,4 +188,3 @@ sub {
 		: Vend::Interpolate::pull_else($text, $reverse);
 }
 EOR
-

@@ -1,5 +1,8 @@
-UserTag write-relative-file Documentation <<EOD
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: write_relative_file.coretag,v 1.7 2005-02-14 00:42:53 docelic Exp $
 
+UserTag write-relative-file Documentation <<EOD
 =head2 write-relative-file
 
 	[write-relative-file file=name]content[/write-relative-file]
@@ -7,15 +10,13 @@ UserTag write-relative-file Documentation <<EOD
 Writes a file C<name> in the catalog directory. C<name> is subject to
 file control (e.g. it must be relative), it will return undef if
 the check isn't passed.
-
 =cut
-
 EOD
-
-UserTag write-relative-file Order file
+UserTag write-relative-file Order         file
 UserTag write-relative-file hasEndTag
 UserTag write-relative-file addAttr
-UserTag write-relative-file Routine <<EOR
+UserTag write-relative-file Version       $Revision: 1.7 $
+UserTag write-relative-file Routine       <<EOR
 sub {
 	my ($file, $opt, $data) = @_;
 #::logDebug("writing $file");
@@ -28,4 +29,3 @@ sub {
 	Vend::File::writefile(">$file", $data, $opt);
 }
 EOR
-

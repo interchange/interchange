@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: diffmerge.coretag,v 1.2 2005-02-14 00:42:52 docelic Exp $
+
 # This tag uses GNU diff3 to merge two texts blocks that were
 # modified from the same ancestral text together, and marks
 # conflicts that may appear. This is similar to CVS's merging
@@ -35,16 +39,17 @@
 #     safe_data=1
 # ][scratch new_pagebody][/diffmerge]
 
-UserTag diffmerge Interpolate 1
+UserTag diffmerge Interpolate   1
 UserTag diffmerge hasEndTag
 UserTag diffmerge addAttr
+UserTag diffmerge Version       $Revision: 1.2 $
 
 # These designations come from the diff3 manpage.
 # It seemed easier to use their names than to make up new ones.
 UserTag diffmerge Order yours older mine
 
 # But here I try to make up new ones anyway. :)
-UserTag diffmerge attrAlias <<EOA
+UserTag diffmerge attrAlias     <<EOA
 	current		mine
 	curr		mine
 	previous	yours
@@ -52,7 +57,7 @@ UserTag diffmerge attrAlias <<EOA
 	old			older
 EOA
 
-UserTag diffmerge Routine <<EOR
+UserTag diffmerge Routine       <<EOR
 sub {
     my ($yours, $older, $mine, $opt, $body) = @_;
 

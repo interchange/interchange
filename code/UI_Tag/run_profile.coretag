@@ -1,5 +1,10 @@
-UserTag run-profile Order check cgi profile
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: run_profile.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag run-profile Order   check cgi profile
 UserTag run-profile addAttr
+UserTag run-profile Version $Revision: 1.2 $
 UserTag run-profile Routine <<EOR
 sub {
 	my ($check, $cgi, $profile, $opt) = @_;

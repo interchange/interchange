@@ -1,7 +1,12 @@
-UserTag file-info Order name
-UserTag file-info attrAlias file name
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: file_info.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag file-info Order       name
+UserTag file-info attrAlias   file name
 UserTag file-info addAttr
-UserTag file-info Routine <<EOR
+UserTag file-info Version     $Revision: 1.2 $
+UserTag file-info Routine     <<EOR
 sub {
 	my ($fn, $opt) = @_;
 	if($opt->{server}) {
@@ -45,4 +50,3 @@ sub {
     $Tag->time($Scratch->{mv_locale},{time => $stat[9], gmt => $opt->{gmt}},$opt->{fmt});
 }
 EOR
-

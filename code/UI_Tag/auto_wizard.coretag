@@ -1,8 +1,12 @@
-UserTag  auto-wizard  Order  name
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: auto_wizard.coretag,v 1.17 2005-02-14 00:42:52 docelic Exp $
+
+UserTag  auto-wizard  Order     name
 UserTag  auto-wizard  AddAttr
 UserTag  auto-wizard  HasEndTag
-UserTag  auto-wizard  Version  $Version$
-UserTag  auto-wizard  Routine <<EOR
+UserTag  auto-wizard  Version   $Revision: 1.17 $
+UserTag  auto-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;
 	

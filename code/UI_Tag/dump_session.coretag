@@ -1,7 +1,11 @@
-UserTag dump_session Order name
-UserTag dump_session AddAttr
-UserTag dump_session Routine <<EOR
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: dump_session.coretag,v 1.6 2005-02-14 00:42:53 docelic Exp $
 
+UserTag dump_session Order    name
+UserTag dump_session AddAttr
+UserTag dump_session Version  $Revision: 1.6 $
+UserTag dump_session Routine  <<EOR
 sub show_part {
 	my ($ref, $key) = @_;
 	return $ref unless $key;

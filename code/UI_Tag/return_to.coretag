@@ -1,6 +1,11 @@
-UserTag return_to Order type table_hack
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: return_to.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag return_to Order    type table_hack
 UserTag return_to addAttr 
-UserTag return_to Routine <<EOR
+UserTag return_to Version  $Revision: 1.2 $
+UserTag return_to Routine  <<EOR
 sub {
 	use vars qw/$Tag/;
     my ($type, $tablehack, $opt) = @_;
@@ -91,4 +96,3 @@ sub {
     return $out;
 }
 EOR
-

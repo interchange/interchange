@@ -1,6 +1,11 @@
-UserTag uneval Order name ref
-UserTag uneval PosNumber 1
-UserTag uneval Routine <<EOR
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: uneval.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag uneval Order       name ref
+UserTag uneval PosNumber   1
+UserTag uneval Version     $Revision: 1.3 $
+UserTag uneval Routine     <<EOR
 sub {
 	my ($name, $ref) = @_;
 #::logError("args: @_" . Vend::Util::uneval_it(@_));
@@ -10,4 +15,3 @@ sub {
 	return Vend::Util::uneval($ref);
 }
 EOR
-

@@ -1,8 +1,13 @@
-UserTag su Description Switch User Tag for catalog superuser
-UserTag su Order username
-UserTag su attrAlias user username
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: su.coretag,v 1.6 2005-02-14 00:42:53 docelic Exp $
+
+UserTag su Description  Switch User Tag for catalog superuser
+UserTag su Order        username
+UserTag su attrAlias    user username
 UserTag su addAttr
-UserTag su Routine <<EOR
+UserTag su Version      $Revision: 1.6 $
+UserTag su Routine      <<EOR
 sub {
 	my ($user, $opt) = @_;
 	use vars qw/$Session $Tag $ready_safe $Scratch/;

@@ -1,6 +1,10 @@
-UserTag update-order-status Order order_number
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: update_order_status.tag,v 1.10 2005-02-14 00:42:53 docelic Exp $
+
+UserTag update-order-status Order   order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.9 2003-11-09 16:39:52 mheins Exp $
+UserTag update-order-status Version $Revision: 1.10 $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;

@@ -1,9 +1,13 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: row_edit.coretag,v 1.10 2005-02-14 00:42:53 docelic Exp $
+
+UserTag row-edit Order       key table size columns
 UserTag row-edit HasEndTag
-UserTag row-edit Order key table size columns
 UserTag row-edit addAttr
 UserTag row-edit Interpolate 1
-UserTag row-edit Version $Revision: 1.9 $
-UserTag row-edit Routine <<EOR
+UserTag row-edit Version     $Revision: 1.10 $
+UserTag row-edit Routine     <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;
 	use vars qw/$CGI $Values $Variable/;
@@ -165,4 +169,3 @@ EOF
 
 }
 EOR
-

@@ -1,6 +1,11 @@
-UserTag get-gpg-keys Order dir
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: get_gpg_keys.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag get-gpg-keys Order    dir
 UserTag get-gpg-keys addAttr
-UserTag get-gpg-keys Routine <<EOR
+UserTag get-gpg-keys Version  $Revision: 1.3 $
+UserTag get-gpg-keys Routine  <<EOR
 sub {
 	my ($dir, $opt) = @_;
 	my $gpgexe = $Global::Variable->{GPG_PATH} || 'gpg';

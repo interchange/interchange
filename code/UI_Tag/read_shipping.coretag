@@ -1,7 +1,12 @@
-UserTag read-shipping Order file
-UserTag read-shipping PosNumber 1
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: read_shipping.coretag,v 1.2 2005-02-14 00:42:53 docelic Exp $
+
+UserTag read-shipping Order      file
+UserTag read-shipping PosNumber  1
 UserTag read-shipping addAttr
-UserTag read-shipping Routine <<EOR
+UserTag read-shipping Version    $Revision: 1.2 $
+UserTag read-shipping Routine    <<EOR
 sub {
 	my ($file, $opt) = @_;
 	my $status = read_shipping($file, $opt);
@@ -17,4 +22,3 @@ sub {
 	return $status;
 }
 EOR
-

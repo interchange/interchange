@@ -1,4 +1,9 @@
-UserTag list-databases Order nohide extended
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: list_databases.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+
+UserTag list-databases Order   nohide extended
+UserTag list-databases Version $Revision: 1.3 $
 UserTag list-databases routine <<EOR
 sub {
 	my $nohide = shift;
@@ -36,4 +41,3 @@ sub {
 	return $string;
 }
 EOR
-
