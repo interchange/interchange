@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.12 2001-01-09 11:54:17 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.13 2001-01-19 17:24:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.13 $, 10);
 
 @EXPORT = qw (
 
@@ -736,6 +736,9 @@ sub tag_data {
 	'filesafe' =>	sub {
 						return Vend::Util::escape_chars(shift);
 				},
+	'mime_type' =>	sub {
+						return Vend::Util::mime_type(shift);
+				},
 	'currency' =>	sub {
 						my ($val, $tag, $locale) = @_;
 						my $convert = $locale ? 1 : 0;
@@ -790,6 +793,17 @@ sub tag_data {
 					$mon =~ s/^0//;
 					$day =~ s/^0//;
 					$val = sprintf("%d%02d%02d", $yr, $mon, $day);
+					return $val;
+				},
+	'checkbox' =>		sub {
+					my $val = shift;
+					return length($val) ? $val : '';
+				},
+	'compress_space' =>		sub {
+					my $val = shift;
+					$val =~ s/\s+$//g;
+					$val =~ s/^\s+//g;
+					$val =~ s/\s+/ /g;
 					return $val;
 				},
 	'null_to_space' =>		sub {
@@ -1418,8 +1432,18 @@ sub build_accessory_select {
 	}
 
 	$run .= '>';
+	my $optgroup_one;
 	
 	for(@opts) {
+		if(/^\s*\~\~(.*)\~\~\s*$/) {
+			my $label = $1;
+			$label =~ s/"/&quot;/g;
+			if($optgroup_one++) {
+				$run .= "</optgroup>";
+			}
+			$run .= qq{<optgroup label="$label">};
+			next;
+		}
 		$run .= '<OPTION';
 		$select = '';
 		s/\*$// and $select = 1;
