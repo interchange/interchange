@@ -176,7 +176,7 @@ user gives back a cookie.
 Pages in the catalog served by Interchange running as a cgi-bin program generate a
 special URL for every link. Here is an example of such a URL:
 
-    http://www.minivend.com/cgi-bin/simple/browse1?id=WehUkATn&pc=122&ar=99-102
+    http://www.minivend.com/cgi-bin/simple/browse1?id=WehUkATn&mv_pc=122
 
 An explanation of each part:
 
@@ -207,10 +207,6 @@ The session ID
 
 Separates session ID from other other parameters (normal HTTP)
 
-=item mv_arg=99-102
-
-An argument which can be used by Interchange to select page display options.
-
 =item &
 
 Separates argument from other parameters (normal HTTP)
@@ -229,22 +225,28 @@ support catalog ordering. Interchange extensions look like:
 
     <A HREF="[href specials]">See our specials!</A>
 
+or
+
+	Count from one to three:<BR><BR>
+	[loop list="1 2 3"]
+		[loop-code]....<BR>
+	[/loop]
+
 Pages are delivered through the following steps:
 
 =over 4
 
 =item *
 
-The HTTPD server (Apache, Netscape, or NCSA are examples of HTTP
-servers) receives a request for an Interchange page.
+The HTTPD server (Apache, Netscape Enterprise server, and Roxen
+are examples of HTTP servers) receives a request for an Interchange page.
 
 =item *
 
 The server is already running as a daemon, and the request calls a small
-C program (source is vlink.c or tlink.c) that is
-I<named according to which catalog is being called.> This program
-communicates with the Interchange program via
-a UNIX- or INET-domain socket.
+C program that is I<named according to which catalog is being called.>
+This program communicates with the Interchange program via a UNIX-
+or INET-domain socket.
 
 =item *
 
@@ -274,8 +276,8 @@ distribution for the full license.
 
 Interchange is not guaranteed to be supported other than by making
 full source code available. If it breaks you get to keep both pieces.
-However, the author is always looking to improve Interchange and sometimes
-answers questions.  The more concise and better-researched your question,
+However, the authors are always looking to improve Interchange and sometimes
+answers questions. The more concise and better-researched your question,
 the more likely it is to get an answer. No tutorials will be provided,
 though. You have to learn all of this stuff on your own, or use the
 Interchange mail list and hope that someone will help you.
@@ -284,30 +286,29 @@ Interchange mail list and hope that someone will help you.
 
 The latest stable Interchange is available from:
 
-    http://www.minivend.com/minivend/download.html
+	http://www.akopia.com/
 
 =head2 Perl
 
-You will need Perl version 5.005 or higher to run Interchange 4.0. Many
+You will need Perl version 5.005 or higher to run Interchange 4.x. Many
 sites are still running lower Perl versions.
 You can download the latest Perl 5 from any CPAN (Comprehensive Perl
 Archive Network) site. See
 
     http://www.perl.com/CPAN/
 
-Windows users will need to obtain the ActiveState Perl build
-5xx. No earlier version will work -- for example, the old version
-on the NT Resource kit will definitely not work.
-
 In addition, on systems that do not have GDBM or DB_File installed,
 large catalogs will use large amounts of memory if the databases must
-all reside there. If you use SQL, this is not a problem.
+all reside there. If you use SQL, this is not normally a problem.
 
 =head1 QUICK START
 
+NOTE: See http://developer.akopia.com/ for the most recent installation
+information.
+
 Obtain, decompress and untar the distribution:
 
-    gzip -dc minivend-4.xx.tar.gz | tar xvf -
+    gzip -dc interchange-4.xx.tar.gz | tar xvf -
 
 NOTE FOR WINDOWS: Windows users need to unzip the file WinZip or a similar
 program or obtain the self-extracting executable.
@@ -317,7 +318,7 @@ patches that might have been issued since the release.
 
 Change to the created directory, something like:
 
-    cd minivend-4.xx
+    cd interchange-4.xx
 
 On UNIX, you perform the normal Perl installation method:
 
@@ -326,13 +327,13 @@ On UNIX, you perform the normal Perl installation method:
     make test && make install
 
 Replace the C<perl> with the proper path to your Perl 5.005
-or higher binary.
+or higher binary if necessary.
 
 You will be asked for the directory where you want to install Interchange --
 any directory will do. The defaults are:
 
-    Installed as root: /usr/local/minivend
-    Installed as user: ~/mvend
+    Installed as root: /usr/local/interchange
+    Installed as user: ~/interchange
 
 NOTE: ~ is shorthand for your home directory.
 
@@ -340,11 +341,14 @@ You must of course have write permission there. This
 directory is referred to later in the documentation as B<VendRoot>
 or the B<Interchange software directory>.
 
-To install the link program, you will eventually need to have write
-permission on your CGI and HTML directories. The definition of these
-are typically part of your HTTP server configuration; In Apache, the
-CGI directory is set by B<ScriptAlias>; the HTML directory is set
-by B<DocumentRoot>.
+Once you have installed the software, you will want to run the program
+C<makecat> in the Interchange bin directory. It will build a demo catalog
+which you can use as the base for your installation.
+
+To install a catalog, you will eventually need to have write permission
+on your CGI and HTML directories. The definition of these are typically
+part of your HTTP server configuration; In Apache, the CGI directory is
+set by B<ScriptAlias>; the HTML directory is set by B<DocumentRoot>.
 
 The process should be self-explanatory. If you have trouble answering
 the questions asked, B<look closely> at the examples provided. If you
