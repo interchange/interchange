@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.10 2000-12-31 14:45:32 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.11 2000-12-31 15:22:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.11 $, 10);
 
 @EXPORT = qw (
 
@@ -5178,61 +5178,69 @@ sub read_shipping {
 				|| Vend::Util::catfile($Vend::Cfg->{ProductDir},'shipping.asc');
 	}
 
-    open(SHIPPING, "< $file") or do {
-			if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
-				($Vend::Cfg->{SQL_shipping} = 1, return)
-					if $Vend::Foreground;
-				$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
-				my $ary;
-				my $query = interpolate_html($Vend::Cfg->{CustomShipping});
-				eval {
-					$ary = query($query, { wantarray => 1} );
-				};
-				if(! ref $ary) {
-					logError("Could not make shipping query %s: %s" ,
-								$Vend::Cfg->{CustomShipping},
-								$@);
-					return undef;
-				}
-				my $out;
-				for(@$ary) {
-					$out .= join "\t", @$_;
-					$out .= "\n";
-					Vend::Util::writefile(">$file", $out);
-				}
-				open(SHIPPING, "< $file") or do {
-					logError("Could not make shipping query %s: %s" ,
-								$Vend::Cfg->{CustomShipping},
-								$!);
-					return undef;
-				};
-			}
-			else {
-				logError("Could not open shipping file %s: %s" , $file, $!)
-					if $Vend::Cfg->{CustomShipping};
-				return undef;
-			}
+	my @flines = split /\n/, readfile($file);
+	if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
+		($Vend::Cfg->{SQL_shipping} = 1, return)
+			if $Vend::Foreground;
+		my $ary;
+		my $query = interpolate_html($Vend::Cfg->{CustomShipping});
+		eval {
+			$ary = query($query, { wantarray => 1} );
 		};
+		if(! ref $ary) {
+			logError("Could not make shipping query %s: %s" ,
+						$Vend::Cfg->{CustomShipping},
+						$@);
+			return undef;
+		}
+		my $out;
+		for(@$ary) {
+			push @flines, join "\t", @$_;
+		}
+	}
+	
 	$Vend::Cfg->{Shipping_desc} = {}
 		if ! $Vend::Cfg->{Shipping_desc};
 	my %seen;
 	my $append = '00000';
 	my @line;
+	my $prev = '';
+	my $waiting;
 	my @shipping;
 	my $first;
-    while(<SHIPPING>) {
-		chomp;
+    for(@flines) {
+
+		# Strip CR, we hope
+		s/\s+$//;
+
+		# Handle continued lines
 		if(s/\\$//) {
-			$_ .= <SHIPPING>;
-			redo;
+			$prev .= $_;
+			next;
 		}
-		elsif (s/<<(\w+)$//) {
-			my $mark = $1;
-			my $line = $_;
-			$line .= Vend::Config::read_here(\*SHIPPING, $mark);
-			$_ = $line;
-			redo;
+		elsif($waiting) {
+			if($_ eq $waiting) {
+				undef $waiting;
+				$_ = $prev;
+				$prev = '';
+				s/\s+$//;
+			}
+			else {
+				$prev .= "$_\n";
+				next;
+			}
 		}
+		elsif($prev) {
+			$_ = "$prev$_";
+			$prev = '';
+		}
+
+		if (s/<<(\w+)$//) {
+			$waiting = $1;
+			$prev .= $_;
+			next;
+		}
+
 		next unless /\S/;
 		s/\s+$//;
 		if(/^[^\s:]+\t/) {
@@ -5294,10 +5302,16 @@ sub read_shipping {
 				) if $@;
 		}
 	}
-    close SHIPPING;
 
 	push @shipping, [ @line ]
 		if @line;
+
+	if($waiting) {
+		::logError(
+			"Failed to find end-of-line termination '%s' in shipping read",
+			$waiting,
+		);
+	}
 
 	my $row;
 	my %zones;
