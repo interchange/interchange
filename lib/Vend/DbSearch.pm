@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.3 2001-10-30 19:00:44 jon Exp $
+# $Id: DbSearch.pm,v 2.4 2001-11-22 03:53:15 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use Search::Dict;
 use strict;
@@ -254,7 +254,10 @@ sub search {
 		if(! defined $f and defined $limit_sub) {
 #::logDebug("no f, limit, dbref=$dbref");
 			local($_);
-			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
+			while ($_ = join "\t",
+						map { s/\t/ /g; $_ }
+						$dbref->each_nokey($qual || undef)
+					) {
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
 			}
@@ -262,7 +265,10 @@ sub search {
 		elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
 			local($_);
-			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
+			while ($_ = join "\t",
+						map { s/\t/ /g; $_ }
+						$dbref->each_nokey($qual || undef)
+					) {
 				next unless &$f();
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
@@ -274,7 +280,10 @@ sub search {
 		else {
 #::logDebug("f and no limit, dbref=$dbref");
 			local($_);
-			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
+			while ($_ = join "\t",
+						map { s/\t/ /g; $_ }
+						$dbref->each_nokey($qual || undef)
+					) {
 				next unless &$f();
 				push @out, &$return_sub($_);
 			}
