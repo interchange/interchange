@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.37 2001-04-16 00:24:29 heins Exp $
+# $Id: interchange.PL,v 1.15.2.38 2001-04-16 07:43:05 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -464,7 +464,6 @@ sub set_db {
 sub update_data {
 	my($key,$value);
     # Update a database record
-
 	# Check to see if this is allowed
 	if(! $::Scratch->{mv_data_enable}) {
 		logError(
@@ -575,26 +574,25 @@ sub update_data {
 	}
 
 	my $count;
-	my $max = $CGI::values{$prikey} =~ tr/\0/\0/;
+	my $multi = $CGI::values{$prikey} =~ tr/\0/\0/;
+	my $max = 0;
 	my $min = 9999;
 	my ($minname, $maxname);
 
-	if($max) {
-		while (($key, $value) = each %CGI::values) {
-			next unless defined $data{$key};
-			$count = (@{$data{$key}} = split /\0/, $value);
-			$max = $count, $maxname = $key if $count > $max;
-			$min = $count, $minname = $key if $count < $min;
-		}
+	while (($key, $value) = each %CGI::values) {
+		next unless defined $data{$key};
+		$count = (@{$data{$key}} = split /\0/, $value);
+		$max = $count, $maxname = $key if $count > $max;
+		$min = $count, $minname = $key if $count < $min;
+	}
 
-		if( ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
-			my $msg = errmsg(
-					"probable bad form -- number of values min=%s (%s) max=%s (%s)",
-					$min, $minname, $max, $maxname,
-					);
-			Vend::Interpolate::set_error($msg);
-			return;
-		}
+	if( $multi and ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
+		my $msg = errmsg(
+				"probable bad form -- number of values min=%s (%s) max=%s (%s)",
+				$min, $minname, $max, $maxname,
+				);
+		Vend::Interpolate::set_error($msg);
+		return;
 	}
 
 	my $autonumber;
@@ -2001,6 +1999,9 @@ EOF
 		};
 	}
 
+	# Do it here so we can use autoloads and such
+	Vend::Interpolate::reset_calc() if $Global::Foreground;
+	Vend::Interpolate::init_calc();
 # LEGACY
 	ROUTINES: {
 		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
@@ -2118,16 +2119,13 @@ EOF
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
 	my ($sub, $status);
-	Vend::Interpolate::reset_calc();
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
 		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
-		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
 		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
-		Vend::Interpolate::init_calc();
 		$Vend::FinalPath = join "", @path;
 	}
 
