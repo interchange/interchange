@@ -1420,10 +1420,10 @@ function saveForm (idx, msg, zeromsg) {
 	var l = lines[idx];
 
 	if(msg == undefined)
-		msg = 'saved';
+		msg = '[L]saved[/L]';
 
 	if(zeromsg == undefined)
-		zeromsg = 'saved';
+		zeromsg = '[L]saved[/L]';
 
 	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
 
@@ -1824,12 +1824,12 @@ function motion (idx, motion, fromchecked) {
 	</td>
 	<td>
 		<div id=treebox style="font-size: 10px; display: none">
-		<input type=checkbox name=show_info value=1 class=nowrap> [L]Show item info[/L]
-		<input type=checkbox name=qmenu_tree value=1 class=nowrap> [L]Tree mode[/L]
-		<input type=checkbox name=qmenu_write_tree value=1 class=nowrap> [L]Write tree to DB[/L]
-		<input type=checkbox name=showlevel value=1 class=nowrap onClick="toggleShowlevel()" CHECKED=1> [L]Show numerical level[/L]
-		<input type=checkbox name=collapse value=1 class=nowrap onClick="toggleItem(0,this,0)"> [L]Collapse tree[/L]
-		<input type=checkbox name=explode value=1 class=nowrap onClick="toggleItem(0,this,1)"> [L]Explode tree[/L]
+        <span class="nowrap"><input type=checkbox name=show_info value=1 class=nowrap> [L]Show item info[/L]</span>
+		<span class="nowrap"><input type=checkbox name=qmenu_tree value=1 class=nowrap> [L]Tree mode[/L]</span>
+		<span class="nowrap"> <input type=checkbox name=qmenu_write_tree value=1 class=nowrap> [L]Write tree to DB[/L]</span>
+		<span class="nowrap"> <input type=checkbox name=showlevel value=1 class=nowrap onClick="toggleShowlevel()" CHECKED=1> [L]Show numerical level[/L]</span>
+		<span class="nowrap"><input type=checkbox name=collapse value=1 class=nowrap onClick="toggleItem(0,this,0)"> [L]Collapse tree[/L]</span>
+		<span class="nowrap"><input type=checkbox name=explode value=1 class=nowrap onClick="toggleItem(0,this,1)"> [L]Explode tree[/L]</span>
 		</div>
 	</td>
 </tr>
