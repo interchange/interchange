@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.4 2004-04-11 16:34:50 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.5 2004-04-11 18:01:11 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use strict;
 
@@ -82,6 +82,22 @@ sub create {
 		else {
 			$config->{_Key_splittor} = qr([\0,]);
 		}
+	}
+	if(
+		(! $config->{INDEX} or @{$config->{INDEX}} == 0)
+		and
+		! $config->{POSTCREATE}
+	  )
+	{
+		my $fields = $config->{COMPOSITE_KEY};
+		$fields =~ s/^\s+//;
+		$fields =~ s/\s+$//;
+		$fields =~ s/\s+/,/g;
+
+		my $tabname = $config->{REAL_NAME} || $config->{name};
+		$config->{POSTCREATE} = 
+			["CREATE UNIQUE INDEX ${tabname}_index ON $tabname($fields)"];
+#::logDebug("did POSTCREATE: $config->{POSTCREATE}");
 	}
 
 #::logDebug("open_table config=" . ::uneval($config));
