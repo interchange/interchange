@@ -2,12 +2,12 @@
 
 Interchange Databases
 
-=head1 AKOPIA INTERCHANGE(TM) DATABASES
+=head1 Interchange Databases
 
-Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. This document discusses
-databases, SQL support, the Interchange search engine, frequently
-asked questions, and usertags.
+Interchange is the industry's most widely distributed and implemented
+open source e-commerce platform. This document discusses databases,
+SQL support, the Interchange search engine, frequently asked
+questions, and usertags.
 
 =head2 A Typical User Session
 
@@ -45,7 +45,7 @@ Something's sample catalogs, changed the database entries, and opened
 their store. Most users, however, have built their catalogs using
 their own distinctive look and feel.
 
-=head1 DATABASES
+=head1 Databases
 
 As with most powerful shopping cart programs, Interchange is all about
 databases. Interchange can use GDBM, DB_File, SQL, LDAP, or in-memory
@@ -201,8 +201,8 @@ files must use ASCII mode, not binary mode.
 
 Interchange's default ASCII delimiter is TAB.
 
-IMPORTANT NOTE: The items must be separated by a single delimiter. The
-items are lined up for reading convenience.
+B<Note: >The items must be separated by a single delimiter. The items
+are lined up for reading convenience.
 
 =over 4
 
@@ -772,10 +772,9 @@ information.
 =head2 Exporting from a Database
 
 To export an existing database to a file suitable for searching by
-Interchange, create an AdminPage (or any page, for that matter) that
-contains a C<[tag export ...][/tag]> element. Perhaps a better method
-is to define the same sort of tags in an OrderProfile, and use forms
-and buttons to access the profile.
+Interchange, create a page that contains a C<[tag export ...][/tag]>
+element. Perhaps a better method is to define the same sort of tags in
+an OrderProfile, and use forms and buttons to access the profile.
 
 =head2 Write Control
 
@@ -820,22 +819,22 @@ equivalent to:
 
 If a database is to be available to all catalogs on the Interchange
 server, it may be defined in C<minivend.cfg>. Any catalog running
-under that server will be able to use it. NOTE: It is writable by any
+under that server will be able to use it. It is writable by any
 catalog unless WRITE_CONTROL is used.
 
-=head1 SQL SUPPORT
+=head1 SQL Support
 
 Interchange can use any of a number of SQL databases through the
 powerful Perl DBI/DBD access methods. This allows transparent access
 to any database engine that is supported by a DBD module. The current
-list includes mSQL, mySQL, Solid, Postgres, Oracle, Sybase, Informix,
-Ingres, Dbase, DB2, Fulcrum, and others. Any ODBC (with appropriate
-driver) should also be supported.
+list includes mSQL, MySQL, Solid, PostgreSQL, Oracle, Sybase,
+Informix, Ingres, Dbase, DB2, Fulcrum, and others. Any ODBC (with
+appropriate driver) should also be supported.
 
 No SQL database is included with Interchange, but there are a number
-widely available on the Internet. Many are free for non-commercial
-use, such as mSQL, mySQL, Sybase, and Qbase. It is beyond the scope of
-this document to describe SQL or DBI/DBD. Sufficient familiarity is
+widely available on the Internet. Most commonly used with Interchange
+are PostgreSQL, MySQL, and Oracle. It is beyond the scope of this
+document to describe SQL or DBI/DBD. Sufficient familiarity is
 assumed.
 
 In most cases, Interchange cannot perform administrative functions,
@@ -940,7 +939,7 @@ alter all searches, imports, and exports accordingly. It is best to
 just accept the default and make the first column the key for any
 Interchange database.
 
-=item ChopBlanks,LongReadLen,LongTruncOK,RaiseError, etc.
+=item ChopBlanks, LongReadLen, LongTruncOK, RaiseError, etc.
 
 Sets the corresponding DBI attribute. Of particular interest is
 C<ChopBlanks>, which should be set on drivers which by default return
@@ -961,7 +960,7 @@ Issue the shell command C<perldoc DBI> for more information.
 
 =back
 
-Here is an example of a completely set up DBI database on mySQL, using
+Here is an example of a completely set up DBI database on MySQL, using
 a comma-separated value input, setting the DBI attribute
 C<LongReadLen> to retrieve an entire field, and changing some field
 definitions from the default char(128):
@@ -985,10 +984,10 @@ definitions from the default char(128):
  Database   products  NUMERIC       price
  Database   products  NUMERIC       discount
 
-mySQL, DBI, and DBD::mysql must be completely installed and tested,
+MySQL, DBI, and DBD::mysql must be completely installed and tested,
 and have created the database C<minivend>, for this to work.
-Permissions are difficult on mySQL. if having trouble, try starting
-the mySQL daemon with C<safe_mysqld --skip-grant-tables &> for testing
+Permissions are difficult on MySQL. if having trouble, try starting
+the MySQL daemon with C<safe_mysqld --skip-grant-tables &> for testing
 purposes.
 
 To change to ODBC, the only changes required might be:
@@ -1054,7 +1053,7 @@ proper .sql file. If that is not done, and the database source file is
 changed, the SQL database could be overwritten. In any case, always
 back up the database before enabling it for use by Interchange.
 
-=head1 THE SEARCH ENGINE
+=head1 The Search Engine
 
 Interchange implements a search engine which will search the product
 database (or any other file) for items based on customer input. It
@@ -1572,8 +1571,6 @@ Change this to C<[page scan se=searchstring]>, or perhaps better yet:
    [page search="
                    se=searchstring
            "]
-
-cause a bad URL. Change this to C<[page scan se=searchstring]>.
 
 A one-click search may be specified in three different ways.
 
@@ -2194,9 +2191,9 @@ specification separated by commas.
 
 =back
 
-B<NOTE FOR ADVANCED USERS: >If specifying a sort for the product
-database, C<mv_field_names> must be specified if doing a
-fieldname-addressed post-sort.
+B<Note: >If specifying a sort for the product database,
+C<mv_field_names> must be specified if doing a fieldname-addressed
+post-sort.
 
 =over 4
 
@@ -2540,7 +2537,7 @@ to be targeted to a different window than the one set by SearchFrame
 
 =back
 
-=head1 SORTING
+=head1 Sorting
 
 Interchange has standard sorting options for sorting the search lists,
 loop lists, and item lists based on the contents of database fields.
@@ -2738,7 +2735,7 @@ database contains many thousands of items, using the C<[tag each
 products]> sort is not recommended unless planning on caching or
 statically building pages.
 
-=head1 SHIPPING
+=head1 Shipping
 
 Interchange has a powerful custom shipping facility that performs UPS
 and other shipper lookups, as well as a flexible rule-based facility
@@ -3094,9 +3091,6 @@ PriceDivide=0 upsca  UPS/CA   weight            0   150    C upsca
 [default zip A7G] 5.00 upsca  UPS/CA   weight            150 99999  e
 @@TOTAL@@ lb too heavy for UPS
 
-fedex  FedEx    quantity          1   9999   s fedex_cost ;[value
-country]
-
 =over 4
 
 =item global
@@ -3226,119 +3220,6 @@ following:
 
 The only difference is that the beginning code to call the lookup is
 upper-case C<U> instead of lower-case C<u>.
-
-=item fedex
-
-The last entry, C<fedex>, uses a named subroutine. The example is
-designed to work with this subroutine defined in C<catalog.cfg>:
-
-    Sub    sub fedex_cost {
-        my($country) = @_;
-        my $cost;
-        if($country =~ /^usa?$/i) {
-            $cost = 20;
-        }
-        else {
-            $cost = 50;
-        }
-        return $cost;
-    }
-    EOF
-
-<<EOF
-
-=back
-
-B<Note: >The text above appears indented, but in the C<catalog.cfg>
-file it must begin at the beginning of the line. Also, make sure to
-upload in ASCII mode. Carriage returns are not tolerated.
-
-=over 4
-
-=item
-
-It will simply return a cost of 20 if the country the user has entered
-is US or USA. Otherwise, it will return a cost of 50. Obviously, much
-more complicated routines can be defined. Read the following only if
-familiar with Perl.
-
-Named subroutines can be called with any of the methods defined with
-C<[set name] your_perl_code_here [/set]>, Sub, or GlobalSub.
-
-If parameters are specified, separated by commas, they will be taken
-as either fixed values or as database fields to be sent to the
-subroutine in an anonymous hash keyed on the item code (for each item
-in the *current* shopping cart).
-
-If a database other than the products database is to be used, the
-database name should be prepended with a colon (C<:>) separator. If a
-key other than the item code is to be used, it should be appended with
-a semi-colon separator.
-
-To send fixed value to the subroutine (appended to the call reference
-as an array of fixed scalar parameters), begin the parameter with a
-semicolon. They will be appended globally after the hash reference.
-
-\Examples:
-
-  # Sends the weight of each item from the products da
-  weight
-
-  # Sends the value of the handling field from the
-  # special database for each item
-
-  special:handling
-
-  # Sends the value of the 'adder' field from the special
-  # database, for the value the user has entered for 'country'
-  # The spaces around the separators are OK
-
-  special : adder ; [value country]
-
-  # Sends a fixed parameter of 20 to the subroutine
-
-  ;20
-
-abase
-
-The parameters are interpreted for Interchange tags before being
-parsed. Here is a complete example:
-
-   s item_cost weight,modes:[value mv_shipmode];[value country], ;2
-  items in the shopping cart:  00-0011 19=202
-
-  ------- product database  ----
-
-  code    weight   description      price
-  00-0011   8      The Mona Lisa    1000
-  19-202    12     American Gothic  800
-
-    ------- modes database  ----
-
-  code    upsg  upsb  upsr  postal_air postal_surface
-  UK        0    0     0       1            1
-
-, ;25
-
-This will call the subroutine C<item_cost> and will send the weight of
-each item, along with the value of the modes database column
-corresponding to the shipping mode the user has selected, keyed with
-the value of C<country> on their order form. If the user has selected
-C<mode postal_air> and is in the country coded as C<UK>, the
-subroutine will be called as if it was:
-
-      item_c                    '00-0011' => {postal_air => '1', weight => '8'},
-                    '19-202' => {postal_air => '1', weight => '12'},
-                 }, 20, 25 )
-
-st( {
-
-If the undefined value is returned by the routine, the next shipping
-mode will be tried. If a non-numeric string value is returned, its
-value will be placed as an error message in the session variable
-ship_message (available as C<[data session ship_message]>) and a zero
-cost will be returned. If any number or the empty string is returned,
-it will be used as the shipping cost (even 0).
 
 =back
 
@@ -3505,7 +3386,7 @@ To force a choice by the user, make C<mv_shipmode> a required form
 variable (with RequiredFields or in an order profile) and set
 C<DefaultShipping> to zero.
 
-=head1 USER DATABASE
+=head1 User Database
 
 Interchange has a user database function which allows customers to
 save any pertinent values from their session. It also allows the
@@ -3522,7 +3403,7 @@ available with C<[data table=userdb column=address key=username]>.
 The ASCII file for the database will not reflect changes unless the
 file is exported with C<[tag export userdb][/tag]>. It is not
 advisable to edit the ASCII file, as it will overwrite the real data
-that is in the DBM table. User logins and changes would be lost. NOTE:
+that is in the DBM table. User logins and changes would be lost. Note:
 This would not happen with SQL, but editing the ASCII file would have
 no effect. It is recommended that the NoImport configuration directive
 be set accordingly.
@@ -3576,9 +3457,9 @@ A few of those fields are special in naming, though all can be changed
 via an option. A couple of the fields are reserved for Interchange's
 use.
 
-B<IMPORTANT NOTE: >If not running with PGP or other encryption for
-credit card numbers, which is never recommended, it is important that
-the mv_credit_card_info field be removed from the database.
+B<Note: >If not running with PGP or other encryption for credit card
+numbers, which is never recommended, it is important that the
+mv_credit_card_info field be removed from the database.
 
 The special database fields are:
 
@@ -4169,13 +4050,784 @@ Access can be disallowed with:
 Of course, a pre-existing database with the ACL values will work as
 well. It need not be in the UserDB setup.
 
-=head1 FREQUENTLY ASKED QUESTIONS
+=head1 Back Office UI
 
-=head2 Does Interchange require SQL?
+=head2 [display] tag and mv_metadata
 
-No. Interchange does not require SQL. If you have a small database
-with no particular desire to integrate your own tool set, you may be
-more comfortable using Interchange's internal database.
+The Interchange back office UI uses the mv_metadata table to discover
+formatting information for field, table, and view display. The
+information is kept in fields in the mv_metadata table, and is used to
+select the display, the HTML input type, the size (height and width
+where appropriate), label, help text, additional help URL, and default
+value display.
+
+It works in conjunction with the [display ...] usertag defined in the
+Interchange UI as well as in specific pages in the UI. The [display]
+tag has this syntax:
+
+[display table=tablename column=fieldname key=key arbitrary=tag
+filter=op ...]
+
+In the simplest use, the formatting information for a table form field
+is called with:
+
+=over 4
+
+=item
+
+[display table=products column=category key="os28007"]
+
+=back
+
+The mv_metadata table is scanned for the following keys:
+
+=over 4
+
+=item
+
+products::category::os28007
+
+products::category
+
+=back
+
+If a row is found with one of those keys, then the information in the
+row is used to set the display widget. If no row is found, an INPUT
+TYPE=TEXT widget is displayed. If the data is all digits, a size of 8
+is used, otherwise the size is 60.
+
+If the following row were found (not all fields shown, would be
+tab-separated in the actual data):
+
+  code                type   width height label     options
+  products::category  text   20           Category
+
+Then an input C<<>C<INPUT TYPE=text SIZE=20 VALUE="*category*">> with
+a field label of I<Category> would be output.
+
+If the following row were found:
+
+  code                type   width height label     options
+  products::category  select              Category  =none, product=Hardware
+
+Then the following would be output:
+
+        <SELECT NAME=category>
+        <OPTION VALUE="">none
+        <OPTION VALUE="product">Hardware
+        </SELECT>
+
+The standard widget types are:
+
+=over 4
+
+=item text
+
+The default. Uses the fields:
+
+    width   size of input box
+
+=back
+
+=over 4
+
+=item textarea
+
+Format a <TEXTAREA> </TEXTAREA> pair. Uses the fields:
+
+        width   COLS for textarea
+
+=back
+        height  ROWS for textarea
+
+=over 4
+
+=item select
+
+Format a <SELECT> </SELECT> pair with appropriate options. Uses the
+fields:
+
+  height          SIZE for select
+
+=back
+  default         Default for SELECTED
+  options         Options for a fixed list (or prepended to a lookup)
+  lookup          signals a lookup (used as field name if "field" empty)
+  field           field to look up possible values in
+  db              table to look up in if not current table
+  lookup_exclude  regular expression to exclude certain values from lookup
+
+=head1 Standard Database Dictionary
+
+You can alter any of the standard databases to suit your needs, add
+new databases, or remove unneeded ones. But the following dictionary
+lists each table and each of its fields, and explains its purpose.
+
+=head2 2ndDayAir.csv
+
+Shipping table
+
+=head2 450.csv
+
+Shipping table
+
+=head2 Ground.csv
+
+Shipping table
+
+=head2 NextDayAir.csv
+
+Shipping table
+
+=head2 access.asc
+
+Admin access table
+
+    username
+    password
+    name
+    last_login
+    super
+    yes_tables
+    no_tables
+    upload
+    acl
+    export
+    edit
+    pages
+    files
+    config
+    reconfig
+    groups
+    meta
+
+    no_functions
+        Used From: none
+
+    yes_functions
+        Used From: dist/lib/UI/pages/admin/access_permissions.html
+
+    table_control
+        Used From: dist/lib/UI/Primitive.pm
+                   dist/lib/UI/pages/admin/special/key_violation.html
+                   dist/lib/UI/usertag/if_mm
+
+    personal_css
+        Used From: dist/lib/UI/pages/admin/preferences.html
+        Used in the admin screens to make personal changes to the admin
+        presentation, by creating your own personal CSS, appears to be used
+        currently only in the preferences screen.
+
+=head2 affiliate.txt
+
+    affiliate
+    name
+        Affiliate Name
+    campaigns
+    coupon_amount
+    join_date
+        Join date
+    url
+        URL (Default URL to redirect to)
+    timeout
+        Timeout delay (in seconds, 0 to disable)
+    active
+    password
+    image
+
+=head2 area.txt
+
+    code
+    sel
+    name
+    which_page
+    sort
+    display_type
+    image
+    image_prop
+    banner_image
+    banner_text
+    link_type
+            none = No link
+            external = External link (http://...)
+            internal = Interchange page
+            simple = Simple search
+            complex = Complex search
+    url
+    tab
+    page
+    search
+    selector
+    link_template
+
+=head2 banner.txt
+
+    code
+    category
+    weight
+    rotate
+    banner
+
+=head2 cat.txt
+
+    code
+    sel
+    name
+    which_page
+    sort
+    display_type
+            name = Name
+            url = URL only
+            icon = Icon and name
+            image = Image
+    image
+    image_prop
+    banner_image
+    banner_text
+    link_type
+        Type of link:
+            none = No link
+            external = External link (http://...)
+            internal = Interchange page
+            simple = Simple search
+            complex = Complex search
+    url
+    tab
+    page
+    search
+    selector
+    link_template
+
+=head2 component.txt
+
+    code
+    group
+    name
+    width
+    height
+    pieces
+    label
+    banner
+    help
+    help_url
+    filter
+    controls
+    Variable
+
+=head2 country.txt
+
+    code
+    sorder
+    region
+    selector
+    shipmodes
+    name
+
+=head2 downloadable.txt
+
+    sku
+    dl_location
+    dl_type
+
+=head2 files.txt
+
+=head2 gift_certs.txt
+
+    code
+    username
+    order_date
+    original_amount
+    redeemed_amount
+    available_amount
+    passcode
+    active
+    redeemed
+    update_date
+
+=head2 icmenu.txt
+
+    code
+    mgroup
+    msort
+    next_line
+    indicator
+    exclude_on
+    depends_on
+    page
+    form
+    name
+    super
+    inactive
+    special
+    help_name
+
+=head2 inventory.txt
+
+    sku
+        Quantity info
+    quantity
+    stock_message
+        Out of stock message:
+            In stock
+            Ships in 3-5 days
+            Ships in 4-6 weeks
+            Special order
+    account
+        Accounting info
+        Sales account
+    cogs_account
+
+=head2 locale.txt
+
+    code
+    en_US
+    de_DE
+    fr_FR
+
+=head2 merchandising.txt
+
+    sku
+    featured
+    banner_text
+    banner_image
+    blurb_begin
+    blurb_end
+        Closer (end text for feature display)
+    timed_promotion
+    start_date
+        Start date
+    finish_date
+    upsell_to
+        Cross-sell SKUs
+    cross_sell
+    cross_category
+    others_bought
+    times_ordered
+
+=head2 mv_metadata.asc
+
+    code
+        Table::Column to be operated on.
+        Database table
+    type
+        Widget type (Select the basic display type for the field)
+            textarea = Textarea
+            text = Text Entry (default)
+            select = Select Box
+            yesno = Yes/No (Yes=1)
+            noyes = No/Yes (No=1)
+            multiple = Multiple Select
+            combo = Combo Select
+            reverse_combo = Reverse Combo
+            move_combo = Combo move
+            display = Text of option
+            hidden_text = Hidden(show text)
+            radio = Radio box
+            radio_nbsp = Radio (nbsp)
+            checkbox = Checkbox
+            check_nbsp = Checkbox (nbsp)
+            imagedir = Image listing
+            imagehelper = Image upload
+            date = Date selector
+            value = Value
+            option_format = Option formatter
+            show = Show all options
+    width
+        Width (SIZE for TEXT, COLS for TEXTAREA, Label limit for SELECT)
+    height
+        Height (SIZE for SELECT, ROWS for TEXTAREA)
+    field
+        Field for lookup (can be two comma separated fields, in which case
+        second is used as the label text.  Both must be in the same table.)
+    db
+    name
+        Variable name (normally left empty, changes variable name to send in
+        form)
+    outboard
+        Select directory for image listing widget
+    options
+        options in the format <blockquote>value=label*</blockquote>
+    attribute
+        Column name (Do not set this.)
+    label
+    help
+        Help (displays at top of page)
+    lookup
+        Lookup select (Whether lookup is performed to get options for a select
+        type.  If nothing is in the field, then used as the name of the field
+        to lookup in.  Use lookup table if you want to look up in a different
+        table.
+    filter
+        Filters (Filters which can transform or constrain your data.  Some
+        widgets require filters.)
+    help_url
+        Help URL (links below help text)
+        A URL which will provide more help
+    pre_filter
+    lookup_exclude
+        ADVANCED: regular expression that excludes certain keys from the lookup
+    prepend
+    append
+        Append HTML (HTML to be appended to the widget.  Will substitute in the
+        macros _UI_TABLE_, _UI_COLUMN_, _UI_KEY_, and _UI_VALUE_, and will
+        resolve relative links with absolute links.)
+    display_filter
+
+=head2 options.txt
+
+    code
+    o_master
+        Master item (Always included when the base SKU is equal to this.)
+    sku
+        Unique SKU (Associated item)
+    o_group
+        Option Group (scanned to see if it applies (or doesn't apply) to this
+        product)
+    o_sort
+    phantom
+        Phantom? (Whether a phantom for structuring)
+    o_enable
+        Follow? (Enable for next level) Sub-items
+    o_matrix
+        Matrix options (Matrix options allow you to maintain multiple option
+        sets with inventory on each combination)
+    o_modular
+        Modular Options (Modular options allow you to attach multiple SKUs to
+        the same item, possibly with attached options of their own.  Very
+        complex but you can do most anything.
+    o_default
+        Default? (Yes if the default selection for the group)
+    o_label
+        Short name for option display
+    o_value
+        Possible Values (In Interchange option format: VALUE1=Label 1,
+        VALUE2=Label 2 *=default selection)
+    o_widget
+    o_footer
+    o_header
+    o_height
+        Height of widget (if applicable)
+    o_width
+        Width of widget
+    description
+        Option/Variant description (for description in display)
+    price
+        Price (Price of this option/variant)
+    wholesale
+        Dealer price
+    differential
+    weight
+    volume
+        Volume (if different, mostly for matrix/modular)
+    mv_shipmode
+    o_exclude
+        Exclude (Only for modular options. Lists the option groups to exclude
+        once the include has been done.  Takes the form of a number of wildcard
+        atoms.
+    o_include
+        Include (Only for modular options. Lists the option groups to include
+        with your item. Takes the form of a number of wildcard atoms.)
+
+=head2 order_returns.txt
+
+    code
+    order_number
+    session
+    username
+    rma_number
+    nitems
+    total
+    return_date
+    update_date
+
+=head2 orderline.txt
+
+    code
+    store_id
+    order_number
+    session
+    username
+    shipmode
+    sku
+    quantity
+    price
+    subtotal
+    shipping
+    taxable
+    mv_mi
+    mv_si
+    size
+    color
+    options
+    order_date
+    update_date
+    status
+            pending = Pending
+            shipped = Shipped
+            backorder = Back ordered
+            credit = Waiting for credit check
+            canceled = Cancelled
+    parent
+    affiliate
+    campaign
+    description
+    mv_mp
+
+=head2 pricing.txt
+
+    sku
+    price_group
+    q2
+    q5
+    q10
+    q25
+    q100
+
+=head2 products.txt
+
+    sku
+    description
+        Short Description
+    title
+        Title
+    template_page
+    comment
+        Detailed Description
+    thumb
+        Thumb
+    image
+        Image
+    price
+    wholesale
+        Dealer Price
+    prod_group
+    category
+        Category (Enter in box for new category.)
+    nontaxable
+    weight
+        Weight in pounds
+    size
+    color
+    gift_cert
+        Gift certificate handling? (Yes if price should appear to be quantity)
+    related
+    featured
+    download
+    dl_type
+    dl_location
+    inactive
+    url
+
+=head2 route.txt
+
+    code
+    attach
+    continue
+    commit
+    commit_tables
+    counter
+    credit_card
+    cyber_mode
+    email
+    empty
+    encrypt
+    encrypt_program
+    errors_to
+    increment
+    inline_profile
+    individual_track
+    individual_track_ext
+    partial
+    pgp_cc_key
+    pgp_key
+    profile
+    receipt
+    reply
+    report
+    rollback
+    rollback_tables
+    supplant
+    track
+
+=head2 salestax.asc
+
+=head2 shipping.asc
+
+Shipping methods table
+
+=head2 state.txt
+
+State/territory/county information
+
+    code
+    sorder
+    country
+    state
+    name
+    tax
+    postcode
+    shipmodes
+    tax_name
+
+=head2 transactions.txt
+
+Order table, one entry per order, assoc with orderline
+
+    code
+    store_id
+    order_number
+    session
+    username
+    shipmode
+    nitems
+    subtotal
+    shipping
+    handling
+    salestax
+    total_cost
+    fname
+    lname
+        Last Name
+    company
+    address1
+    address2
+        Address line 2
+    city
+    state
+    zip
+    country
+    phone_day
+        Daytime Phone
+    phone_night
+        Home Phone
+    fax
+    email
+    b_fname
+    b_lname
+        Billing Last Name
+    b_company
+    b_address1
+    b_address2
+        Billing Address Line 2
+    b_city
+    b_state
+        Billing State
+    b_zip
+        Billing Postcode
+    b_country
+        Billing Country
+    b_phone
+    order_date
+    order_ymd
+    order_wday
+    payment_method
+    po_number
+    avs
+    order_id
+    update_date
+    status
+    affiliate
+    campaign
+    parent
+    archived
+    deleted
+    complete
+    comments
+
+=head2 userdb.txt
+
+Customer database
+
+    username
+    password
+    acl
+    mod_time
+    s_nickname
+    company
+    fname
+    lname
+    address1
+    address2
+    address3
+    city
+    state
+    zip
+        Postcode
+    country
+        Country
+    phone_day
+    mv_shipmode
+    b_nickname
+    b_fname
+    b_lname
+    b_address1
+    b_address2
+    b_address3
+    b_city
+    b_state
+    b_zip
+    b_country
+    b_phone
+        Billing Phone
+    mv_credit_card_type
+    mv_credit_card_exp_month
+    mv_credit_card_exp_year
+    p_nickname
+    email
+    fax
+    phone_night
+    fax_order
+        Payment method:
+            (none) = Credit Card
+            1 = Fax or Mail
+            2 = Purchase order
+            3 = COD
+    address_book
+    accounts
+    preferences
+    carts
+    owner
+    file_acl
+    db_acl
+    order_numbers
+    email_copy
+    mail_list
+        Mailing lists the customer has joined:
+            offer = Special offers
+            newsletter = Newsletter
+            alert = Alerts and Recalls
+            upgrade = Upgrades
+    project_id
+    account_id
+    order_dest
+    credit_limit
+    inactive
+    dealer
+        Dealer:
+            (none) = No
+            1 = Yes
+    b_company
+    feedback
+        ???
+
+=head2 variable.txt
+
+Configuration database
+
+    code
+        Variable name
+    Variable
+    pref_group
+        Preferences area
+
+=head1 Frequently Asked Questions
+
+=head2 Does Interchange require an SQL database?
+
+No. Interchange does not require an external SQL database. If you have
+a small database with no particular desire to integrate your own tool
+set, you may be more comfortable using Interchange's internal
+database.
 
 Bear in mind that the order management functions of Interchange will
 be slow and not as robust without SQL. SQL is strongly recommended for
@@ -4239,8 +4891,8 @@ SQL type.
 
 =item I don't like the column types that Interchange defines!
 
-They can be changed. See the C<simple/mysql> directory for some
-examples under MySQL.
+They can be changed. See the C<foundation/dbconf/mysql> directory for
+some examples under MySQL.
 
 =item I change the ASCII file, but the table is not updated. Why?
 
@@ -4283,7 +4935,7 @@ ISP or UNIX system.
 
 However, you can turn it around.  Once you have created a MySQL or
 other SQL database on the UNIX machine, you may then obtain the
-Windows ODBC driver for the database (mySQL has a package called
+Windows ODBC driver for the database (MySQL has a package called
 myODBC) and use the UNIX database as a data source for your PC-based
 database program.
 
@@ -4293,9 +4945,9 @@ Here is a quick procedure that might get you started:
 
 =item *
 
-Get mySQL from:
+Get MySQL from:
 
-    http://www.mysql.com
+    http://www.mysql.com/
 
 Install it on your UNIX box. On LINUX, it is as easy as getting the
 RPM distribution:
@@ -4307,14 +4959,14 @@ are not root, you will have to build the source distribution.
 
 =item *
 
-To avoid permissions problems for your testing, stop the mysql daemon
+To avoid permissions problems for your testing, stop the MySQL daemon
 and allow global read-write access with:
 
     mysqladmin sh    safe_mysqld --skip-grant-tables &
 
 tdown
 
-Obviously, you will want to study mySQL permissions and set up some
+Obviously, you will want to study MySQL permissions and set up some
 security pretty quickly. It has excellent capability in that area, and
 the FAQ will help you get over the hurdles.
 
@@ -4342,26 +4994,26 @@ Make an SQL query to set up a table, for example:
 
 =item *
 
-Get and install myODBC, also from the MySQL site (use a mirror):
+Get and install myODBC, also from the MySQL site:
 
-    http://www.mysql.com
+    http://www.mysql.com/
 
 You install this package on your Windows 95 or NT box. It is a simple
 setup.exe process which leads you to the control panel for setting up
-an ODBC data source.  Set up a data source named C<test_odbc> that
+an ODBC data source. Set up a data source named C<test_odbc> that
 points to the database C<test_odbc> on the UNIX box. You will need to
 know the host name and the port (usually 3306).
 
 =item *
 
-With MS-Access, you can then open a blank database and select:
+With Microsoft Access, you can then open a blank database and select:
 File/Get External Data/Link Tables. Select File Type of 'ODBC
 databases' and the proper data source, and you should have access to
 the database residing on the UNIX side.
 
 =back
 
-=head1 INTERCHANGE DATABASE USERTAGS
+=head1 Interchange Database Usertags
 
 =head2 Data
 
@@ -4490,7 +5142,7 @@ them. Case is sensitive, so in a pinch you could call the database
 
 rmat]
 
-=head2 Search_region
+=head2 search_region
 
 =over 4
 
@@ -4534,16 +5186,5 @@ Attribute aliases:
 
 > arg
 
-
-=over 8
-
-=item *
-
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
-
-=back
 =back
 

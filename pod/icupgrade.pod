@@ -2,6 +2,11 @@
 
 Interchange Upgrade Guide
 
+=head1 Introduction
+
+This document contains, in rough form, notes on upgrading from
+MiniVend 3 to MiniVend 4, and MiniVend 4 to Interchange.
+
 =head1 Interchange 4.8 Deprecated Features
 
 This document describes features of Interchange 4.8 that have been
@@ -127,7 +132,7 @@ routine.
 
 =back
 
-=head1 Upgrading from Minivend 4.0 to Interchange 4.6
+=head1 Upgrading from MiniVend 4.0 to Interchange 4.6
 
 =over 4
 
@@ -397,13 +402,13 @@ Add a new field to transaction.txt called 'archived'.
 
 =back
 
-=head1 Upgrading from Minivend 3 to Minivend 4
+=head1 Upgrading from MiniVend 3 to MiniVend 4
 
 =over 4
 
 =item
 
-There were big changes from Minivend 3 to Minivend 4, some of which
+There were big changes from MiniVend 3 to MiniVend 4, some of which
 were incompatible.
 
 Many things were removed as redundant, deprecated, or just plain
@@ -746,7 +751,7 @@ update. For best security, gate with a userdb entry like this:
 
 =item
 
-Minivend 4 uses in-page error-flagging on the checkout page. Simplest
+MiniVend 4 uses in-page error-flagging on the checkout page. Simplest
 way to convert is probably to use the checkout.html from the simple
 demo as a start, and move in any customization from the existing
 site's catalog.html (headers, footers, logos, etc.) A line-by-line
@@ -814,13 +819,13 @@ issues discussed above.
 
 Accessing globalsubs from [perl] tags is done slightly differently.
 
-Minivend 3 method:
+MiniVend 3 method:
 
 [perl sub]
 myfunsub();
 [/perl]
 
-Minivend 4/IC method:
+MiniVend 4/IC method:
 
 [perl subs=1]
 myfunsub();
@@ -832,15 +837,15 @@ If you do this wrong, you'll get an error that looks like this:
 
 =back
 
-Minivend 3 compatibility usertags and globalsubs
+MiniVend 3 compatibility usertags and globalsubs
 
 =over 4
 
 =item
 
-These files were originally distributed with Minivend 4 in the compat/
-directory. They replace Minivend 3 functionality that was removed or
-greatly altered in Minivend 4.
+These files were originally distributed with MiniVend 4 in the compat/
+directory. They replace MiniVend 3 functionality that was removed or
+greatly altered in MiniVend 4.
 
 =back
 
@@ -1052,6 +1057,7 @@ sub parse_random {
     my $c = [];
     $var = lc $var;
         my @files = grep /\S/, split /\s+/, $value;
+        local ($Vend::Cfg) = $C;
         for (@files) { push @$c, Vend::Util::readin($_) }
         return $c;
 }

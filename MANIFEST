@@ -818,7 +818,6 @@ pod/icintro.pod
 pod/ictags.pod
 pod/ictemplates.pod
 pod/icupgrade.pod
-pod/usertag.pod
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL

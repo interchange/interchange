@@ -1,15 +1,15 @@
 =head1 NAME
 
-Interchange Back-Office
+Interchange Back Office
 
-=head1 AKOPIA INTERCHANGE(TM) BACK-OFFICE
+=head1 Interchange Back Office
 
-Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. This document describes
-how to administer a commerce site with Interchange's back-office
+Interchange is the industry's most widely distributed and implemented
+open source e-commerce platform. This document describes how to
+administer a commerce site with Interchange's back-office
 functionality, and discusses site management and security.
 
-=head1 TRACKING AND BACK-END ORDER ENTRY
+=head1 Tracking and Back-End Order Entry
 
 Interchange allows the entry of orders into a system through one of
 several methods. The C<AsciiBackend> capability allows submission of
@@ -82,10 +82,10 @@ using the convenient C<NOTES> format:
 
 =head2 Custom Order Routing
 
-Akopia Interchange can send order emails and perform custom credit
-card charges and/or logging for each item. The Route directive is used
-to control this behavior, along with the C<mv_order_route> item
-attribute and C<mv_order_route> form variable.
+Interchange can send order emails and perform custom credit card
+charges and/or logging for each item. The Route directive is used to
+control this behavior, along with the C<mv_order_route> item attribute
+and C<mv_order_route> form variable.
 
 Routes are established with the C<Route> directive, which is similar
 to the C<Locale> directive. Each route is like a locale, so that
@@ -316,7 +316,7 @@ possibly by reading a value set in the profile).
 The C<main> order routing will use CyberCash to charge the order, and
 will be completely encrypted for e-mailing.
 
-=head1 ADMINISTERING AKOPIA INTERCHANGE
+=head1 Administering Interchange
 
 Some utilities are supplied with Interchange and are located in the
 VendRoot/bin directory:
@@ -605,8 +605,8 @@ C<view>, or C<edit> available files.
 
 =head2 Import/Export
 
-Akopia Interchange makes it easy to import and export data to and from
-a commerce Web site.
+Interchange makes it easy to import and export data to and from a
+commerce Web site.
 
 Use C<Database Upload> to import a tab delimited database of all
 product information to Interchange to make set-up faster and easier.
@@ -625,12 +625,12 @@ again.
 
 =head2 Meta Field Information
 
-Akopia Interchange can store meta information for selected columns of
-tables in a site's database. This meta information is used when the
-user interacts with the database. For example, the meta informaton for
-a C<Hide Item> field might specify that a checkbox be displayed when
-the user edits that field, since the only reasonable values are C<on>
-and C<off>. Or, the meta information might specify a filter on data
+Interchange can store meta information for selected columns of tables
+in a site's database. This meta information is used when the user
+interacts with the database. For example, the meta informaton for a
+C<Hide Item> field might specify that a checkbox be displayed when the
+user edits that field, since the only reasonable values are C<on> and
+C<off>. Or, the meta information might specify a filter on data
 entered for a C<Filename> field which makes sure that the characters
 entered are safe for use in a filename.
 
@@ -659,17 +659,17 @@ C<::> as the C<lookup_exclude>.
 C<Filter> and C<pre_filter> can be used to filter data destined for
 that field or data read from that field, respectively.
 
-=head1 INTERCHANGE SECURITY
+=head1 Interchange Security
 
 =head2 SSL Support
 
-Akopia Interchange has several features that enable secure ordering
-via SSL (Secure Sockets Layer). Despite their mystique, SSL servers
-are actually quite easy to operate. The difference between the
-standard HTTP server and the SSL HTTPS server, from the standpoint of
-the user, is only in the encryption and the specification of the URL;
-C<https:> is used for the URL protocol specification instead of the
-usual http: designation.
+Interchange has several features that enable secure ordering via SSL
+(Secure Sockets Layer). Despite their mystique, SSL servers are
+actually quite easy to operate. The difference between the standard
+HTTP server and the SSL HTTPS server, from the standpoint of the user,
+is only in the encryption and the specification of the URL; C<https:>
+is used for the URL protocol specification instead of the usual http:
+designation.
 
 B<IMPORTANT NOTE: >Interchange attempts to perform operations
 securely, but no guarantees or warranties of any kind are made! Since
@@ -705,11 +705,10 @@ variables.
 
 =head2 Administrative Pages
 
-With Akopia Interchange's C<GlobalSub> capability, very complex add-on
+With Interchange's C<GlobalSub> capability, very complex add-on
 schemes can be implemented with Perl subroutines. And with the new
-writable database, pages that modify the catalog data can be made. If
-a page is marked as an C<AdminPage>, only the catalog administrator
-may use it. See C<MasterHost>, C<RemoteUser>, and C<Password>.
+writable database, pages that modify the catalog data can be made. See
+C<MasterHost>, C<RemoteUser>, and C<Password>.
 
 In addition, any Interchange page subdirectory can be protected from
 access by anyone except the administrator if a file called '.access'
@@ -814,7 +813,7 @@ capability is not available.
 
 =back
 
-=head1 USERTAG REFERENCE
+=head1 Usertag Reference
 
 =head2 email
 
@@ -935,19 +934,4 @@ capability is not available.
        return defined $ref->{$message} ? $ref->{$message} : $message;
    }
    EOF
-
-=over 4
-
-=over 8
-
-=item *
-
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
-
-=back
-
-=back
 

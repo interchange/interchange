@@ -2,14 +2,13 @@
 
 Interchange Templates
 
-=head1 AKOPIA INTERCHANGE(TM) TEMPLATES
+=head1 Interchange Templates
 
-Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. Interchange is designed
-to build pages based on templates from a database. This document
-discusses, in detail, how to build forms and report templates with
-Interchange's tag language, ITL (Interchange Tag Language). A number
-of frequently asked questions are also discussed.
+Interchange is the industry's most widely distributed and implemented
+open source e-commerce platform. Interchange is designed to build
+pages based on templates from a database. This document discusses, in
+detail, how to build forms and report templates with Interchange's tag
+language, ITL (Interchange Tag Language).
 
 =head2 Overview
 
@@ -47,7 +46,7 @@ Perl can also be embedded within the page, and if given the proper
 permission by the system administrator, can call upon resources from
 other computers and networks.
 
-=head1 VARIABLE REPLACEMENT
+=head1 Variable Replacement
 
 Variable substitution is a simple and oft-used feature of Interchange
 templates. Before anything else is done on a template, all variable
@@ -68,7 +67,7 @@ See the C<icconfig> documentation for information on how to use the
 C<Variable> configuration file directive to set global variables in
 C<interchange.cfg> and catalog variables in C<catalog.cfg>.
 
-=head1 INTERCHANGE TAGS
+=head1 Interchange Tags
 
  [accessories]        Access product accessory functions
 [area]               Insert a re-written Interchange URL
@@ -385,7 +384,7 @@ C<[data table col key]> call.
 
 =back
 
-=head2 SET, SETI, SCRATCH and SCRATCHD
+=head2 set, seti, scratch and scratchd
 
 Scratch variables are maintained in the user session separate from the
 form variable values set on HTML forms. Many things can be controlled
@@ -460,7 +459,7 @@ Tests a scratch variable. See IF.
 
 =back
 
-=head2 LOOP
+=head2 loop
 
 Loop lists can be used to construct arbitrary lists based on the
 contents of a database field, a search, or other value (like a fixed
@@ -475,8 +474,8 @@ is a reasonable default maximum. If the text file for searching an
 Interchange DBM database is not used, set C<st=db> (mv_searchtype).
 
 When using C<st=db>, returned keys may be affected by
-C<TableRestrict>. See C<CATALOG.CFG>. Both can be sorted with C<[sort
-table:field:mod -start +number]> modifiers. See SORTING.
+C<TableRestrict>. See C<catalog.cfg>. Both can be sorted with C<[sort
+table:field:mod -start +number]> modifiers. See C<Sorting>.
 
 =over 4
 
@@ -670,7 +669,7 @@ Defines a subroutine that is available to the current (and subsequent)
 
 =back
 
-=head2 IF
+=head2 if
 
 =over 4
 
@@ -1015,13 +1014,13 @@ Terminates an if conditional.
 
 =back
 
-=head1 PROGRAMMING
+=head1 Programming
 
 Interchange has a powerful paradigm for extending and enhancing its
 functionality.  It uses two mechanisms, C<user-defined tags> and
 C<user subroutines> on two different security levels, global and
 catalog. In addition, C<Embedded Perl Code> may be used to build
-functionality into a site’s page.
+functionality into a site's page.
 
 C<User-defined tags> are defined with the UserTag directive in either
 C<minivend.cfg> or C<catalog.cfg>. The ones in C<minivend.cfg> are
@@ -1278,7 +1277,7 @@ Attribute aliases:
 
 =head2 Header
 
-=head2 PRICE, DESCRIPTION, ACCESSORIES
+=head2 price, description, accessories
 
 =over 4
 
@@ -1298,7 +1297,7 @@ If an named attribute corresponding to a product option is passed, and
 that option would cause a change in the price, the appropriate price
 will be displayed.
 
-DEMO EXAMPLE: The T-Shirt (product code 99-102), with a base price of
+Demo example: The T-Shirt (product code 99-102), with a base price of
 $10.00, can vary in price depending on size and color. C<S>, the small
 size, is 50 cents less; C<XL>, the extra large size, is $1.00 more,
 and the color C<RED> is 0.75 extra. There are also quantity pricing
@@ -1609,7 +1608,7 @@ banner. Otherwise, it works just as in other categorized ads. Rotation
 will work if set non-zero/non-blank, and it will be inactive if the
 rotate field is blank. Each category rotates on its own.
 
-=item ADVANCED
+=item Advanced
 
 All parameters are optional since they are marked with an asterisk
 C<(*)>.
@@ -1982,7 +1981,7 @@ enter the quantity to order.
 
 =back
 
-=head1 INTERCHANGE PAGE DISPLAY
+=head1 Interchange Page Display
 
 Interchange has several methods for displaying pages:
 
@@ -2044,10 +2043,10 @@ built. The C<[if-item-field fieldname]> HTML C<[/if-item-field]> pair
 can be used to insert HTML only if there is a non-blank value in a
 particular field.
 
-IMPORTANT NOTE: Because the tags are substituted globally on the page,
-C<[item-*]> tags cannot be used on the default on-the-fly page. To use
-a [search-region] or [item-list] tag, change the default with the
-prefix parameter. Example:
+B<Important note:> Because the tags are substituted globally on the
+page, C<[item-*]> tags cannot be used on the default on-the-fly page.
+To use a [search-region] or [item-list] tag, change the default with
+the prefix parameter. Example:
 
    [item-list prefix=cart]
    [cart-code] -- title=[cart-data products title]
@@ -2206,7 +2205,7 @@ To do this occasionally, use a Variable setting:
 and place __CHECK_HTML__ in the pages.  Then set the Variable to the
 empty string to disable it.
 
-=head1 FORMS AND INTERCHANGE
+=head1 Forms and Interchange
 
 Interchange uses HTML forms for many of its functions, including
 ordering, searching, updating account information, and maintaining
@@ -2548,11 +2547,12 @@ provided with the C<[checked]> and C<[selected]> tags.
 
 =item [checked var_name value]
 
-named attributes: [checked name="var_name" value="value" multiple=0|1
-default=0|1]
+named attributes: C<[checked name="var_name" value="value" cgi=0|1
+multiple=0|1 default=0|1 case=0|1]>
 
 This will output CHECKED if the variable C<var_name> is equal to
-C<value>. Not case sensitive.
+C<value>. Set the C<cgi> attribute to use cgi instead of values data.
+Not case sensitive unless C<case> is set.
 
 If the C<multiple> attribute is defined and set to a non-zero value (1
 is implicit) and if the value matches on a word/non-word boundary, it
@@ -2560,13 +2560,19 @@ will be CHECKED. If the C<default> attribute is set to a non-zero
 value, the box will be checked if the variable C<var_name> is empty or
 zero.
 
-=item [selected var_name value MULTIPLE*]
+=item [selected var_name value]
 
-named attributes: C<[selected name=var_name value="value" multiple=1]>
+named attributes: C<[selected name="var_name" value="value" cgi=0|1
+multiple=0|1 default=0|1 case=0|1]>
 
 This will output SELECTED if the variable C<var_name> is equal to
-C<value>. If the optional MULTIPLE argument is present, it will look
-for any of a variety of values. Not case sensitive.
+C<value>. Set the C<cgi> attribute to use cgi instead of values data.
+Not case sensitive unless C<case> is set.
+
+If the C<multiple> argument is present, it will look for any of a
+variety of values. If the C<default> attribute is set, SELECT will be
+output if the variable is empty or zero. Not case sensitive unless
+C<case> is set.
 
 Here is a drop-down menu that remembers an item-modifier color
 selection:
@@ -2923,9 +2929,9 @@ The variables in the form do not update the user's session values, so
 they can correspond to database field names without fear of corrupting
 the user session.
 
-=head1 FREQUENTLY ASKED QUESTIONS
+Frequently Asked Questions
 
-=head2 How do you pass variables from page to page?
+How do you pass variables from page to page?
 
 No effort needed. Interchange does this automatically. Every user
 session that is started by Interchange automatically creates a
@@ -2942,7 +2948,7 @@ unset variables it does not find on the current form. That means you
 can't expect a checkbox to become unchecked unless you explicitly
 reset it.
 
-=head2 How can I tell when I need to quote a tag inside a tag?
+How can I tell when I need to quote a tag inside a tag?
 
 In general, you don't need to quote the following tags which are
 interpreted first within a list:
@@ -2975,13 +2981,13 @@ performance. If you have large lists of tags you can achieve
 significant speedups by using positional parameters. It requires CPU
 power to parse and disassemble the named parameters.
 
-=head2 Can I use Interchange with my existing static catalog pages?
+Can I use Interchange with my existing static catalog pages?
 
 Yes, but you probably won't want to in the long run. Interchange is
 designed to build pages based on templates from a database. If all you
-want is a shopping cart, you probably should use a simpler program. It
-is not difficult to convert existing static pages to Interchange, but
-maintaining them can be a nightmare.
+want is a shopping cart, you can mix standard static pages with
+Interchange, but it is not as convenient and doesn't take advantage of
+the many dynamic features Interchange offers.
 
 That being said, all you usually have to do to place an order link on
 a page is:
@@ -2990,18 +2996,165 @@ a page is:
 
 Replace C</cgi-bin/construct> with the path to your Interchange link.
 
+Template Parsing Order
+
+Under normal circumstances, the template page containing tags and HTML
+is parsed in the following order:
+
 =over 4
+
+=item 1.
+
+Any content in MV_AUTOLOAD is prepended to the template page.
+
+=over 8
+
+=item
+
+I<>
+
+=back
+
+I<>
+
+=item 2.
+
+Any [C<pragma>] tags anywhere in the text are processed, and the
+specified pragmas are set.
 
 =over 8
 
 =item *
 
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
+Since [C<pragma>] tags are preprocessed before any other content,
+C<reparse> will not catch them, nor will they work if included in
+variables. Also, the specified pragma will apply to the entire
+template (not just the section after the tag).
+
+=item *
+
+If you want to apply a pragma with a variable or only to part of a
+document, you must use [C<tag> pragma="..."] instead.
 
 =back
 
+I<>
+
+=item 3.
+
+Variables (macros) are processed in the following order:
+
+=over 8
+
+=item 4.
+
+@@VARNAME@@ global variables
+
+=item 5.
+
+@_VARNAME_@ local or global variables
+
+=item 6.
+
+__VARNAME__ local variables
+
 =back
+
+I<>
+
+=item 7.
+
+Interchange comments are stripped.
+
+=over 8
+
+=item
+
+I<>
+
+=back
+
+I<>
+
+=item 8.
+
+False-endtag macros are expanded (e.g., [C</page>] and [C</order>]).
+
+=over 8
+
+=item
+
+I<>
+
+=back
+
+I<>
+
+=item 9.
+
+'<!--[tagname]-->' escapes are converted to [tagname]
+
+=over 8
+
+=item *
+
+This can be a convenience for your HTML editor if it has trouble with
+tags using the standard [tagname] syntax.
+
+=item *
+
+However, if you want to HTML-comment out an interchange tag in content
+that will be fed raw to a browser, you must include whitespace, like
+this, '<!-- [tagname] -->'.
+
+=back
+
+I<>
+
+=item 10.
+
+The main tag parser is called.
+
+=over 8
+
+=item *
+
+Some tags parse recursively (depending on C<reparse> and
+C<interpolate> settings, of course).
+
+=item *
+
+Some tags (e.g., [C<loop>]) process prefix-tags in their contained
+body text.  The prefix-tags are not handled recursively.
+
+=back
+
+I<>
+
+=item 11.
+
+Image paths substitution on the HTML output occurs.
+
+=over 8
+
+=item
+
+I<>
+
+=back
+
+I<>
+
+=back
+
+B<Nonstandard parsing within the admin interface>
+
+Parsing of content via the specialized C<regenerate> usertag included
+with the administrative interface does not obey the above order.  The
+MV_AUTOLOAD and '<!--[tagname]-->' escapes are skipped.  There are
+some other more subtle differences as well; in the very unlikely event
+that you need to check this in the source code, compare the
+'interpolate_html' and 'cache_html' routines in Interpolate.pm.
+
+
 

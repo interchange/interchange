@@ -2,33 +2,15 @@
 
 Interchange Introduction
 
-=head1 INTRODUCTION TO INTERCHANGE(TM)
+=head1 Introduction to Interchange
 
-Akopia's Interchange is the industry's most widely distributed and
-implemented  open source e-commerce  platform. The software is
-equipped with a wide range of features that make it the most
-comprehensive, reliable, and cost-effective option available today.
-This introduction provides a background on Interchange, an overview of
-its capabilities, a description of how it works, and answers a number
-of frequently asked questions.
-
-=head2 Background
-
-Interchange is a descendent of Vend, an e-commerce solution originally
-developed by Andrew Wilcox in 1995. In the five years that followed,
-Mike Heins expanded and enhanced Vend, creating a more powerful and
-versatile tool, MiniVend. MiniVend grew to support thousands of
-businesses and their e-commerce sites. However, despite the fact that
-MiniVend was feature-rich, it lacked an intuitive administrative
-interface. A similar product, called Tallyman, had the features that
-MiniVend lacked. It was intuitive and had better content management
-features, but lacked some of MiniVend's transactional capabilities.
-
-During the same period of time, an experienced e-commerce development
-team founded Akopia. Their goal was to create a sophisticated open
-source e-commerce platform that was both feature-rich and easy to use.
-Akopia acquired both MiniVend and Tallyman and integrated them to
-create Interchange.
+Interchange is the industry's most widely distributed and implemented
+open source e-commerce platform. The software is equipped with a wide
+range of features that make it the most comprehensive, reliable, and
+cost-effective option available today. This introduction provides a
+background on Interchange, an overview of its capabilities, a
+description of how it works, and answers a number of frequently asked
+questions.
 
 =head2 Overview
 
@@ -55,11 +37,38 @@ serve many different customers from one or just a few Interchange
 server processes. As many as 2,000 Interchange catalogs have been run
 on one machine from the same server process.
 
-=head1 HOW INTERCHANGE WORKS
+=head2 Background
 
-This section describes how Interchange works.
+Interchange is a descendent of Vend, an e-commerce solution originally
+developed by Andrew Wilcox in early 1995. Mike Heins took the first
+publicly-released version, Vend 0.2, and added searching and DBM
+catalog storage to create MiniVend. Mike released MiniVend 0.2m7 on
+December 28, 1995. Subsequent versions of MiniVend took parts from
+Vend 0.3, especially the vlink and Server.pm modules, which were
+adapted to run with MiniVend. In the four years that followed, Mike
+Heins expanded and enhanced MiniVend, creating a powerful and
+versatile e-commerce development platform. MiniVend grew to support
+thousands of businesses and their e-commerce sites.
 
-=head2 The Vend Concept
+Separately, an experienced e-commerce development team founded Akopia.
+Their goal was to create a sophisticated open source e-commerce
+platform that was both feature-rich and easy to use. Their product,
+Tallyman, was intuitive, and had great content-management features,
+but lacked many of MiniVend's capabilities.
+
+Akopia acquired MiniVend in June 2000. Mike Heins and the Tallyman
+developers combined MiniVend with Tallyman's features to create
+Interchange. Interchange replaces both MiniVend and Tallyman. In order
+to preserve compatibility, the name "minivend" and prefixes like "mv_"
+and "MVC_" will still appear in source code and configuration files.
+
+In January 2001, Red Hat acquired Akopia and created its new
+E-Business Solutions Division. Interchange development is going
+forward and the user community continues to grow.
+
+=head1 How Interchange works
+
+=head2 The Pages and Tags Concept
 
 The basic concept of implementing Interchange remains unchanged from
 Vend. Interchange maintains a unique set of pages, outside of regular
@@ -176,7 +185,7 @@ Interchange can issue cookies that contain the user session ID. If the
 user returns the cookie, then the user can be presented pages without
 accompanying session information.
 
-=item URL Re-Writing
+=item URL Rewriting
 
 If the user doesn't want to use cookies, Interchange will include a
 session ID in the URL. This is a random-looking piece of text that is
@@ -186,9 +195,9 @@ simultaneous users.
 
 =back
 
-=head2 Page Delivery in CGI-BIN
+=head2 Page Delivery in cgi-bin
 
-Pages in the catalog served by Interchange running as a CGI-bin
+Pages in the catalog served by Interchange running as a cgi-bin
 program generate a special URL for every link. For example:
 
 http://www.mystore.com/cgi-bin/simple/browse1?id=WehUkATn&pc=122&ar=99-102
@@ -282,18 +291,36 @@ HTTP server, which returns it to the browser.
 
 =back
 
-=head1 TECHNICAL REQUIREMENTS
+=head1 Technical Requirements
 
 This section describes the technical requirements needed to run
 Interchange.
+
+=head2 Hardware
+
+A 400MHz Pentium or equivalent computer with 128MB of RAM is
+recommended. This machine can serve many catalogs, if that is all it
+does.
+
+If a site is located on a machine with hundreds of domains, as
+sometimes happens with low-cost hosting operations, expect some
+problems. It is difficult to maintain a stable environment with
+numerous users.
+
+=head2 Operating System
+
+A Unix-like operating system is required. This includes the many Linux
+distributions, FreeBSD, Solaris, Mac OS X, and so on. Mac OS classic
+(anything before OS X) and Microsoft Windows platforms are not
+supported.
 
 =head2 Perl
 
 Interchange 4.6 requires Perl version 5.005 or higher. Perl 5 can be
 downloaded from any CPAN (Comprehensive Perl Archive Network) site.
-See the following site:
+See the main Perl werbsite:
 
-http://www.perl.com/CPAN/
+http://www.perl.com/
 
 In addition, on systems that do not have GDBM or DB_File installed,
 SQL is recommended because large, resident catalog databases will use
@@ -303,8 +330,8 @@ large amounts of memory.
 
 The core functions of Interchange can run with a stock Perl, but some
 features of Interchange (like the administrative interface) require
-additional modules. If using a UNIX server, use the CPAN module and
-run the following command:
+additional modules. You can use the CPAN module by running this
+command:
 
    perl -MCPAN -e 'install Bundle::Interchange'
 
@@ -332,56 +359,26 @@ The following modules are not essential:
 The DBI module is required if using SQL, along with the appropriate
 DBD module for your database.
 
-=head2 Operating System
-
-The UNIX Operating System is highly recommended. Mac OS/Finder and
-Microsoft Windows platforms are not supported. Interchange will run on
-Mac OS/X.
-
-=head2 Machine
-
-A 400MHz Pentium or equivalent computer with 128MB of RAM is
-recommended. This machine can serve many catalogs, if that is all it
-does.
-
-If a site is located on a machine with hundreds of domains, as
-sometimes happens with low-cost hosting operations, expect some
-problems. It is difficult to maintain a stable environment with
-numerous users.
-
 =head2 If Problems Occur
 
-Akopia is interested in making Interchange as reliable and
-trouble-free as possible and provides support for Interchange. Forward
-bug reports, questions and comments to the bug reporting system,
-Bugzilla, found at http://developer.akopia.com.
+Help can be found through the community of developers subscribing to
+the interchange-users mailing list. Information on how to subscribe is
+at the Interchange developer website. There you will also find FAQs,
+searchable documentation with user annotations, and mailing list
+archives:
 
-Interchange offers fee-based technical support through it's Technical
-Services Group. Help can also be found through the community of
-developers subscribing to the user group on the Akopia Developer
-Resource site.  Akopia makes full source code of the current version
-of Interchange available on the Akopia web site :
+    http://developer.akopia.com/
 
-   http://www.akopia.com
+We are interested in making Interchange as reliable and trouble-free
+as possible. Please submit bug reports to our bug tracking system,
+also available from the Interchange developer website.
 
-Frequently asked questions and documentation are also available on the
-Akopia web site. There is a search feature that encompasses the
-documentation, FAQs, and an archived mailing list.
+Red Hat's e-business division offers fee-based technical support,
+which is described at:
 
-=head1 FREQUENTLY ASKED QUESTIONS
+    http://www.akopia.com/
 
-=head2 Can you tell me more about MiniVend, Interchange's ancestor?
-
-MiniVend was originally based on Vend created by Andrew Wilcox. Vend
-was written in the early part of 1995, and the first released version
-was 0.2. The first version of MiniVend was based on that. It added
-searching and DBM catalog storage. Subsequent versions took parts from
-Vend 0.3, especially the VLINK and Server.pm modules, which were
-adapted to run with MiniVend.
-
-The first release of MiniVend (0.2m7) was on December 28, 1995, and
-quickly proved to be a more powerful and versatile tool than Vend.
-Thousands of businesses depend on MiniVend for their e-commerce sites.
+=head1 Frequently Asked Questions
 
 =head2 How does Interchange compare with other shopping carts?
 
@@ -446,11 +443,12 @@ Consider a commercial product when a site has:
 =item 1.
 
 a need for power, but users who will interact only through a site
-building system like MS FrontPage or Netobjects Fusion.
+building system like Microsoft FrontPage or Netobjects Fusion.
 
 =item 2.
 
-a need to interact only through a GUI like Windows and not edit files.
+a need to interact only through a Windows GUI program and not edit
+files.
 
 =back
 
@@ -479,7 +477,7 @@ To place an order link on a page, use the following:
 
 Replace C</cgi-bin/simple> with the path to your Interchange link.
 
-=head2 Will Interchange run on an ISP?
+=head2 Will Interchange run on my ISP's server?
 
 The majority of ISPs provide some CGI service, and an increasing
 number run systems that are compatible with Interchange. The catalog
@@ -505,15 +503,15 @@ Some examples of programs that run as daemons (in most cases) are:
 
 =item 1.
 
-HTTP server (Apache, etc.).
+Apache and other HTTP servers
 
 =item 2.
 
-MySQL, mSQL, Oracle, and other SQL servers.
+MySQL, PostgreSQL, Oracle, and other database servers
 
 =item 3.
 
-Sendmail.
+sendmail
 
 =back
 
@@ -614,9 +612,9 @@ In addition, if uploading a page from a Mac or PC, make sure it is
 uploaded in ASCII (non-image) format. If it is not in ASCII, the
 Interchange catalog can break.
 
-=head2 How will Akopia support Interchange?
+=head2 How is Interchange supported?
 
-Akopia will:
+The Interchange developers will:
 
 =over 4
 
@@ -626,12 +624,12 @@ Quickly follow up on cogent bug reports. A bug is a demonstrated fault
 in the program logic that can be duplicated. A cogent bug report is
 detailed and concise, and includes HTML/code snippets that demonstrate
 the problem. Bugs can be entered on Bugzilla at
-http://developer.akopia.com
+http://developer.akopia.com/
 
 =item 2.
 
-Take note of faults in the demonstrations. Any fixes will be discussed
-on the mailing list and may be fixed in the next release version of
+Take note of faults in the demos. Any fixes will be discussed on the
+mailing list and may be fixed in the next release version of
 Interchange.
 
 =item 3.
@@ -652,63 +650,84 @@ supporting information.
 
 =back
 
-=head2 I want to partner with Akopia, or exchange links, etc.
+=head2 I want to partner with you, or exchange links, etc.
 
-Akopia receives many partnering requests. Keep in mind:
+We receive many partnering requests. Keep in mind:
 
 =over 4
 
 =item Payment Gateways
 
+=back
+
 There are literally dozens of different companies doing e-commerce
-payment services on the web. Akopia has received inquiries from many
-of them over time. The only way Akopia will consider putting in
-support for a specific payment gateway is if it is a funded consulting
-project. This usually costs thousands of dollars and is prohibitive.
+payment services on the web. We have received inquiries from many of
+them over time. We will only consider putting in support for a
+specific payment gateway is if it is a funded consulting project. This
+usually costs thousands of dollars.
 
 Users have integrated Interchange with many different payment
-gateways, such as CyberCash, Signio, and Authorize.net. Akopia
-supports CyberCash and Signio directly in Interchange because they are
-market leaders. Interchange easily integrates user gateways.
+gateways, such as CyberCash, Signio, and Authorize.net. Interchange
+supports CyberCash and Signio directly because they are market
+leaders. Interchange easily integrates user gateways.
+
+=over 4
 
 =item Directory Listings
 
+=back
+
 Interchange may be listed in software directories but not on mail
-lists. Akopia will not maintain the listing.
+lists. We will not maintain the listing.
+
+=over 4
 
 =item CD-ROM Distributions
 
-Interchange may be distributed unchanged on a CD-ROM. Akopia requests
-that they be sent a copy of the CD-ROM.
+=back
+
+Interchange may be distributed unchanged on a CD-ROM. We request that
+they we sent a copy of the CD-ROM.
+
+=over 4
 
 =item Reselling
 
-Interchange is GNU GPL licensed. See the GNU web site
-C<http://www.gnu.org/> for more information.
+=back
 
-=item Akopia Services
+Interchange is licensed under the terms of the GNU General Public
+License. See the GNU web site C<http://www.gnu.org/> for more
+information.
+
+=head2 What services does Red Hat offer?
+
+=over 4
+
+=item Red Hat Services
 
 While Interchange has many appealing features, the true value of the
-Akopia solution lies in the comprehensive support provided throughout
+Red Hat solution lies in the comprehensive support provided throughout
 all stages of an e-business integration. Regardless of the extent of
-service you require, Akopia's experienced staff is dedicated to
+service you require, Red Hat's experienced staff is dedicated to
 ensuring the success of an e-commerce implementation.
 
-=item Akopia Professional Services
+=item Red Hat E-Business Professional Services
 
-Akopia Professional Services are designed to build the most successful
-e-business architecture possible. Professional services encompass
-complete site development and integration, from needs assessment and
-planning to testing and deployment.
+=back
 
-Akopia's Professional Services team is experienced and trained to
-maximize the power and flexibility of the Interchange platform. Akopia
-offers professional services for projects of all sizes and scopes,
-from smaller projects to traditional full lifecycle engagements.
+Red Hat E-Business Professional Services are designed to build the
+most successful e-business architecture possible. Professional
+services encompass complete site development and integration, from
+needs assessment and planning to testing and deployment.
 
-Akopia professional services include:
+We are experienced and trained to maximize the power and flexibility
+of the Interchange platform. We offer professional services for
+projects of all sizes and scopes, from smaller projects to traditional
+full lifecycle engagements.
 
-=over 8
+Red Hat E-Business professional services include:
+
+=over 4
 
 =item *
 
@@ -728,7 +747,7 @@ Systems integration
 
 =item *
 
-User Interface Design
+User interface design
 
 =item *
 
@@ -736,17 +755,21 @@ Deployment services
 
 =back
 
-=item Akopia Managed Services
+=over 4
+
+=item Red Hat E-Business Managed Services
+
+=back
 
 Many businesses would rather not commit valuable time and resources to
 the challenges associated with operating 24x7 customer-facing systems.
-With Akopia Managed Services, you can focus on running your business
-while our expert team ensures your site is performing optimally and
-your applications are continuously monitored.
+With Red Hat E-Business Managed Services, you can focus on running
+your business while our expert team ensures your site is performing
+optimally and your applications are continuously monitored.
 
-Akopia Managed Services include:
+Red Hat E-Business Managed Services include:
 
-=over 8
+=over 4
 
 =item *
 
@@ -766,29 +789,24 @@ Service Level Agreements
 
 =back
 
-=item Akopia Technical Support Services
+=over 4
 
-Akopia provides access to our expert consultants by both telephone and
+=item Red Hat E-Business Technical Support Services
+
+=back
+
+We provide access to our expert consultants by both telephone and
 electronic support offerings. A variety of support packages are
 available, and can be purchased according to your specific needs, such
 as frequency and response time.
 
-=item Akopia Training Services
+=over 4
 
-Akopia offers Interchange training options for technical and business
+=item Red Hat Training Services
+
+=back
+
+We offer Interchange training options for technical and business
 professionals. We will customize a training program that is
 appropriate to your business needs.
-
-=over 8
-
-=item *
-
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
-
-=back
-
-=back
 

@@ -2,14 +2,14 @@
 
 Interchange Installation
 
-=head1 INSTALLATION OF AKOPIA INTERCHANGE(TM)
+=head1 Installation of Interchange
 
-Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. This document provides
-detailed installation instructions for Interchange and the
-demonstration store included with the program.
+Interchange is the industry's most widely distributed and implemented
+open source e-commerce platform. This document provides detailed
+installation instructions for Interchange and the demonstration store
+included with the program.
 
-=head1 GETTING READY -- BEFORE INSTALLING INTERCHANGE
+=head1 Getting Ready
 
 =over 4
 
@@ -135,11 +135,11 @@ Choose a name for the first demo catalog, usually C<construct>.
 
 =back
 
-=head1 INSTALLING INTERCHANGE
+=head1 Installing Interchange
 
-To install Akopia Interchange, there are two required steps:
-downloading the program and setting up a catalog. The following
-sections will explain this installation process in detail.
+To install Interchange, there are two required steps: downloading the
+program and setting up a catalog. The following sections will explain
+this installation process in detail.
 
 =over 4
 
@@ -216,7 +216,10 @@ space, disable all access to the Interchange catalog directory with
 the proper HTTP access restrictions. Normally that is done by creating
 a .htaccess file like this:
 
-<Limit GET POST> order allow,deny deny from all </Limit>
+        <Limit GET POST>
+        order allow,deny
+        deny from all
+        </Limit>
 
 If unable to do this, do not run Interchange unless file permissions
 can be set such that files will not be served. However, security will
@@ -244,7 +247,8 @@ way to see what the makecat program does is to configure the simple
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-cd /usr/local/interchange diff -r construct catalogs/construct
+        cd /usr/local/interchange
+        diff -r construct catalogs/construct
 
 The files are mostly identical, except that certain macro strings have
 been replaced with the answers given to the script. For example, if
@@ -252,14 +256,14 @@ C<www.mydomain.com> was answered at the prompt for a server name, this
 difference would appear in the catalog.cfg file:
 
        # template
-       Variable SERVER_NAME  &#32;_MVC_SERVERNAME__
+       Variable SERVER_NAME  __MVC_SERVERNAME__
 
        # configured catalog
        Variable SERVER_NAME  www.mydomain.com
 
-The macro string &#32;_MVC_SERVERNAME__ was substituted with the
-answer to the question about server name. In the same way, other
-variables are substituted, and include:
+The macro string __MVC_SERVERNAME__ was substituted with the answer to
+the question about server name. In the same way, other variables are
+substituted, and include:
 
  MVC_BASEDIR      MVC_IMAGEDIR
 MVC_CATROOT      MVC_IMAGEURL
@@ -396,15 +400,15 @@ that several catalogs can share the same information, allowing
 =head2 Manual Installation of Catalogs
 
 An Interchange installation is complex, and requires quite a few
-distinct steps. That is why there is an interactive configuration
-script that is included with Interchange. It merely does automatically
-what is described below. It makes the process much easier, and will
-install the demo catalog. This configuration script has been tested on
-many UNIX systems.
+distinct steps. Please see the C<iccattut> document for a full
+tutorial on build a catalog by hand.
 
-The installation program (makecat) can be used to install a custom
-catalog template. See the supplied demo template C<construct> for
-examples.
+Normally you will want to use the interactive configuration script
+C<makecat> that is included with Interchange. It merely does
+automatically what is described below. It makes the process much
+easier, and will install the demo catalog. It can also be used to
+install from a custom catalog template. See the supplied demo template
+C<foundation> (C<construct> for Interchange 4.6) for examples.
 
 =head2 Needed Directories
 
@@ -412,28 +416,30 @@ The Interchange program, and its supporting libraries, should go into
 one directory as installed by the installation program. User catalog
 pages, user databases, and user configuration files should all go into
 their private directories. Because the catalog pages are served
-through the Interchange CGI-bin program and contain nonstandard
-elements, they should not be put into a public Web directory, nor do
-they need to have world-readable file permissions.
+through the Interchange CGI program and contain nonstandard elements,
+they should not be put into a public Web directory, nor do they need
+to have world-readable file permissions.
 
-B<IMPORTANT NOTE: >Since catalogs are all run under one server,
-permissions are complex and very important. The Interchange
-configuration program is capable of doing the work!
+Since catalogs are all run under one server, permissions are complex
+and very important.
 
 A public Web directory for inline image graphic files is needed.
 Interchange does not serve the images, only the HTML tags calling
 them. A useful convention is to place all buttonbars, backgrounds, and
 icons in the /images directory, with the catalog items located in the
 /images/catalog directory. Regardless of the directory structure, an
-I<absolute path> must be used. Relative paths are unacceptable.
-Interchange supports the I<ImageDir> directive, which places that as
-the absolute path in front of all relative IMG and INPUT SRC
-specifications.
+I<absolute path> must be used. Relative paths are unacceptable. Use
+the I<ImageDir> directive, which places that as the absolute path in
+front of all relative IMG and INPUT SRC, and BODY, TABLE, TR, TH, and
+TD BACKGROUND specifications.
 
-A CGI-bin directory in which to put the vlink or tlink program is also
+A cgi-bin directory in which to put the vlink or tlink program is also
 needed.
 
-=head1 DEMO STORE INSTALLATION PROCESS
+=head1 Building the Demo Store
+
+B<Note: >Red Hat can set up a server with Interchange pre-installed.
+See the our Web site at C<http://www.akopia.com/> for more details.
 
 This detailed process describes the entire installation and setup
 process of the demo store. The text seen during this process will be
@@ -461,9 +467,6 @@ Write on the cgi-bin directory
 Write on the httpd document root
 
 =back
-
-B<Note: >Akopia can set up a server with Interchange pre-installed.
-See the Akopia Web site C<http://www.akopia.com/> for more details.
 
 =over 4
 
@@ -821,7 +824,7 @@ UPS shipping methods.
 
 UPS calculates shipping from one zip code to another zip code. This
 zip code is the origin of all shipments. If shipping from multiple
-locations, consult the documentation or contact Akopia support.
+locations, consult the documentation or contact us for paid support.
 
 =item 25.
 
@@ -1052,7 +1055,37 @@ placed on a network wire.
 
 =back
 
-=head1 FREQUENTLY ASKED QUESTIONS
+=head1 Installing Perl Modules without Root Access
+
+Installing Interchange without root access is no problem. However,
+installing Perl modules without root access is a little trickier.
+
+You must build your makefile to work in your home dir. Something like:
+
+ PREFIX=~/usr/local \
+INSTALLPRIVLIB=~/usr/local/lib/perl5 \
+INSTALLSCRIPT=~/usr/local/bin \
+INSTALLSITELIB=~/usr/local/lib/perl5/site_perl \
+INSTALLBIN=~/usr/local/bin \
+INSTALLMAN1DIR=~/usr/local/lib/perl5/man \
+INSTALLMAN3DIR=~/usr/local/lib/perl5/man/man3
+
+Put this in a file, say 'installopts', and use it for the Makefile.PL.
+
+ perl Makefile.PL `cat installopts`
+
+Then, forget ./config. Just do:
+
+ make
+make test
+make install
+
+Some of the tests may fail, but that's probably ok.
+
+Also make sure to install Bundle::Interchange, which will need the
+same config data as you put into 'installopts'.
+
+=head1 Frequently Asked Questions
 
 =head2 Where are the pages?
 
@@ -1089,19 +1122,4 @@ will become this:
 
 Absolute image paths are not affected. An image, such as
 </other/images/whatever.gif>, will not be changed.
-
-=over 4
-
-=over 8
-
-=item *
-
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
-
-=back
-
-=back
 
