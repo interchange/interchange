@@ -289,7 +289,7 @@ EOF
 	}
 
 	my $nd = $curdir;
-	if($nd ne '.') {
+	if($nd ne '.' and ! $opt->{no_up}) {
 		$nd =~ s:/[^/]*$::
 		  or $nd = '.';
 		my $msg = $nd eq '.'
@@ -299,7 +299,8 @@ EOF
 	}
 
 	my $pc = \$Vend::Session->{pageCount};
-	unshift @dir, [ "$curdir/", errmsg('(new file)'), $utmpl ];
+	unshift @dir, [ "$curdir/", errmsg('(new file)'), $utmpl ]
+		unless $opt->{no_new_file};
 
 	@dir = () if $opt->{no_dirs};
 
