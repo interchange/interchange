@@ -62,6 +62,10 @@ sub {
 	if($opt->{error_set}) {
 		set_error($body, $opt->{error_set});
 	}
+	if($opt->{error_scratch}) {
+		$::Scratch->{$opt->{error_scratch}} = 1;
+	}
+
 	return '' if $opt->{hide};
 	return $body;
 }
