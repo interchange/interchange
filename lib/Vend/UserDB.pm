@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.18 2001-04-10 05:22:18 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.19 2001-04-11 02:36:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.18 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.19 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -592,7 +592,10 @@ sub get_values {
 
 	@fields = @{ $self->{DB_FIELDS} } unless @fields;
 
-	unless ( $self->{DB}->record_exists($self->{USERNAME}) ) {
+	my $db = $self->{DB}
+		or die ::errmsg("No user database found.");
+
+	unless ( $db->record_exists($self->{USERNAME}) ) {
 		$self->{ERROR} = ::errmsg("username %s does not exist.", $self->{USERNAME});
 		return undef;
 	}
@@ -615,6 +618,10 @@ sub get_values {
 		@scratch{@s} = @s;
 #::logError("scratch ones: " . join " ", @s);
 	}
+
+	my @needed;
+	my $row = $db->row_hash($self->{USERNAME});
+
 	for(@fields) {
 		if($ignore{$_}) {
 			$self->{PRESENT}->{$_} = 1;
@@ -626,7 +633,7 @@ sub get_values {
 			$val = ::tag_data($t, ($c || $_), $self->{USERNAME}, { foreign => $k });
 		}
 		else {
-			$val = $self->{DB}->field($self->{USERNAME}, $_);	
+			$val = $row->{$_};
 		}
 
 		if($scratch{$_}) {
@@ -634,6 +641,7 @@ sub get_values {
 			next;
 		}
 		$::Values->{$_} = $val;
+
 	}
 
 	my $area;
