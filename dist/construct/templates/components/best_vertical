@@ -1,7 +1,13 @@
-<!-- BEGIN COMPONENT random_vertical -->
+<!-- BEGIN COMPONENT best_vertical -->
 [loop
-    random="[either][scratch component_vsize][or]3[/either]"
-    search="ra=yes/ml=1000"
+    search="
+					fi=merchandising
+					st=db
+					ra=yes
+					tf=times_ordered
+					to=rn
+					ml=[either][scratch component_vsize][or]3[/either]
+	"
  ] 
 <table width="132" border="0" cellspacing="0" cellpadding="0">
 	<tr bgcolor="#FF9900" align="center" valign="middle"> 
@@ -49,4 +55,4 @@
 	  </table>
 [/loop]
 
-<!-- END COMPONENT random_vertical -->
+<!-- END COMPONENT best_vertical -->

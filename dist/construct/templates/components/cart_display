@@ -1,0 +1,96 @@
+<!-- BEGIN COMPONENT cart_display -->
+[if items]
+<center>
+  <table width="90%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
+		<TR bgcolor="#669999" VALIGN=TOP>
+                        <td width="9%" align=center><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="0"><b>Action</b></font></td>
+                        <td width="13%"> 
+                          <div align="center"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1">SKU</font></b></font></div>
+                        </td>
+                        <td width="27%"> 
+                          <div align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Description</b></font></div>
+                        </td>
+                        <td width="13%"> 
+                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Quantity</b></font></div>
+                        </td>
+                        <td width="19%"> 
+                          <div align="center"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Price</font></b></div>
+                        </td>
+                        <td width="19%"> 
+                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Extension</b></font></div>
+                        </td>
+		</TR>
+	<TBODY>
+[item-list]
+
+[set color][item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate][/set]
+<TR bgcolor="[scratch color]">
+	<TD align=center valign=top>
+	<FONT SIZE="-2">[page ord/basket]edit</A></FONT></TD>
+	<TD valign=top><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-code]</font></TD>
+	<td valign=top><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[page [item-code]][item-description]</A></font>
+
+
+
+	[if-item-data inventory quantity < 1]
+<br>
+		<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
+	[/if-item-data]
+</TD>
+
+[if-item-modifier gift_cert]
+	<TD ALIGN=CENTER><small>Amount of gift:</small></TD>
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	<TD ALIGN=right>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			[item-subtotal]
+		</font>
+	</TD>
+[else]
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	[if discount [item-code]]
+		<TD ALIGN=right>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			Regular price <STRIKE>[item-price]</STRIKE>
+		<BR>
+			<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			<B>Your price [discount-price]<br>
+			<font color="__CONTRAST__">
+			You save [item-difference]</b>
+			</FONT>
+		</font>
+		</TD>
+		<TD ALIGN=right>
+			<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+				<strike>[item-subtotal]</strike><br>
+			<B>[item-discount-subtotal]<BR>
+			<font color="__CONTRAST__">
+			You save [item-discount]
+			</font></b>
+		</TD>
+	[else]
+	<TD ALIGN=right>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			[item-price]
+		</font>
+	</TD>
+	<TD ALIGN=right>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			[item-subtotal]
+		</font>
+	</TD>
+	[/else]
+	[/if]
+[/else]
+[/if-item-modifier]
+</TR>
+
+<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
+[/item-list]
+</TBODY>
+</table>
+</FORM>
+</center>
+[/if]
+
+<!-- END COMPONENT cart_display -->

@@ -4,6 +4,9 @@ ui_template_name: leftright
 ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
 ui_template_description: Page with top/left/right areas.
 
+break:
+	widget: break
+
 page_title: 
 	description: Page title
 
@@ -20,12 +23,12 @@ break1:
 	widget: break
 
 component_before:
-	options: =none, promo_horizontal=Specials, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell,
 	widget: select
 	description: Horizontal before content
 
 component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell,
 	widget: select
 	description: Horizontal after content
 
@@ -41,7 +44,7 @@ hpromo_type:
 	help: Only for a promotion
 
 hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
 	widget: move_combo
 	width: 40
 	description: Before/after Banner
@@ -51,7 +54,7 @@ break2:
 	widget: break
 
 component_right:
-	options: =none, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Up sell, cross_vertical=Cross sell
+	options: =none, best_vertical=Best Sellers, cross_vertical=Cross sell, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Upsell,
 	widget: select
 	description: Vertical Component
 
@@ -61,7 +64,7 @@ component_vsize:
 	description: Vertical items height
 
 vbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
 	widget: move_combo
 	width: 40
 	description: Right Banner
@@ -72,7 +75,6 @@ vpromo_type:
 	widget: select
 	description: Special tag
 	help: Only for a promotion
-
 
 bgcolor:
 	options: #FFFFFF=White,pink=Pink

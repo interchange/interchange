@@ -7,7 +7,7 @@
     [/if]
 [/if]<html>
 <head>
-	<title>[scratch page_title]</title>
+<title>[scratch page_title]</title>
 <script language="JavaScript">
 <!--
 function MM_swapImgRestore() { //v3.0
@@ -105,11 +105,11 @@ function MM_swapImage() { //v3.0
                   <td width="10" valign="top"> 
                     <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
                   </td>
-                  <td width="455"> 
+                  <td> 
                     <div align="left"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"><b><font size="1"><i>[either][scratch page_banner][or][scratch page_title][/either]</i></font></b></font></font><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF"> 
                       </font></font></font><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"></font></font></font></div>
                   </td>
-                  <td width="4"><img src="navigation/d3.gif" width="12" height="20"></td>
+                  <td width="146"><img src="navigation/d3.gif" width="146" height="20"></td>
                 </tr>
 <tr> 
   <td bgcolor="#999999" valign="top" width=131>
@@ -132,6 +132,7 @@ function MM_swapImage() { //v3.0
 <INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
 <INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
 <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
+
 		  </td>
 		  <td width="119" valign="top"><INPUT TYPE=image alt="Search Go" border="0" src="navigation/go.gif" width="23" height="17"></a></td>
 		</tr>
@@ -143,71 +144,20 @@ function MM_swapImage() { //v3.0
 	<td><img src="navigation/whitey.gif" width="5" height="4"></td>
 	<td width="119"><img src="navigation/whitey.gif" width="126" height="4"></td>
   </tr>
-					  
-[loop
-	prefix=box
-	search="
-		fi=area
-		st=db
-		tf=sort
-		ac=0
-		ac=0
-		co=yes
-		
-		sf=sel
-			op=eq
-	[if scratch left_bar]
-		se=[scratch left_bar][set left_bar][/set]
-	[else]
-		se=left
-	[/else]
-	[/if]
+  <tr><td colspan=2>
+	  [loop list="1 2 3"]
+	  [if scratch component_left[loop-code]]
+		[include file="templates/components/[scratch component_left[loop-code]]"]
+		<br clear=left>
+	  [/if]
+	  [/loop]
+	  </td>				  
+  </tr>
+  </table>
 
-		sf=which_page
-			op=rm
-	[if scratch page_class]
-		se=all|[scratch page_class][set page_class][/set]
-	[else]
-		se=all|@@MV_PAGE@@
-	[/else]
-	[/if]
-"]
-                      <tr> 
-                        <td>&nbsp;</td>
-                        <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><B>[box-exec bar_link]area[/box-exec]</B></font></td>
-                      </tr>
-                      <tr> 
-                        <td> 
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
-                        </td>
-                        <td width="119" valign="top">
-						<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
-[set found_cat][/set]
-[loop prefix=cat
-	search="
-		fi=cat
-		st=db
-		tf=sort
-		tf=name
-		rf=code,name
-		sf=sel
-		se=[box-code]
-	"
-	]
-[cat-exec bar_link]cat[/cat-exec]<BR>
-[/loop]
-                            <br>
-                            </font></p>
-                        </td>
-                      </tr>
-[/loop]
-					  
-                    </table>
-
-</td>
-<td width="12">&nbsp;</td>
-<td valign="top" width="457"> 
+				</td>
+				<td width="12">&nbsp;</td>
+				<td valign="top" width="313"> 
 [if scratch component_before]
 [include file="templates/components/[scratch component_before]"]
 [set component_before][/set]

@@ -1,3 +1,4 @@
+<!-- BEGIN COMPONENT cross_vertical -->
 [if !scratch cross_codes]
 [tmp cross_codes][loop search="
 					[if scratch cross_category]
@@ -12,6 +13,15 @@
 						sf=specials
 					[/else]
 					[/if]
+					"] [loop-code][/loop][/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+						st=db
+						fi=merchandising
+						ra=yes
+						tf=times_ordered
+						ml=10
 					"] [loop-code][/loop][/tmp]
 [/if]
 [loop
@@ -67,3 +77,5 @@
   </table>
 [/on-match]
 [/loop]
+
+<!-- END COMPONENT cross_vertical -->

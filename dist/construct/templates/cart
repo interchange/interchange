@@ -4,6 +4,9 @@ ui_template_name: cart
 ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
 ui_template_description: Shopping cart page
 
+break:
+	widget: break
+
 page_title: 
 	description: Page title
 
@@ -12,8 +15,11 @@ page_banner:
 
 	help: Defaults to page title
 
+break0:
+	widget: break
+
 component_before:
-	options: =none, cart=Shopping Cart*, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, cart=Shopping Cart*, upsell_horizontal=Upsell,
 	widget: select
 	description: Upper component
 
@@ -39,12 +45,12 @@ break1:
 	widget: break
 
 component_after:
-	options: =none, cart=Shopping Cart, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell*
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell*, promo_horizontal=Promotion, random_horizontal=Random items, cart=Shopping Cart, upsell_horizontal=Upsell,
 	widget: select
 	description: Lower component
 
 hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
 	widget: move_combo
 	width: 40
 	description: Lower component banner

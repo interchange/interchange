@@ -4,6 +4,9 @@ ui_template_name: leftonly
 ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
 ui_template_description: Page with top/left areas.
 
+break:
+	widget: break
+
 page_title: 
 	description: Page title
 
@@ -20,22 +23,22 @@ break1:
 	widget: break
 
 component_before:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell
 	widget: select
 	description: Component after content
 
 component_hsize:
-	options: 1,2*,3
+	options: 1,2,3*
 	widget: select
 	description: Component items horizontal
 
 hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
 	widget: move_combo
 	width: 40
 	description: Before/after Banner

@@ -1,3 +1,4 @@
+<!-- BEGIN COMPONENT promo_vertical -->
 [query arrayref=main
 	   sql="
 		SELECT sku,timed_promotion,start,finish
@@ -86,3 +87,5 @@
    </tr>
 </table>
 [/loop]
+
+<!-- END COMPONENT promo_vertical -->

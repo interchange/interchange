@@ -4,6 +4,9 @@ ui_template_name: fullwidth
 ui_template_layout: NOLEFT_TOP, UI_CONTENT, NOLEFT_BOTTOM
 ui_template_description: Page with top/bottom areas only, content in middle.
 
+break:
+	widget: break
+
 page_title:
 	description: Page title
 
