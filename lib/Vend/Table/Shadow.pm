@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.19 2003-01-03 11:55:22 racke Exp $
+# $Id: Shadow.pm,v 1.20 2003-02-16 13:02:17 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 # TODO
 #
@@ -223,6 +223,12 @@ sub touch {
 	my ($s) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->[$OBJ]->touch();
+}
+
+sub sort_each {
+	my ($s, @args) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->sort_each(@args);
 }
 
 sub each_record {
