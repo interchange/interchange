@@ -1,7 +1,7 @@
 # Copyright 2002-2003 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2000-2003 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.9 2004-10-02 18:30:46 docelic Exp $
+# $Id: formel.tag,v 1.10 2004-10-02 19:13:13 docelic Exp $
 
 UserTag formel Order label name type size
 UserTag formel addAttr
@@ -61,15 +61,15 @@ sub {
 	if ($opt->{'size'}) {
 		if ($type eq 'textarea') {
 			my ($cols, $rows) = split (/\s*[,x\s]\s*/, $opt->{'size'});
-			$sizestr = " rows=$rows cols=$cols";
+			$sizestr = qq{ rows="$rows" cols="$cols"};
 		}
 		else {
-			$sizestr = " size=$opt->{size}";
+			$sizestr = qq{ size="$opt->{size}"};
 		}
 	}
 
 	if ($opt->{'maxlength'}) {
-		$sizestr .= " maxlength=$opt->{maxlength}";
+		$sizestr .= qq{ maxlength="$opt->{maxlength}"};
 	}
 
 	if ($type eq 'radio' || $type eq 'checkbox') {		
@@ -91,7 +91,7 @@ sub {
 
 			$rlabel = &$labelproc($rlabel, 1);
 
-			$elhtml .= qq{<input type=$type name=$name value="${rvalue}"$select> $rlabel};
+			$elhtml .= qq{<input type="$type" name="$name" value="${rvalue}"$select> $rlabel};
 		}
 		# delete error implicitly
 		$labelhtml = &$labelproc($label);
@@ -124,7 +124,7 @@ sub {
 			}
 		}
 		return sprintf ($fmt, $labelhtml, 
-				qq{<select name=$name>$elhtml</select>});
+				qq{<select name="$name">$elhtml</select>});
 	}
 
 	if ($type eq 'display') {
@@ -146,7 +146,7 @@ sub {
 			$elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
 		}
 		else {
-			$elhtml = qq{<input type=$type name="${name}"$sizestr>};
+			$elhtml = qq{<input type="$type" name="${name}"$sizestr>};
 		}
 	}
 	else {
@@ -154,7 +154,7 @@ sub {
 			$elhtml = qq{<textarea name="${name}"$sizestr>$::Values->{$name}</textarea>};
 		}
 		else {
-			$elhtml = qq{<input type=$type name=$name value="$::Values->{$name}"$sizestr>};
+			$elhtml = qq{<input type="$type" name="$name" value="$::Values->{$name}"$sizestr>};
 		}
 	}
 
