@@ -78,7 +78,7 @@ random:
     [/calc]
     <table border="0" width="100%">
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
-    [loop random="[scratch random]" list="[strip][scratch cross_codes][/strip]"]
+    [loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]
       <TD width="[scratch width_percent]"> 
 	<table border="0">
 	<tr> 
