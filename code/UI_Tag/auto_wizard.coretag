@@ -19,11 +19,14 @@ sub compile_wizard {
 	my $qip; # question in progress
 	my $iip; # item in progress
 	my $fip; # final in progress
+	my $bip; # breaks in progress
+	my $blip; # break labels in progress
 	my $began; # We have begun
 
 	my $sip;
 	my $vip;
 	my $mark;
+	my $break;
 
 #Debug("Found some lines, number=" . scalar @lines);
 	for(@lines) {
@@ -58,15 +61,22 @@ sub compile_wizard {
 			next;
 		}
 
-		if(/^(\d+):\s*(.*)/) {
+		if(/^(\d+)[:.]\s*(.*)/) {
 			my $pn = $1; my $title = $2;
 			push @pages, $ref;
 			my $lastpage = $ref->{_page_name};
 			$qip = [];
-			$ref = { _page_name => $pn, _name => $qip, _page_title => $title};
+			undef $bip;
+			undef $blip;
+			$ref = {	_page_name		=> $pn,
+						_name			=> $qip,
+						_breaks			=> $bip,
+						_break_labels	=> $blip,
+						_page_title		=> $title,
+						};
 			next;
 		}
-		if(/^final:\s*(.*)/) {
+		if(/^final[:.]\s*(.*)/) {
 			undef $qip;
 			undef $iip;
 			$fip = 1;
@@ -79,14 +89,18 @@ sub compile_wizard {
 
 
 		if($fip) {
-		
 			s/^\s+//;
-			unless (/^([A-Za-z]\w+)\s*:\s*(.*)/s) {
+			unless (/^([A-Za-z]\w+)(?:=([^:]+))?\s*:\s*(.*)/s) {
 				$Tag->warnings(qq{Unrecognized "$_" in middle of script.});
 				next;
 			}
-			my $thing = $1;
-			my $value = $2;
+			my $thing    = $1;
+			my $modifier = $2;
+			my $value    = $3;
+			if($modifier) {
+				$ref->{_modifier} ||= {};
+				$ref->{_modifier}{$thing} = $modifier;
+			}
 			$ref->{$thing} = $value;
 			next;
 		}
@@ -118,8 +132,27 @@ sub compile_wizard {
 			my $value = $3;
 
 			if(! $iip) {
+
+				## This redoes the loop
+				if($thing eq 'name') {
+					$thing = $value;
+					undef $value;
+				}
+				elsif($thing eq 'break') {
+					$break = $value;
+					$break =~ s/,/&#41;/g;
+					$ref->{_breaks} ||= ($bip = []);
+					$ref->{_break_labels} ||= ($blip = []);
+					next;
+				}
+
 				$iip = $thing;
 				push @$qip, $iip;
+				if($break) {
+					push @$bip, $iip;
+					push @$blip, "$iip=$break";
+					undef $break;
+				}
 				$ref->{label}{$iip} = $value;
 				next;
 			}
@@ -263,6 +296,19 @@ sub {
 	
 	my %attr;
 
+	my %modsub = (
+			i		=> sub {
+							my $val = shift;
+							::logDebug("running interpolate of $val");
+							return interpolate_html($val);
+						},
+			default => sub {
+							my $val = shift;
+							my $filters = join " ", @_;
+							return $Tag->filter($filters, $val);
+						},
+		);
+
 	$attr{TITLE}  = $Scratch->{$title_var}  = $optref->{_page_title};
 	$attr{BANNER} = $Scratch->{$banner_var} = $optref->{_page_title};
 
@@ -284,6 +330,17 @@ sub {
 			my $template = delete $ref->{template};
 			$attr{EXTRA} = " $attr{EXTRA}" if $attr{EXTRA};
 			my $auto = delete $ref->{auto};
+
+			my $mod = $ref->{_modifier} || '';
+			for(keys %$ref) {
+				next if /^_/;
+				my $m;
+				if($mod and $m = $mod->{$_}) {
+					my $v = $ref->{$_};
+					my $sub = $modsub{$m} || $modsub{default};
+					$ref->{$_} = $sub->($ref->{$_}, $m);
+				}
+			}
 
 			for(keys %$ref) {
 				next unless /^_/;
@@ -332,7 +389,11 @@ EOF
 	my $name = $optref->{_name} || die;
 	$Scratch->{page_title} = $optref->{_page_title};
 
-
+	if($optref->{_breaks}) {
+		$opts{ui_break_before} = join " ", @{$optref->{_breaks}};
+		$opts{ui_break_before_label} = join ",", @{$optref->{_break_labels}};
+	}
+	$opts{form_name} ||= 'wizard';
 	$opts{all_errors} = '1';
 	$opts{hidden} = {
 		wizard_name => $wizname,
@@ -364,7 +425,6 @@ EOF
        </tr>
      </table>
    </td>
-</tr>
 <tr class=rtitle>
 	<td colspan=2><img src="bg.gif"></td>
 EOF
@@ -374,18 +434,6 @@ EOF
 	$opts{mv_prevpage} = $Global::Variable->{MV_PAGE} if $current_page != 1;
 	$opts{bottom_buttons} = 1;
 
-	my %modsub = (
-			i		=> sub {
-							my $val = shift;
-							::logDebug("running interpolate of $val");
-							return interpolate_html($val);
-						},
-			default => sub {
-							my $val = shift;
-							my $filters = join " ", @_;
-							return $Tag->filter($filters, $val);
-						},
-		);
 	my $mod = $optref->{_modifier} || '';
 	for(keys %$optref) {
 		next if /^_/;
@@ -415,7 +463,8 @@ EOF
 	}
 
 	delete $opts{type};
-	$Tmp->{auto_wizard} = $Tag->table_editor( {all_opts => \%opts });
+#::logDebug("calling table_editor opts=" . ::uneval(\%opts));
+	$Tmp->{auto_wizard} = $Tag->table_editor_tpl( {all_opts => \%opts });
 	if($Tmp->{auto_wizard} !~ /<form\s+/i) {
 		$attr{auto_wizard} .= "\n";
 		my $msg = errmsg("Auto wizard failed to run wizard %s.", $name);
