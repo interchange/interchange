@@ -111,7 +111,7 @@ sub {
 	if($CGI::values{ui_never_build}) {
 		my @tmp = split /\0/, $CGI::values{ui_never_build};
 #::logDebug("never build of: @tmp");
-		@force_build{@tmp} = (@tmp);
+		@never_build{@tmp} = (@tmp);
 	}
 	my $save_session = $Vend::Session;
 	my $save_status  = $Vend::StatusLine;
