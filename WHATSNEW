@@ -145,6 +145,10 @@ Shadow
 * Add stubs for commit and rollback methods, thanks to Thomas Weiss 
   <pater.noster@gmx.net> for report.
 
+* Use $Vend::Cfg->{DefaultLocale} as fallback locale. The UI destroys
+  the $Scratch->{mv_locale} setting and the catalog translation
+  became inconsistent.
+
 i18n
 ----
 
