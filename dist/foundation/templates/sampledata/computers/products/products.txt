@@ -15,18 +15,18 @@ sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_gro
 7000103	Celeron 600 CPU				thumb.gif	yourimage.gif	80.00	72.00	Hardware	CPU chips		0										
 7000104	Celeron 633 CPU				thumb.gif	yourimage.gif	90.00	81.00	Hardware	CPU chips		0										
 7000105	Celeron 700 CPU				thumb.gif	yourimage.gif	110.00	99.00	Hardware	CPU chips		0										
-7000124	PIII-600 Mhz CPU				thumb.gif	yourimage.gif	140.00	126.00	Hardware	CPU chips		0										
-7000126	PIII-650 Mhz CPU				thumb.gif	yourimage.gif	150.00	135.00	Hardware	CPU chips		0										
-7000127	PIII-700 Mhz CPU				thumb.gif	yourimage.gif	160.00	144.00	Hardware	CPU chips		0										
-7000128	PIII-750 Mhz CPU				thumb.gif	yourimage.gif	200.00	180.00	Hardware	CPU chips		0										
-7000129	PIII-800 Mhz CPU				thumb.gif	yourimage.gif	220.00	198.00	Hardware	CPU chips		0										
-7000130	PIII-850 Mhz CPU Available with B28 Only				thumb.gif	yourimage.gif	230.00	207.00	Hardware	CPU chips		0										
+7000124	PIII-600 MHz CPU				thumb.gif	yourimage.gif	140.00	126.00	Hardware	CPU chips		0										
+7000126	PIII-650 MHz CPU				thumb.gif	yourimage.gif	150.00	135.00	Hardware	CPU chips		0										
+7000127	PIII-700 MHz CPU				thumb.gif	yourimage.gif	160.00	144.00	Hardware	CPU chips		0										
+7000128	PIII-750 MHz CPU				thumb.gif	yourimage.gif	200.00	180.00	Hardware	CPU chips		0										
+7000129	PIII-800 MHz CPU				thumb.gif	yourimage.gif	220.00	198.00	Hardware	CPU chips		0										
+7000130	PIII-850 MHz CPU Available with B28 Only				thumb.gif	yourimage.gif	230.00	207.00	Hardware	CPU chips		0										
 7000013	32 Meg 100 MHz SDRAM				thumb.gif	yourimage.gif	39.00	35.10	RAM	SDRAM		0										
 7000025	64 Meg 100 MHz SDRAM - (1) 64 DIMM				thumb.gif	yourimage.gif	71.00	63.90	RAM	SDRAM		0										
 7000062	96 Meg 100 MHz SDRAM - (1) 32 & (1) 64 DIMM				thumb.gif	yourimage.gif	99.00	89.10	RAM	SDRAM		0										
 7000085	128 Meg 100 MHz SDRAM - (1) 128 DIMM				thumb.gif	yourimage.gif	137.00	123.30	RAM	SDRAM		0										
-7000111	256 Meg 100 MHz SDRAM - (2) 128 DIMM's				thumb.gif	yourimage.gif	256.00	230.40	RAM	SDRAM		0										
-7000116	384 Meg 100 MHz SDRAM - (3) 128 DIMM's				thumb.gif	yourimage.gif	384.00	345.60	RAM	SDRAM		0										
+7000111	256 Meg 100 MHz SDRAM - (2) 128 DIMMs				thumb.gif	yourimage.gif	256.00	230.40	RAM	SDRAM		0										
+7000116	384 Meg 100 MHz SDRAM - (3) 128 DIMMs				thumb.gif	yourimage.gif	384.00	345.60	RAM	SDRAM		0										
 7000068	Sound Blaster AWE64 Value (CT4520)				thumb.gif	yourimage.gif	29.00	26.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/64-value/
 7000092	Sound Blaster Live Value (CT4832)				thumb.gif	yourimage.gif	59.00	53.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/live-value/
 7000069	Sound Blaster PCI 128 (CT4750)				thumb.gif	yourimage.gif	39.00	35.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/pci-128/
@@ -95,5 +95,5 @@ sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_gro
 7000059	2 Year On Site - Parts & Labor With 24/7 Tech Supp				thumb.gif	yourimage.gif	79.00	71.10	Service	Service		0										http://www.nwcserv.com/Profile/Your_Sales_Partner/24X7/24x7.html
 7000024	36 Bit 600x1200 dpi Flatbed USB Scanner				thumb.gif	yourimage.gif	79.00	71.10	Input devices	Scanners		0										http://www.silitek.com/scanners/fc600.htm
 00010	Pentium Computer				generic_thumb.gif	generic.gif	499.95	449.95	Systems	Pentium												
-00011	Athlon Computer -- 800MHz, 96M				generic_thumb.gif	generic.gif	849.95	764.96	Systems	Athlon -- preconfigured												
+00011	Athlon Computer -- 800MHz, 96M				generic_thumb.gif	generic.gif	849.95	764.96	Systems	Athlon -- pre-configured												
 00009	Athlon Computer				generic_thumb.gif	generic.gif	499.95	449.95	Systems	Athlon												

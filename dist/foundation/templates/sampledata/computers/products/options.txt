@@ -3,7 +3,7 @@ code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o
 1003	999000	7000043	A	02				0							0	0	Enlight ATX Tower Case (4) 5.25 & (2)3.5	29						
 1004	999000	7000063	A	03				0							0	0	Enlight ATX Desktop Case (2)5.25 & (2)3.5	35						
 1005	999000	7000095	A	04				0							0	0	Super Tower Case (6)5.25 & (3)3.5	75						
-1006	999000	7000033	A	47				0							0	0	Micro ATX Tower - Smokey Grey	0.00						
+1006	999000	7000033	A	47				0							0	0	Micro ATX Tower - Smoky Grey	0.00						
 1007	999000	7000032	A	48				0							0	0	Micro ATX Tower - Rage Red	0.00						
 1008	999000	7000030	A	49				0							0	0	Micro ATX Tower - Honey Yellow	0.00						
 1009	999000	7000031	A	50				0							0	0	Micro ATX Tower - Moody Blue	0.00						
@@ -18,18 +18,18 @@ code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o
 1018	999002	7000103	C	58				0							0	0	Celeron 600 CPU	40						
 1019	999002	7000104	C	59				0							0	0	Celeron 633 CPU	50						
 1020	999002	7000105	C	60				0							0	0	Celeron 700 CPU	70						
-1021	999002	7000124	C	75				0							0	0	PIII-600 Mhz CPU	100						
-1022	999002	7000126	C	78				0							0	0	PIII-650 Mhz CPU	110						
-1023	999002	7000127	C	80				0							0	0	PIII-700 Mhz CPU	120						
-1024	999002	7000128	C	81				0							0	0	PIII-750 Mhz CPU	170						
-1025	999002	7000129	C	83				0							0	0	PIII-800 Mhz CPU	190						
-1026	999002	7000130	C	84				0							0	0	PIII-850 Mhz CPU Available with B28 Only	230						
+1021	999002	7000124	C	75				0							0	0	PIII-600 MHz CPU	100						
+1022	999002	7000126	C	78				0							0	0	PIII-650 MHz CPU	110						
+1023	999002	7000127	C	80				0							0	0	PIII-700 MHz CPU	120						
+1024	999002	7000128	C	81				0							0	0	PIII-750 MHz CPU	170						
+1025	999002	7000129	C	83				0							0	0	PIII-800 MHz CPU	190						
+1026	999002	7000130	C	84				0							0	0	PIII-850 MHz CPU Available with B28 Only	230						
 1028	999050	7000013	D	01				0	1						0	0	32 Meg 100 MHz SDRAM	0.00						
 1029	999050	7000025	D	02				0							0	0	64 Meg 100 MHz SDRAM - (1) 64 DIMM	39						
 1030	999050	7000062	D	03				0							0	0	96 Meg 100 MHz SDRAM - (1) 32 & (1) 64 DIMM	79						
 1031	999050	7000085	D	04				0							0	0	128 Meg 100 MHz SDRAM - (1) 128 DIMM	99						
-1032	999050	7000111	D	05				0							0	0	256 Meg 100 MHz SDRAM - (2) 128 DIMM's	232						
-1033	999050	7000116	D	06				0							0	0	384 Meg 100 MHz SDRAM - (3) 128 DIMM's	365						
+1032	999050	7000111	D	05				0							0	0	256 Meg 100 MHz SDRAM - (2) 128 DIMMs	232						
+1033	999050	7000116	D	06				0							0	0	384 Meg 100 MHz SDRAM - (3) 128 DIMMs	365						
 100020	00010	999007	G		1	1		0							0	0	Select modem							
 1010	00010	999000	A	00	1	1		0							0	0	Select case type	0.00						
 1036	999008	7000036	F	02				0							0	0	X-Wave Mach One PCI Sound Card W/3D Sound	19						
@@ -101,7 +101,7 @@ code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o
 1101	999012	7000065	O	02				0							0	0	Microsoft Intellimouse	26.5						
 1102	00010	103002	P	00	1	1		0							0	0	Select speakers	0.00						
 1103	103002	7000023	P	01				0							0	0	150 Watt (P.M.P.O) Speakers	7						
-1104	103002	7000060	P	02				0							0	0	400 Watt Speakers With Subwoofer	43						
+1104	103002	7000060	P	02				0							0	0	400 Watt Speakers With Sub-woofer	43						
 1105	103002	7000089	P	03				0							0	0	Creative Labs 4 Point Surround Sound	99						
 1106	103002	7000098	P	20				0							0	0	Altec ACS33 Amplified Powercube - 10W SPK 15W Sub	49						
 1107	103002	7000112	P	21				0							0	0	Altec ACS45.2 Amplified Powercube - 6W SPK 20W Sub	69						
@@ -117,7 +117,7 @@ code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o
 1117	103003	7000096	Q	02				0							0	0	Windows 98 Second Edition	99						
 1118	103003	7000109	Q	03				0							0	0	Windows NT 4.0 Workstation	199						
 1119	103003	7000115	Q	06				0							0	0	Windows NT Server 4.0 With 5 Client Access Lic.	799						
-1120	103003	7000021	Q	08				0							0	0	Windows ME Millenium Edition	109						
+1120	103003	7000021	Q	08				0							0	0	Windows ME Millennium Edition	109						
 1121	103003	7000071	Q	10				0							0	0	Windows 2000 Professional (Requires 64M RAM)	149						
 1122	999107	7000016	R	00				0	1						0	0	Corel Wordperfect Suite 8.0	0.00						
 1123	999107	7000034	R	01				0							0	0	Microsoft Works 2000	49						

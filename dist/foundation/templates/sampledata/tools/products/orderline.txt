@@ -6,7 +6,7 @@ code	store_id	order_number	session__MVC_FIELDMUNGE__	username	shipmode	sku	quant
 00002-4		00002	AhGiHXgR	ckirk		os28077	3	39.99	119.97			one size fits all			20001006	__MVC_SQLUDATE__	backorder				Carpenter's Tool Belt
 00003-1		00003	AhGiHXgR	jking		os28086	150	12.99	1948.5			6'			20001006	__MVC_SQLUDATE__	shipped				Folding Ruler
 00004-1		00004	AhGiHXgR	ladams		os28068b	16	12	192			one size fits all			20001006	__MVC_SQLUDATE__	pending				"The Bug" Eye Wear
-00004-2		00004	AhGiHXgR	ladams		os28068a	11	5.99	65.89			one size fits all			20001006	__MVC_SQLUDATE__	pending				"Breath Right" Face Mask
+00004-2		00004	AhGiHXgR	ladams		os28068a	11	5.99	65.89			one size fits all			20001006	__MVC_SQLUDATE__	pending				"Breathe Right" Face Mask
 00005-1		00005	AhGiHXgR	lriley		os28087	1	11.99	11.99			set			20001006	__MVC_SQLUDATE__	shipped				Sanders Multi-Pac
 00005-2		00005	AhGiHXgR	lriley		os28081	13	8.99	116.87			fine			20001006	__MVC_SQLUDATE__	shipped				Steel Wool
 00005-3		00005	AhGiHXgR	lriley		os28011	2	14.99	29.98			2"			20001006	__MVC_SQLUDATE__	backorder				Spackling Knife
@@ -17,7 +17,7 @@ code	store_id	order_number	session__MVC_FIELDMUNGE__	username	shipmode	sku	quant
 00009-1		00009	AhGiHXgR	mmichaels		gift_cert	100	1	100						20001006	__MVC_SQLUDATE__	shipped				Gift Certificate
 00010-1		00010	AhGiHXgR	tlucas		os28004	1	21.99	21.99			1.5'			20001006	__MVC_SQLUDATE__	pending				Ergo Roller
 00010-2		00010	AhGiHXgR	tlucas		os28087	2	11.99	23.98			set			20001006	__MVC_SQLUDATE__	pending				Sanders Multi-Pac
-00010-3		00010	AhGiHXgR	tlucas		os28068a	2	5.99	11.98			one size fits all			20001006	__MVC_SQLUDATE__	pending				"Breath Right" Face Mask
+00010-3		00010	AhGiHXgR	tlucas		os28068a	2	5.99	11.98			one size fits all			20001006	__MVC_SQLUDATE__	pending				"Breathe Right" Face Mask
 00011-1		00011	AhGiHXgR	jrollins		os29000	1	44.99	44.99			3'			20001006	__MVC_SQLUDATE__	pending				3' Step Ladder
 00012-1		00012	AhGiHXgR	ssmith		os28065	1	18.99	18.99			3/4"			20001006	__MVC_SQLUDATE__	shipped				Mechanics Pliers
 00013-1		00013	AhGiHXgR	mmichaels		os28066	1	14.99	14.99			3'			20001006	__MVC_SQLUDATE__	shipped				"Big L" Carpenters Square
