@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.60 2001-05-18 17:29:39 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.61 2001-05-25 17:04:43 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.60 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.61 $, 10);
 
 @EXPORT = qw (
 
@@ -3024,8 +3024,7 @@ sub tag_weighted_banner {
 		$dir .= "/$c";
 	}
 #::logDebug("banner category=$category dir=$dir");
-	my $statfile =	$Vend::Cfg->{ConfDir};
-	$statfile .= "/status.$Vend::Cat";
+	my $statfile = $Vend::Cfg->{ConfDir} . "/status.$Vend::Cat";
 #::logDebug("banner category=$category dir=$dir statfile=$statfile");
 	my $start_time;
 	if($opt->{once}) {

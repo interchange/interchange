@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.46 2001-05-13 02:49:53 jon Exp $
+# $Id: Config.pm,v 1.25.2.47 2001-05-25 17:04:43 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.46 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.47 $, 10);
 
 my %CDname;
 
@@ -693,7 +693,7 @@ sub config {
 	# %MV::Default holds command-line mods to config, which we write
 	# to a file for easier processing 
 	if(! $existing and defined $MV::Default{$catalog}) {
-		my $fn = "$Global::ConfDir/$catalog.cmdline";
+		my $fn = "$Global::RunDir/$catalog.cmdline";
 		open(CMDLINE, ">$fn")
 			or die "Can't create cmdline configfile $fn: $!\n";
 		for(@{$MV::DefaultAry{$catalog}}) {
@@ -712,7 +712,7 @@ sub config {
 
 	my $allcfg;
 	if($Global::DumpAllCfg) {
-		open ALLCFG, ">allconfigs.cfg"
+		open ALLCFG, ">$Global::RunDir/allconfigs.cfg"
 			and $allcfg = 1;
 	}
 	# Create closure that reads and sets config values
@@ -1228,7 +1228,7 @@ GLOBLOOP:
 		Vend::Parse::global_init;
 	}
 
-	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
+	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure and ! $Vend::ExternalProgram;
 	return 1;
 }

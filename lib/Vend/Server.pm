@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.38 2001-05-21 20:52:10 jason Exp $
+# $Id: Server.pm,v 1.8.2.39 2001-05-25 17:04:43 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.38 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.39 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1071,11 +1071,11 @@ sub housekeeping {
 			}
 		}
 
-		opendir(Vend::Server::CHECKRUN, $Global::ConfDir)
-			or die "opendir $Global::ConfDir: $!\n";
+		opendir(Vend::Server::CHECKRUN, $Global::RunDir)
+			or die "opendir $Global::RunDir: $!\n";
 		@files = readdir Vend::Server::CHECKRUN;
 		closedir(Vend::Server::CHECKRUN)
-			or die "closedir $Global::ConfDir: $!\n";
+			or die "closedir $Global::RunDir: $!\n";
 		($reconfig) = grep $_ eq 'reconfig', @files;
 		($restart) = grep $_ eq 'restart', @files
 			if $Signal_Restart || $Global::Windows;
@@ -1088,10 +1088,10 @@ sub housekeeping {
 
 		if (defined $restart) {
 			$Signal_Restart = 0;
-			open(Vend::Server::RESTART, "+<$Global::ConfDir/restart")
-				or die "open $Global::ConfDir/restart: $!\n";
+			open(Vend::Server::RESTART, "+<$Global::RunDir/restart")
+				or die "open $Global::RunDir/restart: $!\n";
 			lockfile(\*Vend::Server::RESTART, 1, 1)
-				or die "lock $Global::ConfDir/restart: $!\n";
+				or die "lock $Global::RunDir/restart: $!\n";
 			while(<Vend::Server::RESTART>) {
 				chomp;
 				my ($directive,$value) = split /\s+/, $_, 2;
@@ -1128,18 +1128,18 @@ EOF
 				}
 			}
 			unlockfile(\*Vend::Server::RESTART)
-				or die "unlock $Global::ConfDir/restart: $!\n";
+				or die "unlock $Global::RunDir/restart: $!\n";
 			close(Vend::Server::RESTART)
-				or die "close $Global::ConfDir/restart: $!\n";
-			unlink "$Global::ConfDir/restart"
-				or die "unlink $Global::ConfDir/restart: $!\n";
+				or die "close $Global::RunDir/restart: $!\n";
+			unlink "$Global::RunDir/restart"
+				or die "unlink $Global::RunDir/restart: $!\n";
 			$respawn = 1;
 		}
 		if (defined $reconfig) {
-			open(Vend::Server::RECONFIG, "+<$Global::ConfDir/reconfig")
-				or die "open $Global::ConfDir/reconfig: $!\n";
+			open(Vend::Server::RECONFIG, "+<$Global::RunDir/reconfig")
+				or die "open $Global::RunDir/reconfig: $!\n";
 			lockfile(\*Vend::Server::RECONFIG, 1, 1)
-				or die "lock $Global::ConfDir/reconfig: $!\n";
+				or die "lock $Global::RunDir/reconfig: $!\n";
 			while(<Vend::Server::RECONFIG>) {
 				chomp;
 				my ($script_name,$table,$cfile) = split /\s+/, $_, 3;
@@ -1173,11 +1173,11 @@ EOF
 				}
 			}
 			unlockfile(\*Vend::Server::RECONFIG)
-				or die "unlock $Global::ConfDir/reconfig: $!\n";
+				or die "unlock $Global::RunDir/reconfig: $!\n";
 			close(Vend::Server::RECONFIG)
-				or die "close $Global::ConfDir/reconfig: $!\n";
-			unlink "$Global::ConfDir/reconfig"
-				or die "unlink $Global::ConfDir/reconfig: $!\n";
+				or die "close $Global::RunDir/reconfig: $!\n";
+			unlink "$Global::RunDir/reconfig"
+				or die "unlink $Global::RunDir/reconfig: $!\n";
 			$respawn = 1;
 			
 		}
@@ -1223,7 +1223,7 @@ EOF
 
         for (@pids) {
             $Num_servers++;
-            my $fn = "$Global::ConfDir/$_";
+            my $fn = "$Global::RunDir/$_";
             ($Num_servers--, next) if ! -f $fn;
             my $runtime = $now - (stat(_))[9];
             next if $runtime < $Global::PIDcheck;
@@ -1932,7 +1932,7 @@ sub server_both {
 	my $spawn;
 
 	for (qw/mode.inet mode.unix mode.soap/) {
-		unlink "$Global::ConfDir/$_";
+		unlink "$Global::RunDir/$_";
 	}
 
 	# We always unlink our file-based sockets
@@ -1957,12 +1957,12 @@ sub server_both {
 			map_unix_socket(\$vector, \%vec_map, \%fh_map, @$Global::SocketFile);
 		if (scalar @made) {
 			@unix_socket{@made} = @made;
-			open(UNIX_MODE_INDICATOR, ">$Global::ConfDir/mode.unix")
-				or die "creat $Global::ConfDir/mode.unix: $!";
+			open(UNIX_MODE_INDICATOR, ">$Global::RunDir/mode.unix")
+				or die "create $Global::RunDir/mode.unix: $!";
 			print UNIX_MODE_INDICATOR join " ", @made;
 			close(UNIX_MODE_INDICATOR);
 			# So that other apps can read if appropriate
-			chmod $Global::SocketPerms, "$Global::ConfDir/mode.unix";
+			chmod $Global::SocketPerms, "$Global::RunDir/mode.unix";
 		}
 		else { # The error condition
 			my $msg;
@@ -2055,12 +2055,12 @@ sub server_both {
 			}
 		}
 		else {
-			open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.inet")
-				or die "creat $Global::ConfDir/mode.inet: $!";
+			open(INET_MODE_INDICATOR, ">$Global::RunDir/mode.inet")
+				or die "create $Global::RunDir/mode.inet: $!";
 			print INET_MODE_INDICATOR join " ", @made;
 			close(INET_MODE_INDICATOR);
 			# So that other apps can read if appropriate
-			chmod $Global::SocketPerms, "$Global::ConfDir/mode.inet";
+			chmod $Global::SocketPerms, "$Global::RunDir/mode.inet";
 		}
 	}
 
@@ -2310,15 +2310,15 @@ my $pretty_vector = unpack('b*', $rin);
 }
 
 sub touch_pid {
-	open(TEMPPID, ">>$Global::ConfDir/pid.$$") 
-		or die "creat PID file $$: $!\n";
+	open(TEMPPID, ">>$Global::RunDir/pid.$$") 
+		or die "create PID file $$: $!\n";
 	lockfile(\*TEMPPID, 1, 0)
 		or die "PID $$ conflict: can't lock\n";
 }
 
 sub unlink_pid {
 	close(TEMPPID);
-	unlink("$Global::ConfDir/pid.$$");
+	unlink("$Global::RunDir/pid.$$");
 	1;
 }
 
@@ -2446,8 +2446,8 @@ sub run_server {
 				$next = server_both();
 
 				unlockfile($pidh);
-				opendir(CONFDIR, $Global::ConfDir) 
-					or die "Couldn't open directory $Global::ConfDir: $!\n";
+				opendir(RUNDIR, $Global::RunDir) 
+					or die "Couldn't open directory $Global::RunDir: $!\n";
 				unlink $Global::PIDfile;
                 exit 0;
             }

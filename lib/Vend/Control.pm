@@ -1,6 +1,6 @@
 # Control.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.6.2.3 2001-02-22 19:59:53 heins Exp $
+# $Id: Control.pm,v 1.6.2.4 2001-05-25 17:04:43 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ sub signal_reconfig {
 	for(@cats) {
 		my $ref = $Global::Catalog{$_}
 			or die ::errmsg("Unknown catalog '%s'. Stopping.\n", $_);
-		Vend::Util::writefile("$Global::ConfDir/reconfig", "$ref->{script}\n");
+		Vend::Util::writefile("$Global::RunDir/reconfig", "$ref->{script}\n");
 	}
 }
 
@@ -56,13 +56,13 @@ sub signal_remove {
 	shift;
 	$Vend::mode = 'reconfig';
 	my $cat = shift;
-	Vend::Util::writefile("$Global::ConfDir/restart", "remove catalog $cat\n");
+	Vend::Util::writefile("$Global::RunDir/restart", "remove catalog $cat\n");
 	control_interchange('remove', 'HUP');
 }
 
 sub signal_add {
 	$Vend::mode = 'reconfig';
-	Vend::Util::writefile("$Global::ConfDir/restart", <>);
+	Vend::Util::writefile("$Global::RunDir/restart", <>);
 	control_interchange('add', 'HUP');
 }
 
@@ -161,7 +161,7 @@ sub add_catalog {
 		}
 	}
 
-	Vend::Util::writefile("$Global::ConfDir/reconfig", "$script\n");
+	Vend::Util::writefile("$Global::RunDir/reconfig", "$script\n");
 	my $msg = <<EOF;
 Added/changed catalog %s:
 
@@ -196,7 +196,7 @@ sub change_global_directive {
 	$Global::Structure->{$ref->[0]} = $ref->[1]
 		if $Global::DumpStructure;
 
-	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
+	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure;
 	return 1;
 }

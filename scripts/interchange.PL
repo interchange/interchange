@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.3
 #
-# $Id: interchange.PL,v 1.15.2.42 2001-05-16 03:37:43 jon Exp $
+# $Id: interchange.PL,v 1.15.2.43 2001-05-25 17:05:10 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -1487,7 +1487,7 @@ sub config_named_catalog {
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
 	my $stime = scalar localtime();
-	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
+	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
 
 	return $c;
@@ -2498,6 +2498,7 @@ sub parse_options {
 		DEBUG 		    => \$Global::DEBUG,
 		reconfig        => $rcfgsub,
 		confdir         => \$Global::ConfDir,
+		rundir          => \$Global::RunDir,
 		configfile      => \$Global::ConfigFile,
 		dir          	=> \$Global::VendRoot,
 		exclude         => \%Vend::CatalogToSkip,
@@ -2572,6 +2573,7 @@ sub parse_options {
 		Ignore
 		add|a=s
 		confdir=s
+		rundir=s
 		configfile|config|c|f=s
 		dir|vendroot|d=s
 		exclude|e=s
@@ -2627,8 +2629,9 @@ sub main_loop {
 	# These are only starting values, can be changed by command-line
 	# options or the interchange.cfg file
 	$Global::ConfDir = "$Global::VendRoot/etc";
-	$Global::PIDfile = "$Global::ConfDir/$Global::ExeName.pid";
-	$Global::SOAP_PIDfile = "$Global::ConfDir/$Global::ExeName.soap.pid";
+	$Global::RunDir = "$Global::VendRoot/etc";
+	$Global::PIDfile = "$Global::RunDir/$Global::ExeName.pid";
+	$Global::SOAP_PIDfile = "$Global::RunDir/$Global::ExeName.soap.pid";
 
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
 
