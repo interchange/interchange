@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.13 2001-01-20 20:02:27 heins Exp $
+# $Id: Config.pm,v 1.25.2.14 2001-01-28 08:33:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.14 $, 10);
 
 my %CDname;
 
@@ -258,6 +258,7 @@ sub global_directives {
 	['Message',          'message',           ''],
 	['VarName',          'varname',           ''],
 	['DumpStructure',	 'yesno',     	     'No'],
+	['OutputAllCfg',	 'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
 	['Inet_Mode',         'yesno',            defined $Global::Inet_Mode ? ($Global::Inet_Mode) : 'Yes'],
 	['Unix_Mode',         'yesno',            defined $Global::Unix_Mode ? ($Global::Unix_Mode) : 'Yes'],
@@ -684,6 +685,11 @@ sub config {
 		push @include, $fn;
 	}
 
+	my $allcfg;
+	if($Global::OutputAllCfg) {
+		open ALLCFG, ">allconfigs.cfg"
+			and $allcfg = 1;
+	}
 	# Create closure that reads and sets config values
 	my $read = sub {
 		my ($lvar, $value, $tie) = @_;
@@ -728,10 +734,15 @@ CONFIGLOOP:
 				die "$msg\n";
 			}
 		};
+	print ALLCFG "# READING FROM $configfile\n" if $allcfg;
 	seek(CONFIG, $tellmark, 0) if $tellmark;
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
 	while(<CONFIG>) {
+		if($allcfg) {
+			print ALLCFG $_
+				unless /^#?include\s+/;
+		}
 		chomp;			# zap trailing newline,
 		# Look for meta commands (ifdef, endif, include) after '#'?
 		my $leadinghash = $C->{ConfigParseComments} ? '#?' : '';
@@ -782,7 +793,7 @@ CONFIGLOOP:
 			$begin .= "\n" if $begin;
 			my $mark  = $2;
 			my $startline = $.;
-			$value = $begin . read_here(\*CONFIG, $mark);
+			$value = $begin . read_here(\*CONFIG, $mark, $allcfg);
 			unless (defined $value) {
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
@@ -793,7 +804,7 @@ CONFIGLOOP:
 			$begin .= "\n" if $begin;
 			my $mark  = $2;
 			my $startline = $.;
-			$value = $begin . read_here(\*CONFIG, $mark);
+			$value = $begin . read_here(\*CONFIG, $mark, $allcfg);
 			unless (defined $value) {
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
@@ -957,11 +968,12 @@ EOF
 }
 
 sub read_here {
-	my($handle, $marker) = @_;
+	my($handle, $marker, $allcfg) = @_;
 	my $foundeot = 0;
 	my $startline = $.;
 	my $value = '';
 	while (<$handle>) {
+		print ALLCFG $_ if $allcfg;
 		if ($_ =~ m{^$marker$}) {
 			$foundeot = 1;
 			last;
@@ -1759,6 +1771,7 @@ sub set_default_search {
 	my @fout;
 	my @tout;
 	my $nofile;
+	my $notable;
 
 	if ($C->{Variable}{MV_DEFAULT_SEARCH_FILE}) {
 		@fout =
@@ -1772,15 +1785,17 @@ sub set_default_search {
 		}
 	}
 	if ($C->{Variable}{MV_DEFAULT_SEARCH_TABLE}) {
-		$setting = [
+		@tout =
 			grep defined $C->{Database}{$_},
 				split /[\s,]+/,
-				$C->{Variable}{MV_DEFAULT_SEARCH_FILE}
-		];
+				$C->{Variable}{MV_DEFAULT_SEARCH_TABLE}
+		;
+		$notable = 1;
 	}
+
 	for(@$setting) {
 		next if $C->{Database}{$_}{NO_SEARCH};
-		push @tout, $_;
+		push @tout, $_ unless $notable;
 		next unless defined $C->{Database}{$_}{file};
 		push @fout, $C->{Database}{$_}{file}
 			unless $nofile;
@@ -2153,7 +2168,7 @@ sub parse_catalog {
 		push @{$cat->{$key}}, @rest if @rest;
 	}
 	elsif($key eq 'global') {
-		$cat->{$key} = $Global::AllowGlobal{$name} = is_yes($value);
+		$cat->{$key} = $Global::AllowGlobal->{$name} = is_yes($value);
 	}
 	elsif($key eq 'directive') {
 		no strict 'refs';
