@@ -267,7 +267,7 @@ do
 		--imagedir=$DOCROOT/$i/images \
 		--imageurl=/$i/images \
 		--sharedir=$DOCROOT \
-		--shareurl=/ \
+		--shareurl= \
 		--cgidir=$CGIDIR \
 		--cgibase=$CGIBASE \
 		--cgiurl=$CGIBASE/$i \
@@ -339,8 +339,10 @@ fi
 %dir /var/run/interchange
 %dir /var/cache/interchange
 %dir /var/log/interchange
+%dir /var/lib/interchange
 /var/log/interchange/error.log
 %config(noreplace) /etc/interchange.cfg
+%{webdir}/html/interchange
 
 %defattr(-, root, root)
 
@@ -353,7 +355,8 @@ fi
 %{_mandir}/man8
 %config(noreplace) /etc/rc.d/init.d/interchange
 %config(noreplace) /etc/logrotate.d/interchange
-%dir %{_sbindir}/interchange
+%config(noreplace) %{_sbindir}/interchange
+%dir %{_libdir}/interchange
 
 
 %files %cat_name
@@ -369,7 +372,7 @@ fi
 %files %{cat_name}-demo
 
 %defattr(-, %{ic_user}, %{ic_group})
-/var/lib/interchange
+/var/lib/interchange/%cat_name
 /var/log/interchange/%cat_name
 /var/cache/interchange/%cat_name
 %{webdir}/html/%cat_name
@@ -504,11 +507,16 @@ do
 			mv $ICCFGTMP $ICCFG
 	fi
 
-	# Remove remaining machine-generated files
+	# Remove leftover machine-generated files
 	rm -rf /var/cache/interchange/$i/tmp/*
 	rm -rf /var/cache/interchange/$i/session/*
 	rm -rf /var/log/interchange/$i/orders/*
 	rm -rf /var/log/interchange/$i/logs/*
+	rm -rf /var/lib/interchange/$i/products/*.db
+	rm -rf /var/lib/interchange/$i/products/products.txt.*
+	rm -rf /var/lib/interchange/$i/products/*.autonumber
+	rm -rf /var/lib/interchange/$i/products/*.numeric
+	rm -rf /var/lib/interchange/$i/etc/status.$i
 done
 
 
@@ -524,6 +532,7 @@ rm -f %filelist_main
 - Bring back prebuilt demo, but as a separate package called
   interchange-foundation-demo. It's helpful to have prebuilt CGI binaries
   for emaciated OS installations without a C compiler.
+- Handle admin images moved to /var/www/html/interchange.
 
 * Fri May 25 2001 Jon Jensen <jon@redhat.com>
 - Use new split confdir/rundir option to keep important things in
