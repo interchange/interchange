@@ -1,9 +1,12 @@
-interchange (4.7.6-1) unstable; urgency=low
+interchange (4.7.7-1) unstable; urgency=low
 
   * new upstream release (Closes: #102645 due to new build)
   * foundation is now the demo catalog instead of construct
   * interchange wrapper handles now PID and sockets directives
     instead of putting it into the configuration file
+  * changed makecat.wrapper to run as interchange user instead of root
+  * docroot for catalogs added to makecat.wrapper
+  * wrappers described within README.debian
   * UI needs now a std.js file
   * put poweredby.gif in place again
   * UI_SECURE added to interchange.cfg
@@ -11,15 +14,11 @@ interchange (4.7.6-1) unstable; urgency=low
   * use new PreFork mode by default
   * use new -rundir command line option
   * Variable DEBUG now configurable by debconf
-  * changed makecat.wrapper to run as interchange user instead of root
-  * added a link for makecat.cfg
   * use /var/lib/interchange/catalogs as default for catalog installations
   * images are now installed to /var/www/interchange
-  * docroot for catalogs added to makecat.wrapper
   * get rid of .packlist (Closes: #104747)
-  * wrappers described within README.debian
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 24 Jul 2001 15:21:17 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 26 Jul 2001 11:41:49 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 

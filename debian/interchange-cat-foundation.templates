@@ -8,6 +8,18 @@ Description-de: Möchten Sie den Interchange-Demokatalog angelegt haben ?
  Ob der Demokatalog aus dem Foundation-Template installiert werden
  soll oder Sie ihn manuell mit makecat installieren möchten.
 
+Template: interchange-cat-foundation/purge
+Type: boolean
+Default: false
+Description: Remove Interchange demo catalog after "purging" this package ?
+ Should all files belonging to the Interchange demo catalog removed
+ when you purge this package, e.g. with dpkg --purge 
+ or apt-get remove --purge ?
+Description-de: Interchange-Demokatalog löschen ?
+ Sollen alle Dateien des Interchange-Demokatalogs gelöscht werden wenn
+ dieses Paket mit dpkg --purge oder apt-get remove --purge entfernt
+ wird ?
+
 Template: interchange-cat-foundation/replace
 Type: select
 Choices: always, ask, never
