@@ -899,13 +899,16 @@ dist/foundation/templates/sampledata/tools/images/thumb/os28113_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os29000_b.gif
 dist/foundation/templates/sampledata/tools/products/affiliate.txt
 dist/foundation/templates/sampledata/tools/products/area.txt
+dist/foundation/templates/sampledata/tools/products/area_de_DE.txt
 dist/foundation/templates/sampledata/tools/products/cat.txt
+dist/foundation/templates/sampledata/tools/products/cat_de_DE.txt
 dist/foundation/templates/sampledata/tools/products/inventory.txt
 dist/foundation/templates/sampledata/tools/products/merchandising.txt
 dist/foundation/templates/sampledata/tools/products/options.txt
 dist/foundation/templates/sampledata/tools/products/orderline.txt
 dist/foundation/templates/sampledata/tools/products/pricing.txt
 dist/foundation/templates/sampledata/tools/products/products.txt
+dist/foundation/templates/sampledata/tools/products/products_de_DE.txt
 dist/foundation/templates/sampledata/tools/products/specs.txt
 dist/foundation/templates/sampledata/tools/products/transactions.txt
 dist/foundation/templates/sampledata/tools/products/userdb.txt
