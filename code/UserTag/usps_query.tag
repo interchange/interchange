@@ -324,7 +324,7 @@ service guides for more information on this topic.
 Destination country. No default. You must pass the name of the country, not the ISO
 code or abbreviation (i.e. 'Canada', not 'CA'). Note that USPS maintains a table of
 valid country names which does not necessarily match all entries in the country
-table which is distributed with the foundation demo, so modifications may be needed
+table which is distributed with the standard demo, so modifications may be needed
 if you intend to use USPS international services. Consult the USPS International
 Services guide for more information.
 

@@ -3,7 +3,7 @@
 #
 # findtags - Find ITL tags in Interchange catalogs and directories
 #
-# $Id: findtags.PL,v 1.4 2003-09-24 18:53:24 jon Exp $
+# $Id: findtags.PL,v 1.5 2004-05-09 20:56:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -79,7 +79,7 @@ and other sources can fool it. If you include all directories, make sure you
 don't include documentation files or the usertags themselves.
 
 With the standard distribution, this should find just about all
-tags needed for foundation:
+tags needed:
 
 	findtags -a -d lib/UI
 
@@ -305,7 +305,7 @@ and other sources can fool it. If you include all directories, make sure you
 don't include documentation files or the usertags themselves.
 
 With the standard distribution, this should find just about all
-tags needed for foundation:
+tags needed:
 
 	findtags -a -d lib/UI
 

@@ -102,7 +102,7 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
   To stop these warnings, remove the NoCache directive and any
   directive beginning with "Static" from your catalog.cfg file.
-  In the foundation-style catalog, these are all located near
+  In the standard-style catalog, these are all located near
   each other.
 
   If you use the static page build facility, there are other means of
@@ -154,15 +154,15 @@ After running compile_link, you should see four new files in the
 
   EXAMPLE:
 
-    Catalog foundation /var/lib/interchange/foundation /cgi-bin/foundation
+    Catalog standard /var/lib/interchange/standard /cgi-bin/standard
 
 You should comment out all but the one you want to test.
 
-5. Change the /cgi-bin/foundation script link name to /cgi-bin/test5.
+5. Change the /cgi-bin/standard script link name to /cgi-bin/test5.
 
   EXAMPLE:
 
-    Catalog foundation /var/lib/interchange/foundation /cgi-bin/test5
+    Catalog standard /var/lib/interchange/standard /cgi-bin/test5
 
 6. Copy the src/vlink (UNIX mode) or src/tlink (INET mode) link executable
 to your CGI directory and name it "test5", i.e.
@@ -196,7 +196,7 @@ subdirectory in your document root, i.e.:
                 cp -r /usr/lib/interchange-5/share/interchange \
                           /var/www/html/interchange-5
 
-11. Modify your /var/lib/interchange/foundation/catalog.cfg file to
+11. Modify your /var/lib/interchange/standard/catalog.cfg file to
 point the URLs to the test server if appropriate by placing at the
 end:
 

@@ -41,6 +41,7 @@ _$
 ^dist/basic(/|$)
 ^dist/books(/|$)
 ^dist/construct(/|$)
+^dist/foundation(/|$)
 ^dist/test(/|$)
 ^dist/etc/[^.j]
 ^dist/lib/MiniMate(/|$)

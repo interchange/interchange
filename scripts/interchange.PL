@@ -3,7 +3,7 @@
 #
 # Interchange version 5.3.0
 #
-# $Id: interchange.PL,v 2.80 2004-04-09 21:00:10 jon Exp $
+# $Id: interchange.PL,v 2.81 2004-05-09 20:56:21 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -828,6 +828,26 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	$| = 1;
 	logGlobal( "Interchange V$VERSION");
+
+	SIGNALCHECK: {
+		my $high_enough;
+		eval {
+			require 5.8.2;
+			$high_enough = 1;
+		};
+		last SIGNALCHECK unless $high_enough;
+		if($ENV{PERL_SIGNALS} eq 'unsafe') {
+			logGlobal("Running with old signals.");
+		}
+		else {
+			my $msg = <<EOF;
+Running with new signals, external programs could be unreliable.
+Re-run with environment variable PERL_SIGNALS set to "unsafe" to change this.
+EOF
+			chomp $msg;
+			logGlobal($msg);
+		}
+	}
 
 	# The global configuration set up which catalogs exist.
 	# Certain ones may have been skipped with -skip on command line...

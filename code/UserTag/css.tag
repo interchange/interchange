@@ -24,7 +24,7 @@ In the simplest case:
 	[css THEME_CSS]
 
 it looks for the file C<images/them_css.css>, and if it exists generates
-a <C<link rel=stylesheet href="/foundation/images/theme_css.css">> HTML
+a <C<link rel=stylesheet href="/standard/images/theme_css.css">> HTML
 tag to call it.
 
 =head2 OPTIONS

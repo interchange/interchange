@@ -22,7 +22,7 @@ Given sku os29000 in the Foundation demo, and assuming the products
 database specifies os29000.gif in the B<image> field for os29000,
 the tag returns HTML code something like this:
 
-	<img src="/foundation/images/os29000.gif" width=120 height=150
+	<img src="/standard/images/os29000.gif" width=120 height=150
 	alt="3' Step Ladder" title="3' Step Ladder">
 
 If file os29000.gif hadn't existed, or the products database B<image>
@@ -32,7 +32,7 @@ field were empty, the tag would check for files called "(sku).jpg",
 You can also specify a particular image filename, but also give the
 sku to look up the description in the database:
 
-	[image sku="[item-code]" src="/foundation/silly/putty.jpg"]
+	[image sku="[item-code]" src="/standard/silly/putty.jpg"]
 
 You can force the use of an image filename even if the file doesn't
 exist (for example, if it is on a different server). Any absolute URL

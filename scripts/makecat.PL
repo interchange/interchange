@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.23 2003-12-07 17:47:20 mheins Exp $
+# $Id: makecat.PL,v 2.24 2004-05-09 20:56:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -114,7 +114,7 @@ options:
     --cgidir=directory         The directory the CGI link should go to
     --servername=server        Name of server (www.whatever.domain)
     --cgiurl=url_fragment      The path to the CGI link (no server name)
-    --demotype=template        The template catalog (foundation is the default)
+    --demotype=template        The template catalog (standard is the default)
     --mailorderto=email        Email address to send orders
 
     Optional:
@@ -269,7 +269,7 @@ extension .cgi added.
 Only the characters [-a-zA-Z0-9_] are allowed, and it is strongly suggested
 that the catalog name be all lower case.
 
-If you are doing the demo for the first time, you might use "foundation".
+If you are doing the demo for the first time, you might use "standard".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
@@ -445,7 +445,7 @@ my %Prefix = (
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
-	demotype     =>  $ENV{MVC_DEMOTYPE} || 'foundation',
+	demotype     =>  $ENV{MVC_DEMOTYPE} || 'standard',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
 							($isroot ? '' : $Conf{'interchangeuser'})
@@ -566,8 +566,11 @@ my %History = (
     demotype =>  sub {
 						my @dir; 
 						@dir = sort map { s:(.*)/.*:$1:; $_ } glob("*/catalog.cfg");
-						@dir = grep $_ ne 'foundation', @dir;
-						unshift(@dir, 'foundation') if -f 'foundation/catalog.cfg';
+						@dir = grep $_ ne 'standard', @dir;
+						unshift(@dir, 'standard') if -f 'standard/catalog.cfg';
+						unshift(@dir, 'foundation')
+							if  -f 'foundation/catalog.cfg'
+							and $catalog_name =~ /^foundation/;
 						unshift(@dir, 'construct')
 							if  -f 'construct/catalog.cfg'
 							and $catalog_name =~ /^construct/;
@@ -2300,7 +2303,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.23 2003-12-07 17:47:20 mheins Exp $
+# $Id: makecat.PL,v 2.24 2004-05-09 20:56:21 mheins Exp $
 
 =head1 INTRODUCTION
 
@@ -2447,18 +2450,18 @@ For testing on your local machine, just use C<localhost>.
 =item --cgiurl=url_fragment
 
 The path to the CGI link (no server name). For a catalog named
-C<foundation>, this would normally be one of:
+C<standard>, this would normally be one of:
 
-    --cgiurl=/cgi-bin/foundation
+    --cgiurl=/cgi-bin/standard
 
 or 
 
-    --cgiurl=/foundation.cgi
+    --cgiurl=/standard.cgi
 
 
 =item --demotype=template
 
-The template catalog. The default is <foundation>.
+The template catalog. The default is <standard>.
 
 =item --mailorderto=email
 
@@ -2547,11 +2550,11 @@ B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
 
 A catalog template contains an image of a configured catalog. The best
-way to see what the makecat program does is to configure the 'foundation'
+way to see what the makecat program does is to configure the 'standard'
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-  diff -r interchange/foundation catalogs/foundation
+  diff -r interchange/standard catalogs/standard
 
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
@@ -2578,7 +2581,7 @@ substituted, and include (at least):
     MVC_DOCUMENTROOT MVC_VENDROOT
     MVC_ENCRYPTOR
 
-(Not all of these are present in the foundation template, and
+(Not all of these are present in the standard template, and
 quite a few more may be defined.)  In fact, any environment variable that
 is set and begins with MVC_ will be substituted for by the C<makecat>
 script. So if you wanted to set up a configurable parameter to customize
@@ -2597,7 +2600,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-foundation and copy the C<foundation> demo directory to it as a starting point.
+standard and copy the C<standard> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
@@ -2650,7 +2653,7 @@ This will cause the prompt:
     We need to create an SQL database for your Interchange
     database tables.
      
-    Run command "mysqladmin create test_foundation"?
+    Run command "mysqladmin create test_standard"?
 
 If the response is "y" or "yes", then the command will be run
 by passing it through the Perl system() function. As with any
@@ -2709,7 +2712,7 @@ documentation for Interchange is at:
 
 __END__
 
-[catalog foundation]
+[catalog standard]
 basedir         =
 catroot         =
 catuser         =
@@ -2717,7 +2720,7 @@ cgibase         =
 cgibin          =
 cgidir          =
 cgiurl          =
-demotype        = foundation
+demotype        = standard
 documentroot    =
 imagedir        =
 imageurl        =

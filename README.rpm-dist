@@ -31,7 +31,7 @@ the Interchange user ID to write/create files.
 
 Sessions and temporary files: /var/cache/interchange.
 
-Documentation: /usr/share/doc/interchange-5.0.0.
+Documentation: /usr/share/doc/interchange-5.3.0.
 
 On a dedicated production server, it is wise to segregate as many of these
 directories as possible onto their own partitions, to prevent problems if
@@ -45,7 +45,7 @@ usually come supplied with your operating system, so you will need to
 install them yourself. It's best to locate RPMs for each of the needed
 Perl modules and install them. To get a complete list of dependencies, do:
 
-rpm -qp --requires interchange-5.0.0-1.i386.rpm
+rpm -qp --requires interchange-5.3.0-1.i386.rpm
 
 Note that some of the dependencies are not actually necessary. For example,
 the Cybercash modules (CCMck*) are only needed if you use the Cybercash
@@ -82,14 +82,14 @@ This is unfortunate but is considered the best workaround at the moment.
 
 INSTALL
 
-rpm -Uvh interchange-5.0.0-1.i386.rpm
-rpm -Uvh interchange-foundation-5.0.0-1.i386.rpm
+rpm -Uvh interchange-5.3.0-1.i386.rpm
+rpm -Uvh interchange-standard-5.3.0-1.i386.rpm
 
 Your version of RPM may correctly recognize Perl modules even if they
 were not installed via RPM. But it may not. If not, you'll need to install
 the main interchange package without dependency checking:
 
-rpm -Uvh --nodeps interchange-5.0.0-1.i386.rpm
+rpm -Uvh --nodeps interchange-5.3.0-1.i386.rpm
 
 
 STARTING/RESTARTING INTERCHANGE
@@ -116,17 +116,17 @@ you use the RPM installation.
 -----------------------------------------------------------------------------
 
 There is a separate RPM that provides a live demonstration catalog called
-'foundation', which you may optionally use to quickly try out Interchange.
+'standard', which you may optionally use to quickly try out Interchange.
 It should not be used as a basis for a real catalog; instead build
 your own with the makecat tool in '/usr/lib/interchange/bin/makecat',
-as described in the documentation. Do not confuse the 'foundation' live demo
-with the 'foundation' catalog skeleton from which you are encouraged to build
+as described in the documentation. Do not confuse the 'standard' live demo
+with the 'standard' catalog skeleton from which you are encouraged to build
 your own catalog.
 
 
 APACHE ASSUMPTIONS
 
-The foundation-demo RPM relies upon the following things in the Apache
+The standard-demo RPM relies upon the following things in the Apache
 installation:
 
 -- Standard document root and CGI binary locations:
@@ -135,9 +135,9 @@ installation:
    ScriptAlias  /cgi-bin/ /var/www/cgi-bin/
 
 -- ServerName must be the same as what is revealed by `hostname` when
-   the foundation RPM is installed. If it is not, temporarily change the
+   the standard RPM is installed. If it is not, temporarily change the
    hostname with a command like 'hostname new.host.name' and then install
-   the foundation-demo RPM. Afterwards you can change the hostname back
+   the standard-demo RPM. Afterwards you can change the hostname back
    to normal.
 
 -- suEXEC not enabled. If you have suEXEC enabled, you are responsible
@@ -149,7 +149,7 @@ installation:
 
 INSTALL
 
-rpm -Uvh interchange-foundation-demo-5.0.0-1.i386.rpm
+rpm -Uvh interchange-standard-demo-5.3.0-1.i386.rpm
 
 
 USING THE DEMO
@@ -157,7 +157,7 @@ USING THE DEMO
 Once installed, you should be able to access the demo catalog like this
 (using your own hostname, of course):
 
-http://hostname/foundation/
+http://hostname/standard/
 
 The initial administrative user name is "interch", and the password is
 "pass". Change the password as soon as possible.

@@ -53,7 +53,7 @@ dist/          The distribution files, exclusive of executable
                files and modules. Includes:
 
                interchange.cfg.dist   Distribution interchange.cfg
-               foundation/            Demo catalog skeleton, used by makecat
+               standard/              Demo catalog skeleton, used by makecat
                src/                   C and Perl code for CGI links
                lib/                   Back-end administrative interface
                code/                  Usertags and other customizable code
@@ -81,8 +81,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-5.0.0.tar.gz | tar xvf -
-cd interchange-5.0.0
+gzip -dc interchange-5.3.0.tar.gz | tar xvf -
+cd interchange-5.3.0
 ./configure
 
 The configure script asks where you'd like to install Interchange, and
@@ -96,7 +96,7 @@ as described in the next section.
 
                                  D E M O
 
-There is a demo catalog skeleton included called 'foundation'.
+There is a demo catalog skeleton included called 'standard'.
 
 To build your own catalog from the demo, go to the directory where you
 installed Interchange (default is "interchange" in your home directory,
