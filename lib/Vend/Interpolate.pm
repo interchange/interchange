@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.89 2002-07-23 22:43:02 racke Exp $
+# $Id: Interpolate.pm,v 2.90 2002-07-25 17:07:21 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.89 $, 10);
+$VERSION = substr(q$Revision: 2.90 $, 10);
 
 @EXPORT = qw (
 
@@ -3558,7 +3558,12 @@ sub find_sort {
 
 sub more_link_template {
 	my ($anchor, $arg, $form_arg) = @_;
-	my $url = tag_area( "scan/MM=$arg", '', { form => $form_arg } );
+
+	my $url = tag_area("scan/MM=$arg", '', {
+	    form => $form_arg,
+	    secure => $CGI::secure,
+	});
+
 	my $lt = $link_template;
 	$lt =~ s/\$URL\$/$url/g;
 	$lt =~ s/\$ANCHOR\$/$anchor/g;
@@ -3724,10 +3729,12 @@ sub tag_more_list {
 		else {
 			$last_anchor = ::errmsg('Last');
 		}
- 		$last = $total - 1;
- 		my $last_beg_idx = $total - ($total % $chunk || $chunk);
- 		$arg = "$session:$last_beg_idx:$last:$chunk";
- 		$next_tag .= ' ' . more_link_template($last_anchor, $arg, $form_arg);
+		unless ($last_anchor eq 'none') {
+			$last = $total - 1;
+			my $last_beg_idx = $total - ($total % $chunk || $chunk);
+			$arg = "$session:$last_beg_idx:$last:$chunk";
+			$next_tag .= ' ' . more_link_template($last_anchor, $arg, $form_arg);
+		}
 	}
 	else {
 		$r =~ s:\[(last|next)[-_]anchor\]$All\[/\1[-_]anchor\]::i;
@@ -5822,10 +5829,14 @@ sub shipping {
 	else {
 #::logDebug("standard field selection");
 	    my $use_modifier;
-	    if (defined $::Variable->{MV_SHIP_MODIFIERS} && $field =~ /^($::Variable->{MV_SHIP_MODIFIERS})$/){
-		$use_modifier = 1;
+
+	    if ($::Variable->{MV_SHIP_MODIFIERS}){
+		my @pieces = grep {$_ = quotemeta $_} split(/[\s,|]+/,$::Variable->{MV_SHIP_MODIFIERS});
+		my $regex = join('|',@pieces);
+		$use_modifier = 1 if ($regex && $field =~ /^($regex)$/);
 	    }
-	    my $col_checked;
+
+	    my $col_checked = 0;
 	    foreach my $item (@$Vend::Items){
 		my $value;
 		if ($use_modifier && defined $item->{$field}){
