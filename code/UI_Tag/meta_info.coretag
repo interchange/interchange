@@ -1,0 +1,42 @@
+UserTag meta-info Order table column key
+UserTag meta-info attrAlias  col column
+UserTag meta-info addAttr
+UserTag meta-info Routine <<EOR
+sub {
+	my ($table, $col, $key, $opt) = @_;
+
+	my $item;
+	if($table) {
+		$item = $table;
+		$item .= "::$col" if $col;
+	}
+
+	$item ||= $opt->{item} or return undef;
+	my $meta;
+	my $mdb;
+
+	if($opt->{meta_table}) {
+		$mdb = dbref($opt->{meta_table});
+	}
+	
+	my @tries = $item;
+
+	if($opt->{specific}) {
+		unshift @tries, $item . "::$opt->{specific}";
+	}
+
+	for(@tries) {
+		$meta = Vend::Table::Editor::meta_record(
+								$_,
+								$opt->{view},
+								$mdb,
+								$opt->{extended_only},
+							)
+				and last;
+	}
+	return undef unless $meta;
+#::logDebug("Got meta record back, looking for $key: " . ::uneval($meta));
+	return errmsg($meta->{$key}) if $opt->{localize};
+	return $meta->{$key};
+}
+EOR
