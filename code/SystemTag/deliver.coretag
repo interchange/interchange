@@ -1,0 +1,55 @@
+UserTag deliver Order type
+UserTag deliver HasEndTag
+UserTag deliver addAttr
+UserTag deliver Routine <<EOR
+sub {
+	my ($type, $opt, $body) = @_;
+	my $out;
+	if($opt->{file}) {
+		$type ||= Vend::Util::mime_type($opt->{file});
+		return undef unless -f $opt->{file};
+		$out = \( readfile($opt->{file}) );
+	}
+	elsif(ref $body) {
+		$out = $body;
+	}
+	elsif($body) {
+		$out = \$body;
+	}
+	$type ||= 'application/octet-stream';
+	Vend::Tags->tag( { op => 'header', name => 'Content-Type', content => $type } );
+
+	## This is a bounce, returns
+	if($opt->{location}) {
+		Vend::Tags->tag( {	op => 'header',
+							name => 'Status',
+							content => $opt->{status} || '302 moved',
+						} );
+		Vend::Tags->tag( {	op => 'header',
+							name => 'Location',
+							content => $opt->{location},
+						} );
+		$Vend::Sent = 1;
+		return 1;
+	}
+	
+	Vend::Tags->tag( {	op => 'header',
+						name => 'Content-Type',
+						content => $type,
+					} );
+	
+	if($opt->{extra_headers}) {
+		my @lines = grep /\S/, split /[\r\n]+/, $opt->{extra_headers};
+		for(@lines) {
+			my ($header, $val) = split /:/, $_;
+			Vend::Tags->tag( {	op => 'header',
+						name => $header,
+						content => $val,
+					} );
+		}
+	}
+	::response($out);
+	$Vend::Sent = 1;
+	return 1;
+}
+EOR

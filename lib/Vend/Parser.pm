@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.6 2002-07-14 03:35:03 jon Exp $
+# $Id: Parser.pm,v 2.7 2002-08-14 15:32:04 mheins Exp $
 #
 # Copyright (C) 1997-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 
 sub new
@@ -99,7 +99,12 @@ sub parse
 	# tokens from the beginning of $$buf until we can't deside whether
 	# it is a token or not, or the $$buf is empty.
 	while (1) {  # the loop will end by returning when text is parsed
-		# First we try to pull off any plain text (anything before a '[')
+		# If a preceding routine sent the response, stop 
+		if ($Vend::Sent) {
+			$self->{OUT} = $self->{_buf} = '';
+			return $self;
+		}
+		# We try to pull off any plain text (anything before a '[')
 		if ($$buf =~ s/^([^[]+)// ) {
 #my $eat = $1;
 #::logDebug("plain eat='$eat'");

@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.21 2002-08-05 06:04:49 mheins Exp $
+# $Id: Parse.pm,v 2.22 2002-08-14 15:32:03 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -501,7 +501,6 @@ sub eval_die {
 # syntax color '"
 
 sub start {
-	return html_start(@_) if $_[0]->{HTML};
     my($self, $tag, $attr, $attrseq, $origtext, $empty_container) = @_;
 	$tag =~ tr/-/_/;   # canonical
 	$Vend::CurrentTag = $tag = lc $tag;
