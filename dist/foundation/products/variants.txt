@@ -1,1 +1,1 @@
-code	sku	description	comment	thumb	image	image_large	price	wholesale	sale_price	weight	inactive
+code	sku	description	comment__MVC_FIELDMUNGE__	thumb	image	image_large	price	wholesale	sale_price	weight	inactive
