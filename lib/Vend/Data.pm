@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.6 2002-01-31 17:57:02 mheins Exp $
+# $Id: Data.pm,v 2.7 2002-02-05 01:33:11 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -361,11 +361,11 @@ sub sql_query {
 	my ($db);
 
 	$opt->{table} = $Vend::Cfg->{ProductFiles}[0] unless defined $opt->{table};
-	$db = $Vend::Database{$opt->{table}}
+	$db = database_exists_ref($opt->{table})
 		or die "dbi_query: unknown base table $opt->{table}.\n";
-	$db = $db->ref();
 
 	$type = lc $type;
+	$type ||= 'list';
 
 	if ($list and $type ne 'list') {
 		$query = '' if ! defined $query;

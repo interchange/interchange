@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.55 2002-02-04 01:31:17 mheins Exp $
+# $Id: Interpolate.pm,v 2.56 2002-02-05 01:33:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 @EXPORT = qw (
 
@@ -2129,7 +2129,7 @@ sub tag_perl {
 }
 
 sub ed {
-	return $_[0] if $Safe_data or $::Pragma->{safe_data};
+	return $_[0] if ! $_[0] or $Safe_data or $::Pragma->{safe_data};
 	$_[0] =~ s/\[/&#91;/g;
 	return $_[0];
 }

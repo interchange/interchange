@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.9 2002-02-04 04:19:46 mheins Exp $
+# $Id: Form.pm,v 2.10 2002-02-05 01:33:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 @EXPORT = qw (
 	display
@@ -945,9 +945,14 @@ if($opt->{debug}) {
 		$data = options_to_array($opt->{passed}, $opt);
 	}
 	elsif($opt->{column} and $opt->{table}) {
+		GETDATA: {
 		my $key = $opt->{outboard} || $item->{code} || $opt->{code};
-		$opt->{passed} = $Tag->data($opt->{table}, $opt->{column}, $key);
+			last GETDATA unless length($key);
+			last GETDATA unless ::database_exists_ref($opt->{table});
+			$opt->{passed} = $Tag->data($opt->{table}, $opt->{column}, $key)
+				and
 		$data = options_to_array($opt->{passed}, $opt);
+	}
 	}
 	elsif(! $Global::VendRoot) {
 		# Not in Interchange
@@ -1076,8 +1081,7 @@ if($opt->{debug}) {
 		radio       => \&box,
 		select      => \&dropdown,
 		show        => \&show_data,
-		value       => \&processed_value,
-		value       => sub { my $opt = shift; return $opt->{value} },
+		value       => sub { my $opt = shift; return $opt->{encoded} },
 		yesno		=> \&yesno,
 	);
 

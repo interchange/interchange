@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.9 2002-01-29 05:52:43 mheins Exp $
+# $Id: Parse.pm,v 2.10 2002-02-05 01:33:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -66,9 +66,13 @@ my %Order =	(
 				unless			=> [qw( type term op compare )],
 				or				=> [qw( type term op compare )],
 				and				=> [qw( type term op compare )],
+				restrict		=> [qw( enable )],
 			);
 
 my %addAttr = (
+				qw(
+					restrict		1
+				)
 			);
 
 my %hasEndTag = (
@@ -76,6 +80,7 @@ my %hasEndTag = (
 				qw(
                         if              1
                         unless          1
+					restrict		1
 				)
 			);
 

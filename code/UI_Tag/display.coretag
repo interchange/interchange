@@ -84,43 +84,48 @@ sub {
 		}
 	}
 
+#::logDebug("metarecord=$record");
 	my $w;
 
 	METAMAKE: {
-		last METAMAKE unless $record;
-
-		## Here we allow override with the display tag, even with views and
-		## extended
-		my @override = qw/
-							append
-							attribute
-							db
-							extra
-							field
-							filter
-							height
-							help
-							help_url
-							label
-							lookup
-							lookup_exclude
-							lookup_query
-							name
-							options
-							outboard
-							passed
-							pre_filter
-							prepend
-							type
-							width
-							/;
-		for(keys %$record) {
-			delete $record->{$_} if ! length($record->{$_});
-			next unless defined $opt->{$_};
-			$record->{$_} = $opt->{$_};
+		if( ! $record ) {
+			$record = { %$opt };
+		}
+		else {
+			## Here we allow override with the display tag, even with views and
+			## extended
+			my @override = qw/
+								append
+								attribute
+								db
+								extra
+								field
+								filter
+								height
+								help
+								help_url
+								label
+								lookup
+								lookup_exclude
+								lookup_query
+								name
+								options
+								outboard
+								passed
+								pre_filter
+								prepend
+								type
+								width
+								/;
+			for(keys %$record) {
+				delete $record->{$_} if ! length($record->{$_});
+				next unless defined $opt->{$_};
+				$record->{$_} = $opt->{$_};
+			}
 		}
 
 		$record->{name} ||= $column;
+#::logDebug("record now=" . ::uneval($record));
 
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 #::logDebug("checking options");
@@ -155,6 +160,7 @@ sub {
 			}
 		}
 
+#::logDebug("checking for custom widget");
 		if ($record->{type} =~ s/^custom\s+//s) {
 			my $wid = lc $record->{type};
 			$wid =~ tr/-/_/;
@@ -175,6 +181,7 @@ sub {
 			last METAMAKE;
 		}
 
+#::logDebug("formatting prepend/append");
 		for(qw/append prepend/) {
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});
@@ -190,6 +197,7 @@ sub {
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
 		}
 
+#::logDebug("overriding defaults");
 #::logDebug("passed=$record->{passed}") if $record->{debug};
 		my %things = (
 			attribute	=> $column,
@@ -205,7 +213,8 @@ sub {
 			next if length $record->{$k};
 			$record->{$k} = $v;
 		}
-		
+
+#::logDebug("calling Vend::Form");
 		$w = Vend::Form::display($record);
 		if($record->{filter}) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="};
@@ -214,6 +223,7 @@ sub {
 		}
 	}
 
+#::logDebug("widget=$w");
 	if(! defined $w) {
 		my $text = $opt->{value};
 		my $iname = $opt->{name} || $column;
