@@ -1,22 +1,21 @@
-# This is how you can use Signio PayPro with Interchange.
+# This is how you can use CCVS with Interchange.
 # 
 Variable CCVS_HELP <<EOV
 
  1. Modify interchange.cfg to use this file.
  
- #include globalsub/ccvs
+#include globalsub/ccvs
 
-    (you might have to create that directory)
+	(you might have to create that directory and copy this file there)
 
- 2. Modify catalog.cfg to set the server and your Signio account info
+ 2. Modify catalog.cfg to set the server and your CCVS config info
 
- # Username and password
- Variable MV_PAYMENT_ID      ccvs_configname
- # Use test.signio.com for testing
+# CCVS configuration name
+Variable MV_PAYMENT_ID   ccvs_configname
 
  3. Set the payment mode in catalog.cfg:
 
- Variable MV_PAYMENT_MODE    ccvs
+Variable MV_PAYMENT_MODE ccvs
 
  4. Make sure CreditCardAuto is off (default)
 
