@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.33 2001-06-08 15:45:37 heins Exp $
+# $Id: Util.pm,v 1.14.2.34 2001-06-15 00:37:35 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.33 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.34 $, 10);
 
 BEGIN {
 	eval {
@@ -309,6 +309,16 @@ sub setlocale {
     my ($locale, $currency, $opt) = @_;
 #::logDebug("original locale " . (defined $locale ? $locale : 'undef') );
 #::logDebug("default locale  " . (defined $::Scratch->{mv_locale} ? $::Scratch->{mv_locale} : 'undef') );
+
+	if($opt->{get}) {
+	    my $loc     = $Vend::Cfg->{Locale_repository} or return;
+	    my $currloc = $Vend::Cfg->{Locale} or return;
+	    for(keys %$loc) {
+			return $_ if $loc->{$_} eq $currloc;
+	    }
+	    return;
+	}
+
     $locale = $::Scratch->{mv_locale} unless defined $locale;
 #::logDebug("locale is now   " . (defined $locale ? $locale : 'undef') );
 

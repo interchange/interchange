@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.23 2001-06-14 12:52:40 heins Exp $
+# $Id: Parse.pm,v 1.12.2.24 2001-06-15 00:37:35 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.24 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -753,6 +753,7 @@ my %Alias = (
 						shipping_description	shipping_desc
 						process_target	process
 				),
+					getlocale		=> 'setlocale get=1',
 					process_search		=> 'area href=search',
 					process_order		=> 'process order=1',
 					buzzard		=> 'data table=products column=artist key=',
