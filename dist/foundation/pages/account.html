@@ -26,22 +26,6 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-<SCRIPT>    // JavaScript Form Validation Demo    // by Paul Colton
-  function check_tax(form) {
-    // Make sure the email field is not blank
-    var foundState = false;
-    var ch = form.state.value;
-    ch = ch.toUpperCase();
-    [loop list="__TAXAREA__"]
-    if(ch == "[loop-code]") {
-      alert("You will be charged [currency][fly-tax [loop-code]][/currency] sales tax\nsince you are shipping to [loop-code]. Click Recalculate to see the amount in your total.");
-      foundState = true;
-    }
-    [/loop]
-    return foundState;
-  }
-</SCRIPT>
-
 [userdb function=get_billing_names]
 [userdb function=get_shipping_names]
 
@@ -60,7 +44,7 @@ They are shown in <FONT color="red">this color</FONT> below.</FONT>
 
 <INPUT TYPE=hidden NAME=mv_order_profile VALUE=account_change>
 <INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE=@@MV_PAGE@@>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
 
 [set Save_database]
@@ -123,7 +107,7 @@ They are shown in <FONT color="red">this color</FONT> below.</FONT>
     [error name=state std_label="State/Province" required=1]
   </td>
   <td>
-    <INPUT onChange="check_tax(this.form)" TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+    <INPUT TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
   </td>
 </tr>
 <tr class="contentbar1"> 
@@ -149,14 +133,12 @@ They are shown in <FONT color="red">this color</FONT> below.</FONT>
     [error name=country std_label="Country" required=1]
   </td>
   <td colspan=3> 
-    [if value country =~ /(^$|US|CA)/]
       <SELECT NAME=country onChange="this.form.submit()">
+    [if value country =~ /(^$|US|CA)/]
 	<OPTION VALUE="US"> United States
 	<OPTION [selected country CA] VALUE="CA"> Canada
 	<OPTION VALUE="JP"> Other
-      </SELECT>
     [else]
-      <SELECT onChange="this.form.submit()" NAME=country>
 	[loop option=country search="
 	 ra=yes
 	 fi=country
@@ -166,9 +148,9 @@ They are shown in <FONT color="red">this color</FONT> below.</FONT>
 	"]
 	<OPTION VALUE="[loop-code]"> [loop-data country name] 
 	[/loop]
-      </SELECT>
     [/else]
     [/if]
+      </SELECT>
     <small>(will update display)</small>
   </td>
 </tr>
