@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.81 2001-06-26 17:05:45 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.82 2001-06-27 13:56:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.81 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.82 $, 10);
 
 @EXPORT = qw (
 
@@ -2109,7 +2109,20 @@ sub tag_accessories {
 	}
 
 	my ($default, $label, $select, $value, $run);
+
 	my @opts = split /\s*$delimiter\s*/, $data;
+
+	if($type =~ s/\bnumeric\b//i || $opt->{numeric} ) {
+		my @out; 
+		for (@opts) {
+			if( /^\s* (\d+) \s* \.\.+ \s* (\d+) \s* $/x ) {
+				push @out, $1 .. $2;
+				next;
+			}
+			push @out, $_;
+		}
+		@opts = @out;
+	}
 
 #::logDebug("item in tag_accessories: " . ::uneval_it($item));
 	if($item) {
