@@ -5,10 +5,14 @@
 
 ------------------------------------------------------------------------------
 
-Interchange-4.9.5 not yet released
+
+Interchange 4.9.5 not yet released.
 
 
-Interchange 4.9.4
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.4 released 2002-12-02.
 
 
 Core
@@ -524,6 +528,13 @@ Forum
   submit, no display will be done. (The enabling is done automatically
   for products by passing the product=1 parameter in the URL and
   finding the product in the database.)
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.3 released only as nightly builds.
+
 
 ------------------------------------------------------------------------------
 
