@@ -327,7 +327,7 @@ EOF
 	### end build of error checking
 
 	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
-	$opt->{clear_image} = "${ui_img}admin/bg.gif" if ! $opt->{clear_image};
+	$opt->{clear_image} = "${ui_img}bg.gif" if ! $opt->{clear_image};
 
 #::logDebug("table-editor opt: " . ::uneval($opt));
 	my $die = sub {
