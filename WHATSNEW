@@ -8,17 +8,31 @@
 
 Interchange 4.9.9 not yet released.
 
-
 Core
 ----
 
+* Fix locking of NFS sessions.
+
+Payment
+-------
+
 * CCVS payment module removed.
+
+Shipping
+--------
+
+* Don't cache zero UPS shipping cost.
+
+Table Editor
+------------
+
+* Fix sequential edit.
 
 
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.8 released 2003-06-18.
+Interchange 4.9.8 released 2003-06-19.
 
 
 Core
