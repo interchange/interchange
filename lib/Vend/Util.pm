@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.35 2001-06-18 01:57:03 heins Exp $
+# $Id: Util.pm,v 1.14.2.36 2001-06-25 22:12:50 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.35 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.36 $, 10);
 
 BEGIN {
 	eval {
@@ -1094,7 +1094,7 @@ sub change_url {
 	my $arg;
 	my @args;
 	($url, $arg) = split /[?&]/, $url, 2;
-	@args = split $Global::UrlSplittor, $url;
+	@args = split $Global::UrlSplittor, $arg;
 	return Vend::Interpolate::tag_area( $url, '', {
 											form => join "\n", @args,
 										} );
