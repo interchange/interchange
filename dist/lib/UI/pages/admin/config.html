@@ -56,14 +56,14 @@ EOF
 [value name=ui_spreadsheet_rows set=10 hide=1]
 [/if]
 
-<table cellpadding=0 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <TR BGCOLOR="__UI_C_INTBLOCK__" CELLPADDING=2>
 	<TD ALIGN=RIGHT>Setting</TD>
 	<TD>Value</TD>
 </TR>
 
 <tr>
-<td colspan="2" bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=3>
+<td colspan="2" bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=3>
 </td>
 </tr>
 
@@ -84,19 +84,19 @@ EOF
 </TABLE>
 <P>
 <BR CLEAR=LEFT>
-<INPUT TYPE=submit NAME=mv_click VALUE=[L]Submit[/L]>&nbsp;&nbsp;&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE=Submit>&nbsp;&nbsp;&nbsp;
 [if !value ui_too_large]
 <INPUT TYPE=checkbox
 		NAME=ui_auto_export CHECKED VALUE="variable">
-	[L]Auto-export[/L]
+	Auto-export
 [/if]
 </FORM>
 <FORM METHOD=POST ACTION="[area __UI_BASE__/flex_editor]">
 <INPUT TYPE=hidden NAME="mv_action" VALUE="return">
-[L]Edit/Insert setting[/L]:
+Edit/Insert setting:
 <INPUT TYPE=hidden NAME="mv_data_table" VALUE="variable">
 <INPUT TYPE=TEXT SIZE=16 NAME="item_id" VALUE="new">
-<INPUT TYPE=submit VALUE="[L]Edit[/L]">
+<INPUT TYPE=submit VALUE="Edit">
 </FORM>
 <P>
 

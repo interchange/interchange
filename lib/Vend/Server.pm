@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.2 2000-06-25 00:47:03 heins Exp $
+# $Id: Server.pm,v 1.3 2000-07-11 20:05:23 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1046,7 +1046,6 @@ sub server_both {
 	}
 
 	my $no_fork;
-
 	if($Global::Windows or $Global::DEBUG ) {
 		$no_fork = 1;
 		$Vend::Foreground = 1;
@@ -1066,6 +1065,7 @@ sub server_both {
 		elsif (!$Global::DEBUG) {
 			# May as well turn warnings off, not going anywhere
 			$^W = 0;
+			open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
 		}
 
 		open(STDOUT, ">&Vend::DEBUG");

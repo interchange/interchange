@@ -1,21 +1,28 @@
-[set page_title]Welcome to TallyMan[/set]
+[set page_title]Welcome to Interchange[/set]
 [set help_name]main[/set]
 [set icon_name]admin/icon_regen.gif[/set]
 @@UI_STD_HEAD@@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<table border=0>
+<table __UI_T_PROPERTIES__>
+<center>
+<table border="0" width="90%" cellpadding="0" cellspacing="0">
+
 <tr>
+
 <td valign=top><img src="admin/back.sm.gif" height=350 width=230></td>
-<td>&nbsp;</td>
+
+<td>&nbsp;&nbsp;</td>
+
 <td valign=top align=left>
-<table border="0" cellpadding="0" cellspacing="3" width="296">
+
+<table border="0" cellpadding="0" cellspacing="0">
 
 [if-mm advanced order]
 <tr>
 <td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_orders.gif">
+<a href="[area __UI_BASE__/order.html]"><img height =16 width=16 src="admin/icon_orders.gif" border="0"></a>
 </td><td valign="bottom">
 <font size=3 face="Arial,Helvetica,Geneva">
 <b>
@@ -26,156 +33,216 @@
 </tr><tr height="27">
 <td width="27" height="27"></td>
 <td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage customer online orders</font>
-</td>
+
+</td> 
 </tr>
 [/if-mm]
 
+
 [if-mm advanced item]
+
 <tr>
 <td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_item.gif">
+<a href="[area __UI_BASE__/item]"><img height =16 width=16 src="admin/icon_item.gif" border="0"></a>
 </td><td valign="bottom">
+
 <font size=3 face="Arial,Helvetica,Geneva">
+
 <b>
+
 <a href="[area __UI_BASE__/item]">Items</a>
+
 </b>
+
 </font>
 </td>
 </tr><tr height="27">
 <td width="27" height="27"></td>
 <td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage the items displayed on your site</font>
+
 </td>
 </tr>
+
 [/if-mm]
 
 [if-mm advanced stats]
+
 <tr>
+
 <td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_stats.gif">
+
+<a href="[area __UI_BASE__/genstats]"><img height =16 width=16 src="admin/icon_stats.gif" border="0"></a>
+
 </td><td valign="bottom">
+
 <font size=3 face="Arial,Helvetica,Geneva">
+
 <b>
+
 <a href="[area __UI_BASE__/genstats]">Statistics</a>
+
 </b>
+
 </font>
+
 </td>
+
 </tr><tr height="27">
+
 <td width="27" height="27"></td>
+
 <td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View sales reports and order stats for any period of time</font>
+
 </td>
+
 </tr>
 [/if-mm]
 
 
+
+
+
 <tr>
+
 <td colspan=2>
+
 <hr size=1 noshade>
+
 </td>
+
 </tr>
+
 
 [if-mm advanced reconfig]
+
 <tr>
+
 <td width="27" align="center" valign="bottom">
-<img height=16 width=16 src="admin/icon_regen.gif">
+
+<a href="[area __UI_BASE__/reconfig]"><img height=16 width=16 src="admin/icon_regen.gif" border="0"></a>
+
 </td><td valign="bottom">
+
 <font size=3 face="Arial,Helvetica,Geneva">
+
 <b>
+
 <a href="[area __UI_BASE__/reconfig]">Apply Changes</a>
+
 </b>
+
 </font>
+
 </td>
+
 </tr>
+
 <tr height="27">
+
 <td width="27" height="27"></td>
+
 <td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Reload catalog so that changes take effect</font>
+
 </td>
+
 </tr>
 [/if-mm]
 
+
 <tr>
+
 <td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_help.gif">
+
+<a href="javascript:open_help('__UI_HELP_BASE_URL__/main.html')"><img height =16 width=16 src="admin/icon_help.gif" border="0"></a>
+
 </td><td valign="bottom">
+
 <font size=3 face="Arial,Helvetica,Geneva">
+
 <b>
-<a href="javascript:open_help('http://www.tallyman.com/help/2.0.6/main.html')">Help</a>
+
+<a href="javascript:open_help('__UI_HELP_BASE_URL__/main.html')">Help</a>
+
 </b>
+
 </font>
+
 </td>
+
 </tr><tr height="27">
+
 <td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View Tallyman's online documentation</font>
+
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View Interchange's online documentation</font>
+
 </td>
+
 </tr>
 
+
+
 <tr>
+
 <td colspan=2>
+
 <hr size=1 noshade>
+
 </td>
+
 </tr>
 
+
+
 <tr>
+
 <td width="27" align="center" valign="bottom">
-<img height=16 width=16 src="admin/icon_pages.gif">
+
+<a href="javascript:open_quicklinks()"><img height=16 width=16 src="admin/icon_pages.gif" border="0"></a>
+
 </td><td valign="bottom">
+
 <font size=3 face="Arial,Helvetica,Geneva">
+
 <b>
+
 <a href="javascript:open_quicklinks()">Quicklinks</a>
+
 </b>
+
 </font>
+
 </td>
+
 </tr>
+
 <tr height="27">
+
 <td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Open a convenient menu listing available admin options, 
+
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Open a convenient menu listing available admin options,
+
 including site design and advanced configuration options.
+
 </font>
+
 </td>
+
 </tr>
+
+
 
 
 
 </table>
-</td>
-</tr>
-</table>				
 
-
-[comment]
-Currently unused:
-
-<tr>
-<td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_pages.gif">
-</td><td valign="bottom">
-<a href="[area __UI_BASE__/page]"><img src="admin/b-pages2.gif" width="74" height="13" border="0" alt="Pages"></a>
 </td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Create and edit the pages in your site and arrange items on them</font>
-</td>
+
 </tr>
 
-<tr>
-<td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_config.gif">
-</td><td valign="bottom">
-<a href="[area __UI_BASE__/genconfig]"><img src="admin/b-configure2.gif" width="62" height="13" border="0" alt="Configure"></a>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Set up tax, shipping, and payment, site layout and advanced options</font>
-</td>
-</tr>
+</table>
+<br><br>
 
 
-
-
-
-
-
-
-[/comment]
 <!-- ----- END REAL STUFF ----- -->
 
 @@UI_STD_FOOTER@@

@@ -1,14 +1,14 @@
 <html>
-<body bgcolor="__UI_C_INTBLOCK__" link="__UI_C_LINK__" alink="__UI_C_ALINK__"
- vlink="__UI_C_VLINK__">
+<body bgcolor="__UI_C_INTBLOCK__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
 
 <table>
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
 
-<form name="createnew" action="layout">
-New category name:
-<input size=20 name="newcategory">
+<form name="createnew" action="[area __UI_BASE__/layout]">
+<input name=mv_action type=hidden value=return>
+New area name:
+<input size=20 name="newarea" onChange="document.createnew.submit(); window.opener.location.reload(); window.close()">
 <input type="submit" value="Create!" onclick="document.createnew.submit(); window.opener.location.reload(); window.close()">
 </form>
 

@@ -11,6 +11,11 @@
 [/if-mm]
 
 [set page_perm]order[/set]
+[set meta_header]
+<style><!--
+td {font-family:arial,sans-serif}
+-->
+</style>[/set]
 
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -117,7 +122,6 @@
 
 @@UI_STD_HEAD@@
 
-
 [if scratch message]
 <BLOCKQUOTE>
 [scratch message]
@@ -129,17 +133,15 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <!-- ----- Show the archive/pending buttons ----- -->
-
+<center>
 <form action="[area __UI_BASE__/order]" method=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
 <input type=hidden name=archive value="false">
 
-<p>
-&nbsp;
-<table cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -155,12 +157,12 @@
 </td>
 
 <td bgcolor="__UI_C_INTBLOCK__">
-<a href="[area __UI_BASE_/orderstats]">View Order Stats</a>
+<a href="[area __UI_BASE__/orderstats]">View Order Stats</a>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
@@ -210,7 +212,7 @@ mv_nextpage=@@MV_PAGE@@
 
 [loop more=1 search="
 		fi=transactions
-		ml=100
+		ml=__UI_SZ_LIST_ORDER__
 		md=1
 		st=db
 		co=yes
@@ -232,16 +234,10 @@ mv_nextpage=@@MV_PAGE@@
 </pre>
 [more-list]<BR>Orders [matches] of [value mv_search_match_count]: [more][/more-list]
 [/loop]
-<B>Total: [currency]
-	[query
-		sql="select sum(total_cost) from transactions where archived [scratch archive_sense] 1"
-		list=1
-][sql-code][/query]
-[/currency]</B>
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 

@@ -1,6 +1,6 @@
 # Static.pm - MiniVend static page routines
 # 
-# $Id: Static.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Static.pm,v 1.2 2000-07-11 20:05:24 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -354,8 +354,7 @@ EOF
 		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
 
 	$Vend::Session->{pageCount} = -1;
-	my $save = $^W;
-	$^W = 0;
+	local($^W) = 0;
 
 	my $static;
 
@@ -449,8 +448,6 @@ EOF
 		}
 		last STATICDEPTH if $num >= scalar keys %Vend::Found_scan;
 	}
-
-	$^W = $save;
 }
 
 1;

@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -488,10 +488,28 @@ sub rotate {
 		$options = {Motion => 'unsave'};
 	}
 
-	my $dir = $options->{Directory} || '.';
+
+	my $dir = '.';
+
+	if( $options->{Directory} ) {
+		$dir = $options->{Directory};
+	}
+
+	if ($base =~ s:(.*)/:: ) {
+		$dir .= "/$1";
+	}
+
 	my $motion = $options->{Motion} || 'save';
 
+::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
+
 	$dir =~ s:/+$::;
+
+	if("\L$motion" eq 'save' and ! -f "$dir/$base+") {
+			require File::Copy;
+			File::Copy::copy("$dir/$base", "$dir/$base+")
+				or die "copy $dir/$base to $dir/$base+: $!\n";
+	}
 
 	opendir(forwardDIR, $dir) || die "opendir $dir: $!\n";
 	my @files;
@@ -501,7 +519,6 @@ sub rotate {
 	my $add = '-';
 
 	if("\L$motion" eq 'save') {
-		return 0 unless -f "$dir/$base+";
 		@backward = grep s:^($base\++):$dir/$1:, @files;
 		@forward = grep s:^($base-+):$dir/$1:, @files;
 	}
@@ -517,7 +534,7 @@ sub rotate {
 
 	$base = "$dir/$base";
 
-#::logGlobal( "rotate $base with options dir=$dir motion=$motion from >> " . Data::Dumper::Dumper($options));
+::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	my $base_exists = -f $base;
 	push @forward, $base if $base_exists;

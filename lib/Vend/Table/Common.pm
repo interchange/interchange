@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for MiniVend Databases
 #
-# $Id: Common.pm,v 1.4 2000-07-05 19:05:41 heins Exp $
+# $Id: Common.pm,v 1.5 2000-07-11 20:05:24 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -90,7 +90,7 @@ sub create_columns {
 	}
     my $i;
 	my $alias = $config->{FIELD_ALIAS} || {};
-::logDebug("field_alias: " . ::uneval($alias)) if $config->{FIELD_ALIAS};
+#::logDebug("field_alias: " . ::uneval($alias)) if $config->{FIELD_ALIAS};
     for ($i = 0;  $i < @$columns;  ++$i) {
         $column_index->{$columns->[$i]} = $i;
 		defined $alias->{$columns->[$i]}

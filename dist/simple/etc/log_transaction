@@ -65,6 +65,8 @@ order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
 order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
 order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
 status: pending
+deleted: 
+archived: 
 affiliate: [data session source]
 campaign: [value campaign]
 parent: __PARENT__

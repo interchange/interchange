@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.9 2000-07-05 19:05:41 heins Exp $
+# $Id: Config.pm,v 1.10 2000-07-11 20:05:23 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 my %CDname;
 
@@ -2261,7 +2261,7 @@ sub parse_routeconfig {
 	shift @n;
 	my $i;
 	while( ($k, undef, @f ) = $db->each_record) {
-::logDebug("Got route key=$k f=@f");
+#::logDebug("Got route key=$k f=@f");
 		for ($i = 0; $i < @f; $i++) {
 			next unless length($f[$i]);
 			$C->{Route_repository}{$k}{$n[$i]} = $f[$i];

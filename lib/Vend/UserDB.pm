@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.3 2000-06-28 07:15:54 heins Exp $
+# $Id: UserDB.pm,v 1.4 2000-07-11 20:05:23 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -939,7 +939,7 @@ sub login {
 	if($@) {
 		if(defined $self) {
 			$self->{ERROR} = $@;
-::logDebug( "Vend::UserDB error: %s\n", $@ );
+#::logDebug( "Vend::UserDB error: %s\n", $@ );
 		}
 		else {
 			::logError( "Vend::UserDB error: %s\n", $@ );

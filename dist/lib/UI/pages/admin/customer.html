@@ -96,7 +96,7 @@
 									);
 		}
 		else {
-			$Scratch->{message} = "[L]No next customer.[/L]";
+			$Scratch->{message} = "No next customer.";
 		}
 	}
 	return;
@@ -140,16 +140,14 @@
 
 <input type=hidden name=inactive value="false">
 
-<p>
-&nbsp;
-<table cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [if value showinactive]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
 <input type=submit name="showactive" value="Show active customers">
 [set active_sense]=[/set]
 </td>
@@ -157,7 +155,7 @@
 [else]
 [value name=showinactive set=""]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
 <input type=submit name="showinactive" value="Show inactive customers">
 [set active_sense]!=[/set]
 </td>
@@ -166,7 +164,7 @@
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
@@ -177,17 +175,31 @@
 <input type=submit name="viewcustomer" value="View customer"><br>
 
 [if value showinactive]
-[if-mm advanced userdb=u]
-<input type=submit name="activate" value="Activate customer">
-[/if-mm]
+	[if-mm advanced userdb=u]
+		<input type=submit name="activate" value="Activate customer"><br>
+	[/if-mm]
 [else]
-[if-mm advanced userdb=a]
-<input type=submit name="deactivate" value="Deactivate customer">
-[/if-mm]
+	[if-mm advanced userdb=a]
+		<input type=submit name="deactivate" value="Deactivate customer"><br>
+	[/if-mm]
 [/else]
 [/if]
 
-<br>
+[if-mm advanced userdb=i]
+
+	[set Enter new order]
+	[calc]
+		$CGI->{customer} =~ s/^[\0\s]+//s;
+		$CGI->{customer} =~ s/\0.*//s;
+		return;
+	[/calc]
+	mv_nextpage=__UI_BASE__/entry
+	mv_todo=return
+	[/set]
+
+	<input type=submit name=mv_click value="Enter new order"><br>
+[/if-mm]
+
 <br>
 
 [if-mm advanced userdb=d]
@@ -216,19 +228,19 @@ mv_nextpage=@@MV_PAGE@@
 
 [loop more=1 search="
 		fi=userdb
-		ml=100
+		ml=__UI_SZ_LIST_CUSTOMER__
 		md=1
 		st=db
 		co=yes
 		sf=inactive
 		se=1
 		op=[scratch active_sense]
-		tf=lname
+		tf=username
 		[scratch start_at][set start_at][/set]
 		rf=username,lname,fname
 "]
 <pre>
-<select name=customer size=10 MULTIPLE>
+<select name=customer size=10>
 [list]<OPTION VALUE="[loop-code]">[loop-code]  [loop-param lname]  [loop-param fname]</OPTION>
 [/list]
 </select>
@@ -238,7 +250,7 @@ mv_nextpage=@@MV_PAGE@@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 

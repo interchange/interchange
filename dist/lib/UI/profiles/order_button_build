@@ -49,6 +49,9 @@ EOF
 		if(length $CGI->{item_group}) {
 			push @parms, "mv_order_group=$CGI->{item_group}";
 		}
+		if(length $CGI->{affiliate}) {
+			push @parms, "mv_pc=$CGI->{affiliate}";
+		}
 		for my $mod (@{$Config->{UseModifier}}) {
 			if($CGI->{"item_modifier_$mod"}) {
 				@ones = split /\s*,\s*/, $CGI->{"item_modifier_$mod"};

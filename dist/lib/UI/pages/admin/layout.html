@@ -1,5 +1,5 @@
 [set page_title]Layout Editor[/set]
-[set page_banner]Layout Editor: Organize your site into sections[/set]
+[set page_banner]Layout Editor: Organize your site into categories[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]admin/icon_pages.gif[/set]
 
@@ -8,60 +8,100 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <FORM METHOD=GET ACTION="[area @@MV_PAGE@@]" name="layoutform">
+<input type=hidden name=mv_action value=return>
 
-<table cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
+
+[if cgi newarea]
+[value name=area set="[fcounter etc/area.recordnumber]" hide=1]
+[data table=area column=name key="[value area]" value="[cgi newarea]"]
+[elsif cgi newcat]
+[value name=cat set="[fcounter etc/cat.recordnumber]" hide=1]
+[data table=cat column=name key="[value cat]" value="[cgi newarea]"]
+[data table=cat column=area key="[value cat]" value="[data table=area col=selector key='[value area]']"]
+[/elsif]
+[/if]
 
 <tr>
-<td colspan=[if cgi cat]3[else]1[/else][/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=[if value cat]3[elsif value area]2[/elsif][else]1[/else][/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td valign=top bgcolor="__UI_C_INTBLOCK__">
 
 <script language="javascript">
 <!--
-   document.write("Edit section:<br>");
+   document.write("Edit area:<br>");
 // -->
 </script>
 <noscript>
 <input type="submit" value="Edit section:"><br>
 </noscript>
 
-<select name="cat" size=10 onchange="document.layoutform.submit()">
+<select name="area" size=10 [if !value area]onchange="document.layoutform.submit()"[/if]>
 [loop   search="
-        fi=cat
-		st=db
-		ra=yes
-		rf=code,name "]
-<option [if type=cgi term=cat op=eq compare=[loop-code]]selected[/if]
-  value=[loop-code]>
-[loop-param name]
+			fi=area
+			st=db
+			ra=yes
+			rf=code,name
+		"
+		option=area ]
+<option value="[loop-code]"> [loop-param name]
 [/loop]
 </select>
 <br>
 
-<input type=submit value="Section Properties">
+<input type=submit value="Area Properties">
 
 <br>
 
-[if cgi cat]
-[seti win_href][href form="cur_cat=[cgi cat]" href="__UI_BASE__/layout_subcat.html" ][/seti]
-
-<input onclick="window.open('[scratch win_href]', 'create_window', 
-			    'resizable=1,width=240,height=120')" 
-	type=submit value="Create subsection">
-[/if]
-
-<input onclick="window.open('layout_create.html', 'create_window', 
+<input onclick="window.open('[area __UI_BASE__/layout_create.html]', 'create_window', 
 			    'resizable=1,width=240,height=120')" 
 	type="submit" value="Create new section">
 
 
 </td>
 
-[if cgi cat]
 
-<td bgcolor="__UI_C_TOPBLOCKBAR__" width=1><img src="admin/cleardot.gif" width=1></td>
+[if value area]
+<td valign=top bgcolor="__UI_C_INTBLOCK__">
+
+<script language="javascript">
+<!--
+   document.write("Edit category:<br>");
+// -->
+</script>
+<noscript>
+<input type="submit" value="Edit category:"><br>
+</noscript>
+
+<select name="cat" size=10 [if !value cat]onchange="document.layoutform.submit()"[/if]>
+[loop   search="
+			fi=cat
+			st=db
+			ml=1000
+			sf=area
+			se=[data table=area col=selector key='[value area]']
+			rf=code,name
+		option=cat
+			"]
+<option value="[loop-code]"> [loop-param name]
+[/loop]
+</select>
+<br>
+
+<input type=submit value="Category Properties"><br>
+</td>
+[seti win_href][href form="cur_area=[value area]" href="__UI_BASE__/layout_subcat.html" ][/seti]
+
+<input onclick="window.open('[scratch win_href]', 'create_window', 
+			    'resizable=1,width=240,height=120')" 
+	type=submit value="Create category">
+
+[/if]
+
+[if value cat]
+[or value area]
 
 <td bgcolor="__UI_C_INTBLOCK__">
 
@@ -71,31 +111,31 @@
 
 <td>
 
-[seti cat_selector][data table=cat column=selector key="[cgi cat]"][/seti]
-[seti cat_name][data table=cat column=name key="[cgi cat]"][/seti]
-[seti cat_page][data table=cat column=page key="[cgi cat]"][/seti]
-[seti cat_url][data table=cat column=url key="[cgi cat]"][/seti]
+[seti cat_selector][data table=cat column=selector key="[value cat]"][/seti]
+[seti cat_name][data table=cat column=name key="[value cat]"][/seti]
+[seti cat_page][data table=cat column=page key="[value cat]"][/seti]
+[seti cat_url][data table=cat column=url key="[value cat]"][/seti]
 
 [perl]
 
- if($Tag->scratch('cat_url')) {
+ if($Scratch->{cat_url}) {
 
-    $Tag->set('cat_type', 'url');
+    $Scratch->{cat_type} = 'url';
 
  # We need a better way to differentiate between product pages
  # and other kinds of local pages
- } elsif($Tag->scratch('cat_page')) {
+ } elsif($Tag->scratch(cat_page)) {
 
-    $Tag->set('cat_type', 'static');
+    $Scratch->{cat_type} = 'static';
 
  } else {
 
-    $Tag->set('cat_type', 'items');
+    $Scratch->{cat_type} = 'items';
  }
-
+ return;
 [/perl]
 
-Type of section:
+Type of category:
 <select name="cat_type">
 <option value="items" [if scratch cat_type eq items]selected[/if]>
   Product page
@@ -116,7 +156,10 @@ URL: <input name="cat_url" size=20>
 [if scratch cat_type eq static]
 
 <!-- should list files in catalogs/[...]/pages/, or something -->
-Page name: <input size=20>
+Page name: 
+<select NAME=cat_url>
+[list-pages options=1]
+</select>
 
 [/if]
 
@@ -132,10 +175,10 @@ Add an item to "[scratch cat_name]":<br>
 [loop search="
         fi=products
 		ra=yes
-		rf=name,sku
+		rf=description,sku
 		ml=1000
 "]
-<option value="[loop-param sku]">[loop-param name]
+<option value="[loop-param sku]">[loop-param description]
 [/loop]
 </select>
 <input type="submit" value="Add">
@@ -143,17 +186,17 @@ Add an item to "[scratch cat_name]":<br>
 
 <hr>
 
-Items in section "[scratch cat_name]":<br>
+Items in category "[scratch cat_name]":<br>
 
 <select name="existing_items" size=10>
 [loop search="
         fi=products
-		sf=Category
+		sf=category
 		se=[scratch cat_selector]
         st=db
 		em=yes
-        rf=name,sku
-"]<option value="[loop-param sku]">[loop-param name]
+        rf=description,sku
+"]<option value="[loop-param sku]">[loop-param description]
 [/loop]
 </select>
 
@@ -164,7 +207,7 @@ Items in section "[scratch cat_name]":<br>
 <td>
 
 
-<input type=submit value="Remove item from section">
+<input type=submit value="Remove item from category">
 <input type=submit value="Edit item">
 
 <br>
@@ -182,7 +225,7 @@ Items in section "[scratch cat_name]":<br>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [else]

@@ -79,7 +79,7 @@ return;
 	@areas = grep /\S/, split /[\s,\0]+/, $Values->{mv_data_fields};
 	return scalar(@areas) + 1;
 [/calc]"
-	bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=3></td>
+	bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=3></td>
 </tr>
 
 	[search-list]
@@ -107,29 +107,29 @@ return;
 	[/more-list]
 [/search-region]
 <BR CLEAR=LEFT>
-<INPUT TYPE=submit NAME=mv_click VALUE=[L]Submit[/L]>&nbsp;&nbsp;&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE=Submit>&nbsp;&nbsp;&nbsp;
 [if !value ui_too_large]
 <INPUT TYPE=checkbox
 		NAME=ui_auto_export CHECKED VALUE="[value mv_data_table]">
-	[L]Auto-export[/L]
+	Auto-export
 [/if]
 </FORM>
 <FORM METHOD=POST ACTION="[process]">
 <INPUT TYPE=hidden NAME="mv_nextpage" VALUE="__UI_BASE__/flex_editor">
-[L]Edit/Insert row[/L]:
+Edit/Insert row:
 <INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
 <INPUT TYPE=TEXT SIZE=16 NAME="item_id" VALUE="new">
-<INPUT TYPE=submit VALUE="[L]Edit[/L]">
+<INPUT TYPE=submit VALUE="Edit">
 </FORM>
 <P>
-[title-bar 400 2][L]Limit fields to display (changes above will not be made)[/L][/title-bar]
+[title-bar 400 2]Limit fields to display (changes above will not be made)[/title-bar]
 [seti ui_data_fields_name]spread:[value mv_data_table]:ui_data_fields[/seti]
 <FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <TABLE BORDER=1>
 <TR>
-<TD VALIGN=TOP ALIGN=RIGHT>[L]Column width[/L]</TD>
+<TD VALIGN=TOP ALIGN=RIGHT>Column width</TD>
 
 <TD VALIGN=TOP>
 <SELECT NAME="ui_spread_size">
@@ -141,8 +141,8 @@ return;
 </TD>
 
 <TD ROWSPAN=3 VALIGN=TOP>
-<INPUT TYPE=submit VALUE="[L]Change and Limit[/L]"><BR>
-<INPUT TYPE=submit name=mv_click VALUE="[L]Display All Fields[/L]"><BR>
+<INPUT TYPE=submit VALUE="Change and Limit"><BR>
+<INPUT TYPE=submit name=mv_click VALUE="Display All Fields"><BR>
 [set Display All Fields][scratch ui_data_fields_name]=
 mv_todo=return
 mv_nextpage=@@MV_PAGE@@
@@ -169,11 +169,11 @@ mv_nextpage=@@MV_PAGE@@
 </TR>
 
 <TR>
-<TD VALIGN=TOP ALIGN=RIGH>[L]Decode HTML entities[/L]</TD>
+<TD VALIGN=TOP ALIGN=RIGH>Decode HTML entities</TD>
 <TD VALIGN=TOP>
 <SELECT NAME=mv_data_decode>
-<OPTION VALUE="0">[L]No[/L]
-<OPTION VALUE="1" [selected mv_data_decode 1]>[L]Yes[/L]
+<OPTION VALUE="0">No
+<OPTION VALUE="1" [selected mv_data_decode 1]>Yes
 </SELECT>
 </TD>
 </TR>

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.10 2000-06-28 07:15:54 heins Exp $
+# $Id: Interpolate.pm,v 1.11 2000-07-11 20:05:23 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 @EXPORT = qw (
 
@@ -2012,6 +2012,7 @@ sub tag_value_extended {
 				$CGI::file{$var} =~ s/\n/$replace/g;
 			}
 		}
+#::logDebug(">$file \$CGI::file{$var}" . ::uneval($opt)); 
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
 			and return $opt->{yes} || '';
 		return $opt->{'no'} || '';

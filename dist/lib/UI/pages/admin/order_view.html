@@ -18,9 +18,7 @@
 [update values]
 [loop list="[value-extended order]"]
 
-<p>
-&nbsp;
-<table width=100% cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <tr>
 <td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
 </tr>
@@ -205,6 +203,10 @@
 [query st=db sql="select * from orderline where order_number = '[loop-data transactions order_number]'" list=1]
 <tr><td width=50 align=center bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
+[calc]
+	$total_weight += ([field col=weight key="[sql-param sku]"] + 0 || 0) * [item-quantity];
+	return;
+[/calc]
 [sql-data orderline quantity]
 </font></td>
 
@@ -215,9 +217,9 @@
 <BR>
 Size: [sql-data orderline size]
 [/if-sql-data]
-[if-sql-data orderline size]
+[if-sql-data orderline color]
 <BR>
-Color: [sql-data orderline size]
+Color: [sql-data orderline color]
 [/if-sql-data]
 
 [if-sql-data orderline options]
@@ -234,7 +236,7 @@ Options: [sql-data orderline options]
 
 <td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
-[sql-data orderline price]
+[currency][sql-data orderline price][/currency]
 </font></td>
 
 <td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
@@ -244,7 +246,7 @@ Options: [sql-data orderline options]
 
 <td width=80 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
-[sql-data orderline subtotal]
+[currency][sql-data orderline subtotal][/currency]
 
 </font></td>
 </tr>
@@ -257,7 +259,7 @@ Options: [sql-data orderline options]
 <font size=2>Product Total:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>[loop-data transactions subtotal]</font>
+<font size=2>[currency][loop-data transactions subtotal][/currency]</font>
 </td>
 </tr>
 
@@ -268,7 +270,7 @@ Options: [sql-data orderline options]
 <font size=2>Tax:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>[loop-data transactions salestax]</font>
+<font size=2>[currency][loop-data transactions salestax][/currency]</font>
 </td>
 </tr>
 
@@ -280,7 +282,7 @@ Options: [sql-data orderline options]
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
-[loop-data transactions shipping]</font>
+[currency][loop-data transactions shipping][/currency]</font>
 </td>
 </tr>
 
@@ -291,7 +293,7 @@ Options: [sql-data orderline options]
 <font size=3><b>Grand total:</b></font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=3><b>[loop-data transactions total_cost]<br></b></font>
+<font size=3><b>[currency][loop-data transactions total_cost][/currency]<br></b></font>
 </td>
 </tr>
 
@@ -304,7 +306,7 @@ Options: [sql-data orderline options]
 <font size=2>Total weight:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>5</font>
+<font size=2>[calc] $total_weight [/calc]</font>
 </td>
 </tr>
 

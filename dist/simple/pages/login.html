@@ -22,7 +22,8 @@ If you have an account with us, please enter your user name and password. (test/
     <FORM ACTION="[process secure=1]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-	<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__ORDER_STYLE__/checkout">
+	<INPUT TYPE=hidden NAME=mv_successpage VALUE="[cgi mv_successpage]">
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][scratch mv_successpage][or]index[/either]">
 
     <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH=80%>
     <TR><TD ALIGN=RIGHT>Username</TD>
@@ -34,7 +35,7 @@ If you have an account with us, please enter your user name and password. (test/
         <INPUT TYPE=submit VALUE="Log in"> &nbsp;&nbsp;
         </TD></TR>
     <TR><TD ALIGN=RIGHT>&nbsp;</TD>
-        <TD ALIGN=RIGHT><INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1 CHECKED> <I>Log me in automatically</I> </TD>
+        <TD ALIGN=RIGHT><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1> <I>Log me in automatically</I> </TD>
     </TABLE>
 
     </FORM>

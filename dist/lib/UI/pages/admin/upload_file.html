@@ -1,0 +1,79 @@
+[set page_title]Upload File[/set]
+[set page_banner]Upload File[/set]
+[set page_perm]files[/set]
+[set icon_name]admin/icon_config.gif[/set]
+
+[if-mm function="!files" name="[data session arg]"]
+[seti ui_error]Not authorized to upload file [data session arg].[/seti]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+@@UI_STD_HEAD@@
+
+<!-- BEGIN REAL STUFF -->
+
+<FORM ACTION="[process-target]" METHOD=POST ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_todo VALUE="return">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/do_upload">
+
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__>
+	[if session arg]
+	Uploading file <b>[data session arg]</B>
+	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
+	[else]
+	<B>File to upload</B>
+		<BLOCKQUOTE>
+		<INPUT NAME=ui_upload_fn SIZE=40>
+		</BLOCKQUOTE>
+	[/else]
+	[/if]
+
+</td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__>
+<B>Local file</B><BR>
+	<BLOCKQUOTE>
+	<INPUT TYPE=file NAME="ui_upload_file" SIZE=40>
+	</BLOCKQUOTE>
+<P>
+<B>Upload mode</B>
+	<BLOCKQUOTE>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;ASCII<BR>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;Binary
+	</BLOCKQUOTE>
+<P>
+<B>Backup mode</B>
+	<BLOCKQUOTE>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;Back up<BR>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=0>&nbsp;NO backup
+	</BLOCKQUOTE>
+<P>
+<INPUT TYPE=submit VALUE="Upload">
+
+</FORM>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+<!-- END REAL STUFF -->
+
+@@UI_STD_FOOTER@@
+

@@ -19,9 +19,7 @@
 [update values]
 [loop list="[value-extended customer]"]
 
-<p>
-&nbsp;
-<table width=100% cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <tr>
 <td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
 </tr>
@@ -164,32 +162,30 @@
 </td></tr>
 
 <tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<pre> </pre>
-</td>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
 </tr>
 
 <tr>
-<td>
-	Order number
+<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Order number</B>
 </td>
-<td>
-	Order date
+<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Order date</B>
 </td>
-<td>
-	Tax
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<B>Tax</B>
 </td>
-<td>
-	Shipping
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<B>Shipping</B>
 </td>
-<td>
-	Total cost
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<B>Total cost</B>
 </td>
-<td>
-	Status
+<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Status</B>
 </td>
 </tr>
-[query  list=1
+[query list=1
 		table=transactions 
 		sql="select
 			  order_number, order_date, salestax, shipping, total_cost, status
@@ -202,7 +198,7 @@
 <td>
 	<A HREF="[area __UI_BASE__/order_view [sql-code]]"><U>[sql-code]</U></A>
 </td>
-<td align=right>
+<td>
 	[sql-pos 1]
 </td>
 <td align=right>
@@ -228,10 +224,7 @@
 			"]"><U>[sql-pos 5]</U></A>
 </td>
 </tr>
-[more-list]<TR><TD COLSPAN=6 ALIGN=CENTER>[more]</TD></TR> [/more-list]
 [/query]
-<tr>
-<td>
 <tr>
 <td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
 </tr>
@@ -251,7 +244,13 @@ viewnext=
 viewcustomer=
 [/set]
 <input type=submit name=mv_click value="Return">
-<input type=submit name="viewcustomer" value="View next customer">
+
+[set Enter order]
+mv_nextpage=__UI_BASE__/entry
+mv_todo=return
+[/set] 
+
+<input type=submit name="mv_click" value="Enter order">
 
 [if-mm advanced userdb=e]
 [if-loop-data userdb inactive]

@@ -22,7 +22,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 	for(@inst) {
 		s/"/&quot;/g;
 		$out .= <<EOF;
-<INPUT TYPE=hidden NAME=ui_return_to   VALUE="$_">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="$_">
 EOF
 	}
 	return $out;
@@ -37,10 +37,10 @@ EOF
 [/else]
 [/if-key-exists]
 
-<table cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [seti extra_tables]
@@ -116,7 +116,7 @@ EOF
 									});
 		$Document->write(<<EOF) if $break{$col};
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 		$Document->write(<<EOF);
@@ -134,7 +134,7 @@ EOF
 [/mvasp]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -5,91 +5,90 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="page" method="post">
+<form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_action value=back>
 
-<table cellpadding=3 cellspacing=0>
+[if scratch ui_error]
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__" SIZE=+1>
+[scratch ui_error][set ui_error][/set]
+</FONT>
+</BLOCKQUOTE>
+[/if]
+
+<table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
-<input type="submit" name="show_create_cmd" value="Create new page">
+[set Create new page]
+[if !cgi ui_page]
+mv_nextpage=@@MV_PAGE@@
+[set ui_error]Need to select a file name.[/set]
+mv_todo=return
+[else]
+mv_nextpage=__UI_BASE__/page_edit
+mv_todo=return
+[/else]
+[/if]
+[/set]
+
+[set Preview template]
+mv_nextpage=__UI_BASE__/page_preview
+mv_todo=return
+[/set]
+
+<input type="submit" name="mv_click" value="Create new page" onClick="this.form.target='_self'"><BR>
+<input type="submit" name="mv_click" value="Preview template" onClick="this.form.target='_blank'">
 </td>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
 &nbsp;
 
-<select name="type_id" size=1>
-<option value=0> Please select a type
-<option value="1000">Content
-
-<option value="1001">Product
+<select name="ui_template" size=1>
+<option value=> Please select a type
+[calc]
+	@files = $Tag->list_glob('templates/*');
+	for(@files) {
+		my $name = $_;
+		$data = $Tag->file($_);
+		$name =~ s:.*/::;
+		my $ref = {};
+		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]}s;
+		my $structure = $1 || "ui_template_description: Unknown $name";
+		my @lines = grep /\S/, split /\n/, $structure;
+		for(@lines) {
+			my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
+			#Log ("found el=$el el_item=$el_item el_data=$el_data");
+			if($el_data) {
+				$ref->{$el} = { $el_item, $el_data };
+			}
+			else {
+				$ref->{$el} = $el_item;
+			}
+		}
+		#Log("ref is " . $Tag->uneval( { ref => $ref } ));
+		push @out, qq{<OPTION VALUE="$_">$ref->{ui_template_description}};
+	}
+	return join "\n", @out;
+[/calc]
 </select>
-
+File name: <INPUT NAME=ui_page>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-<input type="submit" name="show_edit_cmd" value="Edit page">
-<br>
-<input type="submit" name="do_delete_cmd" value="Delete page" 
- onClick="return confirm('Are you sure you want to delete this page?')">
-</td>
-
-<td bgcolor="__UI_C_INTBLOCK__">
-<select name="page_id" size=10>
-<option value="1001"> About Barry's
-
-  <option value="1006"> Bikes
-
-  <option value="1015"> Brakes
-
-  <option value="1017"> Cassettes
-
-  <option value="1002"> Contact Us
-
-  <option value="1018"> Cranks
-
-  <option value="1003"> Customer Service
-
-  <option value="1014"> Fiction
-
-  <option value="1007"> Forks
-
-  <option value="1000"> Home Page
-
-  <option value="1012"> Kids' Books
-
-  <option value="1010"> Misc. Bike Parts
-
-  <option value="1011"> Misc. Books
-
-  <option value="1013"> Non-fiction
-
-  <option value="1020"> Pedals
-
-  <option value="1004"> Saddles
-
-  <option value="1009"> Sandals
-
-  <option value="1008"> Shoes
-
-  <option value="1016"> Stems
-
-  <option value="1005"> Tires
-
-  <option value="1019"> Wheelsets
-</select>
-
+<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+[file-navigator mask="pages" start_open="pages" edit_only=1]
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

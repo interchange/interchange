@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.9 2000-06-26 08:53:57 heins Exp $
+# $Id: minivend.PL,v 1.10 2000-07-11 20:05:24 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -123,7 +123,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.5.1';
+	$VERSION = '4.5.2';
 }
 
 
@@ -1573,7 +1573,8 @@ EOF
     }
 
 	$Vend::FinalPath =~ s:^/+::;
-	$Vend::FinalPath =~ s/\.html?$//;
+	$Vend::FinalPath =~ s/(\.html?)$//;
+	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath");
 
     @path = split('/', $Vend::FinalPath, 2);

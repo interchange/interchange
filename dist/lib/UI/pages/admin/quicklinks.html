@@ -12,13 +12,19 @@ Quicklinks
 </style>
 </head>
 
-<body bgcolor="#ffffff" link="#0000ee" alink="#0000ee" vlink="#0000ee">
-<table bgcolor="#000000" border=0 width=110 cellpadding=6 cellspacing=1>
+<body bgcolor="__UI_P_BG__" link="__UI_P_LINK__" alink="__UI_P_ALINK__" vlink="__UI_P_VLINK__">
+
+<div valign=middle>
+<center>
+<table border=0 width=120 cellpadding=1 cellspacing=0 bgcolor="__UI_C_TOPBLOCKBAR__">
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td>
+
+<table border=0 width=100% cellpadding=1 cellspacing=0>
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__" nowrap>
 
 <font size=2 face="Verdana,Arial,Helvetica,sans-serif">
-
 
 [seti win][data session arg][/seti]
 
@@ -49,12 +55,6 @@ Customers</a><br>
 Items</a><br>
 [/if-mm]
 
-[if-mm advanced layout]
-&nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/layout]">
-Site Layout</a><br>
-[/if-mm]
-
 [if-mm advanced affilate]
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/affiliates]">
@@ -66,6 +66,19 @@ Affiliates</a><br>
 <hr noshade size=1>
 <b>Site Design:</b>
 <br><br>
+
+[if-mm advanced layout]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/layout]">
+Site Layout</a><br>
+[/if-mm]
+
+
+[if-mm advanced layout]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/page]">
+Page Edit</a><br>
+[/if-mm]
 
 [if-mm advanced searchbuilder]
 &nbsp;&nbsp;&nbsp;
@@ -104,6 +117,7 @@ Tax</a><br>
 [/if-mm]
 
 [if-mm advanced shipping]
+<P>
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/ship]">
 Shipping</a><br>
@@ -117,6 +131,13 @@ Payment</a><br>
 
 <br>
 
+
+[if-mm files]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/genupload]">
+File transfer</a><br>
+<p>
+[/if-mm]
 
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/import_table]">
@@ -138,9 +159,23 @@ Administrators</a><br>
 [if-mm advanced group]
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/group]">
-Administrator Groups</a><br>
+<<<<<<< quicklinks.html
+Groups</a><br>
 [/if-mm]
 
+[if-mm advanced perm]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/access_permissions]">
+Permissions</a><br>
+=======
+Administrator Groups</a><br>
+>>>>>>> 1.13
+[/if-mm]
+
+<<<<<<< quicklinks.html
+<br>
+=======
+>>>>>>> 1.13
 
 [if-mm advanced env_vars]
 &nbsp;&nbsp;&nbsp;
@@ -226,9 +261,14 @@ Matrix</a>
 
 
 [/comment]
-
-</font>
+</FONT>
+                </TD>
+        </TR>
+</TABLE>
 </td></tr></table>
+</center>
+</div>
+<div align="center"><a href="javascript:self.window.close()">[close]</a></div>
+</BODY>
+</HTML>
 
-</body>
-</html>

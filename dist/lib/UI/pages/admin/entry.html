@@ -28,7 +28,7 @@
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE="refresh">
 <INPUT TYPE=hidden NAME=mv_search_page VALUE="__UI_BASE__/entry_select">
-<TABLE WIDTH="__UI_OVERALL_WIDTH__" BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<table __UI_T_PROPERTIES__>
 	<COL WIDTH="10%">
 	<COL WIDTH="1%">
 	<COL WIDTH="40%">
@@ -444,8 +444,8 @@ mv_todo=return
 
 <P>  
 <TABLE><TR><TD VALIGN=TOP>
-Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
-<INPUT TYPE=text NAME=mv_credit_card_number SIZE=19 VALUE="4111 1111 1111 1111">
+Card Number<BR>
+<INPUT TYPE=text NAME=mv_credit_card_number SIZE=19 VALUE="">
 [if variable MV_PAYMENT_MODE =~ /minivend_test/]
 	<BR>MiniVend test should yield:
 		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success CHECKED>Success
@@ -521,7 +521,7 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
 [/if]
 
-<TABLE WIDTH=__UI_OVERALL_WIDTH__><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
+<TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
 <FONT SIZE="+2" COLOR="__UI_C_TITLEBARTXT__">Billing Address (if different)</FONT>
 </TD></TR></TABLE>
 

@@ -168,18 +168,18 @@ EOF
    
         ][/seti]
 	[if scratch result]
-	[L]Export of[/L] [L]table[/L] <I><B>[cgi mv_data_table]</B></I> [L]successful[/L]<P>
+	Export of table <I><B>[cgi mv_data_table]</B></I> successful<P>
 	<P>
 		<UL>
 		[quick-table]
-		[L]Table name[/L]: [value mv_data_table]
-		[L]File name[/L]: [default mv_data_file]
-		[L]File type[/L]: [default mv_data_export_type][if value ui_sort_field]
-		[L]Sorting[/L]: [value ui_sort_field]:[value ui_sort_option][/if]
+		Table name: [value mv_data_table]
+		File name: [default mv_data_file]
+		File type: [default mv_data_export_type][if value ui_sort_field]
+		Sorting: [value ui_sort_field]:[value ui_sort_option][/if]
 		[/quick-table]
 	[else]
 	<FONT SIZE=5 COLOR=RED>
-		[L]Database export error[/L]: [data session last_error]
+		Database export error: [data session last_error]
 	</FONT>
 	[/else]
 	[/if]
@@ -192,9 +192,9 @@ EOF
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genconfig">
 
 
-<table cellpadding=3 cellspacing=0>
+<table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -217,25 +217,25 @@ Table to export
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
-[L]Export as[/L]<BR>
+Export as<BR>
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
         <SELECT NAME="mv_data_export_type">
-            <OPTION VALUE=""> [L]Current type[/L]
-            <OPTION VALUE="DEFAULT"> [L]System default[/L]
-            <OPTION VALUE="TAB"> [L]TAB delimited[/L]
+            <OPTION VALUE=""> Current type
+            <OPTION VALUE="DEFAULT"> System default
+            <OPTION VALUE="TAB"> TAB delimited
             <OPTION VALUE="CSV"> CSV
-            <OPTION VALUE="PIPE"> [L]PIPE separated[/L]
+            <OPTION VALUE="PIPE"> PIPE separated
             <OPTION VALUE="%%"> %%/%%%
-            <OPTION VALUE="LINE"> [L]Line mode[/L]
+            <OPTION VALUE="LINE"> Line mode
         </SELECT>
 </td>
 </tr>
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
-	[L]Export to file[/L]<br>
-	<small><I>([L]leave empty for default file[/L])</I></small>
+	Export to file<br>
+	<small><I>(leave empty for default file)</I></small>
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
  <INPUT NAME=mv_data_file SIZE=40>
@@ -244,7 +244,7 @@ Table to export
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
-[L]Sort by column[/L]
+Sort by column
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 	<SELECT NAME=ui_sort_field>
@@ -260,7 +260,7 @@ Table to export
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
-	[L]Sort options[/L]<BR>
+	Sort options<BR>
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 	<SELECT NAME=ui_sort_option>
@@ -278,9 +278,9 @@ Table to export
 <td bgcolor="__UI_C_INTBLOCK__" colspan=2>
 
 <center>
-<INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]">
+<INPUT TYPE=submit NAME=mv_click VALUE="Export">
 </center>
-[set [L]Export[/L]]
+[set Export]
 ui_export_database=1
 [/set]
 
@@ -288,7 +288,7 @@ ui_export_database=1
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

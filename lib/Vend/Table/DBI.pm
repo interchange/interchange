@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.8 2000-07-05 19:05:41 heins Exp $
+# $Id: DBI.pm,v 1.9 2000-07-11 20:05:24 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 use strict;
 
@@ -493,7 +493,7 @@ sub field {
 		$column = $s->[$NAME][$idx];
 	}
 	my $query = "select $column from $s->[$TABLE] where $s->[$KEY] = $key";
-::logDebug("DBI field: key=$key column=$column query=$query");
+#::logDebug("DBI field: key=$key column=$column query=$query");
     my $sth;
 	eval {
 		$sth = $s->[$DBI]->prepare($query);

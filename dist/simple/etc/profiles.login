@@ -2,9 +2,9 @@
 __NAME__ Logout
 
 [if type=explicit compare="[userdb logout]"]
-mv_nextpage=[cgi mv_successpage]
+mv_nextpage=[either][cgi mv_successpage][or][cgi mv_nextpage][/either]
 [else]
-mv_nextpage=[cgi mv_failpage]
+mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
 [/else]
 [/if]
 

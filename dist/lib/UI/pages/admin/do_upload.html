@@ -1,0 +1,37 @@
+[set page_title]Page Upload Results</TITLE>
+[set help_name]upload.main</TITLE>
+
+[if-mm function="!files" name="[value ui_upload_fn]"]
+[seti ui_error] Not allowed to upload [value ui_upload_fn].[/seti]
+[bounce page=__UI_BASE__/error]
+[/if-mm]
+
+[if type=!explicit compare=|
+						[value-extended name='ui_upload_file' test=isfile]
+						|
+]
+[seti ui_error] No file sent.[/seti]
+[bounce page=__UI_BASE__/error]
+[/if]
+
+[if cgi ui_backup]
+[and type="!explicit" compare=|
+						[backup-file file='[value ui_upload_fn]' ]
+				|]
+[bounce page=__UI_BASE__/error]
+[/if]
+
+[if type=explicit compare=|
+					[value-extended
+							Yes=1
+							No=0
+							ascii="[value ui_upload_ascii]"
+							name=ui_upload_file
+							outfile="[value ui_upload_fn]"
+						]
+					|]
+[bounce page="[either][cgi ui_return_to][or]__UI_BASE__/genupload[/either]"]
+[else]
+[seti ui_error] Error writing file [value ui_upload_fn].[/seti]
+[bounce page=__UI_BASE__/error]
+[/else][/if]
