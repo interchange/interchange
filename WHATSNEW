@@ -9,6 +9,8 @@ Interchange 4.9.0 not yet released
 UI
 --
 
+* Display server hostname on the information page (genconfig).
+
 * Unused usertag component removed.
 
 ------------------------------------------------------------------------------
