@@ -786,6 +786,9 @@ Foundation
 
 * Set more reasonable default types for each SQL DB.
 
+* Use mv_form_profile instead of mv_order_profile on account page in
+  order to check user's input.
+
 Debian
 ------
 
