@@ -10,7 +10,7 @@ Database  products  KEY          sku
 Database  products  COLUMN_DEF   "sku=char(14) NOT NULL PRIMARY KEY"
 Database  products  COLUMN_DEF   "description=VARCHAR(128) NOT NULL"
 Database  products  COLUMN_DEF   "title=VARCHAR(128) DEFAULT '' NOT NULL, index(title)"
-Database  products  COLUMN_DEF   "related_cat=VARCHAR(128) DEFAULT '' NOT NULL, index(related_cat)"
+Database  products  COLUMN_DEF   "template_page=VARCHAR(64)"
 Database  products  COLUMN_DEF   "comment=TEXT"
 Database  products  COLUMN_DEF   "display=VARCHAR(128)"
 Database  products  COLUMN_DEF   "image=VARCHAR(64)"
