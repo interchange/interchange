@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.81 2002-07-06 07:13:01 mheins Exp $
+# $Id: Interpolate.pm,v 2.82 2002-07-07 04:02:27 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.81 $, 10);
+$VERSION = substr(q$Revision: 2.82 $, 10);
 
 @EXPORT = qw (
 
@@ -1549,19 +1549,23 @@ sub tag_profile {
 #::logDebug("doing profile $one");
 			next unless defined $Vend::Cfg->{$one};
 			my $string;
-			my $val;
+			my $val = $prof->{$one};
 			if( ! ref $Vend::Cfg->{$one} ) {
-				$val = $prof->{$one};
+				# Do nothing
 			}
-			elsif( ref($Vend::Cfg->{$one}) =~ /HASH/ ) {
+			elsif( ref($Vend::Cfg->{$one}) eq 'HASH') {
+				if( ref($val) ne 'HASH') {
 				$string = '{' .  $prof->{$one}	. '}'
 					unless	$prof->{$one} =~ /^{/
 					and		$prof->{$one} =~ /}\s*$/;
 			}
-			elsif( ref($Vend::Cfg->{$one}) =~ /ARRAY/ ) {
+			}
+			elsif( ref($Vend::Cfg->{$one}) eq 'ARRAY') {
+				if( ref($val) ne 'ARRAY') {
 				$string = '[' .  $prof->{$one}	. ']'
 					unless	$prof->{$one} =~ /^\[/
 					and		$prof->{$one} =~ /]\s*$/;
+			}
 			}
 			else {
 				::logError( "profile: cannot handle object of type %s.",
@@ -5605,7 +5609,7 @@ sub update {
 			$cart = $Vend::Items;
 		}
 		return if ! ref $cart;
-		Vend::Cart::toss_cart($cart);
+		Vend::Cart::toss_cart($cart, $opt->{name});
 	}
 	elsif ($func eq 'process') {
 		::do_process();
@@ -6378,6 +6382,9 @@ sub subtotal {
 		$save = $Vend::Items;
 		tag_cart($cart);
 	}
+
+	levies() unless $Vend::Levying;
+
 	my $discount = defined $Vend::Session->{discount};
     $subtotal = 0;
 	$tmp = 0;
@@ -6534,12 +6541,38 @@ sub tag_ups {
 	return $cost;
 }
 
+sub levy_sum {
+	my ($set, $levies, $repos) = @_;
+
+	$set    ||= $Vend::CurrentCart || 'main';
+	$levies ||= $Vend::Cfg->{Levies};
+	$repos  ||= $Vend::Cfg->{Levy_repository};
+
+	my $icart = $Vend::Session->{carts}{$set} || [];
+
+	my @sums;
+	for(@$icart) {
+		push @sums, @{$_}{sort keys %$_};
+	}
+	my $items;
+	for(@$levies) {
+		next unless $items = $repos->{$_}{check_status};
+		push @sums, @{$::Values}{ split /[\s,\0]/, $items };
+	}
+	return generate_key(@sums);
+}
+
 sub levies {
-	my($set, $opt) = @_;
+	my($recalc, $set, $opt) = @_;
+
 	my $levies;
-#::logDebug("Calling levies");
 	return unless $levies = $Vend::Cfg->{Levies};
+
+
+	$opt ||= {};
 	my $repos = $Vend::Cfg->{Levy_repository};
+#::logDebug("Calling levies, recalc=$recalc group=$opt->{group}");
+
 	if(! $repos) {
 		logOnce('error', "Levies set but no levies defined! No tax or shipping.");
 		return;
@@ -6549,6 +6582,20 @@ sub levies {
 	$set ||= 'main';
 
 	$Vend::Session->{levies} ||= {};
+	
+	my $lcheck = $Vend::Session->{latest_levy} ||= {};
+	$lcheck = $lcheck->{$set} ||= {};
+
+	if($Vend::LeviedOnce and ! $recalc and ! $opt->{group} and $lcheck->{sum}) {
+		my $newsum = levy_sum($set, $levies, $repos);
+#::logDebug("did levy check, new=$newsum old=$lcheck->{sum}");
+		if($newsum  eq $lcheck->{sum}) {
+			undef $Vend::Levying;
+#::logDebug("levy returning cached value");
+			return $lcheck->{total};
+		}
+	}
+
 	my $lcart = $Vend::Session->{levies}{$set} = [];
 	
 	my $run = 0;
@@ -6560,7 +6607,17 @@ sub levies {
 			next;
 		}
 		my $type = $l->{type} || ($name eq 'salestax' ? 'salestax' : 'shipping');
-		my $mode = $l->{mode} || $name;
+		my $mode;
+
+		if($l->{mode_from_values}) {
+			$mode = $::Values->{$l->{mode_from_values}};
+		}
+		elsif($l->{mode_from_scratch}) {
+			$mode = $::Scratch->{$l->{mode_from_scratch}};
+		}
+
+		$mode ||= ($l->{mode} || $name);
+		my $group = $l->{group} || $type;
 		my $cost = 0;
 		my $sort;
 		my $desc;
@@ -6583,7 +6640,7 @@ sub levies {
 				$sort = $type eq 'handling' ? 100 : 500;
 			}
 			$cost = shipping($mode);
-			$desc = $l->{description} || shipping_desc($mode);
+			$desc = $l->{description} || tag_shipping_desc($mode);
 		}
 		elsif($type eq 'custom') {
 			my $sub;
@@ -6605,11 +6662,20 @@ sub levies {
 				logError("No subroutine found for custom levy '%s'", $name);
 			}
 		}
+
+		my $cost_format;
+		unless ($cost_format = $l->{cost_format}) {
+			my $digits = errmsg('frac_digits') || 2;
+			$cost_format = "%.${digits}f";
+		}
 		my $item = {
 							code			=> $name,
 							mode			=> $mode,
 							sort			=> $sort,
-							cost			=> $cost,
+							cost			=> sprintf($cost_format,$cost),
+							currency		=> currency($cost),
+							group			=> $group,
+							label			=> $l->{label} || $desc,
 							description		=> $desc,
 						};
 		if($cost == 0) {
@@ -6622,9 +6688,19 @@ sub levies {
 	@$lcart = sort { $a->{sort} cmp $b->{sort} } @$lcart;
 
 	for(@$lcart) {
+		next if $opt->{group} and $opt->{group} ne $_->{group};
 		$run += $_->{cost};
 	}
+
 	$run = round_to_frac_digits($run);
+	if(! $opt->{group}) {
+		$lcheck = $Vend::Session->{latest_levy}{$set} = {};
+		$lcheck->{sum}   = levy_sum($set, $levies, $repos);
+		$lcheck->{total} = $run;
+		$Vend::LeviedOnce = 1;
+	}
+
+	undef $Vend::Levying;
 	return $run;
 }
 1;

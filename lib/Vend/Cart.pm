@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.5 2002-07-06 07:13:01 mheins Exp $
+# $Id: Cart.pm,v 2.6 2002-07-07 04:02:27 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use strict;
 
@@ -135,7 +135,7 @@ sub DESTROY { }
 # If the user has put in "0" for any quantity, delete that item
 # from the order list.
 sub toss_cart {
-	my($s) = @_;
+	my($s, $cartname) = @_;
 	my $i;
 	my $sub;
 	my (@master);
@@ -238,7 +238,7 @@ sub toss_cart {
 			@{$s} = @items[sort {$a <=> $b} keys %save];
 		}
 	}
-	Vend::Interpolate::levies();
+	Vend::Interpolate::levies(1, $cartname);
 	return 1;
 }
 

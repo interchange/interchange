@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.26 2002-07-04 23:11:13 mheins Exp $
+# $Id: Order.pm,v 2.27 2002-07-07 04:02:27 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1986,7 +1986,7 @@ sub add_items {
 		);
 		do_lockout($msg);
 	}
-	Vend::Cart::toss_cart($cart);
+	Vend::Cart::toss_cart($cart, $CGI::values{mv_cartname});
 }
 
 
