@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.95 2001-07-05 19:58:02 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.96 2001-07-12 14:00:22 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.95 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.96 $, 10);
 
 @EXPORT = qw (
 
@@ -509,6 +509,7 @@ sub dynamic_var {
 			and defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
 
 	VARDB: {
+		last VARDB if $Vend::Cfg->{Pragma}{dynamic_variables_file_only};
 		last VARDB unless $Vend::Cfg->{VariableDatabase};
 		if($Vend::VarDatabase) {
 			last VARDB unless $Vend::VarDatabase->record_exists($varname);
