@@ -1,7 +1,7 @@
 # differences from RH 6 specfile:
 # /home/httpd -> /var/www
 # /usr/man -> /usr/share/man
-%define interchange_version		4.5.7
+%define interchange_version		4.5.8
 %define interchange_package		interchange
 %define interchange_user		interch
 %define build_cats				construct
@@ -11,14 +11,14 @@
 Name: interchange
 Summary: Interchange is a powerful database access and HTML templating daemon focused on e-commerce.
 Group: Applications/Internet
-Version: 4.5.7
+Version: 4.5.8
 Copyright: GNU General Public License
 Release: 1.rh7
 URL: http://developer.akopia.com/
 Packager: Akopia <info@akopia.com>
 Distribution: Red Hat Linux Applications CD
 Vendor: Akopia, Inc.
-Source: http://ftp.minivend.com/interchange/beta/interchange-4.5.7.tar.gz
+Source: http://ftp.minivend.com/interchange/beta/interchange-4.5.8.tar.gz
 Provides: interchange
 Obsoletes: interchange
 
