@@ -1,4 +1,4 @@
-%define interchange_version		4.6.4
+%define interchange_version		4.6.5
 %define interchange_rpm_release	1
 %define interchange_package		interchange
 %define interchange_user		interch

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6
 #
-# $Id: interchange.PL,v 1.25 2001-03-01 02:10:54 heins Exp $
+# $Id: interchange.PL,v 1.26 2001-04-14 22:48:19 jon Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -136,7 +136,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.6.4';
+	$VERSION = '4.6.5';
 }
 
 use Fcntl;
@@ -1799,7 +1799,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.6.4
+4.6.5
 
 =head1 DESCRIPTION
 
