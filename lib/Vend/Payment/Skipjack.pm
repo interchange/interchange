@@ -1,6 +1,6 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.2 2002-06-17 22:24:11 jon Exp $
+# $Id: Skipjack.pm,v 2.3 2002-09-02 16:51:30 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 2.2 $
+Vend::Payment::Skipjack $Revision: 2.3 $
 
 =head1 SYNOPSIS
 
@@ -482,6 +482,41 @@ sub skipjack {
 			$amount = Vend::Util::round_to_frac_digits($amount,$precision);
     }
 
+	if(! $opt->{orderstring}) {
+		
+		my @strings;
+		my $tax_charged = Vend::Tags->salestax({noformat => 1}) > 0;
+		my $tf = $Vend::Cfg->{NonTaxableField};
+
+		for my $item (@$Vend::Items) {
+			my $price = Vend::Data::item_price($item);
+			my $desc = $item->{description} || Vend::Data::item_description($item);
+			$desc =~ s/~//g;
+			$desc =~ s/[\r\n]+/ /g;
+			$desc = HTML::Entities::encode_entities($desc);
+
+			my $taxable;
+			if(defined $item->{mv_nontaxable}) {
+				$taxable = $item->{mv_nontaxable} ? 'N' : 'Y'; 
+			}
+			elsif($tf) {
+				$taxable = is_yes(Vend::Data::item_field($item, $tf)) ? 'N' : 'Y';
+			}
+			else {
+				$taxable = $tax_charged ? 'Y' : 'N';
+			}
+			push @strings,
+					join "~",
+						$item->{code},
+						$desc,
+						$price,
+						$item->{quantity},
+						$taxable,
+						'';
+		}
+		$opt->{orderstring} = join '||', @strings;
+	}
+
 	my %values;
 	if($transtype eq 'sale') {
 		%values = (
@@ -497,7 +532,7 @@ sub skipjack {
 			Year => $ccey,
 			Serialnumber => $user,
 			Transactionamount => $amount,
-			Orderstring => "0001~Generic Order String~$amount~1~N~||",
+			Orderstring => $opt->{orderstring},
 			Shiptophone => $actual{phone_day}
 			);
 	}
