@@ -161,7 +161,6 @@ code/UI_Tag/quick_table.coretag
 code/UI_Tag/read_shipping.coretag
 code/UI_Tag/reconfig.coretag
 code/UI_Tag/reconfig_time.coretag
-code/UI_Tag/regenerate.coretag
 code/UI_Tag/return_to.coretag
 code/UI_Tag/rotate_table.coretag
 code/UI_Tag/row_edit.coretag
