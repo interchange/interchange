@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-# Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
+# tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: Link.pm,v 1.5 2005-01-25 04:15:24 mheins Exp $
+# $Id: Link.pm,v 1.6 2005-04-03 19:40:23 pvinci Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
+# Copyright (C) 2002-2004 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.5 $
+$Revision: 1.6 $
 
 =head1 SYNOPSIS
 
@@ -317,8 +317,8 @@ Send bug reports and suggestions to the Interchange users list,
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2002-2005 Interchange Development Group
  Copyright (C) 1996-2002 Red Hat, Inc.
+ Copyright (C) 2002-2004 Interchange Development Group
 
 This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -336,9 +336,10 @@ my %config;
 
 sub setup_location {
     my $r = shift;
+    my $s = $r->server;
     my $location = $r->location;
 
-    return $config{$location} if $config{$location};
+    return $config{$location} if $config{$location} && !($s->is_virtual);
 
 #warn "Getting location $location\n";
 
@@ -610,8 +611,8 @@ sub handler {
 
     my $cfg = setup_location($r);
 
-    $SIG{PIPE} = sub { die_page("signal"); };
-    $SIG{ALRM} = sub { server_not_running(); exit 1; };
+    $SIG{PIPE} = sub { die_page($r); };
+    $SIG{ALRM} = sub { server_not_running($r); exit 1; };
 
     my ($remote, $port, $iaddr, $paddr, $proto, $line);
 
