@@ -14,12 +14,23 @@ sub {
 	return unless $Vend::Session->{warnings};
 
 	my $out = $opt->{header} || "";
-	$out .= '<ul><li>' if $opt->{auto};
-	if(! length($opt->{joiner})) {
-		$opt->{joiner} = $opt->{auto} ? '<li>' : "\n";
+	if($opt->{auto}) {
+		$opt->{list_container} ||= 'ul';
+		$out .= "<$opt->{list_container}";
+		for(qw/ class style extra /) {
+			next unless $opt->{"list_$_"};
+			$out .= ' ' . $opt->{"list_$_"};
+		}
+		$out .= '>';
+		$opt->{joiner} = '<li>'
+			if ! length($opt->{joiner});
+		$out .= $opt->{joiner};
+	}
+	elsif(! length($opt->{joiner})) {
+		$opt->{joiner} = "\n";
 	}
 	$out .= join $opt->{joiner}, grep /\S/, @{$Vend::Session->{warnings}};
-	$out .= '</ul>' if $opt->{auto};
+	$out .= "</$opt->{list_container}>" if $opt->{auto};
 	$out .= $opt->{footer} if length($opt->{footer});
 	delete $Vend::Session->{warnings} unless $opt->{keep};
 	return $out;
