@@ -1,7 +1,7 @@
 <!-- BEGIN COMPONENT random_vertical -->
 [loop
     random="[either][scratch component_vsize][or]3[/either]"
-    search="ra=yes/ml=1000"
+    search="ra=yes/ml=1000/st=db"
  ] 
 <table width="132" border="0" cellspacing="0" cellpadding="0">
 	<tr bgcolor="#FF9900" align="center" valign="middle"> 
