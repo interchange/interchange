@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.31 2002-02-01 17:01:52 kwalsh Exp $
+# $Id: Config.pm,v 2.32 2002-02-02 18:59:34 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 my %CDname;
 
@@ -969,6 +969,8 @@ sub get_system_code {
 		oc	OrderCheck
 		ut	UserTag
 		fi	Filter
+		fw	Widget
+		lc	LocaleChange
 		tag	UserTag
 		ct	CoreTag
 	/;
@@ -3054,6 +3056,16 @@ sub save_variable {
 
 my %tagCanon = ( qw(
 
+	group			Group
+	actionmap		ActionMap
+	coretag  		CoreTag
+	filter			Filter
+	formaction		FormAction
+	ordercheck		OrderCheck
+	usertag			UserTag
+	systemtag		SystemTag
+	widget  		Widget
+
 	alias			Alias
 	addattr  		addAttr
 	attralias		attrAlias
@@ -3061,15 +3073,6 @@ my %tagCanon = ( qw(
 	documentation	Documentation
 	endhtml			endHTML
 	gobble			Gobble
-
-	group			Group
-	actionmap		ActionMap
-	filter			Filter
-	formaction		FormAction
-	ordercheck		OrderCheck
-	usertag			UserTag
-	systemtag		SystemTag
-
 	hasendtag		hasEndTag
 	implicit		Implicit
 	inserthtml		insertHTML
@@ -3093,34 +3096,35 @@ my %tagCanon = ( qw(
 
 my %tagAry 	= ( qw! Order 1 Required 1 Version 1 ! );
 my %tagHash	= ( qw!
-				replaceAttr	1
-				Implicit	1
-				attrAlias	1
+                attrAlias   1
+                Implicit    1
+                replaceAttr 1
 				! );
 my %tagBool = ( qw!
-				hasEndTag	1
-				Interpolate 1
-				canNest		1
-				isEndAnchor	1
-				addAttr 	1
-				Filter		1
-				ItemAction	1
-				ActionMap	1
-				FormAction	1
-				OrderCheck	1
-				UserTag	    1
-				isOperator	1
+                ActionMap   1
+                addAttr     1
+                canNest     1
+                Filter      1
+                FormAction  1
+                hasEndTag   1
+                Interpolate 1
+                isEndAnchor 1
+                isOperator  1
+                ItemAction  1
+                OrderCheck  1
+                UserTag     1
 				! );
 
 my %current_dest;
 my %valid_dest = qw/
-					filter     Filter
-					itemaction ItemAction
-					actionmap  ActionMap
-					formaction FormAction
-					ordercheck OrderCheck
-					coretag    UserTag
-					usertag    UserTag
+                    actionmap  ActionMap
+                    coretag    UserTag
+                    filter     Filter
+                    formaction FormAction
+                    itemaction ItemAction
+                    ordercheck OrderCheck
+                    usertag    UserTag
+                    widget     Widget
 				/;
 
 sub finalize_mapped_code {
