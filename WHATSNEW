@@ -98,8 +98,12 @@ Packaging
 
 * interchange-ui Debian package now suggests a HTTPS server.
 
-------------------------------------------------------------------------------
+I18N
+----
 
+* improved Dutch translation (UI)
+
+------------------------------------------------------------------------------
 
 Interchange 4.8.3 released 2001-11-27.
 
