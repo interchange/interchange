@@ -129,7 +129,7 @@
 	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=RIGHT>
 		[discount-price]
 		[if discount [item-code]]
-		<BR><FONT COLOR=__CONTRAST__ SIZE=-2>Item is discounted
+		<BR><FONT COLOR=__CONTRAST__ SIZE=-2>[L]Item is discounted[/L]
 			[item-discount]
 			</FONT>
 		[/if]
@@ -145,24 +145,24 @@
 <TD COLSPAN=4 ROWSPAN=5 ALIGN=LEFT VALIGN=CENTER>
 &nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit
 	onClick="this.form.action='[process-target]'"
-	VALUE="Enter / Recalculate">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1">[summary format="<B>Shipping weight:</B> %s" total=1]</FONT></TD>
+	VALUE="[L]Enter / Recalculate[/L]">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1">[summary format="<B>[L]Shipping weight[/L]:</B> %s" total=1]</FONT></TD>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>Subtotal</TD>
+	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>[L]Subtotal[/L]</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[subtotal]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>Shipping</TD>
+	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>[L]Shipping[/L]</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL>[shipping]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>Tax</TD>
+	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>[L]Tax[/L]</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL>[salestax]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>TOTAL</TD>
+	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>[L]TOTAL[/L]</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[total-cost]</TD>
 </TR>
@@ -183,7 +183,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 
 <br>
 <TABLE border=0 WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Shipping Address</B></FONT>
+<FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]Shipping Address[/L]</B></FONT>
 </TD></TR></TABLE>
 
 [calc]
@@ -238,24 +238,24 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 <TABLE WIDTH="90%" cellpadding=3 border=0>
 <TR>
 	<TD ALIGN=RIGHT>
-	Customer ID</TD>
+	[L]Customer ID[/L]</TD>
 	<TD>
 		<INPUT TYPE=text NAME=customer_id VALUE="[value customer_id]" size=30>
-		<INPUT TYPE=checkbox NAME=new_customer_id VALUE=1 [if !value customer_id]CHECKED[else]onClick="this.form.customer_id.value=''; this.form.submit()"[/else][/if]>New customer
+		<INPUT TYPE=checkbox NAME=new_customer_id VALUE=1 [if !value customer_id]CHECKED[else]onClick="this.form.customer_id.value=''; this.form.submit()"[/else][/if]>[L]New customer[/L]
 	</TD>
 </TR>
 
 <TR>
 	<TD ALIGN=RIGHT>
-	[error name=fname std_label="First Name" required=1]</TD>
+	[error name=fname std_label="[L]First Name[/L]" required=1]</TD>
 	<TD>
 		<INPUT TYPE=text NAME=fname VALUE="[value name=fname default="[loop-data userdb fname]"]" size=30>
-	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value name=lname default="[loop-data userdb lname]"]" size=30>
+	[error name=lname std_label="[L]Last Name[/L]" required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value name=lname default="[loop-data userdb lname]"]" size=30>
 	</TD>
 </TR>
 
 <TR>
-	<TD ALIGN=RIGHT>[error name=address1 std_label=Address required=1]</TD>
+	<TD ALIGN=RIGHT>[error name=address1 std_label=[L]Address[/L] required=1]</TD>
 	<TD ALIGN=LEFT>
 		<INPUT TYPE=text NAME=address1 VALUE="[value name=address1 default="[loop-data userdb address1]"]" size=60>
 	</TD>
@@ -270,7 +270,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 
 <TR>
 	<TD ALIGN=RIGHT>
-		[error name=city std_label="City" required=1]
+		[error name=city std_label="[L]City[/L]" required=1]
 	</TD>
 	<TD>
 	<TABLE>
@@ -279,14 +279,14 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 			<INPUT TYPE=text NAME=city VALUE="[value name=city default="[loop-data userdb city]"]" size=20>
 		</TD>
 		<TD>
-			[error name=state std_label="State/Province" required=1]
+			[error name=state std_label="[L]State/Province[/L]" required=1]
 		</TD>
 		<TD>
 			<INPUT onChange="check_tax(this.form)"
 				TYPE=text NAME=state VALUE="[value name=state default="[loop-data userdb state]"]" size=3>
 		</TD>
 		<TD>
-			[error name=zip std_label="Zip/Postal Code" required=1]
+			[error name=zip std_label="[L]Zip/Postal Code[/L]" required=1]
 		</TD>
 		<TD>
 			<INPUT TYPE=text NAME=zip VALUE="[value name=zip default="[loop-data userdb zip]"]" size=10>
@@ -297,7 +297,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 </TR>
 
 <TR>
-	<TD ALIGN=RIGHT><B>[error name=email std_label="Email Address" required=1]</B></TD>
+	<TD ALIGN=RIGHT><B>[error name=email std_label="[L]Email Address[/L]" required=1]</B></TD>
 	<TD ALIGN=LEFT>
 		<INPUT TYPE=text NAME=email VALUE="[value name=email default="[loop-data userdb email]"]" size=42>
 	</TD>
@@ -306,15 +306,15 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 
 <TR>
 		<TD ALIGN=RIGHT>
-		<B>Country</B>
+		<B>[L]Country[/L]</B>
 		</TD>
 		<TD>
 		[value name=country set="[value name=country default='[loop-data userdb country]']" hide=1]
 		[if value country =~ /(^$|US|CA)/]
 		<SELECT NAME=country onChange="this.form.submit()">
-			<OPTION VALUE="US"> United States
-			<OPTION [selected country CA] VALUE="CA"> Canada
-			<OPTION VALUE="JP"> Other (select to change)
+			<OPTION VALUE="US"> [L]United States[/L]
+			<OPTION [selected country CA] VALUE="CA"> [L]Canada[/L]
+			<OPTION VALUE="JP"> [L]Other (select to change)[/L]
 		</SELECT>
 		[else]
 		<SELECT onChange="this.form.submit()" NAME=country>
@@ -323,12 +323,12 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 		[/loop]
 		</SELECT>
 		[/else]
-		[/if] <FONT SIZE="1"><B>(will update display)</B></FONT>
+		[/if] <FONT SIZE="1"><B>[L](will update display)[/L]</B></FONT>
 		</TD>
 </TR>
 
 <TR>	
-	<TD ALIGN=RIGHT>[error name=phone_day std_label="Daytime Phone" required=1]</TD>
+	<TD ALIGN=RIGHT>[error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]</TD>
 	<TD>
 	<TABLE>
 	<TR>
@@ -336,7 +336,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 		<INPUT TYPE=text NAME=phone_day VALUE="[value name=phone_day default="[loop-data userdb phone_day]"]" size=16>
 		</TD>
 		<TD ALIGN=RIGHT>
-		[error name=phone_night std_label="Evening Phone" required=0]
+		[error name=phone_night std_label="[L]Evening Phone[/L]" required=0]
 		</TD>
 		<TD>
 		<INPUT TYPE=text NAME=phone_night VALUE="[value name=phone_night default="[loop-data userdb phone_night]"]" size=16>
@@ -345,13 +345,13 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 	</TABLE>
 </TR>
 
-[set Find]
+[set [L]Find[/L]]
 mv_nextpage=__UI_BASE__/entry_select
 mv_change_frame=select
 mv_todo=back
 [/set]
 
-[set Clear]
+[set [L]Clear[/L]]
 customer_id=
 customer=NEW
 mv_todo=return
@@ -361,14 +361,14 @@ mv_todo=return
 <TR>
 	<TD>&nbsp;</TD>
 	<TD>
-	<B><INPUT TYPE=submit NAME=mv_click VALUE=Find>
-	<INPUT TYPE=submit NAME=mv_click VALUE=Clear></B>
+	<B><INPUT TYPE=submit NAME=mv_click VALUE=[L]Find[/L]>
+	<INPUT TYPE=submit NAME=mv_click VALUE=[L]Clear[/L]></B>
 	 </TD>
 </TR>
 <TR>
 	<TD>&nbsp;</TD>
 	<TD>
-		<SMALL><I><B>Bold</B> fields needed to process the order</I></SMALL>
+		<SMALL><I>[msg arg.0="<B>" arg.1="</B>"]%sBold%s fields needed to process the order[/msg]</I></SMALL>
 	</TD>
 </TR>
 
@@ -382,7 +382,7 @@ mv_todo=return
 [if !scratch only_downloadable]
 <P>
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR=__UI_C_TITLEBARTXT__><B>Choose your shipping method</B></FONT>
+<FONT COLOR=__UI_C_TITLEBARTXT__><B>[L]Choose your shipping method[/L]</B></FONT>
 </TD></TR></TABLE>
 
 <P>
@@ -396,13 +396,13 @@ mv_todo=return
 		]
     </SELECT>
 </TD>
-<TD ALIGN=RIGHT><INPUT TYPE=submit VALUE="Update"></TD>
+<TD ALIGN=RIGHT><INPUT TYPE=submit VALUE="[L]Update[/L]"></TD>
 </TR>
 
 <TR>
 <TD COLSPAN=2 ALIGN=CENTER>
 [if session ship_message]
-<BR><B>Note:</B> [data session ship_message]<BR>
+<BR><B>[L]Note:[/L]</B> [data session ship_message]<BR>
 [/if]
 </TD>
 </TR></TABLE>
@@ -543,11 +543,6 @@ Card Number<BR>
 
 </TABLE><br>
 
-[set Place Order!]
-mv_order_route=log_entry main copy_user
-mv_todo=submit
-[/set]
-
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
 <FONT COLOR="__UI_C_TITLEBARTXT__"><B>Email preferences</B></FONT>
 </TD></TR></TABLE>
@@ -576,6 +571,8 @@ mv_todo=submit
 <CENTER>
 [set Place Order]
 mv_todo=submit
+mv_nextpage=admin/order
+[value name=mv_order_route set="log_entry main copy_user" hide=1]
 [/set]
 
 <INPUT name=mv_click TYPE=submit VALUE="Place Order">
