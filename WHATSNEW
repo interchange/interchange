@@ -137,8 +137,8 @@ Core
 
 * Better error trapping on DB calls.
 
-Admin backend
--------------
+Admin back-end
+--------------
 * Page editor and template system rewritten.
 
   - Retains the global settings for the page, things like page_title,
@@ -185,7 +185,7 @@ Admin backend
 
 * Enhance list-pages tag so that an array can be returned.
 
-* Patch table-edior option parsing, fixing bug #190.
+* Patch table-editor option parsing, fixing bug #190.
 
 Foundation demo
 ---------------
@@ -208,12 +208,17 @@ Foundation demo
 
 Packaging
 ---------
-* Add rundir setting (/var/cache/interchange) to keep important confdir things
-  in /var/run/interchange from getting erased at OS boot time.
+* Add cachedir setting (e.g. /var/cache/interchange) to allow catalog session
+  and tmp directories to be in separate location.
 
-* Rotate catalog error.log files.
+* Add rundir setting (e.g. /var/run/interchange) to keep temporary files like
+  status.* separate from things in VENDROOT/etc. This takes advantage of the
+  OS deleting everything in /var/run/interchange at OS boot time without
+  losing files like *.before, etc.
 
-* Various RPM and Debian package improvements.
+* Have system logrotate daemon rotate catalog error.log files.
+
+* Various other RPM and Debian package improvements.
 
 General
 -------
