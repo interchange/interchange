@@ -4,8 +4,9 @@ interchange (4.8.6-0.1) unstable; urgency=low
   * turned Depends of libapache-mod-interchange on interchange into a
     Suggests (interchange might be running on a remote host), thanks to
     Christopher F.Miller <cfm.maine.com> for the suggestion
+  * doc-base support added to libapache-mod-interchange
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 21 May 2002 12:45:33 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 21 May 2002 12:50:04 +0200
 
 interchange (4.8.5-1) unstable; urgency=high
 

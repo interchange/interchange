@@ -49,6 +49,7 @@ debian/interchange.prerm
 debian/interchange.templates
 debian/interchange.wrapper
 debian/interchangeconfig
+debian/libapache-mod-interchange.doc-base
 debian/libapache-mod-interchange.docs
 debian/libapache-mod-interchange.files
 debian/makecat.cfg
