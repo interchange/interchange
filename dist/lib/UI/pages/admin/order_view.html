@@ -196,7 +196,7 @@
 <tr>
 <td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
-<b>Qty.</b></font></td>
+<b>Status</b></font></td>
 
 <td width=230 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
@@ -205,6 +205,10 @@
 <td width=100 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>SKU</b></font></td>
+
+<td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
+<font size=2>
+<b>Qty.</b></font></td>
 
 <td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
@@ -225,8 +229,7 @@
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
 	return;
 [/calc]
-[sql-data orderline quantity] 
-<BR>[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
+[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
 <BR>&nbsp;
 </font></td>
 
@@ -251,6 +254,11 @@ Options: [sql-data orderline options]
 <td width=100 align=left bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
 [sql-data orderline sku]
+</font></td>
+
+<td width=50 align=right bgcolor=__UI_C_INTBLOCK__>
+<font size=2>
+[sql-data orderline quantity]
 </font></td>
 
 <td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
