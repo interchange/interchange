@@ -73,7 +73,7 @@ random:
 				[b-link [loop-code]][L]MORE INFO[/L][/b-link]
 			</td>
 			<td align="center">
-				[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+				[b-link order mv_order_item=[loop-code]][L]BUY NOW[/L][/b-link]
 			</td>
 		  </tr>
 		</table>
