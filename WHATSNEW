@@ -29,6 +29,82 @@ Core
   than one. We were overloading the discount_price() routine, which
   was dumb, so a new discount_subtotal() routine takes over.
 
+* Add iso_time and null_time options for updating UserDB time_field:
+
+	UserDB  default  null_time    1
+	UserDB  default  iso_time     1
+
+* Add stubs for log_error and errstr routines in the database
+  modules.
+
+* Fix for broken getppid() on Linux systems with threads enabled.
+  To implement, use
+
+        Variable   MV_GETPPID_BROKEN   1
+
+  in interchange.cfg. It substitutes a syscall(64) for the getppid
+  call.
+
+  This should only be necessary on systems with threads enabled,
+  which is NOT recommended for IC.
+
+Tables
+------
+
+* Set up error reporting to be able to catch database errors
+  and display in session, catalog error.log, or global error.log
+
+    1. Logging levels are on a per-table basis, with
+       defaults that can be set with DatabaseDefault:
+
+        DatabaseDefault  LOG_ERROR_CATALOG  1
+        DatabaseDefault  LOG_ERROR_SESSION  1
+        DatabaseDefault  LOG_ERROR_GLOBAL   0
+        DatabaseDefault  DIE_ERROR          0
+
+    2. Log errors to the catalog error.log by default.
+
+        Database  inventory LOG_ERROR_CATALOG  0|1*
+
+    3. Log errors to the session always if an admin, and
+       controlled by configuration if not.
+
+        Database  inventory LOG_ERROR_SESSION  0|1*
+
+       This has the effect of giving a big red error message when such
+       an event as failing to create a record occured. In most cases,
+       you would be able to use the <-Back button and fix the error
+       and resubmit.
+
+       The error tag is "table foo", where foo is the table.
+
+    4. Die at the page level (500 error) only if that is explicit
+       request in config for that table:
+
+        Database  inventory  DIE_ERROR  0*|1
+
+    5. Log errors globally only on explicit request:
+
+        Database  inventory LOG_ERROR_GLOBAL   0*|1
+
+    6. LENGTH_EXCEPTION errors go into warnings if they are handled
+       with truncate.
+
+      * default
+
+* Fix numeric sorting in SQL statements if a field is NUMERIC.
+
+* Allow limits from SQL statement to flow through even if ml="" is set
+  and let direct_sql.html admin page honor them.
+
+* Fix table names so that we don't have the funky .txt problems
+  where a SQL query would not work on a DBM database unless
+  the file name base matched the table name.
+
+* Attempt to regularize error messages so that they can be
+  more easily translated. Now should have about 50% less
+  variations.
+
 Payment
 -------
 
@@ -52,6 +128,9 @@ Shipping
 
         # Remap Monaco to France for UPS
         Variable  UPS_COUNTRY_REMAP   MC=FR
+
+* Add ability to build weight adjustments based on Simple options
+  settings. Requires a "weight" field in the options table.
 
 UI
 --
@@ -82,6 +161,13 @@ UI
 * Add meta_editor support for MAXLENGTH and JavaScript checks.
 
 * Made default metadata (for merge) match foundation.
+
+* Fix inability to set and retain multiple user groups with fix
+  provided by Sonny Cook.
+
+* Prevent display of meta database when relocated from meta editor.
+
+* Write the selected PGP/GPG key to the Variable table setting.
 
 Form
 ----
@@ -138,6 +224,15 @@ Table Editor
 	The "Specific" tab will be presented open when the record is edited.
 	The form focus will be at the "baz" field.
 
+* Substitute placeholders in lookup_query (just like with prepend and append):
+
+  _UI_TABLE_
+  _UI_COLUMN_
+  _UI_KEY_
+
+  This allows foreign table lookup queries to be tailored for the record
+  currently being edited in the table editor.
+
 Foundation
 ----------
 
@@ -150,6 +245,8 @@ Foundation
 
 * Add HIDE_FIELD to products database definition, so products marked
   inactive will not be found in search.
+
+* Add --[L]select state[/L]-- blank option to shipping address form.
 
 Usertags
 --------
@@ -187,6 +284,8 @@ Jobs
 ----
 
 * Set $CGI->{mv_tmp_session} to signal that a "robot" is in charge.
+
+* filter option added for Job output
 
 SQL Parsing
 -----------
