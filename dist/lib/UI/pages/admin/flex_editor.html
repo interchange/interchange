@@ -36,7 +36,7 @@
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
-				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
+				 item_id=[cgi mv_data_table]
 		 ']standard view</A>)
 		[/if-mm]
 		 [/if]
@@ -73,9 +73,25 @@
 					ui_hide_key=1
 					icon_name=admin/icon_config.gif
 					']">No meta display</A>
-<PRE>
+<!--
+<XMP>
+click:
 [return-to click]
-</PRE>
+
+formlink:
+[return-to formlink]
+
+default:
+[return-to]
+
+Ok:
+[scratch Ok]
+
+Cancel:
+[scratch Cancel]
+</XMP>
+-->
+
 @_UI_STD_FOOTER_@
 
 <!-- page: @@MV_PAGE@@ -->
