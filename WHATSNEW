@@ -7,10 +7,73 @@
 
 Interchange 4.9.7 not yet released
 
+Core
+----
+
+* Allow [PREFIX-more-list] ... [/PREFIX-more-list] for nested loops.
+
+Menu
+----
+
+* Add category-specific image links and toggles for the tree menu.
+
+  To enable this for toggles, do:
+
+  	  [menu
+	  		menu-type=tree
+			...
+			specific-image-toggle=N
+			]
+
+  Where N is the level (1 == 0) to which you wish to do this.
+
+  The image for a non-toggled category comes from the tree database field
+  img_up, for a toggled category from img_dn.
+
+  You can set the base URL for the images with:
+
+  		specific-image-base="__IMAGE_DIR__";
+
+  A trailing / is added if not already present.
+
+  If you wish to allow image anchors for links as well, put the image
+  name in the img_up field and add the parameter:
+
+  	       specific-image-link=1
+
+  If the image name is not present, the normal "name" field is used.
+
+  To enable all of this for the example product_tree component, you would
+  have a call of:
+
+	[menu tree-selector="[control tree_selector Products]"
+			link-class="[control link_class barlink]"
+			link-style="[control link_style]"
+			link-class-open="[control link_class_open]"
+			link-style-open="[control link_style_open font-size: larger;]"
+			link-class-closed="[control link_class_closed]"
+			link-style-closed="[control link_style_closed font-size: larger;]"
+			no-image="[control no_image]"
+			menu-type=tree
+			specific-image-toggle=1
+			specific-image-base="__IMAGE_DIR__/tree"
+			specific-image-link=1
+			reparse=0]
+
+
 UI
 --
 
+* Fix dependency of page editor on certain [if ...] conditions in page code.
+
 * Add "send help edit to ICDEVGROUP" function in the online help editor.
+
+* Change name of "Bottom" menu (which was on top) to "Fixed". 
+
+Foundation
+----------
+
+* Make metadata correspond to current UI version.
 
 Debian
 ------
