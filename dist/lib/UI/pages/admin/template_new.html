@@ -6,7 +6,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[area __UI_BASE__/template_create]" method=POST ENCTYPE="multipart/form-data">
+<form action="[area __UI_BASE__/template_edit]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
@@ -22,13 +22,13 @@
 <td colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-[set Create new page]
+[set [L]Create new template[/L]]
 [if !cgi ui_template_new]
 mv_nextpage=@@MV_PAGE@@
 [set ui_error]Need to select a file name.[/set]
 mv_todo=return
 [else]
-mv_nextpage=__UI_BASE__/template_create
+mv_nextpage=__UI_BASE__/template_edit
 mv_todo=return
 [/else]
 [/if]
@@ -46,18 +46,21 @@ mv_todo=return
 
 </td>
 <td>
-<select name="ui_template" size=1>
+<select name="ui_template_template" size=1>
 <option value=> Select a page template to base this on (optional)
 [calc]
-	@files = $Tag->list_glob('templates/*');
+	my $tdir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
+	@files = $Tag->list_glob("$tdir/*");
 	for(@files) {
 		next unless -f $_;
 		my $name = $_;
-		$data = $Tag->file($_);
+		$data = $Tag->file($_)
+			or next;
 		$name =~ s:.*/::;
 		my $ref = {};
-		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]}s;
-		my $structure = $1 || "ui_template_description: Unknown $name";
+		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]}s
+			or next;
+		my $structure = $1 || "ui_template_description: no description";
 		my @lines = grep /\S/, split /\n/, $structure;
 		for(@lines) {
 			my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
@@ -70,7 +73,7 @@ mv_todo=return
 			}
 		}
 		#Log("ref is " . $Tag->uneval( { ref => $ref } ));
-		push @out, qq{<OPTION VALUE="$_">$ref->{ui_template_description}};
+		push @out, qq{<OPTION VALUE="$_">$name: $ref->{ui_template_description}};
 	}
 	return join "\n", @out;
 [/calc]
@@ -108,10 +111,10 @@ mv_todo=return
 
 <tr id=ralt>
 <td>
-5. Click this button to create the template:
+5. [L]Click this button to create the template[/L]:
 </td>
 <td>
-<input type="submit" name="mv_click" value="Create new page" onClick="this.form.target='_self'"> <INPUT TYPE=checkbox NAME=ui_show_template VALUE=1 CHECKED>Show template top/bottom<BR>
+<input type="submit" name="mv_click" value="[L]Create new template[/L]" onClick="this.form.target='_self'"> <INPUT TYPE=checkbox NAME=ui_show_template VALUE=1 CHECKED>Show template top/bottom<BR>
 </td>
 </tr>
 
