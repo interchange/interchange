@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.13 2001-03-18 19:31:03 heins Exp $
+# $Id: Data.pm,v 1.17.2.14 2001-03-24 17:47:08 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1375,7 +1375,7 @@ sub chain_cost {
 	else {
 		@p = Text::ParseWords::shellwords($raw);
 	}
-	if(scalar @p > 64) {
+	if(scalar @p > ($Vend::Cfg->{Limit}{chained_cost_levels} || 64)) {
 		::logError('Too many chained cost levels for item ' .  uneval($item) );
 		return undef;
 	}

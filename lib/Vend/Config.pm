@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.33 2001-03-23 16:32:51 heins Exp $
+# $Id: Config.pm,v 1.25.2.34 2001-03-24 17:47:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.33 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.34 $, 10);
 
 my %CDname;
 
@@ -349,6 +349,7 @@ sub catalog_directives {
 	['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
 	['VarName',          'varname',           ''],
+	['Limit',			 'hash',	     	 ''],
 	['ScratchDefault',	 'hash',     	 	 ''],
 	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],

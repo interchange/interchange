@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Cart.pm,v 1.2.6.2 2000-12-13 16:11:15 zarko Exp $
+# $Id: Cart.pm,v 1.2.6.3 2001-03-24 17:47:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.3 $, 10);
 
 use strict;
 
@@ -156,6 +156,13 @@ sub toss_cart {
 				splice(@$s, $i, 1);
 				next DELETE;
 			}
+			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			
+			$s->[$i]->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line}
+				if
+					$s->[$i]->{quantity}
+						>
+					$Vend::Cfg->{Limit}{cart_quantity_per_line};
 		}
 		last DELETE;
 	}
