@@ -6,7 +6,7 @@ UserTag get-url Documentation <<EOD
 =pod
 
 usage: 
-[get-url url="valid_url" method="POST" strip=1 content_type="x-www-form-urlencoded" content="name=Brev" authuser="username" authpass="password"]
+[get-url url="valid_url" method="POST" strip=1 content_type="x-www-form-urlencoded" content="name=Brev" authuser="username" authpass="password" useragent="useragent string"]
 
 Uses the LWP libraries to fetch a URL and return the contents.
 
@@ -48,6 +48,10 @@ sub {
 	}
 	else { $method = "GET"; }
 
+        if($opt->{useragent} ) {
+                $ua->agent($opt->{useragent});
+        }
+
 	my $req = HTTP::Request->new($method, $url);
 
 	$req->content_type('application/x-www-form-urlencoded');
@@ -62,6 +66,7 @@ sub {
 	if($opt->{authuser} && $opt->{authpass}) {
 		$req->authorization_basic($opt->{authuser}, $opt->{authpass});
 	}
+
 
 	my $res = $ua->request($req);
 
