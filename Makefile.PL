@@ -713,11 +713,21 @@ sub MY::install {
 		\*install;
 	}
 
-	my $new = <<'EOF';
+	my $uidparm;
+
+	if (-f "_uid") {
+		if (open UID, '_uid') {
+			chomp (my $uid = <UID>);
+			close UID;
+			$uidparm = "INTERCHANGE_USER=$uid";
+		}
+	}
+
+	my $new = <<EOF;
 VERBINST=0
 
 mv_install ::
-			$(PERL) Makefile.PL force final=$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL force $uidparm final=\$(INSTALLARCHLIB)
 
 install :: all pure_install doc_install mv_install
 
