@@ -357,7 +357,6 @@ EOF
     		[button
 		text="Check out"
      		src="checkout_button.gif"
-		extra="class=contentbar1"
 		hidetext=1
 		form=basket
 		]
