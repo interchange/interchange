@@ -307,6 +307,8 @@ dist/construct/pages/admin/report_def/Order%20Status.html
 dist/construct/pages/admin/report_def/Products%20to%20edit.html
 dist/construct/pages/admin/reports/Order%20Status.html
 dist/construct/pages/admin/reports/Products%20to%20edit.html
+dist/construct/pages/affiliate/index.html
+dist/construct/pages/affiliate/login.html
 dist/construct/pages/browse.html
 dist/construct/pages/canceled.html
 dist/construct/pages/contact.html
