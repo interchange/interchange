@@ -1,0 +1,298 @@
+[comment]
+ui_component: product_tree
+ui_type: component
+ui_name: product_tree
+ui_class: vertical
+ui_group: Navigation
+ui_label: Vertical category list
+ui_source: templates/components/product_tree
+
+tree_selector:
+	advanced: 1
+	help: Defines which tree menu is selected
+	label: Tree name
+	db: tree
+	lookup: mgroup
+	type: select
+[/comment]
+
+<!-- BEGIN COMPONENT [control component product_tree] -->
+<tr><td align="left" class="categorybar">
+  <br>
+  <table width="90%" align="center">
+  <tr> 
+    <td valign="top" class="categorybar">
+
+[tmpn OLDBROWSER][/tmpn]
+[if type=session term=browser op="!~" compare="/MSIE [5-9].*Windows|Mozilla.*Gecko/"]
+[set OLDBROWSER]1[/set]
+[/if]
+
+[goto name=OLDBROWSER if="[scratch OLDBROWSER]"]
+
+<P>
+<A HREF="javascript:do_explode(); void(0)" class=barlink>Explode tree</A><br>
+<A HREF="javascript:do_collapse(); void(0)" class=barlink>Collaps tree</A><br>
+</P>
+<script>
+ var lines = new Array;
+[tmpn tmp_field_vars][/tmpn]
+[tree   start=Products
+		table=tree
+		master=parent_fld
+		subordinate=code
+		autodetect=1
+		toggle=toggle
+		sort=code
+		iterator=jsline
+		full=1
+		spacing=4
+		][item-sub jsline]
+sub {
+	my $loopname = shift;
+	my $row = shift;
+	$loopinc = 0 if ! defined $loopinc;
+
+#Debug("loopname=$loopname row=" . uneval($row));
+	$loopname =~ s/^\s+//;
+	$loopname =~ s/\s+$//;
+	my $fields;
+	$loopname =~ s/[\s,]+(.*)//s
+		and $fields = $1;
+	$fields ||= q{
+					code
+					parent_fld
+					mv_level
+					mv_children
+					mv_increment
+					page
+					form
+					name
+					description};
+	$fields =~ s/^\s+//;
+	my @fields = split /[\s,\0]+/, $fields;
+#Debug("form=$row->{form}");
+	if($row->{page}) {
+		my $form = $row->{form};
+		if($form) {
+			$form =~ s/&/\n/g;
+			$form .= "\nopen=";
+		}
+		else {
+			$form = 'open=';
+		}
+		$row->{page} = $Tag->area( { href => $row->{page}, form => $form });
+	}
+	$row->{description} = $Tag->filter('encode_entities', $row->{description});
+	my @values = @{$row}{@fields};
+
+	if(! $Scratch->{tmp_field_vars}) {
+		push @fields, 'open';
+		my @out;
+		for(my $i = 0; $i < @fields; $i++) {
+			push @out, "  var \U$fields[$i]\E = $i;";
+		}
+		$Scratch->{tmp_field_vars} = join "\n", @out;
+		pop @fields;
+	}
+
+	for(@values) {
+		my $foundit = '';
+		if(s/^\s*{\s+//) {
+			s/(,?\s*\}\s*)$//;
+			$foundit = 1;
+		}
+		s/\\'/-_ESC_QUOTE_-/g;
+		s/'/\\'/g;
+		s/\r+$/' + "\\r"/g;
+		s/\r/' + "\\r" + '/g;
+		s/-_ESC_QUOTE_-/\\\\\\'/g;
+		if($foundit) {
+			$_ = "{" . $_ . "}";
+		}
+		if(/\D/) {
+			$_ = qq{'$_'};
+		}
+	}
+	my $out = "$loopname\[" . $loopinc++  . "] = [" . join(", ", @values) . "];";
+	return $out;
+}
+[/item-sub]lines[/tree]
+
+[calc]
+	my $out = '  var openstatus = [';
+	$out .=  join ",", split //, $CGI->{open};
+	$out .= "];\n";
+	$out .= " var explode = ";
+	$out .= $CGI->{explode} ? 1 : 0;
+	$out .= ";\n";
+	$out .= " var collapse = ";
+	$out .= $CGI->{collapse} ? 1 : 0;
+	$out .= ";\n";
+	return $out;
+[/calc]
+
+[scratch tmp_field_vars]
+
+[restrict log=none]
+	var next_level = 0;
+	var openstring = '';
+
+	function tree_link (idx) {
+
+		var out = '';
+		var treebox;
+
+		var l = lines[idx];
+
+		if(l == undefined) {
+			do_alert("Bad idx=" + idx + ", no line there.");
+			return;
+		}
+
+		if(l[MV_LEVEL] > next_level)
+			return '';
+			// return 'next_level=' + next_level + ', mv_level=' + l[MV_LEVEL] + '<br>';
+// alert("line is " + l);
+		var i;
+		var needed = l[MV_LEVEL];
+		for(i = 1; i <= needed; i++)
+			out = out + '&nbsp;&nbsp;&nbsp;&nbsp;';
+
+		if(l[MV_CHILDREN] > 0) {
+			out = out + '<a href="javascript:toggit(' + idx + ');void(0)">';
+			var iname;
+			if(openstatus[idx] == 1) {
+				iname = "__IMAGE_DIR__/" + "folder.open.gif";
+				out = out + '<img src=' + '"' + iname + '" border=0 align=absbottom>';
+				next_level = l[MV_LEVEL] + 1;
+			}
+			else {
+				iname = "__IMAGE_DIR__/folder.gif";
+				out = out + '<img src=' + '"' + iname + '" border=0 align=absbottom>';
+				next_level = l[MV_LEVEL];
+			}
+			out = out + '</a>';
+		}
+		else {
+			out = out + '<img'; // > Defeate image subst
+			out = out + ' src="' + '__IMAGE_DIR__/bg.gif" height=22';
+			out = out + ' width=20 border=0 align=absbottom>';
+			next_level = l[MV_LEVEL];
+		}
+
+		if(l[PAGE]) {
+			out = out + '<a class=barlink href="' + l[PAGE] + openstring + '"';
+			out = out + ' onDblClick="toggit(' + idx + ')"';
+			if(l[DESCRIPTION])
+				out = out + ' title="' + l[DESCRIPTION] + '"';
+			out = out + '>';
+			out = out + l[NAME] + '</a>';
+		}
+		else {
+			out = out + l[NAME];
+		}
+		// out = out + ' level=' + l[MV_LEVEL] + ' children=' + l[MV_CHILDREN];
+		// out = out + ' needed=' + needed + ", next_level=" + next_level;
+		out = out + '<br>';
+
+		return out;
+	}
+
+	function toggit (idx) {
+
+		var l = lines[idx];
+		if(l == undefined) {
+			alert("bad index " + idx);
+			return;
+		}
+		if(l[MV_CHILDREN] < 1) {
+			alert("nothing to toggle at index " + idx);
+			return;
+		}
+
+		openstatus[idx] = openstatus[idx] == 1 ? 0 : 1;
+		openstring = openstatus.join('');
+		openstring = openstring.replace(/0+$/, '');
+		rewrite_tree();
+	}
+
+	function do_explode () {
+		for(var i = 0; i < lines.length; i++)
+			openstatus[i] = 1;
+		rewrite_tree();
+	}
+
+	function do_collapse () {
+		for(var i = 0; i < lines.length; i++)
+			openstatus[i] = 0;
+		rewrite_tree();
+	}
+
+
+	function rewrite_tree () {
+		var thing = '';
+		for(i = 0; i < lines.length; i++) {
+			thing = thing + tree_link(i);
+		}
+		treebox.innerHTML = thing;
+		next_level = 0;
+	}
+
+</script>
+[/restrict]
+
+<div id=treebox style="Visibility: Visible">
+Test.
+</div>
+
+<script>
+	treebox = document.getElementById('treebox');
+	if(collapse == 1 || explode == 1) {
+		openstatus.length = 0;
+	}
+	for( var i = 0; i < lines.length; i++) {
+		if(openstatus[i] == undefined)
+			openstatus[i] = explode;
+	}
+	collapse = 0;
+	explode = 0;
+	openstring = openstatus.join('');
+	openstring = openstring.replace(/0+$/, '');
+	rewrite_tree();
+</script>
+
+[goto LAST]
+&nbsp;
+
+[label OLDBROWSER]
+
+<P>
+<a href="[area href=@@MV_PAGE@@ form="explode=1"]" class=barlink>Explode tree</A><br>
+<a href="[area href=@@MV_PAGE@@ form="collapse=1"]" class=barlink>Collapse tree</A>
+</P>
+
+[tree   start="[control tree_selector Products]"
+		table=tree
+		master=parent_fld
+		subordinate=code
+		autodetect=1
+		toggle=toggle
+		memo=memo
+		sort=code
+		collapse=collapse
+		explode=explode
+		spacer="&nbsp;"
+		spacing=4
+		iterator=tree_link
+		/]
+
+[label LAST]
+
+    </td>
+  </tr>
+  </table>
+  <br>
+</td></tr>
+
+<!-- END COMPONENT [control component product_tree] -->
