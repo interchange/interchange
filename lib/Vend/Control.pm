@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.10 2003-07-31 19:33:40 racke Exp $
+# $Id: Control.pm,v 2.11 2004-09-25 09:43:47 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -111,7 +111,8 @@ sub control_interchange {
 The previous Interchange server was not running and probably
 terminated with an error.
 EOF
-		return if $restart;
+		exit 1 unless $restart;
+		return;
 	}
 	if(! $sig) {
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
