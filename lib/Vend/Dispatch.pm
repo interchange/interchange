@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.27 2003-10-28 17:22:29 mheins Exp $
+# $Id: Dispatch.pm,v 1.28 2003-12-06 22:52:36 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.27 $, 10);
+$VERSION = substr(q$Revision: 1.28 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1353,7 +1353,8 @@ EOF
     url_history($Vend::FinalPath) if $Vend::Cfg->{History};
 
 # TRACK
-    $Vend::Track = new Vend::Track;
+    $Vend::Track = new Vend::Track
+		unless $Vend::admin and ! $::Variable->{MV_TRACK_ADMIN};
 # END TRACK
 
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
