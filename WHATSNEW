@@ -156,6 +156,12 @@ Payment
   their site's interaction with the Interchange Payment system, without
   actually being connected to a real Payment Services Provider. 
 
+* Change AuthorizeNet.pm to more easily enable settlement of orders
+  done via AUTH_ONLY.
+
+* Prevent automatic try at credit card encryption if no EncryptKey
+  is present.
+
 Filters
 -------
 
@@ -369,6 +375,10 @@ UI
 
 * Ability to employ database entries in filters supported by profile 
   "process_filter" now.
+
+* Major update to order status update program. Now can batch ship by
+  checking boxes, sequence ship, settle transactions previously done
+  via auth_only with realtime payment gateway, and more.
 
 * Many, many, minor bug fixes and improvements.
 

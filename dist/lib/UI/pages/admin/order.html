@@ -41,6 +41,11 @@
 
 @_UI_STD_HEAD_@
 
+[comment]
+<!-- sequence_edit: [cgi ui_sequence_edit] -->
+<!-- item_id_left: [cgi item_id_left] -->
+[/comment]
+
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
 [set ui_error]
@@ -52,6 +57,42 @@
 [tmp can_delete][if-mm advanced order=d]1[/if-mm][/tmp]
 
 [include include/order_delete_archive]
+
+[perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
+	delete $Scratch->{ui_location};
+	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/order_status';
+	if($CGI->{ui_sequence_edit}) {
+		my $doit;
+		$CGI->{item_id_left} =~ s/-_NULL_-/\0/g;
+		$CGI->{item_id_left} =~ s/\0+/,/g;
+		$CGI->{item_id_left} =~ s/,+/,/g;
+		if($CGI->{item_id_left} =~ s/^(.*?),//) {
+			$CGI->{item_id} = $1;
+			$doit = 1;
+		}
+		elsif ($CGI->{item_id_left}) {
+			$CGI->{item_id} = delete $CGI->{item_id_left};
+			delete $CGI->{ui_sequence_edit};
+			$doit = 1;
+		}
+		else {
+			delete $CGI->{item_id};
+			delete $CGI->{ui_sequence_edit};
+		}
+		return unless $doit;
+		$Scratch->{ui_location}
+				= $Tag->area( {
+						href => $dest,
+						form => qq{
+							item_id=$CGI->{item_id}
+							item_id_left=$CGI->{item_id_left}
+							ui_sequence_edit=$CGI->{ui_sequence_edit}
+						},
+					});
+		return;
+	}
+
+[/perl]
 
 [calc]
 	if ($CGI->{mv_like_spec}) {
@@ -289,13 +330,79 @@
 			`]
 [scratch archive_nm]order=1[/button]
 
-<p>
+&nbsp;&nbsp;&nbsp;[button form=batch src="__UI_IMG__icon_merch.gif"
+			link-text-too=1
+			text="Ship checked orders"
+			]
+ui_sequence_edit=[calc]
+	$CGI->{item_id} = delete $CGI->{order};
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=__UI_BASE__/order_status
+[/button]
+
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<table>
+	<tr>
+		<td>
+
 <A HREF="javascript:checkAll(document.batch, 'order', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <A HREF="javascript:checkAll(document.batch, 'order', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+
+		</td>
+
+[if scratch old_browser]
+	<td>
+<input type=checkbox name=ship_auto value=1> <span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]">Ship all automatically</span>
+	</td>
+[else]
+	<td>
+<script>
+	function div_vis (show) {
+		var el = document.getElementById('ship_auto_help');
+		el.style.display = show ? 'block' : 'none';
+	}
+</script>
+		<span onMouseOver="div_vis(1)" onMouseOut="div_vis(0)">
+			<input type=checkbox name=ship_auto value=1> Ship all automatically
+		&nbsp;
+		&nbsp;
+		</span>
+		</td>
+		<td height=50>
+			<div
+				id=ship_auto_help
+				style="
+					display: none;
+					border: 2px solid black;
+					padding: 5px;
+				">
+				Ship all lines of all orders,<br>
+				archive[if variable SETTLE_TRANSACTION], settle[/if]
+			</div>
+		</td>
+
+[/else]
+[/if]
+
+	</tr>
+</table>
 </FORM>
 [/search-region]
 <!-- ----- END REAL STUFF ----- -->
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.9 2002-10-17 04:46:23 mheins Exp $ -->

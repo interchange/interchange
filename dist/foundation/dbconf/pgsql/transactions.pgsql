@@ -5,7 +5,7 @@ endif
 ifdef SQLPASS
 Database  transactions  PASS         __SQLPASS__
 endif
-Database  transactions  transactions.raw  SQL
+Database  transactions  DEFAULT_TYPE varchar(128)
 Database  transactions  COLUMN_DEF   "code=VARCHAR(14) NOT NULL PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=VARCHAR(9)"
 Database  transactions  COLUMN_DEF   "order_number=VARCHAR(14) NOT NULL"
@@ -44,6 +44,8 @@ Database  transactions  COLUMN_DEF   "b_phone=VARCHAR(20)"
 Database  transactions  COLUMN_DEF   "payment_method=varchar(128)"
 Database  transactions  COLUMN_DEF   "avs=varchar(32)"
 Database  transactions  COLUMN_DEF   "order_id=varchar(32)"
+Database  transactions  COLUMN_DEF   "auth_code=varchar(32)"
+Database  transactions  COLUMN_DEF   "tracking_number=varchar(64)"
 Database  transactions  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
 Database  transactions  COLUMN_DEF   "update_date=timestamp"
 Database  transactions  COLUMN_DEF   "archived=CHAR(1) DEFAULT ''"

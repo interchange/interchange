@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.1 2002-09-08 15:40:07 kwalsh Exp $
+# $Id: TestPayment.pm,v 1.2 2002-10-17 04:46:24 mheins Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -27,7 +27,7 @@ package Vend::Payment::TestPayment;
 
 =head1 Interchange payment test module
 
-Vend::Payment::TestPayment $Revision: 1.1 $
+Vend::Payment::TestPayment $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -190,7 +190,7 @@ BEGIN {
 	unless $Vend::Quiet;
 }
 
-$VERSION = substr(q$Revision: 1.1 $,10);
+$VERSION = substr(q$Revision: 1.2 $,10);
 
 package Vend::Payment;
 
@@ -199,17 +199,17 @@ sub testpayment {
 
     my $opt;
     if (ref $user){
-	$opt = $user;
-	$user = $opt->{id} || undef;
-	$secret = $opt->{secret} || undef;
+		$opt = $user;
+		$user = $opt->{id} || undef;
+		$secret = $opt->{secret} || undef;
     }
     else{
-	$opt = {};
+		$opt = {};
     }
 	
     my $actual;
     if ($opt->{actual}){
-	$actual = $opt->{actual};
+		$actual = $opt->{actual};
     }
     else{
 	my (%actual) = map_actual();
@@ -227,6 +227,19 @@ sub testpayment {
     $secret ||= charge_param('secret');
 
     my $precision = $opt->{precision} || 2;
+
+	my @override = qw/
+						order_id
+						auth_code
+						mv_credit_card_exp_month
+						mv_credit_card_exp_year
+						mv_credit_card_number
+					/;
+	for(@override) {
+		next unless defined $opt->{$_};
+		$actual->{$_} = $opt->{$_};
+	}
+
 
     $actual->{mv_credit_card_exp_month} =~ s/\D//g;
     $actual->{mv_credit_card_exp_year} =~ s/\D//g;
@@ -248,25 +261,74 @@ sub testpayment {
     $order_id = gen_order_id($opt);
 
     my %result;
+	
+	my $msg = $opt->{message_declined};
 
-    if ($actual->{mv_credit_card_number} eq '4111111111111111'){
+	if($opt->{transaction} =~ /^settle/ ) {
+		$msg ||= 'Settlement failure: %s';
+		if(! $actual->{order_id}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need order-id');
+		}
+		elsif(! $actual->{auth_code}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need auth-code');
+		}
+		else {
+			$result{'pop.status'} = 'success';
+			$result{'pop.order-id'} = $opt->{order_id};
+			$result{'pop.auth-code'} = $opt->{auth_code};
+		}
+	}
+	elsif($opt->{transaction} eq 'void' ) {
+		$msg ||= 'Void failure: %s';
+		if(! $opt->{order_id}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need order-id');
+		}
+		elsif($opt->{auth_code}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need auth-code');
+		}
+		else {
+			$result{'pop.status'} = 'success';
+			$result{'pop.order-id'} = $opt->{order_id};
+			$result{'pop.auth-code'} = $opt->{auth_code};
+		}
+	}
+	elsif($opt->{transaction} eq 'return' ) {
+		$msg ||= 'Return/credit failure: %s';
+		if(! $opt->{order_id}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need order-id');
+		}
+		elsif($opt->{auth_code}) {
+			$result{'pop.status'} = 'failure';
+			$result{'pop.error-message'} = errmsg($msg,'Need auth-code');
+		}
+		else {
+			$result{'pop.status'} = 'success';
+			$result{'pop.order-id'} = $opt->{order_id};
+			$result{'pop.auth-code'} = $opt->{auth_code};
+		}
+	}
+    elsif ($actual->{mv_credit_card_number} eq '4111111111111111'){
     	$result{'pop.status'} = 'success';
-	$result{'pop.order-id'} = $opt->{order_id};
-	$result{'pop.auth-code'} = 'test_auth_code';
+		$result{'pop.order-id'} = $opt->{order_id};
+		$result{'pop.auth-code'} = 'test_auth_code';
     }
     elsif ($actual->{mv_credit_card_number} eq '4111111111111129'){
+		$msg ||= 'TestPayment error: %s.  Please call in your order or try again.';
     	$result{'pop.status'} = 'failure';
-	my $msg = $opt->{message_declined} ||
-	    'TestPayment error: %s.  Please call in your order or try again.';
-	$result{'pop.error-message'} = errmsg($msg,'Payment declined by the card issuer');
+		$result{'pop.error-message'} =
+			errmsg($msg,'Payment declined by the card issuer');
     }
     else{
     	$result{'pop.status'} = 'failure';
-	delete $result{'pop.order-id'};
-	delete $result{'order-id'};
-	my $msg = $opt->{message_declined} ||
-	    'TestPayment error: %s.  Please call in your order or try again.';
-	$result{'pop.error-message'} = errmsg($msg,'Invalid test card number');
+		delete $result{'pop.order-id'};
+		delete $result{'order-id'};
+		$msg ||= 'TestPayment error: %s.  Please call in your order or try again.';
+		$result{'pop.error-message'} = errmsg($msg,'Invalid test card number');
     }
 
     $result{MStatus} = $result{'pop.status'};

@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.6 2002-07-24 18:54:09 mheins Exp $
+# $Id: Payment.pm,v 2.7 2002-10-17 04:46:24 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -468,13 +468,10 @@ sub charge {
 	$Vend::Session->{payment_id} = $result{'order-id'};
 
 	my $encrypt = charge_param('encrypt');
-	$encrypt = 1 unless defined $encrypt;
 
-	if($encrypt) {
+	if($encrypt and $CGI::values{mv_credit_card_number} and $Vend::Cfg->{EncryptKey}) {
 		my $prog = charge_param('encrypt_program') || $Vend::Cfg->{EncryptProgram};
 		if($prog =~ /pgp|gpg/) {
-			local($Vend::Cfg->{Encrypt_program});
-			$Vend::Cfg->{Encrypt_program} = $prog;
 			$CGI::values{mv_credit_card_force} = 1;
 			(
 				undef,

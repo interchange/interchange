@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.5 2002-06-17 22:24:11 jon Exp $
+# $Id: AuthorizeNet.pm,v 2.6 2002-10-17 04:46:24 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.5 $
+Vend::Payment::AuthorizeNet $Revision: 2.6 $
 
 =head1 SYNOPSIS
 
@@ -316,6 +316,18 @@ sub authorizenet {
 	my $referer   =  $opt->{referer}
 					|| charge_param('referer');
 
+	my @override = qw/
+						order_id
+						auth_code
+						mv_credit_card_exp_month
+						mv_credit_card_exp_year
+						mv_credit_card_number
+					/;
+	for(@override) {
+		next unless defined $opt->{$_};
+		$actual->{$_} = $opt->{$_};
+	}
+
 	## Authorizenet does things a bit different, ensure we are OK
 	$actual->{mv_credit_card_exp_month} =~ s/\D//g;
     $actual->{mv_credit_card_exp_month} =~ s/^0+//;
@@ -344,12 +356,12 @@ sub authorizenet {
 		mauthcapture 			=>	'AUTH_CAPTURE',
 		mauthonly				=>	'AUTH_ONLY',
 		return					=>	'CREDIT',
-		reverse           		=>	'PRIOR_AUTH_CAPTURE',
+		settle_prior        	=>	'PRIOR_AUTH_CAPTURE',
 		sale		 			=>	'AUTH_CAPTURE',
 		settle      			=>  'CAPTURE_ONLY',
 		void					=>	'VOID',
 	);
-	
+
 	if (defined $type_map{$transtype}) {
         $transtype = $type_map{$transtype};
     }
@@ -363,6 +375,7 @@ sub authorizenet {
 
 	$order_id = gen_order_id($opt);
 
+#::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
     my %query = (
                     x_Test_Request	=> $opt->{test} || charge_param('test'),
                     x_Card_Num		=> $actual->{mv_credit_card_number},
@@ -470,6 +483,7 @@ sub authorizenet {
     		$result{MErrMsg} = errmsg($msg, $result{x_response_reason_text});
     	}
     }
+#::logDebug(qq{authorizenet result=} . uneval(\%result));    	
 
     return (%result);
 }

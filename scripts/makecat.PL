@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.16 2002-08-12 00:34:58 mheins Exp $
+# $Id: makecat.PL,v 2.17 2002-10-17 04:46:24 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -158,6 +158,8 @@ if (scalar @ARGV > 1) {
 	    'imageurl'          => \$Conf{imageurl},
 	    'l'                 => \$Logfile,
 	    'linkmode'          => \$Conf{linkmode},
+	    'linkhost'          => \$Conf{linkhost},
+	    'linkport'          => \$Conf{linkport},
 	    'linkprogram'       => \$Conf{linkprogram},
 	    'mailorderto'       => \$Conf{mailorderto},
 	    'interchangegroup'  => \$Conf{interchangegroup},
@@ -208,6 +210,8 @@ if (scalar @ARGV > 1) {
 	    imageurl=s
 	    l=s
 	    linkmode=s
+	    linkhost=s
+	    linkport=s
 	    linkprogram=s
 	    mailorderto=s
 	    interchangegroup|minivendgroup|group=s
@@ -1350,7 +1354,7 @@ EOF
 
 		my %seen;
 		sethistory(grep !$seen{$_}++, @ports);
-		$default = $defport || 7786;
+		$default = $defport || $Conf{linkport} || 7786;
 		$lp = $lh = '';
 		while(! $lp) {
 			$lp = prompt("TCP socket to use? ", $default);
@@ -1362,7 +1366,7 @@ EOF
 		}
 
 		sethistory(grep !$seen{$_}++, @hosts);
-		$default = $defhost || 'localhost';
+		$default = $defhost || $Conf{linkhost} || 'localhost';
 		while(! $lh) {
 			$lh = prompt("Link host? ", $default);
 			redo INETASK if $lh eq '@';
@@ -2273,7 +2277,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.16 2002-08-12 00:34:58 mheins Exp $
+# $Id: makecat.PL,v 2.17 2002-10-17 04:46:24 mheins Exp $
 
 =head1 INTRODUCTION
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: configure,v 2.6 2002-08-15 20:18:48 mheins Exp $
+# $Id: configure,v 2.7 2002-10-17 04:46:23 mheins Exp $
 
 cat <<EOF
 
@@ -102,6 +102,6 @@ echo "If you get a CPAN error, rerun the configuration and it should go away."
 echo
 fi
 
-$PERL Makefile.PL
+$PERL Makefile.PL $*
 make
 make test && make install

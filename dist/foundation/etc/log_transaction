@@ -67,7 +67,7 @@ Payment processing...payment_method=[value mv_order_profile]
 	Real-time charge FAILED. Reason: [data session cybercash_error]
 	[calc]
 		die errmsg(
-				"Real-time charge failed. Reason: %s",
+				"Real-time charge failed. Reason: %s\n",
 				errmsg($Session->{cybercash_error}),
 			);
 	[/calc]
@@ -172,6 +172,7 @@ b_phone: [value filter=strip name=b_phone]
 payment_method: [value mv_payment]
 payment_mode: [data session payment_mode]
 order_id: [data session payment_id]
+auth_code: [calc] ($Session->{payment_result} || {})->{'pop.auth-code'}; [/calc]
 order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
 order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
 order_wday: [value name=order_wday set="[tag time]%u[/tag]"]

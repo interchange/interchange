@@ -27,6 +27,13 @@ Variable  TRAFFIC  low
 
 #========================================================================#
 
+# Require an external module
+
+# This one tests the realtime payment gateway code, uncomment to test.
+## Require module Vend::Payment::TestPayment
+
+#========================================================================#
+
 # Disable old C-style meta-directives like #ifdef, #endif, and #include.
 ConfigParseComments No
 

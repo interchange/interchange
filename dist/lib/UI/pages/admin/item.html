@@ -51,6 +51,7 @@
 
 [perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
+	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/item_edit';
 	if($CGI->{ui_sequence_edit}) {
 		my $doit;
 		if($CGI->{item_id_left} =~ s/^(.*?),//) {
@@ -69,7 +70,7 @@
 		return unless $doit;
 		$Scratch->{ui_location}
 				= $Tag->area( {
-						href => '__UI_BASE__/item_edit',
+						href => $dest,
 						form => qq{
 							item_id=$CGI->{item_id}
 							item_id_left=$CGI->{item_id_left}
@@ -570,4 +571,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.12 2002-10-11 18:42:47 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.13 2002-10-17 04:46:23 mheins Exp $ -->

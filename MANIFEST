@@ -15,6 +15,7 @@ WHATSNEW
 code/ActionMap/foo.am
 code/Filter/date2time.filter
 code/Filter/lc.filter
+code/Filter/next_sequential.filter
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
 code/SystemTag/area.coretag
@@ -168,6 +169,7 @@ code/UI_Tag/tabbed_display.coretag
 code/UI_Tag/table_editor.coretag
 code/UI_Tag/uneval.coretag
 code/UI_Tag/unlink_file.coretag
+code/UI_Tag/update_order_status.tag
 code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
 code/UI_Tag/with.coretag
@@ -794,10 +796,8 @@ dist/foundation/templates/sampledata/reports/products/cat.txt
 dist/foundation/templates/sampledata/reports/products/inventory.txt
 dist/foundation/templates/sampledata/reports/products/merchandising.txt
 dist/foundation/templates/sampledata/reports/products/options.txt
-dist/foundation/templates/sampledata/reports/products/orderline.txt
 dist/foundation/templates/sampledata/reports/products/pricing.txt
 dist/foundation/templates/sampledata/reports/products/products.txt
-dist/foundation/templates/sampledata/reports/products/transactions.txt
 dist/foundation/templates/sampledata/reports/products/userdb.txt
 dist/foundation/templates/sampledata/tools/etc/after.cfg
 dist/foundation/templates/sampledata/tools/etc/before.cfg
@@ -1216,6 +1216,7 @@ lib/Vend/Server.pm
 lib/Vend/Session.pm
 lib/Vend/SessionDB.pm
 lib/Vend/SessionFile.pm
+lib/Vend/Swish.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DBI.pm
 lib/Vend/Table/DB_File.pm

@@ -247,5 +247,5 @@ Our Price	Sale Price	Best Price
 
 DEMOMODE
 Set to 1 to display demo helper features in your store
-	1	0
+__MVC_DEMOMODE__	1	0
 
