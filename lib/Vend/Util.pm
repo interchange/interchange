@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.31 2001-04-18 03:57:42 heins Exp $
+# $Id: Util.pm,v 1.14.2.32 2001-05-29 14:21:19 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -60,6 +60,7 @@ require Exporter;
 	secure_vendUrl
 	send_mail
 	setup_escape_chars
+	set_lock_type
 	show_times
 	string_to_ref
 	tag_nitems
@@ -76,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.31 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.32 $, 10);
 
 BEGIN {
 	eval {
@@ -1154,9 +1155,7 @@ sub fcntl_unlock {
     my ($fh) = @_;
 	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
 	if (fcntl($fh, F_SETLK, $struct) < 0) {
-		if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
+		if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
 			return 0;
 		}
 		else {
@@ -1166,24 +1165,27 @@ sub fcntl_unlock {
 	return 1;
 }
 
-my $lock_function;
-my $unlock_function;
+my $lock_function = \&flock_lock;
+my $unlock_function = \&flock_unlock;
 
-if ($Global::LockType eq 'none') {
-    print errmsg("using NO locking") . "\n";
-    $lock_function = sub {1};
-    $unlock_function = sub {1};
+sub set_lock_type {
+	if ($Global::LockType eq 'none') {
+		logDebug("using NO locking");
+		$lock_function = sub {1};
+		$unlock_function = sub {1};
+	}
+	elsif ($Global::LockType =~ /fcntl/i) {
+		logDebug("using fcntl(2) locking");
+		$lock_function = \&fcntl_lock;
+		$unlock_function = \&fcntl_unlock;
+	}
+	else {
+		$lock_function = \&flock_lock;
+		$unlock_function = \&flock_unlock;
+	}
+	return; # VOID
 }
-elsif ($Global::LockType =~ /fcntl/i) {
-    logDebug("using fcntl(2) locking");
-    $lock_function = \&flock_lock;
-    $unlock_function = \&flock_unlock;
-}
-else {
-    $lock_function = \&flock_lock;
-    $unlock_function = \&flock_unlock;
-}
-    
+ 
 sub lockfile {
     &$lock_function(@_);
 }
