@@ -13,9 +13,18 @@
 					<td width="128">
 		<img src="space.gif" width="128" height="1"><br>
 		<font face="verdana" size="2"><b>
+		[if session login_table eq '__UI_ACCESS_TABLE__']
+		<I>You are logged in as admin user <b>[data session username]</b>.
+		You will be logged out if you place an order.
+		<p>
+		&nbsp;&nbsp;<a href="[area __UI_BASE__/index]">admin menu</A><br>
+		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;
+		[else]
 		&nbsp;&nbsp;[value fname] [value lname]<p>
 		&nbsp;&nbsp;<a href="[area query/check_orders]">order status</A><br>
-		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;</td>
+		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;
+		[/else]
+		[/if]</td>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
 				</tr>
 				<tr>
