@@ -635,7 +635,6 @@ dist/foundation/templates/sampledata/tools/products/transactions.txt
 dist/foundation/templates/sampledata/tools/products/userdb.txt
 dist/foundation/upload/.empty
 dist/foundation/upload/products.xls
-dist/foundation/upload/sampledata.xls
 dist/interchange.cfg.dist
 dist/lib/UI/ContentEditor.pm
 dist/lib/UI/Primitive.pm
