@@ -739,10 +739,14 @@ sub MY::install {
 
 	my $uidparm;
 
-	if ($MV::Default{INTERCHANGE_USER}) {
-		$uidparm = "INTERCHANGE_USER=$MV::Default{INTERCHANGE_USER}";
+	if (-f "_uid") {
+		if (open UID, '_uid') {
+			chomp (my $uid = <UID>);
+			close UID;
+			$uidparm = "INTERCHANGE_USER=$uid";
+		}
 	}
-	
+
 	my $new = <<EOF;
 VERBINST=0
 
