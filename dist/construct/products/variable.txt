@@ -44,6 +44,7 @@ UI_C_TITLEBARBG	#6699FF	Admin colors
 UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#6699FF	Admin colors
 UI_HELP_BASE_URL	http://help.akopia.com/4.5.6/	Admin control
+UI_IMG	__MVC_SHAREURL__	Admin control
 UI_ITEM_FIELDS	description image comment size color sku price weight category	Item display
 UI_META_LINK	0	Admin control
 UI_SZ_LIST_CUSTOMER	25	Customer display
