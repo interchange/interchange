@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.4 2001-08-10 18:59:52 heins Exp $
+# $Id: makecat.PL,v 2.5 2001-08-11 03:35:21 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -471,9 +471,14 @@ my %Prefix = (
 								unless $isroot;
 							return "~/catalogs";
 							},
-	interchangeuser =>  sub {  return 'everybody' if $Windows;
-							get_id(); },
-	interchangegroup=>  '',
+	interchangeuser =>  sub {
+							return 'everybody' if $Windows;
+							get_id();
+						},
+	interchangegroup=>  sub {
+							return '' unless $Conf{permtype} =~ /^g/i;
+							return $Conf{interchangeuser};
+						},
     servername => sub {
 						my $host = `hostname`;
 						chomp $host;
@@ -485,8 +490,14 @@ my %Prefix = (
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
 	demotype     =>  $ENV{MVC_DEMOTYPE} || 'foundation',
     catuser      =>  sub {
-							$ENV{MVC_CATUSER} ||
-							($isroot ? '' : $Conf{'interchangeuser'})
+							if ($isroot) {
+								 return $Conf{interchangeuser}
+								 	if $Conf{permtype} =~ /^u/i;
+								 return '';
+							}
+							else {
+								 return $Conf{interchangeuser};
+							}
 						},
     mailorderto  => 
 						sub {  return 'webmaster' if $Windows;
@@ -1506,6 +1517,10 @@ for($Conf{catroot}, $Conf{samplehtml}, $Conf{imagedir}) {
 }
 
 if($warn) {
+	my $save;
+	if($Conf{permtype} =~ /^[mgMG]/) {
+		$save = umask 2;
+	}
 	for(qw(catroot samplehtml imagedir)) {
 		$dir = "$Conf{relocate}$Conf{$_}";
 #print "doing dir=$dir\n";
@@ -1519,6 +1534,7 @@ if($warn) {
 				or die "Couldn't make directory $dir: $!\n";
 		}
 	}
+	umask $save if defined $save;
 }
 
 for(qw(catroot samplehtml imagedir)) {
@@ -1789,8 +1805,18 @@ sub set_owner {
 	my($file) = @_;
 	return unless $isroot;
 	my ($user, $group) = ($mvuid, $mvgid);
-	if($Conf{permtype} =~ /^m/i) { $user = $catuid; $group = $catgid; }
-	elsif($Conf{permtype} =~ /^g/i) { $group = $catgid; }
+
+	if($Conf{interchangegroup}) {
+		$group = getgrnam($Conf{interchangegroup});
+	}
+	elsif($Conf{permtype} =~ /^g/i) {
+		$group = $catgid;
+	}
+
+	if($Conf{permtype} =~ /^m/i) {
+		$user = $catuid;
+		$group = $catgid;
+	}
 	chown($user, $group, $file)
 		or die "Couldn't set ownership to UID=$user GID=$group for $file: $!\n";
 }
@@ -1980,7 +2006,11 @@ EOF
 		print do_msg("Moving HTML files to $Conf{samplehtml}");
 		eval {
 			chdir 'html' or ++$ok and die "\nchdir html: $!\n";
-			copy_current_to_dir("$Conf{relocate}$Conf{samplehtml}");
+			copy_current_to_dir(
+				"$Conf{relocate}$Conf{samplehtml}",
+				undef,
+				{ Perms => $Conf{permtype} },
+			);
 			chdir '..';
 			File::Path::rmtree('html'); 
 		};
@@ -2004,7 +2034,11 @@ EOF
 		print do_msg("Moving image files to $Conf{imagedir}");
 		eval {
 			chdir 'images' or ++$ok and die "chdir images: $!\n";
-			copy_current_to_dir("$Conf{relocate}$Conf{imagedir}");
+			copy_current_to_dir(
+				"$Conf{relocate}$Conf{imagedir}",
+				undef,
+				{ Perms => $Conf{permtype} },
+			);
 			chdir '..';
 			File::Path::rmtree('images');
 		};
@@ -2269,7 +2303,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.4 2001-08-10 18:59:52 heins Exp $
+# $Id: makecat.PL,v 2.5 2001-08-11 03:35:21 heins Exp $
 
 =head1 INTRODUCTION
 

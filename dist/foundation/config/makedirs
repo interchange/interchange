@@ -1,16 +1,30 @@
 #!/bin/sh
 
+PERMTYPE=`echo __MVC_PERMTYPE__ | sed -e 's/\(.\).*/\1/' | tr a-z A-Z`
+
 if [ "x`whoami`" = xroot ]
 then
-	CATUSER=__MVC_CATUSER__
-	CATGROUP=__MVC_CATGROUP__
+	if test "x$PERMTYPE" = x -o "x$PERMTYPE" = xM
+	then
+		CATUSER=__MVC_CATUSER__
+		CATGROUP=__MVC_CATGROUP__
+	elif test "x$PERMTYPE" = xG
+	then
+		CATUSER=__MVC_INTERCHANGEUSER__
+		CATGROUP=__MVC_CATGROUP__
+	else
+		CATUSER=__MVC_INTERCHANGEUSER__
+		CATGROUP=__MVC_INTERCHANGEGROUP__
+	fi
 fi
 
-if test "x__MVC_PERMTYPE__" = x -o "x__MVC_PERMTYPE__" = xM -o "x__MVC_PERMTYPE__" = xG
+if test "x$PERMTYPE" = x -o "x$PERMTYPE" = xM -o "x$PERMTYPE" = xG
 then
 	DMODE=2770
+	FMODE=660
 else
 	DMODE=700
+	FMODE=600
 fi
 
 # Link the image directory always
@@ -30,6 +44,7 @@ then
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
 	if test -n "$CATUSER"
 	then
+		touch           __MVC_RELOCATE__$LOGDIR/error.log
 		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
 		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
@@ -41,10 +56,14 @@ else
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
 	if test -n "$CATUSER"
 	then
+		touch           __MVC_RELOCATE__$LOGDIR/error.log
 		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
 		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
 fi
+
+chmod $FMODE __MVC_RELOCATE__$LOGDIR/error.log
+chmod $FMODE __MVC_RELOCATE____MVC_CATROOT__/catalog.cfg
 
 # Make cache directories to store tmps.
 if test -n '__MVC_CACHEDIR__'
