@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
+# $Id: localize.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -58,6 +58,9 @@ use Getopt::Std;
 use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t);
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
@@ -350,7 +353,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
+$Id: localize.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
 
 =head1 SYNOPSIS
 

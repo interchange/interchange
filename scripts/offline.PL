@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.7 2000-09-25 16:42:51 zarko Exp $
+# $Id: offline.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -70,6 +70,9 @@ $Data::Dumper::Terse = 1;
 $Data::Dumper::Indent = 2;
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	eval {
 		require 5.004;
 		require FindBin;
@@ -274,7 +277,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.7 2000-09-25 16:42:51 zarko Exp $
+$Id: offline.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
 
 =head1 DESCRIPTION
 

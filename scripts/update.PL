@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 1.7 2000-09-25 16:08:06 zarko Exp $
+# $Id: update.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -58,6 +58,9 @@ use Vend::Data;
 use Vend::Util;
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	eval {
 		require 5.004;
 		require FindBin;
