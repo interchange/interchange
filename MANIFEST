@@ -1110,13 +1110,13 @@ dist/lib/UI/pages/include/item_option_modular
 dist/lib/UI/pages/include/item_option_simple
 dist/lib/UI/pages/include/menus/Accounting.txt
 dist/lib/UI/pages/include/menus/Admin.txt
-dist/lib/UI/pages/include/menus/Bottom.txt
 dist/lib/UI/pages/include/menus/Commerce.txt
 dist/lib/UI/pages/include/menus/Content.txt
 dist/lib/UI/pages/include/menus/ContentEdit.txt
 dist/lib/UI/pages/include/menus/Customers.txt
 dist/lib/UI/pages/include/menus/DbConfig.txt
 dist/lib/UI/pages/include/menus/Design.txt
+dist/lib/UI/pages/include/menus/Fixed.txt
 dist/lib/UI/pages/include/menus/Items.txt
 dist/lib/UI/pages/include/menus/Layout.txt
 dist/lib/UI/pages/include/menus/Legacy.txt
