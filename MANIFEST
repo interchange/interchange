@@ -643,6 +643,7 @@ dist/lib/UI/usertag/db_columns.tag
 dist/lib/UI/usertag/db_hash.tag
 dist/lib/UI/usertag/dbinfo.tag
 dist/lib/UI/usertag/diff.tag
+dist/lib/UI/usertag/diffmerge.tag
 dist/lib/UI/usertag/directive_value.tag
 dist/lib/UI/usertag/display.tag
 dist/lib/UI/usertag/dump_session.tag
@@ -801,6 +802,7 @@ lib/Vend/Parse.pm
 lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
+lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CCVS.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/Signio.pm
@@ -827,10 +829,13 @@ lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
 perl/Interchange.pm
+pod/ic_ecommerce.pod
+pod/ic_howto_cvs.pod
 pod/icadvanced.pod
 pod/iccattut.pod
 pod/icconfig.pod
 pod/icdatabase.pod
+pod/icfaq.pod
 pod/icfoundation.pod
 pod/ictags.pod
 pod/ictemplates.pod
