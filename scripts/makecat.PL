@@ -97,38 +97,39 @@ options:
     -r    Reconfigure defaults
 
     Defaults:
-    --basedir=directory      Base directory for catalogs
-    --cgibase=url_fragment   Base URL for link programs
-    --documentroot=directory The directory where HTML is based
-    --minivendgroup=group    The default group files should be owned by
-    --minivenduser=username  The user ID which runs Interchange
-    --serverconf=filename    Location of httpd.conf
-    --vendroot=filename      Location of Interchange software
-    --homedir=directory      Use instead of \$HOME to set defaults
+    --basedir=directory        Base directory for catalogs
+    --cgibase=url_fragment     Base URL for link programs
+    --documentroot=directory   The directory where HTML is based
+    --interchangegroup=group   The default group files should be owned by
+    --interchangeuser=username The user ID which runs Interchange
+    --serverconf=filename      Location of httpd.conf
+    --vendroot=filename        Location of Interchange software
+    --homedir=directory        Use instead of \$HOME to set defaults
 
     Required:
-    --catroot=directory      Directory where Interchange catalog files go
-    --cgidir=directory       The directory the CGI link should go to
-    --servername=server      Name of server (www.whatever.domain)
-    --cgiurl=url_fragment    The path to the CGI link (no server name)
-    --demotype=template      The template catalog (simple is the default)
-    --mailorderto=email      Email address to send orders
+    --catroot=directory        Directory where Interchange catalog files go
+    --cgidir=directory         The directory the CGI link should go to
+    --servername=server        Name of server (www.whatever.domain)
+    --cgiurl=url_fragment      The path to the CGI link (no server name)
+    --demotype=template        The template catalog (simple is the default)
+    --mailorderto=email        Email address to send orders
 
     Optional:
-    --catuser=username       The user files should be owned by (if root)
-    --imagedir=directory     The directory where template images go
-    --imageurl=url           The URL to prefix images with
-    --linkmode=mode          UNIX or INET (link program vlink or tlink)
-    --linkprogram=file       Use file as link program instead of vlink/tlink
-    --nocfg                  Don't add to minivend.cfg
-    --nocopy                 Don't actually copy the files, just test
-    --norunning              Don't add to running server
-    --noumask                Don't set umask
-    --permtype=[M|G|U]       Set permission type (Multi, Group, User)
-    --reference              Return hash of config as string (sets -F, no write)
-    --relocate=dir           Directory to relocate files to (for RPM and such)
-    --samplehtml=directory   The directory where template HTML goes
-    --sampleurl=url          URL to access HTML for catalog
+    --catuser=username         The user files should be owned by (if root)
+    --imagedir=directory       The directory where template images go
+    --imageurl=url             The URL to prefix images with
+    --linkmode=mode            UNIX or INET (link program vlink or tlink)
+    --linkprogram=file         Use file as link program instead of vlink/tlink
+    --nocfg                    Don't add to minivend.cfg
+    --nocopy                   Don't actually copy the files, just test
+    --norunning                Don't add to running server
+    --noumask                  Don't set umask
+    --permtype=[M|G|U]         Set permission type (Multi, Group, User)
+    --reference                Return hash of config as string
+                               (sets -F, no write)
+    --relocate=dir             Directory to relocate files to (for RPM and such)
+    --samplehtml=directory     The directory where template HTML goes
+    --sampleurl=url            URL to access HTML for catalog
 
 EOF
 
@@ -159,8 +160,8 @@ my %optctl = (
     'linkmode'          => \$Conf{linkmode},
     'linkprogram'       => \$Conf{linkprogram},
     'mailorderto'       => \$Conf{mailorderto},
-    'minivendgroup'     => \$Conf{minivendgroup},
-    'minivenduser'      => \$Conf{minivenduser},
+    'interchangegroup'  => \$Conf{interchangegroup},
+    'interchangeuser'   => \$Conf{interchangeuser},
     'nocfg'             => \$Conf{nocfg},
     'nocopy'            => \$Conf{nocopy},
     'norunning'         => \$Conf{norunning},
@@ -208,8 +209,8 @@ my @options = ( qw/
     linkmode=s
     linkprogram=s
     mailorderto=s
-    minivendgroup|group=s
-    minivenduser|mvuser=s
+    interchangegroup|minivendgroup|group=s
+    interchangeuser|minivenduser|mvuser=s
     nocfg
     nocopy
     norunning
@@ -403,7 +404,7 @@ $Conf{catalogname} = $catalog_name;
 
 my %Initial;
 
-my %IfRoot = (qw( permtype 1 minivenduser 1 minivendgroup 1 catuser 1));
+my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1));
 
 my %Prefix = (
 	vendroot     =>  $VendRoot,
@@ -415,9 +416,9 @@ my %Prefix = (
 								unless $isroot;
 							return "~/catalogs";
 							},
-	minivenduser =>  sub {  return 'everybody' if $Windows;
+	interchangeuser =>  sub {  return 'everybody' if $Windows;
 							get_id(); },
-	minivendgroup=>  '',
+	interchangegroup=>  '',
     servername	 =>  $Config{myhostname},
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
@@ -425,7 +426,7 @@ my %Prefix = (
 	demotype     =>  $ENV{MVC_DEMOTYPE} || 'simple',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
-							($isroot ? '' : $Conf{'minivenduser'})
+							($isroot ? '' : $Conf{'interchangeuser'})
 						},
     mailorderto  => 
 						sub {  return 'webmaster' if $Windows;
@@ -621,7 +622,7 @@ my %History = (
 						return (@return, sort @out);
 					},
 
-	minivenduser  =>   sub {
+	interchangeuser  =>   sub {
 						return 'everybody' if $Windows;
 						my @return = (@_);
 						my $u;
@@ -638,7 +639,7 @@ my %History = (
 						return (@return, sort @out);
 					},
 
-	minivendgroup  =>   sub {
+	interchangegroup  =>   sub {
 						return 'nogroup' if $Windows;
 						my (@return) = @_;
 						my $u;
@@ -658,8 +659,8 @@ my %History = (
 );
 
 unless($isroot) {
-	@Prefix{qw(minivenduser minivendgroup)} = get_ids();
-	$Prefix{catuser} = $Prefix{minivenduser};
+	@Prefix{qw(interchangeuser interchangegroup)} = get_ids();
+	$Prefix{catuser} = $Prefix{interchangeuser};
 	$Prefix{basedir} = "$ENV{HOME}/catalogs";
 }
 
@@ -1110,9 +1111,9 @@ EOF
 
 }
 
-$mvuid = $Windows ? 'everybody' : (getpwnam($Conf{minivenduser}))[2];
+$mvuid = $Windows ? 'everybody' : (getpwnam($Conf{interchangeuser}))[2];
 unless (defined $mvuid) {
-	die "$Conf{minivenduser} is not a valid user name on this machine.\n";
+	die "$Conf{interchangeuser} is not a valid user name on this machine.\n";
 }
 
 # Fix supplied by Paul V. Shevtsov
@@ -1121,14 +1122,14 @@ if($isroot) {
 		or warn "\nCouldn't set ownership of $Configfile: $!\n";
 }
 
-if ($Conf{minivendgroup}) {
-	$mvgid = $Windows ? 'nogroup' : getgrnam($Conf{minivendgroup});
+if ($Conf{interchangegroup}) {
+	$mvgid = $Windows ? 'nogroup' : getgrnam($Conf{interchangegroup});
 	unless (defined $mvgid) {
-		die "$Conf{minivendgroup} is not a valid group name on this machine.\n";
+		die "$Conf{interchangegroup} is not a valid group name on this machine.\n";
 	}
 }
 else {
-	$mvgid = $Windows ? 'nogroup' : (getpwnam($Conf{minivenduser}))[3];
+	$mvgid = $Windows ? 'nogroup' : (getpwnam($Conf{interchangeuser}))[3];
 }
 
 if($Windows) {
@@ -1891,7 +1892,7 @@ EOF
 	}
 	
     my $start_string = $> == 0
-				? qq(su -c "$Conf{vendroot}/bin/interchange -r" $Conf{minivenduser})
+				? qq(su -c "$Conf{vendroot}/bin/interchange -r" $Conf{interchangeuser})
 				: "$Conf{vendroot}/bin/interchange -r";
 
 	print <<EOF;
@@ -1957,7 +1958,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.10 2000-09-20 19:58:01 zarko Exp $
+$Id: makecat.PL,v 1.11 2000-09-21 23:09:07 zarko Exp $
 
 =head1 INTRODUCTION
 
@@ -2051,11 +2052,11 @@ are made with .cgi extension) or C</cgi-bin> (you have a CGI directory).
 The directory where HTML is based. This is the root directory of the
 web server, i.e. DocumentRoot.
 
-=item --minivendgroup=group
+=item --interchangegroup=group
 
 The default group files should be owned by.
 
-=item --minivenduser=username
+=item --interchangeuser=username
 
 The user ID which runs Interchange.
 
@@ -2356,45 +2357,45 @@ __END__
 
 # Sample catalog definition
 [catalog barry]
-basedir      =
-catroot      =
-catuser      =
-cgibase      =
-cgibin       =
-cgidir       =
-cgiurl       =
-demotype     = barry
-documentroot =
-imagedir     =
-imageurl     =
-mailorderto  =
-minivendgroup=
-minivenduser =
-samplehtml   =
-sampleurl    =
-servername   =
-vendroot     =
+basedir         =
+catroot         =
+catuser         =
+cgibase         =
+cgibin          =
+cgidir          =
+cgiurl          =
+demotype        = barry
+documentroot    =
+imagedir        =
+imageurl        =
+mailorderto     =
+interchangegroup=
+interchangeuser =
+samplehtml      =
+sampleurl       =
+servername      =
+vendroot        =
 
 # Simple catalog definition
 [catalog simple]
-basedir      =
-catroot      =
-catuser      =
-cgibase      =
-cgibin       =
-cgidir       =
-cgiurl       =
-demotype     = simple
-documentroot =
-imagedir     =
-imageurl     =
-mailorderto  =
-minivendgroup=
-minivenduser =
-samplehtml   =
-sampleurl    = 
-servername   =
-vendroot     =
+basedir         =
+catroot         =
+catuser         =
+cgibase         =
+cgibin          =
+cgidir          =
+cgiurl          =
+demotype        = simple
+documentroot    =
+imagedir        =
+imageurl        =
+mailorderto     =
+interchangegroup=
+interchangeuser =
+samplehtml      =
+sampleurl       = 
+servername      =
+vendroot        =
 
 [base]
 permtype=
@@ -2402,8 +2403,8 @@ basedir=
 cgidir=
 cgibase=
 documentroot=
-minivendgroup=
-minivenduser=
+interchangegroup=
+interchangeuser=
 serverconf=
 servername=
 vendroot=
@@ -2433,8 +2434,8 @@ documentroot
 imagedir
 imageurl
 mailorderto
-minivendgroup
-minivenduser
+interchangegroup
+interchangeuser
 samplehtml
 sampleurl
 serverconf
@@ -2453,8 +2454,8 @@ documentroot
 imagedir
 imageurl
 mailorderto
-minivendgroup
-minivenduser
+interchangegroup
+interchangeuser
 samplehtml
 sampleurl
 servername
@@ -2469,7 +2470,7 @@ cgibase
 documentroot
 vendroot
 basedir
-minivenduser
+interchangeuser
 EOF
 
 # 
@@ -2478,9 +2479,9 @@ EOF
 askconfig=<<EOF
 demotype
 permtype
-minivenduser
+interchangeuser
 catuser
-minivendgroup
+interchangegroup
 mailorderto
 catroot
 cgidir
@@ -2504,8 +2505,8 @@ demotype=1
 imagedir=1
 imageurl=1
 mailorderto=1
-minivenduser=1
-minivendgroup=1
+interchangeuser=1
+interchangegroup=1
 permtype=1
 samplehtml=1
 sampleurl=1
@@ -2518,8 +2519,8 @@ basedir=1
 cgidir=1
 cgibase=1
 documentroot=1
-minivendgroup=1
-minivenduser=1
+interchangegroup=1
+interchangeuser=1
 serverconf=1
 servername=1
 vendroot=1

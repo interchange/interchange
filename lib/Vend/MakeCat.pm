@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.5 2000-09-19 20:33:14 zarko Exp $
+# $Id: MakeCat.pm,v 1.6 2000-09-21 23:09:07 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,7 +61,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -78,8 +78,8 @@ my %Pretty = qw(
 	imagedir        ImageDir
 	imageurl        ImageUrl
 	mailorderto     MailOrderTo
-	minivenduser	MiniVendUser
-	minivendgroup	MiniVendGroup
+	interchangeuser	InterchangeUser
+	nterchangegroup	InterchangeGroup
 	samplehtml      SampleHtml
 	sampledir       SampleDir
 	sampleurl       SampleUrl
@@ -186,13 +186,13 @@ EOF
 #
 #        M is recommended, G works for most installations.
 EOF
-	minivenduser  =>  <<EOF,
+	interchangeuser  =>  <<EOF,
 # The user name the Interchange server runs under on this machine. This
 # should not be the same as the user that runs the HTTP server (i.e.
 # NOT nobody).
 #
 EOF
-	minivendgroup    =>  <<EOF,
+	interchangegroup    =>  <<EOF,
 # The group name the server-owned files should be set to.  This is
 # only important if Interchange catalogs will be owned by multiple users
 # and the group to be used is not the default for the catalog user.
@@ -258,7 +258,7 @@ sub findexe {
     my($exe) = @_;
     my($dir,$path) = ('', $ENV{PATH});
     $path =~ s/\(\)//g;
-    $path =~ s/\s+/\s/g;
+    $path =~ s/\s+/ /g;
     my(@dirs) = split /[\s:]+/, $path;
     foreach $dir (@dirs) {
         return "$dir/$exe" if -x "$dir/$exe";
