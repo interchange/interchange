@@ -19,7 +19,11 @@
 						verify='[value zip]'
 		]
 		|]
-	Auto-created user [data session username].
+		[seti mv_autocreate]
+			mv_username=[data session username]
+			mv_password=[value zip]
+		[/seti]
+		Auto-created user [data session username].
 	[else]
 	Auto-create of user failed.
 	[perl] die errmsg("Auto-create of user failed."); [/perl]
@@ -97,6 +101,8 @@ set credit_limit: [seti credit_limit][data
 
 [comment]Past transactions entry.[/comment]
 
+[set download_present][/set]
+
 [item-list]Added [item-code] to orderline:
 [import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]
@@ -118,6 +124,7 @@ campaign: [value campaign]
 status: pending
 description: [filter mac][item-description][/filter]
 [/import]
+
 [if variable DECREMENT_INVENTORY]Inventory of [item-code] now:
 	[data
 		table=inventory
@@ -127,6 +134,19 @@ description: [filter mac][item-description][/filter]
 		value="-[item-quantity]"
 	]
 [/if]
+
+[comment] Handle downloadables [/comment]
+[if-item-field download]
+	[if value mv_payment =~ /credit.*card/i]
+		[set download_present]1[/set]
+		[userdb
+				function=set_file_acl
+				mode="expire 7 days"
+				location="[item-code]"
+		]
+	[/if]
+[/if-item-field]
+
 [/item-list]
 
 [/try]

@@ -22,11 +22,15 @@ sourcedir=$catroot/templates/sampledata/__MVC_SAMPDATATYPE__
 if test -d $sourcedir
 then
 	returndir="`pwd`" || exit 1
-	cd $sourcedir/images || exit 1
-	find . -type d -exec chmod $DMODE \{\} \;
-	find . -type f -exec chmod $FMODE \{\} \;
-	tar cf - . | (cd __MVC_RELOCATE____MVC_IMAGEDIR__ && tar xf -)
-	cd .. || exit 1
+	cd $sourcedir
+	if test -d $sourcedir/images
+	then
+		cd $sourcedir/images || exit 1
+		find . -type d -exec chmod $DMODE \{\} \;
+		find . -type f -exec chmod $FMODE \{\} \;
+		tar cf - . | (cd __MVC_RELOCATE____MVC_IMAGEDIR__ && tar xf -)
+		cd .. || exit 1
+	fi
 	tar cf - `find . -mindepth 1 | grep -v '^\./images'` | (cd $catroot && tar xf -)
 	cd $returndir
 else 

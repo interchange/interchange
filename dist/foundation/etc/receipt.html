@@ -186,19 +186,6 @@ ui_template_name: noleft
 <p>
 
 [comment] Handle downloadables [/comment]
-[set download_present][/set]
-[item-list]
-	[if-item-field download]
-		[if !value fax_order]
-			[set download_present]1[/set]
-			[userdb
-					function=set_file_acl
-					mode="expire 7 days"
-					location="[item-code]"
-			]
-		[/if]
-	[/if-item-field]
-[/item-list]
 [perl products]
 	sub get_download {
 		if (! $Scratch->{download_present}) {
@@ -208,7 +195,11 @@ ui_template_name: noleft
 		return '' unless tag_data('products', 'download', $sku);
 		my $loc =  tag_data('products', 'dl_location', $sku);
 		my $save = delete $Scratch->{mv_add_dot_html};
-		my $url = $Tag->area( { href => "deliver/$loc", arg => $sku } ); 
+		my $url = $Tag->area( {
+						href => "deliver/$loc",
+						arg => $sku,
+						form => $Scratch->{mv_autocreate},
+					} ); 
 		$Scratch->{mv_add_dot_html} = $save if $save;
 		return qq{<BR><A HREF="$url"><IMG border=0 SRC="download.png"></A>};
 	}
