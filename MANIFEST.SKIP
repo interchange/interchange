@@ -16,6 +16,7 @@ _$
 ^MANIFEST\.bak
 ^Makefile$
 ^Makefile.old$
+^META.yml$
 \.linux.warned
 \bCVS\b
 \bRCS\b
