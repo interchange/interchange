@@ -119,7 +119,7 @@ logged_in_po=mandatory Must have pre-existing account for PO.
 	return;
 [/calc]
 credit_limit_ok=mandatory Credit limit exceeded.
-&set=mv_payment PO number [value project_id]
+&set=mv_payment PO number [value po_number]
 
 &final = yes
 &set = payment_method purchase_order
