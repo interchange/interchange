@@ -757,6 +757,7 @@ setarea=[cgi selector]
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
+	<input type=hidden name=mv_data_fields value=link_template>
 	[display table=area column=link_template key="[value area]"]
 	</td>
 </tr>
@@ -1059,40 +1060,41 @@ return;
 
 [if scratch ui_cat_display =~ /icon|image/]
 <INPUT TYPE=hidden NAME=mv_data_fields value="image">
-<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
-<input type=hidden name="ui_filter:image" value="nullselect">
-<tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<B>Image</B>
-	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<small>
-	<small>
-	[display table=cat column=image key="[value cat]" js=|onChange="this.form.submit()"|]
-	</td>
-</tr>
-<tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<B>Image properties</B>
-	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<small>
-		<input name="image_prop" size=30 VALUE="[calc]
-		$image_prop = q{[table-data cat image_prop]};
-		$image_prop =~ s/"/&quot;/g;
-		return $image_prop || 'border=0';
-	[/calc]">
-	</td>
-</tr>
-[/if]
+	<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
+	<input type=hidden name="ui_filter:image" value="nullselect">
+	<tr>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<B>Image</B>
+		</td>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<small>
+		[display table=cat column=image key="[value cat]" js=|onChange="this.form.submit()"|]
+		</td>
+	</tr>
+	<tr>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<B>Image properties</B>
+		</td>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+			<input name="image_prop" size=30 VALUE="[calc]
+			$image_prop = q{[table-data cat image_prop]};
+			$image_prop =~ s/"/&quot;/g;
+			return $image_prop || 'border=0';
+		[/calc]">
+		</td>
+	</tr>
+	[/if]
 
-<tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<B>Link template</B>
-	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
-	<small>
-	[display table=cat column=link_template key="[value cat]"]
+	<tr>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<B>Link template</B>
+		</td>
+		<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<input type=hidden name=mv_data_fields value=link_template>
+		[display table=cat column=link_template key="[value cat]"]
 	</td>
 </tr>
 
