@@ -1,3 +1,11 @@
+Interchange 4.6.3
+
+* Fixed a bad bug that kept product options from working right. A bugfix
+  in 4.6.2 uncovered a worse bug due to swapped parameters in a subroutine
+  call in Data.pm. Thanks to Marc Infield <marc@geronimo.com> for pointing
+  this out quickly.
+
+
 Interchange 4.6.2
 
 * [loop list=`$Scratch->{ary}`] now accepts a prebuilt array reference to

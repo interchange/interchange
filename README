@@ -1,6 +1,6 @@
-Interchange V4.6.2
+Interchange V4.6.3
 
-Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 
 Originally based on Vend 0.2
 Copyright 1995 by Andrew M. Wilcox
@@ -87,8 +87,8 @@ UNIX INSTALLATION
 ------------------
 Here is the short version:
 
-    gzip -dc interchange-4.6.2.tar.gz | tar xvf -
-    cd interchange-4.6.2
+    gzip -dc interchange-4.6.3.tar.gz | tar xvf -
+    cd interchange-4.6.3
     ./configure
 
 The 'configure' script is basically a shortcut for:

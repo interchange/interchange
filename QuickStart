@@ -1,6 +1,6 @@
-Interchange V4.6.2
+Interchange V4.6.3
 
-Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -61,7 +61,7 @@ Install Walkthrough
              Write on the cgi-bin for the web server
 
         Unpack the distribution:
-            gzip -dc interchange-4.6.2.tar.gz | tar xvf -
+            gzip -dc interchange-4.6.3.tar.gz | tar xvf -
 
         Run the configuration script:
             ./configure
@@ -532,7 +532,7 @@ Demo Store Install Walkthrough
 Low traffic settings.
 Calling UI....
 ....UI is loaded....
-Interchange V4.6.2
+Interchange V4.6.3
 Configuring catalog example...done.
 Interchange server started in INET and UNIX mode(s) (process id 22200)
 
