@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.44 2004-09-27 13:27:28 jon Exp $
+# $Id: Dispatch.pm,v 1.45 2004-10-06 23:36:13 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.44 $, 10);
+$VERSION = substr(q$Revision: 1.45 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1096,7 +1096,7 @@ sub run_macro {
 		if ($m =~ /^\w+$/) {
 			my $sub = $Vend::Cfg->{Sub}{$m} || $Global::GlobalSub->{$m}
 				or do {
-					logError("Unknown Autoload macro '%s'.", $macro);
+					logError("Unknown Autoload macro '%s'.", $m);
 					next;
 				};
 			$sub->($content_ref);
