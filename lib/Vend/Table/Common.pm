@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.0.2.1 2001-10-06 06:22:58 mheins Exp $
+# $Id: Common.pm,v 2.0.2.2 2001-10-18 05:30:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -320,6 +320,15 @@ sub set_slice {
 			$s->[$CONFIG]{name},
 		);
 		return undef;
+	}
+
+	if(ref $fary ne 'ARRAY') {
+		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { $fary, $vary, @_ }
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
 	}
 
 	my $keyname = $s->[$CONFIG]{KEY};
@@ -978,7 +987,7 @@ EndOfExcel
 	my @i;  # Array of field names for sort
 	my @o;  # Array of sort options
 	my %comma;
-	if($options->{INDEX}) {
+	if($options->{INDEX} and ! $options->{NO_ASCII_INDEX}) {
 		my @f; my $f;
 		my @n;
 		my $i;

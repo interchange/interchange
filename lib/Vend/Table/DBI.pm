@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0 2001-07-18 02:23:20 jon Exp $
+# $Id: DBI.pm,v 2.0.2.1 2001-10-18 05:30:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 use strict;
 
@@ -888,6 +888,45 @@ sub clone_set {
 	return $new;
 }
 
+sub get_slice {
+    my ($s, $key, $fary) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+
+	my $tkey;
+	my $sql;
+	return undef unless $s->record_exists($key);
+
+	$tkey = $s->quote($key, $s->[$KEY]);
+#::logDebug("tkey now $tkey");
+
+	# Better than failing on a bad ref...
+	if(ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	my $fstring = join ",", @$fary;
+	$sql = "SELECT $fstring from $s->[$TABLE] WHERE $s->[$KEY] = $tkey";
+
+#::logDebug("get_slice query: $sql");
+#::logDebug("get_slice key/fields:\nkey=$key\n" . ::uneval($fary));
+	my $sth;
+	my $ary;
+	eval {
+		$sth = $s->[$DBI]->prepare($sql)
+			or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
+		$sth->execute();
+	};
+
+	if($@) {
+		my $msg = $@;
+		::logError("failed %s::%s routine: %s", __PACKAGE__, 'get_slice', $msg);
+		return undef;
+	}
+
+	return wantarray ? $sth->fetchrow_array() : $sth->fetchrow_arrayref();
+}
+
 sub set_slice {
     my ($s, $key, $fary, $vary) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
@@ -911,6 +950,15 @@ sub set_slice {
 
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
+
+	if(ref $fary ne 'ARRAY') {
+		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { $fary, $vary, @_ }
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
+	}
 
 	if(defined $tkey) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
@@ -1646,7 +1694,7 @@ eval {
 	}
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
-	if(ref $ref) {
+	if(CORE::ref($ref)) {
 		# make sure rc is set if we got a ref from MVSEARCH
 		$rc = scalar @{$ref};
 	}
