@@ -25,13 +25,19 @@ Hit action for no-content
 __MV_TREE_TABLE__
 __ProductFiles_0__
 tree
+cat
+area
 [cgi qmenu_products]
 __UI_META_TABLE__
 [/seti]
 
 [perl tables="[scratch medit_tables]"]
 	my $menupath = $Variable->{MV_MENU_DIRECTORY} || 'include/menus';
-	@menufields = qw/code mgroup inactive msort page form name description extended/;
+	@menufields = qw/
+        code mgroup msort next_line indicator exclude_on depends_on page
+        form name super inactive description help_name img_dn img_up
+        img_sel img_icon url
+	/;
 
 	$Tag->tmp('qmenu_fdata');
 	$Tag->tmp('qmenu_data');
@@ -162,7 +168,8 @@ __UI_META_TABLE__
 			my $db = $Db{$tab}
 				or do {
 					$Tag->error({ set => errmsg(
-										"Failed to open products table %s.",
+										"Failed to open %s table %s.",
+										'products',
 										$tab,
 										),
 									});
@@ -189,7 +196,8 @@ __UI_META_TABLE__
 							or do {
 								$Tag->error({
 										set => errmsg(
-											"No results from products table %s.",
+											"No results from %s table %s.",
+											'products',
 											$tab,
 										),
 									});
@@ -265,7 +273,140 @@ __UI_META_TABLE__
 #Debug("qmenu_data=$Scratch->{qmenu_data}");
 		}
 	}
-	@menufields = qw/code mgroup inactive msort page form name description extended/;
+	elsif ($CGI->{qmenu_cat}) {
+		AREABUILD: {
+			my $tab = $CGI->{qmenu_area} || 'area';
+			my $ctab = $CGI->{qmenu_cat} || 'cat';
+			my $db = $Db{$tab}
+				or do {
+					$Tag->error({ set => errmsg(
+										"Failed to open %s table %s.",
+										'area',
+										$tab,
+										),
+									});
+					last AREABUILD;
+				};
+#Debug("LARGE=" . $db->config('LARGE'));
+			my $q = qq{ SELECT * FROM $tab ORDER BY sort };
+			my $ary = $db->query({ sql => $q, hashref => 1 } )
+							or do {
+								$Tag->error({
+										set => errmsg(
+											"No results from %s table %s.",
+											'area',
+											$tab,
+										),
+									});
+					last AREABUILD;
+				};
+
+sub old_link {
+  my ($row, $nrow) = @_;
+#Debug("row link_type='$row->{link_type}'");
+  if($row->{link_type} eq 'external') {
+	  $first = $row->{url};
+	  $first =~ s/\s+$//;
+	  $first =~ s/^\s+//;
+	  $nrow->{page} = $first;
+  }
+  elsif	($row->{link_type} eq 'internal') {
+	  my ($page, $form) = split /\s+/, $row->{url}, 2;
+	  $nrow->{page} = $page;
+	  $nrow->{form} = $form;
+  }
+  elsif	($row->{link_type} eq 'simple') {
+	  my (@items) = split /\s*[\n,]\s*/, $row->{selector};
+	  my @out;
+	  my $fi = $row->{tab};
+	  my $sp = $row->{page};
+	  my $arg = '';
+	  $nrow->{page} = 'search';
+	  push @out, "fi=$fi" if $fi;
+	  push @out, "sp=$sp" if $sp;
+	  push @out, "st=db";
+
+	  if(! @items) {
+		  push @out, "ra=yes";
+		  $nrow->{form} = join "\n", @out;
+	  }
+	  else {
+		push @out, "co=yes";
+		for(@items) {
+			my ($col, $string) = split /\s*=\s*/;
+			push @out, "sf=$col";
+			push @out, "se=$string";
+		}
+		push @out, $row->{search}
+			if $row->{search} =~ /^\s*\w\w=/;
+
+		push @out, qq{va=banner_image=$row->{banner_image}};
+		push @out, qq{va=banner_text=$row->{banner_text}};
+		$arg = join "\n", @out;
+		$nrow->{form} = $arg;
+	  }
+  }
+  elsif	($row->{link_type} eq 'complex') {
+	  $row->{search} =~ s/[\r\n+]/\n/g;
+	  $row->{search} .= qq{\nva=banner_text=$row->{banner_text}};
+	  $row->{search} .= qq{\nva=banner_image=$row->{banner_image}};
+	  $nrow->{form} = $row->{search};
+  }
+  else {
+	  $url = "";
+  }
+  return $nrow;
+}
+
+			my @rows;
+			my $nc = '0000';
+			my $cdb = $Db{$ctab};
+			foreach my $row (@$ary) {
+				my $code = $row->{code};
+				my $nrow = {
+					code => $nc++,
+					name => $row->{name},
+					img_icon => $row->{image},
+					msort => 0,
+					mgroup => $row->{set_selector},
+				};
+				old_link($row, $nrow);
+				my $sq = qq{
+						SELECT * FROM $ctab
+						WHERE sel = '$code'
+						OR    sel like '$code %'
+						OR    sel like '% $code'
+						OR    sel like '% $code %'
+						ORDER BY sort
+						};
+#Debug("subquery=$sq");
+				push @rows, $nrow;
+				my $sary = $cdb->query({ sql => $sq, hashref => 1 });
+#Debug("subquery returned: " . uneval($sary));
+				for my $crow (@$sary) {
+				  my $nsub = {
+					  code => $nc++,
+					  name => $crow->{name},
+					  img_icon => $crow->{image},
+					  msort => 1,
+					  mgroup => $crow->{sel},
+				  };
+				  old_link($crow, $nsub);
+				  push @rows, $nsub;
+				}
+			}
+			for(@rows) {
+#Debug("pushing out --> " . $_->{name});
+				push @out, join "\t", @{$_}{@menufields};
+#Debug("pushing out --> row=" . uneval($_));
+			}
+			push @out, join
+			$Scratch->{qmenu_data} = join "\n", @out, '';
+			$CGI->{qmenu_name} = '';
+			$CGI->{qmenu_new} ||= 'Untitled';
+#Debug("qmenu_data=$Scratch->{qmenu_data}");
+		}
+	}
 
 	if($CGI->{qmenu_html_create} and $CGI->{qmenu_create}) {
 		my $text = $CGI->{qmenu_html_create};

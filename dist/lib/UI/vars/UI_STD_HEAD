@@ -295,8 +295,6 @@ function addItem(selector, receptor, joiner) {
 														<td height=13 align=left valign=top><a
 		id="{CODE}"
 		href="{HREF}"
-		onMouseOver="mousein(this)"
-		onMouseOut="mouseout(this)"
 		title="{DESCRIPTION}"
 		class=menufont>{NAME}</a>&nbsp;&nbsp;</td>
 													</tr>
