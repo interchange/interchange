@@ -146,7 +146,7 @@
 <tr class=rnorm>
     <td class=clabel>Fields to be <i>ignored</i></td>
 	<td class=cdata>
-[calc]
+[perl tables="[cgi mv_data_table]"]
 my $chklist;
 my @cols = $Tag->db_columns($CGI->{mv_data_table});
 for (my $i = 1; $i < @cols; $i++) {
@@ -154,7 +154,7 @@ for (my $i = 1; $i < @cols; $i++) {
 }
 delete $Values->{ui_ignore_fields};
 $chklist;
-[/calc]
+[/perl]
     </td>
 </tr>
 <tr class=rnorm>
