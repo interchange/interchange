@@ -5,6 +5,7 @@ endif
 ifdef SQLPASS
 Database  userdb  PASS         __SQLPASS__
 endif
+Database  userdb  DEFAULT_TYPE  VARCHAR(255)
 Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"
@@ -54,6 +55,8 @@ Database  userdb  COLUMN_DEF   "mail_list=varchar(64)"
 Database  userdb  COLUMN_DEF   "project_id=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "account_id=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "order_dest=VARCHAR(32)"
+Database  userdb  COLUMN_DEF   "inactive=VARCHAR(32)"
+Database  userdb  DEFAULT      "inactive=''"
 
 # Prevent problems with abstime representation
 UserDB    default    time_field    none
