@@ -1,6 +1,6 @@
 [set page_title]Welcome to TallyMan[/set]
 [set help_name]main[/set]
-[set icon_name]admin/icon_help.gif[/set]
+[set icon_name]admin/icon_regen.gif[/set]
 @@UI_STD_HEAD@@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -16,13 +16,126 @@
 <td width="27" align="center" valign="bottom">
 <img height =16 width=16 src="admin/icon_orders.gif">
 </td><td valign="bottom">
-<a href="[area __UI_BASE__/order]"><img src="admin/b-orders2.gif" width="96" height="13" border="0" alt="Orders"></a>
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="[area __UI_BASE__/order.html]">Orders</a>
+</b>
+</font>
 </td>
 </tr><tr height="27">
 <td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View, download, archive, and delete online orders</font>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage customer online orders</font>
 </td>
 </tr>
+
+<tr>
+<td width="27" align="center" valign="bottom">
+<img height =16 width=16 src="admin/icon_item.gif">
+</td><td valign="bottom">
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="[area __UI_BASE__/item]">Items</a>
+</b>
+</font>
+</td>
+</tr><tr height="27">
+<td width="27" height="27"></td>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage the items displayed on your site</font>
+</td>
+</tr>
+
+<tr>
+<td width="27" align="center" valign="bottom">
+<img height =16 width=16 src="admin/icon_stats.gif">
+</td><td valign="bottom">
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="[area __UI_BASE__/orderstats]">Statistics</a>
+</b>
+</font>
+</td>
+</tr><tr height="27">
+<td width="27" height="27"></td>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View sales reports and order stats for any period of time</font>
+</td>
+</tr>
+
+
+<tr>
+<td colspan=2>
+<hr size=1 noshade>
+</td>
+</tr>
+
+
+<tr>
+<td width="27" align="center" valign="bottom">
+<img height=16 width=16 src="admin/icon_regen.gif">
+</td><td valign="bottom">
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="[area __UI_BASE__/reconfig]">Apply Changes</a>
+</b>
+</font>
+</td>
+</tr>
+<tr height="27">
+<td width="27" height="27"></td>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Reload catalog so that changes take effect</font>
+</td>
+</tr>
+
+<tr>
+<td width="27" align="center" valign="bottom">
+<img height =16 width=16 src="admin/icon_help.gif">
+</td><td valign="bottom">
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="javascript:open_help('http://www.tallyman.com/help/2.0.6/main.html')">Help</a>
+</b>
+</font>
+</td>
+</tr><tr height="27">
+<td width="27" height="27"></td>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View Tallyman's online documentation</font>
+</td>
+</tr>
+
+<tr>
+<td colspan=2>
+<hr size=1 noshade>
+</td>
+</tr>
+
+<tr>
+<td width="27" align="center" valign="bottom">
+<img height=16 width=16 src="admin/icon_pages.gif">
+</td><td valign="bottom">
+<font size=3 face="Arial,Helvetica,Geneva">
+<b>
+<a href="javascript:open_quicklinks()">Quicklinks</a>
+</b>
+</font>
+</td>
+</tr>
+<tr height="27">
+<td width="27" height="27"></td>
+<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Open a convenient menu listing available admin options, 
+including site design and advanced configuration options.
+</font>
+</td>
+</tr>
+
+
+
+</table>
+</td>
+</tr>
+</table>				
+
+
+[comment]
+Currently unused:
 
 <tr>
 <td width="27" align="center" valign="bottom">
@@ -38,18 +151,6 @@
 
 <tr>
 <td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_item.gif">
-</td><td valign="bottom">
-<a href="[area __UI_BASE__/item]"><img src="admin/b-items2.gif" width="71" height="13" border="0" alt="Items"></a>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Create, edit, and arrange the items displayed in your site</font>
-</td>
-</tr>
-
-<tr>
-<td width="27" align="center" valign="bottom">
 <img height =16 width=16 src="admin/icon_config.gif">
 </td><td valign="bottom">
 <a href="[area __UI_BASE__/genconfig]"><img src="admin/b-configure2.gif" width="62" height="13" border="0" alt="Configure"></a>
@@ -60,47 +161,14 @@
 </td>
 </tr>
 
-<tr>
-<td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_stats.gif">
-</td><td valign="bottom">
-<a href="[area __UI_BASE__/genstats]"><img src="admin/b-statistics2.gif" width="58" height="13" border="0" alt="Statisics"></a>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View web site traffic and sales reports for any period of time</font>
-</td>
-</tr>
-
-<tr>
-<td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_regen.gif">
-</td><td valign="bottom">
-<a href="[area __UI_BASE__/regen]"><img src="admin/b-regenerate2.gif" width="70" height="13" border="0" alt="Regenerate"></a>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Rebuild your web pages after making changes to your data</font>
-</td>
-</tr>
-
-<tr>
-<td width="27" align="center" valign="bottom">
-<img height =16 width=16 src="admin/icon_help.gif">
-</td><td valign="bottom">
-<a href="http://www.tallyman.com/help/alpha/main.html"><img src="admin/b-help2.gif" width="28" height="13" border="0" alt="Regenerate"></a>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View Tallyman's online documentation</font>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>				
 
 
+
+
+
+
+
+[/comment]
 <!-- ----- END REAL STUFF ----- -->
 
 @@UI_STD_FOOTER@@
