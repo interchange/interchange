@@ -1,3 +1,14 @@
+Interchange 4.6.2
+
+* Fixed problem in Search.pm where coordinated search of op=rm would not
+  match on words only.
+
+* Fixed a couple of hard-coded mv_metadata references in admin pages
+  preventing renaming of __UI_META_TABLE__.
+
+* Improved makecat error message when problems occur reading config file.
+
+
 Interchange 4.6.1
 
 * Added MS Excel import/export capability.
