@@ -202,6 +202,8 @@ Core
 	[PREFIX-alternate 0]            Alias for first_only
 	[PREFIX-alternate -1]           Alias for except_last
 
+* Move handling of anchor option from tag_area to vendURL.
+
 Tables
 ------
 
@@ -412,7 +414,7 @@ UI
 
 * Write the selected PGP/GPG key to the Variable table setting.
 
-* Missing session id added to form in user_edit 
+* Missing session id added to form in various admin pages
   (thanks to Paul Vinciguerra <pvinci@vinciguerra.com> for the patch).
 
 * Add check to disallow invalid option names.
@@ -617,6 +619,10 @@ UI
 
 * No longer check for Term::Readline and Term::ReadKey.
 
+* Explicitly set filters to avoid mangling of promotions
+
+* Don't allow user to change order number through order status page.
+
 Form
 ----
 
@@ -743,6 +749,9 @@ Foundation
   break just about every catalog out there.
 
 * Add handling to mail receipt if applicable.
+
+* Remove the "view_from" parameter undoubtedly messing up many product edits
+  and add ui_more_alpha definition to metadata.
 
 Usertags
 --------
@@ -921,6 +930,9 @@ Miscellaneous
   DNS lookup, as per bug #516.
 
 * Remove abandoned "newcat" script from distribution.
+
+* Convert nonstandard != to standard SQL <> (which also avoids a parse
+  error in the new Vend::SQL_Parser) within options stuff.
 
 Extensions
 ----------
