@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7 2000-09-27 22:17:06 heins Exp $
+# $Id: DbSearch.pm,v 1.7.2.1 2000-11-07 22:41:45 zarko Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.1 $, 10);
 
 use Search::Dict;
 use strict;
@@ -55,32 +55,32 @@ sub list {
 }
 
 my %Default = (
-        matches                 => 0,
-        mv_head_skip            => 0,
-        mv_index_delim          => "\t",
-        mv_matchlimit           => 50,
-        mv_min_string           => 1,
-        verbatim_columns        => 1,
+	matches                 => 0,
+	mv_head_skip            => 0,
+	mv_index_delim          => "\t",
+	mv_matchlimit           => 50,
+	mv_min_string           => 1,
+	verbatim_columns        => 1,
 	);
 
 sub init {
 	my ($s, $options) = @_;
 
 	@{$s}{keys %Default} = (values %Default);
-    $s->{mv_all_chars}	        = [1];
-    $s->{mv_base_directory}     = $Vend::Cfg->{ProductFiles}[0];
-    $s->{mv_begin_string}       = [];
-    $s->{mv_case}               = [];
-    $s->{mv_column_op}          = [];
-    $s->{mv_negate}             = [];
-    $s->{mv_numeric}            = [];
-    $s->{mv_orsearch}           = [];
-    $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        = [@{$Vend::Cfg->{ProductFiles}}];
-    $s->{mv_search_group}       = [];
-    $s->{mv_searchspec}         = [];
-    $s->{mv_sort_option}        = [];
-    $s->{mv_substring_match}    = [];
+	$s->{mv_all_chars}	        = [1];
+	$s->{mv_base_directory}     = $Vend::Cfg->{ProductFiles}[0];
+	$s->{mv_begin_string}       = [];
+	$s->{mv_case}               = [];
+	$s->{mv_column_op}          = [];
+	$s->{mv_negate}             = [];
+	$s->{mv_numeric}            = [];
+	$s->{mv_orsearch}           = [];
+	$s->{mv_search_field}       = [];
+	$s->{mv_search_file}        = [@{$Vend::Cfg->{ProductFiles}}];
+	$s->{mv_search_group}       = [];
+	$s->{mv_searchspec}         = [];
+	$s->{mv_sort_option}        = [];
+	$s->{mv_substring_match}    = [];
 
 	for(keys %$options) {
 		$s->{$_} = $options->{$_};
@@ -90,7 +90,7 @@ sub init {
 }
 
 sub new {
-    my ($class, %options) = @_;
+	my ($class, %options) = @_;
 	my $s = new Vend::Search;
 	bless $s, $class;
 	$s->init(\%options);
@@ -139,9 +139,9 @@ sub search {
 
 	@specs = @{$s->{mv_searchspec}};
 
-    if(ref $s->{mv_range_look}) {
-        unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-                scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
+	if(ref $s->{mv_range_look}) {
+		unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
+				scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
 			$s->{mv_search_warning}
 				= "Must have min and max values for range -- aborting range look.";
 			undef $s->{mv_range_look};
@@ -150,20 +150,17 @@ sub search {
 
 	@pats = $s->spec_check(@specs);
 
-	if ($s->{mv_coordinate}) {
+	if($s->{mv_coordinate}) {
 		undef $f;
-	}
-	elsif ($s->{mv_return_all}) {
+	} elsif($s->{mv_return_all}) {
 		$f = sub {1};
-	}
-	elsif ($s->{mv_orsearch}[0]) {
+	} elsif($s->{mv_orsearch}[0]) {
 		eval {$f = $s->create_search_or(
 									$s->get_scalar(
 											qw/mv_case mv_substring_match mv_negate/
 											),
 										@pats					)};
-	}
-	else  {	
+	} else {	
 		eval {$f = $s->create_search_and(
 									$s->get_scalar(
 											qw/mv_case mv_substring_match mv_negate/
@@ -186,7 +183,7 @@ sub search {
 	foreach $searchfile (@searchfiles) {
 		$searchfile =~ s/\..*//;
 		my $db;
-		if (! $s->{mv_one_sql_table} ) {
+		if(! $s->{mv_one_sql_table} ) {
 			$db = Vend::Data::database_exists_ref($searchfile)
 				or ::logError(
 							"Attempt to search non-existent database %s",
@@ -216,19 +213,16 @@ sub search {
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
 			}
-		}
-		elsif(defined $limit_sub) {
+		} elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
 			}
-		}
-		elsif (!defined $f) {
+		} elsif(!defined $f) {
 			return $s->search_error('No search definition');
-		}
-		else {
+		} else {
 #::logDebug("f and no limit, dbref=$dbref");
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
@@ -255,16 +249,15 @@ sub search {
 		$s->{matches} = scalar(@out);
 	}
 
-    if ($s->{matches} > $s->{mv_matchlimit}) {
-        $s->save_more(\@out)
-            or ::logError("Error saving matches: $!");
-		if ($s->{mv_first_match}) {
+	if($s->{matches} > $s->{mv_matchlimit}) {
+		$s->save_more(\@out)
+			or ::logError("Error saving matches: $!");
+		if($s->{mv_first_match}) {
 			splice(@out,0,$s->{mv_first_match}) if $s->{mv_first_match};
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
 			$s->{mv_next_pointer} = 0
 				if $s->{mv_next_pointer} > $s->{matches};
-		}
-		elsif ($s->{mv_start_match}) {
+		} elsif($s->{mv_start_match}) {
 			my $comp = $s->{mv_start_match};
 			my $i = -1;
 			my $found;
@@ -281,8 +274,7 @@ sub search {
 					$found = $i;
 					last;
 				}
-			}
-			elsif (! $found) {
+			} elsif(! $found) {
 				for(@out) {
 					$i++;
 					next unless $_->[0] ge $comp;
@@ -298,20 +290,18 @@ sub search {
 					if $s->{mv_next_pointer} > $s->{matches};
 			}
 		}
-        $#out = $s->{mv_matchlimit} - 1;
-    }
+		$#out = $s->{mv_matchlimit} - 1;
+	}
 #::logDebug("after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
 
 	if(! $s->{mv_return_reference}) {
 		$s->{mv_results} = \@out;
-	}
-	elsif($s->{mv_return_reference} eq 'LIST') {
+	} elsif($s->{mv_return_reference} eq 'LIST') {
 		my $col = scalar @{$s->{mv_return_fields}};
 		@out = map { join $s->{mv_return_delim}, @$_ } @out;
 		$s->{mv_results} = join $s->{mv_record_delim}, @out;
-	}
-	else {
+	} else {
 		my @names;
 		@names = @{ $s->{mv_field_names} }[ @{$s->{mv_return_fields}} ];
 		$names[0] eq '0' and $names[0] = 'code';
