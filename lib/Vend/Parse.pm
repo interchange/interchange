@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9.2.3 2000-11-07 22:41:46 zarko Exp $
+# $Id: Parse.pm,v 1.9.2.4 2000-11-08 20:32:05 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9.2.3 2000-11-07 22:41:46 zarko Exp $
+# $Id: Parse.pm,v 1.9.2.4 2000-11-08 20:32:05 zarko Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.4 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.9.2.4 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -63,7 +63,7 @@ my %PosNumber =	( qw!
 				bounce           2
 				cart             1
 				cgi              1
-				checked          4
+				checked          2
 				counter          1
 				currency         2
 				data             3
@@ -107,7 +107,7 @@ my %PosNumber =	( qw!
 				scratchd         1
 				record			 0
 				region		     0
-				selected         3
+				selected         2
 				set              1
 				seti             1
 				setlocale        2
@@ -141,7 +141,7 @@ my %Order =	(
 				catch			=> [qw( label )],
 				cgi				=> [qw( name  )],
 				'currency'		=> [qw( convert noformat )],
-				checked			=> [qw( name value multiple default)],
+				checked			=> [qw( name value )],
 				counter			=> [qw( file )],
 				data			=> [qw( table field key )],
 				default			=> [qw( name default )],
@@ -190,7 +190,7 @@ my %Order =	(
 				search_region	=> [qw( arg   )],
 				region			=> [qw( )],
 				record			=> [qw( )],
-				selected		=> [qw( name value multiple )],
+				selected		=> [qw( name value )],
 				set_cookie		=> [qw( name value expire )],
 				setlocale		=> [qw( locale currency )],
 				set				=> [qw( name )],
@@ -221,6 +221,7 @@ my %addAttr = (
 					area            1
 					banner          1
 					catch           1
+					checked         1
 					counter         1
 					data			1
 					default			1
@@ -244,6 +245,7 @@ my %addAttr = (
 					process         1
 					query			1
 					sql             1
+					selected        1
 					setlocale       1
 					record          1
 					region          1
