@@ -1,28 +1,28 @@
-# To do:
-# Fall back to vlink.pl if no C compiler available at foundation demo build time
-
 %define ic_version			4.7.4
 %define ic_rpm_release		1
 %define ic_package_basename	interchange
 %define ic_user				interch
 %define ic_group			interch
+# Currently only one demo catalog name may be specified,
+# and it must also be the skeleton name.
+%define cat_name foundation
 
-Summary: Interchange - a complete ecommerce system
+
+Summary: Interchange - a database access and HTML templating system focused on ecommerce
 Name: %ic_package_basename
 Version: %ic_version
 Release: %ic_rpm_release
 Vendor: Red Hat, Inc.
 Copyright: GPL
-URL: http://developer.akopia.com/
+URL: http://interchange.redhat.com/
 Packager: Interchange Development Team <info@akopia.com>
-Source: http://ftp.akopia.com/interchange/interchange-%{ic_version}.tar.gz
+Source: http://interchange.redhat.com/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
-#Distribution: Stronghold?
 Requires: perl >= 5.005
 BuildPrereq: perl >= 5.005
 Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
-BuildArchitectures: noarch
+BuildArch: noarch i386
 
 BuildRoot: %{_tmppath}/%{name}-%{version}
 
@@ -30,12 +30,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}
 Interchange is the most powerful free ecommerce system available today.
 
 
-# Currently only one demo catalog name may be specified,
-# and it must also be the skeleton name.
-%define cat_name foundation
-
 %package %cat_name
-Summary: Interchange Foundation catalog - a template for building your own store
+Summary: Interchange Foundation skeleton - a template for building your own store
 Group: Applications/Internet
 Requires: %ic_package_basename
 Provides: %{ic_package_basename}-%cat_name
@@ -45,13 +41,33 @@ Obsoletes: %{ic_package_basename}-%cat_name
 The Foundation Store is a basic catalog you can adapt to build your own store.
 
 
+%package %{cat_name}-demo
+Summary: Interchange Foundation demo - a prebuilt demonstration store
+Group: Applications/Internet
+Requires: %ic_package_basename
+Provides: %{ic_package_basename}-%{cat_name}-demo
+Obsoletes: %{ic_package_basename}-%{cat_name}-demo
+
+%description %{cat_name}-demo
+This demo is a prebuilt installation of the Foundation Store that makes
+it easy to try out a number of Interchange's features.
+
+
 %define warning_file %{_docdir}/%{ic_package_basename}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
-%define main_filelist %{_tmppath}/%{name}-%{version}.filelist
-%define stamp_file .rpm
+%define filelist_main %{_tmppath}/%{name}-%{version}.filelist
 
 # if user su'd to root but didn't get /usr/sbin added to the PATH,
 # we need to get to it on our own
 %define useradd %( which useradd || echo /usr/sbin/useradd )
+
+# Find base directory for web files
+# Red Hat Linux 7: /var/www
+# Red Hat Linux 6: /home/httpd
+%define webdir %( if [ -d /var/www ]; then echo -n '/var/www' ; else echo -n '/home/httpd' ; fi )
+
+# This is obviously a terrible oversimplification of whether the build system
+# is Red Hat Linux 7 or not, but it has worked so far.
+%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
 
 
 %prep
@@ -108,9 +124,16 @@ cp extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
 cp extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
 cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
 
+# Tell Perl where to find IC libraries during build time
+export PERL5LIB=$RPM_BUILD_ROOT$ICBASE/lib
+export MINIVEND_ROOT=$RPM_BUILD_ROOT$ICBASE
+
 # Fix paths of link file in compile script
 cd $RPM_BUILD_ROOT$ICBASE
 perl -pi -e "s:^(\s+)LINK_FILE(\s+)=>.*:\$1LINK_FILE\$2=> \"$RUNBASE/interchange/socket\",:" bin/compile_link
+
+# Build link program
+#bin/compile_link -build src
 
 mkdir -p $RPM_BUILD_ROOT$LIBBASE/interchange
 mkdir -p $RPM_BUILD_ROOT$RUNBASE/interchange
@@ -123,7 +146,7 @@ cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
 #!/bin/sh
 #
 # Run control script for Interchange
-# http://developer.akopia.com/
+# http://interchange.redhat.com/
 #
 # chkconfig: 345 96 4
 # description: Interchange is a database access and HTML templating system focused on ecommerce
@@ -217,8 +240,52 @@ fi
 EOF
 chmod +x $RPM_BUILD_ROOT%{_sbindir}/interchange
 
+# Build the demo catalog
+HOST=RPM_CHANGE_HOST
+BASEDIR=/var/lib/interchange
+LOGDIR=/var/log/interchange
+CACHEDIR=/var/cache/interchange
+DOCROOT=%{webdir}/html
+CGIDIR=%{webdir}/cgi-bin
+CGIBASE=/cgi-bin
+HTTPDCONF=/etc/httpd/conf/httpd.conf
+for i in %cat_name
+do 
+	mkdir -p $RPM_BUILD_ROOT$CGIDIR
+	mkdir -p $RPM_BUILD_ROOT$DOCROOT/$i/images
+	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
+	bin/makecat \
+		-F \
+		--relocate=$RPM_BUILD_ROOT \
+		--demotype=$i \
+		--catalogname=$i \
+		--basedir=$BASEDIR \
+		--catroot=$BASEDIR/$i \
+		--documentroot=$DOCROOT \
+		--samplehtml=$DOCROOT/$i \
+		--sampleurl=http://$HOST/$i \
+		--imagedir=$DOCROOT/$i/images \
+		--imageurl=/$i/images \
+		--sharedir=$DOCROOT \
+		--shareurl=/ \
+		--cgidir=$CGIDIR \
+		--cgibase=$CGIBASE \
+		--cgiurl=$CGIBASE/$i \
+		--interchangeuser=%ic_user \
+		--interchangegroup=%ic_group \
+		--permtype=user \
+		--serverconf=$HTTPDCONF \
+		--vendroot=$ICBASE \
+		--linkmode=UNIX \
+		--servername=$HOST \
+		--catuser=%ic_user \
+		--mailorderto=%{ic_user}@$HOST \
+		cachedir=$CACHEDIR/$i \
+		logdir=$LOGDIR/$i
+done
+
 # Put interchange.cfg in /etc instead of IC software directory
-mv interchange.cfg.dist $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
+mv interchange.cfg $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
 ln -s $ETCBASE/interchange.cfg
 
 # Put global error log in /var/log/interchange instead of IC software directory
@@ -235,7 +302,7 @@ chown %{ic_user}.%ic_group $RPM_BUILD_ROOT$RPMICLOG
 DIRDEPTH=`echo $ICBASE | sed 's:[^/]::g' | awk '{print length + 1}'`
 cd $RPM_BUILD_ROOT
 find . -path .$ICBASE/%cat_name -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
-	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' > %main_filelist
+	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' > %filelist_main
 
 
 %install
@@ -263,13 +330,17 @@ then
 fi
 
 
-%files -f %main_filelist
+%ifarch noarch
+
+%files -f %filelist_main
 
 %defattr(-, %{ic_user}, %{ic_group})
 
 %dir /var/run/interchange
 %dir /var/cache/interchange
-/var/log/interchange
+%dir /var/log/interchange
+/var/log/interchange/error.log
+%config(noreplace) /etc/interchange.cfg
 
 %defattr(-, root, root)
 
@@ -282,15 +353,30 @@ fi
 %{_mandir}/man8
 %config(noreplace) /etc/rc.d/init.d/interchange
 %config(noreplace) /etc/logrotate.d/interchange
-%config(noreplace) /etc/interchange.cfg
 %dir %{_sbindir}/interchange
-%dir /var/lib/interchange
 
 
 %files %cat_name
 
 %defattr(-, root, root)
 %{_libdir}/interchange/%cat_name
+
+%endif
+
+
+%ifarch i386
+
+%files %{cat_name}-demo
+
+%defattr(-, %{ic_user}, %{ic_group})
+/var/lib/interchange
+/var/log/interchange/%cat_name
+/var/cache/interchange/%cat_name
+%{webdir}/html/%cat_name
+%{webdir}/cgi-bin/%cat_name
+
+
+%endif
 
 
 %post
@@ -341,7 +427,11 @@ then
 		echo "Interchange catalogs will work without them, but the admin interface will not."
 		echo "You need to install these modules before you can use the admin interface."
 		echo ""
-		echo "Try:"
+		echo "You can find the appropriate RPM packages at:"
+		echo ""
+		echo "http://interchange.redhat.com/"
+		echo ""
+		echo "Or, as a last resort, you can build and install them from source. Try:"
 		echo ""
 		echo 'perl -MCPAN -e "install Bundle::Interchange"'
 		echo ""
@@ -349,84 +439,19 @@ then
 fi
 
 
-%post %cat_name
-
-if [ -d /var/www ]
-then
-	WEBDIR=/var/www
-else
-	WEBDIR=/home/httpd
-fi
+%post %{cat_name}-demo
 
 HOST=`hostname`
-VENDROOT=%{_libdir}/interchange
-BASEDIR=/var/lib/interchange
-LOGDIR=/var/log/interchange
-CACHEDIR=/var/cache/interchange
-DOCROOT=$WEBDIR/html
-CGIDIR=$WEBDIR/cgi-bin
-CGIBASE=/cgi-bin
-HTTPDCONF=/etc/httpd/conf/httpd.conf
+perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
+	/var/lib/interchange/%{cat_name}/catalog.cfg \
+	/var/lib/interchange/%{cat_name}/products/variable.txt \
+	%{webdir}/html/%{cat_name}/index.html
 
-cd $VENDROOT
 for i in %cat_name
 do 
-	# Make sure we don't clobber an existing catalog of the same name
-	if [ -d $BASEDIR/$i ] || [ -d $DOCROOT/$i ] || [ -f $CGIDIR/$i ] || \
-		[ -n "`grep \"^[ \t]*Catalog[ \t][ \t]*$i[ \t]\" /etc/interchange.cfg`" ]
-	then
-		{
-			echo "Aborting build of demo -- a catalog named '$i' appears already to"
-			echo "have been built! The catalog skeleton has been installed in"
-			echo "$VENDROOT/$i. You can manually run:"
-			echo ""
-			echo "    $VENDROOT/bin/makecat"
-			echo ""
-			echo "to build a catalog from this skeleton."
-		} >&2
-		exit 0
-	fi
-
-	# Build the demo catalog
-	#echo -n "Building demo catalog '$i' from newly-installed skeleton..." >&2
-	mkdir -p $CGIDIR
-	mkdir -p $DOCROOT/$i/images
-	mkdir $BASEDIR/$i
-	bin/makecat \
-		-F \
-		--demotype=$i \
-		--catalogname=$i \
-		--basedir=$BASEDIR \
-		--catroot=$BASEDIR/$i \
-		--documentroot=$DOCROOT \
-		--samplehtml=$DOCROOT/$i \
-		--sampleurl=http://$HOST/$i \
-		--imagedir=$DOCROOT/$i/images \
-		--imageurl=/$i/images \
-		--sharedir=$DOCROOT \
-		--shareurl=/ \
-		--cgidir=$CGIDIR \
-		--cgibase=$CGIBASE \
-		--cgiurl=$CGIBASE/$i \
-		--interchangeuser=%ic_user \
-		--interchangegroup=%ic_group \
-		--permtype=user \
-		--serverconf=$HTTPDCONF \
-		--vendroot=$VENDROOT \
-		--linkmode=UNIX \
-		--servername=$HOST \
-		--catuser=%ic_user \
-		--mailorderto=%{ic_user}@$HOST \
-		cachedir=$CACHEDIR/$i \
-		logdir=$LOGDIR/$i \
-		> /dev/null || exit 1
-	#echo "done." >&2
-
-	# Stamp the catalog so we know later whether it's safe to uninstall
-	echo "RPM built this catalog on `date`" > $BASEDIR/$i/%stamp_file
-
 	# Add the new catalog to the running Interchange daemon
-	if test -n "`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
+	if test -x /etc/rc.d/init.d/interchange && test -n \
+		"`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
 	then
 		catline="`grep \"^[ \t]*Catalog[ \t][ \t]*$i[ \t]\" /etc/interchange.cfg`"
 		if [ -n "$catline" ]
@@ -448,40 +473,13 @@ then
 fi
 
 # Remove non-user data
-rm -f %{_libdir}/interchange/etc/makecat.cfg
-rm -f %{_libdir}/interchange/etc/makecat.cfg.new
 rm -rf /var/run/interchange/*
 rm -rf /var/cache/interchange/*
 rm -rf %{_libdir}/interchange/lib/HTML
 rm -f %warning_file
 
-# Remove link compilation remnants
-for i in config.cache config.h config.log config.status syscfg \
-	tlink tlink.localhost.7786 vlink vlink._var_run_interchange_socket
-do
-	rm -f %{_libdir}/interchange/src/$i
-done
 
-
-%preun %cat_name
-
-# Don't delete any extra files if our install stamp is not found
-if [ ! -f /var/lib/interchange/%{cat_name}/%stamp_file ]
-then
-	{
-		echo "Skipping any built catalogs called '%{cat_name}' because they don't appear"
-		echo "to have been built during an RPM install. The '%{cat_name}' skeleton will"
-		echo "still be uninstalled, though."
-	} >&2
-	exit 0
-fi
-
-if [ -d /var/www ]
-then
-	WEBDIR=/var/www
-else
-	WEBDIR=/home/httpd
-fi
+%preun %{cat_name}-demo
 
 for i in %cat_name
 do
@@ -506,29 +504,26 @@ do
 			mv $ICCFGTMP $ICCFG
 	fi
 
-	# Remove locally built foundation demo catroot
-	rm -rf /var/lib/interchange/$i
-
-	# Remove session and log files
-	rm -rf /var/cache/interchange/$i
-	rm -rf /var/log/interchange/$i
-
-	# Remove link program and HTML/images for catalog
-	rm -f $WEBDIR/cgi-bin/$i
-	rm -rf $WEBDIR/html/$i
+	# Remove remaining machine-generated files
+	rm -rf /var/cache/interchange/$i/tmp/*
+	rm -rf /var/cache/interchange/$i/session/*
+	rm -rf /var/log/interchange/$i/orders/*
+	rm -rf /var/log/interchange/$i/logs/*
 done
-
-# Remove admin images
-rm -rf $WEBDIR/html/akopia
 
 
 %clean
 
-rm -f %main_filelist
+rm -f %filelist_main
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+
+* Thu Jun 14 2001 Jon Jensen <jon@redhat.com>
+- Bring back prebuilt demo, but as a separate package called
+  interchange-foundation-demo. It's helpful to have prebuilt CGI binaries
+  for emaciated OS installations without a C compiler.
 
 * Fri May 25 2001 Jon Jensen <jon@redhat.com>
 - Use new split confdir/rundir option to keep important things in
