@@ -140,7 +140,7 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-[either][item-data inventory account][or][var QB_DEFAULT_ACCOUNT][or]Other Income[/either]
+[either][item-data inventory account][or]__QB_DEFAULT_ACCOUNT__[or]Other Income[/either]
 [scratch CUSTNAME]
 
 -[item-subtotal noformat]
@@ -149,7 +149,16 @@ N
 N
 -[item-quantity]
 [item-price noformat=1]
-[item-filter 45][var QB_TITLE_PREFIX][item-field title][/item-filter]
+[seti DESC][filter
+                interpolate=1
+                op="strip mac __QB_ITEM_LENGTH__ 30"
+            ]
+            [either]
+                __QB_ITEM_PREFIX__[item-field title]
+            [or]
+                __QB_ITEM_PREFIX__[item-description]
+            [/either]
+[/filter][/seti][scratch DESC]
 
 [if-item-field nontaxable]N[else][scratch NAMEISTAXABLE][/else][/if-item-field]
 N
@@ -160,7 +169,7 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-[either][var QB_SHIPPING_ACCOUNT][or]Other Income[/either] 
+[either]__QB_SHIPPING_ACCOUNT__[or]Other Income[/either] 
 [scratch CUSTNAME]
 
 -[shipping noformat=1]
@@ -169,7 +178,7 @@ N
 N
 -1
 [shipping noformat=1]
-[either][var QB_SHIPPING_ITEM][or]Shipping[/either]
+[either]__QB_SHIPPING_ITEM__[or]Shipping[/either]
 
 N
 N
@@ -180,8 +189,8 @@ N
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
-[either][var QB_SALES_TAX_ACCOUNT][or]Sales Tax Payable[/either]
-[either][var QB_SALES_TAX_AGENCY][or]State Board of Equalization[/either]
+[either]__QB_SALES_TAX_ACCOUNT__[or]Sales Tax Payable[/either]
+[either]__QB_SALES_TAX_AGENCY__[or]State Board of Equalization[/either]
 
 -[salestax noformat=1]
 [value mv_order_number]
@@ -189,7 +198,7 @@ N
 N
 -1
 
-[either][var QB_SALES_TAX_ITEM][or]Sales Tax Item[/either]
+[either]__QB_SALES_TAX_ITEM__[or]Sales Tax Item[/either]
 
 N
 N
@@ -203,7 +212,7 @@ ENDTRNS
 	$Scratch->{qb_trans} =~ s/\s*$/\r\n/;
 	return;
 [/calc]
-Logging transaction to orders/qb[either][var QB_FILE_SUFFIX][or][scratch FILEDATE][/either].iif: [tag op=log umask=022 file="orders/qb[value mv_order_number].iif" type=text interpolate=1][scratch qb_trans]
+Logging transaction to orders/qb[either]__QB_FILE_SUFFIX__[or][scratch FILEDATE][/either].iif: [tag op=log umask=022 file="orders/qb[value mv_order_number].iif" type=text interpolate=1][scratch qb_trans]
 [/tag]
 
 [calc]

@@ -224,7 +224,8 @@ your variable.txt file.
  
  cat >>/path/to/your/products/variable.txt  <<EOF
  QB_DISABLE_DOCNUM		Quickbooks
- QB_TITLE_PREFIX		Quickbooks
+ QB_ITEM_PREFIX		Quickbooks
+ QB_ITEM_LENGTH		Quickbooks
  QB_FILE_SUFFIX		Quickbooks
  QB_SHIPPING_ACCOUNT		Quickbooks
  QB_SHIPPING_ITEM		Quickbooks
@@ -242,14 +243,6 @@ contents to your mv_metadata.asc file:
  
  cat >>/path/to/your/products/mv_metadata.asc  <mv_metadata-additions.asc
 
-=head2 Compatibility Modifications
-
-Quickbooks versions 6.0 and 99 may have a problem with item names that are longer
-than 30 characters.  The current version limits the item names to 45 characters 
-(known to work on Quickbooks 2000 and later version), but can be easily changed in
-the etc/trans_quickbooks file.  Please report any compatibility problems to the 
-interchange-users@icdevgroup.org mailing list.
- 
 =head2 Restart the catalog
 
 This can be done by restarting the Interchange server or by clicking
