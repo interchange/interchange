@@ -1,6 +1,7 @@
 UserTag filters Order exclude
 UserTag filters Routine <<EOR
-my %Filter_desc = (
+use vars '%Filter_desc';
+%Vend::Interpolate::Filter_desc = (
 	filesafe        => 'Safe for filename',
 	currency        => 'Currency',
 	mailto          => 'mailto: link',
