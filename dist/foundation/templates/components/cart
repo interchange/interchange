@@ -356,16 +356,16 @@ EOF
 	  <td>
 	    <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
 	  </td>
-	  <td align="center" valign="center" class="categorybar">
-    		<b>[button
-		text="Check out"
-     		src="checkout_button.gif"
-		hidetext=1
-		form=basket
-		]
+	  <td align="center" valign="center" class="contentbar1">
+    		[button
+     		  text="Check Out"
+		  src="__THEME__/checkout_button.gif"
+		  hidetext=1
+		  form=basket
+		  ]
 			mv_todo=return
 			mv_nextpage=ord/checkout
-		[/button]</b>
+		[/button]
 	  </td>
 	  <td align="center">
 	    [if type=explicit compare="[control continue_shopping]"]
@@ -438,7 +438,7 @@ EOF
   [else]
       [button
           text="Save This Cart"
-          src="save_cart_button.gif"
+          src="__THEME__/savecart.gif"
           extra="class=contentbar2"
           hidetext=1
           form=basket
@@ -450,7 +450,7 @@ EOF
       [/button]
       [button
           text="Set As Recurring Order"
-          src="recurring_order_button.gif"
+          src="__THEME__/saverecur.gif"
           extra="class=contentbar2"
           hidetext=1
           form=basket
