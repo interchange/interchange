@@ -17,6 +17,14 @@
 	my $ref;
 	my $ref_in_page;
 	my $t_name = '';
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
 	if($CGI->{ui_template}) {
 #Log("reading template=$CGI->{ui_template}");
 		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
@@ -96,6 +104,8 @@
 											type => $wtype,
 											passed => $options,
 											default => $set,
+											filter => $ref->{ui_control_filter}{$_},
+											pre_filter => $ref->{ui_control_prefilter}{$_},
 										});
 				}
 				else {
@@ -163,6 +173,7 @@ EOF
 	</select>
 	[button text="Change template"]
 		mv_todo=back
+		[js]onclick="this.form.target='_self'"[/js]
 		mv_nextpage=@@MV_PAGE@@
 	[/button]
 	 </small>
@@ -203,13 +214,18 @@ EOF
 	}
 
 	if($current) {
-		$current =~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is;
-		$content = $1 || '';
+		if ($current =~ m{<!--\s+begin\s+content\s+-->\n(.*)\n<!--\s+end\s+content\s+-->}is)
+		{
+			$content = $1;
+		}
+		else {
+			$content = $current;
+		}
 	}
 
+	$content =~ s/\&/\&amp;/g;
 	$content =~ s/\[/&#91;/g;
 	$content =~ s/</&lt;/g;
-	$content =~ s/&nbsp;/&amp;nbsp;/g;
 
 	# If nothing else, display the content
 	$ref->{ui_template_layout} = 'UI_CONTENT'
