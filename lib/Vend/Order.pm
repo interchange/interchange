@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Order.pm,v 2.1 2001-07-19 11:50:59 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -156,20 +156,22 @@ my %Parse = (
 							$code =~ s/(\w+)\s*//;
 							my $tab = $1
 								or return (0, $name, errmsg("no table specified"));
+							my $msg = $code;
+
 							my $db = database_exists_ref($tab)
 								or do {
-									my $msg = errmsg(
+									$msg = errmsg(
 										"Table %s doesn't exist",
 										$tab,
 									);
 									return(0, $name, $msg);
 								};
 							if($db->record_exists($value)) {
-								my $msg = errmsg(
+								$msg = errmsg(
 										"Key %s already exists in %s, try again.",
 										$value,
 										$tab,
-									);
+									) unless $msg;
 								return(0, $name, $msg);
 							}
 							return (1, $name, '');
