@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.45 2004-06-09 17:16:55 mheins Exp $
+# $Id: Form.pm,v 2.46 2004-07-04 13:11:50 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 
 @EXPORT = qw (
 	display
@@ -952,7 +952,7 @@ sub options_to_array {
 	my @out;
 
 	if($passed =~ m{^[^=]*\0}) {
-		$passed = filter_value($passed, 'option_format');
+		$passed = Vend::Interpolate::filter_value($passed, 'option_format');
 	}
 
 	my $delim = $opt->{delimiter} || ',';
