@@ -59,6 +59,10 @@
 		code
 		name
 
+		=Edit capability
+
+		extended.file_upload
+
 		=Edit page display
 
 		extended.ui_data_fields
@@ -69,6 +73,7 @@
 	label=`{
 		code							=> 'View::Table',
 		name							=> 'Description',
+		'extended.file_upload'		=> 'Allow file upload for this table',
 		'extended.ui_data_fields'		=> 'Fields to edit',
 		'extended.ui_display_only'		=> 'Fields for display only',
 		'extended.left_width' => 'Width specification for label column',
@@ -78,6 +83,7 @@
 	widget=`{
 		code							=> 'hidden_text',
 		name							=> 'value',
+		'extended.file_upload'			=> 'yesno',
 		'extended.ui_data_fields'		=> 'move_combo_8',
 		'extended.ui_display_only'		=> 'text_40',
 		'extended.table_width'		    => 'text_8',
