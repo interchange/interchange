@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.20 2001-03-22 08:54:40 racke Exp $
+# $Id: interchange.PL,v 1.15.2.21 2001-03-23 15:03:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1138,7 +1138,7 @@ my %form_action = (
 					if (defined $CGI::values{mv_order_route}) {
 						# $ok will not be defined unless Route "supplant" was set
 						# $order_no will come back so we don't issue two of them
-#::logDebug("Routing order");
+#::logDebug("Routing order $CGI::values{mv_order_route}");
 						($ok, $order_no) = route_order(
 											$CGI::values{mv_order_route},
 											$Vend::Items
@@ -2656,6 +2656,11 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	# Read interchange.cfg (or whatever its name is set to be)
 	global_config();
+
+	@action{keys %{$Global::ActionMap}} = (values %{$Global::ActionMap})
+		if $Global::ActionMap;
+	@form_action{keys %{$Global::FormAction}} = (values %{$Global::FormAction});
+		if $Global::FormAction;
 
 #::logDebug(::uneval(\%Global::Catalog));
 
