@@ -157,6 +157,11 @@ i18n
 
 * Japanese UI translation update from Murahashi <murahashi@ayayu.com>.
 
+SOAP
+----
+
+* no DNS lookups unless HostnameLookups is set
+
 Debian
 ------
 
