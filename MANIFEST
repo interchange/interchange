@@ -23,6 +23,7 @@ debian/interchange-cat-foundation.postrm
 debian/interchange-cat-foundation.templates
 debian/interchange-ui.config
 debian/interchange-ui.files
+debian/interchange-ui.prerm
 debian/interchange-ui.postinst
 debian/interchange-ui.templates
 debian/interchange.cfg
@@ -36,6 +37,7 @@ debian/interchange.init
 debian/interchange.logrotate
 debian/interchange.postinst
 debian/interchange.preinst
+debian/interchange.prerm
 debian/interchange.templates
 debian/interchange.wrapper
 debian/interchangeconfig
