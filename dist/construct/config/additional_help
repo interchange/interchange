@@ -20,7 +20,7 @@ can configure MySQL and Postgres in a test configuration.
 MYSQL
 .
 You can select this to use MySQL in your test catalog. Careful!
-This requires the ability to create a database named "test_barry",
+This requires the ability to create a database named "test_construct",
 and is highly dependent on your Perl and MySQL configuration. Don't
 be too surprised if this doesn't work.
 
@@ -43,7 +43,7 @@ This is often the user "root".
 PGSQL
 .
 You can select this to use PostGres in your test catalog.
-This requires the ability to create a database named "test_barry",
+This requires the ability to create a database named "test_construct",
 and is highly dependent on your Perl and system configuration. Don't
 be too surprised if this doesn't work.
 

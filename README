@@ -67,7 +67,7 @@ Major files/directories in the distribution:
                 files and modules. Includes:
 
                 interchange.cfg.dist   Distribution interchange.cfg
-                construct/             The "barry" catalog demo application.
+                construct/             The new catalog demo application
                 src/                   C and Perl code for CGI links
                 lib/                   User interface
                 usertag/               Some fairly-standard usertags
