@@ -1,4 +1,4 @@
-[set page_title]Select option type[/set]
+[set page_title][L]Select option type[/L][/set]
 [set ui_class]Items[/set]
 [calc]
 	$Tag->tmp('tables_to_open');
@@ -95,15 +95,15 @@
 	}
 	my @types = sort keys %{$Config->{Options_repository}};
 	my %def_desc = (
-		Simple	=> 'Simple Options',
-		Matrix	=> 'Matrix Options',
-		Old48 	=> 'Old Interchange 4.8 Options',
+		Simple	=> '[L]Simple Options[/L]',
+		Matrix	=> '[L]Matrix Options[/L]',
+		Old48 	=> '[L]Old Interchange 4.8 Options[/L]',
 	);
 	my @lines = "code\tdescription";
 	for(@types) {
 		my $loc = $Config->{Options_repository}{$_};
 		next if $loc->{disable};
-		my $desc = $loc->{description} || $def_desc{$_} || $_;
+		my $desc = errmsg($loc->{description}) || $def_desc{$_} || errmsg($_);
 		push @lines, "$_\t$desc";
 	}
 
@@ -130,7 +130,7 @@
 <INPUT TYPE=HIDDEN NAME="set_options" VALUE="1">
 <INPUT TYPE=RADIO NAME="setting" VALUE="" [if scratch setting eq 'none']CHECKED[/if]> [L]No Options[/L]<BR>
 [loop list="[scratch options_loop]" lr=1 head-skip=1]
-<INPUT TYPE=RADIO NAME="setting" VALUE="[loop-code]" [if scratch setting eq '[loop-code]']CHECKED[/if]> [msg][loop-param description][/msg]<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="[loop-code]" [if scratch setting eq '[loop-code]']CHECKED[/if]> [loop-param description]<BR>
 [/loop]
 [button text="[L]Update[/L]" mv_check="[L]Update[/L]"]
 mv_todo=return
@@ -146,13 +146,13 @@ mv_nextpage="@@MV_PAGE@@"
 <table width="__UI_OVERALL_WIDTH__" __UI_T_PROPERTIES__>
 
 <tr class=rnorm>
-        <td class=titlebox colspan=2>Option type:
+        <td class=titlebox colspan=2>[L]Option type:[/L]
                 [scratch setting]
 &nbsp; &nbsp; &nbsp;
                 [page href="@@MV_PAGE@@" form="
                         ui_change_options=1
                         item_id=[loop-code]
-                        "]Change</A><br>
+                        "][L]Change[/L]</A><br>
         </td>
 </tr>
 
@@ -160,7 +160,7 @@ mv_nextpage="@@MV_PAGE@@"
 <P>
 [/loop]
 
-[tmp page_title]Configure [scratch setting] options for [description code="[cgi item_id]"][/tmp]
+[tmp page_title][msg arg.0="[scratch setting]" arg.1="[description code='[cgi item_id]']"]Configure %s options for %s[/msg][/tmp]
 [options code="[cgi item_id]" admin_page=1]
 
 [/else]
