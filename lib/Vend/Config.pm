@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.1 2001-07-19 16:51:40 heins Exp $
+# $Id: Config.pm,v 2.2 2001-08-01 00:58:49 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 my %CDname;
 
@@ -269,8 +269,18 @@ sub global_directives {
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
-	['Inet_Mode',         'yesno',            defined $Global::Inet_Mode ? ($Global::Inet_Mode) : 'Yes'],
-	['Unix_Mode',         'yesno',            defined $Global::Unix_Mode ? ($Global::Unix_Mode) : 'Yes'],
+	['Inet_Mode',         'yesno',            (
+												defined $Global::Inet_Mode
+												||
+												defined $Global::Unix_Mode
+												)
+												? ($Global::Inet_Mode || 0) : 'Yes'],
+	['Unix_Mode',         'yesno',            (
+												defined $Global::Inet_Mode
+												||
+												defined $Global::Unix_Mode
+												)
+												? ($Global::Unix_Mode || 0) : 'Yes'],
 	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
