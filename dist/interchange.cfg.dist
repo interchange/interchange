@@ -63,7 +63,7 @@ endif
 
 #### Now including individual usertag files
 
-include usertag/*
+include usertag/*.tag
 
 
 ### Include if you want non-English error messages. Not complete.
