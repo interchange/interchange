@@ -356,7 +356,7 @@ EOF
 	  <td>
 	    <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
 	  </td>
-	  <td align="center" valign="center" class="contentbar1">
+	  <td align="center" valign="center"> 
     		[button
      		  text="Check Out"
 		  src="__THEME__/checkout_button.gif"
