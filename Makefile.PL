@@ -797,7 +797,7 @@ localefiles:
 		lang=`basename $$langfile .cfg`; \
 		mv $$langfile $$langfile.old; \
 		cat $(UILCDIR)/default.cfg >> $$langfile.old; \
-		if ! $(INSTALLBIN)/localize -n -s -m $$langfile.old -u $(UIMENUDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $$langfile; then \
+		if ! $(INSTALLBIN)/localize -n -s -m $$langfile.old -u $(UIMENUDIR) -l $$lang `find $(UIDIR) -type f -not -empty -not -name '.#*'` > $$langfile; then \
 		echo "Failed to generate locale file $$langfile"; \
 		mv $$langfile.old $$langfile; \
 		fi; \
