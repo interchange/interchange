@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Cart.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Cart.pm,v 1.2.6.1 2000-11-25 00:08:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.1 $, 10);
 
 use strict;
 
@@ -62,19 +62,97 @@ sub STORE {
 
 sub DESTROY { }
 
+
+# BEGTEST
+
+=head2 Test header for item toss
+
+ my $cart = [
+	{
+		code => 1,
+		mv_mi => 1,
+		mv_si => 0,
+		mv_ci => 0,
+		quantity => 0,
+	},
+	{
+		code => 2,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 2,
+		quantity => 1,
+	},
+	{
+		code => 3,
+		mv_mi => 2,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 5,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 3,
+		quantity => 1,
+	},
+	{
+		code => 50,
+		mv_mi => 3,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 51,
+		mv_mi => 3,
+		mv_si => 1,
+		mv_ci => 31,
+		quantity => 1,
+	},
+	{
+		code => 52,
+		mv_mi => 31,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 6,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 7,
+		mv_mi => 0,
+		mv_si => 0,
+		mv_ci => 0,
+		quantity => 1,
+	},
+];
+
+=cut
+
 # If the user has put in "0" for any quantity, delete that item
 # from the order list.
 sub toss_cart {
 	my($s) = @_;
 	my $i;
 	my (@master);
+	my (@cascade);
     DELETE: for (;;) {
         foreach $i (0 .. $#$s) {
             if ($s->[$i]->{quantity} <= 0) {
 				next if defined $s->[$i]->{mv_control} and
 								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
-				push (@master, $s->[$i]->{mv_mi})
-					if $s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si};
+				if ($s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si}) {
+					push (@master, $s->[$i]->{mv_mi});
+				}
+				elsif ( $s->[$i]->{mv_ci} ) {
+					push (@master, $s->[$i]->{mv_ci});
+				}
                 splice(@$s, $i, 1);
                 next DELETE;
             }
@@ -86,17 +164,44 @@ sub toss_cart {
 	my $mi;
 	my %save;
 	my @items;
+
 	# Brute force delete for subitems of any deleted master items
-	foreach $mi (@master) {
-        foreach $i (0 .. $#$s) {
-            $save{$i} = 1
-				unless $s->[$i]->{mv_si} and $s->[$i]->{mv_mi} eq $mi;
-        }
+	while (@master) {
+		@cascade = @master;
+		@master = ();
+		foreach $mi (@cascade) {
+			%save = ();
+			foreach $i (0 .. $#$s) {
+				if ( $s->[$i]->{mv_si} and $s->[$i]->{mv_mi} eq $mi ) {
+					delete $save{$i};
+# print "mi=$mi == $s->[$i]->{mv_mi}, si=$s->[$i]->{mv_si}, ci=$s->[$i]->{mv_ci}\n";
+					push(@master, $s->[$i]->{mv_ci})
+						if $s->[$i]->{mv_ci};
+				}
+				else {
+# print "mi=$mi != $s->[$i]->{mv_mi}, si=$s->[$i]->{mv_si}\n";
+					$save{$i} = 1;
+				}
+			}
+			@items = @$s;
+			@{$s} = @items[sort {$a <=> $b} keys %save];
+		}
 	}
-	@items = @$s;
-	@{$s} = @items[sort {$a <=> $b} keys %save];
     1;
 }
+
+=head2 Test footer for item toss
+
+	toss_cart($cart);
+
+	use Data::Dumper;
+	$Data::Dumper::Indent = 2;
+	$Data::Dumper::Terse = 2;
+	print Data::Dumper::Dumper($cart);
+
+	# ENDTEST
+
+=cut
 
 sub get_cart {
 	my($cart) = shift or return $Vend::Items;
