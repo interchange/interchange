@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.18 2001-04-10 23:50:25 heins Exp $
+# $Id: Parse.pm,v 1.12.2.19 2001-04-13 10:18:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.19 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -86,6 +86,7 @@ my %PosNumber =	( qw!
 				harness          0
 				html_table       0
 				if               1
+				unless           1
 				import           2
 				include          2
 				index            1
@@ -170,6 +171,7 @@ my %Order =	(
 				harness		    => [qw( )],
 				html_table	    => [qw( )],
 				if				=> [qw( type term op compare )],
+				unless			=> [qw( type term op compare )],
 				or				=> [qw( type term op compare )],
 				and				=> [qw( type term op compare )],
 				index			=> [qw( table )],
@@ -290,28 +292,29 @@ my %addAttr = (
 my %hasEndTag = (
 
 				qw(
-                        attr_list       1
-                        calc            1
 						catch           1
 						control_set     1
+						either          1
+						harness         1
+                        attr_list       1
+                        calc            1
                         currency        1
                         discount        1
                         filter	        1
                         fly_list        1
-						either          1
-						harness         1
                         html_table      1
                         if              1
                         import          1
                         input_filter    1
                         item_list       1
+                        log             1
                         loop            1
                         mail            1
                         mvasp           1
                         perl            1
                         query           1
-                        row             1
                         region          1
+                        row             1
                         search_region   1
                         set             1
                         set             1
@@ -319,12 +322,12 @@ my %hasEndTag = (
                         sql             1
                         strip           1
                         tag             1
-                        log             1
-                        tree            1
-                        try             1
-                        tmp             1
                         time			1
                         timed_build     1
+                        tmp             1
+                        tree            1
+                        try             1
+                        unless          1
 
 				)
 			);
@@ -347,6 +350,7 @@ my %InvalidateCache = (
 				index		1
 				input_filter		1
 				if          1
+				unless      1
 				mail		1
 				mvasp		1
 				nitems		1
@@ -382,6 +386,18 @@ my %Implicit = (
 			page    =>	{ qw( secure	secure ) },
 			area    =>	{ qw( secure	secure ) },
 
+			unless =>		{ qw(
+								!=		op
+								!~		op
+								<=		op
+								==		op
+								=~		op
+								>=		op
+								eq		op
+								gt		op
+								lt		op
+								ne		op
+					   )},
 			if =>		{ qw(
 								!=		op
 								!~		op
@@ -427,6 +443,7 @@ my %PosRoutine = (
 				or			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
 				and			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
 				if			=> \&Vend::Interpolate::tag_if,
+				unless		=> \&Vend::Interpolate::tag_unless,
 			);
 
 my %Routine = (
@@ -494,6 +511,7 @@ my %Routine = (
 				input_filter	=> \&Vend::Interpolate::input_filter,
 				item_list		=> \&Vend::Interpolate::tag_item_list,
 				if				=> \&Vend::Interpolate::tag_self_contained_if,
+				unless			=> \&Vend::Interpolate::tag_unless,
 				or				=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
 				and				=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
 				goto			=> sub { return '' },
@@ -645,6 +663,12 @@ my %attrAlias = (
 	 'salestax'			=> { 'cart' => 'name', },
 	 'subtotal'			=> { 'cart' => 'name', },
 	 'total_cost'		=> { 'cart' => 'name', },
+	 'unless'			=> { 
+	 						'comp' => 'compare',
+	 						'condition' => 'compare',
+	 						'operator' => 'op',
+	 						'base' => 'type',
+						},
 	 'if'			=> { 
 	 						'comp' => 'compare',
 	 						'condition' => 'compare',
@@ -708,6 +732,7 @@ my %lookaheadHTML = (
 				qw(
 
 				if 		then|elsif|else
+				unless 	then|elsif|else
 				)
 			);
 
