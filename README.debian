@@ -7,9 +7,8 @@ Feedback
 --------
 
 Please send your comments and bug reports to Stefan Hornburg (Racke)
-<racke@linuxia.de>. He is a member of the Interchange core team,
-but not employed by Red Hat, so don't blame them if you encounter
-problems with the Interchange Debian packages.
+<racke@linuxia.de>. He is the Interchange core developer responsible 
+for the Interchange Debian packages. 
 
 APT Sources
 ===========
