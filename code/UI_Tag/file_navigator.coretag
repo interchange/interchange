@@ -29,9 +29,8 @@ sub {
 	my $action = $CGI::values{action} || '';
 	my $already_found;
 
-	my $edit_page = $opt->{edit_page} || "page_edit";
-	my $edit_var = $opt->{edit_var} || 'ui_page';
-	my $edit_form = $opt->{edit_form} || "$edit_var=~FN~";
+	my $edit_page = $opt->{edit_page} || "content_editor";
+	my $edit_form = $opt->{edit_form} || "ui_name=~FN~&ui_type=page";
 	
 	my @errors;
 	my @messages;
@@ -279,7 +278,7 @@ EOF
 		if(-d $_) {
 			push @dir, [$fe, $fn, $dtmpl, $perms];
 		}
-		elsif ($opt->{edit_all} || /\.html?$/) {
+		elsif ($opt->{edit_all} || ($opt->{edit_only} && /\.html?$/) ) {
 			my $rn = '';
 			($rn = $fn) =~ s/$idir_re// if $idir_re;
 			push @plain, [$fe, $fn, $ftmpl_ed, $perms, $rn];
