@@ -491,6 +491,7 @@ EoPC
 			mv_nextpage=@@MV_PAGE@@
 			nocancel=1
 			notable=1
+			top-buttons-rows=1
 			no_meta=1
 			override.ui_body_text=`$page_content`
 			show_reset=1

@@ -351,6 +351,7 @@ mv_nextpage=__UI_BASE__/content
 				override.ui_body_text=`$Scratch->{c_content}`
 				show_reset=1
 				notable=1
+				top-buttons-rows=1
 				no-table-meta=1
 				widget.ui_body_text="textarea"
 				width.ui_body_text="90"

@@ -265,6 +265,7 @@ mv_nextpage=__UI_BASE__/content
 		table=mv_metadata
 		ui_data_fields="code ui_body_text"
 		notable=1
+		top-buttons-rows=1
 		no-table-meta=1
 		widget.ui_body_text="textarea"
 		width.ui_body_text="90"
