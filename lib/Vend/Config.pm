@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.19 2000-09-23 21:07:06 heins Exp $
+# $Id: Config.pm,v 1.20 2000-09-25 15:10:24 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 my %CDname;
 
@@ -372,6 +372,7 @@ sub catalog_directives {
     ['Pragma',		 	 'boolean',     	 ''],
     ['DynamicData', 	 'boolean',     	 ''],
     ['NoImport',	 	 'boolean',     	 ''],
+    ['NoImportExternal', 'yesno',	     	 ''],
     ['CommonAdjust',	 undef,  	     	 ''],
     ['PriceAdjustment',	 'array',  	     	 ''],
     ['PriceBreaks',	 	 'array',  	     	 ''],

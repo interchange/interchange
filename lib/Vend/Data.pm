@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.10 2000-09-16 01:13:26 heins Exp $
+# $Id: Data.pm,v 1.11 2000-09-25 15:10:24 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -707,7 +707,12 @@ sub import_database {
 
 	if ($class_config->{RestrictedImport}) {
 		$obj->{db_file_extended} = $database_dbm;
-		if (-f $database_dbm or ! -f $database_txt) {
+		if (
+			$Vend::Cfg->{NoImportExternal}
+			or -f $database_dbm
+			or ! -f $database_txt
+			)
+		{
 			$no_import = 1;
 		}
 		else {
