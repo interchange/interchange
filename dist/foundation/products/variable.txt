@@ -1,77 +1,41 @@
 code	Variable	pref_group
 ADDRESS	__MVC_ADDRESS__	Company
-BACKGROUND	#FFFFFF	Catalog Colors and Style
 BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink">$ANCHOR$</A>	Admin colors
 CATALOG_STATIC	No	Static pages
-CATEGORYBAR_TEXT	#FFFFFF	Catalog Colors and Style
-CATEGORYBAR_BG	#993333	Catalog Colors and Style
-CATEGORYBAR_FONT	Helvetica	Catalog Colors and Style
-CATEGORYBAR_FONTSIZE	11px	Catalog Colors and Style
-CATEGORYBAR_WEIGHT	normal	Catalog Colors and Style
-CATEGORYBAR_LINK	#FFFFCC	Catalog Colors and Style
-CATEGORYBAR_LINKHOVER	#FFFFCC	Catalog Colors and Style
-CATEGORYBAR_LINKDECO	none	Catalog Colors and Style
-CATEGORYBAR_HOVERDECO	underline	Catalog Colors and Style
 CGI_URL	__MVC_CGIURL__	Directories and Paths
-CHECK_ACCEPTED	1	Payment
 CHECKOUT_MAIL_LIST	1	Mailings
+CHECK_ACCEPTED	1	Payment
 CITY	__MVC_CITY__	Company
 COD_ACCEPTED	__MVC_PAYCOD__	Payment
 COMPANY	__MVC_COMPANY__	Company
-CONTENTBAR1	#DDDDDD	Catalog Colors and Style
-CONTENTBAR2	#BBBBBB	Catalog Colors and Style
 CONTRAST	RED	Template
 CREDIT_CARDS_ACCEPTED	__MVC_PAYCC__	Payment
 DECREMENT_INVENTORY	1	Order
-DEFAULT_FONT	__MVC_DEFAULTFONT__	Template
 DEFAULT_LOCALE	__MVC_DEFAULTLOCALE__	Internationalization
-DICT_PRICE_SALE	__MVC_DICTPRICEALE__	Labels
-DICT_PRICE_STD	__MVC_DICTPRICESTD__	Labels
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 EMAIL_INFO	__MVC_EMAILINFO__	Company
 EMAIL_SERVICE	__MVC_EMAILSERVICE__	Company
 ENCRYPTOR		Encryption
 FAX	__MVC_FAX__	Company
 FORUM_ANON_NAME	Anonymous Coward	Forums
-FORUM_PRODUCTS	__MVC_MYSQL____MVC_PGSQL__	Forums
 FORUM_EMAIL_NOTIFY	__MVC_EMAILSERVICE__	Forums
+FORUM_PRODUCTS	__MVC_MYSQL____MVC_PGSQL__	Forums
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
-IMG_ADDCART	__MVC_IMGADDCART__	Images
-IMG_CHECKOUT	__MVC_IMGCHECKOUT__	Images
-IMG_CONTINUE	__MVC_IMGCONTINUE__	Images
-IMG_MOREINFO	__MVC_IMGMOREINFO__	Images
-IMG_PLACEORDER	__MVC_IMGPLACEORDER__	Images
-IMG_RECALC	__MVC_IMGRECALC__	Images
-IMG_VIEWCART	__MVC_IMGVIEWCART__	Images
-LINK	#993333	Catalog Colors and Style
-LINKHOVER	#FF3333	Catalog Colors and Style
-LINKDECO	underline	Catalog Colors and Style
-LINKHOVERDECO	underline	Catalog Colors and Style
 LOCALES	__MVC_LOCALES__	Internationalization
 LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
-MAILING_MAX_DIRECT	50	Mailings
 MAILING_FROM	__MVC_COMPANY__ <__MVC_EMAILSERVICE__>	Mailings
+MAILING_MAX_DIRECT	50	Mailings
 MAILING_TO	{FNAME} {LNAME} <{EMAIL}>	Mailings
-MAINCONTENT_TEXT	#000000	Catalog Colors and Style
-MAINCONTENT_BG	#FFFFFF	Catalog Colors and Style
-MAINCONTENT_FONT	Helvetica	Catalog Colors and Style
-MAINCONTENT_FONTSIZE	12px	Catalog Colors and Style
-MAINCONTENT_WEIGHT	normal	Catalog Colors and Style
-MENUBAR_TEXT	#FFFFFF	Catalog Colors and Style
-MENUBAR_BG	#CC3333	Catalog Colors and Style
-MENUBAR_FONT	Helvetica	Catalog Colors and Style
-MENUBAR_FONTSIZE	11px	Catalog Colors and Style
-MENUBAR_WEIGHT	normal	Catalog Colors and Style
 MV_DEFAULT_SEARCH_DB	1	Database
 MV_DEMO_MODE	__MVC_DEMOMODE__	General
 MV_OPTION_TABLE	options	Item display
-MV_PAYMENT_ID		Payment
-MV_PAYMENT_SECRET		Payment
-MV_PAYMENT_MODE		Payment
 MV_PAYMENT_HOST		Payment
-MV_PAYMENT_REFERER		Payment
+MV_PAYMENT_ID		Payment
+MV_PAYMENT_MODE		Payment
 MV_PAYMENT_PARTNER		Payment
+MV_PAYMENT_REFERER		Payment
+MV_PAYMENT_SECRET		Payment
 MV_PAYMENT_VENDOR		Payment
 MYSQL	__MVC_MYSQL__	Database
 ORACLE	__MVC_ORACLE__	Database
@@ -111,8 +75,8 @@ UI_COMPONENT_DIR	templates/components	Directories and Paths
 UI_HELP_HEIGHT	480	Admin layout
 UI_HELP_WIDTH	650	Admin layout
 UI_IMAGE_DIR	__MVC_SHAREURL__/interchange-5/	Admin control
-UI_ITEM_TABLES	products pricing inventory merchandising options:sku	Item display
 UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange-5/	Admin control
+UI_ITEM_TABLES	products pricing inventory merchandising options:sku	Item display
 UI_META_LINK	1	Admin control
 UI_ORDER_VIEWNEXT_MAX_SKIP	20	Admin control
 UI_PAGE_DIR	pages	Directories and Paths
