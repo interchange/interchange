@@ -8,6 +8,8 @@ ui_component_label: Small saved cart list for left/right display
 
 <!-- BEGIN COMPONENT [control component saved_carts_list_small] -->
 
+[tmp myimagedir][image dir_only=1 ui=1][/tmp]
+
 [if session logged_in]
 
   [if cgi delete_cart][delete_cart nickname="[cgi delete_cart]"][/if]
@@ -43,11 +45,13 @@ ui_component_label: Small saved cart list for left/right display
         ",
     });
 
+
+my $myimagedir = $Scratch->{myimagedir};
 my $row = <<"END";
 
 <tr class="">
   <td valign=top class="contentbar2">
-    $delink<img src="[image dir_only=1 ui=1]delsm.gif" border=0></a>&nbsp;&nbsp;
+    $delink<img src="${myimagedir}delsm.gif" border=0></a>&nbsp;&nbsp;
   </td>
   <td valign=top class="contentbar1">$golink$name</A></td>
   <td valign=top class="contentbar2" nowrap><small>$last_update</small></td>
