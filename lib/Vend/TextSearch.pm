@@ -1,6 +1,6 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.8 2002-06-22 22:38:38 edl Exp $
+# $Id: TextSearch.pm,v 2.9 2002-06-23 01:20:10 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use Search::Dict;
 use strict;
@@ -345,7 +345,7 @@ sub search {
 
 	$s->{matches} = scalar(@out);
 
-	if ($s->{matches} > $s->{mv_matchlimit}) {
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->save_more(\@out)
 			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {

@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.2 2002-06-17 22:24:08 jon Exp $
+# $Id: RefSearch.pm,v 2.3 2002-06-23 01:20:10 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 use strict;
 
@@ -258,7 +258,7 @@ sub search {
 	## or ITL
 	return @out if $s->{mv_return_filtered};
 
-	if ($s->{matches} > $s->{mv_matchlimit}) {
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->save_more(\@out)
 			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {

@@ -34,7 +34,7 @@
 </tr>
 
 <tr bgcolor="__UI_C_INTBLOCK__">
-<td width=25%>
+<td width="25%">
 
 1. Choose a table as the source:
 
@@ -232,7 +232,10 @@ EOF
 		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('_Auto_number');
 		return "area column $acol doesn't exist"
 			unless $pdb->column_exists($acol);
-		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
+		my $ary = $pdb->query({
+				sql => "select distinct $acol from $ptab order by $acol",
+				ml  => 'all',
+			})
 			or return "area column query failed";
 		for(@$ary) {
 			my ($area) = (@$_);
@@ -250,9 +253,10 @@ EOF
 		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
 		return "cat column $ccol doesn't exist"
 			unless $pdb->column_exists($ccol);
-		my ($ary, $fh) = $pdb->query(
-								"select $acol, $ccol from $ptab order by $ccol",
-								)
+		my ($ary, $fh) = $pdb->query({
+				sql => "select $acol, $ccol from $ptab order by $ccol",
+				ml  => 'all',
+			})
 			or return "cat column query failed";
 		foreach my $row (@$ary) {
 			my $area = $row->[$fh->{$acol}];
@@ -277,7 +281,7 @@ EOF
 	$CGI->{mv_nextpage} = $go_page;
 	my $out = $Tag->uneval( { ref => \%catmap } );
 	$out =~ s/,/,\n/g;
-	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP>";
 	return;
 [/perl]
 [/seti]
@@ -298,9 +302,3 @@ EOF
 <!-- ----- END REAL STUFF ----- -->
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
-
-
-
-
-
-

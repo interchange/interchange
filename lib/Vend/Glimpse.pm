@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.4 2002-06-17 22:24:07 jon Exp $
+# $Id: Glimpse.pm,v 2.5 2002-06-23 01:20:10 jon Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 use strict;
 
 sub array {
@@ -330,7 +330,7 @@ EOF
 		$s->{matches} = scalar(@out);
 	}
 
-	if ($s->{matches} > $s->{mv_matchlimit}) {
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->save_more(\@out)
 			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {

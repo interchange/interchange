@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.10 2002-06-22 22:30:22 edl Exp $
+# $Id: Scan.pm,v 2.11 2002-06-23 01:20:10 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 use strict;
 use Vend::Util;
@@ -201,7 +201,7 @@ my %Parse = (
 	mv_dict_limit           =>  \&_dict_limit,
 	mv_exact_match          =>  \&_yes,
 	mv_head_skip            =>  \&_number,
-	mv_matchlimit           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 50 },
+	mv_matchlimit           =>  \&_matchlimit,
 	mv_max_matches          =>  sub { $_[1] =~ /(\d+)/ ? $1 : -1 },
 	mv_min_string           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 1 },
 	mv_profile              =>  \&parse_profile,
@@ -951,6 +951,13 @@ sub _dict_limit {
 	$ref->{mv_dict_end} = $ref->{mv_dict_look};
 	substr($ref->{mv_dict_end},$limit,1) =~ s/(.)/chr(ord($1) + 1)/e;
 	return $_[1];
+}
+
+sub _matchlimit {
+	shift;
+	my $val = lc(shift);
+	return -1 if $val eq 'none' or $val eq 'all';
+	return int($val) || $::Variable->{MV_DEFAULT_MATCHLIMIT} || 50;
 }
 
 1;

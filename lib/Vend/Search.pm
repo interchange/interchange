@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.8 2002-06-17 22:24:08 jon Exp $
+# $Id: Search.pm,v 2.9 2002-06-23 01:20:10 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -1026,7 +1026,7 @@ sub save_more {
 	delete $s->{dbref} if defined $s->{dbref};
 	my $id = $s->{mv_more_id} || $Vend::SessionID;
 	$id .= ".$s->{mv_cache_key}";
-	if ($s->{matches} > $s->{mv_matchlimit}) {
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->{overflow} = 1;
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
 	}
