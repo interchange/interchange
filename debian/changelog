@@ -1,12 +1,12 @@
-interchange (4.5.8-2) unstable; urgency=low
+interchange (4.6.0-1) unstable; urgency=low
 
-  * prepared for new upstream release 
+  * new upstream release 
   * modified expire scripts so they work from cron
   * log form action errors
   * image helper widget added
   * option size of usertag formel implemented
 
- -- Stefan Hornburg <racke@linuxia.de>  Thu, 26 Oct 2000 17:00:27 +0200
+ -- Stefan Hornburg <racke@linuxia.de>  Fri, 27 Oct 2000 04:05:39 +0200
 
 interchange (4.5.8-1) unstable; urgency=low
   
