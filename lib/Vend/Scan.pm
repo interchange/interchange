@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Scan.pm,v 2.0.2.1 2001-11-17 02:22:55 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 use strict;
 use Vend::Util;
@@ -894,7 +894,7 @@ sub _file_security {
 		}
 		if($_ !~ /\./) {
 			$_ = $Vend::Cfg->{Database}{$_}{'file'}
-				if defined $Vend::Cfg->{Database}{$_}{'file'};
+				if defined $Vend::Cfg->{Database}{$_};
 		}
 		$ok &&= $_ !~ /$Vend::Cfg->{NoSearch}/
 			if $Vend::Cfg->{NoSearch};
