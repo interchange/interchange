@@ -1,4 +1,5 @@
 etc/init.d
+etc/interchange/usertag
 usr/bin
 usr/lib/interchange/etc
 usr/sbin
