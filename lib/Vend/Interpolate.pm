@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.82 2002-07-07 04:02:27 mheins Exp $
+# $Id: Interpolate.pm,v 2.83 2002-07-09 15:17:05 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 @EXPORT = qw (
 
@@ -2056,10 +2056,8 @@ sub tag_perl {
 			next unless $db;
 			$db = $db->ref();
 			if($hole) {
-				$Sql{$tab} = $hole->wrap($db->[$Vend::Table::DBI::DBI])
-					if $db =~ /::DBI/;
-				$Sql{$tab} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
-					if $db =~ /::LDAP/;
+				$Sql{$tab} = $hole->wrap($db->dbh())
+					if $db->can('dbh');
 				$Db{$tab} = $hole->wrap($db);
 			}
 			else {
@@ -2225,7 +2223,6 @@ sub flag {
 		foreach $dbname (@args) {
 			# Handle table:column:key
 			$dbname =~ s/:.*//;
-#::logDebug("flag transactions $dbname=$value");
 			$Vend::TransactionDatabase{$dbname} = $value;
 			$Vend::WriteDatabase{$dbname} = $value;
 
@@ -2242,6 +2239,9 @@ sub flag {
 				$db = database_exists_ref($dbname);
 				$db = $db->ref();
 			}
+			$Db{$dbname} = $db;
+			$Sql{$dbname} = $db->dbh()
+				if $db->can('dbh');
 		}
 	}
 	elsif($flag eq 'commit' || $flag eq 'rollback') {
@@ -6676,6 +6676,7 @@ sub levies {
 							currency		=> currency($cost),
 							group			=> $group,
 							label			=> $l->{label} || $desc,
+							part_number		=> $l->{part_number},
 							description		=> $desc,
 						};
 		if($cost == 0) {
