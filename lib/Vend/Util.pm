@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.12 2000-11-06 01:21:50 heins Exp $
+# $Id: Util.pm,v 1.13 2000-11-11 20:45:12 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 BEGIN {
 	eval {
@@ -873,7 +873,7 @@ EOF
 # / is not allowed unless $Global::NoAbsolute is set.
 #
 sub readfile {
-    my($file, $no) = @_;
+    my($file, $no, $loc) = @_;
     my($contents);
     local($/);
 
@@ -893,7 +893,7 @@ sub readfile {
 	$contents = <READIN>;
 	close(READIN);
 
-	if ($Vend::Cfg->{Locale} and $Vend::Cfg->{Locale}->{readfile}) {
+	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
