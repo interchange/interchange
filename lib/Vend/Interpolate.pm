@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.90 2002-07-25 17:07:21 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.91 2002-07-25 17:14:21 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.90 $, 10);
+$VERSION = substr(q$Revision: 2.91 $, 10);
 
 @EXPORT = qw (
 
@@ -3737,7 +3737,7 @@ sub tag_more_list {
 		}
 	}
 	else {
-		$r =~ s:\[(last|next)[-_]anchor\]$All\[/\1[-_]anchor\]::i;
+		$r =~ s:\[(last|next)[-_]anchor\]$All\[/\1[-_]anchor\]::gi;
 	}
 	
 	unless ($page_anchor) {
