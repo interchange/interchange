@@ -61,7 +61,8 @@ ui_template_name: leftright
 	<big><b>Advanced Search</b></big>
 	<br><br> 
 
-	<form action="[area search]">
+	<form action="[area search]" method=post>
+    <input type=hidden name=mv_session_id value="[data session id]">
 	[set asearch]su=yes/fi=products[/set]
         <input type=hidden name=mv_profile value=asearch>
 	<table>
@@ -88,6 +89,7 @@ ui_template_name: leftright
 	</form>
 
   <form action="[area search]" method=post>
+  <input type=hidden name=mv_session_id value="[data session id]">
   <input type=hidden name=mv_substring_match value="Yes">
   <input type=hidden name=mv_search_map value="
     mv_searchspec=search1
