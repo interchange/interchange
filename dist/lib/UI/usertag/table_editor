@@ -2,17 +2,19 @@ UserTag table-editor Order mv_data_table item_id
 UserTag table-editor addAttr
 UserTag table-editor AttrAlias clone ui_clone_id
 UserTag table-editor AttrAlias table mv_data_table
+UserTag table-editor AttrAlias fields ui_data_fields
 UserTag table-editor AttrAlias mv_data_fields ui_data_fields
 UserTag table-editor AttrAlias key   item_id
 UserTag table-editor AttrAlias view  ui_meta_view
 UserTag table-editor AttrAlias profile ui_profile
+UserTag table-editor AttrAlias email_fields ui_display_only
 UserTag table-editor hasEndTag
 UserTag table-editor Routine <<EOR
 sub {
 	my ($table, $key, $opt, $template) = @_;
 
 	package Vend::Interpolate;
-	#use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable $ready_safe/;
+	use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable $safe_safe/;
 
 	init_calc();
 
@@ -55,22 +57,30 @@ sub {
 		}
 	}
 
+	my $rowcount = 0;
+	my $rowdiv = $opt->{across} || 1;
+	my $span = $rowdiv * 2;
+	my $oddspan = $span - 1;
+	$opt->{table_width} = '60%' if ! $opt->{table_width};
+	$opt->{left_width} = '30%' if ! $opt->{left_width};
 	my $check       = $opt->{check};
 	my $default     = $opt->{default};
 	my $error       = $opt->{error};
 	my $extra       = $opt->{extra};
 	my $filter      = $opt->{filter};
-	my $height      = $opt->{height};
+	my $height      = $opt->{widget_height};
 	my $help        = $opt->{help};
 	my $label       = $opt->{label};
 	my $override    = $opt->{override};
 	my $pre_filter  = $opt->{pre_filter};
 	my $widget      = $opt->{widget};
-	my $width       = $opt->{width};
+	my $width       = $opt->{widget_width};
 #::logDebug("widget=" . ::uneval_it($widget) );
 
-	my $blabel      = $opt->{begin_label} || '<b>';
-	my $elabel      = $opt->{end_label} || '</b>';
+	#my $blabel      = $opt->{begin_label} || '<b>';
+	#my $elabel      = $opt->{end_label} || '</b>';
+	my $blabel      ;
+	my $elabel      ;
 	my $mlabel = '';
 
 	if($opt->{cgi}) {
@@ -113,8 +123,8 @@ sub {
 			[ qr/^ui_te_override:/, $override ],
 			[ qr/^ui_te_filter:/, $filter ],
 			[ qr/^ui_te_pre_filter:/, $pre_filter ],
-			[ qr/^ui_te_height:/, $height ],
-			[ qr/^ui_te_width:/, $width ],
+			[ qr/^ui_te_widget_height:/, $height ],
+			[ qr/^ui_te_widget_width:/, $width ],
 			[ qr/^ui_te_help:/, $help ],
 		);
 		my @cgi = keys %{$CGI};
@@ -172,7 +182,8 @@ mv_form_profile=mandatory
 &set=mv_todo set
 EOF
 		$Scratch->{ui_profile} = $prof;
-		$blabel = $elabel = '';
+		$blabel = '<span style="font-weight: normal">';
+		$elabel = '</span>';
 		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<B>Bold</B> fields are required');
 		$have_errors = $Tag->error( {
 									all => 1,
@@ -192,10 +203,7 @@ EOF
 	### end build of error checking
 
 	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
-	$opt->{clear_image} = "admin/bg.gif" if ! $opt->{clear_image};
-	$opt->{clear_image} = "$ui_img$opt->{clear_image}"
-		if $opt->{clear_image} !~ m{^(https?:|)/};
-
+	$opt->{clear_image} = "${ui_img}admin/bg.gif" if ! $opt->{clear_image};
 
 #::logDebug("table-editor opt: " . ::uneval($opt));
 	my $die = sub {
@@ -270,7 +278,7 @@ EOF
 
 	CANONCOLS: {
 		my @cols = split /[,\0\s]/, $opt->{ui_data_fields};
-		@cols = grep /:/ || $db->column_exists($_), @cols;
+		#@cols = grep /:/ || $db->column_exists($_), @cols;
 
 		$opt->{ui_data_fields} = join " ", @cols;
 
@@ -321,12 +329,20 @@ EOF
 
 	my $blob_data;
 	my $blob_widget;
-	if($opt->{mv_blob_field}) {
+	if($opt->{mailto} and $opt->{mv_blob_field}) {
+		$opt->{hidden}{mv_blob_only} = 1;
+		$opt->{hidden}{mv_blob_nick}
+			= $opt->{mv_blob_nick}
+			|| POSIX::strftime("%Y%m%d%H%M%S", localtime());
+	}
+	elsif($opt->{mv_blob_field}) {
 #::logDebug("checking blob");
 
 		my $blob_pointer;
 		$blob_pointer = $data->{$opt->{mv_blob_pointer}}
 			if $opt->{mv_blob_pointer};
+		$blob_pointer ||= $opt->{mv_blob_nick};
+			
 
 		DOBLOB: {
 
@@ -340,12 +356,12 @@ EOF
 
 			my $bstring = $data->{$opt->{mv_blob_field}};
 
-#::logDebug("blob: bstring=$bstring");
+::logDebug("blob: bstring=$bstring");
 
 			my $blob;
 
 			if(length $bstring) {
-				$blob = $ready_safe->reval($bstring);
+				$blob = $safe_safe->reval($bstring);
 				if($@) {
 					push @errors, ::errmsg("error reading blob data: %s", $@);
 					last DOBLOB;
@@ -400,7 +416,7 @@ ui_nextpage=
 [perl]Log("tried to go to $Global::Variable->{MV_PAGE}"); return[/perl]
 mv_todo=back
 EOF
-#::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
+::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
 
 			my $loaded_from;
 			if( $opt->{mv_blob_nick} ) {
@@ -425,7 +441,8 @@ EOF
 				$set 	 = $opt->{mv_blob_nick};
 			}
 
-			$blob_widget = $Tag->widget({
+			unless ($opt->{nosave}) {
+				$blob_widget = $Tag->widget({
 									name => 'mv_blob_nick',
 									type => 'combo',
 									filter => 'nullselect',
@@ -433,22 +450,25 @@ EOF
 									set => "$set",
 									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
 									});
+				$blob_widget = <<EOF;
+<B>Save to:</B> $blob_widget&nbsp;
+<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;Save&nbsp;here&nbsp;only</SMALL>
+EOF
+			}
 
-			my $checked = $opt->{mv_blob_only} ? ' CHECKED' : '';
-			$blob_widget = <<EOF if $blob_widget;
-<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
-	 <td>
+			$blob_widget = <<EOF;
+<TR id=rnorm>
+	 <td id=clabel width="$opt->{left_width}">
 	   <SMALL>$opt->{mv_blob_title}<BR>
 		$loaded_from
 	 </td>
-	 <td>
-	 	<SMALL><B>Save to:</B> $blob_widget&nbsp;
-		<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;Save&nbsp;here&nbsp;only</SMALL>
+	 <td id=cwidget>
+	 	$blob_widget&nbsp;
 	 </td>
 </TR>
 
 <tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
-<td colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
 
@@ -525,6 +545,12 @@ EOF
 		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
 	}
 
+	if($opt->{mailto}) {
+		$opt->{mailto} =~ s/\s+/ /g;
+		$Scratch->{mv_email_enable} = $opt->{mailto};
+		$opt->{hidden}{mv_data_email} = 1;
+	}
+
 	if(ref $opt->{hidden}) {
 		my ($hk, $hv);
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
@@ -533,17 +559,18 @@ EOF
 	}
 
 	$out .= $Tag->return_to();
-	$Scratch->{Ok} = $Tag->return_to('click');
+	$Scratch->{Ok} = $Tag->return_to('click', 1)
+		if ! $opt->{nosave};
 
 	$out .= <<EOF;
-<table width="60%" border="" cellspacing="0" cellpadding="0" bordercolor="$Variable->{UI_C_TITLEBARBG}">
+<table id=touter  width="$opt->{table_width}" border="" cellspacing="0" cellpadding="0">
 <tr>
   <td>
 
-<table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+<table id=tinner cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 
-<tr bgcolor="$Variable->{UI_C_TITLEBARBG}"> 
-<td align=right colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+<tr id=rtitle> 
+<td align=right colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
 
@@ -552,10 +579,10 @@ EOF
 	  					|| $linecount > 4
 						|| defined $opt->{include_form}
 						|| $mlabel;
-      $out .= <<EOF if $extra_ok;
-<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+      $out .= <<EOF if $extra_ok and ! $opt->{nosave};
+<TR id=rnorm>
 <td>&nbsp;</td>
-<td align=left>
+<td align=left colspan=$oddspan>
 <B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
 </B>
 &nbsp;
@@ -563,11 +590,13 @@ EOF
 </TD>
 </TR>
 
-<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
-<td colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+<tr id=rspacer>
+<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
-$blob_widget
 EOF
+
+	$out .= $blob_widget;
+
 	  #### Extra buttons
 
 	if($opt->{ui_new_item} and $opt->{ui_clone_tables}) {
@@ -663,8 +692,8 @@ EOF
 		$set =~ s/_TABLES_/$tabs/g;
 		$Scratch->{clone_tables} = $set;
 		$out .= <<EOF;
-<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
-<td colspan=2>
+<tr id=rtitle>
+<td colspan=$span>
 $tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
 <INPUT TYPE=hidden NAME=ui_clone_id VALUE="$opt->{ui_clone_id}">
 </td>
@@ -692,18 +721,30 @@ EOF
 	my $passed_fields = $opt->{ui_data_fields};
 
 	my @extra_cols;
+	my %email_cols;
 	my %ok_col;
+
 	while($passed_fields =~ s/(\w+:+\S+)//) {
 		push @extra_cols, $1;
 	}
-	my (@cols)  = split /\s+/, $Tag->db_columns( {
+
+	my %display_only;
+	my @do = grep /\S/, split /[\0,\s]+/, $opt->{ui_display_only};
+	for(@do) {
+		$email_cols{$_} = 1 if $opt->{mailto};
+		$display_only{$_} = 1;
+		push @extra_cols, $_;
+	}
+
+	my @cols;
+	my (@dbcols)  = split /\s+/, $Tag->db_columns( {
 										name	=> $table,
 										columns	=> $passed_fields,
 										passed_order => 1,
 									});
 
 	if($opt->{ui_data_fields}) {
-		for(@cols, @extra_cols) {
+		for(@dbcols, @extra_cols) {
 			unless (/^(\w+):+(\S+)/) {
 				$ok_col{$_} = 1;
 				next;
@@ -713,15 +754,15 @@ EOF
 			next unless $Tag->db_columns( { name	=> $t, columns	=> $c, });
 			$ok_col{$_} = 1;
 		}
-		@cols = grep $ok_col{$_}, split /\s+/, $opt->{ui_data_fields};
 	}
+	
+	@cols = grep $ok_col{$_}, split /\s+/, $opt->{ui_data_fields};
 
-	my %display_only;
-	if($opt->{ui_display_only}) {
-		my @do = split /[\0,\s]+/, $opt->{ui_display_only};
-		for(@do) {
-			$display_only{$_} = 1;
-			$opt->{ui_data_fields} =~ s/\b$_\b//;
+	if($opt->{defaults}) {
+		for(@cols) {
+			next if defined $default->{$_};
+			next unless defined $Values->{$_};
+			$default->{$_} = $Values->{$_};
 		}
 	}
 
@@ -732,21 +773,19 @@ EOF
 	my @data_enable = ($opt->{mv_blob_pointer}, $opt->{mv_blob_field});
 	my @ext_enable;
  	my $row_template = $opt->{row_template} || <<EOF;
- <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
-   <td align=left width=150> 
-     <font color="$Variable->{UI_C_TEXT}" size="-1">$blabel\$LABEL\$$elabel~META~
+   <td id=clabel width="$opt->{left_width}"> 
+     $blabel\$LABEL\$$elabel~META~
    </td>
-   <td valign=TOP> 
+   <td id=cdata> 
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
-         <td width="60%"> 
-           <FONT SIZE="-1">\$WIDGET\$</FONT>
+         <td id=cwidget> 
+           \$WIDGET\$
          </td>
-         <td><FONT SIZE="-1">~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+         <td id=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
        </tr>
      </table>
    </td>
- </tr>
 EOF
 
 	foreach my $col (@cols) {
@@ -780,12 +819,13 @@ EOF
 			$t = $table;
 			$c = $col;
 			push @data_enable, $c
-				unless $do;
+				unless $do and ! $opt->{mailto};
 		}
 
 		my $type;
 		my $overridden;
 
+		$currval = $data->{$col} if defined $data->{$col};
 		if (defined $override->{$c} ) {
 			$currval = $override->{$c};
 			$overridden = 1;
@@ -796,7 +836,7 @@ EOF
 			$overridden = 1;
 #::logDebug("hit preload for $col,currval=$currval");
 		}
-		elsif($do or $col =~ /:/) {
+		elsif( ($do && ! $currval) or $col =~ /:/) {
 			if(defined $k) {
 				my $check = $k;
 				undef $k;
@@ -818,11 +858,11 @@ EOF
 		}
 		else {
 ::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
-			$currval = $data->{$col};
+			$currval = length($data->{$col}) ? $data->{$col} : '';
 			$overridden = 1;
 		}
 
-		$type = 'value' if $do;
+		$type = 'value' if $do and ! $opt->{mailto};
 
 		if (! length $currval and defined $default->{$c}) {
 			$currval = $default->{$c};
@@ -903,14 +943,29 @@ EOF
 				if $opt->{ui_meta_specific};
 			$meta .= '</FONT>';
 		}
+		$display =~ s/\~META\~/$meta/g;
         
-		$out .= <<EOF if $break{$col};
-<TR BGCOLOR="$Variable->{UI_T_ROW_ODD}">
-	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
+		if ($break{$col}) {
+			while($rowcount % $rowdiv) {
+				$out .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
+				$rowcount++;
+			}
+			$out .= "</TR>\n";
+			$out .= <<EOF if $break{$col};
+<TR id=rbreak>
+	<TD COLSPAN=$span id=cbreak>$break_label{$col}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
-		$display =~ s/\~META\~/$meta/g;
+			$rowcount = 0;
+		}
+		$out .= "<tr id=rnorm>" unless $rowcount++ % $rowdiv;
 		$out .= $display;
+		$out .= "</TR>\n" unless $rowcount % $rowdiv;
+	}
+
+	while($rowcount % $rowdiv) {
+		$out .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
+		$rowcount++;
 	}
 
 	$Scratch->{mv_data_enable} = '';
@@ -926,21 +981,31 @@ EOF
 	### Here the user can include some extra stuff in the form....
 	###
 	$out .= <<EOF if $opt->{include_form};
-<tr>
-<td colspan=2 BGCOLOR="$Variable->{UI_T_ROW_EVEN}">$opt->{include_form}</td>
+<tr id=rnorm>
+<td colspan=$span>$opt->{include_form}</td>
 </tr>
 EOF
 	### END USER INCLUDE
 
-	$out .= <<EOF;
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$opt->{ui_data_fields}">
-<tr>
-<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><img src="$opt->{clear_image}" height=3 alt=x></td>
-</tr>
+	unless ($opt->{mailto} and $opt->{mv_blob_only}) {
+		@cols = grep ! $display_only{$_}, @cols;
+	}
+	$passed_fields = join " ", @cols;
 
-<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+	$out .= <<EOF;
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">
+<tr id=rspacer>
+<td colspan=$span ><img src="$opt->{clear_image}" height=3 alt=x></td>
+</tr>
+EOF
+
+  SAVEWIDGETS: {
+  	last SAVEWIDGETS if $opt->{nosave}; 
+	$out .= <<EOF;
+
+<TR id=rnorm>
 <td>&nbsp;</td>
-<td align=left>
+<td align=left colspan=$oddspan>
 <B><INPUT TYPE=submit NAME=mv_click VALUE=Ok></B>
 &nbsp;
 &nbsp;
@@ -950,7 +1015,7 @@ EOF
 		my $checked = ' CHECKED';
 		$checked = ''
 			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
-		$out .= <<EOF;
+		$out .= <<EOF if ! $opt->{nosave};
 <small>
 &nbsp;
 &nbsp;
@@ -976,14 +1041,21 @@ EOF
 						mv_action=back
 					!,
 					});
-		$out .= <<EOF;
-<BR><A
+		$out .= <<EOF if ! $opt->{nosave};
+<BR><BR><A
 onClick="return confirm('Are you sure you want to delete $key?')"
 HREF="$url"><IMG SRC="${ui_img}admin/delete.gif" ALT="Delete $key" BORDER=0></A> Delete
 EOF
 	}
+	$out .= <<EOF;
+</small>
+</td>
+</tr>
+EOF
+  } # end SAVEWIDGETS
 
 	my $message = '';
+
 #	if($opt->{bottom_errors}) {
 #		my $err = $Tag->error( {
 #									show_var => $error_show_var,
@@ -993,6 +1065,7 @@ EOF
 #								);
 #		push @errors, $err if $err;
 #	}
+
 	if(@errors) {
 		$message .= '<P>Errors:';
 		$message .= qq{<FONT COLOR="$opt->{color_fail}">};
@@ -1008,13 +1081,10 @@ EOF
 		$message .= '</BLOCKQUOTE></FONT>';
 	}
 	$Tag->error( { all => 1 } );
-	$out .= <<EOF;
-</small>
-</td>
-</tr>
 
-<tr>
-<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><!-- $Scratch->{Ok} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
+	$out .= <<EOF;
+<tr id=rtitle>
+<td colspan=$span><!-- $Scratch->{Ok} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 
 </table>
