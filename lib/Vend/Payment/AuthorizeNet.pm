@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.8 2003-05-21 20:22:15 jon Exp $
+# $Id: AuthorizeNet.pm,v 2.9 2003-06-11 17:51:53 danb Exp $
 #
 # Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.8 $
+Vend::Payment::AuthorizeNet $Revision: 2.9 $
 
 =head1 SYNOPSIS
 
@@ -399,12 +399,13 @@ sub authorizenet {
 		x_Method				=> 'CC',
 		x_Card_Num				=> $actual->{mv_credit_card_number},
 		x_Exp_Date				=> $exp,
+		x_Card_Code				=> $actual->{cvv2},
 		x_Trans_ID				=> $actual->{order_id},
 		x_Auth_Code				=> $actual->{auth_code},
 		x_Invoice_Num			=> $actual->{mv_order_number},
 		x_Password				=> $secret,
 		x_Login					=> $user,
-		x_Version				=> '3.0',
+		x_Version				=> '3.1',
 		x_ADC_URL				=> 'FALSE',
 		x_ADC_Delim_Data		=> 'TRUE',
     );
@@ -441,6 +442,7 @@ sub authorizenet {
             pop.avs_code          x_avs_code
             pop.avs_zip           x_zip
             pop.avs_addr          x_address
+            pop.cvv2_resp_code    x_cvv2_resp_code
     /
     );
 
@@ -457,6 +459,38 @@ sub authorizenet {
 			x_auth_code
 			x_avs_code
 			x_trans_id
+			x_invoice_num
+			x_description
+			x_amount
+			x_method
+			x_type
+			x_cust_id
+			x_first_name
+			x_last_name
+			x_company
+			x_address
+			x_city
+			x_state
+			x_zip
+			x_country
+			x_phone
+			x_fax
+			x_email
+			x_ship_to_first_name
+			x_ship_to_last_name
+			x_ship_to_company
+			x_ship_to_address
+			x_ship_to_city
+			x_ship_to_state
+			x_ship_to_zip
+			x_ship_to_country
+			x_tax
+			x_duty
+			x_freight
+			x_tax_exempt
+			x_po_num
+			x_MD5_hash
+			x_cvv2_resp_code			
 		/
 		}
 		 = split (/,/,$page);

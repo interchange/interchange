@@ -673,8 +673,15 @@ Payment
 
 * Map company and b_company for payment use.
 
-* Send to Authorize.Net customer shipping address information and company
-  where available.
+* Authorize.Net:
+  
+  - Send to Authorize.Net customer shipping address information and company
+    where available.
+
+  - Add Card Security Code (AKA CVV2, CVC2, CSC, CID) verification support
+    (uses Authorize.Net protocol version 3.1). (Chaim Klar <c_klar@c-cs.com>).
+
+  - Added the whole list of response codes (Chaim Klar <c_klar@c-cs.com>).
 
 Shipping
 --------
