@@ -5,6 +5,7 @@ Makefile.PL
 QuickStart
 README
 README.rpm
+SPECS/interchange-4.5.5.spec
 SPECS/minivend-4.04.spec
 SPECS/minivend-docs-4.04.spec
 WHATSNEW
@@ -24,6 +25,8 @@ dist/barry/config/no_right
 dist/barry/config/postcopy_commands
 dist/barry/config/precopy_commands
 dist/barry/config/rightside
+dist/barry/etc/area.recordnumber
+dist/barry/etc/cat.recordnumber
 dist/barry/etc/log_entry
 dist/barry/etc/log_transaction
 dist/barry/etc/mail_receipt
@@ -346,6 +349,7 @@ dist/lib/UI/pages/admin/export_table.html
 dist/lib/UI/pages/admin/flex_editor.html
 dist/lib/UI/pages/admin/flex_select.html
 dist/lib/UI/pages/admin/format_meta.html
+dist/lib/UI/pages/admin/fr_index.html
 dist/lib/UI/pages/admin/genconfig.html
 dist/lib/UI/pages/admin/genreport.html
 dist/lib/UI/pages/admin/genstats.html
@@ -414,6 +418,7 @@ dist/lib/UI/usertag/backup_file
 dist/lib/UI/usertag/base_url
 dist/lib/UI/usertag/button
 dist/lib/UI/usertag/check_upload
+dist/lib/UI/usertag/component
 dist/lib/UI/usertag/db_columns
 dist/lib/UI/usertag/db_hash
 dist/lib/UI/usertag/dbinfo
@@ -461,6 +466,7 @@ dist/lib/UI/usertag/widget
 dist/lib/UI/usertag/with
 dist/lib/UI/usertag/write_relative_file
 dist/lib/UI/usertag/write_shipping
+dist/lib/UI/vars/UI_EDIT_LINK
 dist/lib/UI/vars/UI_STD_DBEDIT_HEAD
 dist/lib/UI/vars/UI_STD_DBEDIT_TABLE
 dist/lib/UI/vars/UI_STD_FILE_NAV
@@ -499,6 +505,8 @@ dist/simple/config/yellow1/menubottom
 dist/simple/config/yellow1/no_right
 dist/simple/config/yellow1/only_logo
 dist/simple/config/yellow1/rightside
+dist/simple/etc/area.recordnumber
+dist/simple/etc/cat.recordnumber
 dist/simple/etc/log_entry
 dist/simple/etc/log_transaction
 dist/simple/etc/mail_receipt

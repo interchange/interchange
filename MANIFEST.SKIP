@@ -38,6 +38,7 @@ dist/lib/MiniMate.*
 dist/mvmall.*
 dist/books.*
 doc/.*[^d]
+help/.*
 lib/src/config.cache
 lib/src/config.h
 lib/src/config.log
