@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.2.2 2000-11-07 22:41:45 zarko Exp $
+# $Id: Data.pm,v 1.13.2.3 2000-11-08 20:19:25 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -110,7 +110,7 @@ sub product_code_exists_ref {
 
 	my $return;
 	foreach $ref (@Vend::Productbase) {
-		return $ref if $ref->record_exists($code);
+		return ($return = $ref) if $ref->record_exists($code);
 	}
 	return undef;
 }
@@ -495,8 +495,82 @@ sub find_delimiter {
 	$type = $type || 1;
 	return @{$Delimiter{$type}}
 		if defined $Delimiter{$type}; 
-	return ("\t", "\n");
+	return;
 }
+
+=head1 auto_delimiter
+
+This routine finds the delimiter type automatically, given the text file
+name. Below is a test of it -- run the code from the definition of %Delimiter to
+end of the =cut below the routine.
+
+=cut
+
+sub auto_delimiter {
+	my ($fn) = @_;
+	my $fdelim = "\t";
+	my $rdelim = "\n";
+	my $tried_plain;
+	my $type;
+	open(AUTODELIM, $fn) 
+		or die errmsg("Cannot open database text source file %s: %s\n", $fn, $!);
+	local ($/);
+	$/ = "\n";
+	while(<AUTODELIM>) {
+		my $line = $_;
+		chomp;
+		if(! $tried_plain and $_) {
+			s/[^\t|,]//g;
+			s/[ (=)]+//g;
+			m/(.)/;
+			my $char = $1;
+			if (/^\Q$char\E+$/) {
+				($fdelim, $rdelim) = ($char, "\n");
+				last;
+			}
+		}
+		$tried_plain++ or next;
+		if($_ eq '%%') {
+			$type = '%%';
+			last;
+		}
+		elsif ($_ eq '') {
+			$type = 'LINE';
+			last;
+		}
+	}
+	close AUTODELIM;
+	$type = 'CSV' if $fdelim eq ',';
+	if($type and defined $Delimiter{$type}) {
+		($fdelim, $rdelim) =  @{$Delimiter{$type}};
+	}
+	return ($fdelim, $rdelim);
+}
+
+=head2 Test code 
+
+	my @test = qw(
+					/cc/products/products.txt
+					/cc/products/NextDayAir.csv
+					/tmp/products.pipe
+					/tmp/products.line
+					/tmp/products.pct
+				);	
+	my %map = (
+		"\t" => '\t',
+		"\n" => '\n',
+		"\n\n" => '\n\n',
+	);
+
+	for(@test) {
+		my $file = $_;
+		my ($f, $r) = auto_delimiter($file);
+		my $fs = $map{$f} || $f;
+		my $rs = $map{$r} || $r;
+		print "$file: f=$fs r=$rs\n";
+	}
+
+=cut
 
 my %db_config = (
 # SQL
@@ -553,7 +627,7 @@ sub tie_database {
 			$Vend::Database{$name} = import_database($data);
 		} else {
 			if($data->{GUESS_NUMERIC}) {
-				my $dir = $data->{dir} || $Vend::Cfg->{ProductDir};
+				my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
 				my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
 #::logDebug("fields=@fields");
@@ -626,17 +700,17 @@ sub import_database {
 	}
 
 	$base = $obj->{'name'};
-	$dir = $obj->{'dir'} if defined $obj->{'dir'};
+	$dir = $obj->{DIR} if defined $obj->{DIR};
 
 	$class_config = $db_config{$obj->{Class} || $Global::Default_database};
 
-#::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
+::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
 	$table_name     = $name;
 	my $export;
 
 	IMPORT: {
-		last IMPORT if $no_import and $obj->{'dir'};
-		last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{'dir'};
+		last IMPORT if $no_import and $obj->{DIR};
+		last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{DIR};
 #::logDebug ("first no_import_check: passed") if $type == 9;
 
 		$database_txt = $database;
@@ -653,11 +727,11 @@ sub import_database {
 			}
 			$dir = $path;
 		} else {
-			$dir = $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
+			$dir = $obj->{DIR} || $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
 			$database_txt = Vend::Util::catfile($dir,$database_txt);
 		}
 
-		$obj->{'dir'} = $dir;
+		$obj->{DIR} = $dir;
 
 		$obj->{ObjectType} = $class_config->{Class};
 
@@ -720,13 +794,21 @@ sub import_database {
 
 			$type = 1 unless $type;
 			($delimiter, $record_delim) = find_delimiter($change_delimiter || $type);
-			$obj->{'delimiter'} = $delimiter;
+			if(! $delimiter) {
+				($delimiter, $record_delim) = auto_delimiter($database_txt);
+			}
+
+			$obj->{'delimiter'} = $obj->{'DELIMITER'} = $delimiter;
 
 			my $save = $/;
+
 			local($/) = $record_delim if defined $record_delim;
-			$db = $delimiter ne 'CSV'
-				? Vend::Table::Common::import_ascii_delimited($database_txt, $obj, $new_table_name)
-	        	: Vend::Table::Common::import_csv($database_txt, $obj, $new_table_name);
+
+			$db = Vend::Table::Common::import_ascii_delimited(
+				$database_txt,
+				$obj,
+				$new_table_name,
+			);
 
 			$/ = $save;
 			if(defined $database_dbm) {
@@ -940,8 +1022,9 @@ sub export_database {
 	my ($delim, $record_delim) = find_delimiter($type || $db->config('type'));
 
 	$file = $file || $db->config('file');
+	my $dir = $db->config('DIR');
 
-	$file = Vend::Util::catfile( $Vend::Cfg->{ProductDir}, $file)
+	$file = Vend::Util::catfile( $dir, $file)
 		unless Vend::Util::file_name_is_absolute($file);
 
 	my @cols = $db->columns();
