@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.6 2000-12-17 07:09:44 heins Exp $
+# $Id: Data.pm,v 1.17.2.7 2000-12-31 14:49:39 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -147,7 +147,11 @@ sub update_productbase {
 		$Vend::Productbase{$_} = $Vend::Database{$_};
 		$Vend::Basefinder{$Vend::Database{$_}} = $_;
 		push @Vend::Productbase, $Vend::Database{$_};
+		$Vend::OnlyProducts = $_;
 	}
+
+	undef $Vend::OnlyProducts if scalar @Vend::Productbase > 1;
+
 	$Products = $Vend::Productbase[0];
 #::logError("Productbase: '@Vend::Productbase' --> " . ::uneval(\%Vend::Basefinder));
 
@@ -287,8 +291,8 @@ sub set_field {
 
 sub product_field {
     my ($field_name, $code, $base) = @_;
-	return database_field($Vend::Cfg->{OnlyProducts}, $field_name, $code)
-		if $Vend::Cfg->{OnlyProducts};
+	return database_field($Vend::OnlyProducts, $field_name, $code)
+		if $Vend::OnlyProducts;
 	my ($db);
     $db = product_code_exists_ref($code, $base || undef)
 		or return '';
@@ -426,29 +430,6 @@ sub database_ref {
 
 *read_shipping = \&Vend::Interpolate::read_shipping;
 
-# Read in the accessories file.
-
-sub read_accessories {
-    my($code, $accessories);
-
-	my $file = $Vend::Cfg->{Special}{'accessories.asc'}
-				|| Vend::Util::catfile($Vend::Cfg->{ProductDir}, 'accessories.asc');
-	return undef unless -f $file;
-    open(Vend::ACCESSORIES, "< $file") or return undef;
-    while(<Vend::ACCESSORIES>) {
-		chomp;
-		tr/\r//d;
-		if (s/\\\s*$//) { # handle continues
-	        $_ .= <Vend::ACCESSORIES>;
-			redo;
-		}
-		($code, $accessories) = split(/\t/, $_, 2);
-		$Vend::Cfg->{Accessories}->{$code} = $accessories;
-    }
-    close Vend::ACCESSORIES;
-	1;
-}
-
 # Read in the sales tax file.
 sub read_salestax {
     my($code, $percent);
@@ -459,21 +440,13 @@ sub read_salestax {
 		unless $file;
 
 	$Vend::Cfg->{SalesTaxTable} = {};
-    -f $file and open(Vend::SALESTAX, "< $file") or do {
-					logError( "Could not open salestax file %s: %s" ,
-								$file,
-								$!
-							)
-						if ! $Vend::Cfg->{SalesTaxFunction};
-					return undef;
-				};
-    while(<Vend::SALESTAX>) {
-		chomp;
+
+	my @lines = split /\n/, readfile($file);
+    for(@lines) {
 		tr/\r//d;
 		($code, $percent) = split(/\s+/, $_, 2);
 		$Vend::Cfg->{SalesTaxTable}->{"\U$code"} = $percent;
     }
-    close Vend::SALESTAX;
 
 	if(not defined $Vend::Cfg->{SalesTaxTable}->{DEFAULT}) {
 		$Vend::Cfg->{SalesTaxTable}->{DEFAULT} = 0;

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.8 2000-12-21 11:24:21 heins Exp $
+# $Id: Config.pm,v 1.25.2.9 2000-12-31 14:49:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.9 $, 10);
 
 my %CDname;
 
@@ -373,6 +373,7 @@ sub catalog_directives {
 	['RouteDatabase',     'routeconfig',        ''],
 	['DirectiveDatabase', 'dbconfig',        ''],
 	['VariableDatabase',  'dbconfig',        ''],
+	['FileDatabase',	 undef,				 ''],
 	['RequiredFields',   undef,              ''],
 	['NoSearch',         'wildcard',         'userdb'],
 	['OrderCounter',	 undef,     	     ''],
@@ -1748,12 +1749,6 @@ sub set_default_search {
 	if(! $setting) {
 		return 1 if $C->{BaseCatalog};
 		return (undef, errmsg("No ProductFiles setting!") );
-	}
-	if( scalar @$setting > 1 ) {
-		undef $Vend::Cfg->{OnlyProducts};
-	}
-	else {
-		$Vend::Cfg->{OnlyProducts} = $setting->[0];
 	}
 	
 	my @fout;
