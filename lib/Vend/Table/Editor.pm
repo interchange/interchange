@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.59 2004-06-07 03:05:30 mheins Exp $
+# $Id: Editor.pm,v 1.60 2004-06-23 16:21:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.59 $, 10);
+$VERSION = substr(q$Revision: 1.60 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2644,7 +2644,7 @@ EOF
 		if($opt->{ui_break_before_label}) {
 			@tmp = grep /\S/, split /\s*[,\0]\s*/, $opt->{ui_break_before_label};
 			for(@tmp) {
-				my ($br, $lab) = split /\s*=\s*/, $_;
+				my ($br, $lab) = split /\s*=\s*/, $_, 2;
 				$break_label{$br} = $lab;
 			}
 		}
