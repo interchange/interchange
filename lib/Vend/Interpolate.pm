@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.106 2002-08-18 07:59:08 mheins Exp $
+# $Id: Interpolate.pm,v 2.107 2002-08-26 00:58:26 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.106 $, 10);
+$VERSION = substr(q$Revision: 2.107 $, 10);
 
 @EXPORT = qw (
 
@@ -3107,7 +3107,7 @@ sub tag_page {
 		undef $arg;
 	}
 
-	resolve_static(), $url = $urlroutine->($page)
+	resolve_static(), $url = $urlroutine->($page, $arg)
 		unless $url;
 
     return qq{<a href="$url"$extra>};
