@@ -1,4 +1,5 @@
 [set page_title]Layout Editor[/set]
+[set ui_class]Design[/set]
 [set page_banner]Layout Editor: Organize your site into categories[/set]
 [set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
@@ -23,12 +24,12 @@
 [if cgi newarea]
 <!-- Creating area: 
 [flag type=write table=area]
-[value name=area set="[fcounter etc/area.recordnumber]" hide=1]
+[value name=area set="[counter file=etc/area.recordnumber start=1000]" hide=1]
 [data table=area column=name key="[value area]" value="[cgi newarea]"] -->
 [elsif cgi newcat]
 <!-- Creating category: 
 [flag type=write table=cat]
-[value name=cat set="[fcounter etc/cat.recordnumber]" hide=1]
+[value name=cat set="[counter file=etc/cat.recordnumber start=1000]" hide=1]
 [data table=cat column=name key="[value cat]" value="[cgi newcat]"]
 [data table=cat column=sel key="[value cat]" value="[value area]"] -->
 [/elsif]
@@ -44,7 +45,7 @@
 [/set]
 
 <tr>
-<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -1021,11 +1022,11 @@ return;
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [/then]
@@ -1034,7 +1035,7 @@ return;
 </tr>
 
 <tr>
-<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/else]
 [/if]

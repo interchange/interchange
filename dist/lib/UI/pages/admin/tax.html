@@ -1,5 +1,6 @@
 [calc]$CGI->{mv_data_table} = 'variable'; return;[/calc]
 [set table_perm]1[/set]
+[set ui_class]Admin[/set]
 [set page_title]Tax configuration[/set]
 [set help_name]tax.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
@@ -24,6 +25,7 @@
 	return;
 [/perl]
 [if scratch taxarea]
+	[value name=ui_changes_made set=1 hide=1]
 	<!-- areas: [data table=variable
 						col=Variable
 						key=TAXAREA
@@ -66,7 +68,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -88,7 +90,7 @@
 </tr>
 
 <tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [loop lr=1 list="[scratch its]"]
 <tr>
@@ -116,15 +118,20 @@
 </tr>
 
 <tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
 
 <p>
-<input type=submit name=ok value="Update values">
+[button text="Update values"]
+mv_todo=return
+[/button]
 <p>
-<input type=submit name=back value="Back">
+[button text="Back"]
+mv_todo=back
+[return-to click]
+[/button]
 </form>
 
 

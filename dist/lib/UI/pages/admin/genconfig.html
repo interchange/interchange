@@ -1,7 +1,8 @@
-[set page_perm]files[/set]
-[set page_title]Configuration[/set]
-[set help_name]genconfig.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[tmp page_perm]files[/tmp]
+[tmp page_title]Administration: [calc]$Config->{CatalogName}[/calc][/tmp]
+[set ui_class]Admin[/set]
+[tmp help_name]genconfig.main[/tmp]
+[tmp icon_name]admin/icon_config.gif[/tmp]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -10,57 +11,88 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/tax]">Tax Definition</a>
-</font>
-</td></tr>
+<H3>Catalog Information</H3>
+<TABLE>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Last time server restarted
+	</TH>
+	<TD>[calc] scalar localtime([file-info conf=1 name="minivend.pid" time=1])[/calc]</TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/ship]">Shipping Options </a>
-</font>
-</td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Last time changes applied
+	</TH>
+	<TD>[file name=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`] ([page __UI_BASE__/reconfig]apply now</A>)</TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/payment]">Payment Options </a>
-</font>
-</td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Catalog URL
+	</TH>
+	<TD>[calc]return qq{<A HREF="$Config->{VendURL}">$Config->{VendURL}}[/calc]</A></TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=1 height=1></td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Secure URL
+	</TH>
+	<TD>[calc]return qq{<A HREF="$Config->{SecureURL}">$Config->{SecureURL}}[/calc]</A></TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/layout]"> Layout manager </a>
-</font>
-</td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Active sessions
+	</TH>
+	<TD>[loop list="[dump-session find=1]"]<A HREF="[area
+														href='@@MV_PAGE@@'
+														form='show_session=[loop-code]'
+														]">[loop-code]</A><BR>[/loop]
+	[if cgi show_session]
+		<P><B>Showing session: [cgi show_session]</B>
+		<FONT SIZE=1>
+<XMP>
+[dump-session name="[cgi show_session]"]
+</XMP>
+		</FONT>
+	[/if]
+		</TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/group]"> Group manager </a>
-</font>
-</td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange version
+	</TH>
+	<TD> [version]</A></TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/affiliates]"> Affiliates </a>
-</font>
-</td></tr>
 
-<tr><td align=left bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=1 height=1></td></tr>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Database Information
+	</TH>
+	<TD> [version extended=1 db=1]</A></TD>
+</TR>
 
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/advanced]"> Advanced tools</a>
-</font>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Module Information
+	</TH>
+	<TD> [version extended=1 modules=1]</A></TD>
+</TR>
+
+
+</TABLE>
+
 </td></tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

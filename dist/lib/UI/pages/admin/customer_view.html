@@ -1,4 +1,5 @@
 [set page_title]Customer manager: View customer[/set]
+[set ui_class]Customers[/set]
 [set page_banner]View customer[/set]
 [set help_name]customer.view[/set]
 [set icon_name]admin/icon_people.gif[/set]
@@ -21,7 +22,7 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 <tr>
@@ -34,15 +35,9 @@
 <td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
 <b>Customer: 
 <A HREF="[area
-				href=__UI_BASE__/flex_editor
+				href=__UI_BASE__/customer_pref
 				form=|
-					ui_return_to=__UI_BASE__/customer_view
-					ui_hide_key=1
-					ui_return_to=mv_arg=[cgi customer]
-					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
-					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
-					item_id=[loop-data userdb username]
-					mv_data_table=userdb
+					customer=[cgi customer]
 				|
 		]"><u>[loop-data userdb fname] [loop-data userdb lname]</u></A>
 		</b>
@@ -53,6 +48,8 @@
 <td colspan=2 valign=top>
 
 <!-- ----- Customer information ----- -->
+
+<form>
 
 <table>
 <tr><td align=right>
@@ -70,28 +67,37 @@
 <tr><td align=right>
 <font size=2><b> Email: </b></font>
 </td><td><font size=2> <a href="mailto:[loop-data userdb email]"><U>[loop-data userdb email]</U></a></font></td></tr>
-
 <tr><td align=right>
 <font size=2><b> Payment type: </b></font>
-</td><td><font size=2>[loop-data userdb payment_method]</a></font></tr>
+</td><td><font size=2>[display arbitrary=custview table=userdb column=fax_order key="[loop-code]"]</a></font></tr>
+
+[if-loop-data userdb project_id]
+<tr><td align=right>
+<font size=2><b>PO Number:</b></font>&nbsp;
+</td><td><font size=2>[loop-data userdb project_id]</font></td></tr>
+[/if-loop-data]
+
+[if-loop-data userdb fax]
+<tr><td align=right>
+<font size=2><b>FAX number:</b></font>&nbsp;
+</td><td><font size=2>[loop-data userdb fax]</font></td></tr>
+[/if-loop-data]
 
 <tr><td align=right>
-<font size=2><b> Field 1: </b></font>
-</td><td><font size=2> </font></td></tr>
+<font size=2><b>Dealer:</b></font>&nbsp;
+</td><td><font size=2>[display arbitrary=custview table=userdb column=dealer key="[loop-code]"]</font></td></tr>
+
 
 <tr><td align=right>
-<font size=2><b> Field 2: </b></font>
-</td><td><font size=2> </font></td></tr>
+<font size=2><b>Wants email copy:</b></font>&nbsp;
+</td><td><font size=2>[display arbitrary=custview table=userdb column=email_copy key="[loop-code]"]</font></td></tr>
 
 <tr><td align=right>
-<font size=2><b> Field 3: </b></font>
-</td><td><font size=2>  </font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Field 4: </b></font>
-</td><td><font size=2> </font></td></tr>
+<font size=2><b>Mail lists:</b></font>&nbsp;
+</td><td><font size=2>[loop-data userdb mail_list]</font></td></tr>
 
 </table>
+</form>
 
 </td><td valign=top colspan=4>
 [set bill_address]
@@ -116,15 +122,9 @@
 <p>
 [if-loop-data userdb username]
 <A HREF="[area
-				href=__UI_BASE__/flex_editor
+				href=__UI_BASE__/customer_bill
 				form=|
-					ui_return_to=__UI_BASE__/customer_view
-					ui_return_to=customer=[cgi customer]
-					ui_hide_key=1
-					ui_data_fields=username company b_fname b_lname b_address1 b_address2 b_city b_state b_zip b_country b_email b_phone_day b_phone_night
-					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
-					item_id=[loop-data userdb username]
-					mv_data_table=userdb
+					customer=[loop-data userdb username]
 				|
 		]"><b><u>Bill To</u>:</b></A>
 [else]
@@ -141,15 +141,9 @@
 </blockquote>
 
 <A HREF="[area
-				href=__UI_BASE__/flex_editor
+				href=__UI_BASE__/customer_ship
 				form=|
-					ui_return_to=__UI_BASE__/customer_view
-					ui_return_to=mv_arg=[cgi customer]
-					ui_hide_key=1
-					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
-					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
-					item_id=[loop-data userdb username]
-					mv_data_table=userdb
+					customer=[cgi customer]
 				|
 		]"><b><u>Ship To</u>:</b></A>
 <br>
@@ -163,7 +157,7 @@
 </td></tr>
 
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 <tr>
@@ -214,21 +208,15 @@
 </td>
 <td>
 <A HREF="[area
-			href=__UI_BASE__/flex_editor
+			href=__UI_BASE__/order_status
 			form="
-				item_id=[sql-code]
-				mv_data_table=transactions
-				page_title=Change status of order [sql-code]
-				ui_return_to=__UI_BASE__/customer_view
-				ui_return_to=mv_arg=[loop-code]
-				ui_data_fields=code order_date status
-				ui_hide_key=1
+				order=[sql-code]
 			"]"><U>[sql-pos 5]</U></A>
 </td>
 </tr>
 [/query]
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 </table>

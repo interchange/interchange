@@ -7,6 +7,7 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 [seti page_title][cgi report_title][/seti]
+[set ui_class]Reports[/set]
 [set icon_name]admin/icon_stats.gif[/set]
 [set help_name]report[/set]
 [calc]
@@ -210,7 +211,7 @@
 			$data = "[data table=$t column=$c key='[item-data $current_table $k]']";
 		}
 		else {
-			$data = "[item-data $t $c]";
+			$data = "[item-data $current_table $c]";
 		}
 		if($e) {
 			$ek = $ek ? "[item-data $t $ek]" : $data;
@@ -223,9 +224,17 @@
 									mv_data_table=$e
 									item_id=$ek
 									"]} if $e;
-			$page .= qq{[item-filter $r]} if $r;
+			if ($r) {
+				$page .= $k
+						? qq{[filter op=$r interpolate=1]}
+						: qq{[item-filter $r]};
+			}
 			$page .= $data;
-			$page .= "[/item-filter]" if $r;
+			if ($r) {
+				$page .= $k
+						? qq{[/filter]}
+						: qq{[/item-filter]};
+			}
 			$page .= qq{</A>} if $e;
 		}
 		$total_line .= "\t<TD $l>";

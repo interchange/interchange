@@ -1,63 +1,26 @@
+[calc]
+	if(! $CGI->{mv_data_table}) {
+		$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
+	}
+	if(! $CGI->{ui_data_fields}) {
+		$CGI->{ui_data_fields} = $Variable->{UI_ITEM_FIELDS}
+				|| 'sku description category comment price image weight size color';
+	}
+	if(! $CGI->{ui_break_before}) {
+		$CGI->{ui_break_before} = $Variable->{UI_ITEM_BREAK}
+				|| 'image size';
+	}
+	return;
+[/calc]
 @_UI_STD_DBEDIT_HEAD_@
 
+[set ui_class]Items[/set]
 [seti page_title]Item editor: [cgi item_id][/seti]
 [seti page_banner]Item editor: edit item <B>[cgi item_id]</B>[/seti]
 [set help_name]item.edit[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
-
-<A HREF="[area href=admin/flex_editor
-				form='
-					item_id=[cgi item_id]
-					mv_data_table=pricing
-					page_title=Edit pricing: [cgi item_id]
-					help_name=pricing.edit
-					icon_name=admin/icon_item.gif
-					ui_return_to=admin/item
-					ui_hide_key=1
-					ui_break_before=price_group,q2
-					']">Edit pricing</A><BR>
-<A HREF="[area href=admin/flex_editor
-				form='
-					item_id=[cgi item_id]
-					mv_data_table=inventory
-					page_title=Edit inventory: [cgi item_id]
-					help_name=inventory.edit
-					ui_hide_key=1
-					ui_return_to=admin/item
-					icon_name=admin/icon_item.gif
-					ui_break_before=quantity,stock_message
-					']">Edit inventory</A><BR>
-[seti prod_tables] [/seti]
-[flag type=write
-      table=`   my $tmp = join " ", @{$Config->{ProductFiles}};
-                $tmp =~ s/\s+.*//;
-                $Scratch->{prod_tables} = $tmp;
-            `]
-[perl table="[scratch prod_tables]"]
-	$CGI->{ui_return_to} = '__UI_BASE__/item';
-	my $db = $Db{$Scratch->{prod_tables}}
-		or return;
-	my $fields = join " ", '', $db->columns(), '';
-	#return unless $fields =~ /\sblurb_begin\s/;
-	$url = $Tag->area( { href => '__UI_BASE__/flex_editor',
-						 form => qq{
-							item_id=$CGI->{item_id}
-							ui_return_to=__UI_BASE__/item
-							mv_data_table=merchandising
-							page_title=Merchandising: $CGI->{item_id}
-							help_name=merchandising
-							ui_hide_key=1
-							ui_return_to=admin/item
-							icon_name=admin/icon_item.gif
-							ui_break_before=featured blurb_begin banner_text start
-							ui_data_fields=sku featured blurb_begin blurb_end banner_text banner_image start finish
-							},
-						});
-	return qq{<A HREF="$url">Merchandising</A>};
-[/perl]
-
 <P>
 @_UI_STD_DBEDIT_TABLE_@
 

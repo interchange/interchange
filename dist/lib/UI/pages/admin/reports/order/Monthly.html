@@ -125,6 +125,7 @@ EOF
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
 			($syn, $camp) = split /-/, $id, 2;
+			my $synlabel = $syn || '(none)';
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Detail', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
 				if $mname;
@@ -137,7 +138,7 @@ EOF
 	</TD>
 	<TD VALIGN=top>
 	<FONT FACE=arial SIZE=-1>
-	<A HREF="$burl&affiliate=$syn">$syn</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
+	<A HREF="$burl&affiliate=$syn">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
 	</FONT>
 	</TD>
 	<TD ALIGN=right VALIGN=top>

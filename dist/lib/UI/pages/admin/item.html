@@ -10,6 +10,7 @@
 [/if-mm]
 [/comment]
 
+[set ui_class]Items[/set]
 [set page_title]Item editor[/set]
 [set table_perm]1[/set]
 [set help_name]item.main[/set]
@@ -26,155 +27,138 @@
 <p>
 &nbsp;
 [/if]
-<form action="[area process]" method="post">
-<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/item_edit">
-<INPUT TYPE=hidden NAME=mv_data_table VALUE="[calc]$Config->{ProductFiles}[0][/calc]">
-<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either]__UI_ITEM_FIELDS__[or]description image comment size color sku price weight category[/either]">
-<INPUT TYPE=hidden NAME=ui_break_before VALUE="[either]__UI_ITEM_BREAK__[or]description image sku category[/either]">
 
-<table __UI_T_PROPERTIES__>
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-[set Create new item]
-ui_hide_key=0
-item_id=new
-sku=new
-[/set]
-
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
-<input type="submit" name="mv_click" value="Create new item">
-</td>
-
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
-
-&nbsp; <!-- make sure theres always *something* in the cell -->
-
-</td></tr>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-
-<input type="submit" name="show_edit_cmd" value="Edit item">
-<br>
-
-[button name="show_changematrix_cmd" text="Change matrix"][/button]
-<br>
-<input type="submit" name="show_editallvariants_cmd" value="Edit all 
- variations">
-<br>
-
-[button
-	text="Delete item"
-	src="admin/dalete.gif"
-	alt="Delete the item from the database"
-	confirm="Are you sure you want to delete this item from [either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]?"
-	
-]
-	[loop list="[either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]"]
-	[flag type=write table="[loop-code]"]
-	[/loop]
-	mv_nextpage=__UI_BASE__/item
-	[if-mm advanced item=d]
-		[perl tables="[either]__UI_ITEM_EXPUNGE__[or]inventory pricing products[/either]"]
-			my ($item) = $CGI->{item_id};
-			my $tabs = $Variable->{UI_ITEM_EXPUNGE} || q/products pricing inventory/;
-			my @tabs = split /[\s\0,]+/, $tabs;
-			my $out;
-			for(@tabs) {
-				next unless $Db{$_};
-				if ($Db{$_}->delete_record($item)) {
-					$out .= "Deleted $item from $_ table<BR>";
-				}
-				else {
-					$out .= "Item $item not in $_ table (or delete failed)<BR>";
-				}
-			}
-			$Scratch->{ui_message} = $out;
-			return;
-		[/perl]
-	[else]
-		[set ui_message]Not authorized to delete items.[/set]
-	[/else]
-	[/if-mm]
-[/button]
-</td>
-<td bgcolor="__UI_C_INTBLOCK__">
-<input	onChange="this.form.mv_nextpage.value='@@MV_PAGE@@'; this.form.submit()"
-		name=ui_searchspec size=20>
-[button text="Limit" src="admin/search.gif"]
-	mv_nextpage=@@MV_PAGE@@
-[/button]<BR>
-
-<select name="item_id" size=10>
-[loop
-    more=1
-    search=`
-		my $pf   = $Config->{ProductFiles}[0];
-		my $key  = $Config->{Database}{$pf}{KEY} || 'sku';
-		my $sort = $Variable->{UI_ITEM_SORT} || $Config->{DescriptionField};
-		my $show = $Variable->{UI_ITEM_LIST} || $Config->{DescriptionField};
-		my $size = $Variable->{UI_ITEM_PAGE_SIZE} || 50;
-		if($CGI->{ui_searchspec}) {
-			my ($field, $spec) = split /\s*=\s*/, $CGI->{ui_searchspec}, 2;
-			if(! $spec) {
-				$limit = qq{se=$field};
-			}
-			else {
-				$limit = qq{co=yes\nac=0\n};
-				while ($spec =~ s/\s*,\s*(.*=.*)//) {
-					my $hold = $1;
-					$limit .= qq{sf=$field\nse=$spec\n};
-					($field, $spec) = split /\s*=\s*/, $hold, 2;
-				}
-				$limit .= qq{sf=$field\nse=$spec\n};
-			}
-		}
-		else {
-			$limit = 'ra=yes';
-		}
-		return <<EOF;
-	fi=$pf
-	st=db
-	$limit
-	ml=$size
-	tf=$sort
-	rf=$key,$show
-EOF
-	`]
-[list][loop-sub limit_return]
-	my $line = shift;
-	my @items = split /\t/, $line;
-	for(@items) {
-		next unless length($_) > 30;
-		$_ = substr($_, 0, 27) . '...';
+[tmp pricing_edit]
+mv_data_table=pricing
+help_name=pricing.edit
+icon_name=admin/icon_item.gif
+ui_return_to=admin/item
+ui_hide_key=1
+ui_break_before=price_group,q2
+[/tmp]
+[tmp inv_edit]
+mv_data_table=inventory
+help_name=inventory.edit
+ui_hide_key=1
+ui_return_to=admin/item
+icon_name=admin/icon_item.gif
+ui_break_before=quantity,stock_message
+[/tmp]
+[tmp cross_edit]
+ui_return_to=__UI_BASE__/item
+mv_data_table=merchandising
+help_name=merchandising
+ui_hide_key=1
+ui_return_to=admin/item
+icon_name=admin/icon_item.gif
+ui_break_before=products:related cross_sell
+ui_data_fields=sku products:related cross_sell upsell_to
+[/tmp]
+[tmp merch_edit]
+ui_return_to=__UI_BASE__/item
+mv_data_table=merchandising
+help_name=merchandising
+ui_hide_key=1
+ui_return_to=admin/item
+icon_name=admin/icon_item.gif
+ui_break_before=featured blurb_begin banner_text start
+ui_data_fields=sku featured blurb_begin blurb_end banner_text banner_image start finish
+[/tmp]
+<FORM ACTION="[area @@MV_PAGE@@]">
+<INPUT NAME=ui_text_qualification>
+<INPUT TYPE=submit VALUE="Limit with search">
+</FORM>
+[if cgi ui_text_qualification]
+<H3>Entries cotaining "[cgi ui_text_qualification]"</H3>
+[/if]
+[search-region more=1 arg="
+		[if cgi ui_text_qualification]
+		se=[cgi ui_text_qualification]
+		su=yes
+		[else]ra=yes[/else][/if]
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=description
+		[/else]
+		[/if]
+		st=db
+		sp=@@MV_PAGE@@
+		ml=25
+"][on-match]
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless $fld eq $f;
+		return $out if $so =~ /r/;
+		return $out . 'r';
 	}
-	return join ", ", @items;
-[/loop-sub]
-<option value="[loop-code]"> [loop-exec limit_return][loop-line 1][/loop-exec]
-[/list]
-</select>
-[more-list]<BR>Items [matches] of [value mv_search_match_count], pages: [more][/more-list]
-[/loop]
+	return;
+[/calc]
+<TABLE CELLSPACING=0>
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=sku\n" . sortrev('sku');
+	`]SKU</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=description\n" . sortrev('description');
+	`]Description</TH>
+<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=price\n" . sortrev('price', 1);
+	`]Price</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Quantity pricing</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Featured</TH>
+</tr>
+[/on-match]
+[search-list]
+<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+<TD>[filter 30][item-description][/filter]</TD>
+<TD ALIGN=RIGHT>[item-price]</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+	item_id=[item-code]
+	page_title=Pricing: [item-code]
+	ui_data_fields=products:price [db-columns name=pricing joiner=' ']
+	[scratch pricing_edit]
+"][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+	item_id=[item-code]
+	page_title=Merchandising: [item-code]
+	[scratch cross_edit]
+"][if-item-data merchandising related]Yes[else]No[/else][/if-item-data]
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+	item_id=[item-code]
+	page_title=Merchandising: [item-code]
+	[scratch merch_edit]
+"][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]
+</TD>
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan=6 align=center>
+<B>Nothing matched.</B>
 </td>
 </tr>
-
+[/no-match]
+[more-list]
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=6 align=center>
+More products: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
 </tr>
-
+[/more-list]
 </table>
-
-</form>
-
-
+[/search-region]
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@

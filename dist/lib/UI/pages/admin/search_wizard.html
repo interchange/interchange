@@ -1,5 +1,6 @@
 [seti page_title]Search wizard[/seti]
 [set help_name]search_builder[/set]
+[set ui_class]Design[/set]
 [set icon_name]admin/icon_config.gif[/set]
 [seti name=tables][list-databases][/seti]
 [seti meta_header]
@@ -41,14 +42,14 @@
 		@lines = grep /\S/, split /\n/, $CGI->{ui_searchblob};
 		@lines = map { s/^\s+//; s/\s+$//; $_ } @lines;
 		for(@lines) {
-Log("processing searchblob line $_");
+#Log("processing searchblob line $_");
 			my($k, $v) = split /\s*=\s*/, $_, 2;
-Log("searchblob $k=$v");
+#Log("searchblob $k=$v");
 			my $keyname;
 			if ($keyname = delete($wantmap{$k}) ) {
 				$v = ! $v if $want_invert{$k};
 				$saved->{$keyname} = $v;
-Log("searchblob immediate $keyname=$v");
+#Log("searchblob immediate $keyname=$v");
 			}
 			else {
 				push @rescan, [$k, $v];
@@ -91,12 +92,12 @@ Log("searchblob immediate $keyname=$v");
 				$tab = $1;
 				$kn = $keyname;
 				$kn =~ s/search_field/search_table/;
-Log("searchblob table rescan $kn=$tab");
+#Log("searchblob table rescan $kn=$tab");
 				$saved->{$kn} = $tab;
 			}
 			else {
 				my $kn = $keyname;
-Log("searchblob table rescan $kn=$saved->{search_table}");
+#Log("searchblob table rescan $kn=$saved->{search_table}");
 				$kn =~ s/search_field/search_table/;
 				$saved->{$kn} = $saved->{search_table};
 			}
@@ -107,7 +108,7 @@ Log("searchblob table rescan $kn=$saved->{search_table}");
 			$kn =~ s/search_field/search_table/;
 			$saved->{$remap{$kn}} = $tab;
 		}
-Log("searchblob rescan $keyname=$r->[1]");
+#Log("searchblob rescan $keyname=$r->[1]");
 		$saved->{$keyname} = $r->[1];
 	}
 
@@ -234,7 +235,7 @@ EOF
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -267,7 +268,7 @@ EOF
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -291,7 +292,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -317,7 +318,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
@@ -338,7 +339,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -360,7 +361,7 @@ EOF
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -385,7 +386,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>

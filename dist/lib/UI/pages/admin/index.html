@@ -1,39 +1,17 @@
-[if !scratch ui_frames]
-[set window_override][/set]
-[/if]
-[set ui_frames][/set]
-[set help_name]main[/set]
-
+[strip interpolate=1]
 [if-mm !logged_in]
-	[if !scratch no_login_required]
-		[bounce page="__UI_BASE__/login"]
-	[/if]
+	[bounce page="__UI_BASE__/login"]
 [/if-mm]
-[set no_login_required][/set]
+[set page_title]Interchange Administration[/set]
+[tmp ui_no_title]1[/tmp]
+[set icon_name][/set]
+[set help_name]index[/set]
+[set ui_class]None[/set]
 
-<html>
-<head>
-<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
-<title>
-Interchange Administration
-</title>
-[scratch meta_header][set meta_header][/set]
-<style type="text/css">
-<!--
- a:active { text-decoration: none }
- a:link { text-decoration: none }
- a:visited { text-decoration: none }
-  -->
-</style>
-
+[seti meta_header]
 
 <script language="JavaScript1.2">
 <!--
-function open_help(url) {
-  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=630,height=480";
-  window.open(url, 'Help', opts);
-}
-
 [calc]
 	my $browser = $Session->{browser};
 	if($browser =~ /msie.*mac/i) {
@@ -59,7 +37,6 @@ function open_help(url) {
 	return;
 [/calc]
 
-[if !scratch window_override]
 [seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
 
 function open_quicklinks() {
@@ -67,402 +44,35 @@ function open_quicklinks() {
   opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=[scratch ql_width],height=[scratch ql_height]";
   window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
 }
-[/if]
+-->
+</SCRIPT>
+[/seti]
 
-// -->
-</script>
-
-</head>
-<body bgcolor="__UI_C_BG__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
-
-<!-- ----- BEGIN TITLEBAR ----- -->
-
-<table width=__UI_OVERALL_WIDTH__ height=22 bgcolor=__UI_C_TITLEBARBG__ border=0 cellpadding=0 cellspacing=0>
-
-<tr height="22">
-<td width=12 align=left valign=top height=22><img src="admin/curve_left.gif" width=12 height=22 align=top></td>
-
-<td valign="middle" height="22">
-
-
-[if-mm advanced order]
-<img src="admin/cleardot.gif" width="12">
-<a href="[area admin/order]">
-<img src="admin/icon_orders.gif" height="16" width="16" border="0">
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
- &nbsp;Orders
-</font></a>
-[/if-mm]
-
-[if-mm advanced userdb]
-<img src="admin/cleardot.gif" width="12">
-<a href="[area admin/customer]">
-<img src="admin/icon_people.gif" height="16" width="16" border="0">
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
- &nbsp;Customers
-</font></a>
-[/if-mm]
-
-
-[if-mm advanced item]
-<img src="admin/cleardot.gif" width="22">
-<a href="[area admin/item]">
-<img src="admin/icon_item.gif" height="16" width="16" border="0" >
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
-&nbsp;Items
-</font></a>
-[/if-mm]
-
-
-[if-mm advanced stats]
-<img src="admin/cleardot.gif" width="22">
-<a href="[area admin/genstats]">
-<img src="admin/icon_stats.gif" height="16" width="16" border="0" >
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
-&nbsp;Statistics
-</font></a>
-[/if-mm]
-
-
-[if !scratch window_override]
-<img src="admin/cleardot.gif" width="22">
-
-[if-mm advanced reconfig]
-<a href="[area admin/reconfig]">
-<img src="admin/icon_regen.gif" height="16" width="16" border="0" >
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
-&nbsp;Apply Changes
-</font></a>
-[/if-mm]
+[/strip]
+@_UI_STD_HEAD_@
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="200">   <tr>      <td background="@_UI_IMG_@navigation/cellbackground.gif" width="700"> 
+      <br>       <table width="85%" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF" align="center" bgcolor="#FFFFFF">         <tr>           <td>             <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+              <tr>
+			  	<td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/order]">Orders</A></font></b></font></td>
+                <td>. </td>
+				<td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">View and manage incoming orders, archive and access past orders</font></td>               </tr><tr>
+                <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/customer]">Customers</A></font></b></font></td>                 <td>. </td>                 <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">View and manage customer information and order history</font></td>
+              </tr>               <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/item]">Items</A></font></b></font></td>                 <td>. </td>                 <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Add and edit items displayed for sale on the site</font></td>               </tr>
+              <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/page]">Content</A></font></b></font></td>                 <td>. </td>                 <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Create, edit, upload and download pages</font></td>
+              </tr>               <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/layout]">Design</A></font></b></font></td>                 <td>. </td>
+                <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Organize site navigation, manage site layout</font></td>
+              </tr>               <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/merchandising]">Merchandising</A></font></b></font></td>
+                <td>. </td>                 <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Set up quantity pricing, up-sell, featured products, and affiliates</font></td>
+              </tr>               <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/genreport]">Reporting</A></font></b></font></td>                 <td>. </td>
+                <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">View statsitics on orders and site traffic</font></td>               </tr>
+              <tr>                  <td valign="top"><font color="#000066"><b><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/genconfig]">Administration</A></font></b></font></td>                 <td>. </td>
+                <td valign="top"><B><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Administrator and developer-oriented tools</font></td>               </tr>
+            </table>
+          </td>         </tr>
+      </table>
+      <p align="center">&nbsp;</p>       <p>&nbsp;</p>     </td>     <td>       <p>&nbsp;</p>       <p>&nbsp;</p>
 </td>
-
-<td align="right" valign="middle" height="22">
-<a href="javascript:open_quicklinks()">
-<img src="admin/icon_pages.gif" height="16" width="16" border="0">
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
-Quicklinks
-</font>
-</a>
-[/if]
-
-<img src="admin/cleardot.gif" width="22">
-
-<a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')">
-<img src="admin/icon_help.gif" height="16" width="16" border="0" >
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="__UI_C_TITLEBARTXT__">
-Help
-</font></a>
-</td>
-
-<td width="12" align="right" height="22" valign="top"><img align="top" src="admin/curve_right.gif" border="0" width="12" height="22"></td>
-
-</tr>
-<!-- ----- END TITLEBAR ----- -->
-</table>
-<table cellpadding=2 cellspacing=0 width=__UI_OVERALL_WIDTH__ bgcolor=__UI_C_TITLEBARBG__ border=0>
-<tr>
-<td>
-	<table cellpadding=0 cellspacing=0 width=100% bgcolor=__UI_T_BG__ border=0>
-	<tr>
-	<td colspan=2 align="center">
-       <table width=90% cellpadding=0 cellspacing=0 border=0>
-       <tr>
-       <td>
-          <br><br>
-	   &nbsp;</td></tr>
-		</table>
-        </td>
-	</tr>
-	<tr>
-	<td colspan="2">
-	<style type="text/css">
-	<!--
-	 td{font-family:arial, helvetica, sans-serif}
-	   -->
-   </style>
-   <center>
-[comment] Clear these puppies [/comment]
-[calc]
-	for (qw/
-				page_title
-				page_banner
-				icon_name
-				help_name
-				page_perm
-				table_perm
-		/) { delete $Scratch->{$_} }
-	return;
-[/calc]
-
-<!-- ----- BEGIN REAL STUFF ----- -->
-
-<table __UI_T_PROPERTIES__>
-<center>
-<table border="0" width="90%" cellpadding="0" cellspacing="0">
-
-<tr>
-
-<td valign=top><img src="admin/back.sm.gif" height=350 width=230></td>
-
-<td>&nbsp;&nbsp;</td>
-
-<td valign=top align=left>
-
-<table border="0" cellpadding="0" cellspacing="0">
-
-[if-mm advanced order]
-<tr>
-<td width="27" align="center" valign="bottom">
-<a href="[area __UI_BASE__/order.html]"><img height =16 width=16 src="admin/icon_orders.gif" border="0"></a>
-</td><td valign="bottom">
-<font size=3 face="Arial,Helvetica,Geneva">
-<b>
-<a href="[area __UI_BASE__/order.html]">Orders</a>
-</b>
-</font>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage customer online orders</font>
-
-</td> 
-</tr>
-[/if-mm]
-
-
-[if-mm advanced userdb]
-<tr>
-<td width="27" align="center" valign="bottom">
-<a href="[area __UI_BASE__/order.html]"><img height =16 width=16 src="admin/icon_people.gif" border="0"></a>
-</td><td valign="bottom">
-<font size=3 face="Arial,Helvetica,Geneva">
-<b>
-<a href="[area __UI_BASE__/customer.html]">Customers</a>
-</b>
-</font>
-</td>
-</tr><tr height="27">
-
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage customer information</font>
-
-</td> 
-</tr>
-[/if-mm]
-
-
-[if-mm advanced item]
-
-<tr>
-<td width="27" align="center" valign="bottom">
-<a href="[area __UI_BASE__/item]"><img height =16 width=16 src="admin/icon_item.gif" border="0"></a>
-</td><td valign="bottom">
-
-<font size=3 face="Arial,Helvetica,Geneva">
-
-<b>
-
-<a href="[area __UI_BASE__/item]">Items</a>
-
-</b>
-
-</font>
-</td>
-</tr><tr height="27">
-<td width="27" height="27"></td>
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Manage the items displayed on your site</font>
-
-</td>
-</tr>
-
-[/if-mm]
-
-[if-mm advanced stats]
-
-<tr>
-
-<td width="27" align="center" valign="bottom">
-
-<a href="[area __UI_BASE__/genstats]"><img height =16 width=16 src="admin/icon_stats.gif" border="0"></a>
-
-</td><td valign="bottom">
-
-<font size=3 face="Arial,Helvetica,Geneva">
-
-<b>
-
-<a href="[area __UI_BASE__/genstats]">Statistics</a>
-
-</b>
-
-</font>
-
-</td>
-
-</tr><tr height="27">
-
-<td width="27" height="27"></td>
-
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View sales reports and order stats for any period of time</font>
-
-</td>
-
-</tr>
-[/if-mm]
-
-
-
-
-
-<tr>
-
-<td colspan=2>
-
-<hr size=1 noshade>
-
-</td>
-
-</tr>
-
-
-[if-mm advanced reconfig]
-
-<tr>
-
-<td width="27" align="center" valign="bottom">
-
-<a href="[area __UI_BASE__/reconfig]"><img height=16 width=16 src="admin/icon_regen.gif" border="0"></a>
-
-</td><td valign="bottom">
-
-<font size=3 face="Arial,Helvetica,Geneva">
-
-<b>
-
-<a href="[area __UI_BASE__/reconfig]">Apply Changes</a>
-
-</b>
-
-</font>
-
-</td>
-
-</tr>
-
-<tr height="27">
-
-<td width="27" height="27"></td>
-
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Reload catalog so that changes take effect</font>
-
-</td>
-
-</tr>
-[/if-mm]
-
-
-<tr>
-
-<td width="27" align="center" valign="bottom">
-
-<a href="javascript:open_help('__UI_HELP_BASE_URL__/main.html')"><img height =16 width=16 src="admin/icon_help.gif" border="0"></a>
-
-</td><td valign="bottom">
-
-<font size=3 face="Arial,Helvetica,Geneva">
-
-<b>
-
-<a href="javascript:open_help('__UI_HELP_BASE_URL__/main.html')">Help</a>
-
-</b>
-
-</font>
-
-</td>
-
-</tr><tr height="27">
-
-<td width="27" height="27"></td>
-
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">View Interchange's online documentation</font>
-
-</td>
-
-</tr>
-
-
-
-<tr>
-
-<td colspan=2>
-
-<hr size=1 noshade>
-
-</td>
-
-</tr>
-
-
-
-<tr>
-
-<td width="27" align="center" valign="bottom">
-
-<a href="javascript:open_quicklinks()"><img height=16 width=16 src="admin/icon_pages.gif" border="0"></a>
-
-</td><td valign="bottom">
-
-<font size=3 face="Arial,Helvetica,Geneva">
-
-<b>
-
-<a href="javascript:open_quicklinks()">Quicklinks</a>
-
-</b>
-<small>(<a href="[area __UI_BASE__/fr_index]"><U>framed</U></a>)</small>
-
-</font>
-
-</td>
-
-</tr>
-
-<tr height="27">
-
-<td width="27" height="27"></td>
-
-<td height="27" valign="top"><font size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Open a convenient menu listing available admin options,
-
-including site design and advanced configuration options.
-
-</font>
-
-</td>
-
-</tr>
-
-
-
-
-</table>
-
-</td>
-
-</tr>
-
-</table>
-<br><br>
-
-
-<!-- ----- END REAL STUFF ----- -->
+  </tr></table><p>&nbsp;</p><p>&nbsp;</p>
 
 @_UI_STD_FOOTER_@
 

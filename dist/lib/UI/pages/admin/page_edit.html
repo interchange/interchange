@@ -1,16 +1,18 @@
 [set page_title]Edit Page[/set]
+[set ui_class]Content[/set]
 [set help_name]page.main[/set]
 [set icon_name]admin/icon_pages.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[area @@MV_PAGE@@]" method=POST>
+<!-- [dump] -->
+<form action="[base-url]/@@MV_PAGE@@" method=POST>
 <input type=hidden name=mv_action value=back>
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [perl] 
 	my $ref;
@@ -132,7 +134,7 @@
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -146,7 +148,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 		$out .= qq{<tr><td bgcolor=__UI_C_INTBLOCK__><b>$_->[0]</td><td bgcolor=__UI_C_INTBLOCK__>$_->[1]</td></tr>};
@@ -165,7 +167,7 @@ EOF
 
 	$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__ COLSPAN=2>
@@ -174,7 +176,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -191,13 +193,14 @@ EOF
 [/perl]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td colspan=2 bgcolor=__UI_C_INTBLOCK__>
 [set Preview]
 mv_nextpage=__UI_BASE__/page_preview
+mv_action=back
 [/set]
 
 [set Save]
@@ -216,7 +219,7 @@ mv_todo=back
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

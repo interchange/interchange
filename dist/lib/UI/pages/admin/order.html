@@ -1,6 +1,27 @@
-[if cgi showpending]
-[value name=showarchive set=""]
-[/if]
+[calc]
+	if ( $CGI->{showarchive} ) {
+		delete $Values->{showpending};
+		$Values->{showarchive} = 1;
+		$Scratch->{archive_sense} = 'eq';
+		$Scratch->{archive_img} = 'admin/left.gif';
+		$Scratch->{archive_nm} = 'unarchive';
+	}
+	elsif($CGI->{showpending}) {
+		delete $Values->{showarchive};
+		$Values->{showpending} = 1;
+		$Scratch->{archive_sense} = 'ne';
+		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_nm} = 'archive';
+	}
+	elsif(! $Values->{showarchive} and ! $Values->{showpending}) {
+		delete $Values->{showarchive};
+		$Values->{showpending} = 1;
+		$Scratch->{archive_sense} = 'ne';
+		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_nm} = 'archive';
+	}
+	return;
+[/calc]
 
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
@@ -10,12 +31,13 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
-[set page_perm]order[/set]
-[set meta_header]
+[set ui_class]Orders[/set]
+[tmp page_perm]order[/tmp]
+[tmp meta_header]
 <style><!--
 td {font-family:arial,sans-serif}
 -->
-</style>[/set]
+</style>[/tmp]
 
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -132,121 +154,182 @@ td {font-family:arial,sans-serif}
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<!-- ----- Show the archive/pending buttons ----- -->
-<center>
-<form action="[area __UI_BASE__/order]" method=POST>
-<INPUT TYPE=hidden NAME=mv_action VALUE=return>
-
-<input type=hidden name=archive value="false">
-
-<table __UI_T_PROPERTIES__>
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-[if value showarchive]
-<input type=submit name="showpending" value="Show pending orders">
-[set archive_sense]=[/set]
-[else]
-<input type=submit name="showarchive" value="Show archived orders">
-[set archive_sense]!=[/set]
-[/else]
-[/if]
-</td>
-
-<td bgcolor="__UI_C_INTBLOCK__">
-<a href="[area __UI_BASE__/orderstats]">View Order Stats</a>
-</td>
-</tr>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<!-- ----- Show the operation buttons ----- -->
-
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
-
-<input type=submit name="vieworder" value="View order"><br>
-
-[if value showarchive]
-[if-mm advanced order=u]
-<input type=submit name="unarchiveorder" value="Unarchive order">
-[/if-mm]
-[else]
-[if-mm advanced order=a]
-<input type=submit name="archiveorder" value="Archive order">
-[/if-mm]
-[/else]
+[if scratch ui_message]
+<BLOCKQUOTE>
+	[scratch ui_message]
+	[set ui_message][/set]
+</BLOCKQUOTE>
+<p>
+&nbsp;
 [/if]
 
-<br>
-<br>
-
-[if-mm advanced order=d]
-<input type=submit name="deleteorder" value="Delete order" 
- onClick="return confirm('Are you sure you want to delete this order?')">
-[/if-mm]
-
-<br>
-
-[comment]
-<input type=submit name="xload" value="Export orders">
-[/comment]
-[set Start list here]
-[calc]
-	$CGI->{order} =~ s/^\0+//s;
-	$CGI->{order} =~ s/\0.*//s;
-	$Scratch->{start_at} = "sm=$CGI->{order}";
-	return;
-[/calc]
-mv_nextpage=@@MV_PAGE@@
-[/set]
+<table><tr>
+<td>
+<small>
+    <FORM ACTION="[area @@MV_PAGE@@]">
+    <INPUT NAME=order VALUE="[cgi order]">
+    <INPUT TYPE=submit VALUE="Start at order number">
+    </FORM>
+</small>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
-<SMALL>Specific order <INPUT TYPE=text NAME=order VALUE=""> <INPUT TYPE=submit NAME=mv_click VALUE="Start list here"></SMALL>
-<!-- ----- Show the order list box ----- -->
+<td><B>or</B></td>
+<td>
+<small>
+    <FORM ACTION="[area @@MV_PAGE@@]">
+    <INPUT NAME=ui_text_qualification VALUE="">
+    <INPUT TYPE=submit VALUE="Limit with search">
+    </FORM>
+</small>
+</td>
+</tr>
+</table>
 
-[loop more=1 search="
+[if cgi ui_text_qualification]
+<H3>Entries cotaining "[cgi ui_text_qualification]"</H3>
+[/if]
+
+[search-region more=1 arg="
 		fi=transactions
 		ml=__UI_SZ_LIST_ORDER__
 		md=1
 		st=db
-		co=yes
-		sf=archived
-		se=1
-		tf=order_number
-		op=[scratch archive_sense]
+		[if cgi ui_text_qualification]
+			se=[cgi ui_text_qualification]
+		[else]
+			co=yes
+			sf=archived
+			se=1
+			op=[scratch archive_sense]
+			sf=deleted
+			se=1
+			op=ne
+		[/else]
+		[/if]
 		[scratch start_at][set start_at][/set]
-		sf=deleted
-		se=1
-		op=ne
-		rf=code,order_date,total_cost
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=0
+		[/else]
+		[/if]
+		rf=code,order_date,total_cost,nitems,status,city,state,country,fname,lname,username
 "]
-<pre>
-<select name=order size=10 MULTIPLE>
-[list]<OPTION VALUE="[loop-code]">[loop-code]  [loop-param order_date]  [loop-param total_cost]</OPTION>
-[/list]
-</select>
-</pre>
-[more-list]<BR>Orders [matches] of [value mv_search_match_count]: [more][/more-list]
-[/loop]
-</td></tr>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless $fld eq $f;
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+<FORM ACTION="[process]" METHOD=POST NAME=batch>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<TABLE CELLSPACING=0>
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Order No.</TH>
+<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=company,lname\n" . sortrev('company');
+	`]User</A>
+</TH>
+<TH><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=country,state,city\n" . sortrev('country');
+	`]Location</A>
+</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=order_date\n" . sortrev('order_date');
+	`]Date</A>
+</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
+`]Items</A>
+</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
+`]Total</A>
+</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=status\n" . sortrev('status');
+`]Status</A>
+</TH>
 </tr>
+[search-list]
+<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TD>
+<INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
+		[item-calc]
+			return if $Scratch->{archive_nm} eq 'unarchive';
+			return 'CHECKED' if q{[item-data transactions status]} eq 'shipped';
+			return;
+		[/item-calc]
+		>
+[page href="@@MV_PAGE@@"
+	form="
+		[scratch archive_nm]order=1
+		order=[item-code]
+	"]<IMG SRC="[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
+<A HREF="[area
+	href='@@MV_PAGE@@'
+	form='
+		deleteorder=1
+		order=[item-code]
+	']"
+	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG SRC="admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
+<TD>
+	[page href=__UI_BASE__/customer_view form="customer=[item-param username]"][item-param lname], [item-param fname][if-item-param company] -- [item-param company][/if-item-param]</A>
+</TD>
+<TD>[item-filter 30][item-param city], [item-param state] [item-param country][/item-filter]</TD>
+<TD ALIGN=CENTER>[convert-date][item-param order_date][/convert-date]</TD>
+<TD ALIGN=RIGHT>[item-param nitems]</TD>
+<TD ALIGN=Right>[currency][item-param total_cost][/currency]</TD>
+<TD ALIGN=Right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][item-param status]</A></TD>
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan=6 align=center>
+<B>Nothing matched.</B>
+</td>
+</tr>
+[/no-match]
+[more-list]
+<tr>
+<td colspan=6 align=center>
+Orders [matches] displayed. More orders: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+[/more-list]
+
 </table>
-
-<p>
-
-</form>
-
-
+[if-mm advanced order=d]
+[button form=batch text="Delete checked orders" src="admin/delete.gif-NO"
+ confirm='Are you sure you want to delete the checked orders?']deleteorder=1
+[/button]
+[/if-mm]
+&nbsp;&nbsp;&nbsp;[button form=batch src="admin/[scratch archive_img]-NO"
+			text=`
+			my $tmp = "$Scratch->{archive_nm} checked orders";
+			return "\u$tmp";
+			`]
+[scratch archive_nm]order=1[/button]
+</FORM>
+[/search-region]
 <!-- ----- END REAL STUFF ----- -->
+
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

@@ -1,6 +1,7 @@
 [set page_title]Individual Table Import[/set]
 [set table_perm]=i[/set]
 [set help_name]import.main[/set]
+[set ui_class]Admin[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
@@ -47,7 +48,7 @@
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -64,7 +65,7 @@
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 
-<select name="mv_data_table" size=10>
+<select name="mv_data_table">
 [loop list="[list-databases extended=i]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
 [/loop]
 </select>
@@ -72,7 +73,7 @@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
