@@ -1,0 +1,44 @@
+[set page_title]Page Upload Results</TITLE>
+[set ui_class]Admin[/set]
+[set help_name]upload.main</TITLE>
+[if-mm]
+
+@_UI_STD_HEAD_@
+
+<!-- END REAL STUFF -->
+
+<TABLE>
+<CAPTION><H2>Upload</H2></CAPTION>
+[if value page_to_upload]
+<TR>
+<TD>
+[L]Page upload of[/L] <B>[value page_to_upload]</B> -->
+</TD>
+<TD>
+[if type=explicit compare="[value-extended
+							name='page_upload'
+							test=isfile
+							]"]
+[value-extended
+						Yes=Success
+						No=FAILED
+						ascii="[value page_ascii]"
+						name="page_upload"
+						outfile="pages/[value page_to_upload]"
+						]
+[else]
+[value page_to_upload]: [L]No page was uploaded[/L].
+[/else][/if]
+</TD>
+</TR>
+[/if]
+</TABLE>
+</BLOCKQUOTE>
+
+[loop arg="arbitrary_to_upload page_to_upload db_to_upload "]
+[value name="[loop-code] set=""]
+[/loop]
+
+<!-- END REAL STUFF -->
+
+@_UI_STD_FOOTER_@

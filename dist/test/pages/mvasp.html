@@ -1,0 +1,58 @@
+[new]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+[mvasp]
+<head>
+	<title>MiniVend ASP</title>
+</head>
+<body bgcolor="#FFFFFF">
+<basefont size="+1" color="#ff61e7" face="arial,helvetica">
+<center><h1>MiniVend ASP Syntax Example</h1>
+<!--This page will hold your new additions in reverse chronological order-->
+<a href="new.html">What's new</a><br>
+
+<% 
+
+    $Document->write("Hello, you are in <B>&lt;%ASP LAND%&gt;</B> <P>");
+    my $fmt = "%H:%M:%S %D (some time format for y2K, huh...)";
+    my $time = $Tag->tag( $fmt, { op => 'time' } );
+    $Document->write ( "The current time is $time<BR>");
+%>
+<HR>
+<%
+	$Document->write ( "<P>Your session ID is <B>$Session->{id}</B><P>");
+    if($Session->{arg}) {
+        $Document->write ( "<P>The argument given is <B>$Session->{arg}</B><P>");
+        $Document->write ( "<P>Return to " . $Tag->page('mvasp') . "no argument</A>.<P>");
+    }
+    else {
+        $Document->write ( "No argument sent, ", 
+                            $Tag->page('mvasp', 'An arg'),
+                            "try one</A>.<BR>",
+                            );
+    }
+%>
+<P>
+<%
+    $Document->write(
+                        "You can use UserTags, too...ORDERS_TO => ",
+                        $Tag->var('ORDERS_TO'),
+                        "<P>\n",
+                    );
+
+%>
+
+        Compare to ORDERS_TO => __ORDERS_TO__<P>
+
+        You can see the source
+        <A HREF="<%
+                    $Document->write( $Tag->area('view_page', 'mvasp.html') );
+                  %>"> here.</A>
+</center>
+<hr>
+</small>
+</BODY>
+</HTML>
+[/mvasp]
+
+

@@ -1,0 +1,1 @@
+Variable UI_EDIT_LINK <A HREF="[area href='page_edit/[var MV_PAGE 1]' arg='[scratch ui_component]']"><font size=1><U>edit</U></font></A>

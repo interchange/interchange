@@ -1,0 +1,90 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
+ui_template_description: Page with top/left areas.
+
+page_title: 
+	description: Page title
+
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+component_before:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component after content
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+[/comment]
+[set page_title]__COMPANY__ -- Customer Service[/set]
+[set page_banner]Customer Service[/set]
+__LEFTONLY_TOP__
+
+<!-- BEGIN CONTENT -->
+
+                    <p>&nbsp;</p>
+                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">At 
+                      Construct Something customer service is our number one concern. 
+                      The links below can help you manage your account and ordering. 
+                      If you need to talk to someone please <a href="contact.html">click 
+                      here</a>.</font></p>
+                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                      </font></p>
+                    <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#FF9900" bordercolorlight="#FF9900">
+                      <tr bgcolor="#669999"> 
+                        <td> 
+                          <table width="300" border="0" cellspacing="0" cellpadding="2">
+                            <tr bgcolor="#669999"> 
+                              <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#FFFFFF"><b>Links 
+                                to manage your account</b></font></font></td>
+                            </tr>
+                            <tr bgcolor="#999999"> 
+                              <td align="left"> <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#000000"><a href="[area help]"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Help</b></font></a></font></font></td>
+                            </tr>
+                            <tr bgcolor="#999999"> 
+                              <td align="left"> 
+                                <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area account]"><b>Account 
+                                  Maintenance</b></a> </font></p>
+                              </td>
+                            </tr>
+                            <tr bgcolor="#999999"> 
+                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area query/check_orders]"><b>Order 
+                                Tracking</b></a></font></td>
+                            </tr>
+                            <tr bgcolor="#999999"> 
+                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area recurring_orders]"><b>Recurring Orders</b></a></font> </td>
+                            </tr>
+							<tr bgcolor="#999999"> 
+                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area ship_addresses]"><b>Additional Shipping Addresses</b></a></font> </td>
+                            </tr>							
+                            <tr bgcolor="#999999"> 
+                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area new_account]"><b>New 
+                                Account</b></a></font> </td>
+                            </tr>
+                            <tr bgcolor="#999999"> 
+                              <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><a href="[area returns]"><b> 
+                                Order Returns</b></a></font> </td>
+                            </tr>							
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    <p>&nbsp;</p>
+<!-- END CONTENT -->
+
+__LEFTONLY_BOTTOM__

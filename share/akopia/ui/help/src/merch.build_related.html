@@ -1,0 +1,51 @@
+<title>Build Related</title>
+<p>
+You can mine the data from your <TT>orderline</TT> database to suggest products that
+might be bought in combination with a certain product.
+</p>
+
+<p>
+All that is necessary is to access this page. The database will be mined and
+entries made in the <TT>others_bought</TT> field of the <TT>merchandising</TT> database.
+</p>
+
+<p>
+The database is scanned, and a list of items purchased on the same order with
+each item is built. This is stored in a data structure and can be accessed
+<I>in a shopping cart or flypage</I> with the code:
+</p>
+
+<XMP>
+	[if-item-data merchandising others_bought]
+	[perl tables=products]
+		my $hash = [item-data merchandising others_bought];
+		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+		return '' unless @ary;
+		my %in_basket;
+		splice(@ary, 3);
+		for(@{$Carts->{main}}) {
+			$in_basket{$_->{code}} = 1;
+		}
+		@ary = grep ! $in_basket{$_}, @ary;
+		return '' unless @ary;
+		my $out = q{
+		<BR><TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR><TD __HEADERBG__>
+		<FONT SIZE="-1" COLOR="__HEADERTEXT__">
+			Customers who bought this item also bought:
+		</TD>
+		</TR><TR>
+		<TD><FONT SIZE="-1">
+		};
+		for(@ary) {
+ 			my $desc = tag_data( 'products', 'description', $_);
+			$out .= q{<A HREF="[area $_]">$desc</A><BR>}
+		}
+		return $out . '</TD></TR></TABLE>';
+	[/perl]
+	[/if-item-data]
+</XMP>
+
+<p>
+This code is used in the <B>barry</B> and possibly other demos.
+</p>

@@ -1,0 +1,51 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
+ui_template_description: Page with top/left areas.
+
+page_title: 
+	description: Page title
+
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+component_before:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component after content
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+[/comment]
+[set name=done int][userdb function=logout clear=1][/set]
+[set page_title]__COMPANY__ -- Help[/set]
+[set page_banner]Log out[/set]
+
+__LEFTONLY_TOP__
+
+<!-- BEGIN CONTENT -->
+
+                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+					You have been logged out.
+					<br><br>
+					Thank you for visiting.
+					</font></p>
+					
+
+<!-- END CONTENT -->
+
+__LEFTONLY_BOTTOM__

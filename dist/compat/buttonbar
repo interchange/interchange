@@ -1,0 +1,45 @@
+
+# Returns a buttonbar by number
+UserTag buttonbar Order type
+UserTag buttonbar PosNumber 1
+UserTag buttonbar Interpolate 1
+UserTag buttonbar Routine <<EOR
+
+sub get_files {
+	my($dir, @files) = @_;
+	my(@out);
+	my($file, $contents);
+	foreach $file (@files) {
+		config_error(
+		  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n")
+		if $file =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+		push(@out,"\n") unless
+			push(@out,readfile("$dir/$file.html"));
+	}
+	
+	@out;
+}
+
+sub parse_buttonbar {
+	my ($var, $value) = @_;
+	return [] unless $value;
+	my @c;
+	my @vals = grep /\S/, split /\s+/, $value;
+	for(@vals) {
+		push @c, Vend::Util::readfile("pages/$_.html");
+	}
+	return \@c;
+}
+
+sub {
+	my($buttonbar) = @_;
+    if (defined $Vend::Cfg->{'ButtonBars'}->[$buttonbar]) {
+		return $Vend::Cfg->{'ButtonBars'}->[$buttonbar];
+	}
+	else {
+		return '';
+	}
+}
+EOR
+
+AddDirective ButtonBars  buttonbar

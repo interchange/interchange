@@ -1,0 +1,4 @@
+$CC="@CC@";
+$CFLAGS="@CFLAGS@";
+$DEFS="@DEFS@";
+$LIBS="@LIBS@";

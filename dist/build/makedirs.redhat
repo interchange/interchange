@@ -1,0 +1,154 @@
+#!/bin/sh
+
+if test -n "$RPM_RUN_BASE"
+then
+	RUNBASE=$RPM_RUN_BASE
+else
+	RUNBASE=/var/run
+fi
+
+if test -n "$RPM_LOG_BASE"
+then
+	LOGBASE=$RPM_LOG_BASE
+else
+	LOGBASE=/var/log
+fi
+
+if test -n "$RPM_LIB_BASE"
+then
+	LIBBASE=$RPM_LIB_BASE
+else
+	LIBBASE=/var/lib
+fi
+
+if test -n "$RPM_ETC_BASE"
+then
+	ETCBASE=$RPM_ETC_BASE
+else
+	ETCBASE=/etc
+fi
+
+HASICUSER=`grep '^interch:' /etc/passwd`
+if test -n "$RPM_BUILD_ROOT"
+then
+	echo
+elif test -z "$HASICUSER"
+then
+	adduser -d $LIBBASE/interchange -c "Interchange daemon" -r interch
+fi
+
+ETCDIRS="rc.d/init.d logrotate.d"
+LIBDIRS="interchange"
+ICDIRS="$RPM_BUILD_ROOT$RUNBASE/interchange $RPM_BUILD_ROOT$LOGBASE/interchange"
+
+for i in $ETCDIRS
+do
+	mkdir -p $RPM_BUILD_ROOT$ETCBASE/$i
+done
+
+for i in $LIBDIRS
+do
+	mkdir -p $RPM_BUILD_ROOT$LIBBASE/$i
+done
+
+for i in $ICDIRS
+do
+	mkdir -p $i
+	if test -z "$RPM_BUILD_DIR"
+	then
+		chown interch.interch $i
+		chmod 751 $i
+	fi
+done
+
+if test -n "$RPM_BUILD_ROOT"
+then
+	mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
+	mkdir -p $RPM_BUILD_ROOT/usr/sbin
+fi
+
+cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
+#!/bin/sh
+#
+# Startup script for Interchange
+#
+# chkconfig: 345 96 4
+# description: Interchange is a database access and HTML templating system \
+#	       focused on ecommerce
+# processname: interchange
+# pidfile: $RUNBASE/interchange/interchange.pid
+# config: $ETCBASE/interchange.cfg
+# config: $LIBBASE/interchange/*/catalog.cfg
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Handle /usr/local
+PATH=\$PATH:/usr/local/bin
+
+# See how we were called.
+case "\$1" in
+  start)
+	echo -n "Starting interchange: "
+	daemon interchange
+	echo
+	touch /var/lock/subsys/interchange
+	;;
+  stop)
+	echo -n "Shutting down interchange: "
+	killproc interchange
+	echo
+	rm -f /var/lock/subsys/interchange
+	rm -f $RUNBASE/interchange/interchange.pid
+	;;
+  status)
+	status interchange
+	;;
+  restart)
+	\$0 stop
+	\$0 start
+	;;
+  *)
+	echo "Usage: \$0 {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0
+EOF
+
+cat > $RPM_BUILD_ROOT/etc/logrotate.d/interchange <<EOF
+/var/log/interchange/* {
+        rotate 4
+        weekly
+        compress
+}
+EOF
+
+cat > $RPM_BUILD_ROOT/usr/sbin/interchange <<EOF
+#!/bin/sh
+
+RUNSTRING="/usr/lib/interchange/bin/interchange -q \\
+	-configfile $ETCBASE/interchange.cfg \\
+	-pidfile $RUNBASE/interchange/interchange.pid \\
+	-logfile $LOGBASE/interchange/error.log \\
+	ErrorFile=$LOGBASE/interchange/error.log \\
+	PIDfile=$RUNBASE/interchange/interchange.pid \\
+	-confdir $RUNBASE/interchange \\
+	SocketFile=$RUNBASE/interchange/socket"
+
+USER=\`whoami\`
+if test \$USER = "root"
+then 
+	exec su interch -c "\$RUNSTRING \$*"
+else
+	exec \$RUNSTRING \$*
+fi
+EOF
+
+chmod +x $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange $RPM_BUILD_ROOT/usr/sbin/interchange
+
+if test -z "$RPM_BUILD_ROOT"
+then
+	/sbin/chkconfig interchange reset
+fi

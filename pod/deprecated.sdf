@@ -1,0 +1,120 @@
+=head1 NAME
+
+Interchange Deprecated Features List
+
+=head2 Version
+
+This document describes features of Interchange 4.6 that have been deprecated.
+Any use of these features should be discontinued. In most cases we have
+provided an alternative mechanism to accomplish the same results.  These
+deprecated features may be removed at some point in the future.  You should
+change to the new mechanism to avoid breakage.
+
+=head1 Deprecated Features Previous to Interchange 4
+
+=item cart/page from path
+
+interchange.PL 308,313
+
+>        if($path =~ s:/(.*)::) {
+>                $cart = $1;
+>                if($cart =~ s:/(.*)::) {
+>                        $page = $1;
+>                }
+>        }
+
+=item mv_orderpage
+
+interchange.PL 321,323
+
+>        $CGI::values{mv_nextpage} = $CGI::values{mv_orderpage}
+>                                                                || find_special_page('order')
+>                if ! $CGI::values{mv_nextpage};
+
+=item $decode
+
+interchange.PL 493
+
+>                        HTML::Entities::decode($value) if $decode;
+
+=item mv_orderpage
+
+interchange.PL 854,855
+
+>                                        $CGI::values{mv_nextpage} = $CGI::values{mv_orderpage}
+>                                                if $CGI::values{mv_orderpage};
+
+=item ROUTINES and LANG
+
+intechange.PL 1552,1579
+
+>        ROUTINES: {
+>                last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
+>                while ($Vend::FinalPath =~ s:/process/(locale|language|currency)/([^/]*)/:/process/:) {
+>                        $::Scratch->{"mv_$1"} = $2;
+>                }
+>                $Vend::FinalPath =~ s:/process/page/:/:;
+>        }
+>        my $locale;
+>        if($locale = $::Scratch->{mv_language}) {
+>                $Global::Variable->{LANG}
+>                        = $::Variable->{LANG} = $locale;
+>        }
+>
+>        if ($Vend::Cfg->{Locale}                                                                and
+>                $locale = $::Scratch->{mv_locale}       and
+>                defined $Vend::Cfg->{Locale_repository}->{$locale}
+>                )
+>        {
+>                $Global::Variable->{LANG}
+>                                = $::Variable->{LANG}
+>                                = $::Scratch->{mv_language}
+>                                = $locale
+>                         if ! $::Scratch->{mv_language};
+>                Vend::Util::setlocale(  $locale,
+>                                                                ($::Scratch->{mv_currency} || undef),
+>                                                                { persist => 1 }                                                        );
+>        }
+
+=item list_compat
+
+lib/Vend/Interpolate.pm 2808
+
+>        list_compat($opt->{prefix}, \$text);
+
+lib/Vend/Interpolate.pm 3538
+
+>        list_compat($opt->{prefix}, \$text);
+
+lib/Vend/Interpolate.pm 3874
+
+>        list_compat($opt->{prefix}, \$page);
+
+=item find_sort
+
+lib/Vend/Interpolate.pm 3270,3271
+
+>        $text =~ /^\s*\[sort\s+.*/si
+>                and $opt->{sort} = find_sort(\$text);
+
+=item mv_order_report
+
+lib/Vend/Order.pm 867,868
+
+>    $body = readin($::Values->{mv_order_report})
+>                if $::Values->{mv_order_report};
+
+=item mv_error_$var
+
+lib/Vend/Order.pm 1030
+
+>                        $::Values->{"mv_error_$var"} = $message;
+
+=head1 Interchange 4 Deprecated Features
+
+=item Vend::Util::send_mail Vend::Order::send_mail send_mail
+
+The send_mail routine has been replaced by the Vend::Mail::send routine.
+
+=cut
+

@@ -1,0 +1,53 @@
+
+UserTag body PosNumber 2 
+UserTag body Order type extra
+UserTag body Routine <<EOR
+use vars qw($C);
+sub parse_color {
+    my ($var, $value) = @_;
+    return '' unless $value;
+    $var = lc $var;
+    $C->{Color}->{$var} = [];
+    @{$C->{'Color'}->{$var}} = split /\s+/, $value;
+    return $value;
+}
+
+sub {
+    my($scheme, $extra) = @_;
+    my $r = '<BODY';
+    my ($var,$tag);
+    #return '<BODY>' unless (int($scheme) < 16 and int($scheme) > 1);
+    
+    my %color = qw( mv_bgcolor BGCOLOR mv_textcolor TEXT
+                    mv_linkcolor LINK mv_vlinkcolor VLINK
+                     mv_alinkcolor ALINK mv_background BACKGROUND );
+    if (defined $::Values->{mv_resetcolors}
+            and $::Values->{mv_resetcolors}) {
+        delete $::Values->{mv_customcolors};
+        undef $::Values->{mv_resetcolors};
+    }
+    if (defined $::Values->{mv_customcolors}) {
+        foreach $var (keys %color) {
+            $r .= qq| $color{$var}="| . $::Values->{$var} . '"'
+                if $::Values->{$var};
+        }
+    }
+    else {
+        foreach $var (keys %color) {
+            $r .= qq| $color{$var}="| . ${$Vend::Cfg->{Color}->{$var}}[$scheme] . '"'
+                if defined ${$Vend::Cfg->{Color}->{$var}}[$scheme]
+                    &&  ${$Vend::Cfg->{Color}->{$var}}[$scheme] !~ /\bnone\b/;
+        }
+    }
+    $r =~ s#(BACKGROUND="(?!http:))([^/])#$1$Vend::Cfg->{ImageDir}$2#;
+    $r .= " $extra" if defined $extra;
+    $r .= '>';
+}
+EOR
+
+AddDirective Mv_Background   color
+AddDirective Mv_BgColor      color
+AddDirective Mv_TextColor    color
+AddDirective Mv_LinkColor    color
+AddDirective Mv_AlinkColor   color
+AddDirective Mv_VlinkColor   color

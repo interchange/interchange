@@ -1,0 +1,57 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
+ui_template_description: Page with top/left areas.
+
+page_title: 
+	description: Page title
+
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+component_before:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, specials=Specials, random=Random items
+	widget: select
+	description: Component after content
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+[/comment]
+[set page_title]__COMPANY__ -- Help[/set]
+[set page_banner]Help[/set]
+
+__LEFTONLY_TOP__
+
+<!-- BEGIN CONTENT -->
+
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FF9900">(This is a demonstration store.)</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">If you need further help we can be contacted at:</font></p>
+
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#999999">Construct Something<br>
+11480 Sunset Hills Road<br>
+Suite 200 East<br>
+Reston, VA 20190<br>
+Phone: 703.456.2931<br>
+Fax: 703.456.2901</font>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FF9900"><br>
+<a href="info@akopia.com">info@akopia.com</a></font></p>
+<p><a href="customerservice.html"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif">BACK</font></b></font></a> 
+</p>
+
+<!-- END CONTENT -->
+
+__LEFTONLY_BOTTOM__

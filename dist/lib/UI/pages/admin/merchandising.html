@@ -1,0 +1,131 @@
+[if !cgi mv_data_table]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
+	return;
+[/calc]
+[/if]
+[comment]
+[if-mm function="!tables" table=`$Config->{ProductFiles}[0]`]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[/comment]
+
+[set ui_class]Merchandising[/set]
+[set page_title]Merchandising editor[/set]
+[set table_perm]1[/set]
+[set help_name]item.main[/set]
+[set icon_name]admin/icon_item.gif[/set]
+@_UI_STD_HEAD_@
+
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_message]
+<BLOCKQUOTE>
+	[scratch ui_message]
+	[set ui_message][/set]
+</BLOCKQUOTE>
+<p>
+&nbsp;
+[/if]
+
+[comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start finish[/comment]
+<FORM ACTION="[area @@MV_PAGE@@]">
+<INPUT NAME=ui_text_qualification>
+<INPUT TYPE=submit VALUE="Limit with search">
+</FORM>
+[if cgi ui_text_qualification]
+<H3>Entries containing "[cgi ui_text_qualification]"</H3>
+[/if]
+[search-region more=1 arg="
+		[if cgi ui_text_qualification]
+		se=[cgi ui_text_qualification]
+		su=yes
+		[else]ra=yes[/else][/if]
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=description
+		[/else]
+		[/if]
+		st=db
+		sp=@@MV_PAGE@@
+		ml=25
+"][on-match]
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless $fld eq $f;
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+<TABLE border=0 CELLSPACING=0 width="90%">
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=sku\n" . sortrev('sku');
+	`]SKU</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=description\n" . sortrev('description');
+	`]Description</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
+</tr>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+[/on-match]
+[search-list]
+<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+<TD>[filter 30][item-description][/filter]</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
+	item_id=[item-code]
+"][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
+	item_id=[item-code]
+"][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
+	item_id=[item-code]
+"][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
+	item_id=[item-code]
+"][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]</a>
+</TD>
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan=6 align=left>
+<br>
+<B>Nothing matched.</B>
+<br><br>
+</td>
+</tr>
+[/no-match]
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
+[more-list]
+<tr>
+<td colspan=6 align=center>
+More products: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+[/more-list]
+</table>
+[/search-region]
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

@@ -1,0 +1,180 @@
+[tmp page_perm]files[/tmp]
+[tmp page_title]Administration: [calc]$Config->{CatalogName}[/calc][/tmp]
+[set ui_class]Admin[/set]
+[tmp help_name]genconfig.main[/tmp]
+[tmp icon_name]admin/icon_config.gif[/tmp]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<center>
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<TABLE border=0>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange version
+	</TH>
+	<td rowspan=40> &nbsp; &nbsp; </td>
+	<TD> [version]</A></TD>
+</TR>
+
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Last time server restarted
+	</TH>
+	<TD>[calc] scalar localtime([file-info conf=1 name="interchange.pid" time=1])[/calc]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Last time changes applied
+	</TH>
+	<TD>[file name=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`] ([page __UI_BASE__/reconfig]apply now</A>)</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Catalog URL
+	</TH>
+	<TD>[calc]return qq{<A HREF="$Config->{VendURL}">$Config->{VendURL}}[/calc]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Secure URL
+	</TH>
+	<TD>[calc]return qq{<A HREF="$Config->{SecureURL}">$Config->{SecureURL}}[/calc]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	<A HREF="[area href="@@MV_PAGE@@" form="more_perl=1"]">Perl Version</A>
+	</TH>
+	<TD>Perl [version extended=1 perl=1 perl_config="[cgi more_perl]"]
+	</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Location of Error Logs
+	</TH>
+	<TD>
+		Global: [version extended=1 global_error=1]<br>
+		Local: [version extended=1 local_error=1]
+		</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange PID
+	</TH>
+	<TD>[version extended=1 pid=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange SUID User
+	</TH>
+	<TD>[version extended=1 uid=1]</TD>
+</TR>
+
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	<A HREF="[area __UI_BASE__/env_vars]">Environment</A> variables passed
+	</TH>
+	<TD>[version extended=1 env=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Active sessions
+	[if cgi list_sessions]<br><small><i>
+	(last
+	[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] minutes)</I></small>
+	[/if]
+	</TH>
+	<TD>[if cgi list_sessions][loop list="[dump-session find=1]"]<A HREF="[area
+														href='@@MV_PAGE@@'
+														form='show_session=[loop-code]'
+														]">[loop-code]</A><BR>[/loop]
+	[else]
+		[page href="@@MV_PAGE@@" form="list_sessions=1"]Show active sessions</A>
+		<br>
+		<small><i>(last
+		[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] minutes)</I></small>
+
+	[/else]
+	[/if]
+	[if cgi show_session]
+		<P><B>Showing session: [cgi show_session]</B>
+		<FONT SIZE=1>
+<XMP>
+[dump-session name="[cgi show_session]"]
+</XMP>
+		</FONT>
+	[/if]
+		</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	<A HREF="[area __UI_BASE__/dbinfo]">Database Information<a>
+	<small>
+	<small>
+	<blockquote><blockquote><div align=left>
+		[loop list="[list-databases]"]
+			<A HREF="[area __UI_BASE__/dbinfo [loop-code]]">[loop-code]<a><br>
+		[/loop]
+	</div></blockquote></blockquote>
+	</small>
+	</small>
+	</TH>
+	<TD VALIGN=top> [version extended=1 db=1]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Optional Module Information
+	</TH>
+	<TD> [version extended=1 modules=1]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Safe operations untrapped
+	</TH>
+	<TD>[version extended=1 safe=1]</TD>
+</TR>
+
+</TABLE>
+
+</td></tr>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+</center>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+print "Content-type: text/plain\n\n";
+print "This is testcgi.\n\n";
+print "The Perl version is: $]\n";
+print "My user id is: $<\n\n";
+require GDBM_File and print "You have GDBM.\n";
+require DB_File and print "You have Berkeley DB.\n";
+require NDBM_File and print "You have NDBM.\n";
+

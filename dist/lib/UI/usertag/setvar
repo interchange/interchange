@@ -1,0 +1,9 @@
+UserTag setvar Order name
+UserTag setvar hasEndTag
+UserTag setvar Routine <<EOR
+sub {
+	my $name = shift;
+	$::Variable->{$name} = shift;
+	return;
+}
+EOR

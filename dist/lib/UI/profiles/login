@@ -1,0 +1,19 @@
+__NAME__ MMLogin
+mv_todo=return
+[if type=explicit compare="[userdb function=login profile=ui]"]
+mv_nextpage=__UI_BASE__/index
+[else]
+mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]
+[/else]
+[/if]
+__END__
+
+__NAME__ MMChange
+[if type=explicit compare="[userdb function=change_pass profile=ui]"]
+mv_nextpage=[either][cgi mv_successpage][or][cgi mv_nextpage][/either]
+[else]
+mv_username=
+mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
+[/else]
+[/if]
+__END__

@@ -1,0 +1,44 @@
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	if(! $CGI->{ui_elements}) {
+		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
+		$CGI->{ui_elements} = $Tag->read_ui_template( 
+									{
+										file => $CGI->{ui_template},
+										element => 'ui_template_layout',
+									});
+#Log("elements: $CGI->{ui_elements}");
+	}
+	@layout = split /[\0\s,]+/, $CGI->{ui_elements};
+	@insert = split /\0/, ($CGI->{ui_content} || 'Page content.'); 
+	for(keys %{$CGI}) {
+		next unless /^ui_control_(.*)/;
+#Log("found $_ => $k");
+		my $k = $1;
+		unshift @layout, "[set $k]" . $CGI->{$_} . '[/set]';
+	}
+	foreach $one (@layout) {
+		if( $one eq 'UI_CONTENT') {
+			my $content = shift @insert;
+#Log("inserting $content");
+			$content =~ s/\r?\n/\n/g;
+			push @out, $content;
+		}
+		elsif ($one =~ /^[A-Z]\w+$/) {
+			push @out, '__' . $one . '__';
+		}
+		else {
+			push @out, $one;
+		}
+	}
+	$Tag->write_relative_file("tmp/$Session->{id}.preview", (join "\n", @out));
+	return;
+[/perl]
+[include file="tmp/[data session id].preview"]
