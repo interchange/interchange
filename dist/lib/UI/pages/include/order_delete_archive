@@ -52,8 +52,14 @@
 		$ordnum =~ s/[\0,\s].*//;
 		return if ! $ordnum;
 		$ordnum++;
+		my $maxtries = $Tag->var('UI_ORDER_VIEWNEXT_MAX_SKIP', 2) || 20;
+		my $tries = 0;
 		CHECKNEXT: {
 			if (! $db->record_exists($ordnum) ) {
+				if (++$tries <= $maxtries) {
+					++$ordnum;
+					redo CHECKNEXT;
+				}
 				undef $ordnum;
 				last CHECKNEXT;
 			}
