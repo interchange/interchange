@@ -51,7 +51,7 @@ Description-de: Was ist der Benutzername für die Adminstration dieses Katalogs ?
  Bitte einen Benutzernamen für die Verwaltung des Demokatalogs eingeben.
  Der Benutzername muß mindestens zwei Zeichen lang sein und nur Buchstaben,
  Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
-	
+
 Template: interchange-cat-foundation/password
 Type: password
 Default: pass
@@ -66,4 +66,3 @@ Description-de: Was ist das Passwort für die Adminstration dieses Katalogs ?
  ist die Voreinstellung.
  Das Passwort muß mindestens vier Zeichen lang sein und nur Buchstaben,
  Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
-
