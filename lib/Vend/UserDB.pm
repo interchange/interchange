@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.25 2003-09-10 17:01:33 mheins Exp $
+# $Id: UserDB.pm,v 2.26 2004-02-25 19:18:54 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 use vars qw!
 	$VERSION
@@ -306,7 +306,7 @@ sub new {
 
 	return $self if $options{no_open};
 
-	set_db($self) or die ::errmsg("user database %s does not exist.", $self->{DB_ID}) . "\n";
+	set_db($self) or die errmsg("user database %s does not exist.", $self->{DB_ID}) . "\n";
 
 	return $Vend::user_object = $self;
 }
@@ -382,6 +382,17 @@ sub create_db {
 	1;
 }
 
+sub log_either {
+	my $self = shift;
+	my $msg = shift;
+
+	if(! $self->{OPTIONS}{logfile}) {
+		return logError($msg);
+	}
+	$self->log($msg,@_);
+	return;
+}
+
 sub log {
 	my $self = shift;
 	my $time = $self->{OPTIONS}{unix_time} ?  time() :
@@ -400,12 +411,12 @@ sub check_acl {
 	my ($self,%options) = @_;
 
 	if(! defined $self->{PRESENT}{$self->{LOCATION}{ACL}}) {
-		$self->{ERROR} = ::errmsg('No ACL field present.');
+		$self->{ERROR} = errmsg('No ACL field present.');
 		return undef;
 	}
 
 	if(not $options{location}) {
-		$self->{ERROR} = ::errmsg('No location to check.');
+		$self->{ERROR} = errmsg('No location to check.');
 		return undef;
 	}
 
@@ -418,12 +429,12 @@ sub set_acl {
 	my ($self,%options) = @_;
 
 	if(!$self->{PRESENT}{$self->{LOCATION}{ACL}}) {
-		$self->{ERROR} = ::errmsg('No ACL field present.');
+		$self->{ERROR} = errmsg('No ACL field present.');
 		return undef;
 	}
 
 	if(!$options{location}) {
-		$self->{ERROR} = ::errmsg('No location to set.');
+		$self->{ERROR} = errmsg('No location to set.');
 		return undef;
 	}
 
@@ -592,10 +603,10 @@ sub get_values {
 	@fields = @{ $self->{DB_FIELDS} } unless @fields;
 
 	my $db = $self->{DB}
-		or die ::errmsg("No user database found.");
+		or die errmsg("No user database found.");
 
 	unless ( $db->record_exists($self->{USERNAME}) ) {
-		$self->{ERROR} = ::errmsg("username %s does not exist.", $self->{USERNAME});
+		$self->{ERROR} = errmsg("username %s does not exist.", $self->{USERNAME});
 		return undef;
 	}
 
@@ -652,7 +663,7 @@ sub get_values {
 		my $f = $self->{LOCATION}->{$area};
 		if ($self->{PRESENT}->{$f}) {
 			my $s = $self->get_hash($area);
-			die ::errmsg("Bad structure in %s: %s", $f, $@) if $@;
+			die errmsg("Bad structure in %s: %s", $f, $@) if $@;
 			$::Values->{$f} = join "\n", sort keys %$s;
 		}
 	}
@@ -672,7 +683,7 @@ sub set_values {
 	my $db = $self->{DB};
 
 	unless ( $db->record_exists($self->{USERNAME}) ) {
-		$self->{ERROR} = ::errmsg("username %s does not exist.", $self->{USERNAME});
+		$self->{ERROR} = errmsg("username %s does not exist.", $self->{USERNAME});
 		return undef;
 	}
 	my %scratch;
@@ -716,7 +727,7 @@ sub set_values {
 			push @bvals, $val;
 		}
 		else {
-			::logDebug( ::errmsg(
+			::logDebug( errmsg(
 							"cannot set unknown userdb field $_ to: %s",
 							$_,
 							$val,
@@ -731,9 +742,9 @@ sub set_values {
   };
 
 	if($@) {
-	  my $msg = ::errmsg("error saving values in userdb: %s", $@);
+	  my $msg = errmsg("error saving values in userdb: %s", $@);
 	  $self->{ERROR} = $msg;
-	  ::logError($msg);
+	  logError($msg);
 	  return undef;
 	}
 
@@ -864,8 +875,8 @@ sub delete_preferences {
 sub delete_nickname {
 	my($self, $name, @fields) = @_;
 
-	die ::errmsg("no fields?") unless @fields;
-	die ::errmsg("no name?") unless $name;
+	die errmsg("no fields?") unless @fields;
+	die errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -876,7 +887,7 @@ sub delete_nickname {
 
 	my $field_name = $self->{LOCATION}->{$name};
 	unless($self->{PRESENT}->{$field_name}) {
-		$self->{ERROR} = ::errmsg('%s field not present to set %s', $field_name, $name);
+		$self->{ERROR} = errmsg('%s field not present to set %s', $field_name, $name);
 		return undef;
 	}
 
@@ -890,8 +901,8 @@ sub delete_nickname {
 sub set_hash {
 	my($self, $name, @fields) = @_;
 
-	die ::errmsg("no fields?") unless @fields;
-	die ::errmsg("no name?") unless $name;
+	die errmsg("no fields?") unless @fields;
+	die errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -902,7 +913,7 @@ sub set_hash {
 	$::Values->{$nick_field} = $nick;
 	$CGI::values{$nick_field} = $nick if $self->{CGI};
 
-	die ::errmsg("no nickname?") unless $nick;
+	die errmsg("no nickname?") unless $nick;
 
 	$self->{$name}{$nick} = {} unless $self->{OPTIONS}{keep}
 							   and    defined $self->{$name}{$nick};
@@ -914,7 +925,7 @@ sub set_hash {
 
 	my $field_name = $self->{LOCATION}->{$name};
 	unless($self->{PRESENT}->{$field_name}) {
-		$self->{ERROR} = ::errmsg('%s field not present to set %s', $field_name, $name);
+		$self->{ERROR} = errmsg('%s field not present to set %s', $field_name, $name);
 		return undef;
 	}
 
@@ -932,21 +943,21 @@ sub get_hash {
 	my ($nick, $s);
 
 	eval {
-		die ::errmsg("no name?")					unless $name;
-		die ::errmsg("%s field not present to get %s", $field_name, $name) . "\n"
+		die errmsg("no name?")					unless $name;
+		die errmsg("%s field not present to get %s", $field_name, $name) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
 		$s = $self->{DB}->field( $self->{USERNAME}, $field_name);
 
 		if($s) {
 			$self->{$name} = $ready->reval($s);
-			die ::errmsg("Bad structure in %s: %s", $field_name, $@) if $@;
+			die errmsg("Bad structure in %s: %s", $field_name, $@) if $@;
 		}
 		else {
 			$self->{$name} = {};
 		}
 
-		die ::errmsg("eval failed?") . "\n"		unless ref $self->{$name};
+		die errmsg("eval failed?") . "\n"		unless ref $self->{$name};
 	};
 
 	if($@) {
@@ -963,7 +974,7 @@ sub get_hash {
 		$nick =~ s/[\0\s]+.*//;
 		$::Values->{$nick_field} = $nick;
 		$CGI::values{$nick_field} = $nick if $self->{CGI};
-		die ::errmsg("no nickname?") unless $nick;
+		die errmsg("no nickname?") unless $nick;
 	};
 
 	if($@) {
@@ -995,7 +1006,7 @@ sub login {
 
 	# Show this generic error message on login page to avoid
 	# helping would-be intruders
-	my $stock_error = ::errmsg("Invalid user name or password.");
+	my $stock_error = errmsg("Invalid user name or password.");
 	
 	eval {
 		unless($self) {
@@ -1017,29 +1028,29 @@ sub login {
 		# We specifically check for login attempts with group names to see if
 		# anyone is trying to exploit a former vulnerability in the demo catalog.
 		if ($self->{USERNAME} =~ /^:/) {
-			logError("Denied attempted login with group name '%s'",
-				$self->{USERNAME});
+			$self->log_either(errmsg("Denied attempted login with group name '%s'",
+				$self->{USERNAME}));
 			die $stock_error, "\n";
 		}
 
 		# Username must be long enough
 		if (length($self->{USERNAME}) < $self->{USERMINLEN}) {
-			logError("Denied attempted login for user name '%s'; must have at least %s characters",
-				$self->{USERNAME}, $self->{USERMINLEN});
+			$self->log_either(errmsg("Denied attempted login for user name '%s'; must have at least %s characters",
+				$self->{USERNAME}, $self->{USERMINLEN}));
 			die $stock_error, "\n";
 		}
 
 		# Username must contain only valid characters
 		if ($self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$}) {
-			logError("Denied attempted login for user name '%s' with illegal characters",
-				$self->{USERNAME});
+			$self->log_either(errmsg("Denied attempted login for user name '%s' with illegal characters",
+				$self->{USERNAME}));
 			die $stock_error, "\n";
 		}
 
 		# Fail if password is too short
 		if (length($self->{PASSWORD}) < $self->{PASSMINLEN}) {
-			logError("Denied attempted login with user name '%s' and password less than %s characters",
-				$self->{USERNAME}, $self->{PASSMINLEN});
+			$self->log_either(errmsg("Denied attempted login with user name '%s' and password less than %s characters",
+				$self->{USERNAME}, $self->{PASSMINLEN}));
 			die $stock_error, "\n";
 		}
 
@@ -1051,7 +1062,7 @@ sub login {
 				my ($adminuser, $adminpass) = split /[\s:]+/, $pwinfo;
 				last ADMINUSER unless $adminuser eq $self->{USERNAME};
 				unless ($adminpass) {
-					logError("Refusing to use AdminUser variable with user '%s' and empty password", $adminuser);
+					$self->log_either(errmsg("Refusing to use AdminUser variable with user '%s' and empty password", $adminuser));
 					last ADMINUSER;
 				}
 				my $test;
@@ -1067,9 +1078,9 @@ sub login {
 				if ($test eq $adminpass) {
 					$user_data = {};
 					$Vend::admin = $Vend::superuser = 1;
-					logError("Successful superuser login by AdminUser '%s'", $adminuser);
+					$self->log_either( errmsg("Successful superuser login by AdminUser '%s'", $adminuser));
 				} else {
-					logError("Password given with user name '%s' didn't match AdminUser password", $adminuser);
+					$self->log_either(errmsg("Password given with user name '%s' didn't match AdminUser password", $adminuser));
 				}
 			}
 		}
@@ -1085,17 +1096,17 @@ sub login {
 #::logDebug("indirect login query: $q");
 			my $ary = $udb->query($q)
 				or do {
-					my $msg = ::errmsg( "Database access error for query: %s", $q);
+					my $msg = errmsg( "Database access error for query: %s", $q);
 					die "$msg\n";
 				};
 			@$ary == 1
 				or do {
-					logError(
+					$self->log_either(errmsg(
 						"Denied attempted login with nonexistent (indirect from %s) user name %s",
 						$foreign,
 						$uname,
 						$self->{USERNAME},
-					);
+					));
 					die $stock_error, "\n";
 				};
 			$self->{USERNAME} = $ary->[0][0];
@@ -1104,18 +1115,18 @@ sub login {
 		# If not superuser, an entry must exist in access database
 		unless ($Vend::superuser) {
 			unless ($udb->record_exists($self->{USERNAME})) {
-				logError("Denied attempted login with nonexistent user name '%s'",
-					$self->{USERNAME});
+				$self->log_either(errmsg("Denied attempted login with nonexistent user name '%s'",
+					$self->{USERNAME}));
 				die $stock_error, "\n";
 			}
 			unless ($user_data = $udb->row_hash($self->{USERNAME})) {
-				logError("Login denied after failed fetch of user data for user '%s'",
-					$self->{USERNAME});
+				$self->log_either(errmsg("Login denied after failed fetch of user data for user '%s'",
+					$self->{USERNAME}));
 				die $stock_error, "\n";
 			}
 			my $db_pass = $user_data->{ $self->{LOCATION}{PASSWORD} };
 			unless ($db_pass) {
-				logError("Refusing to use blank password from '%s' database for user '%s'", $self->{DB_ID}, $self->{USERNAME});
+				$self->log_either(errmsg("Refusing to use blank password from '%s' database for user '%s'", $self->{DB_ID}, $self->{USERNAME}));
 				die $stock_error, "\n";
 			}
 			$pw = $self->{PASSWORD};
@@ -1128,11 +1139,11 @@ sub login {
 				}
 			}
 			unless ($self->{PASSWORD} eq $db_pass) {
-				logError("Denied attempted login by user '%s' with incorrect password",
-					$self->{USERNAME});
+				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
+					$self->{USERNAME}));
 				die $stock_error, "\n";
 			}
-			logError("Successful login by user '%s'", $self->{USERNAME});
+			$self->log_either(errmsg("Successful login by user '%s'", $self->{USERNAME}));
 		}
 
 		if($self->{PRESENT}->{ $self->{LOCATION}{EXPIRATION} } ) {
@@ -1144,10 +1155,10 @@ sub login {
 						$self->{USERNAME},
 						$self->{LOCATION}{EXPIRATION},
 						);
-			die ::errmsg("Expiration date not set.") . "\n"
+			die errmsg("Expiration date not set.") . "\n"
 				if ! $exp and $self->{EMPTY_EXPIRE_FATAL};
 			if($exp and $exp < $cmp) {
-				die ::errmsg("Expired %s.", $exp) . "\n";
+				die errmsg("Expired %s.", $exp) . "\n";
 			}
 		}
 
@@ -1178,8 +1189,8 @@ sub login {
 									);
 			};
 			if ($@) {
-				my $msg = ::errmsg("Failed to record timestamp in UserDB: %s", $@);
-				::logError($msg);
+				my $msg = errmsg("Failed to record timestamp in UserDB: %s", $@);
+				logError($msg);
 				die $msg, "\n";
 			}
 		}
@@ -1195,7 +1206,7 @@ sub login {
 			$self->{ERROR} = $@;
 		}
 		else {
-			::logError( "Vend::UserDB error: %s\n", $@ );
+			logError( "Vend::UserDB error: %s\n", $@ );
 		}
 		return undef;
 	}
@@ -1256,7 +1267,7 @@ sub logout {
 	delete $CGI::values{mv_username};
 	delete $::Values->{mv_username};
 	$self->log('logout') if $opt->{log};
-	$self->{MESSAGE} = ::errmsg('Logged out.');
+	$self->{MESSAGE} = errmsg('Logged out.');
 	if ($opt->{clear_cookie}) {
 		my @cookies = split /[\s,\0]+/, $opt->{clear_cookie};
 		my $exp = time() + $Vend::Cfg->{SaveExpire};
@@ -1304,9 +1315,9 @@ sub change_pass {
 					undef $self;
 				}
 			} else {
-				::logError("Unprivileged user '%s' attempted to change password of user '%s'",
+				errmsg("Unprivileged user '%s' attempted to change password of user '%s'",
 					$Vend::username, $self->{USERNAME}) if $options{log};
-				die ::errmsg("You are not allowed to change another user's password.") . "\n";
+				die errmsg("You are not allowed to change another user's password.") . "\n";
 			}
 		}
 
@@ -1314,9 +1325,9 @@ sub change_pass {
 			$self = new Vend::UserDB %options;
 		}
 
-		die ::errmsg("Bad object.") unless defined $self;
+		die errmsg("Bad object.") unless defined $self;
 
-		die ::errmsg("'%s' not a user.", $self->{USERNAME}) . "\n"
+		die errmsg("'%s' not a user.", $self->{USERNAME}) . "\n"
 			unless $self->{DB}->record_exists($self->{USERNAME});
 
 		unless ($super and $self->{USERNAME} ne $Vend::username) {
@@ -1329,14 +1340,14 @@ sub change_pass {
 					$self->{OLDPASS} = crypt($self->{OLDPASS}, $db_pass);
 				}
 			}
-			die ::errmsg("Must have old password.") . "\n"
+			die errmsg("Must have old password.") . "\n"
 				if $self->{OLDPASS} ne $db_pass;
 		}
 
-		die ::errmsg("Must enter at least %s characters for password.",
+		die errmsg("Must enter at least %s characters for password.",
 			$self->{PASSMINLEN}) . "\n"
 			if length($self->{PASSWORD}) < $self->{PASSMINLEN}; 
-		die ::errmsg("Password and check value don't match.") . "\n"
+		die errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
 		if($self->{CRYPT}) {
@@ -1356,8 +1367,8 @@ sub change_pass {
 						$self->{LOCATION}{PASSWORD},
 						$self->{PASSWORD}
 						);
-		die ::errmsg("Database access error.") . "\n" unless defined $pass;
-		$self->log(::errmsg('change password')) if $options{'log'};
+		die errmsg("Database access error.") . "\n" unless defined $pass;
+		$self->log(errmsg('change password')) if $options{'log'};
 	};
 
 	scrub();
@@ -1367,7 +1378,7 @@ sub change_pass {
 	if($@) {
 		if(defined $self) {
 			$self->{ERROR} = $@;
-			$self->log(::errmsg('change password failed')) if $options{'log'};
+			$self->log(errmsg('change password failed')) if $options{'log'};
 		}
 		else {
 			logError( "Vend::UserDB error: %s", $@ );
@@ -1432,17 +1443,17 @@ sub new_account {
 
 		delete $Vend::Session->{auto_created_user};
 
-		die ::errmsg("Bad object.") . "\n" unless defined $self;
+		die errmsg("Bad object.") . "\n" unless defined $self;
 
-		die ::errmsg("Already logged in. Log out first.") . "\n"
+		die errmsg("Already logged in. Log out first.") . "\n"
 			if $Vend::Session->{logged_in} and ! $options{no_login};
-		die ::errmsg("Sorry, reserved user name.") . "\n"
+		die errmsg("Sorry, reserved user name.") . "\n"
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
-		die ::errmsg("Must enter at least %s characters for password.",
+		die errmsg("Must enter at least %s characters for password.",
 			$self->{PASSMINLEN}) . "\n"
 			if length($self->{PASSWORD}) < $self->{PASSMINLEN};
-		die ::errmsg("Password and check value don't match.") . "\n"
+		die errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
 		if ($self->{OPTIONS}{ignore_case}) {
@@ -1470,10 +1481,10 @@ sub new_account {
 			$self->{USERNAME} = lc $self->{USERNAME}
 				if $self->{OPTIONS}{ignore_case};
 		}
-		die ::errmsg("Can't have '%s' as username; it contains illegal characters.",
+		die errmsg("Can't have '%s' as username; it contains illegal characters.",
 			$self->{USERNAME}) . "\n"
 			if $self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$};
-		die ::errmsg("Must have at least %s characters in username.",
+		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
 			if length($self->{USERNAME}) < $self->{USERMINLEN};
 
@@ -1486,18 +1497,18 @@ sub new_account {
 			my $q = "select username from $self->{DB_ID} where $foreign = $uname";
 			my $ary = $udb->query($q)
 				or do {
-					my $msg = ::errmsg( "Database access error for query: %s", $q);
+					my $msg = errmsg( "Database access error for query: %s", $q);
 					die "$msg\n";
 				};
 			@$ary == 0
 				or do {
-					my $msg = ::errmsg( "Username already exists (indirect).");
+					my $msg = errmsg( "Username already exists (indirect).");
 					die "$msg\n";
 				};
 		}
 
 		if ($udb->record_exists($self->{USERNAME})) {
-			die ::errmsg("Username already exists.") . "\n";
+			die errmsg("Username already exists.") . "\n";
 		}
 
 		my $pass = $udb->set_field(
@@ -1505,7 +1516,7 @@ sub new_account {
 						$self->{LOCATION}{PASSWORD},
 						$pw,
 						);
-		die ::errmsg("Database access error.") . "\n" unless defined $pass;
+		die errmsg("Database access error.") . "\n" unless defined $pass;
 
 		if($foreign) {
 			 $udb->set_field(
@@ -1513,7 +1524,7 @@ sub new_account {
 						$foreign,
 						$self->{PASSED_USERNAME},
 						)
-				or die ::errmsg("Database access error.");
+				or die errmsg("Database access error.");
 		}
 
 		if($options{no_login}) {
@@ -1526,7 +1537,7 @@ sub new_account {
 			$self->log('new account') if $options{'log'};
 			$self->set_values() unless $self->{OPTIONS}{no_set};
 			$self->login()
-				or die ::errmsg(
+				or die errmsg(
 							"Cannot log in after new account creation: %s",
 							$self->{ERROR},
 						);
@@ -1588,22 +1599,22 @@ sub get_cart {
 	my $cart = [];
 
 	eval {
-		die ::errmsg("no from cart name?")				unless $from;
-		die ::errmsg("%s field not present to get %s", $field_name, $from) . "\n"
+		die errmsg("no from cart name?")				unless $from;
+		die errmsg("%s field not present to get %s", $field_name, $from) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
 		my $s = $self->{DB}->field( $self->{USERNAME}, $field_name);
 
-		die ::errmsg("no saved carts.") . "\n" unless $s;
+		die errmsg("no saved carts.") . "\n" unless $s;
 
 		my @carts = split /\0/, $from;
 		my $d = $ready->reval($s);
 #::logDebug ("saved carts=" . ::uneval_it($d));
 
-		die ::errmsg("eval failed?")				unless ref $d;
+		die errmsg("eval failed?")				unless ref $d;
 
 		for(@carts) {
-			die ::errmsg("source cart '%s' does not exist.", $from) . "\n" unless ref $d->{$_};
+			die errmsg("source cart '%s' does not exist.", $from) . "\n" unless ref $d->{$_};
 			push @$cart, @{$d->{$_}};
 		}
 
@@ -1642,15 +1653,15 @@ sub set_cart {
 	my ($cart,$s,$d);
 
 	eval {
-		die ::errmsg("no to cart name?") . "\n"					unless $to;
-		die ::errmsg('%s field not present to set %s', $field_name, $from) . "\n"
+		die errmsg("no to cart name?") . "\n"					unless $to;
+		die errmsg('%s field not present to set %s', $field_name, $from) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
 		$d = $ready->reval( $self->{DB}->field( $self->{USERNAME}, $field_name) );
 
 		$d = {} unless $d;
 
-		die ::errmsg("eval failed?")				unless ref $d;
+		die errmsg("eval failed?")				unless ref $d;
 
 		if($opt->{merge}) {
 			$d->{$to} = [] unless ref $d->{$to};
@@ -1701,7 +1712,7 @@ sub userdb {
 		undef $Vend::admin;
 		$user = $module->new(%options);
 		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
+			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
 		if ($status = $user->login(%options) ) {
@@ -1719,7 +1730,7 @@ sub userdb {
 	elsif($function eq 'new_account') {
 		$user = $module->new(%options);
 		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
+			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
 		$status = $user->new_account(%options);
@@ -1732,19 +1743,19 @@ sub userdb {
 	elsif($function eq 'logout') {
 		$user = $module->new(%options)
 			or do {
-				$Vend::Session->{failure} = ::errmsg("Unable to create user object.");
+				$Vend::Session->{failure} = errmsg("Unable to create user object.");
 				return undef;
 			};
 		$user->logout();
 	}
 	elsif (! $Vend::Session->{logged_in}) {
-		$Vend::Session->{failure} = ::errmsg("Not logged in.");
+		$Vend::Session->{failure} = errmsg("Not logged in.");
 		return undef;
 	}
 	elsif($function eq 'save') {
 		$user = $module->new(%options);
 		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
+			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
 		$status = $user->set_values();
@@ -1752,7 +1763,7 @@ sub userdb {
 	elsif($function eq 'load') {
 		$user = $module->new(%options);
 		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
+			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
 		$status = $user->get_values();
@@ -1760,7 +1771,7 @@ sub userdb {
 	else {
 		$user = $module->new(%options);
 		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
+			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
 		eval {
