@@ -569,7 +569,7 @@ EOF
 		else {
 			$key = '';
 			$opt->{mv_data_auto_number} = 1;
-			$key_message = '(new key will be assigned if left blank)';
+			$key_message = errmsg('(new key will be assigned if left blank)');
 		}
 	}
 
