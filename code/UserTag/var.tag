@@ -1,4 +1,4 @@
-# [var name=variablename global=1|2]
+# [var name=variablename global=1|2 filter=somefilter]
 #
 # This tag allows access to variables within other variables (or
 # anywhere else, but in regular pages the direct non-tag notations
@@ -13,17 +13,22 @@ UserTag var Order name global include
 UserTag var Routine <<EOR
 sub {
     my ($key, $global) = @_;
-    $global and $global != 2 and return $Global::Variable->{$key};
-	return $Vend::Cfg->{Member}{$key}
-		if	$Vend::Session->{logged_in}
-			&& defined $Vend::Cfg->{Member}{$key};
-
-	if($::Pragma->{dynamic_variables}) {
-		return Vend::Interpolate::dynamic_var($key) || $Global::Variable->{$key}
-			if $global;
-		return Vend::Interpolate::dynamic_var($key);
+	my $value;
+	if ($global and $global != 2) {
+		$value = $Global::Variable->{$key};
 	}
-	return $::Variable->{$key} || $Global::Variable->{$key} if $global;
-	return $::Variable->{$key};
+	elsif ($Vend::Session->{logged_in} and defined $Vend::Cfg->{Member}{$key}) {
+		$value = $Vend::Cfg->{Member}{$key};
+	}
+	else {
+		$value = (
+			$::Pragma->{dynamic_variables}
+			? Vend::Interpolate::dynamic_var($key)
+			: $::Variable->{$key}
+		);
+		$value ||= $Global::Variable->{$key} if $global;
+	}
+	$value = filter_value($opt->{filter}, $value, $key) if $opt->{filter};
+	return $value;
 }
 EOR
