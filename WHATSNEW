@@ -742,6 +742,8 @@ Foundation
   to hunt down. We can't unset it in catalog_before.cfg because it will
   break just about every catalog out there.
 
+* Add handling to mail receipt if applicable.
+
 Usertags
 --------
 
