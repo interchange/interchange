@@ -3,8 +3,7 @@ interchange (4.9.8.20030803-1) unstable; urgency=low
   * fixed hang of build process caused by non-existant user interchange
     (Closes: #202063, thanks to Adrian Bunk <bunk@fs.tum.de> for his
     bugreport and help to trace down the problem) 
-  * location of manual pages for module descriptions fixed, exclude
-    worthless Vend::Data manual page from installation
+  * location of manual pages for module descriptions fixed
   * marked update_locales job as conffile
   * fixed bashisms in interchange-cat-foundation's config script
   
