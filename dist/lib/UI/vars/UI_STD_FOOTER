@@ -62,5 +62,6 @@ Variable UI_STD_FOOTER  <<EOV
 	$Scratch->{mv_charset} = delete $Scratch->{mv_charset_save}
 		if $Scratch->{mv_charset_save};
 	delete $Scratch->{ui_checklist};
+	''
 [/calc]
 EOV
