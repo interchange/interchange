@@ -91,7 +91,8 @@ Admin UI
 
 * Modifying Promotions using the Page Editor now references the correct
   Promotions list (from "Merchandising" or "Item Editor" meta data) instead
-  a static list specified in each component.
+  of a static list specified in each component.  It is now possible to add a 
+  promotion without having to modify component source code.
 
 Payment
 -------
