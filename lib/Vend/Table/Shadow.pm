@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.4 2002-07-09 17:42:12 mheins Exp $
+# $Id: Shadow.pm,v 1.5 2002-07-13 12:44:36 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 # TODO
 #
@@ -29,8 +29,8 @@ $VERSION = substr(q$Revision: 1.4 $, 10);
 
 use strict;
 
-use vars qw($CONFIG $TABLE $KEY $NAME $TYPE $OBJ);
-($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $OBJ) = (0 .. 5);
+use vars qw($CONFIG $TABLE $KEY $NAME $TYPE $OBJ $PENDING);
+($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $OBJ, $PENDING) = (0 .. 6);
 
 sub config {
 	my ($s, $key, $value) = @_;
@@ -40,8 +40,17 @@ sub config {
 }
 
 sub import_db {
-	my($s) = @_;
-	my $db = Vend::Data::import_database($s->[0], 1);
+	my ($s) = @_;
+	my ($db);
+
+	if ($s->[$PENDING]) {
+		die "Recursive call to Vend:Table::Shadow::import_db detected (database $s->[0]->{name})\n";
+	}
+	
+	$s->[$PENDING] = 1;
+	$db = Vend::Data::import_database($s->[0], 1);
+	$s->[$PENDING] = 0;
+
 	return undef if ! $db;
 	$Vend::Database{$s->[0]{name}} = $db;
 	Vend::Data::update_productbase($s->[0]{name});
@@ -69,7 +78,7 @@ sub new {
 sub open_table {
 	my ($class, $config, $tablename) = @_;
 	my $obj;
-	
+#::logDebug ("CLASS: $class CONFIG: " . ::Vend::Util::uneval($config));	
 	no strict 'refs';
 	$obj = &{"Vend::Table::$config->{OrigClass}::open_table"}("Vend::Table::$config->{OrigClass}",$config,$tablename);
 	my $s = [$config, $tablename, undef, undef, undef, $obj];
@@ -80,6 +89,7 @@ sub open_table {
 
 sub close_table {
 	my $s = shift;
+	return 1 unless defined $s->[$OBJ];
 	$s->[$OBJ]->close_table();
 }
 
@@ -87,6 +97,97 @@ sub columns {
 	my ($s) = shift;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	return $s->[$OBJ]->columns();
+}
+
+sub test_column {
+	my ($s, $column) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->test_column($column);
+}
+
+sub numeric {
+	my ($s, $column) = @_;
+	my ($map, $locale);
+
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	$locale = $::Scratch->{mv_locale} || 'default';
+	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+		$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+	}
+	
+	return $s->numeric($column);
+}
+
+sub column_index {
+	my ($s, $column) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->column_index($column);
+}
+
+sub column_exists {
+    my ($s, $column) = @_;
+	my ($locale);
+	
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	$locale = $::Scratch->{mv_locale} || 'default';
+	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+		$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+	}
+	
+	return defined($s->[$CONFIG]{COLUMN_INDEX}{lc $column});
+}
+
+sub set_row {
+	my ($s, @fields) = @_;
+
+	if ($s->[$PENDING]) {
+		no strict 'refs';
+		return &{"Vend::Table::$s->[0]->{OrigClass}::set_row"}($s, @fields);
+	}
+		
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	$s->[$OBJ]->set_row(@fields);
+}
+
+sub row {
+	my ($s, $key) = @_;
+	my ($column, $locale);
+	
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	$locale = $::Scratch->{mv_locale} || 'default';
+	
+	my @row = $s->[$OBJ]->row($key);
+	if (@row) {
+		my @cols = $s->columns();
+		for (my $i = 0; $i < @cols; $i++) {
+			$column = $cols[$i];
+			if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+				$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+				$row[$i] = $s->field($key, $column);
+			}
+		}
+	}
+	return @row;
+}
+
+sub row_hash {
+	my ($s, $key) = @_;
+	my ($ref, $column, $locale);
+	
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	$locale = $::Scratch->{mv_locale} || 'default';
+	$ref = $s->[$OBJ]->row_hash($key);
+	if ($ref) {
+		my @cols = $s->columns();
+		for (my $i = 0; $i < @cols; $i++) {
+			$column = $cols[$i];
+			if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+				$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+				$ref->{$cols[$i]} = $s->field($key, $column);
+			}
+		}
+	}
+	return $ref;
 }
 
 sub field {
@@ -104,6 +205,10 @@ sub field {
 sub ref {
 	return $_[0] if defined $_[0]->[$OBJ];
 	return $_[0]->import_db();
+}
+
+sub test_record {
+	1;
 }
 
 sub record_exists {
