@@ -1,0 +1,109 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=2
+
+ifndef PERL
+	PERL = /usr/bin/perl
+endif
+TMP =`pwd`/debian/tmp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+
+# Add here commands to compile the package.
+	$(PERL) Makefile.PL force=1 \
+		MINIVEND_USER=interchange \
+		PREFIX=/usr/lib/interchange
+	$(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp install-stamp
+
+	# Add here commands to clean up after the build process.
+	-$(MAKE) clean
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+# Add here commands to install the package into debian/tmp.
+	$(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man8
+# Sample configuration file not needed (code in interchange.PL
+# to determine configuration file location will stop to work too)
+	rm $(TMP)/usr/lib/interchange/interchange.cfg.dist
+
+	mkdir -p $(TMP)/usr/sbin
+	cd $(TMP)/usr/sbin && ln -s ../lib/interchange/bin/interchange interchange
+# Drop scripts into bin directory
+	mkdir -p $(TMP)/usr/bin
+	mv $(TMP)/usr/lib/interchange/bin/makecat $(TMP)/usr/bin
+# Setup configuration directory
+	mkdir -p $(TMP)/etc/interchange/
+	cp debian/interchange.cfg debian/catalogs.cfg $(TMP)/etc/interchange    
+# build Interchange control program(s)
+	mkdir -p $(TMP)/usr/lib/cgi-bin
+	$(PERL) scripts/compile_link \
+		--socket=/var/run/interchange/interchange.sock \
+		--port=7786 \
+		--host=127.0.0.1 \
+		--source=dist/src \
+		--build=$(TMP)/usr/lib/cgi-bin
+	cd $(TMP)/usr/lib/cgi-bin; rm compile.pl config* mod_perl_tlink.pl mvctl.c syscfg* testcgi tlink.* vlink.*
+# Add link sources
+	mkdir -p $(TMP)/usr/lib/interchange/src
+	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
+# UI images
+	mkdir -p $(TMP)/var/www/ui/admin
+	cp dist/construct/images/poweredby.gif $(TMP)/var/www/ui
+	cp dist/construct/images/admin/bg.gif $(TMP)/var/www/ui/admin
+	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
+	mkdir $(TMP)/var/www/ui/navigation
+	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
+# Build documentation
+	pod2html pod/mvdocs.pod > mvdocs.html
+
+# install logrotate configuration file
+	install -m 0755 -d $(TMP)/etc/logrotate.d/
+	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
+
+	dh_movefiles
+	touch install-stamp
+
+# Build architecture-independent files here.
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdebconf
+	dh_installdocs README QuickStart WHATSNEW
+# install init.d script
+	dh_installinit
+# install cron script
+	dh_installcron
+#	dh_installmanpages -v -pinterchange-doc
+	dh_installchangelogs 
+	dh_compress
+	dh_fixperms
+	# You may want to make some executables suid here.
+	dh_installdeb
+	dh_perl
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

@@ -1,0 +1,8 @@
+etc/init.d
+usr/bin
+usr/lib/interchange/etc
+usr/sbin
+usr/share/man/man1
+var/log/interchange
+var/run/interchange
+var/run/interchange/etc

@@ -1,0 +1,97 @@
+#! /bin/sh
+#
+# interchange.init - Interchange start-stop script
+#
+# Copyright (C) 2000 Stefan Hornburg <racke@linuxia.de>
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/interchange
+NAME=interchange
+DESC="Interchange Server"
+USERNAME=interchange
+
+# modes that Interchange uses 
+# possible values are
+# --unix            Unix mode only (default)
+# --inetmode        Internet mode only
+# --unix --inetmode Unix and Internet mode
+: ${MODE="--unix"}
+
+test -f $DAEMON || exit 0
+
+function check_mode () {
+	 echo -n "Check which mode(s) the Interchange Server should use: "
+	 db_get interchange/mode
+	 echo $RET
+	 case "$RET" in
+		 "unix mode") : MODE=--unix;;
+		 "internet mode") MODE=--inetmode;;
+		 "both") MODE="";;
+	 esac
+	 db_stop
+}
+
+set -e
+
+case "$1" in
+  start)
+	 # Source debconf library.
+	 . /usr/share/debconf/confmodule
+
+	check_mode
+
+	echo -n "Starting $DESC: "
+	start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
+		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
+        -f /etc/interchange/interchange.cfg \
+        --confdir /var/run/interchange
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+
+	start-stop-daemon --stop --oknodo --pidfile /var/run/interchange/$NAME.pid
+	echo "$NAME."
+	;;
+  #reload)
+	#
+	#	If the daemon can reload its config files on the fly
+	#	for example by sending it SIGHUP, do it here.
+	#
+	#	If the daemon responds to changes in its config file
+	#	directly anyway, make this a do-nothing entry.
+	#
+	# echo "Reloading $DESC configuration files."
+	# start-stop-daemon --stop --signal 1 --quiet --pidfile \
+	#	/var/run/$NAME.pid --exec $DAEMON
+  #;;
+  restart|force-reload)
+	#
+	#	If the "reload" option is implemented, move the "force-reload"
+	#	option to the "reload" entry above. If not, "force-reload" is
+	#	just the same as "restart".
+	#
+
+	# Source debconf library.
+	. /usr/share/debconf/confmodule
+
+	echo -n "Restarting $DESC: "
+	start-stop-daemon --stop --pidfile /var/run/interchange/$NAME.pid
+	echo "$NAME."
+    sleep 1
+
+	check_mode
+
+    start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
+		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
+        -f /etc/interchange/interchange.cfg \
+        --confdir /var/run/interchange
+    ;;
+  *)
+	N=/etc/init.d/$NAME
+	# echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

@@ -1,0 +1,7 @@
+Template: interchange/mode
+Type: select
+Choices: unix mode, internet mode, both
+Default: unix mode
+Description: Start Interchange in Unix mode, Internet mode or both ?
+ Unix mode is is the most secure way to run Interchange, for there is 
+ no way for systems on the internet to interact with the Interchange server.
