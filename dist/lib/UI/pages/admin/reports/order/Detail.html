@@ -42,11 +42,29 @@
 </TD>
 </TR>
 
-[if !session arg]
-<!-- default to current: [data base=session field=arg value="[tag time]%Y%m%d[/tag]"] -->
-[/if]
+<!-- will default to current if not set:
+		[seti today][tag time]%Y%m[/tag][/seti]
+	-->
 
 [calc]
+	if($Session->{arg}) {
+		$Scratch->{date_limit} = "WHERE order_date like '$Session->{arg}%'";
+	}
+	elsif ($CGI->{ui_begin_date}) {
+		for (qw/ ui_begin_date ui_end_date /) {
+			$CGI->{$_} = $Tag->filter( {
+									op => 'date_change',
+									body => $CGI->{$_}
+								});
+		}
+		$Scratch->{date_limit} = <<EOF
+WHERE order_date > '$CGI->{ui_begin_date}'
+AND   order_date < '$CGI->{ui_end_date}Z'
+EOF
+	}
+	else {
+		$Scratch->{date_limit} = "WHERE order_date like '$Scratch->{today}%'";
+	}
 	$Scratch->{synd_limit} = '';
 	return unless $CGI->{affiliate};
 	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
@@ -59,7 +77,7 @@
 	sql="
 	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date
 		from  transactions
-		where   order_date like '[data session arg]%' [scratch synd_limit]
+		[scratch date_limit] [scratch synd_limit]
 		order by order_number
 	"][/query]
 

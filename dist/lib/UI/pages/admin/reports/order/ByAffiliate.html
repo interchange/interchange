@@ -34,9 +34,28 @@
 </TR>
 
 [calc]
+	if($Session->{arg}) {
+		$Scratch->{date_limit} = "WHERE order_date like '$Session->{arg}%'";
+	}
+	elsif ($CGI->{ui_begin_date}) {
+		for (qw/ ui_begin_date ui_end_date /) {
+			$CGI->{$_} = $Tag->filter( {
+									op => 'date_change',
+									body => $CGI->{$_}
+								});
+		}
+		$Scratch->{date_limit} = <<EOF
+WHERE order_date > '$CGI->{ui_begin_date}'
+AND   order_date < '$CGI->{ui_end_date}Z'
+EOF
+	}
+	else {
+		$Scratch->{date_limit} = "";
+	}
+
 	$Scratch->{synd_limit} = '';
 	return unless $CGI->{affiliate};
-	$Scratch->{synd_limit} = "WHERE affiliate = '$CGI->{affiliate}'";
+	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
 	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
 		if $CGI->{campaign};
 	return;
@@ -46,7 +65,7 @@
 	hashref=main
 	sql="
 		select affiliate, campaign, total_cost, order_date
-			from  transactions [scratch synd_limit]
+			from  transactions [scratch date_limit] [scratch synd_limit]
 			order by affiliate, campaign, order_date
 	"][/query]
 

@@ -14,22 +14,42 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" colspan=2>
 
-
-[calc] $Config->{NoSearch} = ''; [/calc]
-
-	[loop list="[list-glob spec='pages/__UI_BASE__/reports/* pages/__UI_BASE__/user/[data session mm_username]/reports/*']"]
-	[calc]
-		$lab = q{[loop-code]}; 
-		$lab =~ s:\.html.*::;
-		$opt = $lab;
-		$opt =~ s:^pages/::;
-		$lab =~ s:.*/::;
-		$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
-		my $out = $Tag->page($opt);
-		$out .= $lab;
-		$out .= '</A><BR>'
-	[/calc]
-	[/loop]
+<BLOCKQUOTE>
+<A HREF="[area __UI_BASE__/reports/order/ByAffiliate]">Overall by month</A><BR>
+<A HREF="[area __UI_BASE__/reports/order/Monthly]">By day for this month</A><BR>
+<A HREF="[area __UI_BASE__/reports/order/Detail]">Individual orders this month</A><BR>
+</BLOCKQUOTE>
+<HR>
+<FORM ACTION="[process]">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/order/ByAffiliate">
+<TABLE>
+<TR>
+<TD>
+<BLOCKQUOTE>Beginning:<BR>
+	[widget type=date name=ui_begin_date]
+</BLOCKQUOTE>
+</TD>
+<TD>
+<BLOCKQUOTE>Ending:<BR>
+	[widget type=date name=ui_end_date]
+</BLOCKQUOTE>
+</TD>
+<TR>
+<TD COLSPAN=2>
+	[set List individual orders]
+	mv_nextpage=__UI_BASE__/reports/order/Detail
+	[/set]
+	[set By day]
+	mv_nextpage=__UI_BASE__/reports/order/Monthly
+	[/set]
+	<BLOCKQUOTE>
+	<INPUT TYPE=submit VALUE="By month">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="By day">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="List individual orders">
+	</BLOCKQUOTE>
+</TD>
+</TR>
+</TABLE>
+</FORM>
 </td>
 </tr>
 

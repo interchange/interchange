@@ -122,11 +122,16 @@ mv_nextpage=__UI_BASE__/spread
 
 [if cgi ui_flex_key]
 [seti keypos][cgi ui_flex_key][/seti]
-[elsif type=data term="__UI_META_TABLE__::outboard::[cgi mv_data_table]"]
-[seti keypos][data table=__UI_META_TABLE__ col=outboard key="[cgi mv_data_table]"][/seti]
-[/elsif]
 [else]
-[set keypos]0[/set]
+[perl tables="[cgi mv_data_table]"]
+	my $ref = $Db{$CGI->{mv_data_table}};
+	if (! $ref) {
+		$Scratch->{keypos} = 0;
+		return;
+	}
+	$Scratch->{keypos} = $ref->config('KEY_INDEX');
+	return;
+[/perl]
 [/else]
 [/if]
 
@@ -144,6 +149,7 @@ mv_nextpage=__UI_BASE__/spread
 				col=field
 				key="[cgi mv_data_table]"
 			]};
+
 	return;
 [/calc]
 [if cgi ui_description_field]
@@ -178,8 +184,8 @@ EOString
 			st=db
 			ra=yes
 			md=1
-			tf=0
-			rf=0
+			tf=[scratch keypos]
+			rf=[scratch keypos]
 	"]
 <select name="item_id" size=10>
 	[list]<option value="[loop-code]">[loop-code]
@@ -199,7 +205,6 @@ EOString
 </table>
 
 </form>
-
 
 <!-- ----- END REAL STUFF ----- -->
 
