@@ -20,7 +20,6 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
 [calc]
-	$ui_img = q{@_UI_IMG_@};
 	unless ($CGI->{ui_return_to}) {
 		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$Scratch->{arg}";
 	}
@@ -72,7 +71,7 @@ Display an extra Ok/Cancel button pair if there are more than
 </TR>
 
 <tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="${ui_img}admin/bg.gif" width=1 height=3 alt=x></td>
+<td colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=1 height=3 alt=x></td>
 </tr>
 
 EOF
@@ -265,7 +264,7 @@ EOF
         #}
 		$Document->write(<<EOF) if $break{$col};
 <TR BGCOLOR="__UI_T_ROW_ODD__">
-	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="${ui_img}admin/bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
+	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 		$display =~ s/\~META\~/$meta/g;
