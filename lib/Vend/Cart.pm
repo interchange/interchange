@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.7 2002-07-18 19:08:10 mheins Exp $
+# $Id: Cart.pm,v 2.8 2002-07-28 03:57:18 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use strict;
 
@@ -91,6 +91,7 @@ sub STORE {
 	else {
 		$Vend::CurrentCart = $cart;
 	}
+	$::Levies = $Vend::Session->{levies}{$Vend::CurrentCart} ||= [];
 	return $::Carts->{$Vend::CurrentCart};
 }
 
