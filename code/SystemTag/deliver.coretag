@@ -5,10 +5,13 @@ UserTag deliver Routine <<EOR
 sub {
 	my ($type, $opt, $body) = @_;
 	my $out;
+	use vars qw/$Tag/;
+	$Tag ||= new Vend::Tags;
 	if($opt->{file}) {
 		$type ||= Vend::Util::mime_type($opt->{file});
 		return undef unless -f $opt->{file};
-		$out = \( readfile($opt->{file}) );
+		my $tmp = readfile($opt->{file});
+		$out = \$tmp;
 	}
 	elsif(ref $body) {
 		$out = $body;
@@ -17,32 +20,39 @@ sub {
 		$out = \$body;
 	}
 	$type ||= 'application/octet-stream';
-	Vend::Tags->tag( { op => 'header', name => 'Content-Type', content => $type } );
+	$Tag->tag( { op => 'header', name => 'Content-Type', content => $type } );
 
 	## This is a bounce, returns
 	if($opt->{location}) {
-		Vend::Tags->tag( {	op => 'header',
+		$Tag->tag( {	op => 'header',
 							name => 'Status',
 							content => $opt->{status} || '302 moved',
 						} );
-		Vend::Tags->tag( {	op => 'header',
+		$Tag->tag( {	op => 'header',
 							name => 'Location',
 							content => $opt->{location},
 						} );
 		$Vend::Sent = 1;
 		return 1;
 	}
-	
-	Vend::Tags->tag( {	op => 'header',
-						name => 'Content-Type',
-						content => $type,
-					} );
+
+	if($opt->{get_encrypted}) {
+		$opt->{get_encrypted} = 1 unless $opt->{get_encrypted} =~ /^\d+$/;
+		my $idx = $opt->{get_encrypted};
+		while ($idx--) {
+			$$out =~ s/.*?(---+BEGIN PGP MESSAGE--+)/$1/s;
+		}
+		$$out =~ s/(---+END PGP MESSAGE---+).*/$1\n/s;
+	}
+
+	$Vend::StatusLine = $Vend::StatusLine ? "$Vend::StatusLine\n" : '';
+	$Vend::StatusLine .=  "Content-Type: $type";
 	
 	if($opt->{extra_headers}) {
 		my @lines = grep /\S/, split /[\r\n]+/, $opt->{extra_headers};
 		for(@lines) {
 			my ($header, $val) = split /:/, $_;
-			Vend::Tags->tag( {	op => 'header',
+			$Tag->tag( {	op => 'header',
 						name => $header,
 						content => $val,
 					} );
