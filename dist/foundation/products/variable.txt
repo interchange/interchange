@@ -110,9 +110,9 @@ UI_CLONE_TABLES	products* pricing* inventory merchandising options:sku	Item disp
 UI_COMPONENT_DIR	templates/components	Directories and Paths
 UI_HELP_HEIGHT	480	Admin layout
 UI_HELP_WIDTH	650	Admin layout
-UI_IMAGE_DIR	__MVC_SHAREURL__/interchange/	Admin control
+UI_IMAGE_DIR	__MVC_SHAREURL__/interchange-5/	Admin control
 UI_ITEM_TABLES	products pricing inventory merchandising options:sku	Item display
-UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange/	Admin control
+UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange-5/	Admin control
 UI_META_LINK	1	Admin control
 UI_PAGE_DIR	pages	Directories and Paths
 UI_SECURE	__MVC_UISECURE__	Admin control

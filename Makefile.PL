@@ -322,6 +322,8 @@ sub initialize {
 	$X{EXE_FILES}	= [ @scripts ];
 	$X{PL_FILES}	= { 'relocate.pl' => [ @scripts ] };
 
+	$MV::Default{LSB} ||= $MV::Default{RPM};
+
 	if(! $MV::Default{force} and ! $MV::Default{PREFIX}) {
 		if($> == 0) {
 			$MV::Default{PREFIX} = '/usr/local/interchange';
@@ -330,6 +332,15 @@ sub initialize {
 			$MV::Default{PREFIX} = "$ENV{HOME}/interchange";
 		}
 	}
+	if($MV::Default{LSB}) {
+		if($> != 0) {
+			die "Cannot install LSB (RPM-style) unless root.\n";
+		}
+		unlink '_uid';
+		$MV::Default{PREFIX} = '/usr/lib/interchange';
+		$MV::Default{INTERCHANGE_USER} = 'interch';
+	}
+
 	if($MV::Default{rpmbuilddir} or $MV::Default{RPMBUILDDIR}) {
 		$X{RPMBUILDDIR} = $MV::Default{rpmbuilddir} || $MV::Default{RPMBUILDDIR};
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
@@ -405,19 +416,24 @@ sub initialize {
 		$MV::Default{PREFIX} = '' if
 			$MV::Default{PREFIX} eq $origdir;
 
-		{
-			$realdir = my_prompt(
-								"Where is your Interchange to be installed? ",
-								$MV::Default{PREFIX},
-								);
-			$realdir =~ s:[\\/]\s*$::;
-			$realdir =~ s:^\s*::;
-			if ($realdir eq $origdir) {
-				warn "Can't install in software source directory!\n";
-				redo;
+		PROMPTDIR: {
+			if($MV::Default{LSB}) {
+				$realdir = $MV::Default{PREFIX};
 			}
+			else {
+				$realdir = my_prompt(
+									"Where is your Interchange to be installed? ",
+									$MV::Default{PREFIX},
+									);
+				$realdir =~ s:[\\/]\s*$::;
+				$realdir =~ s:^\s*::;
+				if ($realdir eq $origdir) {
+					warn "Can't install in software source directory!\n";
+					redo;
+				}
+			}
+			print "\n";
 		}
-		print "\n";
 	}
 	else {
 		$MV::Default{final} =~ s:[\\/]\s*$::;
@@ -441,7 +457,7 @@ sub initialize {
 			if ! $MV::Default{INSTALLMAN3DIR};
 	}
 
-	my @re_link = qw( interchange bin/minivend );
+	my @re_link = qw();
 	my @re_dir  = qw();
 	my @re_copy = qw();
 
@@ -467,24 +483,24 @@ sub initialize {
 		# create symbolic links for images used for
 		# other languages either not yet translated
 		# or without embedded text
-		my @imgfiles = grep m:^share/interchange/en_US/:, @sharefiles;
+		my @imgfiles = grep m:^share/interchange-5/en_US/:, @sharefiles;
 		my @loc;
 		@loc = map { s:.*/::; s/\.cfg$//; $_ } glob('dist/lib/UI/locales/*_*.cfg');
 		my $cwd = cwd();
 		my ($locale, $imgfile, $fname);
-		chdir("$realdir/share/interchange")
-			|| die "Couldn't enter directory $realdir/share/interchange: $!\n";
+		chdir("$realdir/share/interchange-5")
+			|| die "Couldn't enter directory $realdir/share/interchange-5: $!\n";
 
 		for $locale (@loc) {
 			unless (-d $locale) {
 				mkdir ($locale, 0777)
-					|| die "Couldn't create directory $realdir/share/interchange/$locale: $!\n";
+					|| die "Couldn't create directory $realdir/share/interchange-5/$locale: $!\n";
 			}
 			for $imgfile (@imgfiles) {
 				$fname = basename($imgfile);
 				next if -f "$locale/$fname";
 				symlink ("../en_US/$fname", "$locale/$fname")
-					|| die "Couldn't create symlink $realdir/share/interchange/$locale/$fname: $!\n";
+					|| die "Couldn't create symlink $realdir/share/interchange-5/$locale/$fname: $!\n";
 			}
 		}
 		chdir($cwd)
@@ -563,23 +579,44 @@ EOF
 						"$realdir/$_";
 			}
 		}
-		chdir '..';
+		if($MV::Default{LSB}) {
+			my $d = cwd();
+			print "Doing LSB install...\n";
+			do './install_lsb.pl';
+			print "Done with LSB install.\n";
+		}
 		if(@remove_old) {
-			my $msg = <<EOF;
+			if($MV::Default{UNLINK}) {
+				print "Removing old files....";
+				my $odir = cwd();
+				chdir $realdir
+					or die "Cannot chdir to $realdir: $!\n";
+print "Changed dir to realdir=$realdir.\n";
+				unlink @remove_old;
+				print "done.\n";
+				chdir $odir
+					or die "Cannot chdir to $odir: $!\n";
+print "Changed dir to odir=$odir.\n";
+			}
+			else {
+				my $msg = <<EOF;
 The following old files were found, different from the installed versions.
 You should check and remove them at the earliest opportunity.
 
 EOF
-			$msg .= join "\n\t", '', @remove_old;
-			$msg .= <<EOF;
+				$msg .= join "\n\t", '', @remove_old;
+				$msg .= <<EOF;
 
 
 If you have not modified any Interchange usertags, software programs, or
 libraries, it is usually safe to remove them, but you might copy them somewhere
 just in case you forgot something you changed.
 EOF
-			print $msg;
+				print $msg;
+			}
 		}
+
+		chdir '..';
 
 		print <<EOF;
 
@@ -715,11 +752,24 @@ sub MY::install {
 		}
 	}
 
+	my @args = (
+			'force',
+			'nocpaninstall=$(NOCPANINSTALL)',
+		);
+	my @extra_args = ( qw/LSB RPM UNLINK/ );
+	for(@extra_args) {
+		next unless $MV::Default{$_};
+		push @args, "$_=$MV::Default{$_}";
+	}
+	push @args, 'final=$(INSTALLARCHLIB)';
+
+	my $argstring = join " ", @args;
+
 	my $new = <<EOF;
 VERBINST=0
 
 mv_install ::
-			\$(PERL) Makefile.PL force nocpaninstall=\$(NOCPANINSTALL) $uidparm final=\$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL $argstring
 
 install :: all pure_install mv_install
 
@@ -755,7 +805,15 @@ EOF
 }
 
 my %mv_specific = qw/
-	STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
+	FINAL            1
+	FORCE            1
+	INTERCHANGE_USER 1
+	LSB              1
+	PREFIX           1
+	RPM              1
+	RPMBUILDDIR      1
+	STORABLE         1
+	UNLINK           1
 /;
 my %delete;
 use Getopt::Long;
