@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.8 2001-01-18 19:42:05 heins Exp $
+# $Id: DBI.pm,v 1.25.2.9 2001-01-19 15:19:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.9 $, 10);
 
 use strict;
 
@@ -44,6 +44,7 @@ use vars qw/
 			$Set_handle
             %DBI_connect_cache
             %DBI_connect_count
+            %DBI_connect_bad
 		 /;
 
 ($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $DBI, $EACH) = (0 .. 6);
@@ -345,8 +346,17 @@ sub open_table {
 		}
 	}
 
+	$db = $DBI_connect_cache{ $config->{dsn_id} };
+	if($db and ! defined $DBI_connect_bad{$config->{dsn_id}} ) {
+::logDebug("checking connection on $config->{dsn_id}");
+		eval {
+			$DBI_connect_bad{ $config->{dsn_id} } = ! $db->ping();
+		};
+	}
+
 	my $alt_index = 0;
-	unless ($db = $DBI_connect_cache{ $config->{dsn_id} }) {
+
+	if (! $db or $DBI_connect_bad{$config->{dsn_id}} ) {
 #::logDebug("connecting to " . ::uneval(\@call));
 		eval {
 			$db = DBI->connect( @call );
@@ -374,6 +384,7 @@ sub open_table {
 				die "connect failed -- $msg\n";
 			}
 		}
+		$DBI_connect_bad{$config->{dsn_id}} = 0;
 		$DBI_connect_cache{$config->{dsn_id}} = $db;
 ::logDebug("$config->{name} connected to $config->{dsn_id}");
 	}
