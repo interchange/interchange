@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.215 2004-07-19 22:26:00 mheins Exp $
+# $Id: Interpolate.pm,v 2.216 2004-07-20 01:46:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.215 $, 10);
+$VERSION = substr(q$Revision: 2.216 $, 10);
 
 @EXPORT = qw (
 
@@ -3460,8 +3460,8 @@ sub more_link {
 	$pa =~ s/__PAGE__/$inc/g;
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$prefix" if $prefix;
-	$form_arg .= "\nmi=$prefix" if $more_id;
 	$form_arg .= "\n$opt->{form}" if $opt->{form};
+	$form_arg .= "\nmi=$more_id" if $more_id;
 	$next = ($inc-1) * $chunk;
 #::logDebug("more_link: inc=$inc current=$current");
 	$last = $next + $chunk - 1;
