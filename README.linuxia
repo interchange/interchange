@@ -3,12 +3,14 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - Debian packaging files added
 - let `force' override directory check in Makefile.PL (CVS 1.23.4.3)
 - Debian configuration file location added to interchange.PL (CVS 1.8.4.2)
-- new UI UserTag related, called from item_edit (CVS 1.12.4.3)
+- new UI UserTag related, called from item_edit (CVS 1.12.4.3), needed
+  change of spread (CVS 1.9.4.2)
 - superfluous she-bang removed from MakeCat.pm (CVS 1.12.4.1)
 - new UserTag formel
 - insert without primary key (interchange.PL: CVS 1.8.4.4, DBI.pm: CVS 1.19.4.2)
 - replaced hardcoded name for affiliate table with UI_AFFILIATE_TABLE
-  (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3)
+  (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3-5)
+- UI_IMG fix for poweredby.gif (UI_STD_FOOTER: CVS 1.11.4.2)
 
 Changes that made into the main branch:
 
