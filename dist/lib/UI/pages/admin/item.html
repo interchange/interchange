@@ -185,7 +185,8 @@ Message:
 	}
 
 	$Config->{NoSearch} = '';
-	$ui_text_qualification = $CGI->{ui_text_qualification};
+	$ui_text_qualification = $CGI->{ui_text_qualification}
+		and $CGI->{changed_qual} = 1;
 	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
 		$CGI->{ui_text_qualification} = "co=1\n";
 
@@ -238,8 +239,13 @@ EOF
 		$CGI->{ui_text_qualification} = "ra=yes";
 	}
 
-	$CGI->{ui_sort_field} = $meta->{lookup} || $Scratch->{keyname}
-		if ! $CGI->{ui_sort_field};
+	if ($CGI->{ui_sort_field}) {
+		$CGI->{changed_qual} = 1;
+		delete $Scratch->{item_special_sort};
+	}
+	elsif(! $Scratch->{ui_special_sort}) {
+		$CGI->{ui_sort_field} = $meta->{lookup} || $Scratch->{keyname};
+	}
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
 	if(! ($CGI->{ui_show_fields} = $meta->{field}) ) {
@@ -277,10 +283,13 @@ EOF
 	return $out_message;
 [/perl]
 
-<!-- tq: [cgi ui_text_qualification] -->
+<!-- existing item_sparams: [scratch item_sparams]
+		tq: [cgi ui_text_qualification] -->
 
-[if cgi ui_show_fields]
-	[tmp sparams]
+[if scratch item_list_clicked]
+[or cgi changed_qual]
+	[set item_list_clicked][/set]
+	[seti item_sparams]
 			fi=[cgi mv_data_table]
 			st=db
 			[cgi ui_text_qualification]
@@ -290,21 +299,21 @@ EOF
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
 			rf=[cgi ui_show_fields]
-	[/tmp]
+	[/seti]
 [else]
-	[tmp sparams]
-		fi=[cgi mv_data_table]
-		st=db
-		[cgi ui_text_qualification]
-		md=1
-		tf=[scratch keypos]
-		rf=[scratch keypos]
-	[/tmp]
+	[set item_list_clicked]1[/set]
+	<span class=cmessage>(click Items again to reset list)</span>
 [/else]
 [/if]
 
+<!-- existing item_sparams: [scratch item_sparams]
+		tq: [cgi ui_text_qualification] -->
 
-[search-region more=1 sort="[cgi ui_special_sort]" arg="[scratch sparams]"]
+[if cgi ui_special_sort]
+[seti item_special_sort][cgi ui_special_sort][/seti]
+[/if]
+
+[search-region more=1 sort="[scratch item_special_sort]" arg="[scratch item_sparams]"]
 [on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
