@@ -68,7 +68,16 @@ Core
 * Add database filename in question to the fatal error in the
   Vend::Table::Common::column_index method.
 
-* Fixed auto_create_dir option in Vend::Util:writefile which didn't work.
+* Fix auto_create_dir option in Vend::Util:writefile which didn't work.
+
+* Fix round_to_frac_digits() so it handles numbers that don't have a
+  pre-existing decimal point.
+
+* Prevent internal server error if quantity pricing row cannot be found
+  for whatever reason.
+
+* Add Australian BankCard to Vend::Order::guess_cc_type 
+  (contributed by Howard Lowndes).
 
 Options
 -------
@@ -248,6 +257,8 @@ Form
   The type=filetext widget should always be used in combination with two
   filters, "nullselect upload".
 
+* Remove extra closing HTML tag '>' character from password widget.
+
 UI
 --
 
@@ -286,6 +297,8 @@ UI
 * Add check for existence of the extended/default columns
   and display of merge errors to merge_meta page.
 
+* Add Levies to the 'show only' list of the show_session page.
+
 Payment
 -------
 
@@ -299,6 +312,47 @@ Payment
   comment1 and comment2 by default in Payment.pm, but can be remapped.
 
   Also put SHIPTOZIP in the varmap for simplicity, but same function.
+
+Levies
+------
+
+* Fix bugs preventing the usage of the customer defined routine and
+  calling it with the wrong parameters.
+
+* New Levy add_to key allows consolidation of levies under one
+  heading.
+
+	Levies  salestax  foo
+
+	Levy    salestax    description    "Sales Tax (%s)"
+	Levy    salestax    keep_if_zero   1
+	Levy    salestax    type           salestax
+	Levy    salestax    sort           002
+	Levy    salestax    label_value    state
+
+	Levy    foo    keep_if_zero   0
+	Levy    foo    add_to         salestax
+	Levy    foo    type           shipping
+	Levy    foo    mode           PERD
+
+  This will calculate the foo levy, but add its cost to the salestax
+  levy for display purposes.
+
+* Remove sprintf() function and replace with round_to_frac_digits,
+  prevent worries about rounding errors.
+
+* Allow label_value for all levy types, means you can do
+  something like:
+
+	Levy    shipping    description       Shipping (%s)
+	Levy    shipping    keep_if_zero      0
+	Levy    shipping    type              shipping
+	Levy    shipping    mode_from_values  mv_shipmode
+	Levy    shipping    label_value       zip
+
+  which will display
+
+    Shipping (45056)
 
 Foundation
 ----------
@@ -316,6 +370,13 @@ Foundation
 * Preparation of pages for translation.
 
 * Typo in state database fixed (Bugzilla #499).
+
+* Modified include_form code on General Tab of item_edit page
+  in such a way that item images and thumb images with
+  extensions other that .gif can be displayed as well.
+
+  Replaced <img ...> by:
+	[image 	src="[var IMAGE_DIR]/items/[cgi item_id]" extra="border=0 id=item_img"]
 
 Debian
 ------
@@ -355,6 +416,8 @@ Jobs
 
 * update_locales job added.
 
+* Remove bogus session created by logging function.
+
 SOAP
 ----
 
@@ -362,6 +425,12 @@ SOAP
   and HTTP body.
 
 * Log errors in soap tag to catalog log file instead of the global one.
+
+* SOAP_Action introduced, which is intended to used as a
+  way to provide webservices from an Interchange catalog.
+
+* Allow tracing in SOAP calls in order to get a handle on SOAP request
+  resp. response.
 
 Shadow Database
 ---------------
