@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.9 2000-11-05 18:23:52 heins Exp $
+# $Id: Tagref.pm,v 1.9.2.1 2000-11-30 02:41:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.9 2000-11-05 18:23:52 heins Exp $
+# $Id: Tagref.pm,v 1.9.2.1 2000-11-30 02:41:36 heins Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.1 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -67,11 +67,38 @@ for ( keys %Vend::Parse::myRefs ) {
 
 sub tag_reference {
 
+	my $passed = shift;
     my $out = '';
-    $out .= $Documentation{BEGIN};
 
-    for(sort keys %Routine) {
-        my $tag = $_;
+	if($passed) {
+		@todo = grep /\S/, split /[\s,\0]+/, $passed;
+		my $tags = "B<";
+		$tags .= join ">, B<", @todo;
+		$tags .= ">";
+		$out .= <<EOF;
+
+=head1 NAME
+
+ITL tags $tags
+
+EOF
+	}
+	
+	if(! @todo) {
+		@todo = sort keys %Routine;
+		$out .= $Documentation{HEADER};
+		$out .= $Documentation{BEGIN};
+	}
+
+    for(@todo) {
+        my $tag = lc $_;
+		$tag =~ tr/-/_/;
+#::logDebug("docs for $tag");
+		if(! defined $Routine{$tag}) {
+			$out .= "\n\n=head2 $tag NOT DEFINED\n\n";
+			next;
+		}
+
         $out .= "\n\n=head2 $tag\n\n=over 4\n\n";
         $out .= "=item CALL INFORMATION\n\n";
         my $val;
@@ -185,7 +212,8 @@ EOF
 
     }
 
-    $out .= $Documentation{END};
+    $out .= $Documentation{END} unless $passed;
+	return $out;
 }
 
 LOCAL: {
@@ -2818,12 +2846,15 @@ fails. Defaults to the empty string.
 =back
 
 %%%
-BEGIN
+HEADER
 %%
 =head1 NAME
 
 mvtags - ITL TAG REFERENCE
 
+%%%
+BEGIN
+%%
 =head1 DESCRIPTION
 
 ITL stands for Interchange Tag Language. ITL is a superset of MML, or Minivend
