@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.34 2001-04-16 00:47:51 heins Exp $
+# $Id: Server.pm,v 1.8.2.35 2001-04-18 06:12:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.34 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.35 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1708,7 +1708,7 @@ my $pretty_vector = unpack('b*', $rin);
 			$Vend::Cfg = { } if ! $Vend::Cfg;
 
 			my $content;
-			if($content = get_locale_message(500, '', $msg)) {
+			if($content = ::get_locale_message(500, '', $msg)) {
 				print MESSAGE canon_status("Content-type: text/html");
 				print MESSAGE $content;
 			}
@@ -2256,7 +2256,7 @@ my $pretty_vector = unpack('b*', $rin);
 			$Vend::Cfg = { } if ! $Vend::Cfg;
 
 			my $content;
-			if($content = get_locale_message(500, '', $msg)) {
+			if($content = ::get_locale_message(500, '', $msg)) {
 				print MESSAGE canon_status("Content-type: text/html");
 				print MESSAGE $content;
 			}
