@@ -1,0 +1,197 @@
+<html>
+<head>
+   <title>Tallyman Help: Create/edit shipping method</title>
+
+</head>
+<body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999" >
+
+
+<style type="text/css">
+<!--
+A:link {text-decoration: none} 
+A:visited {text-decoration: none} 
+A:active {text-decoration: none}
+A:hover {color:#000000; text-decoration: none}
+-->
+</style>
+
+<form>
+<table width='100%' border=0 cellspacing=0 cellpadding=0><tr><td height=23 bgcolor="#e8a317" background="images/help.background.gif" valign=middle><table width='100%' cols=3 border=0 cellpadding=0 cellspacing=0><tr><td height=1 width=12 align=left valign=middle><img src='images/curve.left.help.gif' width=12 height=22></td><td valign=middle width=550><img src="images/cleardot.gif" height=1height=1 width=12><a href="main.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Home</font></a><img src="images/cleardot.gif" height=1 width=12><a href="faq.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>FAQ</font></a><img src="images/cleardot.gif" height=1 width=12</td><td align=right valign=middle width=40><a href='help' target="Help" onclick='return ShowHelp()' onmouseover="window.status='Help';return true;" onmouseout="window.status='';return true;"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Back</font></a></td><td width=19 align=right valign=middle><img src="images/curve.right.help.gif" width=12 height=22 border=0></td></tr></table></td></tr></table>
+</form>
+
+<center>
+<table border=0 cellspacing=0 cellpadding=2 width="450">
+
+<tr>
+<td>
+<br>
+<font size="-1" face="Verdana,Arial,Helvetica,sans-serif"><b>Create/edit shipping method</b></font> <br>
+<br>
+<hr noshade size=2 width=100%>
+<br>
+<b>Name of this method</b><br>
+The name you specify here will appear in the list of available shipping methods shown to shoppers when they place orders.  Take care to make them easy-to-understand.  The name you enter will reflect the shipping algorithm you choose.  The order you enter the shipping methods is the order they will be presented to the customer.  We recommend starting with the most common or least expensive method first.  Here are some commonly used names for various shipping methods:  standard ground shipping, standard flat rate shipping, three day shipping, second day shipping, next day air shipping, International shipping, US Mail shipping, etc.
+<p>
+<b>Enable this method</b><br>
+When first creating a new shipping method for a live store, we highly recommend un-checking this box before creating a new method.  This will allow you to configure all the options without letting a customer inadvertently select an invalid option.  The "enable this method" feature simply prevents the method from showing up as an option for shoppers.  It will be displayed in your list of methods, but not in the list shown to shoppers.
+<p>
+<b>Call for quote only</b><br>
+Some types of shipping, such as shipping outside your home country, can vary in price so much that it's not feasible to calculate a charge automatically.  In that case, check the "call for quote" box.  For that method, the shipping cost will not be quoted, but will display the words:  "call or email for shipping quote."  Typically, it's a good idea to offer an "international shipping" or "shipping outside [your country]" option with call for quote enabled.  
+<p>
+<b>Calculate based on this algorithm</b></br>
+Unless you are using the call for quote feature, you will have to specify a shipping algorithm to calculate a charge.  Choose from:
+<p>
+<a name="price">By price:</a> shipping total based on the total price of the order.  This can also be used to calculate a flat shipping price ($0 - infinity = $4.95) or a flat rate with big orders shipped free ($0 - 500 = $4.95 and $500 - infinity = free).  The shipping charge can either be a flat charge or a percentage.  For more information, see <a href="shipping.price.html">shipping by price</a>.
+<p>
+<a name="weight">Standard by weight:  </a>calculates shipping by total weight with no regard to zones.  To use this method, you must enter a weight for each item in your inventory.  You can use any unit of measure you wish as long as you are consistent:  if you enter your item prices in grams then configure shipping with pounds, your customers will not be happy when they are quoted huge shipping rates. 
+<p>
+<a name="quantity">Standard by quantity:</a> charges an amount according to how many items are ordered.
+<p>
+<a href="shipping.ups.html">UPS zones-based:</a>  Tallyman is pre-configured with UPS zones tables for ground, three day select, second day air, and next day air.  If you require zones support for Fedex, DHL, or USPS, please <a href="mailto:information@akopia.com">contact Akopia.</a>
+<p>
+<b>Minimum shipping charge</b><br>
+The amount you enter into this field will be the minimum allowed quote for that particular shipping method.  For example, if you want to charge no less than $4.50 for ground shipping, enter "4.5" or "4.50" into this field.  Remember, you must set the minimum for each of your shipping methods, if you want each to have a minimum charge.
+<p>
+<a name="additional"><b>Additional shipping calculation</b><br></a>
+
+Here, you can enter any additional calculation you would like to apply to the shipping calculation.  This is designed specifically for the zones-based shipping calculations.  Very few merchants pay the full rates for UPS shipping, and some merchants want to slightly mark up their shipping charges for handling.  Other merchants may want to discount them slightly to promote goodwill.  This feature would allow you to discount your UPS ground shipping quote by 25% to match your discount, then add $2.50 to cover a packaging and handling charge.  Tip:  if you're currently not receiving a discount on your shipping rates, call UPS and ask for one.  
+
+<p>
+
+Although the shipping calculation engine that comes with Tallyman 
+is flexible and versatile, we realized that it still might not meet the 
+needs of all users.  We decided to include a feature that would 
+allow Tallyman administrators to modify the shipping charges that 
+were calculated in a simple way.  The "additional shipping 
+calculation" field can be used to enter a mathematical expression 
+that will be applied to a calculated shipping charge.  Here's how it 
+works.
+<p>
+Every shipping method needs to have a shipping algorithm 
+associated with it.  The algorithm could be "shipping by total cost", 
+"shipping by quantity", or even a UPS weight based calculation.  
+The administrator will typically have the option to set up several 
+parameters that the algorithm uses.  The administrator then names 
+the shipping method whatever he wants.  All available shipping 
+methods are presented to the customer when he shops.  Based on 
+the method chosen, a shipping charge is calculated.
+<p>
+
+The shipping algorithm calculates a "base shipping charge."  That 
+charge may be modified by using the "additional shipping 
+calculation" field.
+<p>
+
+Let's take an example.  Suppose that I want to implement a UPS 
+based shipping system.  I create three shipping methods, and call 
+them "Regular", "Second day air" and "Next day air."  Each 
+method uses a corresponding UPS algorithm that calculates the 
+shipping charge based on the weight of the customer's order and 
+the UPS rate and zone tables.  Easy enough -- but suppose that I 
+have a special deal with UPS that gives me a 10% discount off the 
+standard rate tables, because I ship a large volume of goods.  
+Obviously, I don't want have to manually edit the rate tables.  
+Instead I can use the "additional shipping calculation" field to 
+automatically apply a 10% discount to whatever the UPS rate 
+*would have calculated.*
+<p>
+
+In the "additional shipping calculation" field, I would enter the 
+following:
+<p>
+
+In the "additional shipping calculation" field, I would enter the 
+following:
+
+<p>
+
+x = x - (x * .1)
+
+<p>
+
+The character "x" represents the shipping charge as calculated by 
+the UPS algorithm.  Tallyman will automatically apply the above 
+formula to the shipping charge, and charge the customer the new 
+total.
+
+<p>
+
+Here's how it would work for a real customer.  Customer A enters 
+the site and orders 50 lbs. of good to be shipped to Alaska by next 
+day air.  The UPS algorithm determines that the cost would be 
+$400.  Tallyman then substitutes 400 for "x" in your formula:
+
+<p>
+
+new charge = 400 - (400 * .1)
+
+<p>
+
+The resultant charge is 400 - 40 dollars, or $360.
+<p>
+
+Of course, we could have also written the formula this way:
+<p>
+x = x * .9
+<p>
+
+which would have had exactly the same effect.  If you're a Perl 
+guru, you'll be happy to know that you could also have written
+<p>
+
+x *= .9
+<p>
+
+It is important to note that you *must* specify some sort of equality 
+on the left hand side of the equation.
+<p>
+You can enter any valid mathematical expression.  You can reuse 
+the "x" variable as many times as you need to.  Tallyman validates 
+the expression you enter, so if you make a mistake it will inform 
+you, and the additional shipping calculation field will *not* be 
+updated.
+<p>
+
+All invalid characters are stripped out before Tallyman processes 
+your equation.  That means that if you type in something like:
+<p>
+x = x * y + 300
+<p>
+the "y" will be removed, and Tallyman will see 
+<p>
+x = x * + 300
+<p>
+which is an invalid equation.
+<p>
+Valid expressions include (but are not limited to) such things as: 
+<pre>
+  x = x + 5
+  x = x + 5 + (x * .1)
+  x = x - .75
+  x += 2
+  x -= (x * .25)
+  etc.
+</pre>
+
+As you can see, There's More Than One Way to enter any given 
+expression.
+<p>
+Valid characters are x+-/*.()0123456789
+<p>
+
+If for any reason a shipping algorithm fails, the additional shipping 
+calculation will not be executed.
+
+ <br>
+<br>
+
+<hr noshade size=2 width=100%>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+<a href="http://www.tallyman.com"><b>Tallyman</b></a><a href="http://www.akopia.com"><b> - ©1999 Akopia, Inc.</b></a></font>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+

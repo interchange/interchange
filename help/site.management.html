@@ -1,0 +1,597 @@
+<html>
+<head>
+   <title>Tallyman Help: Site Management</title>
+</head>
+<body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999" >
+
+
+<style type="text/css">
+<!--
+A:link {text-decoration: none} 
+A:visited {text-decoration: none} 
+A:active {text-decoration: none}
+A:hover {color:#000000; text-decoration: none}
+-->
+</style>
+
+<form>
+<table width='100%' border=0 cellspacing=0 cellpadding=0><tr><td height=23 bgcolor="#e8a317" background="images/help.background.gif" valign=middle><table width='100%' cols=3 border=0 cellpadding=0 cellspacing=0><tr><td height=1 width=12 align=left valign=middle><img src='images/curve.left.help.gif' width=12 height=22></td><td valign=middle width=550><img src="images/cleardot.gif" height=1height=1 width=12><a href="main.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Home</font></a><img src="images/cleardot.gif" height=1 width=12><a href="faq.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>FAQ</font></a><img src="images/cleardot.gif" height=1 width=12</td><td align=right valign=middle width=40><a href='help' target="Help" onclick='return ShowHelp()' onmouseover="window.status='Help';return true;" onmouseout="window.status='';return true;"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Back</font></a></td><td width=19 align=right valign=middle><img src="images/curve.right.help.gif" width=12 height=22 border=0></td></tr></table></td></tr></table>
+</form>
+
+<center>
+<table border=0 cellspacing=0 cellpadding=2 width="450">
+
+<tr>
+<td>
+<br>
+<font size="-1" face="Verdana,Arial,Helvetica,sans-serif"><b>Site Management</b></font> <br>
+<br>
+<hr noshade size=2 width=100%>
+<br>
+<pre>
+:Contents:
+
+	Introduction
+	General Overview of Site Management With Tallyman
+	The a/b/c Style Layout System
+	     Overview
+	     Standard Templates in General
+			Site-wide attributes
+			Individual attributes
+			Other attributes
+			Changing the Site Style
+	     Standard Group Layout
+	     Regen Groups
+	     Grouping Groups
+	     Quicklinks Groups
+			  Text Links
+			  Single Line Links
+			  Dropdown Links
+			  Panel Links
+			  Column Links	  
+             Custom HTML
+	     Standard Page Layout
+			  Content Pages
+			  Product Pages
+			  Individual Product Pages
+
+	
+:Introduction:
+
+This document describes how to manage a site using one of the default 
+templates, called a, b, or c, that are distributed with Tallyman.  
+These templates implement only three of many possible site management 
+schemes possible with Tallyman.  Some of the ideas herein will be specific 
+to this paradigm; others will be of more general value.
+
+:General Overview of Site Management With Tallyman:
+
+Tallyman provides a very powerful set of tools for representing the
+components which make up an online store.  Tallyman knows about 3
+fundamental kinds of things: Items, Pages and Groups.  These can be
+organized using the Layout Manager so as to conveniently represent
+your site and control the way in which the web pages making up your
+store are generated (See the "Standard Page Layout" section for more
+info on using the layout manager).  Templates determine how the layout
+is interpreted and generate the actual .html files.
+
+Template and site designers may also define arbitrary types of items,
+pages and groups.  For instance, a site designer may decide to create
+"Balls", "Books" and "Cars/Trucks" item types.  All three might have a
+field named "Manufacturer".  "Balls" might have a "Diameter" field,
+and "Cars/Trucks" might have a "Number of Wheels" field.  Then it is up
+to the template designer to decide how these fields will be
+represented in the pages of the store.
+
+Since certain terms have meanings specific to Tallyman, some
+definitions are in order:
+
+    Thing: Shorthand for talking about something which might be an
+    item, page or group.  Example: "The layout manager organizes the
+    things in your store".
+
+    Kind: Talks about whether a thing is an item, page or group.
+    Example: "What kind of thing is the 'Competition Basketball'?
+    It's an item."
+
+    Type: Talks about a specific type of item, page or group.
+    Example: "What item type is the 'Competition Basketball'?  It's a
+    ball."
+
+    Thingtype: Talks about a type when you don't care about its kind.
+    Example: "Make sure you spell all the field names correctly when
+    you create a thingtype.  Otherwise you'll confuse the templates."
+
+    Fields: The components used to build thingtypes.  Example: "The
+    'Balls' item type has 'Diameter', 'Color' and 'Sport' fields."
+
+    Snippet: Another name for "field", used in the tallyman libraries.
+    "snippet" technically refers to a field of a specific thing, while
+    "sniptype" refers to that field for the entire type, though in
+    practice "snippet" is often used for both.  Example: "Instead of
+    changing the 'Diameter' snippets for each and every ball, why not
+    just delete the 'Diameter' sniptype from "Balls" and start over?"
+
+As it turns out, there are very few differences between items, pages
+and groups.  Items have some special attributes relative to inventory
+management, matrices, etc., documented elsewhere.  These attributes
+include "Price", "SKU", and "Reserve Quantity".  Items are the only
+things which can be ordered by customers.  Pages and groups are
+absolutely identical in all but name.  They are there primarily to
+separate things which will end up represented as .html pages from
+things which won't.  Quicklinks, for instance, are rendered as pieces
+of HTML which are then inserted into pages, so it wouldn't make sense
+to call them "pages" themselves, even though the libraries don't care.
+So they're set up as groups, to make them easier to organize.
+
+Once a site has been designed, users will rarely have to worry about
+the above mess of terminology.  They will simply create, delete and
+modify "Balls", "Books" and "Cars/Trucks" items, and then put them on
+"Products" or "Content" pages.
+
+
+:The a/b/c Style Layout System:
+
+::Overview::
+
+The a/b/c style layout system is distributed with Tallyman as the
+default set of templates and types.  It provides a basic, yet
+extremely flexible framework within which many different types of
+stores and sites may be built.  Its most unusual feature comes from 3
+interchangeable sets of templates which generate pages with different
+look-and-feel from the same data.
+
+::Standard Templates in General::
+
+Several things are important to know about the layout system in
+general.  The templates are designed to interpret available field and
+layout data in the most intuitive way possible and to be as flexible
+as possible.  Each template has defaults within the template itself
+that are used when information from fields and other entries are
+unavailable.  In general, these can be overridden at first a site-wide
+level and then on a per-thing basis, allowing site designers to have
+as much or as little control over the pages as they like.
+
+:::Site-wide attributes:::
+
+To set an attribute at a site-wide level, you may generally use the
+Knar editor.  The Knar editor can be found by selecting
+"Configure... Advanced Tools..." in the back office.  For example, to
+set the "Page Width" attribute in the Knar editor:
+
+1. Select "Configure" from the tool bar in the Back Office.
+2. Select "Advanced Tools"
+3. Select "Knar editor"
+4. Select "Create new entry"
+5. Enter "Page Width" as the key
+6. Enter "700" as the value
+7. Select "Ok".
+
+Now all pages will be generated as 700 pixels across.
+
+:::Individual attributes:::
+
+To make the "Page Width" definable on a per-page basis, add the field
+to the appropriate page types:
+
+1. Select "Configure" from the title bar in the Back Office.
+2. Select "Advanced Tools"
+3. Select "Type editor"
+4. Select "Page types"
+5. Select "Content Pages", then click "Edit fields"
+6. Select "Add a New Field"
+7. Enter "Page Width" as the name
+8. Set the default value to "700"
+9. Select "Add this field"
+10. Select "Back"
+11. To make this an option for "Product pages" as well, select it and
+then click "Edit fields"
+12. Select "Page Width" from the box next to the "Add an existing
+field", then click "Add an existing field"
+
+Now, when you edit a page you'll be presented with a "Page Width"
+field.  You can fill it in to set the width for that page, or make it
+blank to use the site or template default.
+
+:::Other attributes:::
+
+Most templates understand the "Debug Templates" attribute.  If it has
+a true value (eg. "1"), most templates will do things to help template
+designers see what's going on.  Most of the standard templates will
+put "border=1" in each of the HTML tables it creates, helping
+designers tweak placement and spacing on the pages.
+
+One simple trick to see most of the attributes used by a particular
+template involves looking at the template source code (stored as a
+.epl file in the tallyman/stores/yourstoreid/templates/ directory).
+Near the beginning may be something like this:
+
+REGEN::attrib(
+     [\$page_width, 'Page Width', '650'],
+     [\$text_color, 'Text Color', 'green'],
+     ...
+       );
+
+This indicates that the template looks for attributes named "Page
+Width" and "Text Color".  The third column sets the template default
+for "Page Width" to 650, and the default "Text Color" to green.
+
+Other attributes may also be used later in the template, and you'll
+either have to check the documentation for the template or learn to
+read Embedded Perl to discover those.
+
+
+:::Changing the Site Style:::
+
+The default layout system is called "a/b/c/" because of the three sets
+of page templates which are stored in the templates/a/, templates/b/
+and templates/c/ directories.  The simple "page.epl" template decides
+which set to use based on the value of the "Site Style" entry in the
+Knar editor.  The look and feel of the site will vary with each style.
+If you design your site's graphics carefully, you can make the pages
+look good in several of the styles, and amaze your friends by changing
+the "Site Style" entry, selecting "Regenerate" from the tool bar, and
+watching your entire site change from one style to another.
+
+::Standard Group Layout::
+
+The predefined groups are used in the Layout Manager to structure
+things so that the templates can correctly generate the pages in the
+site.  They are the special cases, and the most confusing elements of
+this paradigm of site layout.  Here we describe the "Regen Groups" and
+"Grouping Group" group types, which give structure to site layout.
+Following that is a description of the "Quicklinks" and "Custom HTML"
+group types, which are somewhat more conventional and relate to
+generating HTML code.
+
+::Regen Groups::
+
+The "Regen Groups" group type's purpose is to give structure to your
+site's representation in the Layout manager.  When you select
+"Regenerate" from the toolbar, you'll notice that regeneration
+generally follows the layout you see in the layout manager.
+"Quicklinks" are generated first, followed by "Pages" and then
+"Items".  This shows exactly the behavior of Regen Groups; each child
+of a regen group is generated using its template, in the order they
+appear in the Layout Manager.
+
+You can create new regen groups (or even use existing groups in
+multiple places in the Layout Manager) and use them to group
+Quicklinks, Pages and Items beyond (or instead of) the default layout
+of "Quicklinks/Pages/Items" in the Layout Manager.  This only effects
+what you see in the Layout manager, and won't effect the .html
+produced for your site at all.  Example:
+
+Create the group:
+1. Select "Configure" from the toolbar
+2. Select  "Group Manager"
+3. Select "Regen Group" from the box next to "Create new group", then
+click "Create new group".
+4. Give the group a name.
+5. Set the "Template" field to "regen.epl"
+6. Select "Ok"
+
+Add to the layout manager:
+1. Select "Configure" from the toolbar
+2. Select "Layout manager"
+3. Add the new regen group as a child of "Quicklinks", "Pages", or
+"Items"
+
+Things can then be placed as children of the new group, and will be
+generated at that point in the regen process.
+
+Note that regen groups are the only things that behave this way.
+Children of content pages, for example, are placed as links on that
+page.  Children of quicklinks groups are listed as links for the
+group.  But children of regen groups are themselves generated.
+
+Also note that the children of a regen group will only be generated if
+the regen group itself is being generated (i.e., is itself a
+first-level heading in the layout manager or a child of a regen
+group).  Placing a regen group as a child of a page, item, or
+quicklinks group makes no sense, since each of those are concerned
+with creating links to their children, and Regen groups themselves
+have no HTML code or .html pages.
+
+If this is confusing to you, don't worry about it.  You can safely
+leave the regen groups as they are by default, and you don't need to
+create new ones unless you want to further divide the quicklinks,
+pages and items in the Layout Manager.
+
+
+::Grouping Groups::
+
+Three grouping groups are created by default, and you shouldn't ever
+need to create any more for the standard set of templates.  Called
+"Sidebar", "Top Bar" and "Bottom Bar", they have only one field, which
+is their name.  Their sole purpose is to indicate to the page
+templates that their children should go in the sidebar, top bar and
+bottom bars of that page, respectively.  The page templates look at
+these groups' children; by themselves, the groups can do nothing.
+
+
+::Quicklinks Groups::
+
+These groups are handy for placing sets of links in various places on
+a page.  See the description of page layout for information on how to
+determine where they are placed on a page.  They can display the links
+in various ways; the "Style" field determines how.
+
+If the "Filename" field is filled in, a page will also be generated
+with links to the same things.
+
+Use the Layout Manager to determine what things will be linked to by
+the quicklinks.  Example:
+
+Quicklinks
+    Site Navigation Quicklinks
+        Home Page
+        About Us
+        Policies
+        ...
+Pages
+    Home Page
+    About Us
+        Sidebar
+            Site navigation Quicklinks
+    Policies
+    ...
+
+In this example, the "Site Navigation Quicklinks" would have links to
+the "Home Page", "About Us" page and "Policies" pages.  It would also
+appear in the sidebar of the "About Us" page.  (See "Standard Page
+Layout" for more information on placing things in the sidebar).
+
+:::Text Links:::
+
+This style is represented differently depending on the Site Style.
+Style A sites display them as simple text, with one link per line.
+Style B sites display them as "Column" links, and Style C links
+display them as "Panel" links.  For Style A, the following attributes
+are used (none have defaults):
+
+Name: "Title"                  
+Description: Listed as a heading for the links.
+
+Name: "Foreground"
+Name: "Typeface"
+Name: "Bold"
+Name: "Italic"
+Description: Determines the typeface, foreground color, etc., for a
+&lt;FONT&gt; tag around the links.
+
+:::Single Line Links:::
+
+This style lists links to its children like this:
+"Link / Link / Link "
+It has the same attributes as the Text Links, except that it ignores
+the "Title" field, and uses this additional field:
+
+Name: "Separator"              Default: " / "
+Description: The separator between links. 
+
+:::Dropdown Links:::
+
+This style lists its children as items in a dropdown &lt;SELECT&gt; box,
+with JavaScript code to automatically take the browser to the page
+selected.  A "Go!" button is also provided for browsers without
+Javascript support.  It uses the "Title" attribute, and looks for this
+in the KNAR table:
+
+Name: "Template Image URL"     Default: None 
+Description: The URL for the directory containing the images
+distributed with the templates.
+
+:::Panel Links:::
+
+These links are like text links, but have special formatting to match
+Style C pages.  They also need the "Template Image URL" KNAR entry,
+use all the attributes used by text links, and use these two
+additional attributes:
+
+Name: "Border"                 Default: "0"
+Description: Determines whether a border is displayed around the links
+
+Name: "Background"             Default: None
+Description: Background color for the panel
+
+:::Column Links:::
+
+These are like text links, but format their links in multiple
+columns.  They use this additional attribute:
+
+Name: "Columns"                Default: 2
+Description: Number of columns in which to display links
+
+
+::Custom HTML::
+
+This group has just one field: "HTML", and is used for inserting your own HTML code into a Top Bar, Sidebar or Bottom Bar.
+
+::Standard Page Layout::
+
+Pages come in three flavors: "Content", "Product" and "Individual
+Product".  Content pages are for things like a home page, listing site
+policies, and other pages where some specific content is the main
+attraction.  Product pages are primarily for product listings,
+although they don't have to list just products.  Individual product
+pages are almost identical to product pages, but are generated for a
+single item.  They are created for any items with a valid "Filename"
+field.
+
+The Layout manager is used to determine what links are placed on each
+page, and where they go.  Pages generally have 4 areas in which links
+may be placed: the top bar, side bar, bottom bar and in the main part
+of the page.  The top and bottom bars are mainly useful for links to
+other pages, and single line and dropdown quicklinks.  The sidebar is
+a good place for links to other pages, quicklinks of all varieties,
+and featured products.  The main part of the page is a good place to
+put featured products.
+
+Placing things in the top, side and bottom bars of a page is effected
+by placing the "Sidebar", "Top Bar" and "Bottom Bar" grouping groups
+as children of the page, and then placing the things as children of
+them.  To place a thing in the main part of the page, place it as a
+child of the page directly (i.e., at the same level as the "Sidebar",
+etc. groups).  An example layout:
+
+Pages
+   Bike Parts
+      Sidebar
+         Category Quicklinks
+         Kevlar Mountain Tire
+      Specialized Air Pirahna Helmet
+      Aluminum Wheels
+      Top Bar
+         Site Navigation Quicklinks
+      Bottom Bar
+	 Site nav single line links
+      
+In this layout, "Site Navigation Quicklinks" would go into a bar
+across the top of the page.  "Site nav single line links" would go
+across the bottom of the page.  "Category Quicklinks" and a link to
+the "Kevlar Mountain Tire" product page would go in the bar on the
+left hand side, and the helmet and wheels would be linked to below the
+content of the page (or on the right-hand bar for style B content
+pages).
+
+All pages (items, in the case of individual product pages) may have
+the following attributes:
+
+Name: "Filename"                  Default: None
+Description: Where the resulting HTML is stored.  If blank, no page
+is created.
+
+Name: "Directory"		  Default: None
+Description: This is inserted between the value of the REGEN_OUTPUT_DIR
+(and REGEN_OUTPUT_URL) knar entries and the value of the "Filename" field
+to build the full pathname of the file.
+
+Name: "Title"                  Default: "Untitled"
+Description: Placed between the &lt;TITLE&gt; tags.
+
+Name: "Background Image"       Default: None
+Name: "Background Color"       Default: "#ffffff"
+Name: "Foreground Color"       Default: "#000000"
+Name: "Link Color"             Default: "#000099"
+Name: "Visited Link Color"     Default: "#990000"
+Description: Placed in the &lt;BODY&gt; tag.
+
+Name: "Title Image"            Default: None
+Name: "Subtitle Image"         Default: None
+Description: Placed at the top of the page.  "Subtitle Image"
+is unused in style B templates (purely for aesthetics).
+
+Name: "Page Width"             Default: 650 
+Description: Width of the tables which make up the page.  Can be
+specified in pixels (eg. "700") or as a percentage of the browser
+window width (eg. "100%").
+
+
+
+:::Content Pages:::
+
+Content pages also honor the following attributes:
+
+Name: "Main Image"             Default: None
+Description: Placed near the center of the page, above the content.
+
+Name: "Content"                Default: None
+Description: The main content of the page.
+
+Name: "Columns"                Default: 3 
+Description: How many columns to create when placing things in the
+main area (i.e., not in the Sidebar, Top Bar or Bottom Bar) of a page.
+
+Name: "Link Image Width"       Default: None
+Name: "Link Image Height"      Default: None
+Description: When placing links to other things, these fields place
+"WIDTH=" and "HEIGHT=" fields in the &lt;IMG&gt; tags for the link.
+
+When generating links to other pages and items, content pages look for
+the following fields in the children:
+
+Name: "HTML"                   Default: None
+Description: If this field exists, insert its contents (ignoring
+the rest of the fields listed here).  This is how Quicklinks are
+inserted into pages.
+
+Name: "Filename"               Default: None
+Description: Filename of the .html file to link to (required).  
+
+Name: "Image Directory"	          Default: None
+Description: Used after the "Directory" entry mentioned above when
+referencing images associated with the thing.  
+
+Name: "Link Image"             Default: None
+Description: Filename of the image to display along with the link.
+
+Name: "Link Text"              Default: None
+Description: Displayed instead of the name of the thing as the text
+of the link.
+
+:::Product Pages:::
+
+Product pages are primarily for listing products, although they
+will also list and groups and pages which are listed as children and
+have the appropriate attributes.
+
+Product pages honor the following attributes in addition to those
+listed above:
+
+Name: "Image Cell Width"       Default: 250
+Description: How wide the table cell should be which holds the
+price and image for an item.
+
+Name: "Price Color"            Default: "#ff0000"
+Name: "Price Typeface"         Default: None ("Helvetica, Arial" for style B)
+Name: "Price Text Size"        Default: -1
+Description: Attributes for the text displaying an item's price (no
+price field is displayed for pages and groups).
+
+Name: "Max Description Length" Default: 1000
+Description: Any child being displayed which has a "More Info" page
+and description longer than specified here will be displayed with
+truncated description.
+
+Product pages look for the following attributes of their children when
+displaying them:
+
+
+Name: "Image Directory"	          Default: None
+Description: Used after the "Directory" entry mentioned above when
+referencing images associated with the thing.  
+
+Name: "Image"                  Default: None
+Description: Filename placed in the &lt;IMG&gt; tag to the left of the
+thing's description.
+
+Name: "Link Image"             Default: None
+Description: Used instead of "Image" if "Image" isn't found.
+
+Name: "Filename"               Default: None
+Description: If this field is valid, a "more info" link will be
+generated along with the product description.
+
+Name: "Description"            Default: None
+Description: Displayed to the right of the image, possibly truncated
+according to the "Max Description Length".
+
+
+:::Individual Product Pages:::
+
+Like product pages, but instead of looking for the listed attributes
+of its children, looks for those attributes in itself.
+
+</pre> <br>
+<br>
+
+<hr noshade size=2 width=100%>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+<a href="http://www.tallyman.com"><b>Tallyman</b></a><a href="http://www.akopia.com"><b> - &copy; 1999 Akopia, Inc.</b></a></font>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
