@@ -1,3 +1,9 @@
+interchange (4.9.9-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 28 Oct 2003 22:36:14 +0100
+
 interchange (4.9.8.20031014-1) unstable; urgency=low
 
   * release from current CVS
