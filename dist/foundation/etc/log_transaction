@@ -1,15 +1,6 @@
 #### begin [value mv_order_number] #####
 [tmp transaction_record]
 
-	[loop list="transactions orderline userdb"]
-	Place table [loop-code] in transaction mode.
-	[flag type=transaction table="[loop-code]"]
-	[/loop]
-[if variable DECREMENT_INVENTORY]
-	Will decrement inventory, place table inventory in transaction mode.
-	[flag type=transaction table="inventory"]
-[/if]
-
 [if type=explicit compare=`
 		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
 		return 0;
@@ -100,6 +91,7 @@ set credit_limit: [seti credit_limit][data
 		value="-[scratch total_cost]"
 		increment=1
 	][/seti]
+[/if]
 
 [comment]Past transactions entry.[/comment]
 
@@ -124,9 +116,7 @@ campaign: [value campaign]
 status: pending
 description: [filter mac][item-description][/filter]
 [/import]
-
-[if variable DECREMENT_INVENTORY]
-Inventory of [item-code] now:
+[if variable DECREMENT_INVENTORY]Inventory of [item-code] now:
 	[data
 		table=inventory
 		col=quantity
@@ -136,6 +126,7 @@ Inventory of [item-code] now:
 	]
 [/if]
 [/item-list]
+
 [/try]
 
 [catch]
