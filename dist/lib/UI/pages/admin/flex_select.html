@@ -62,7 +62,8 @@
 [/if]
 
 [if-mm function="!tables" table="[cgi mv_data_table]"]
-[bounce page="__UI_BASE__/error"]
+[tmp errorurl][area href="__UI_BASE__/error" secure="@_UI_SECURE_@"][/tmp]
+[bounce href="[scratch errorurl]"]
 [/if-mm]
 
 <!-- sequence_edit: [cgi ui_sequence_edit] -->
