@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.11 2000-09-25 15:10:24 heins Exp $
+# $Id: Data.pm,v 1.12 2000-09-30 06:18:13 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,19 +101,18 @@ sub database_key_exists {
 
 sub product_code_exists_ref {
     my ($code, $base) = @_;
+
     my($ref);
-    if(defined $base and $base) {
+    if($base) {
         return undef unless $ref = $Vend::Productbase{$base};
         return $ref->ref() if $ref->record_exists($code);
     }
 
     my $return;
     foreach $ref (@Vend::Productbase) {
-        $ref = $ref->ref();
-        next unless $ref->record_exists($code);
-        $return = $ref;
+        return $ref if $ref->record_exists($code);
     }
-    return $return || undef;
+    return undef;
 }
 
 sub product_code_exists_tag {
@@ -123,11 +122,11 @@ sub product_code_exists_tag {
 		return $base if $Vend::Productbase{$base}->record_exists($code);
 		return 0;
 	}
-	my ($ref);
-	foreach $ref (@Vend::Productbase) {
+
+	foreach my $ref (@Vend::Productbase) {
 		return $Vend::Basefinder{$ref} if $ref->record_exists($code);
 	}
-	return 0;
+	return undef;
 }
 
 sub open_database {
