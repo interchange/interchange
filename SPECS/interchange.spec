@@ -7,7 +7,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.8.8
+Version: 4.8.9
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -370,6 +370,9 @@ fi
 
 
 %changelog
+* Mon Mar 29 2004 Jon Jensen <jon@icdevgroup.org> 4.8.9-1
+- Update for new release.
+
 * Fri Jan 24 2003 Jon Jensen <jon@icdevgroup.org> 4.8.7-1
 - Update for latest release.
 
