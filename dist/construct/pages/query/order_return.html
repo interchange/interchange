@@ -95,7 +95,7 @@ ui_template_name: leftonly
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-]<input type="checkbox" name="return_items" value="[sql-param code]">	<font __FFACE__ size="1"><input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]"></font>	<font __FFACE__ size="1">[sql-param sku]</font>	<font __FFACE__ size="1">[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
+]<input type="checkbox" name="return_items" value="[sql-param code]">	<font __FFACE__ size="1"><input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]"></font>	<font __FFACE__ size="1">[sql-param sku]</font>	<font __FFACE__ size="1">[description [sql-param sku]]<BR>[if-sql-data orderline size__MVC_FIELDMUNGE__]SIZE-->[sql-param size__MVC_FIELDMUNGE__][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
