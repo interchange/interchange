@@ -23,6 +23,16 @@
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
+	else {
+		$CGI->{showpending} = $Values->{showpending};
+		$CGI->{showarchive} = $Values->{showarchive};
+	}
+	if($CGI->{checked_status}) {
+		$Values->{checked_status} = $CGI->{checked_status};
+	}
+	else {
+		$Values->{checked_status} ||= '__UI_SHIPPED_STATUS__';
+	}
 	return;
 [/calc]
 [set icon_name]icon_orders.gif[/set]
@@ -162,6 +172,46 @@
 </tr>
 </table>
 
+[if !scratch old_browser]
+<script>
+	var stat_array = new Array;
+	function push_el (el, status) {
+		if(stat_array[status] == undefined) {
+			stat_array[status] = new Array;
+// alert('created ' + status + ' array');
+		}
+		var els = stat_array[status];
+		els[els.length] = el;
+	}
+
+	function checkType (type, cond) {
+		var other = false;
+		if(cond == undefined) 
+			cond = true;
+		if(cond != true) 
+			other = true;
+		if(stat_array == undefined) {
+			return;
+		}
+		var i;
+		var alerted;
+		for(i in stat_array) {
+// alert("checking status of " + i);
+			var els = stat_array[i];
+			for (var j = 0; j < els.length; j++) {
+				var el = document.getElementById(els[j]);
+				if(el != undefined) {
+					if(i == type) 
+						el.checked = cond;
+					else 
+						el.checked = other;
+				}
+			}
+		}
+	}
+</script>
+[/if]
+
 [if cgi ui_text_qualification]
 [if !cgi mv_like_spec]
 <H4>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H4>
@@ -185,6 +235,11 @@
 			sf=deleted
 			se=1
 			op=ne
+			[if cgi only_status]
+			sf=status
+			se=[cgi only_status]
+			op=eq
+			[/if]
 		[/else]
 		[/if]
 		[scratch start_at][set start_at][/set]
@@ -262,9 +317,16 @@
 <TD>
 <INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
 		[item-calc]
-			return if $Scratch->{archive_nm} eq 'unarchive';
-			return 'CHECKED' if q{[item-data transactions status]} eq '__UI_SHIPPED_STATUS__';
-			return;
+			my $string = '';
+			if(! $Scratch->{old_browser}) {
+				my $nm = 'checker[item-increment]';
+				push @els, qq{push_el('$nm', '[item-param status]');};
+				$string .= "id=$nm ";
+			}
+			return $string if $Scratch->{archive_nm} eq 'unarchive';
+			$string .= 'CHECKED'
+				if q{[item-param status]} eq $Values->{checked_status};
+			return $string;
 		[/item-calc]
 		>
 [page href="@@MV_PAGE@@"
@@ -314,23 +376,31 @@
 </tr>
 [/more-list]
 </table>
+[/search-region]
 
-[if scratch can_delete]
-[button form=batch text="[L]Delete checked orders[/L]"
- src="__UI_IMG__delete.gif"
- link-text-too=1
- confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
-[/button]
-[/if]
-&nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
+<table>
+<tr>
+	<td>
+		[if scratch can_delete]
+		[button form=batch text="[L]Delete checked orders[/L]"
+		 src="__UI_IMG__delete.gif"
+		 link-text-too=1
+		 confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
+		[/button]
+		[/if]
+&nbsp;
+	</td>
+	<td>
+		[button form=batch src="[scratch archive_img]"
 			 link-text-too=1
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
 			return errmsg("\u$tmp");
 			`]
 [scratch archive_nm]order=1[/button]
-
-&nbsp;&nbsp;&nbsp;[button form=batch src="__UI_IMG__icon_merch.gif"
+	</td>
+	<td>
+	[button form=batch src="__UI_IMG__icon_merch.gif"
 			link-text-too=1
 			text="Ship checked orders"
 			]
@@ -349,39 +419,32 @@ ui_sequence_edit=[calc]
 [/calc]
 mv_nextpage=__UI_BASE__/order_status
 [/button]
-
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
-<table>
-	<tr>
-		<td>
-
-<A HREF="javascript:checkAll(document.batch, 'order', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<A HREF="javascript:checkAll(document.batch, 'order', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
-
-		</td>
-
+	</td>
 [if scratch old_browser]
-	<td>
-<input type=checkbox name=ship_auto value=1> <span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]">Ship all automatically</span>
+	<td colspan=2>
+		<input
+			type=checkbox
+			name=ship_auto
+			value=1>
+				<span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]">Ship all automatically</span>
 	</td>
 [else]
 	<td>
-<script>
-	function div_vis (show) {
-		var el = document.getElementById('ship_auto_help');
-		el.style.display = show ? 'block' : 'none';
-	}
-</script>
+		<script>
+		[calc]
+			return join "\n", @els, '';
+		[/calc]
+			function div_vis (show) {
+				var el = document.getElementById('ship_auto_help');
+				el.style.display = show ? 'block' : 'none';
+			}
+		</script>
 		<span onMouseOver="div_vis(1)" onMouseOut="div_vis(0)">
 			<input type=checkbox name=ship_auto value=1> Ship all automatically
 		&nbsp;
-		&nbsp;
 		</span>
 		</td>
-		<td height=50>
+		<td rowspan=2>
 			<div
 				id=ship_auto_help
 				style="
@@ -393,16 +456,41 @@ mv_nextpage=__UI_BASE__/order_status
 				archive[if variable SETTLE_TRANSACTION], settle[/if]
 			</div>
 		</td>
-
 [/else]
 [/if]
-
 	</tr>
+[if !scratch old_browser]
+	<tr>
+		<td>
+			<A HREF="javascript:checkAll(document.batch, 'order', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</td>
+		<td>
+			<A HREF="javascript:checkAll(document.batch, 'order', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+
+		</td>
+		<td>
+[page href=__UI_BASE__/spread
+	  form="
+	  	mv_data_table=transactions
+		ui_meta_view=tracking
+		ui_text_qualification=tracking_number=
+	  "]<img src="__UI_IMG__box_checked.gif" border=0>Enter tracking numbers</A>  
+
+		</td>
+	<tr>
+			[loop list="shipped pending canceled partial"]
+				<td width=100>
+					<A HREF="javascript:checkType('[loop-code]')">
+						<img src="__UI_IMG__box_checked.gif" border=0>Check all [loop-code]
+					</A>
+				</td>
+			[/loop]
+	</tr>
+[/if]
 </table>
 </FORM>
-[/search-region]
 <!-- ----- END REAL STUFF ----- -->
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.9 2002-10-17 04:46:23 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.10 2002-10-18 06:00:10 mheins Exp $ -->

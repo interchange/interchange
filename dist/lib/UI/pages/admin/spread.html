@@ -31,6 +31,7 @@
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=ui_meta_view     value="[cgi ui_meta_view]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 
@@ -58,12 +59,11 @@
 [/if]
 </FORM>
 
-
-
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $table = $CGI->{mv_data_table};
 	my $db = $Db{$table};
 	my $mrec = $Tag->meta_record($table, $CGI->{ui_meta_view}) || {};
+	my $sp = q{@@MV_PAGE@@};
 	$mrec ||= {};
 	$mrec->{spread_fields} ||= join(" ", $db->columns());
 	$mrec->{spread_height} ||= 10;
@@ -71,8 +71,27 @@
 	$mrec->{spread_sort} ||= $key;
 	$CGI->{ui_description_field} = $mrec->{label};
 
+	my $qualbase = qq{
+				sp=$sp
+				st=db
+				ml=$mrec->{spread_height}
+				ms=0
+			};
+	my $qualsimple = qq{
+				fi=$table
+				rf=$CGI->{ui_data_key_name}
+				tf=$mrec->{spread_sort}
+			};
 	my $qual;
-	if ($CGI->{ui_text_qualification} and $CGI->{ui_text_qualification} =~ /=/ ) {
+	my $sstring;
+	if(! $CGI->{ui_text_qualification}) {
+		$qual = "ra=yes";
+	}
+	elsif ($CGI->{ui_text_qualification} =~ /^\s*select/ ) {
+		$qual = "sq=$CGI->{ui_text_qualification}";
+		$sstring = join "\n", $qualbase, $qual;
+	}
+	elsif ($CGI->{ui_text_qualification} =~ /=/ ) {
 		my ($f, $s) = split /\s*=\s*/, $CGI->{ui_text_qualification} , 2;
 		$qual = "co=1\nop=eq\nse=$s\nsf=$f";
 	}
@@ -83,6 +102,8 @@
 		$qual = "ra=yes";
 	}
 
+	$sstring ||= join "\n", $qualbase, $qualsimple, $qual;
+
 	my @fields = split /[\0\s,]+/, $mrec->{spread_fields};
 	@fields = grep length($_) && $_ ne $key, @fields;
 
@@ -92,17 +113,8 @@
 
 	$CGI->{mrec_spread_width} ||= $mrec->{spread_width} || 12; 
 
-	my $sp = q{@@MV_PAGE@@};
+	$Scratch->{mrec_options} = $sstring;
 
-	$Scratch->{mrec_options} = qq{
-				$qual
-				fi=$table
-				st=db
-				sp=$sp
-				ml=$mrec->{spread_height}
-				rf=$CGI->{ui_data_key_name}
-				tf=$mrec->{spread_sort}
-			};
 	$Scratch->{ui_num_col} = scalar(@fields) + 2;
 	$Scratch->{ui_most_col} = $Scratch->{ui_num_col} - 1; 
 	$Config->{NoSearch} = '';
@@ -119,6 +131,7 @@
 <INPUT TYPE=hidden NAME="mv_click" VALUE="process_filter">
 <INPUT TYPE=hidden NAME="mv_update_empty" VALUE="1">
 <INPUT TYPE=hidden NAME="mv_update_empty_key" VALUE="0">
+<INPUT TYPE=hidden NAME="ui_meta_view" value="[cgi ui_meta_view]">
 <INPUT TYPE=hidden NAME="ui_text_qualification" value="[cgi ui_text_qualification]">
 <INPUT TYPE=hidden NAME="ui_return_to" value="[cgi ui_return_to]">
 <INPUT TYPE=hidden NAME="mv_data_fields" VALUE="[cgi mv_data_fields]">

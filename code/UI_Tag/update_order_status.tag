@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.2 2002-10-18 03:05:51 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.3 2002-10-18 06:00:10 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -27,6 +27,7 @@ sub {
 	for(qw/
 			settle_transaction
 			void_transaction
+			cancel_order
 			status
 			do_archive
 			archive
@@ -36,6 +37,11 @@ sub {
 		/)
 	{
 		$opt->{$_} = $CGI::values{$_} if ! defined $opt->{$_};
+	}
+
+	if($opt->{ship_all} == 2 or $opt->{void_transaction} or $opt->{cancel_order}) {
+		$opt->{cancel_order} = 1;
+		$opt->{ship_all} = 2;
 	}
 
 	$opt->{archive} ||= $opt->{do_archive};
@@ -103,7 +109,6 @@ sub {
 		}
 	}
 	elsif($opt->{void_transaction}) {
-		$opt->{ship_all} = 1;
 		my $oid = $trec->{order_id};
 		$oid =~ s/\*$//;
 		my $amount = $trec->{total_cost};
@@ -198,7 +203,7 @@ sub {
 	my %shipping;
 	my %already;
 
-	my $target_status = $opt->{void_transaction} ? 'canceled' : 'shipped';
+	my $target_status = $opt->{cancel_order} ? 'canceled' : 'shipped';
 
 	for(@$lines_ary) {
 		my $code = $_->[$odb_keypos];
@@ -206,7 +211,7 @@ sub {
 		my $line = $code;
 		$line =~ s/.*\D//;
 		$line =~ s/^0+//;
-		if($status eq $target_status and ! $opt->{void_transaction}) {
+		if($status eq $target_status and ! $opt->{cancel_order}) {
 			$already{$line} = 1;
 		}
 		elsif($opt->{ship_all}) {
@@ -260,7 +265,7 @@ sub {
 
 	delete $::Scratch->{ship_now_complete};
 	
-	if($opt->{void_transaction}) {
+	if($opt->{cancel_order}) {
 		$g_status = 'canceled';
 		$ship_mesg = "Order $on canceled.";
 	}

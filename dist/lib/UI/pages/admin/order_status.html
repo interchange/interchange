@@ -113,6 +113,7 @@
 			}
 		}
 	}
+	document.tform.tracking_number.focus();
 </script>
 
 	<select name=ship_all onChange="copasetic(this, this.form)">
@@ -121,7 +122,9 @@
 		<option value=2> Cancel order
 	</select>
 
-	[button form=tform bold=1 text="[L]Update the order[/L]"]
+	[button form=tform
+			extra='style="font-weight: bold"'
+			text="[L]Update the order[/L]"]
 	mv_todo=back
 	order=[cgi code]
 	[tag flag write]orderline transactions[/tag]
@@ -143,7 +146,7 @@
 		[if scratch tmp_orderid]
 			<input type=checkbox name=settle_transaction value=1
 				onChange="copasetic(this, this.form)"
-				[if scratch tmp_orderid !~ /\*$/] CHECKED [/if]>
+				[if scratch tmp_orderid !~ /[-*]$/] CHECKED [/if]>
 					<b>Settle transaction</b>
 			&nbsp;
 			&nbsp;
@@ -164,6 +167,8 @@
 	key="[cgi order]"
 	form-name=tform
 	table-width="100%"
+	next-text="Update status only, no ship function"
+	ok-button-style="font-weight: normal; font-size: smaller"
 	no-table-meta=1
 	mv-nextpage="[scratch mv_nextpage]"
 	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
@@ -191,4 +196,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.7 2002-10-18 03:05:51 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.8 2002-10-18 06:00:10 mheins Exp $ -->
