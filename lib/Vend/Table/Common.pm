@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.12 2000-09-23 21:09:09 heins Exp $
+# $Id: Common.pm,v 1.13 2000-09-25 15:27:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -919,7 +919,7 @@ EndOfExcel
 				push @fh, $fh;
 				if($o[$i] =~ s/c//) {
 					$index .= <<EndOfIndex;
-			map { print { \$fh[$i] } "\$_\\t\$fields[0]\\n" } split /\s*,\s*/, \$fields[$fnum];
+			map { print { \$fh[$i] } "\$_\\t\$fields[0]\\n" } split /\\s*,\\s*/, \$fields[$fnum];
 EndOfIndex
 				}
 				else {
