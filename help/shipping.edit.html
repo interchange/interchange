@@ -1,6 +1,6 @@
 <html>
 <head>
-   <title>Tallyman Help: Create/edit shipping method</title>
+   <title>Interchange Help: Create/edit shipping method</title>
 
 </head>
 <body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999" >
@@ -47,7 +47,7 @@ Unless you are using the call for quote feature, you will have to specify a ship
 <p>
 <a name="quantity">Standard by quantity:</a> charges an amount according to how many items are ordered.
 <p>
-<a href="shipping.ups.html">UPS zones-based:</a>  Tallyman is pre-configured with UPS zones tables for ground, three day select, second day air, and next day air.  If you require zones support for Fedex, DHL, or USPS, please <a href="mailto:information@akopia.com">contact Akopia.</a>
+<a href="shipping.ups.html">UPS zones-based:</a>  Interchange is pre-configured with UPS zones tables for ground, three day select, second day air, and next day air.  If you require zones support for Fedex, DHL, or USPS, please <a href="mailto:information@akopia.com">contact Akopia.</a>
 <p>
 <b>Minimum shipping charge</b><br>
 The amount you enter into this field will be the minimum allowed quote for that particular shipping method.  For example, if you want to charge no less than $4.50 for ground shipping, enter "4.5" or "4.50" into this field.  Remember, you must set the minimum for each of your shipping methods, if you want each to have a minimum charge.
@@ -58,10 +58,10 @@ Here, you can enter any additional calculation you would like to apply to the sh
 
 <p>
 
-Although the shipping calculation engine that comes with Tallyman 
+Although the shipping calculation engine that comes with Interchange 
 is flexible and versatile, we realized that it still might not meet the 
 needs of all users.  We decided to include a feature that would 
-allow Tallyman administrators to modify the shipping charges that 
+allow Interchange administrators to modify the shipping charges that 
 were calculated in a simple way.  The "additional shipping 
 calculation" field can be used to enter a mathematical expression 
 that will be applied to a calculated shipping charge.  Here's how it 
@@ -110,7 +110,7 @@ x = x - (x * .1)
 <p>
 
 The character "x" represents the shipping charge as calculated by 
-the UPS algorithm.  Tallyman will automatically apply the above 
+the UPS algorithm.  Interchange will automatically apply the above 
 formula to the shipping charge, and charge the customer the new 
 total.
 
@@ -119,7 +119,7 @@ total.
 Here's how it would work for a real customer.  Customer A enters 
 the site and orders 50 lbs. of good to be shipped to Alaska by next 
 day air.  The UPS algorithm determines that the cost would be 
-$400.  Tallyman then substitutes 400 for "x" in your formula:
+$400.  Interchange then substitutes 400 for "x" in your formula:
 
 <p>
 
@@ -146,18 +146,18 @@ It is important to note that you *must* specify some sort of equality
 on the left hand side of the equation.
 <p>
 You can enter any valid mathematical expression.  You can reuse 
-the "x" variable as many times as you need to.  Tallyman validates 
+the "x" variable as many times as you need to.  Interchange validates 
 the expression you enter, so if you make a mistake it will inform 
 you, and the additional shipping calculation field will *not* be 
 updated.
 <p>
 
-All invalid characters are stripped out before Tallyman processes 
+All invalid characters are stripped out before Interchange processes 
 your equation.  That means that if you type in something like:
 <p>
 x = x * y + 300
 <p>
-the "y" will be removed, and Tallyman will see 
+the "y" will be removed, and Interchange will see 
 <p>
 x = x * + 300
 <p>
@@ -187,7 +187,7 @@ calculation will not be executed.
 
 <hr noshade size=2 width=100%>
 <font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-<a href="http://www.tallyman.com"><b>Tallyman</b></a><a href="http://www.akopia.com"><b> - ©1999 Akopia, Inc.</b></a></font>
+<a href="http://developer.akopia.com"><b>Interchange</b></a><a href="http://www.akopia.com"><b> - ©1999 Akopia, Inc.</b></a></font>
 
 </td>
 </tr>
