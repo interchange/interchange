@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.101 2003-03-09 01:06:14 racke Exp $
+# $Id: Config.pm,v 2.102 2003-03-31 20:32:55 ramoore Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.101 $, 10);
+$VERSION = substr(q$Revision: 2.102 $, 10);
 
 my %CDname;
 
@@ -1805,6 +1805,7 @@ sub parse_require {
 			$module =~ /[^\w:]/ and return undef;
 			if(! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
 				eval "require $module$oldtype;";
+				::logGlobal("while eval'ing module %s got [%s]", $module, $@) if ($@);
 				return ! $@;
 			}
 			else {
