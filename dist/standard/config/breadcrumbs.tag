@@ -136,9 +136,11 @@ sub {
 
 	if(! $exclude{$curpage}) {
 		my $form = '';
-		for(grep !$exclude_param{$_}, keys %$curparams) {
-		     $form .= "\n$_=";
-		     $form .= join("\n$_=", split /\0/, $curparams->{$_});
+		if(! $CGI->{bread_no_params}) {
+			for(grep !$exclude_param{$_}, keys %$curparams) {
+				 $form .= "\n$_=";
+				 $form .= join("\n$_=", split /\0/, $curparams->{$_});
+			}
 		}
 		$crumb = {
 			key => $keyname,
