@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.44 2003-02-12 03:59:12 mheins Exp $
+# $Id: Order.pm,v 2.45 2003-02-26 16:30:46 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -610,6 +610,7 @@ sub guess_cc_type {
 	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)			{ 'dinersclub' }
 	elsif ($ccnum =~ /^38\d{12}$/)							{ 'carteblanche' }
 	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)				{ 'enroute' }
+	elsif ($ccnum =~ /^56\d{14}$/)                          { 'bankcard' }
 	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)	{ 'jcb' }
 	else													{ 'other' }
 }
