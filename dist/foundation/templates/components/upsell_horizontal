@@ -21,7 +21,7 @@
 		  </tr>
 		  <tr> 
 			<td align="center">
-				<b>[order [loop-code]]Buy Now[/order]</b>
+			  [order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]
 			</td>
 		  </tr>
 		  <tr> 

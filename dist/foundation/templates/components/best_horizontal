@@ -70,7 +70,7 @@ cols:
 				[else][order [loop-code]]
 				[/else]
 				[/if-loop-data]
-					Buy Now
+				  <a href="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">
 				</A></b>
 			</td>
 		  </tr>

@@ -83,7 +83,7 @@ banner:
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
-				[/if-loop-data]Buy Now[/order]</b>
+				[/if-loop-data]<img border="0" alt="buy now" src="__THEME_IMG_DIR__buynow.gif">[/order]</b>
 		</td>
 	  </tr>
 	  <tr> 

@@ -29,25 +29,31 @@
     list="[scratch promo_codes]"
          ] 
 <table border="0" cellspacing="0" cellpadding="0">
-	<tr bgcolor="#FF9900" align="center" valign="middle"> 
-		  <td><font size="2" color="#FFFFFF"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">[scratch vbanner]</font></b></i></font></td>
+	<tr class="categorybar" align="center" valign="middle"> 
+		  <td class="categorybar">
+			<b>[scratch vbanner]</b>
+		  </td>
 	</tr>
 	<tr align="center"> 
 	  <td>
 [list]
 		<table border="0" cellspacing="0" cellpadding="0">
 		  <tr> 
-			<td align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>
+			<td align="center">
+			  <b>
 		[if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
 		[else]
 			[loop-description]
 		[/else]
 		[/if-loop-data]
-			</b></font></td>
+			  </b>
+			</td>
 		  </tr>
 		  <tr> 
-			<td align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b>[order [loop-code]]Buy Now[/order]</b></font></font></td>
+			<td align="center">
+				[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]
+			</td>
 		  </tr>
 		  <tr> 
 			<td align="center"> 
