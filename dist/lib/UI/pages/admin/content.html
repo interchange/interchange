@@ -12,11 +12,9 @@
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE=+1>
+<blockquote class=cerror>
 [scratchd ui_error]
-</FONT>
-</BLOCKQUOTE>
+</blockquote>
 [/if]
 
 [calc]
@@ -69,10 +67,8 @@
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
 <B>There were errors:<br>
-<blockquote>
-<FONT color="__CONTRAST__">
+<blockquote class=cerror>
 	[error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
-</font>
 </blockquote>
 [/if]
 

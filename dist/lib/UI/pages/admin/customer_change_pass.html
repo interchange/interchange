@@ -10,17 +10,17 @@
 [if session failure]
 <P>
 &nbsp;
-<BLOCKQUOTE>
-<FONT COLOR=RED>Failure:</FONT> [data session failure][data base=session field=failure value=""]
-</BLOCKQUOTE>
+<blockquote class=cerror>
+	Failure: [data session failure][data base=session field=failure value=""]
+</blockquote>
 <P>
 &nbsp;
 [/if]
 
 [if scratch ui_message]
 <P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
+<BLOCKQUOTE class=cmessage>
+	[scratchd ui_message]
 </BLOCKQUOTE>
 <P>
 &nbsp;

@@ -147,8 +147,7 @@ return;
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 [if scratch ui_failure]
-	<FONT COLOR=RED>Failed:
-	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
+	<blockquote class=cerror>Failed: [scratchd ui_failure] </blockquote>
 [/if]
 
 <FORM METHOD=POST ACTION="[area process]">
@@ -355,9 +354,9 @@ EOF
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
          <td width="60%" class=cdata> 
-           <FONT SIZE="-1">$WIDGET$</FONT>
+           <span style="font-size: smaller>$WIDGET$</span>
          </td>
-         <td class=chelp><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</FONT></td>
+         <td class=chelp><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</span></td>
        </tr>
      </table>
    </td>
@@ -365,7 +364,7 @@ EOF
 ),
 									});
 		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
-			$meta .= '<BR><FONT SIZE=1>';
+			$meta .= '<BR><span style="font-size: small;">';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
 			my $page = $Tag->var('MV_PAGE', 1);
@@ -390,9 +389,9 @@ EOF
 										ui_return_to=item_id=$CGI->{item_id}
 										ui_return_to=mv_return_table=$t
 										}
-							}) . 'item-specific meta</A></FONT>'
+							}) . 'item-specific meta</A></span>'
 				if $CGI->{ui_meta_specific};
-			$meta .= '</FONT>';
+			$meta .= '</span>';
 		}
         #unless ($label) {
             #$Document->write ($display);

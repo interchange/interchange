@@ -62,7 +62,7 @@
 	my $tcount = 0;
 	for (@tables) {
 		my $tname = $_;
-		my $bgcol = ($tcount++ % 2) ? '__UI_T_ROW_ODD__' : '__UI_T_ROW_EVEN__';
+		my $rclass = ($tcount++ % 2) ? 'rnorm' : 'ralt';
 		my $tinfo = '';
 		if($mdb and $mdb->record_exists($tname) ) {
 			$tinfo = $mdb->field($tname, 'label');
@@ -102,7 +102,7 @@
 		my $obj   = $ref->{Object};
 		$out .= <<EOF;
 <TR>
-	<TH VALIGN=TOP ALIGN=RIGHT width="15%" BGCOLOR="$bgcol">
+	<TH VALIGN=TOP ALIGN=RIGHT width="15%" class=$rclass>
 	$tname$tinfo
 	</TH>
 	<td VALIGN=TOP>

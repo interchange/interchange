@@ -19,7 +19,7 @@
 	$Config->{NoSearch} = '';
 	my $db = $Db{userdb};
 	if(! $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no userdb database.</FONT><BR>";
+		$Scratch->{error_message} = "<span class=cerror>Error: no userdb database.</span><BR>";
 		$Scratch->{ui_location} = "__UI_BASE__/error";
 		return;
 	}
@@ -63,9 +63,9 @@
 	}
 	if(@errors) {
 		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
+		return "<span class=cerror>Error$plural:<UL><LI>" .
 				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
+				"</UL></span><BR>";
 	}
 	if($CGI->{viewnext}) {
 		#Log("viewnext");
@@ -128,12 +128,10 @@
 
 
 [if scratch message]
-<BLOCKQUOTE>
-[scratch message]
-</BLOCKQUOTE>
-[set message][/set]
+	<blockquote class=cmessage>
+		[scratchd message]
+	</blockquote>
 [/if]
-</font>
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 

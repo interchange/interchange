@@ -130,9 +130,9 @@
 	}
 	if(@errors) {
 		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
+		return "<span CLASS=error>Error$plural:<UL><LI>" .
 				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
+				"</UL></span><BR>";
 	}
 	return;
 [/perl]
@@ -179,20 +179,15 @@
 [/if]
 
 [if scratch ui_failure]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</FONT>
-</BLOCKQUOTE>
-<P>
-&nbsp;
+<blockquote class=cerror>
+	[scratchd ui_failure]
+</blockquote>
 [/if]
+
 [if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_message][set ui_message][/set]</FONT>
-</BLOCKQUOTE>
-<P>
-&nbsp;
+	<blockquote class=cmessage>
+		[scratchd ui_message]
+	</blockquote>
 [/if]
 
 [if-mm !super]

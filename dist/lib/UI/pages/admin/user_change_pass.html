@@ -22,22 +22,15 @@
 @_UI_STD_HEAD_@
 
 [if session failure]
-<P>
-&nbsp;
-<BLOCKQUOTE>
-<FONT COLOR=RED>[L]Failure:[/L]</FONT> [data session failure][data base=session field=failure value=""]
-</BLOCKQUOTE>
-<P>
-&nbsp;
+	<blockquote class=cerror>
+		[L]Failure:[/L] [data session failure][data base=session field=failure value=""]
+	</blockquote>
 [/if]
 
 [if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
-</BLOCKQUOTE>
-<P>
-&nbsp;
+	<blockquote class=cmessage>
+		[scratchd ui_message]
+	</blockquote>
 [/if]
 
 <FORM ACTION="[process]" METHOD=POST>

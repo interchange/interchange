@@ -63,9 +63,9 @@
 	return;
 [/perl]
 [if scratch ui_failure]
-<BLOCKQUOTE>
-<FONT COLOR=__CONTRAST__>[msg arg.0="[scratchd ui_failure]"]Error: %s[/msg]</FONT>
-</BLOCKQUOTE>
+	<blockquote class=cerror>
+		[msg arg.0="[scratchd ui_failure]"]Error: %s[/msg]
+	</blockquote>
 [/if]
 <FORM METHOD=POST ACTION="[base-url]/ui">
 <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">

@@ -107,12 +107,12 @@
 					help_name=affiliate.edit
 				"][item-code]</A></TD>
 <TD VALIGN=top>[item-data affiliate name]</TD>
-<TD VALIGN=top><font size=1>linkback:&nbsp;<A href="[item-data affiliate url]">[item-data affiliate url]</A><br>
+<TD VALIGN=top><span style="font-size: small">linkback:&nbsp;<A href="[item-data affiliate url]">[item-data affiliate url]</A><br>
 entry:&nbsp;[calc]
 	my $url = $Config->{VendURL};
 	$url .=  q{?mv_pc=[item-code]};
 	return qq{<A HREF="$url">$url</A>};
-[/calc]</font>
+[/calc]</span>
 </TD>
 <TD ALIGN=CENTER VALIGN=TOP>[page href="__UI_BASE__/reports/order/ByAffiliate"
 				form="
@@ -137,8 +137,7 @@ entry:&nbsp;[calc]
 </td>
 </tr>
 [/no-match]
-<tr bgcolor="#000000" height=1><td colspan=5></td></tr>
-<tr bgcolor="#FFFFFF" height=8><td colspan=5></td></tr>
+<tr class=rborder height=1><td colspan=5></td></tr>
 [more-list]
 <tr>
 <td colspan=5 align=center>
