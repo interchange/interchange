@@ -52,7 +52,7 @@ function open_quicklinks() {
 </script>
 
 </head>
-<body bgcolor="#ffffff" link="#0000ee" alink="#0000ee" vlink="#551a8b">
+<body bgcolor="#ffffff" link="#0000ee" alink="#0000ee" vlink="#0000ee">
 <!-- ----- BEGIN TITLEBAR ----- -->
 
 <table width="100%" height="22" 
@@ -86,7 +86,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="22">
 
-<a href="[area admin/genstats]">
+<a href="[area admin/orderstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
