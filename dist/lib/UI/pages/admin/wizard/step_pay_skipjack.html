@@ -1,0 +1,40 @@
+[set page_title]Payment Preferences - Skipjack[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.authorizenet[/set]
+@_UI_STD_HEAD_@
+
+<table width=500><tr><td align=left>
+Enter the values used to enable payment processing through Skipjack.
+</td></tr></table>
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage=__UI_BASE__/wizard/step_security
+	mv_prevpage=__UI_BASE__/wizard/step_pay
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	widget.code=text_10
+
+	ui_data_fields="code paymentid "
+	ui_display_only="paymentid"
+	ui_hide_key="1"
+
+	check.paymentid=mandatory
+	label.paymentid="Skipjack Account ID"
+	help.paymentid="You should have received this when you signed up"
+	widget.paymentid=text_20
+
+]
+
+@_UI_STD_FOOTER_@

@@ -5,9 +5,9 @@
 @_UI_STD_HEAD_@
 
 [if session browser =~ /mozilla.*gecko/i]
-	[set options_paygate]~~Offline credit card handling~~,none=no credit cards, pgp=PGP sent Credit cards,~~Real-time payment~~, cc=CyberCash, signio=Signio/Verisign, authorize=Authorize.net[/set]
+	[set options_paygate]~~Offline credit card handling~~,none=no credit cards, pgp=PGP sent Credit cards,~~Real-time payment~~, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
 [else]
-	[set options_paygate]none=no credit cards, pgp=PGP sent Credit cards,cc=CyberCash, signio=Signio/Verisign, authorize=Authorize.net[/set]
+	[set options_paygate]none=no credit cards, pgp=PGP sent Credit cards, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
 [/else]
 [/if]
 
@@ -93,12 +93,23 @@ at a later date.
 		}
 		elsif ($CGI->{paygate} eq 'cc') {
 			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_cyber';
+			$Values->{payment_mode} = 'cybercash';
 		}
 		elsif ($CGI->{paygate} eq 'signio') {
 			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_signio';
+			$Values->{payment_mode} = 'signio';
 		}
 		elsif ($CGI->{paygate} eq 'authorize') {
 			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_auth';
+			$Values->{payment_mode} = 'authorizenet';
+		}
+		elsif ($CGI->{paygate} eq 'itransact') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_itransact';
+			$Values->{payment_mode} = 'itransact';
+		}
+		elsif ($CGI->{paygate} eq 'skipjack') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_skipjack';
+			$Values->{payment_mode} = 'skipjack';
 		}
 		else {
 			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_security';
