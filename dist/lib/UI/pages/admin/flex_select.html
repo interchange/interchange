@@ -291,7 +291,7 @@
 							if $CGI->{ui_sort_field} eq $f
 									and
 								$CGI->{ui_sort_option} !~ /r/;
-
+						$o .= 'n' if $numeric{$f};
 						return qq(
 							ui_text_qualification=$ui_text_qualification
 							mv_data_table=$CGI->{mv_data_table}
@@ -306,7 +306,7 @@
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 
-<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/flex_editor form="
+<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/flex_editor form=|
 									mv_data_table=[cgi mv_data_table]
 									ui_page_title=[cgi ui_page_title]
 									ui_page_title=[cgi ui_page_banner]
@@ -314,7 +314,7 @@
 									ui_return_to=@@MV_PAGE@@
 									ui_return_to=mv_data_table=[cgi mv_data_table]
 									item_id=[item-code]
-						"][item-code]</A></TD>
+						|][item-code]</A></TD>
 [item-sub show_line]
 sub {
 	my ($pre, $post) = split /\t/, shift;
@@ -323,6 +323,7 @@ sub {
 	shift (@$line);
 	my $out = '';
 	for(@$line) {
+		s/\[/&#91;/g;
 		$out .= "<TD>" . $Tag->filter('entities', $_) . "</TD>";
 	}
 	return $out . "\n";
