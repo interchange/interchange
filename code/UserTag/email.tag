@@ -18,7 +18,7 @@ sub {
 	}
 	$extra =~ s/\s*$/\n/ if $extra;
         $extra .= "From: $from\n" if $from;
-	@extra = split('\n', $extra);
+	@extra = grep /\S/, split(/\n/, $extra);
 
     SEND: {
             $ok = send_mail($to, $subject, $body, $reply, 0, @extra);
