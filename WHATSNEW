@@ -1,3 +1,24 @@
+Interchange 4.6.1
+
+* Added new SessionType "NFS", which forces fcntl_lock/fcntl_unlock in
+  SessionFile.pm (bug #76).
+
+* Report missing DBDs at startup time by working around DBI bug that causes
+  $@ to be eaten (bug #75).
+
+* Miscellaneous bugfixes, thanks to Jean-Philippe Bouchard:
+  - Fixed Data.pm bug that caused flypage problems (bug #60).
+  - Fixed spreadsheet edit auto export bug (bug #59).
+
+* Link program fixes, thanks to minivend@delionsweb.net:
+  - Fixed tlink.pl LINK_PORT problem (bug #61).
+  - Fixed compile_link 'nosuid' option failure (bug #66).
+
+* Construct Something changes:
+  - Fixed stock alert price problem (bug #57).
+  - Fixed 'title' vs. 'description' field issues. Thanks to Steve Gertz.
+
+
 Interchange 4.6.0
 
 * Minor final changes

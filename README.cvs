@@ -74,12 +74,12 @@ to make a distribution tar file:
 	Writing Makefile for Interchange
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
-	-e "manicopy(maniread(),'interchange-4.6.0', 'best');"
-	mkdir interchange-4.6.0
-	mkdir interchange-4.6.0/dist
+	-e "manicopy(maniread(),'interchange-4.6.1', 'best');"
+	mkdir interchange-4.6.1
+	mkdir interchange-4.6.1/dist
 	....
 	$ ls interch*
-	interchange-4.X.X.tar.gz
+	interchange-4.6.1.tar.gz
 
 =head2 Unpack and install
 
@@ -146,5 +146,5 @@ a C<make tardist> or C<make dist>, just do:
 
 =head2 Trying to run from the CVS directory
 
-If you install in the directory where your CVS image lies, you will have
+If you install in the directory where your CVS image lives, you will have
 problems.
