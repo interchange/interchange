@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.6
 #
-# $Id: interchange.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: interchange.PL,v 2.1 2001-07-19 16:51:40 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1255,27 +1255,10 @@ my %form_action = (
 											$::Values->{mv_order_route},
 											$Vend::Items
 											);
+						return 1 unless $ok;
 					}
 
 					$result_hash = {} unless $result_hash;
-
-					my $mode = $CGI::values{mv_payment_mode};
-					if (! $ok and defined $Vend::Cfg->{ActionMap}{$mode}) {
-						($ok, $status) = $Vend::Cfg->{ActionMap}{$mode}->();
-					}
-					elsif(
-							$Vend::Cfg->{CyberCash}
-							and defined $CGI::values{mv_cyber_mode}
-						)
-					{
-#::logDebug("Cyber charge");
-						$status = cyber_charge();
-						unless($status) {
-							$CGI::values->{mv_nextpage} = find_special_page('failed')
-								if ! $CGI::values->{mv_nextpage};
-							return 1;
-						}
-					}
 
 # TRACK
                     $Vend::Track->finish_order ();

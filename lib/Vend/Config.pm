@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: Config.pm,v 2.1 2001-07-19 16:51:40 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 my %CDname;
 
@@ -453,7 +453,7 @@ sub catalog_directives {
 	['SeparateItems',    'yesno',			 'No'],
 	['PageSelectField',  undef,     	     ''],
 	['NonTaxableField',  undef,     	     ''],
-	['CyberCash',	 	 'yesno',     	     'No'],
+	['CyberCash',	 	 'warn',     	     ''],
 	['CreditCardAuto',	 'yesno',     	     'No'],
 	['NoCache',	     	 'boolean',    	     ''],
 	['ClearCache',	     'yesno',     	     'No'],
