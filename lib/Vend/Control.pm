@@ -1,6 +1,6 @@
-# Rare.pm - Interchange routines rarely used or not requiring much performance
+# Control.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.5 2000-09-25 15:24:48 heins Exp $
+# $Id: Control.pm,v 1.5.2.1 2000-10-20 16:35:41 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,8 +38,6 @@ require Exporter;
 				change_global_directive
 				remove_catalog
 				add_catalog
-				change_catalog_directive
-				change_global_directive
 /;
 
 use strict;
@@ -102,33 +100,6 @@ EOF
 	kill $sig, $pid
 		or die errmsg("Interchange server would not stop.\n");
 	exit 0 unless $restart;
-}
-
-sub change_catalog_directive {
-	my($cat, $line) = @_;
-	$line =~ s/^\s+//;
-	my($dir,$val) = split /\s+/, $line, 2;
-	my $ref = Vend::Config::set_directive($dir,$val);
-	die "Bad directive '$line'.\n" unless defined $ref;
-	$cat->{$ref->[0]} = $ref->[1];
-	return 1;
-}
-
-sub change_global_directive {
-	my($line) = @_;
-	chomp $line;
-	$line =~ s/^\s+//;
-	my($dir,$val) = split /\s+/, $line, 2;
-	my $ref = Vend::Config::set_directive($dir,$val,1);
-	die "Bad directive '$line'.\n" unless defined $ref;
-	no strict 'refs';
-	${"Global::" . $ref->[0]} = $ref->[1];
-	$Global::Structure->{$ref->[0]} = $ref->[1]
-		if $Global::DumpStructure;
-
-	dump_structure($Global::Structure, $Global::ConfigFile)
-		if $Global::DumpStructure;
-	return 1;
 }
 
 sub remove_catalog {
@@ -205,13 +176,13 @@ EOF
 }
 
 sub change_catalog_directive {
-	my($cat, $line) = @_;
-	$line =~ s/^\s+//;
-	my($dir,$val) = split /\s+/, $line, 2;
-	my $ref = Vend::Config::set_directive($dir,$val);
-	die "Bad directive '$line'.\n" unless defined $ref;
-	$cat->{$ref->[0]} = $ref->[1];
-	return 1;
+    my($cat, $line) = @_;
+    $line =~ s/^\s+//;
+    my($dir,$val) = split /\s+/, $line, 2;
+    my $ref = Vend::Config::set_directive($dir,$val);
+    die "Bad directive '$line'.\n" unless defined $ref;
+    $cat->{$ref->[0]} = $ref->[1];
+    return 1;
 }
 
 sub change_global_directive {
@@ -226,7 +197,7 @@ sub change_global_directive {
 	$Global::Structure->{$ref->[0]} = $ref->[1]
 		if $Global::DumpStructure;
 
-	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ConfigFile")
+	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
 		if $Global::DumpStructure;
 	return 1;
 }
