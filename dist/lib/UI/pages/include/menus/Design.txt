@@ -1,8 +1,9 @@
 code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
-001	01	x001					admin/layout	fi=products&st=db&co=1&sf=description&se=brush&op=rm&nu=0&su=1&ml=50&tf=title&to=x	Site layout		0							
+001	01	x001					admin/layout		Site layout		0							
 002	02	x002					admin/search_wizard		Search Builder		0							
 003	03	x003					admin/button_builder		Button Builder		0							
 004	04	x004					admin/regenerate		Generate Static		0							
 005	05	x005					admin/file_transfer		File Transfer		0							
 006	06	x006					admin/content		Page Edit		0							
 007		x007					admin/menu_editor		Menu editor		0	Edit the UI menus, and the menus for the site						
+008		x008				`$Scratch->{help_name} eq 'layout.edit'`	admin/layout_auto		Auto-populate layout		0	Create vertical_category list stuff, deprecated for menu_editor						

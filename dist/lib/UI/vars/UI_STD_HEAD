@@ -101,297 +101,102 @@ Variable UI_STD_HEAD <<EOV
 [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
 <script language="JavaScript">
 <!--
-
 function open_help(url) {
-	if(url == undefined) 
-		url = '[area href="[either][var UI_HELP_URL 2][or][var UI_BASE]/help[/either]" form="topic=[scratch help_name]"]';
-	opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
-	window.open(url, 'Help', opts);
+ if(url == undefined) 
+  url = '[area href="[either]@_UI_HELP_URL_@[or]@_UI_BASE_@/help[/either]" form="topic=[scratch help_name]"]';
+ opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
+ window.open(url, 'Help', opts);
 }
-
 function checkAll(form,what,uncheck) {
-	var i, n, check;
-	n = form.elements[what].length;
-	if (!n) {
-		if (uncheck == 1) {
-			form.elements[what].checked=false;
-		} else {
-			form.elements[what].checked=true;
-		}
-	} else {
-		if (what != "deleteid" || sure()) {
-			var checkval;
-			if (uncheck == 1) { checkval=false; } else { checkval=true; }
-			for (i=0; i < n; i++) {
-				check = form.elements[what][i];
-				check.checked = checkval;
-			}
-		}
-	}
+ var i, n, check;
+ n = form.elements[what].length;
+ if (!n) {
+  if (uncheck == 1) {
+   form.elements[what].checked=false;
+  } else {
+   form.elements[what].checked=true;
+  }
+ } else {
+  if (what != "deleteid" || sure()) {
+   var checkval;
+   if (uncheck == 1) { checkval=false; } else { checkval=true; }
+   for (i=0; i < n; i++) {
+    check = form.elements[what][i];
+    check.checked = checkval;
+   }
+  }
+ }
 }
-
 function addItem(selector, receptor, joiner) {
-	if (joiner == null) { joiner = " "; } else { joiner = "\n"; }
-	if (receptor.value != '') receptor.value = receptor.value + joiner;
-	if (selector[selector.selectedIndex].value != null) {
-		receptor.value = receptor.value + selector[selector.selectedIndex].value;
-	} else {
-		if (selector[selector.selectedIndex].text != null) {
-			receptor.value = receptor.value + selector[selector.selectedIndex].text;
-		}
-	}
-	return true;
+ if (joiner == null) { joiner = " "; } else { joiner = "\n"; }
+ if (receptor.value != '') receptor.value = receptor.value + joiner;
+ if (selector[selector.selectedIndex].value != null) {
+  receptor.value = receptor.value + selector[selector.selectedIndex].value;
+ } else {
+  if (selector[selector.selectedIndex].text != null) {
+   receptor.value = receptor.value + selector[selector.selectedIndex].text;
+  }
+ }
+ return true;
 }
-
 //-->
 </SCRIPT>
-<STYLE TYPE="text/css">
-<!--
-/* background colour styles */
-.interfacemain {
-	background-color: #D4D0C8;
-}
-.tabdark {
-	background-color: #B4B0AA;
-}
-.hrdark {
-	background-color: #404040;
-}
-.hrmedium {
-	background-color: #E4E4E4;
-}
-.hrlight {
-	background-color: #FFFFFF;
-}
-.headerrow {
-	background-color: #CCCCCC;
-}
-.tabborder {
-	background-color: #404040;
-}
-.tablightborder {
-	background-color: #FFFFFF;
-}
-.vr {
-	background-color: #999999;
-}
-/* font styles */
-.heading {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	font-weight: normal;
-	color: #000000;
-}
-.maincontent {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	font-weight: normal;
-	color: #333333;
-	background: #ffffff;
-}
-.footerb {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	font-weight: bold;
-	color: #333333;
-}
-.footer {
+<link href="@_UI_IMAGE_DIR_@ic.css" rel="stylesheet" type="text/css" title="Main IC stylesheet">
+<link href="@_UI_IMAGE_DIR_@ic1.css" rel="alternate stylesheet" type="text/css" title="Working IC stylesheet">
+</STYLE>[calc]
+		%cstyles = (
+						interfacemain	=> '#D4D0C8',
+						tabdark			=> '#B4B0AA',
+						hrdark			=> '#404040',
+						hrmedium		=> '#E4E4E4',
+						hrlight			=> '#FFFFFF',
+						headerrow		=> '#CCCCCC',
+						tabborder		=> '#404040',
+						tablightborder	=> '#FFFFFF',
+						vr				=> '#999999',
+					);
 
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	font-weight: normal;
-	color: #333333;
-}
-.shrink {
-	font-size: 2px;
-}
-/* link styles */
-A.btnfont:link, A.btnfont:visited, A.btnfont:active {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	font-weight: normal;
-	color: #333333;
-    text-decoration:none;
-}
-A.btnfont:hover {
-    color: #000000;
-	font-size: 10px;
-    text-decoration:underline;
-}
+		my @styles = keys %cstyles;
+		if($CGI->{set_styles}) {
+			for(@styles) {
+				$CGI->{$_} =~ s/[^#\w]+//g;
+				if($CGI->{$_}) {
+					$Scratch->{$_} = $CGI->{$_};
+				}
+			}
+		}
+		if($CGI->{reset_styles}) {
+			for(@styles) {
+				delete $Scratch->{$_};
+			}
+		}
 
-A.menufont:link, A.menufont:visited, A.menufont:active {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	font-weight: normal;
-	color: #333333;
-    text-decoration:none;
+		$Scratch->{interesting} ||= 'interfacemain tabdark';
+		if($CGI->{interesting}) {
+			my @ary =  grep /^\w+$/, split /[\s,\0]+/, $CGI->{interesting};
+			$Scratch->{interesting} = join " ", @ary;
+		}
+
+		my @interested =  grep /^\w+$/, split /[\s,\0]+/, $Scratch->{interesting};
+		@interesting{@interested} = @interested;
+
+		for(@styles) {
+			next unless $Scratch->{$_};
+
+			push @out, qq(.$_ {
+	background-color: $Scratch->{$_};
 }
-A.menufont:hover {
-    color: #000000;
-	font-size: 11px;
-    text-decoration:underline;
-}
-
-
-BODY { 
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 11px;
-}
-
-TD { 
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 10px;
-}
-
-.margin { 
-  margin-top: 0px; 
-  margin-left: 0px;
-}
-
-A:link { 
-  text-decoration: none; 
-  font-weight: normal; 
-  color: __UI_C_LINK__;
-  font-size: 10px;
-}
-
-A:hover { 
-  text-decoration: underline; 
-  font-weight: normal; 
-  color: __UI_C_LINK__;
-  font-size: 11px;
-}
-
-A:active { 
-  text-decoration: none; 
-  font-weight: normal; 
-  color: __UI_C_ALINK__;
-  font-size: 11px;
-}
-
-A:visited {
-  text-decoration: none; 
-  font-weight: normal; 
-  color: __UI_C_VLINK__;
-  font-size: 11px;
-}
-
-.ctitle  { 
-  font-weight: bold; 
-  color: white;
-  font-size: 11px;
-}
-
-.cheader  { 
-  font-weight: bold; 
-  color: __UI_C_HEADERTXT__;
-  font-size: 11px;
-}
-
-A:link.ctitle  { 
-  text-decoration: none;
-  font-weight: bold; 
-  color: white;
-  font-size: 11px;
-}
-
-A:hover.ctitle { 
-  text-decoration: underline; 
-  font-weight: bold; 
-  color: yellow; 
-  font-size: 11px;
-}
-
-A:active.ctitle { 
-  text-decoration: underline; 
-  font-weight: bold; 
-  color: yellow; 
-  font-size: 11px;
-}
-
-A:visited.ctitle {  
-  text-decoration: none;
-  font-weight: bold; 
-  color: white;
-  font-size: 11px;
-}
-
-.cbreak { 
-  font-weight: bold; 
-  font-size: 11px;
-}
-
-.cdata { 
-  vertical-align: center;
-  font-size: 11px;
-}
-
-.cerror { 
-  color: red; 
-  font-size: 11px;
-}
-
-.cmessage { 
-  color: green; 
-  font-size: 11px;
-}
-
-.chelp { 
-  vertical-align: center; 
-  font-size: 11px; 
-}
-
-.clabel { 
-  text-align: left; 
-  font-weight: bold; 
-  font-size: 11px;
-}
-
-.cwidget { 
-  vertical-align: center; 
-  font-size: 11px; 
-}
-
-.ralt { 
-  background-color: __UI_T_ROW_ODD__; 
-} 
-
-.rbreak { 
-  background-color: __UI_T_ROW_ODD__; 
-}
-
-.rmarq { 
-  background-color: __UI_C_TITLEBARBG__; 
-}
-
-.rnorm { 
-  background-color: __UI_T_ROW_EVEN__; 
-}
-
-.rborder { 
-  background-color: __UI_C_TOPBLOCKBAR__; 
-}
-
-.rspacer { 
-  background-color: __UI_C_TITLEBARBG__; 
-}
-
-.rtitle { 
-  background-color: __UI_C_TITLEBARBG__; 
-}
-
-.rheader { 
-  background-color: __UI_C_TITLEBARBG__; 
-  color: __UI_C_HEADERTXT__; 
-}
-
-
--->
-</STYLE>
+);
+		}
+		if(@out) {
+			return join "\n", '<STYLE>', @out, '</STYLE>';
+		}
+		return;
+[/calc]
+[if value personal_css]<style>[value personal_css]</style>[/if]
 [scratchd meta_header]
 </head>
-
-<body [scratch ui_body_extra] bgcolor="__UI_C_BG__" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body [scratch ui_body_extra] leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <!-- outer wrapper table to enable the interface to scale to full browser height -->
 <table width="100%" height="100%" border=0 cellpadding=0 cellspacing=0>
 	<tr>
@@ -465,18 +270,25 @@ A:visited.ctitle {
 
 [menu
 	  name=Top
+	  menu-type=flyout
+	  anchor_down=1
 	  inactive=inactive
 	  localize=name
 	  indicator=indicator
 	  ui_security=depends_on
+	  flyout_class=tabdark
+	  link_class=menufont
 	  entities=description
 	  lr=1]
+{MV_LEVEL:}
 {INDICATED:}
 	<!-- class={NAME} down -->
 											<td valign=bottom>
 												<table width="100%" border=0 cellspacing=0 cellpadding=0>
 													<tr>
-														<td width=14 rowspan=3 class=shrink><a href="{HREF}" title="{DESCRIPTION}"><img border=0 src="tab_dark_left.gif"></A></td>
+														<td width=14 rowspan=3 class=shrink><a
+			href="{PAGE}"
+			title="{DESCRIPTION}"><img border=0 src="tab_dark_left.gif"></A></td>
 														<td height=1 width=69 class=tabborder><img src="bg.gif" height=1></td>
 														<td width=2 rowspan=3><img src="tab_dark_right.gif"></td>
 													</tr>
@@ -484,7 +296,13 @@ A:visited.ctitle {
 														<td height=2><img src="bg.gif" height=1></td>
 													</tr>
 													<tr>
-														<td height=13 align=left valign=top><a href="{HREF}" title="{DESCRIPTION}" class=btnfont style="font-size: larger">{NAME}</a>&nbsp;&nbsp;</td>
+														<td height=13 align=left valign=top><a
+		id="{CODE}"
+		href="{PAGE}"
+		onMouseOver="mousein(this)"
+		onMouseOut="mouseout(this)"
+		title="{DESCRIPTION}"
+		class=menufont>{NAME}</a>&nbsp;&nbsp;</td>
 													</tr>
 													<tr>
 														<td height=1 colspan=3 class=hrdark><img src="bg.gif" height=1></td>
@@ -511,7 +329,7 @@ A:visited.ctitle {
 		<td height=1><img src="bg.gif" height=1></td>
 	</tr>
 	<tr>
-		<td height=13 align=left valign=top><a href="{HREF}" title="{DESCRIPTION}" class=btnfont style="font-size: larger">{NAME}</a>&nbsp;&nbsp;&nbsp;</td>
+		<td height=13 align=left valign=top><a href="{HREF}" title="{DESCRIPTION}" class=menufont>{NAME}</a>&nbsp;&nbsp;&nbsp;</td>
 	</tr>
 	<tr>
 		<td height=1 colspan=3><img src="bg.gif" height=1></td>
@@ -522,6 +340,7 @@ A:visited.ctitle {
 </table>
 </td>
 {/INDICATED?}
+{/MV_LEVEL:}
 [/menu]
 										</tr>
 									</table>

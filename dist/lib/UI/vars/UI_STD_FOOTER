@@ -14,21 +14,21 @@ Variable UI_STD_FOOTER  <<EOV
 	</tr>
 	<!-- start of bottom -->
 	<tr>
-		<td valign="bottom">
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<td valign=bottom>
+			<table width="100%" border=0 cellpadding=0 cellspacing=0>
 				<tr>
-					<td height="1" class="hrmedium"><img src="bg.gif" height="1"></td>
+					<td height=1 class=hrmedium><img src="bg.gif" height=1></td>
 				</tr>
 				<tr>
-					<td height="24" class="tabdark">
-						<table border="0" cellspacing="0" cellpadding="0">
+					<td height=24 class=tabdark>
+						<table border=0 cellspacing=0 cellpadding=0>
 							<tr>
-								<td width="6"><img src="bg.gif"></td>
+								<td width=6><img src="bg.gif"></td>
 								<td><img src="icfooter.gif"></td>
-								<td nowrap class="footer">
+								<td nowrap class=footer>
 									[version] &copy; 2002-2003 Interchange Development Group&nbsp;&nbsp;&nbsp;
-									<font class="footerb">[msg]Username[/msg]: </font>[data session username]&nbsp;&nbsp;&nbsp;
-									<font class="footerb">[msg]StoreID[/msg]: </font> <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a>&nbsp;&nbsp;&nbsp;
+									<font class=footerb>[msg]Username[/msg]: </font>[data session username]&nbsp;&nbsp;&nbsp;
+									<font class=footerb>[msg]StoreID[/msg]: </font> <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a>&nbsp;&nbsp;&nbsp;
 									  [tag time]%d %B %Y %H:%M:%S[/tag] &nbsp;([var MV_PAGE 1])
 								</td>
 							</tr>

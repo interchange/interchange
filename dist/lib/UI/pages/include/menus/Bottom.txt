@@ -3,3 +3,4 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 002		x002					javascript:window.name = 'mainwindow';window.open('http://sam.heins.net/cgi-bin/found/admin/quicklinks.html?id=t4sVjsyw&mv_arg=&mv_pc=2312','Quicklinks','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0		Quicklinks		0	Window with quick links to commonly-used functions						
 003		x003				reconfig	admin/reconfig		Apply Changes		0	Apply changes made to configuration						
 004		x004					admin/login		Log out		0	Log out as an administrator						
+005		x005					javascript:open_help()	Help%20on%20this%20screen	Help		0							

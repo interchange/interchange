@@ -41,4 +41,3 @@ code	mgroup	msort	inactive	page	form	name	description	extended
 040		x040	0	index		<b>Go to catalog</b>		
 041		x041	0	admin/login		<b>Logout</b>		
 042		x042	0	admin/reconfig		<b>Apply Changes</b>		
-043		x043	0	search	fi=products&st=db&co=1&sf=title&se=brush&op=rm&nu=0&su=1&ml=3&tf=title&to=x	Testing search build		
