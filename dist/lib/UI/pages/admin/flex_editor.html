@@ -10,6 +10,13 @@
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
 [flag type=write table="[cgi mv_data_table]"]
 
+[if cgi ui_new_item]
+	[calc]
+		$CGI->{item_id} = q{[counter file="products/[cgi mv_data_table].autonumber" start=new0000]};
+		return;
+	[/calc]
+[/if]
+
 @_UI_STD_DBEDIT_HEAD_@
 @_UI_STD_HEAD_@
 @_UI_STD_DBEDIT_TABLE_@
