@@ -1,4 +1,4 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	special	help_name	img_dn	img_up	img_sel	img_icon	url
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
 0001	Top	01		Orders		order	admin/order		Orders			View and manage incoming orders, archive and access past orders		B2.gif	B2_b.gif	B2_b.gif	icon_orders.gif	
 0002	Top	02		Customers		userdb	admin/customer		Customers			View and manage customer information and order history		B3.gif	B3_b.gif	B3_b.gif	icon_people.gif	
 0003	Top	03		Items		item	admin/item		Items			Add and edit items displayed for sale on the site		B4.gif	B4_b.gif	B4_b.gif	icon_item.gif	
