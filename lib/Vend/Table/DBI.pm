@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0.2.5 2002-01-24 05:07:03 jon Exp $
+# $Id: DBI.pm,v 2.0.2.6 2002-06-17 15:57:28 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0.2.5 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
 
 use strict;
 
@@ -1189,7 +1189,7 @@ sub foreign {
 	$key = $s->[$DBI]->quote($key)
 		unless exists $s->[$CONFIG]{NUMERIC}{$foreign};
 	my $query = "select $s->[$KEY] from $s->[$TABLE] where $foreign = $key";
-#::logDebug("DBI field: key=$key column=$column query=$query");
+#::logDebug("DBI field: key=$key query=$query");
     my $sth;
 	eval {
 		$sth = $s->[$DBI]->prepare($query);
