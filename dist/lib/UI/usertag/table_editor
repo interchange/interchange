@@ -5,18 +5,200 @@ UserTag table-editor AttrAlias table mv_data_table
 UserTag table-editor AttrAlias mv_data_fields ui_data_fields
 UserTag table-editor AttrAlias key   item_id
 UserTag table-editor AttrAlias view  ui_meta_view
+UserTag table-editor AttrAlias profile ui_profile
 UserTag table-editor hasEndTag
 UserTag table-editor Routine <<EOR
 sub {
 	my ($table, $key, $opt, $template) = @_;
-	return undef unless $table;
 
 	package Vend::Interpolate;
-	#use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable/;
+	#use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable $ready_safe/;
 
 	init_calc();
 
-	my $error = sub {
+	my @messages;
+	my @errors;
+
+	FORMATS: {
+		no strict 'refs';
+		my $ref;
+		for(qw/
+					default     
+					error       
+					extra       
+					filter      
+					height      
+					help        
+					label       
+					override    
+					pre_filter  
+					widget      
+					width       
+				/ )
+		{
+#::logDebug("doing te_hash $_");
+			next if ref $opt->{$_};
+#::logDebug("te_hash $_ not a ref");
+			($opt->{$_} = {}, next) if ! $opt->{$_};
+#::logDebug("te_hash $_ has a value");
+			my $ref = {};
+			my $string = $opt->{$_};
+#::logDebug("te_hash $_ = $string");
+			$string =~ s/^\s+//gm;
+			$string =~ s/\s+$//gm;
+#::logDebug("te_hash $_ now = $string");
+			while($string =~ m/^(.+?)=\s*(.+)/g) {
+				$ref->{$1} = $2;
+#::logDebug("te_hash $1 = $2");
+			}
+			$opt->{$_} = $ref;
+		}
+	}
+
+	my $check       = $opt->{check};
+	my $default     = $opt->{default};
+	my $error       = $opt->{error};
+	my $extra       = $opt->{extra};
+	my $filter      = $opt->{filter};
+	my $height      = $opt->{height};
+	my $help        = $opt->{help};
+	my $label       = $opt->{label};
+	my $override    = $opt->{override};
+	my $pre_filter  = $opt->{pre_filter};
+	my $widget      = $opt->{widget};
+	my $width       = $opt->{width};
+#::logDebug("widget=" . ::uneval_it($widget) );
+
+	my $blabel      = $opt->{begin_label} || '<b>';
+	my $elabel      = $opt->{end_label} || '</b>';
+	my $mlabel = '';
+
+	if($opt->{cgi}) {
+		my @mapdirect = qw/
+			item_id
+			item_id_left
+			mv_data_decode
+			mv_data_table
+			mv_blob_field
+			mv_blob_nick
+			mv_blob_pointer
+			mv_blob_label
+			mv_blob_title
+			ui_break_before
+			ui_break_before_label
+			ui_data_fields
+			ui_data_fields_all
+			ui_data_key_name
+			ui_display_only
+			ui_hide_key
+			ui_meta_specific
+			ui_meta_view
+			ui_nextpage
+			ui_new_item
+			ui_sequence_edit
+			ui_clone_id
+			ui_clone_tables
+			ui_delete_box
+			mv_update_empty
+		/;
+		for(@mapdirect) {
+			next if ! defined $CGI->{$_};
+			$opt->{$_} = $CGI->{$_};
+		}
+		my @hmap = (
+			[ qr/^ui_te_check:/, $check ],
+			[ qr/^ui_te_default:/, $default ],
+			[ qr/^ui_te_extra:/, $extra ],
+			[ qr/^ui_te_widget:/, $widget ],
+			[ qr/^ui_te_override:/, $override ],
+			[ qr/^ui_te_filter:/, $filter ],
+			[ qr/^ui_te_pre_filter:/, $pre_filter ],
+			[ qr/^ui_te_height:/, $height ],
+			[ qr/^ui_te_width:/, $width ],
+			[ qr/^ui_te_help:/, $help ],
+		);
+		my @cgi = keys %{$CGI};
+		foreach my $row (@hmap) {
+			my @keys = grep $_ =~ $row->[0], @cgi;
+			for(@keys) {
+#::logDebug("found key $_");
+				/^ui_\w+:(\S+)/
+					and $row->[1]->{$1} = $CGI->{$_};
+#::logDebug("set $1=$_");
+			}
+		}
+		$table = $opt->{mv_data_table};
+		$key = $opt->{item_id};
+	}
+
+	$opt->{color_success} = $Variable->{UI_C_SUCCESS} || '#00FF00'
+		if ! $opt->{color_success};
+	$opt->{color_fail} = $Variable->{UI_CONTRAST} || '#FF0000'
+		if ! $opt->{color_fail};
+	### Build the error checking
+	my $error_show_var = 1;
+	my $have_errors;
+	if($opt->{ui_profile} or $check) {
+		$Tag->error( { all => 1 } ) if ! $CGI->{mv_form_profile};
+		my $prof = $opt->{ui_profile} || '';
+		if(ref $check) {
+			while ( my($k, $v) = each %{$check}) {
+				$error->{$k} = 1;
+				$v =~ s/\s+$//;
+				$v =~ s/^\s+//;
+				$v =~ s/\s+$//mg;
+				$v =~ s/^\s+//mg;
+				$error_show_var = 0 if $v =~ /\S /;
+				$v =~ s/^required\b/mandatory/mg;
+				$v =~ /^\&/m
+						or 
+					$v =~ s/^/$k=$1/mg, $v =~ s/\n/\n&and\n/g;
+				$prof .= "$v\n";
+			}
+		}
+		elsif ($check) {
+			for (@_ = grep /\S/, split /[\s,]+/, $check) {
+				$error->{$_} = 1;
+				$prof .= "$_=mandatory\n";
+			}
+		}
+		$opt->{hidden} = {} if ! $opt->{hidden};
+		$opt->{hidden}{mv_form_profile} = 'ui_profile';
+		my $fail = $opt->{mv_failpage} || $Global::Variable->{MV_PAGE};
+		$prof .= <<EOF;
+&fail=$fail
+&fatal=1
+mv_form_profile=mandatory
+&set=mv_todo set
+EOF
+		$Scratch->{ui_profile} = $prof;
+		$blabel = $elabel = '';
+		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<B>Bold</B> fields are required');
+		$have_errors = $Tag->error( {
+									all => 1,
+									show_var => $error_show_var,
+									show_error => 1,
+									joiner => '<BR>',
+									keep => 1}
+									);
+		if($opt->{all_errors}) {
+			if($have_errors) {
+				$mlabel .= '<P>Errors:';
+				$mlabel .= qq{<FONT COLOR="$opt->{color_fail}">};
+				$mlabel .= "<BLOCKQUOTE>$have_errors</BLOCKQUOTE></FONT>";
+			}
+		}
+	}
+	### end build of error checking
+
+	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
+	$opt->{clear_image} = "admin/bg.gif" if ! $opt->{clear_image};
+	$opt->{clear_image} = "$ui_img$opt->{clear_image}"
+		if $opt->{clear_image} !~ m{^(https?:|)/};
+
+
+#::logDebug("table-editor opt: " . ::uneval($opt));
+	my $die = sub {
 		::logError(@_);
 		$Scratch->{ui_error} .= "<BR>\n" if $Scratch->{ui_error};
 		$Scratch->{ui_error} .= ::errmsg(@_);
@@ -24,25 +206,20 @@ sub {
 	};
 
 	my $db = Vend::Data::database_exists_ref($table)
-		or return $error->('table-editor: bad table %s', $table);
+		or return $die->('table-editor: bad table %s', $table);
 
 	$Variable->{UI_META_TABLE} = 'mv_metadata' if ! $Variable->{UI_META_TABLE};
 
 	my $mdb = Vend::Data::database_exists_ref($Variable->{UI_META_TABLE})
-		or return $error->('table-editor: bad meta table %s', $table);
+		or return $die->('table-editor: bad meta table %s', $table);
 
 	my $keycol = $db->config('KEY');
 
+	my $view_table;
+	$view_table = "$CGI::values{ui_meta_view}::$table"
+		if $CGI::values{ui_meta_view};
 	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
 		if $opt->{form_name};
-
-	my $widget = ref $opt->{widget} ? $opt->{widget} : {};
-	my $extra = ref $opt->{extra} ? $opt->{extra} : {};
-	my $default = ref $opt->{default} ? $opt->{default} : {};
-	my $override = ref $opt->{override} ? $opt->{override} : {};
-	my $filter = ref $opt->{filter} ? $opt->{filter} : {};
-	my $height = ref $opt->{height} ? $opt->{height} : {};
-	my $width = ref $opt->{width} ? $opt->{width} : {};
 
 	###############################################################
 	# Get the field display information including breaks and labels
@@ -50,24 +227,37 @@ sub {
 	if( $mdb
 		and ! $opt->{ui_data_fields}
 		and ! $opt->{ui_data_fields_all}
-		and $mdb->record_exists($table)
+		and
+			(
+			$view_table && $mdb->record_exists($view_table)
+				or
+			undef $view_table
+				or 
+			$mdb->record_exists($table)
+			)
 		)
 	{
-		$opt->{ui_data_fields} = $mdb->field($table, 'options');
-		$opt->{ui_data_fields} =~ s/\r\n/\n/g;
-		$opt->{ui_data_fields} =~ s/\r/\n/g;
-		if($opt->{ui_data_fields} =~ /\n\n/) {
-			my @breaks;
-			my @break_labels;
-			while ($opt->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
-				push @breaks, $2;
-				push @break_labels, "$2=$1" if $1;
-			}
-			$opt->{ui_break_before} = join " ", @breaks;
-			$opt->{ui_break_before_label} = join ",", @break_labels;
+::logDebug("meta info for table: view_table=$view_table table=$table");
+		$opt->{ui_data_fields} = $mdb->field($view_table || $table, 'options');
+	}
+
+	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
+	$opt->{ui_data_fields} =~ s/\r/\n/g;
+
+	if($opt->{ui_data_fields} =~ /\n\n/) {
+#::logDebug("Found break fields");
+		my @breaks;
+		my @break_labels;
+		while ($opt->{ui_data_fields} =~ s/\n+(?:\n=(.*))?\n+(\w+)/\n$2/) {
+			push @breaks, $2;
+			push @break_labels, "$2=$1" if $1;
 		}
-		$opt->{ui_data_fields} =~ s/^\s+//;
-		$opt->{ui_data_fields} =~ s/\s+$//;
+		$opt->{ui_break_before} = join(" ", @breaks)
+			if ! $opt->{ui_break_before};
+#::logDebug("break_before=$opt->{ui_break_before}");
+		$opt->{ui_break_before_label} = join(",", @break_labels)
+			if ! $opt->{ui_break_before_label};
+#::logDebug("break_before_label=$opt->{ui_break_before_label}");
 	}
 
 	$opt->{ui_data_fields} = $opt->{mv_data_fields} || (join " ", $db->columns())
@@ -108,13 +298,171 @@ sub {
 	if($opt->{ui_clone_id} and $db->record_exists($opt->{ui_clone_id})) {
 		$data = $db->row_hash($opt->{ui_clone_id})
 			or
-			return $error->('table-editor: row_hash function failed for %s.', $key);
+			return $die->('table-editor: row_hash function failed for %s.', $key);
 		$data->{$keycol} = $key;
 	}
 	elsif ($db->record_exists($key)) {
 		$data = $db->row_hash($key);
 		$exists = 1;
 	}
+
+	if ($opt->{reload} and $have_errors) {
+		if($data) {
+			for(keys %$data) {
+				$data->{$_} = $CGI->{$_}
+					if defined $CGI->{$_};
+			}
+		}
+		else {
+			$data = { %$CGI };
+		}
+	}
+
+
+	my $blob_data;
+	my $blob_widget;
+	if($opt->{mv_blob_field}) {
+#::logDebug("checking blob");
+
+		my $blob_pointer;
+		$blob_pointer = $data->{$opt->{mv_blob_pointer}}
+			if $opt->{mv_blob_pointer};
+
+		DOBLOB: {
+
+			unless ( $db->column_exists($opt->{mv_blob_field}) ) {
+				push @errors, ::errmsg(
+									"blob field %s not in database.",
+									$opt->{mv_blob_field},
+								);
+				last DOBLOB;
+			}
+
+			my $bstring = $data->{$opt->{mv_blob_field}};
+
+#::logDebug("blob: bstring=$bstring");
+
+			my $blob;
+
+			if(length $bstring) {
+				$blob = $ready_safe->reval($bstring);
+				if($@) {
+					push @errors, ::errmsg("error reading blob data: %s", $@);
+					last DOBLOB;
+				}
+#::logDebug("blob evals to " . ::uneval_it($blob));
+
+				if(ref($blob) !~ /HASH/) {
+					push @errors, ::errmsg("blob data not a storage book.");
+					undef $blob;
+				}
+			}
+			else {
+				$blob = {};
+			}
+			my %wid_data;
+			my %url_data;
+			my @labels = keys %$blob;
+			for my $key (@labels) {
+				my $ref = $blob->{$_};
+				my $lab = $ref->{$opt->{mv_blob_label} || 'name'};
+				if($lab) {
+					$lab =~ s/,/&#44/g;
+					$wid_data{$lab} = "$key=$key - $lab";
+					$url_data{$lab} = $Tag->page( {
+											href => $Global::Variable->{MV_PAGE},
+											form => "
+												item_id=$opt->{item_id}
+												mv_blob_nick=$key
+											",
+										});
+					$url_data{$lab} .= "$key - $lab</A>";
+				}
+				else {
+					$wid_data{$key} = $key;
+					$url_data{$key} = $Tag->page( {
+											href => $Global::Variable->{MV_PAGE},
+											form => "
+												item_id=$opt->{item_id}
+												mv_blob_nick=$key
+											",
+										});
+					$url_data{$key} .= "$key</A>";
+				}
+			}
+#::logDebug("wid_data is " . ::uneval_it(\%wid_data));
+			$opt->{mv_blob_title} = "Stored settings"
+				if ! $opt->{mv_blob_title};
+
+			$Scratch->{Load} = <<EOF;
+[return-to type=click page="$Global::Variable->{MV_PAGE}"]
+ui_nextpage=
+[perl]Log("tried to go to $Global::Variable->{MV_PAGE}"); return[/perl]
+mv_todo=back
+EOF
+#::logDebug("blob_pointer=$blob_pointer blob_nick=$opt->{mv_blob_nick}");
+
+			my $loaded_from;
+			if( $opt->{mv_blob_nick} ) {
+				$loaded_from = $opt->{mv_blob_nick};
+			}
+			else {
+				$loaded_from = "current values";
+			}
+			$loaded_from = <<EOF;
+<I>(loaded from $loaded_from)</I><BR>
+EOF
+			if(@labels) {
+				$loaded_from .= "Load from:<BLOCKQUOTE>";
+				$loaded_from .=  join (" ", @url_data{ sort keys %url_data });
+				$loaded_from .= "</BLOCKQUOTE>";
+			}
+
+			my $checked;
+			my $set;
+			if( $opt->{mv_blob_only} and $opt->{mv_blob_nick}) {
+				$checked = ' CHECKED';
+				$set 	 = $opt->{mv_blob_nick};
+			}
+
+			$blob_widget = $Tag->widget({
+									name => 'mv_blob_nick',
+									type => 'combo',
+									filter => 'nullselect',
+									override => 1,
+									set => "$set",
+									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
+									});
+
+			my $checked = $opt->{mv_blob_only} ? ' CHECKED' : '';
+			$blob_widget = <<EOF if $blob_widget;
+<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+	 <td>
+	   <SMALL>$opt->{mv_blob_title}<BR>
+		$loaded_from
+	 </td>
+	 <td>
+	 	<SMALL><B>Save to:</B> $blob_widget&nbsp;
+		<INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;Save&nbsp;here&nbsp;only</SMALL>
+	 </td>
+</TR>
+
+<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
+<td colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+</tr>
+EOF
+
+		if($opt->{mv_blob_nick}) {
+			my $ref = $blob->{$opt->{mv_blob_nick}}
+				or last DOBLOB;
+			for(keys %$ref) {
+				$data->{$_} = $ref->{$_};
+			}
+		}
+
+		}
+	}
+
 #::logDebug("data is: " . ::uneval($data));
 	$data = { $keycol => $key }
 		if ! $data;
@@ -132,9 +480,10 @@ sub {
 		if $opt->{href} !~ m{^(https?:|)/};
 
 	$opt->{method} = $opt->{get} ? 'GET' : 'POST';
+	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
 	my $out = <<EOF;
-<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}>
+<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}>
 <INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
@@ -147,6 +496,10 @@ EOF
 						ui_hide_key
 						ui_meta_view
 						ui_data_decode
+						mv_blob_field
+						mv_blob_label
+						mv_blob_title
+						mv_blob_pointer
 						mv_update_empty
 						mv_data_auto_number
 						mv_data_function
@@ -157,6 +510,7 @@ EOF
 						ui_sequence_edit
 					/ );
 
+	push(@opt_set, splice(@cgi_set, 0)) if $opt->{CGI};
 	for(@opt_set) {
 		next unless length $opt->{$_};
 		my $val = $opt->{$_};
@@ -171,7 +525,6 @@ EOF
 		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
 	}
 
-
 	if(ref $opt->{hidden}) {
 		my ($hk, $hv);
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
@@ -179,10 +532,8 @@ EOF
 		}
 	}
 
-	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
-	$opt->{clear_image} = "admin/bg.gif" if ! $opt->{clear_image};
-	$opt->{clear_image} = "$ui_img$opt->{clear_image}"
-		if $opt->{clear_image} !~ m{^(https?:|)/};
+	$out .= $Tag->return_to();
+	$Scratch->{Ok} = $Tag->return_to('click');
 
 	$out .= <<EOF;
 <table width="60%" border="" cellspacing="0" cellpadding="0" bordercolor="$Variable->{UI_C_TITLEBARBG}">
@@ -197,21 +548,25 @@ EOF
 EOF
 
 	  #### Extra buttons
-      $out .= <<EOF if $linecount > 4;
+      my $extra_ok =	$blob_widget
+	  					|| $linecount > 4
+						|| defined $opt->{include_form}
+						|| $mlabel;
+      $out .= <<EOF if $extra_ok;
 <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
 <td>&nbsp;</td>
 <td align=left>
 <B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
 </B>
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">$mlabel
 </TD>
 </TR>
 
 <tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
 <td colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
-
+$blob_widget
 EOF
 	  #### Extra buttons
 
@@ -374,6 +729,26 @@ EOF
 
 	my $refkey = $key;
 
+	my @data_enable = ($opt->{mv_blob_pointer}, $opt->{mv_blob_field});
+	my @ext_enable;
+ 	my $row_template = $opt->{row_template} || <<EOF;
+ <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+   <td align=left width=150> 
+     <font color="$Variable->{UI_C_TEXT}" size="-1">$blabel\$LABEL\$$elabel~META~
+   </td>
+   <td valign=TOP> 
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td width="60%"> 
+           <FONT SIZE="-1">\$WIDGET\$</FONT>
+         </td>
+         <td><FONT SIZE="-1">~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+       </tr>
+     </table>
+   </td>
+ </tr>
+EOF
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -398,16 +773,30 @@ EOF
 			$t = $1;
 			$c = $2;
 			$k = $3 || undef;
-			$Scratch->{mv_data_enable} .= " $t "
-				unless $do or $Scratch->{mv_data_enable} =~ /\b$t\b/;
+			push @ext_enable, ("$t:$c" . $k ? ":$k" : '')
+				unless $do;
 		}
 		else {
 			$t = $table;
 			$c = $col;
+			push @data_enable, $c
+				unless $do;
 		}
 
 		my $type;
-		if($do or $col =~ /:/) {
+		my $overridden;
+
+		if (defined $override->{$c} ) {
+			$currval = $override->{$c};
+			$overridden = 1;
+::logDebug("hit override for $col,currval=$currval");
+		}
+		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
+			$currval = delete $CGI->{"ui_preload:$t:$c"};
+			$overridden = 1;
+#::logDebug("hit preload for $col,currval=$currval");
+		}
+		elsif($do or $col =~ /:/) {
 			if(defined $k) {
 				my $check = $k;
 				undef $k;
@@ -421,60 +810,64 @@ EOF
 				$k = defined $key ? $key : $refkey;
 			}
 			$currval = tag_data($t, $c, $k) if defined $k;
-			$type = 'value' if $do;
-Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
+#::logDebug("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
 		}
-		elsif (defined $override->{$c} ) {
-			$currval = $override->{$c};
-			$override = 1;
-Log("hit preload for $col,currval=$currval");
-		}
-		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
-			$currval = delete $CGI->{"ui_preload:$t:$c"};
-			$override = 1;
-Log("hit preload for $col,currval=$currval");
-		}
-		elsif( length $data->{$col} ) {
-Log("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
-			$currval = $data->{$col};
-		}
-		elsif (defined $default->{$c} ) {
+		elsif (defined $default->{$c} and ! length($data->{$c}) ) {
 			$currval = $default->{$c};
-Log("hit preload for $col,currval=$currval");
+::logDebug("hit preload for $col,currval=$currval");
+		}
+		else {
+::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
+			$currval = $data->{$col};
+			$overridden = 1;
+		}
+
+		$type = 'value' if $do;
+
+		if (! length $currval and defined $default->{$c}) {
+			$currval = $default->{$c};
 		}
 
 		my $meta = '';
+		my $template = $row_template;
+		if($error->{$c}) {
+			my $parm = {
+					name => $c,
+					std_label => '$LABEL$',
+					required => 1,
+					};
+			if($opt->{all_errors}) {
+				$parm->{keep} = 1;
+				$parm->{text} = <<EOF;
+<FONT COLOR="$opt->{color_fail}">\$LABEL\$</FONT><!--%s-->
+[else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
+EOF
+			}
+			else {
+				$parm->{std_label} = '$LABEL$';
+			}
+			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
+		}
+		$template =~ s/~TKEY~/$tkey_message || ''/eg;
+#::logDebug("widget=$widget->{$c} (type=$type)");
 		my $display = $Tag->display({
-										table => $t,
-										column => $c,
-										name => $col,
-										key => $key,
-										type => $widget->{$c} || $type,
-										height => $height->{$c},
-										width => $width->{$c},
-										filter => $filter->{$c},
-										default => $currval,
-										override => $override,
 										arbitrary => $opt->{ui_meta_view},
+										column => $c,
+										default => $currval,
 										extra => $extra->{$c},
 										fallback => 1,
-										template => qq(
- <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
-   <td align=left width=150> 
-     <font color="$Variable->{UI_C_TEXT}" size="-1"><b>\$LABEL\$</b>~META~
-   </td>
-   <td valign=TOP> 
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td width="60%"> 
-           <FONT SIZE="-1">\$WIDGET\$</FONT>
-         </td>
-         <td><FONT SIZE="-1">$tkey_message<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
-       </tr>
-     </table>
-   </td>
- </tr>
-),
+										filter => $filter->{$c},
+										height => $height->{$c},
+										help => $help->{$c},
+										label => $label->{$c},
+										key => $key,
+										name => $col,
+										override => $overridden,
+										pre_filter => $pre_filter->{$c},
+										table => $t,
+										type => $widget->{$c} || $type,
+										width => $width->{$c},
+										template => $template,
 									});
 		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
 			$meta .= '<BR><FONT SIZE=1>';
@@ -490,7 +883,7 @@ Log("hit preload for $col,currval=$currval");
 								form => qq{
 										item_id=$id
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=item_id=$opt->{item_id}
 										ui_return_to=ui_return_table=$t
 										}
 							});
@@ -499,11 +892,11 @@ Log("hit preload for $col,currval=$currval");
 							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::${c}::$key
-										mv_data_table=mv_metadata
+										mv_data_table=$Variable->{UI_META_TABLE}
 										ui_hide_key=1
 										ui_meta_view=metaconfig
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=item_id=$opt->{item_id}
 										ui_return_to=ui_return_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
@@ -520,6 +913,25 @@ EOF
 		$out .= $display;
 	}
 
+	$Scratch->{mv_data_enable} = '';
+	if($opt->{auto_secure}) {
+		$Scratch->{mv_data_enable} .= "$table:" . join(",", @data_enable) . ':';
+		$Scratch->{mv_data_enable_key} = $opt->{item_id};
+	}
+	if(@ext_enable) {
+		$Scratch->{mv_data_enable} .= " " . join(" ", @ext_enable) . " ";
+	}
+
+	###
+	### Here the user can include some extra stuff in the form....
+	###
+	$out .= <<EOF if $opt->{include_form};
+<tr>
+<td colspan=2 BGCOLOR="$Variable->{UI_T_ROW_EVEN}">$opt->{include_form}</td>
+</tr>
+EOF
+	### END USER INCLUDE
+
 	$out .= <<EOF;
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="$opt->{ui_data_fields}">
 <tr>
@@ -529,14 +941,15 @@ EOF
 <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
 <td>&nbsp;</td>
 <td align=left>
-<B><INPUT TYPE=submit VALUE=Ok></B>
+<B><INPUT TYPE=submit NAME=mv_click VALUE=Ok></B>
 &nbsp;
 &nbsp;
 <INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
 EOF
-
 	if($Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
-		my $checked = $opt->{export} ? ' CHECKED' : '';
+		my $checked = ' CHECKED';
+		$checked = ''
+			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
 		$out .= <<EOF;
 <small>
 &nbsp;
@@ -549,13 +962,59 @@ EOF
 
 	}
 
+	if($exists and ! $opt->{nodelete} and $Tag->if_mm('tables', "$table=d")) {
+		my $extra = $Tag->return_to('click');
+		my $page = $CGI->{ui_return_to};
+		$page =~ s/\0.*//s;
+		my $url = $Tag->area( {
+					href => $page,
+					form => qq!
+						deleterecords=1
+						ui_delete_id=$key
+						mv_data_table=$table
+						mv_click=db_maintenance
+						mv_action=back
+					!,
+					});
+		$out .= <<EOF;
+<BR><A
+onClick="return confirm('Are you sure you want to delete $key?')"
+HREF="$url"><IMG SRC="${ui_img}admin/delete.gif" ALT="Delete $key" BORDER=0></A> Delete
+EOF
+	}
+
+	my $message = '';
+#	if($opt->{bottom_errors}) {
+#		my $err = $Tag->error( {
+#									show_var => $error_show_var,
+#									show_error => 1,
+#									joiner => '<BR>',
+#								}
+#								);
+#		push @errors, $err if $err;
+#	}
+	if(@errors) {
+		$message .= '<P>Errors:';
+		$message .= qq{<FONT COLOR="$opt->{color_fail}">};
+		$message .= '<BLOCKQUOTE>';
+		$message .= join "<BR>", @errors;
+		$message .= '</BLOCKQUOTE></FONT>';
+	}
+	if(@messages) {
+		$message .= '<P>Messages:';
+		$message .= qq{<FONT COLOR="$opt->{color_success}">};
+		$message .= '<BLOCKQUOTE>';
+		$message .= join "<BR>", @messages;
+		$message .= '</BLOCKQUOTE></FONT>';
+	}
+	$Tag->error( { all => 1 } );
 	$out .= <<EOF;
 </small>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><img src="$opt->{clear_image}" height=3 alt=x></td>
+<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><!-- $Scratch->{Ok} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 
 </table>
