@@ -162,7 +162,8 @@ UserTag table-organize Routine <<EOR
 sub {
 	my ($cols, $opt, $body) = @_;
 	$cols = int($cols) || 2;
-	$body =~ s/(.*?)(<td)\b/$2/is;
+	$body =~ s/(.*?)(<td)\b/$2/is
+		or return;
 	my $out = $1;
 	$body =~ s:(</td>)(?!.*</td>)(.*):$1:is;
 	my $postamble = $2;
