@@ -701,7 +701,6 @@ pdf/icinstall.pdf
 pdf/icintro.pdf
 pdf/ictemplates.pdf
 perl/Interchange.pm
-pod/deprecated.sdf
 pod/icbackoffice.pod
 pod/icconfig.pod
 pod/icdatabase.pod
