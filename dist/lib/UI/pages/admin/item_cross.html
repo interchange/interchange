@@ -7,8 +7,8 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:description cross_sell cross_category blurb_begin blurb_end';
-		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
+		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__ cross_sell cross_category blurb_begin blurb_end';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'blurb_begin';

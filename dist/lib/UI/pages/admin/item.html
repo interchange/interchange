@@ -112,7 +112,7 @@
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
 		[else]
-			tf=description
+			tf=__UI_ITEM_DESCRIPTION__
 		[/else]
 		[/if]
 		st=db
@@ -127,7 +127,7 @@
 		my ($f, $n) = @_;
 		my $out = 'ui_sort_option=';
 		$out .= 'n' if $n;
-		return $out unless ($fld eq $f) || ($f eq 'description');
+		return $out unless ($fld eq $f) || ($f eq '__UI_ITEM_DESCRIPTION__');
 		return $out if $so =~ /r/;
 		return $out . 'r';
 	}
@@ -143,7 +143,7 @@
 	return "ui_sort_field=sku\n" . sortrev('sku');
 	`]SKU</TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=description\n" . sortrev('description');
+	return "ui_sort_field=__UI_ITEM_DESCRIPTION__\n" . sortrev('__UI_ITEM_DESCRIPTION__');
 	`]Description</TH>
 <TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=price\n" . sortrev('price', 1);

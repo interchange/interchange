@@ -7,8 +7,8 @@
 		$CGI->{mv_data_table} = 'inventory';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = '__UI_PRODUCT_TABLE__:description [db-columns name=inventory]';
-		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
+		$CGI->{ui_data_fields} = '__UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__ [db-columns name=inventory]';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'account';
