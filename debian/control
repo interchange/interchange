@@ -1,7 +1,7 @@
 Source: interchange
 Section: web
 Priority: optional
-Maintainer: Stefan Hornburg <racke@linuxia.de>
+Maintainer: Stefan Hornburg (Racke) <racke@linuxia.de>
 Standards-Version: 3.1.1.1
 Build-Depends: debhelper
 
