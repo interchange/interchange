@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18 2000-11-23 04:59:43 heins Exp $
+# $Id: Order.pm,v 1.18.2.1 2000-11-30 02:57:01 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1699,6 +1699,15 @@ sub add_items {
 		else {
 			@fly = split /\0/, $CGI::values{mv_order_fly}, -1;
 		}
+	}
+
+	if(defined $CGI::values{mv_item_option}) {
+#::logDebug("adding modifiers");
+		$Vend::Cfg->{UseModifier} = [] if ! $Vend::Cfg->{UseModifier};
+		my %seen;
+		my @mods = (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option});
+		@mods = grep ! $seen{$_}++, @mods;
+		push @{$Vend::Cfg->{UseModifier}}, @mods;
 	}
 
 	if ($Vend::Cfg->{UseModifier}) {

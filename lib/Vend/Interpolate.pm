@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.1 2000-11-25 00:20:24 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.2 2000-11-30 02:57:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.2 $, 10);
 
 @EXPORT = qw (
 
@@ -261,6 +261,7 @@ my @th = (qw!
 		_pos
 		_price
 		_quantity
+		_sku
 		_subtotal
 		_sub
 		col
@@ -326,6 +327,7 @@ my @th = (qw!
 						$T{'/condition'}
 						($Some))xi,
 	'_code'			=> qr($T{_code}\]),
+	'_sku'			=> qr($T{_sku}\]),
 	'col'			=> qr(\[col(?:umn)?\s+
 				 		([^\]]+)
 				 		\]
@@ -523,7 +525,7 @@ sub interpolate_html {
 
 	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = $2, ''/ige;
 
-#::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval(\%Vend::Cfg->{Pragma}));
+#::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval_it(\%Vend::Cfg->{Pragma}));
 
 	vars_and_comments(\$html);
 
@@ -544,6 +546,7 @@ sub interpolate_html {
 
 sub filter_value {
 	my($filter, $value, $tag) = @_;
+#::logDebug("filter_value: filter='$filter' value='$value' tag='$tag'");
 	my @filters = Text::ParseWords::shellwords($filter); 
 	my @args;
 	for (@filters) {
@@ -564,6 +567,7 @@ sub filter_value {
 		unshift @args, $value, $tag;
 		$value = $Filter{$_}->(@args);
 	}
+#::logDebug("filter_value returns: value='$value'");
 	return $value;
 }
 
@@ -684,7 +688,7 @@ sub tag_data {
 		}
 	}
 	elsif($opt->{increment}) {
-::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
+#::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
 		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	}
 	elsif (defined $opt->{value}) {
@@ -709,7 +713,7 @@ sub tag_data {
 			}
 		}
 		else {
-::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
+#::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
 			if($opt->{filter}) {
 				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
 			}
@@ -824,6 +828,31 @@ sub tag_data {
 						return $_ if length $_;
 					}
 					return '';
+				},
+	'option_format' =>		sub {
+					my $value = shift;
+					my $pv = $value;
+					$pv =~ s/\0/_NULL_/g;
+					$pv =~ s/\r/_CR_/g;
+#::logDebug("option_format received: $pv");
+					$value =~ s/\00[\s,]*$//;
+					$value =~ s/\0([^\0]*)\0([10])(\0|$)/'=' . $1 . ($2 ? '*' : '') . ",\r"/ge;
+					$pv = $value;
+					$pv =~ s/\0/_NULL_/g;
+					$pv =~ s/\r/_CR_/g;
+#::logDebug("option_format now: $pv");
+					1 while $value =~ s/\r=,\r/\r/;
+					$value =~ s/\0//g;
+					$value =~ s/[ \t]*[\r\n]+[ \t]*/\r/g;
+					$value =~ s/([^,])[\r\n]/$1,/g;
+					$value =~ s/\r//g;
+					$value =~ s/,/,\r/g;
+					$value =~ s/[=\s,]+$//;
+					$pv = $value;
+					$pv =~ s/\0/_NULL_/g;
+					$pv =~ s/\r/_CR_/g;
+#::logDebug("option_format finally: $pv");
+					return $value;
 				},
 	'nullselect' =>		sub {
 					my @some = split /\0+/, shift;
@@ -952,15 +981,15 @@ sub tag_data {
 	'entities' => sub {
 					return HTML::Entities::encode(shift);
 				},
-	'option_format' => sub {
-					$_[0] =~ s/[,\s]*[\r\n]+/,\r/g;
-					return $_[0];
-				},
+#	'option_format' => sub {
+#					$_[0] =~ s/[,\s]*[\r\n]+/,\r/g;
+#					return $_[0];
+#				},
 	);
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
-#::logDebug("filter var=$varname opt=" . ::uneval($opt));
+#::logDebug("filter var=$varname opt=" . ::uneval_it($opt));
 	return undef unless defined $CGI::values{$varname};
 #::logDebug("before filter=$CGI::values{$varname}");
 	$routine = $opt->{routine} || ''
@@ -1298,9 +1327,10 @@ sub build_accessory_textarea {
 	while($type =~ m/\b(row|col)(?:umn)s?[=\s'"]*(\d+)/gi) {
 		$run .= " \U$1\ES=$2";
 	}
-	if ($type =~ m/\bwrap[=\s'"]*(hard|soft|none)/i) {
+	if ($type =~ m/\bwrap[=\s'"]*(\w+)/i) {
 		$run .= qq{WRAP="$1"};
 	}
+	$run .= " $opt->{extra}" if $opt->{extra};
 	$run .= '>';
 	$run .= $default;
 	$run .= '</TEXTAREA>';
@@ -1310,10 +1340,13 @@ sub build_accessory_textarea {
 sub build_accessory_select {
 	my($name, $type, $default, $opt, @opts) = @_;
 
+	my $price = $opt->{price} || {};
+
 	my $select;
 	my $run = qq|<SELECT NAME="$name"|;
 	$run .= qq{ SIZE="$opt->{rows}"} if $opt->{rows};
 	$run .= " $opt->{js}" if $opt->{js};
+	$run .= " $opt->{extra}" if $opt->{extra};
 	my ($multi, $re_b, $re_e, $regex);
 	
 	if($type =~ /multiple/i) {
@@ -1355,6 +1388,13 @@ sub build_accessory_select {
 			$select = '';
 		}
 		my ($value,$label) = split /=/, $_, 2;
+
+		my $extra;
+		if($price->{$value}) {
+			$extra = currency($price->{$value}, undef, 1);
+			$extra = " ($extra)";
+		}
+
 		my $vvalue = $value;
 		$vvalue =~ s/"/&quot;/;
 		$run .= qq| VALUE="$vvalue"|;
@@ -1370,6 +1410,7 @@ sub build_accessory_select {
 		else {
 			$run .= $limit->($value);
 		}
+		$run .= $extra if $extra;
 	}
 	$run .= '</SELECT>';
 }
@@ -1382,7 +1423,14 @@ sub build_accessory_box {
 	$header = $template = $footer = $row_hdr = $row_ftr = '';
 
 	my $font;
-	my $variant = ($type =~ /check/i) ? 'checkbox' : 'radio';
+	my $variant;
+	if ($type =~ /check/i) {
+		$variant = 'checkbox';
+		$default = '' if ! length($default) and $opt->{item};
+	}
+	else {
+		$variant = 'radio';
+	}
 	if ($type  =~ /font(?:size)?[\s_]*(-?\d)/i ) {
 		$font = qq{<FONT SIZE="$1">};
 	}
@@ -1420,7 +1468,7 @@ EOF
 	
 	my $run = $header;
 
-	$default = '' unless defined $default;
+	my $price = $opt->{price} || {};
 
 	my $i = 0;
 	for(@opts) {
@@ -1430,14 +1478,20 @@ EOF
 		$select = '';
 		s/\*$// and $select = "CHECKED";
 
-		$select = '' if $default;
+#::logDebug("select=$select, default is '" . (defined $default ? $default : 'undef') . "'");
+		$select = '' if defined $default;
 
 		my ($value,$label) = split /=/, $_, 2;
 		$label = $value unless $label;
 
+		my $extra;
+		if($price->{$value}) {
+			$label .= "&nbsp;(" . currency($price->{$value}, undef, 1) . ")";
+		}
+
 		$value =~ s/"/&quot;/g;
 
-		$value eq '' and $default eq '' and $select = "CHECKED";
+		$value eq '' and defined $default and $default eq '' and $select = "CHECKED";
 
 		if(length $value) {
 			my $regex	= $opt->{contains}
@@ -1457,6 +1511,108 @@ EOF
 	$run .= $footer;
 }
 
+# This generates a *session-based* Autoload routine based
+# on the contents of a preset Profile (see the Profile directive).
+# Generates [calc] code which modifies a user's configuration.
+#
+# Normally used for setting pricing profiles with CommonAdjust,
+# ProductFiles, etc.
+# 
+my $Prof_defaults_saved;
+
+sub restore_profile {
+	my $save;
+	return unless $save = $Vend::Session->{Profile_save};
+	for(keys %$save) {
+		$Vend::Cfg->{$_} = $save->{$_};
+	}
+	return;
+}
+
+sub tag_profile {
+	my($profile, $set, $opt) = @_;
+	
+	$opt = {} if ! $opt;
+	if($profile =~ s/(\w+)-//) {
+		$opt->{tag} = $1;
+		$opt->{run} = 1;
+	}
+
+	my $tag = $opt->{tag} || 'default';
+
+	if( "$profile$tag" =~ /\W/ ) {
+		::logError(
+			"profile: invalid characters (tag=%s profile=%s), must be [A-Za-z_]+",
+			$tag,
+			$profile,
+		);
+		return $opt->{failure};
+	}
+
+	my $restore;
+
+	if($opt->{run}) {
+		my $prof = $Vend::Cfg->{Profile_repository}{$profile};
+	    if (not $prof) {
+			::logError( "profile %s (%s) non-existant.", $profile, $tag );
+			return $opt->{failure};
+		} 
+		$Vend::Cfg->{Profile} = $prof;
+		restore_profile();
+		PROFSET: 
+		for my $one (keys %$prof) {
+			next unless defined $Vend::Cfg->{$one};
+			my $string;
+			my $val;
+			if( ! ref $Vend::Cfg->{$one} ) {
+				$val = $prof->{$one};
+			}
+			elsif( ref($Vend::Cfg->{$one}) =~ /HASH/ ) {
+				$string = '{' .  $prof->{$one}	. '}';
+			}
+			elsif( ref($Vend::Cfg->{$one}) =~ /ARRAY/ ) {
+				$string = '[' .  $prof->{$one}	. ']';
+			}
+			else {
+				::logError( "profile: cannot handle object of type %s.",
+							$Vend::Cfg->{$one},
+							);
+				::logError("profile: profile for $one not changed.");
+				next;
+			}
+
+			$val = $ready_safe->reval($string) if $string;
+
+			if($@) {
+				::logError( "profile: bad object %s: %s", $one, $string );
+				next;
+			}
+			$Vend::Session->{Profile_save}{$one} = $Vend::Cfg->{$one}
+				unless defined $Vend::Session->{Profile_save}{$_};
+
+			$Vend::Cfg->{$_} = $val;
+		}
+	}
+
+	if($opt->{set}) {
+		my $al;
+		if(! ref $Vend::Session->{Autoload}) {
+			$al = [ $Vend::Session->{Autoload} ];
+		}
+		elsif($Vend::Session->{Autoload}) {
+			$al = $Vend::Session->{Autoload};
+		}
+
+		if($al) {
+			@$al = grep $_ !~ m{^$tag-\w+$}, @$al;
+		}
+		$al = [] if ! $al;
+		push @$al, "$tag-$profile";
+	}
+
+	return $opt->{success};
+}
+
 sub tag_price {
 	my($code,$ref) = @_;
 	my $amount = Vend::Data::item_price($ref,$ref->{quantity} || 1);
@@ -1466,10 +1622,14 @@ sub tag_price {
 }
 
 sub tag_options {
-	my ($item, $opt) = @_;
-	$item = { code => $item } if ! ref $item;
-::logDebug('entering tag_options');
-	my $sku = $item->{code};
+	my ($sku, $opt) = @_;
+	my $item;
+	if(ref $sku) {
+		$item = $sku;
+		$sku = $item->{mv_sku} || $item->{code};
+	}
+#::logDebug("entering tag_options for $sku");
+
 	$opt = get_option_hash($opt);
 	my $table = $opt->{table} || $::Variable->{MV_OPTION_TABLE} || 'options';
 
@@ -1478,7 +1638,7 @@ sub tag_options {
 		or return;
 	my $record = $db->row_hash($sku)
 		or return;
-::logDebug("found record for $sku in tag_options");
+#::logDebug("found record for $sku in tag_options");
 
 	my $remap;
 	my %map;
@@ -1501,20 +1661,56 @@ sub tag_options {
 	}
 
 	return if ! $record->{o_enable};
+#::logDebug("record for $sku says options enabled");
 
 	my $out = '';
 	my @out;
 
 	my @rf;
 	if($record->{o_matrix}) {
-::logDebug("matrix options");
+#::logDebug("matrix options, item='$item'");
+		for(qw/code o_enable o_group description price weight volume differential/) {
+			push @rf, ($map{$_} || $_);
+		}
+		my $fsel = $map{sku} || 'sku';
+		my $rsel = $db->quote($sku, $fsel);
+		
+		my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
+		my $ary = $db->query($q); 
+		my $ref;
+		my $price = {};
+		foreach $ref (@$ary) {
+			# skip unless description
+			next unless $ref->[3];
+			$ref->[3] =~ s/,/&#44;/g;
+			$ref->[3] =~ s/=/&#61;/g;
+			$price->{$ref->[0]} = $ref->[5];
+			push @out, "$ref->[0]=$ref->[3]";
+		}
+		$out .= "<td>" if $opt->{td};
+		$out .= tag_accessories(
+							$sku,
+							'',
+							{ 
+								passed => join(",", @out),
+								type => $ref->[5] || 'select',
+								attribute => 'code',
+								name => 'mv_sku',
+								price_data => $price,
+								price => $opt->{price},
+								item => $item,
+								default => undef,
+							},
+							$item || undef,
+						);
+		$out .= "</td>" if $opt->{td};
 	}
 	elsif($record->{o_modular}) {
-::logDebug("modular options");
+#::logDebug("modular options");
 	}
 	else {
-::logDebug("simple options");
-		for(qw/code o_enable o_group o_value o_label o_widget/) {
+#::logDebug("simple options");
+		for(qw/code o_enable o_group o_value o_label o_widget price/) {
 			push @rf, ($map{$_} || $_);
 		}
 		my $fsel = $map{sku} || 'sku';
@@ -1532,15 +1728,18 @@ sub tag_options {
 			}
 			push @out, qq{<input type=hidden name=mv_item_option value="$ref->[2]">}
 						. tag_accessories(
-							'',
+							$sku,
 							'',
 							{ 
 								passed => $ref->[3],
 								type => $ref->[5],
 								attribute => $ref->[2],
-								default => $item->{$ref->[2]},
+								price_data => $ref->[6],
+								price => $opt->{price},
+								item => $item,
+								default => undef,
 							},
-							$item
+							$item || undef,
 						);
 		}
 		if($opt->{td}) {
@@ -1553,11 +1752,21 @@ sub tag_options {
 			$out .= join $opt->{joiner}, @out;
 		}
 	}
+#::logDebug("tag_options returns:\n\n$out\n");
 	return $out;
 }
 
 sub tag_accessories {
 	my($code,$extra,$opt,$item) = @_;
+
+	my $ishash;
+	if(ref $item) {
+#::logDebug("tag_accessories: item is a hash");
+		$ishash = 1;
+	}
+	else {
+		$item = {};
+	}
 
 	# Had extra if got here
 #::logDebug("tag_accessories: code=$code opt=" . ::uneval_it($opt) . " item=" . ::uneval_it($item) . " extra=$extra");
@@ -1603,8 +1812,19 @@ sub tag_accessories {
 
 	my $attrib_value = $item ? $item->{$attribute} : '';
 
-	$name = $item ? "[modifier-name $attribute]" : "mv_order_$attribute"
-		unless $name;
+	if($ishash) {
+#::logDebug("tag_accessories: name=$name item=$item=" . ::uneval_it($item) . " opt_item=$opt->{item} attr=$attribute");
+		my $adder;
+		$adder = $item->{mv_ip} if	defined $item->{mv_ip}
+								and $opt->{item} || ! $name;
+#::logDebug("tag_accessories: adder=$adder");
+		$name = $attribute unless $name;
+		$name .= $adder if defined $adder;
+#::logDebug("tag_accessories: name=$name");
+	}
+	else {
+		$name = "mv_order_$attribute" unless $name;
+	}
 
 	return qq|$p<INPUT TYPE="hidden" NAME="$name" VALUE="$attrib_value">$a|
 		if "\L$type" eq 'hidden';
@@ -1612,21 +1832,29 @@ sub tag_accessories {
 		if $type =~ /hidden/;
 	if($type =~ /^text/i) {
 		HTML::Entities::encode($attrib_value);
-		return qq|$p<TEXTAREA NAME="$name" ROWS=$1 COLS=$2>$attrib_value</TEXTAREA>$a|
+		$opt->{extra} = " $opt->{extra}" if $opt->{extra};
+		return qq|$p<TEXTAREA NAME="$name" ROWS=$1 COLS=$2$opt->{extra}>$attrib_value</TEXTAREA>$a|
 			if "\L$type" =~ /^textarea_(\d+)_(\d+)$/;
-		return qq|$p<INPUT TYPE=text NAME="$name" SIZE=$1 VALUE="$attrib_value">$a|
+		return qq|$p<INPUT TYPE=text NAME="$name" SIZE=$1 VALUE="$attrib_value"$opt->{extra}>$a|
 			if "\L$type" =~ /^text_(\d+)$/;
-		return qq|$p<INPUT TYPE=text NAME="$name" SIZE=60 VALUE="$attrib_value">$a|
+		return qq|$p<INPUT TYPE=text NAME="$name" SIZE=60 VALUE="$attrib_value"$opt->{extra}>$a|
 			if "\L$type" =~ /^text/;
 	}
 
 	my ($default, $label, $select, $value, $run);
 	my @opts = split /\s*,\s*/, $data;
 
+#::logDebug("item in tag_accessories: " . ::uneval_it($item));
 	if($item) {
-		$default = $item->{$attribute};
+#::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
+		$default = $item->{$attribute} || '';
+	}
+	elsif (exists $opt->{default}) {
+#::logDebug("default from opt");
+		$default = $opt->{default};
 	}
 	elsif ($name) {
+#::logDebug("default from values");
 		$default = $::Values->{$name};
 	}
 
@@ -1638,6 +1866,8 @@ sub tag_accessories {
 	elsif ($type eq 'labels') {
 		return join "\n", (map { s/.*?=//; $_ } @opts);
 	}
+
+	$opt->{price} = get_option_hash($opt->{price_data}) if $opt->{price};
 
 	# Ranging type, for price breaks based on quantity
 	if ($type =~ s/^range:?(.*)//) {
@@ -1707,7 +1937,11 @@ sub tag_accessories {
 		return "$p$out$a";
 	}
 	else {
-		return $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
+#::logDebug("build_accessory_select is run");
+		#return $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
+		my $s = $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
+#::logDebug("build_accessory_select returns $s");
+		return $s;
 	}
 
 }
@@ -1898,6 +2132,8 @@ sub flag {
 		my (@args) = Text::ParseWords::shellwords($arg);
 		my $dbname;
 		foreach $dbname (@args) {
+			# Handle table:column:key
+			$dbname =~ s/:.*//;
 #::logDebug("tag flag write $dbname=$value");
 			$Vend::WriteDatabase{$dbname} = $value;
 			$Vend::Cfg->{DynamicData}->{$dbname} = $value;
@@ -3643,9 +3879,9 @@ sub iterate_hash_list {
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
 		$item->{mv_cache_price} = undef;
-		$code = $item->{code};
+		$code = $item->{mv_sku} || $item->{code};
 
-#::logDebug("Doing $code substitution, count $count++");
+#::logDebug("Doing $code (variant $item->{code}) substitution, count $count++");
 
 		$run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
@@ -3658,7 +3894,7 @@ sub iterate_hash_list {
 				  $item->{$2}	?	pull_if($4,$1,$3,$item->{$2})
 								:	pull_else($4,$1,$3,$item->{$2})#ige;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
-				  my $tmp = product_field($2, $code);
+				  my $tmp = item_field($item, $2);
 				  $tmp	?	pull_if($4,$1,$3,$tmp)
 						:	pull_else($4,$1,$3,$tmp)#ge;
 		$run =~ s#$IB$QR{_modifier_if}$IE$QR{'/_modifier'}#
@@ -3669,7 +3905,8 @@ sub iterate_hash_list {
 						tag_accessories($code,$1,{},$item):ge;
 		$run =~ s:$B$QR{_options}:
 						tag_options($item,$1):ige;
-		$run =~ s:$B$QR{_code}:$code:ig;
+		$run =~ s:$B$QR{_sku}:$code:ig;
+		$run =~ s:$B$QR{_code}:$item->{code}:ig;
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
 		$run =~ s:$B$QR{_modifier}:$item->{$1}:g;
 		$run =~ s:$B$QR{_param}:$item->{$1}:g;
