@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.8 2001-06-29 02:19:25 jon Exp $
+# $Id: Scan.pm,v 1.7.2.9 2001-07-01 12:02:12 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.9 $, 10);
 
 use strict;
 use Vend::Util;
@@ -594,8 +594,9 @@ sub sql_statement {
 		};
 	}
 	if($@) {
-		::logError("Bad SQL statement: $@\nQuery was: $text.\n");
-		return "se=BAD_SQL";
+		my $msg = ::errmsg("Bad SQL statement: %s\nQuery was: %s", $@, $text);
+		logError($msg) unless $Vend::Try;
+		Carp::croak($msg);
 	}
 
 	my $nuhash;

@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 1.25.2.36 2001-06-29 02:19:28 jon Exp $
+# $Id: DBI.pm,v 1.25.2.37 2001-07-01 12:02:13 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.36 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.37 $, 10);
 
 use strict;
 
@@ -1422,7 +1422,6 @@ sub query {
 	my $codename = $s->[$CONFIG]{KEY};
 	my $ref;
 	my $relocate;
-	my $return;
 	my $spec;
 	my $stmt;
 	my $sth;
@@ -1485,11 +1484,23 @@ sub query {
 					@{$spec}{@additions} = @{$opt}{@additions};
 				}
 			};
-			::logError(qq{rerouted query "$query" failed: $@}) if $@;
+			if($@) {
+				my $msg = ::errmsg(
+						qq{Query rerouted from table %s failed: %s\nQuery was: %s},
+						$s->[$TABLE],
+						$@,
+						$query,
+					);
+				Carp::croak($msg) if $Vend::Try;
+				::logError($msg);
+				return undef;
+			}
 		}
 		else {
-			::logError("SQL query failed: %s\nquery was: %s", $@, $query);
-			$return = $opt->{failure} || undef;
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			Carp::croak($msg) if $Vend::Try;
+			::logError($msg);
+			return undef;
 		}
 	}
 
@@ -1563,12 +1574,12 @@ eval {
 #::logDebug("ref returned: " . Vend::Util::uneval($ref));
 #::logDebug("opt is: " . Vend::Util::uneval($opt));
 	if($@) {
-		::logError("MVSQL query failed for %s: %s\nquery was: %s",
-					$opt->{table},
+		::logError("SQL query failed for %s: %s\nQuery was: %s",
+					$s->[$TABLE],
 					$@,
 					$query,
 					);
-		$return = $opt->{failure} || undef;
+		return undef;
 	}
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");

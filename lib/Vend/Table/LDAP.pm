@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 1.6.6.10 2001-06-29 02:19:28 jon Exp $
+# $Id: LDAP.pm,v 1.6.6.11 2001-07-01 12:02:13 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.10 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.11 $, 10);
 use strict;
 
 use vars qw(
@@ -519,8 +519,10 @@ sub query {
 		eval {
 			($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
 		};
-		if(! CORE::ref $spec) {
-			::logError("Bad SQL, query was: $query");
+		if($@) {
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			Carp::croak($msg) if $Vend::Try;
+			::logError($msg);
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.91 2001-07-01 05:06:30 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.92 2001-07-01 12:02:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.91 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.92 $, 10);
 
 @EXPORT = qw (
 
@@ -3361,7 +3361,14 @@ sub escape_scan {
 	}
 
 	if($scan =~ /^\s*(?:sq\s*=\s*)?select\s+/im) {
-		$scan = Vend::Scan::sql_statement($scan, $ref || \%CGI::values);
+		eval {
+			$scan = Vend::Scan::sql_statement($scan, $ref || \%CGI::values)
+		};
+		if($@) {
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $scan);
+			::logError($msg);
+			$scan = 'se=BAD_SQL';
+		}
 	}
 
 	return join '/', 'scan', escape_mv('/', $scan);

@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.16.4.13 2001-06-29 02:19:28 jon Exp $
+# $Id: Common.pm,v 1.16.4.14 2001-07-01 12:02:12 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.13 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.14 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -641,12 +641,10 @@ sub query {
 		eval {
 			($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
 		};
-		if(! CORE::ref $spec) {
-			if($@) {
-				::logError("Bad SQL, error was: $@, query was: $query");
-			} else {
-				::logError("Bad SQL, query was: $query");
-			}
+		if($@) {
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			Carp::croak($msg) if $Vend::Try;
+			::logError($msg);
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;
