@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.23 2001-03-01 17:36:16 heins Exp $
+# $Id: Config.pm,v 1.25.2.24 2001-03-08 22:37:38 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -74,12 +74,14 @@ my $OldDirectives = q{
 	ReportIgnore
 	RetireDBM
 	Rotate
+	SafeSignals
 	SearchCache
 	SearchFrame
 	SearchOverMsg
 	SecureOrderMsg
 	SpecialFile
 	SubArgs
+	TcpPort
 	TolerateGet
 	TransparentItem
 	Tracking
@@ -97,7 +99,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.24 $, 10);
 
 my %CDname;
 
@@ -261,7 +263,6 @@ sub global_directives {
 	['DisplayErrors',    'yesno',            'No'],
 	['Inet_Mode',         'yesno',            defined $Global::Inet_Mode ? ($Global::Inet_Mode) : 'Yes'],
 	['Unix_Mode',         'yesno',            defined $Global::Unix_Mode ? ($Global::Unix_Mode) : 'Yes'],
-	['TcpPort',          'warn',             ''],
 	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
@@ -294,7 +295,6 @@ sub global_directives {
 	['IpQuad',			 'integer',          '1'],
 	['TemplateDir',      'root_dir', 	     ''],
 	['DomainTail',		 'yesno',            'Yes'],
-	['SafeSignals',	 	 'warn',             ''],
 	['AcrossLocks',		 'yesno',            'No'],
 	['PIDcheck',		 'integer',          '0'],
 	['LockoutCommand',    undef,             ''],
@@ -307,7 +307,6 @@ sub global_directives {
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
 	['HammerLock',		 'integer',     	 30],
-	['DebugMode',		 'warn',     	     ''],
 	['DebugFile',		  undef,     	     ''],
 	['ErrorFile',		  undef,     	     undef],
 	['SysLog',			 'hash',     	     undef],
