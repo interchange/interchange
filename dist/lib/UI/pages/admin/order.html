@@ -124,19 +124,19 @@
 
 <table cellpadding=3 cellspacing=0>
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 [if value showarchive]
 <tr>
-<td bgcolor="#94a0e0" width=600 colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
 <input type=submit name="showpending" value="Show pending orders">
 [set archive_sense]=[/set]
 </td>
 </tr>
 [else]
 <tr>
-<td bgcolor="#94a0e0" width=600 colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
 <input type=submit name="showarchive" value="Show archived orders">
 [set archive_sense]!=[/set]
 </td>
@@ -145,13 +145,13 @@
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
 
 <tr>
-<td bgcolor="#94a0e0" width=150>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
 <input type=submit name="vieworder" value="View order"><br>
 
@@ -176,7 +176,7 @@
 <input type=submit name="xload" value="Export orders">
 
 </td>
-<td bgcolor="#94a0e0" width=450>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
 
 <!-- ----- Show the order list box ----- -->
 <pre>
@@ -212,7 +212,7 @@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 </table>
 

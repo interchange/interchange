@@ -14,7 +14,7 @@
 	delete $Scratch->{test_button};
 	my $result = <<EOF;
 <tr>
-<td colspan=2  bgcolor=#94a0e0 VALIGN=TOP>
+<td colspan=2  bgcolor=__UI_C_INTBLOCK__ VALIGN=TOP>
 	<B>Resulting button</B><BR>
 <TEXTAREA ROWS=5 COLS=70 NAME="search_result">
 EOF
@@ -117,10 +117,10 @@ EOF
 <table cellpadding=3 cellspacing=0>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td colspan=2  bgcolor=#94a0e0>
+<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
 	<B>Build an order button or link</B>
 </td>
 </tr>
@@ -128,14 +128,14 @@ EOF
 [scratch search_result]
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Type</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 <SELECT NAME=search_button>
 <OPTION VALUE=0>Link
 <OPTION VALUE=1 [selected search_button 1]>Button
@@ -144,10 +144,10 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Item code</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 [perl]
 	my $table = $Config->{ProductFiles}[0];
 	$Scratch->{keypos} = $Config->{Database}{$table}{KEYINDEX} || '0';
@@ -174,10 +174,10 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Specific Quantity</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 
 <INPUT NAME=search_quantity> <I>(Separate multiple quantities by commas)</I>
 
@@ -189,10 +189,10 @@ EOF
 	return unless scalar @$ary > 1;
 	my $out = <<'EOF';
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 A specific database
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 <SELECT NAME=search_db>
 EOF
 	for(@$ary) {
@@ -206,10 +206,10 @@ EOF
 [/calc]
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Separate line?</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 
 <SELECT NAME=search_separate>
 	<OPTION VALUE=0> No
@@ -223,10 +223,10 @@ EOF
 
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Group items?</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 
 <SELECT NAME=search_group>
 	<OPTION VALUE=""> No
@@ -240,10 +240,10 @@ EOF
 	for(@{$Config->{UseModifier}}) {
 		$out .= <<EOF;
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>$_ (if any)</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 <INPUT NAME=search_modifier_$_>
  <I>(Separate multiple values by commas)</I>
 </SELECT>
@@ -254,10 +254,10 @@ EOF
 	return $out;
 [/calc]
 <tr>
-<td bgcolor=#94a0e0 align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Action</B>
 </td>
-<td bgcolor=#94a0e0>
+<td bgcolor=__UI_C_INTBLOCK__>
 <INPUT TYPE=submit VALUE=Build>
 </td>
 </tr>

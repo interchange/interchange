@@ -15,7 +15,7 @@
 [set meta_header]
 <STYLE TYPE="text/css">
 	td: { 
-		backround-color: #94a0e0
+		backround-color: __UI_C_INTBLOCK__
 	}
 </STYLE>
 [/set]
@@ -69,7 +69,7 @@ return;
 [rotate-table reparse=0 rotate="[value ui_rotate_spread]" interpolate=1]
 <table cellpadding=0 cellspacing=0>
 [with param=table value="[value mv_data_table]"]
-<TR BGCOLOR="#94a0e0" CELLPADDING=2>
+<TR BGCOLOR="__UI_C_INTBLOCK__" CELLPADDING=2>
 	<TH ALIGN=CENTER>&nbsp;</TH>
 	[row-edit columns="[value ui_data_fields]"]
 </TR>
@@ -79,12 +79,12 @@ return;
 	@areas = grep /\S/, split /[\s,\0]+/, $Values->{mv_data_fields};
 	return scalar(@areas) + 1;
 [/calc]"
-	bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=3></td>
+	bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=3></td>
 </tr>
 
 	[search-list]
 	[if-mm keys [item-code]]
-<TR BGCOLOR="#94a0e0">
+<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD ALIGN=RIGHT><B>
 	[page href="__UI_BASE__/flex_editor"
 	form=|

@@ -12,7 +12,7 @@
 <table cellpadding=3 cellspacing=0>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 [set Create new method]
@@ -22,17 +22,17 @@ ui_header=Create method
 [/set]
 
 <tr>
-<td colspan=2 bgcolor="#94a0e0" width=150>
+<td colspan=2 bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 <input type=submit name="mv_click" value="Create new method">
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="#94a0e0" width=150>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
 [set Edit method]
 mv_nextpage=__UI_BASE__/ship_edit
@@ -71,7 +71,7 @@ mv_nextpage=admin/configure
 
 <!-- Read the current shipping def, success=[read-shipping] -->
 
-<td bgcolor="#94a0e0" width=450>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
 <select name=ui_shipmode size=10>
 [perl]
 	@modes = sort keys %{$Config->{Shipping_desc}};
@@ -90,7 +90,7 @@ mv_nextpage=admin/configure
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 </table>
