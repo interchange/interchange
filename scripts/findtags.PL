@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange session expiration for all catalogs
+# findtags - Find ITL tags in Interchange catalogs and directories
 #
-# $Id: findtags.PL,v 1.3 2003-08-25 11:13:58 racke Exp $
+# $Id: findtags.PL,v 1.4 2003-09-24 18:53:24 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -273,16 +273,15 @@ else {
 	@tags = grep !$seen{$_}++, @tags;
 }
 
-@tags = grep /\w/, @tags;
-@tags = sort @tags;
+@tags = sort grep /\w/, @tags;
 
 if($opt_t) {
 	print "TagInclude <<EOTI\n\t";
-	print join("\n\t", sort @tags);
+	print join("\n\t", @tags);
 	print "\nEOTI\n";
 }
 else {
-	print join("\n", sort @tags);
+	print join("\n", @tags);
 }
 __END__
 
