@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.22 2003-07-01 10:46:32 racke Exp $
+# $Id: Dispatch.pm,v 1.23 2003-07-08 11:41:00 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.22 $, 10);
+$VERSION = substr(q$Revision: 1.23 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -739,7 +739,10 @@ sub run_in_catalog {
 
 		# initialize or autoload can create session
 		# but must handle all aspects
-		init_session() unless $Vend::Session;
+		unless ($Vend::Session) {
+			$CGI::values{mv_tmp_session} = 1;
+			init_session();
+		}
 
 		$CGI::remote_addr ||= 'none';
 		$CGI::useragent   ||= 'commandline';

@@ -172,9 +172,8 @@ Usertags
 
   The size is still determined by Image::Size.
 
-* New Usertag [capture-page] bringing back some of the static page
-  capabilities, designed to called from Interchange jobs. The tag
-  is able to reproduce standard as well as search results pages:
+* New Usertag [capture-page] to interpolate pages and dump to disk,
+  usually called from Interchange jobs. Examples:
 
   [capture-page page=index file=static/index.html umask=022]
 
@@ -183,6 +182,11 @@ Usertags
     scan="fi=products/st=db/co=yes/sf=category/se=[loop-code]" 
     auto_create_dir=1]
   [/loop]
+
+Jobs
+----
+
+* Set $CGI->{mv_tmp_session} to signal that a "robot" is in charge.
 
 SQL Parsing
 -----------

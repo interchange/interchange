@@ -16,7 +16,13 @@ sub {
 
 	$::Scratch->{mv_no_count} = 1;
 
+	if ($opt->{expiry}) {
+		my $stat = (stat($file))[9];		
+		return 1 if $stat > $opt->{expiry};
+	}
+
 	my $pageref = Vend::Page::display_page($page,{return => 1});
+	Vend::Interpolate::substitute_image($pageref);
 
 	return Vend::File::writefile (">$file", $pageref, 
         {auto_create_dir => $opt->{auto_create_dir},
