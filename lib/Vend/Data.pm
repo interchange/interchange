@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.39 2004-06-03 06:31:18 mheins Exp $
+# $Id: Data.pm,v 2.40 2004-06-04 04:05:35 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -774,13 +774,20 @@ sub create_empty_txt {
 	my ($obj, $database_txt, $delimiter, $record_delim) = @_;
 	return if -f $database_txt;
 	return unless $obj->{CREATE_EMPTY_TXT};
-	if(! ref($obj->{NAME}) eq 'ARRAY') {
-		logError("Cannot create text file with no database NAME parameter");
+	my $ary;
+	if($obj->{CREATE_EMPTY_TXT} =~ /[\s,]\w/) {
+		$ary = [ grep /\S/, split /[\s,]+/, $obj->{CREATE_EMPTY_TXT} ];
+	}
+	else {
+		$ary = $obj->{NAME};
+	}
+	unless (ref($ary) eq 'ARRAY') {
+		logError("Cannot create text file with no database NAME parameter and no field names in CREATE_EMPTY_TXT");
 	}
 	else {
 		$delimiter ||= "\t";
 		$record_delim ||= "\n";
-		my $line = join $obj->{DELIMITER}, @{$obj->{NAME}};
+		my $line = join $obj->{DELIMITER}, @$ary;
 		$line .= $record_delim;
 		Vend::Util::writefile($database_txt, $line);
 	}
