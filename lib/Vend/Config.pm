@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.145 2004-10-07 00:10:01 jon Exp $
+# $Id: Config.pm,v 2.146 2004-10-14 23:01:16 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.145 $, 10);
+$VERSION = substr(q$Revision: 2.146 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1183,7 +1183,7 @@ sub config_named_catalog {
 	delete $c->{Source};
 
 	my $stime = scalar localtime();
-	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n");
+	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n$g->{dir}\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
 
 	return $c;
