@@ -45,8 +45,10 @@
 			$ref = [];
 		}
 		my $opt = {};
-		my (@straight) = qw/zone origin adder at_least origin ups round table geo/;
-			
+
+		$Values->{ui_ship_free} = ($Values->{ui_ship_message} || 'free')
+				if $Values->{ui_ship_free};
+		my (@straight) = qw/zone origin adder at_least origin ups round table geo free/;
 		for(@straight) {
 			$opt->{$_} = $Values->{"ui_ship_$_"}
 				if length ($Values->{"ui_ship_$_"});
@@ -56,7 +58,7 @@
 		$crit = '[subtotal noformat=1]' if $crit eq '_subtotal';
 		my $desc = $Values->{ui_ship_description};
 		my $msg  = $Values->{ui_ship_message};
-		$msg =~ /^[a-zA-Z]\s+/ or $msg = "e $msg";
+		$msg =~ /^[a-zA-Z]\s+/ or $msg = "e $msg" unless $Values->{ui_ship_free};
 
 		$Config->{Shipping_line}[$idx] = 
 			[
@@ -163,7 +165,7 @@
 		}
 		$Values->{ui_ship_criteria} = $crit;
 		
-		my (@straight) = qw/zone adder at_least origin round table geo/;
+		my (@straight) = qw/zone adder at_least origin round table geo free/;
 			
 		for(@straight) {
 			$Values->{"ui_ship_$_"} = $opt->{$_};
@@ -319,7 +321,7 @@ EOF
 <td class=rnorm>
 <SELECT NAME=ui_ship_free>
 <OPTION VALUE=""> [L]No[/L]
-<OPTION VALUE="1" [selected ui_ship_free 1]> [L]Yes[/L]
+<OPTION VALUE="1" [selected name=ui_ship_free value="[either][value ui_ship_free][or]1[/either]"]> [L]Yes[/L]
 </SELECT>
 </td>
 </tr>
