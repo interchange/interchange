@@ -120,23 +120,23 @@ pass	nevairbe
 
 !ADDRESS
 Your company address
-11480 Sunset Hills Rd.<BR>Suite 200 East
+123 Main St.
 
 !CITY
 Your company city/state/zip
-Reston, VA 20190
+Anywhere, VA 20190
 
 !PHONE
 Your company phone
-(703) 456-2900
+(703) 555-1212
 
 !FAX
 Your company fax number
-(703) 555-5556
+(703) 555-9999
 
 !TOLLFREE
 Your company tollfree number (if any)
-(888) 555-5555
+(888) 555-1212
 
 !TAXAREA
 Area(s) to tax in
@@ -176,6 +176,7 @@ Arial,Helvetica,sans-serif	Verdana, Arial, Helvetica, Sans-Serif
 
 !DOMAINNAME
 Your base domain for email addresses
+localhost
 
 !EMAILINFO
 Email address to reference for email product information requests
