@@ -27,37 +27,38 @@ page_banner:
 <b>Representation</b><br>
 <table width="100%">
 <tr>
-	<td colspan=3 id=picture0>preamble</td>
+	<td colspan=3 id=picture0><a href="javascript:void(0)" onclick="visible(0)">preamble</a></td>
+
 </tr>
 <tr>
-	<td colspan=3 id=picture1>controls</td>
+	<td colspan=3 id=picture1><a href="javascript:void(0)" onclick="visible(1)">controls</a></td>
 </tr>
 <tr>
 	<td colspan=3 bgcolor="#CCCCCC"><br>header<br>&nbsp;</td>
 </tr>
 <tr>
-	<td id=comp_picture1 width="25%">slot1</td>
+	<td id=comp_picture1 width="25%"><a href="javascript:void(0)" onclick="visible(1,'comp')">slot&nbsp;1</a></td>
 	<td rowspan=3>
-		<div id=comp_picture4 style="width: 100%">slot4</div>
-		<div id=comp_picture5 style="width: 100%"><br>CONTENT<br>&nbsp;</div>
-		<div id=comp_picture6 style="width: 100%">slot5</div>
+		<div id=comp_picture4 style="width: 100%"><a href="javascript:void(0)" onclick="visible(4,'comp')">slot&nbsp;4</a></div>
+		<div id=comp_picture5 style="width: 100%"><br><a href="javascript:void(0)" onclick="visible(5,'comp')">CONTENT</a><br>&nbsp;</div>
+		<div id=comp_picture6 style="width: 100%"><a href="javascript:void(0)" onclick="visible(6,'comp')">slot&nbsp;6</a></div>
 	</td>
-	<td id=comp_picture7>slot6</td>
+	<td id=comp_picture7><a href="javascript:void(0)" onclick="visible(7,'comp')">slot&nbsp;7</a></td>
 </tr>
 <tr>
-	<td id=comp_picture2 width="25%">slot2</td>
-	<td id=comp_picture8 width="25%">slot7</td>
+	<td id=comp_picture2 width="25%"><a href="javascript:void(0)" onclick="visible(2,'comp')">slot&nbsp;2</a></td>
+	<td id=comp_picture8 width="25%"><a href="javascript:void(0)" onclick="visible(8,'comp')">slot&nbsp;8</a></td>
 </tr>
 <tr>
-	<td id=comp_picture3 width="25%">slot3</td>
-	<td id=comp_picture9 width="25%">slot8</td>
+	<td id=comp_picture3 width="25%"><a href="javascript:void(0)" onclick="visible(3,'comp')">slot&nbsp;3</a></td>
+	<td id=comp_picture9 width="25%"><a href="javascript:void(0)" onclick="visible(9,'comp')">slot&nbsp;9</a></td>
 </tr>
 
 <tr>
 	<td colspan=3 bgcolor="#CCCCCC">footer</td>
 </tr>
 <tr>
-	<td colspan=3 id=picture2>postamble</td>
+	<td colspan=3 id=picture2><a href="javascript:void(0)" onclick="visible(2)">postamble</a></td>
 </tr>
 </table>
 <!-- END PAGE_PICTURE -->
