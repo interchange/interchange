@@ -82,6 +82,11 @@ Payment
 
 UI
 --------
+
+* Check for delete permissions before giving option and/or allowing delete
+  of orders. Resolves bug #333. Thanks to Donal Harrington and Mark Johnson
+  for pointing this out.
+
 * Static page building uses the original catalog settings instead
   of the UI ones for images and URLs. Fixed two more bugs which
   render selection of "never build" and maximum number of pages useless.
