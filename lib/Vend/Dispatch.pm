@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.38 2004-04-13 01:10:14 jon Exp $
+# $Id: Dispatch.pm,v 1.39 2004-04-16 16:31:04 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.38 $, 10);
+$VERSION = substr(q$Revision: 1.39 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -966,6 +966,8 @@ EOF
 	}
 
 	$Vend::Cat = $Vend::Cfg->{CatalogName};
+	$Vend::ReadOnlyCfg = $Global::ReadOnlyCfg{$Vend::Cat};
+
 	my $catref = $Global::Catalog{$Vend::Cat};
 	if(! $Global::Foreground and defined $catref->{directive}) {
 		no strict 'refs';
