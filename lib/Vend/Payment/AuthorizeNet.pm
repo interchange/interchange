@@ -3,9 +3,9 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.12 2003-09-11 20:12:56 kwalsh Exp $
+# $Id: AuthorizeNet.pm,v 2.13 2004-04-11 21:32:31 racke Exp $
 #
-# Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2004 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:
@@ -428,7 +428,6 @@ sub authorizenet {
         }
         push @query, "$key=$val";
     }
-    my $string = join '&', @query;
 
 #::logDebug("Authorizenet query: " . ::uneval(\%query));
     $opt->{extra_headers} = { Referer => $referer };
