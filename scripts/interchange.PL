@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.6
 #
-# $Id: interchange.PL,v 1.5 2000-09-25 15:54:54 heins Exp $
+# $Id: interchange.PL,v 1.6 2000-09-25 16:49:39 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,11 +37,10 @@ DOIT: {
 #
 # See the file 'Changes' for information.
 #
-# This program is free software; you can redistribute it
-# and/or modify it under the terms of the GNU General Public
-# License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later
-# version. 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,15 +57,16 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-BEGIN {
+use strict;
 
+BEGIN {
 	$Vend::Foreground = 1;
 	
-($Global::VendRoot = $ENV{MINIVEND_ROOT})
-	if defined $ENV{MINIVEND_ROOT};
+	($Global::VendRoot = $ENV{MINIVEND_ROOT})
+		if defined $ENV{MINIVEND_ROOT};
 	
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
 		$Global::ExeName = 'interchange';
@@ -81,11 +81,11 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
 
-$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
+	$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
-if($^O =~ /win32/i) {
-	$Global::Windows = 1;
-}
+	if($^O =~ /win32/i) {
+		$Global::Windows = 1;
+	}
 
 # Uncomment next line if you want to guarantee use of DB_File
 #$ENV{MINIVEND_DBFILE} = 1;
@@ -116,11 +116,11 @@ if($^O =~ /win32/i) {
 #$ENV{PGPPATH} = '/usr/local/pgp';
 
 # Use the Storable module for storing data in DBM files.
-if (-f "$Global::VendRoot/_session_storable") {
+if(-f "$Global::VendRoot/_session_storable") {
 	$ENV{MINIVEND_STORABLE} = 1;
 }
 
-if (-f "$Global::VendRoot/_db_storable") {
+if(-f "$Global::VendRoot/_db_storable") {
 	$ENV{MINIVEND_STORABLE_DB} = 1;
 }
 
@@ -130,7 +130,7 @@ $Global::SysLog		= '';
 
 }
 
-### END CONFIGURABLE VARIABLES
+### END CONFIGURATION VARIABLES
 
 use vars qw($VERSION);
 require Exporter;
@@ -139,8 +139,6 @@ BEGIN {
 	$VERSION = '4.5.6';
 }
 
-
-use strict;
 use Fcntl;
 
 # BSD, among others, defines sendmail to be in /usr/sbin, and
