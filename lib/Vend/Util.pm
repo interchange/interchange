@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.11 2002-11-26 03:21:10 jon Exp $
+# $Id: Util.pm,v 2.1.2.12 2003-01-24 04:59:36 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -75,7 +75,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.11 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.12 $, 10);
 
 BEGIN {
 	eval {
@@ -1283,9 +1283,10 @@ sub tag_nitems {
 	if($opt->{qualifier}) {
 		$attr = $opt->{qualifier};
 		my $qr;
-		$qr = qr{$opt->{compare}}
-			if $opt->{compare};
-		if($opt->{compare}) {
+		eval { 
+			$qr = qr{$opt->{compare}} if $opt->{compare};
+		};
+		if($qr) {
 			$sub = sub { 
 							$_[0] =~ $qr;
 						};
