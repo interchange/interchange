@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.217 2004-07-20 05:23:59 mheins Exp $
+# $Id: Interpolate.pm,v 2.218 2004-07-24 17:34:32 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.217 $, 10);
+$VERSION = substr(q$Revision: 2.218 $, 10);
 
 @EXPORT = qw (
 
@@ -270,6 +270,24 @@ my %cond_op = (
 				 return 1;
 				},
 );
+
+my %file_op = (
+	A => sub { -A $_[0] },
+	B => sub { -B $_[0] },
+	d => sub { -d $_[0] },
+	e => sub { -e $_[0] },
+	f => sub { -f $_[0] },
+	g => sub { -g $_[0] },
+	l => sub { -l $_[0] },
+	M => sub { -M $_[0] },
+	r => sub { -r $_[0] },
+	s => sub { -s $_[0] },
+	T => sub { -T $_[0] },
+	u => sub { -u $_[0] },
+	w => sub { -w $_[0] },
+	x => sub { -x $_[0] },
+);
+
 
 $cond_op{len} = $cond_op{length};
 
@@ -1305,7 +1323,7 @@ sub input_filter {
 sub conditional {
 	my($base,$term,$operator,$comp, @addl) = @_;
 	my $reverse;
-	$base = lc $base;
+	$base =~ s/(\w+)/\L$1/;
 	$base =~ s/^!// and $reverse = 1;
 	my ($op, $status);
 	my $noop;
@@ -1466,12 +1484,17 @@ sub conditional {
 		$op = "q{$op}" unless defined $noop;
 		$op .=  qq% $comp% if $comp;
 	}
-	elsif($base eq 'file') {
+	elsif($base =~ /^file(-([A-Za-z]))?$/) {
 		#$op =~ s/[^rwxezfdTsB]//g;
 		#$op = substr($op,0,1) || 'f';
-		undef $noop;
-		$op = 'f';
-		$op = qq|-$op "$term"|;
+		my $fop = $2 || 'f';
+		if(! $file_op{$fop}) {
+			logError("Unrecognized file test '%s'. Returning false.", $fop);
+			$status = 0;
+		}
+		else {
+			$op = $file_op{$fop}->($term);
+		}
 	}
 	elsif($base =~ /^errors?$/) {
 		my $err;
