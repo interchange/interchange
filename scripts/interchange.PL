@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.2
 #
-# $Id: interchange.PL,v 2.44 2002-07-23 17:42:47 jon Exp $
+# $Id: interchange.PL,v 2.45 2002-07-23 22:44:50 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -1541,6 +1541,7 @@ sub run_in_catalog {
 										reply_to => $croncfg->{reply_to},
 										mailer => "Interchange $::VERSION",
 										extra => $croncfg->{extra_headers},
+									    log_error => 1,
 									},
 									$out,
 								);
