@@ -33,6 +33,34 @@ Core
 * Fix whitespace transform and tolerate leading whitespace on HTTP
   header lines.
 
+* Avoid persistent storage to make [summary] safe in prefork mode.
+
+* Allow a database to spring into existence without a .txt file. TO
+  do this, you define the field names in the NAME paramter.
+
+      Database will_be_there  will_be_there.txt  __SQLDSN__
+      Database will_be_there  NAME   code  field1 field2
+      Database will_be_there  CREATE_EMPTY_TXT  1
+
+  All it does is create the .txt file (or whatever the name is) from
+  the value of NAME array. It does take delimiters into account.
+
+  You must be just a bit careful, since if you then remove the .txt
+  file it will of course recreate the table. Of course you should
+  take that into account when setting this non-default parameter.
+
+  This will allow some one-file configurations to be added to the
+  system.
+
+* Allow autonumber for the linked-table behavior of update_data. Before,
+  you couldn't autonumber because the determination of whether the data
+  would be set was whether the key value is present. This allows
+  you to set mv_data_qual=fieldname and have a non-empty value in
+  that field determine whether to insert or not.
+
+* Minor cleanup in Data.pm, including ensuring $obj->{DELIMITER} 
+  and $obj->{delimiter} match.
+
 Content Management
 ------------------
 
