@@ -1,3 +1,5 @@
+<!-- begin page_edit_old -->
+
 <form action="[base-url]/@@MV_PAGE@@" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_action value=back>
 
@@ -149,7 +151,7 @@
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__><b>Template</b></td>
@@ -216,7 +218,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 	}
@@ -229,7 +231,7 @@ EOF
 		if($_->[0] eq 'break') {
 			$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 			next;
@@ -279,7 +281,7 @@ EOF
 
 	$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__ valign=top>
@@ -302,7 +304,7 @@ EOF
 
 [comment]
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/comment]
 

@@ -59,9 +59,10 @@ sub {
 		next unless length($data);
 		$name =~ s:.*/::;
 		my $ref = {};
-		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]}s;
+		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]\s*(.*)}s;
 		my $structure = $1 || '';
 		next unless $structure;
+		$ref->{ui_current_content} = $2;
 		my @lines = split /\n/, $structure;
 		my $found;
 		for(;;) {

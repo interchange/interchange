@@ -208,31 +208,48 @@ EOF
 	if( $template_input ) {
 		for(\$template_top, \$template_bot) {
 			while( $$_ =~ m{
-					 [ \t]* 
-					 (?:
-						<!--+ \s+ begin \s+ component \s+ (\w+) \s+ --+>
-						(.*?)
-						<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
-					 | 
-						\[ include \s+ file \s*=\s*["'][^"]*/
-							(?:\[control \s+ component \s+ )?
-								(\w+)
-							\]? ['"]
-						(.*?)
-						\]  \s*  \[control\]
-					 )
+				 [ \t]* 
+				 (?:
+				 	<!--+ \s+ begin \s+ component \s+ (\w+) \s+ (\w*) \s* --+>
+				 	(.*?)
+					<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
+				 | 
+				 	\[ include \s+ file \s*=\s*["'][^"]*/
+						(?:\[control \s+ component \s+ )?
+							(\w+)
+						\]? ['"]
+				 	\s*
+					(?:group=["']?(\w+)['"]?)?
+					.*?
+					\]  \s*  \[control\]
+				 )
 				}gsix)
+#					 [ \t]* 
+#					 (?:
+#						<!--+ \s+ begin \s+ component \s+ (\w+) \s+ --+>
+#						(.*?)
+#						<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
+#					 | 
+#						\[ include \s+ file \s*=\s*["'][^"]*/
+#							(?:\[control \s+ component \s+ )?
+#								(\w+)
+#							\]? ['"]
+#						(.*?)
+#						\]  \s*  \[control\]
+#					 )
 			{
-				my $compname = $1 || $3;
-				my $current_content = $2 || $4;
+				my $compname = $1 || $4;
+				my $comptype = $2 || $5;
+				my $current_content = $3 || '';
 				
 				push @comp_order, $compname;
+				push @comp_type, $comptype;
 
 			}
 
 			$$_ =~ s{
 					 [ \t]*<!--+
-						\s+ begin \s+ component \s+ (\S+) \s+ --+>
+						\s+ begin \s+ component \s+ (\S+) (?:\s*(\w+))? \s+ --+>
 						(.*?)
 					 <!--+ \s+end \s+component \s+ \1 \s+ --+> 
 				}
@@ -261,23 +278,27 @@ EOF
 	}
 
 
-	foreach my $compname (@comp_order) {
-			# Parens needed for array context
-			my ($carray) = $Tag->read_ui_template("$compdir/$compname");
-			push @messages, ("Read component $compname=$carray.");
-			if ($carray and scalar @$carray) {
-				push @cobj, @$carray;
-			}
-			else {
-				my $desc	= -f "$compdir/$compname"
-							? 'Static component, no controls'
-							: 'placeholder';
-				push @cobj, {
-					ui_component  => $compname,
-					ui_component_name => $compname,
-					ui_component_description => $desc,
-				};
-			}
+	for (my $i = 0; $i < @comp_order; $i++) {
+		my $compname = $comp_order[$i];
+		my $comptype = $comp_type[$i];
+		# Parens needed for array context
+		my ($carray) = $Tag->read_ui_template("$compdir/$compname");
+		push @messages, ("Read component $compname=$carray.");
+		if ($carray and scalar @$carray) {
+			$carray->[0]->{ui_component_type_current} = $comptype;
+			push @cobj, @$carray;
+		}
+		else {
+			my $desc	= -f "$compdir/$compname"
+						? 'Static component, no controls'
+						: 'placeholder';
+			push @cobj, {
+				ui_component  => $compname,
+				ui_component_name => $compname,
+				ui_component_description => $desc,
+				ui_component_type => $comptype,
+			};
+		}
 	}
 
 	$template_top_display = $template_top;
@@ -375,20 +396,26 @@ EOF
 		my $hash = $_;
 		my $key = $hash->{ui_component_name} || $hash->{ui_component};
 		my $val = $hash->{ui_component_label} || $hash->{ui_component_description};
+		my $tkey = $hash->{ui_component_type};
 		$key =~ s/"/&quot;/g;
 		$val =~ s/"/&quot;/g;
 		$val =~ s/,/&#44;/g;
 		push @copts, "$key=$val";
+		push @topts, grep /\S/, split /[\s,\0]+/, $tkey;
 	}
 
 	my $template_break;
 
 	my $opt_string = join ",", "NONE=none", @copts;
+	my %seen;
+	my $topt_string = join ",", grep !$seen{$_}++, "ALL", @topts;
 
 	for(my $i = 0; $i < @cobj; $i++) {
 		$template_break = scalar(@controls) if $template_div == $i;
 		my $ref = $cobj[$i];
 		my $c_name = $ref->{ui_component_name} || $ref->{ui_component} || 'None';
+		my $c_type = $ref->{ui_component_type};
+		my $c_type_curr = $ref->{ui_component_type_current};
 		my $c_label  = $ref->{ui_component_label}
 					|| $ref->{ui_component_description}
 					|| 'no description';
@@ -425,6 +452,23 @@ EOF
 						override => $c_name,
 						default => $c_name,
 						help => $help,
+						label =>  "Component",
+						filter => 'null_to_comma',
+						template => $control_template,
+					});
+
+		push @messages, "widget='$widget'";
+		# No meta for now
+		$widget =~ s/~[A-Z]{3,}~//g;
+		push @controls, $widget;
+
+		$widget = $Tag->display( {
+						name => "$i.ui_control_component_type",
+						type => 'select',
+						passed => $topt_string,
+						override => $c_type_curr,
+						default => $c_type_curr,
+						help => "Type of component for slot",
 						label =>  "Component type",
 						filter => 'null_to_comma',
 						template => $control_template,

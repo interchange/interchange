@@ -1,0 +1,118 @@
+[perl]
+Log("In page save");
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	if(! $CGI->{ui_template_layout}) {
+		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
+		$CGI->{ui_template_layout} = $Tag->read_ui_template( 
+									{
+										file => $CGI->{ui_template},
+										element => 'ui_template_layout',
+									});
+Log("elements: $CGI->{ui_template_layout}");
+	}
+
+	my @keys = keys %$CGI;
+
+	for(@keys) {
+		next unless /^ui_control_(.*)/;
+		my $k = $1;
+		push @layout, "[tmp $k]" . $CGI->{$_} . '[/tmp]';
+	}
+
+	@insert = split /\0/, ($CGI->{ui_content} || 'Page content.'); 
+
+	my (@components) = grep /^\d+\.ui_component$/, @keys;
+	@components = map { s/^(\d+).*/$1/; $_ } @components;
+	@components = sort { $a <=> $b } @components;
+
+	push @layout, '[control reset=1]' if @components;
+
+Log("components: " . join ",", @components);
+	for(@components) {
+		my $digit = $_;
+		my $comp = $CGI->{"$digit.ui_component"};
+
+		my $out = "\n[control-set]\n";
+		$out .= "[component]";
+		$out .= $comp;
+		$out .= "[/component]\n";
+
+		my @els = grep /^$digit\.ui_control_/, keys %$CGI;
+		for (@els) {
+			my $val = $CGI->{$_};
+			my $name = $_;
+			$name =~ s/^\d+\.ui_control_//;
+			$out .= "[$name]";
+			$out .= $val;
+			$out .= "[/$name]\n";
+		}
+		$out .= "[/control-set]\n";
+		push @layout, $out;
+	}
+
+	push @layout, '[control reset=1]' if @components;
+
+	push @layout, split /[\0\s,]+/, $CGI->{ui_template_layout};
+
+	my $def_string;
+	if($CGI->{ui_save_t_in_page}) {
+		$def_string = $CGI->{ui_definition};
+	}
+	else {
+		$def_string = $CGI->{ui_short_definition};
+	}
+
+	$def_string = "ui_template: yes\nui_template_name: $CGI->{ui_template}"
+		if $def_string !~ /\S/;
+
+	$def_string =~ s/\r\n?/\n/g;
+	unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
+
+	foreach $one (@layout) {
+		if( $one eq 'UI_CONTENT') {
+			my $content = shift @insert;
+			if($content !~ /\n/) {
+				$content =~ tr/\r/\n/;
+			}
+			else {
+				$content =~ s/\r?\n/\n/g;
+			}
+			$content = "\n<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->\n";
+			#Log("inserting $content");
+			push @out, $content;
+		}
+		elsif ($one =~ /^[A-Z]\w+$/) {
+			push @out, '@_' . $one . '_@';
+			#Log("inserted variable $one");
+		}
+		else {
+			push @out, $one;
+			#Log("inserted set $one");
+		}
+	}
+
+	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
+	if( ! $page) {
+		$Scratch->{ui_error} = errmsg("No page name given.");
+		$Tag->bounce('__UI_BASE__/error');
+		return;
+	}
+	$page = "pages/$page" if $page !~ m{^pages/};
+	$page .= $Config->{HTMLsuffix}
+		unless $page =~ /$Config->{HTMLsuffix}$/;
+Log("final page=$page");
+	push @out, '';
+	unless ($Tag->write_relative_file($page, (join "\n", @out))) {
+Log("failed to write page=$page");
+		$Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
+	}
+	$Scratch->{ui_output_page} = $page;
+	return;
+[/perl]

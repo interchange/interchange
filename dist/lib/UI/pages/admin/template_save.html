@@ -41,16 +41,18 @@
 	$top =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
 					my $name = $1 - 1;
 					$name .= ".ui_control_component";
+					my $type = $name;
+					$type .= "_type";
 				'[include file="[control component '
 				. $CGI->{$name}
-				.  ']"][control]'
+				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
 			~ge if $top;
 	$bot =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
 					my $name = $1 - 1;
 					$name .= ".ui_control_component";
 				'[include file="[control component '
 				. $CGI->{$name}
-				.  ']"]'
+				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
 			~ge if $bot;
 
 	my $ver = $Tag->version();
