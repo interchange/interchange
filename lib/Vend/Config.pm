@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.107 2003-04-04 04:51:06 mheins Exp $
+# $Id: Config.pm,v 2.108 2003-04-04 12:47:04 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.107 $, 10);
+$VERSION = substr(q$Revision: 2.108 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3252,8 +3252,8 @@ sub parse_database {
 				$c->{$val} = $d;
 			}
 		}
-		elsif ($p eq 'MAP') {
-			Vend::Table::Shadow::_parse_config_line ($d, $val);
+		elsif ($p =~ /^MAP/) {
+			Vend::Table::Shadow::_parse_config_line ($d, $p, $val);
 		}
 
 		else {
