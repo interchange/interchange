@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.16 2002-01-31 17:55:02 racke Exp $
+# $Id: Util.pm,v 2.17 2002-01-31 18:04:35 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 BEGIN {
 	eval {
@@ -1640,7 +1640,7 @@ sub errmsg {
 			$fmt = $location->{$fmt};
 		}
 	}
-	scalar(@strings) ? sprintf $fmt, @strings : $fmt;
+	return scalar(@strings) ? sprintf $fmt, @strings : $fmt;
 }
 
 *l = \&errmsg;
