@@ -1,13 +1,15 @@
-UserTag convert-date Order days
+UserTag convert-date Order adjust
 UserTag convert-date PosNumber 1
 UserTag convert-date addAttr
 UserTag convert-date AttrAlias fmt format
+UserTag convert-date AttrAlias days adjust
 UserTag convert-date HasEndTag
 UserTag convert-date Interpolate
 UserTag convert-date Routine <<EOR
 sub {
-    my ($days, $opt, $text) = @_;
+    my ($adjust, $opt, $text) = @_;
     my @t;
+    my $now;
 
 	if(! ref $opt) {
 		my $raw = $opt ? 1 : 0;
@@ -32,11 +34,20 @@ sub {
 					$t[5] -= 1900;
 	}
 	else {
-					my $now = time();
-					if ($days) {
-									$now += $days * 86400;
-					}
-					@t = localtime($now);
+					$now = time();
+					@t = localtime($now) unless $adjust;
+	}
+
+	if ($adjust) {
+		$now ||= mktime(@t);
+		$adjust .= ' days' if $adjust =~ /^[-\s\d]+$/;
+
+		if ($adjust =~ s/^\s*-\s*//) {
+			@t = localtime($now - Vend::Config::time_to_seconds($adjust));
+		}
+		else {
+			@t = localtime($now + Vend::Config::time_to_seconds($adjust));
+		}
 	}
 
 	if (defined $opt->{raw} and Vend::Util::is_yes($opt->{raw})) {
@@ -44,7 +55,7 @@ sub {
 	}
 
 	if (! $fmt) {
-		if ($t[2]) {
+		if ($t[1] || $t[2]) {
 			$fmt = '%d-%b-%Y %I:%M%p';
 		} else {
 			$fmt = '%d-%b-%Y';
