@@ -43,7 +43,7 @@ ui_template_name: leftright
 	</font>
 	
 		[if scratch coupon_approve]
-		[seti coupon_amount][data table=affiliate column=coupon_amount key='[scratch source]'][/seti]
+		[seti coupon_amount][data table=affiliate column=coupon_amount key='[data session source]'][/seti]
 		[discount ENTIRE_ORDER] $s - $Scratch->{coupon_amount}; [/discount]
 		[set order_discounted]1[/set]
 		[/if]
