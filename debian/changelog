@@ -1,3 +1,10 @@
+interchange (4.5.8-1.1) unstable; urgency=low
+
+  * patch to eg/globalsub/signio from upstream
+  * option size of usertag formel implemented
+
+ -- Stefan Hornburg <racke@linuxia.de>  Wed, 25 Oct 2000 10:52:05 +0200
+
 interchange (4.5.8-1) unstable; urgency=low
   
   * initial release
