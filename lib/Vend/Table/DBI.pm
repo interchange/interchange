@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.20 2000-10-17 19:59:25 jon Exp $
+# $Id: DBI.pm,v 1.21 2000-10-17 21:55:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 
 use strict;
 
@@ -275,6 +275,7 @@ sub open_table {
 		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
 							||	defined $config->{FILTER_FROM}
 							||	defined $config->{FILTER_TO}
+							||	$config->{UPPERCASE}
 							||	'';
 	}
 
@@ -491,7 +492,18 @@ sub row_hash {
 
 	return $sth->fetchrow_hashref()
 		unless $s->[$TYPE];
-	my $ref = $sth->fetchrow_hashref();
+	my $ref;
+	if($s->config('UPPERCASE')) {
+		my $aref = $sth->fetchrow_arrayref();
+		$ref = {};
+		my @nm = @{$sth->{NAME}};
+		for ( my $i = 0; $i < @$aref; $i++) {
+			$ref->{$nm[$i]} = $ref->{lc $nm[$i]} = $aref->[$i];
+		}
+	}
+	else {
+		$ref = $sth->fetchrow_hashref();
+	}
 	return $ref unless $s->[$CONFIG]{FIELD_ALIAS};
 	my ($k, $v);
 	while ( ($k, $v) = each %{ $s->[$CONFIG]{FIELD_ALIAS} } ) {
@@ -646,11 +658,9 @@ sub list_fields {
 			}
 		};
 	}
-
 	if($config->{UPPERCASE}) {
-        @fld = map { lc $_ } @fld;
-    }
-
+		@fld = map { lc $_ } @fld;
+	}
 	return \@fld;
 }
 
