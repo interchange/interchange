@@ -791,10 +791,13 @@ GetOptions(\%optctl, @options)
 WriteMakefile(
 	NAME     => "Interchange",
 	MAN3PODS => {
+					'pod/ic_ecommerce.pod'	=> 'blib/man3/ic_ecommerce.8',
+					'pod/ic_howto_cvs.pod'	=> 'blib/man3/ic_howto_cvs.8',
 					'pod/icadvanced.pod'	=> 'blib/man3/icadvanced.8',
 					'pod/iccattut.pod'		=> 'blib/man3/iccattut.8',
 					'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
 					'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
+					'pod/icfaq.pod'			=> 'blib/man3/icfaq.8',
 					'pod/icfoundation.pod'	=> 'blib/man3/icfoundation.8',
 					'pod/ictags.pod'		=> 'blib/man3/ictags.8',
 					'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
