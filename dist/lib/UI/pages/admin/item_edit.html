@@ -1,5 +1,11 @@
 [calc]
 	$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
+	if ($CGI->{item_id} eq 'new') {
+		$CGI->{ui_new_item} = 1;
+	}
+	else {
+		$CGI->{ui_hide_key} = 1 unless $CGI->{item_id} eq 'new';
+	}
 	if(! $CGI->{ui_data_fields}) {
 		$CGI->{ui_data_fields} = $Variable->{UI_ITEM_FIELDS}
 				|| 'sku description category comment price image weight size color';
@@ -16,6 +22,12 @@
 	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
+[if cgi ui_new_item]
+	[calc]
+		$CGI->{item_id} = q{[counter file="products/products.autonumber" start=new0000]};
+		return;
+	[/calc]
+[/if]
 @_UI_STD_DBEDIT_HEAD_@
 
 [set ui_class]Items[/set]
