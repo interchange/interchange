@@ -4,6 +4,9 @@
   <center>
   <a href="http://www.icdevgroup.org/">
     <img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index][L]Admin[/L]</a></p>
+    [/if]
   </center>
   <br><br>
 
