@@ -7,7 +7,6 @@ UserTag if-mm Routine <<EOR
 sub {
 	my($func, $field, $opt, $text) = @_;
 
-#::logDebug("if-mm: " . ::uneval(\@_));
 	my $record;
 	my $status;
 
@@ -20,8 +19,6 @@ sub {
 	my ($group, @groups);
 	$text = 1 if ! $text;
   CHECKIT: {
-#::logDebug("if-mm check func=$func field=$field extended=$extended");
-#::logDebug("if-mm group=$group") if $group;
 	if ($group or ! ($record = $Vend::UI_entry) ) {
 		$record = ui_acl_enabled($group);
 		if ( ! ref $record) {
@@ -29,7 +26,6 @@ sub {
 			last CHECKIT;
 		}
 	}
-#::logDebug("if-mm record: " . Vend::Util::uneval_it($record));
 	($status = 0, last CHECKIT) if ! UI::Primitive::is_logged();
 	($status = 1, last CHECKIT) if $record->{super};
 	$func = lc $func;
@@ -97,7 +93,6 @@ sub {
 		# strip trailing slashes for checks on directories
 		$file =~ s%/+$%%;                     
 		my @files =  UI::Primitive::list_glob($record->{$check}, $opt->{prefix});
-#::logDebug("if-mm file/page: file=$file set=@files");
 		if(! @files) {
 			$status = '';
 			last CHECKIT;
@@ -110,41 +105,31 @@ sub {
 		last CHECKIT;
 	}
 	if($check = $yesno_func{$func} ) {
-#::logDebug("if-mm yesno check: table=$table func=$func");
 		my $v;
 		if($v = $record->{"yes_$check"}) {
 			$status = ui_check_acl("$table$extended", $v);
-#::logDebug("yes check: status=$status");
 		}
 		else {
-#::logDebug("yes check defaulted to 1");
 			$status = 1;
 		}
 		if($v = $record->{"no_$check"}) {
 			$status &&= ! ui_check_acl("$table$extended", $v);
-#::logDebug("no check: status=$status");
 		}
 		last CHECKIT;
 	}
 	if(! ($check = $acl_func{$func}) ) {
-#::logDebug("if-mm straight check: table=$table func=$func");
 		my $default = $func =~ /^no_/ ? 0 : 1;
 		$status = $default, last CHECKIT unless $record->{$func};
 		$status = ui_check_acl("$table$extended", $record->{$func});
-#::logDebug("if-mm straight check: table=$table func=$func status=$status reverse=$reverse");
 		last CHECKIT;
 	}
 
 	# Now it is definitely a job for table_control;
 	$acl = UI::Primitive::get_ui_table_acl($table);
-#::logDebug("if-mm ACL check: table=$table func=$func check=$check status=$status reverse=$reverse");
-#::logDebug("if-mm ACL check: ofield=$acl->{owner_field}");
-#::logDebug("if-mm acl=" . Vend::Util::uneval_it($acl));
 
 	$status = 1, last CHECKIT unless $acl;
 	my $val;
 	if($acl->{owner_field} and $check eq 'keys') {
-#::logDebug("if-mm ACL check owner_field: table=$table field=$field check=$check ofield=$acl->{owner_field}");
 		$status = ::tag_data($table, $acl->{owner_field}, $field)
 					eq $Vend::username;
 		last CHECKIT;
@@ -155,14 +140,12 @@ sub {
 	}
 	$status = UI::Primitive::ui_acl_atom($acl, $check, $field);
   }
-#::logDebug("if-mm prior to group: func=$func field=$field status=$status reverse=$reverse") if ! $group;
 	if(! $status and $record and (@groups or $record->{groups}) ) {
 		goto CHECKIT if $group = shift @groups;
 		(@groups) = grep /\S/, split /\0,\s]+/, $record->{groups};
 		($group, @groups) = map { s/^/:/; $_ } @groups;
 		goto CHECKIT;
 	}
-#::logDebug("if-mm: func=$func field=$field status=$status reverse=$reverse");
 	return $status
 		? (
 			Vend::Interpolate::pull_if($text, $reverse)
