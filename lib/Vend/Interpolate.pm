@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.14 2001-01-20 20:02:27 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.15 2001-01-28 08:35:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.15 $, 10);
 
 @EXPORT = qw (
 
@@ -419,6 +419,10 @@ sub substitute_image {
                          $1 . $dir . $2#ige;
         $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
                          $1 . $dir . $2#ige;
+        $$text =~ s#(<t[dhr]\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+                         $1 . $dir . $2#ige
+            if $Vend::Cfg->{Pragma}{substitute_table_image};
+
     }
     if($Vend::Cfg->{ImageAlias}) {
 		for (keys %{$Vend::Cfg->{ImageAlias}} ) {
@@ -2112,7 +2116,7 @@ sub tag_perl {
 		for(keys %{$Global::GlobalSub}) {
 #::logDebug("tag_perl share subs: GlobalSub=$_");
 			next if defined $Global::AdminSub->{$_}
-				and ! $Global::AllowGlobal{$Vend::Cfg->{CatalogName}};
+				and ! $Global::AllowGlobal->{$Vend::Cfg->{CatalogName}};
 			*$_ = \&{$Global::GlobalSub->{$_}};
 			push @share, "&$_";
 		}
@@ -2176,6 +2180,9 @@ sub tag_perl {
 	else {
 		$result = $ready_safe->reval($body);
 	}
+
+	undef $MVSAFE::Safe;
+
 	if ($@) {
 #::logDebug("tag_perl failed $@");
 		my $msg = $@;
@@ -2185,7 +2192,6 @@ sub tag_perl {
 	}
 #::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
 
-	undef $MVSAFE::Safe;
 	if ($opt->{no_return}) {
 		$Vend::Session->{mv_perl_result} = $result;
 		$result = join "", @Vend::Document::Out;
