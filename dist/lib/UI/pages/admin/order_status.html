@@ -162,6 +162,7 @@
 	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
 	include-form="[scratch form_include]"
 	include-before="order_id"
+	widget.code=hidden_text
 	help.order_id='<span style="font-size: larger;font-weight: bold">* = settled, - = voided</span>'
 	link-table=orderline
 	link-key=order_number
@@ -184,4 +185,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.12 2003-04-01 23:17:36 ramoore Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.13 2003-07-22 18:56:09 mheins Exp $ -->
