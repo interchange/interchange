@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 #
-# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ APXS=/usr/bin/apxs
 # (From mod-perl packaging)
 DEV_DPKG_VERSION := $(shell dpkg -s apache-dev | awk '/Version:/ {print $2}')
 DEV_VERSION := $(shell echo $(DEV_DPKG_VERSION) | sed "s/^Version: \(.*\)-.*$$/\1/")
-NEXTVERNO := $(shell echo $(DEV_VERSION) | awk -F. '{OFS="."; $$NF = $$NF + 1; print}')
 
 build: build-stamp
 build-stamp:
@@ -143,7 +142,7 @@ binary-arch: build install
 	dh_installdeb
 	dh_shlibdeps
 	dh_perl usr/lib/interchange
-	dh_gencontrol -- -VTHISDEV="$(DEV_VERSION)" -VNEXTDEV="$(NEXTVERNO)"
+	dh_gencontrol -- -VTHISDEV="$(DEV_VERSION)"
 	dh_md5sums
 	dh_builddeb
 
