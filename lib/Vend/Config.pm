@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.3 2000-11-30 01:25:10 heins Exp $
+# $Id: Config.pm,v 1.25.2.4 2000-12-02 20:14:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.4 $, 10);
 
 my %CDname;
 
@@ -2091,6 +2091,7 @@ my %Hash_ref = (  qw!
 							FILTER_FROM   FILTER_FROM
 							FILTER_TO     FILTER_TO 
 							COLUMN_DEF    COLUMN_DEF
+							DEFAULT       DEFAULT
 							FIELD_ALIAS   FIELD_ALIAS
 							NUMERIC       NUMERIC
 							WRITE_CATALOG WRITE_CATALOG

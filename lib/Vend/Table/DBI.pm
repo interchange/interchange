@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.2 2000-11-30 02:51:14 heins Exp $
+# $Id: DBI.pm,v 1.25.2.3 2000-12-02 20:14:01 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.3 $, 10);
 
 use strict;
 
@@ -367,10 +367,19 @@ sub open_table {
 	}
 
 	if(! defined $config->{EXTENDED}) {
-		$config->{NAME} = list_fields($db, $tablename, $config)
-			if ! $config->{NAME};
-		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config)
+		## side-effects here -- sets $config->{NUMERIC},
+		## $config->{_Numeric_ary}, reads GUESS_NUMERIC
+		if(! $config->{NAME}) {
+			$config->{NAME} = list_fields($db, $tablename, $config);
+		}
+		else {
+			list_fields($db, $tablename, $config);
+		}
+
+		## side-effects here -- sets $config->{_Default_ary} if needed
+		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config, $db)
 			if ! $config->{COLUMN_INDEX};
+
 		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
 							||	defined $config->{FILTER_FROM}
 							||	defined $config->{FILTER_TO}
@@ -378,11 +387,7 @@ sub open_table {
 							||	'';
 	}
 
-	if($config->{GUESS_NUMERIC} and ! $config->{NUMERIC}) {
-		list_fields($db, $tablename, $config);
-	}
 
-	$config->{NUMERIC} = {} unless $config->{NUMERIC};
 
 	die "DBI: no column names returned for $tablename\n"
 			unless defined $config->{NAME}[1];
@@ -436,7 +441,8 @@ sub quote {
 	my($s, $value, $field) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	return $s->[$DBI]->quote($value)
-		unless $field and $s->numeric($field);
+		unless $field and exists $s->[$CONFIG]->{NUMERIC}{$field};
+	$value = 0 if ! length($value);
 	return $value;
 }
 
@@ -506,7 +512,8 @@ sub bind_entire_row {
 	my($s, $sth, $key, @fields) = @_;
 #::logDebug("bind_entire_row=" . ::uneval(\@_));
 	my $i;
-	my $numeric = $s->[$CONFIG]->{NUMERIC};
+	my $numeric = $s->[$CONFIG]->{_Numeric_ary}
+		or die ::errmsg("improperly set up database, no numeric array.");
 	my $name = $s->[$NAME];
 	my $j = 1;
 	for($i = 0; $i < scalar @$name; $i++, $j++) {
@@ -514,13 +521,13 @@ sub bind_entire_row {
 		$sth->bind_param(
 			$j,
 			$fields[$i],
-			(! exists $numeric->{$name->[$i]} ? undef : DBI::SQL_INTEGER),
+			$numeric->[$i],
 			);
 	}
 	$sth->bind_param(
 			$j,
 			$key,
-			(! exists $numeric->{$name->[$i]} ? undef : DBI::SQL_INTEGER),
+			$numeric->[ $s->[$CONFIG]{KEY_INDEX} ],
 			)
 		if $key;
 	return;
@@ -651,10 +658,29 @@ sub set_row {
 	if(scalar @fields == 1) {
 		$fields[0] = $s->autonumber()
 			if ! length($fields[0]);
+		$val = $s->quote($fields[0], $s->[$KEY]);
+		my $key_string;
+		my $val_string;
+		my $ary;
+		if($ary = $cfg->{_Default_ary}) {
+			my @flds = $s->[$KEY];
+			my @vals = $val;
+			for (my $i = 0; $i < @$ary; $i++) {
+				next unless defined $ary->[$i];
+				push @flds, $s->[$NAME][$i];
+				push @vals, $ary->[$i];
+			}
+			$key_string = join ",", @flds;
+			$val_string = join ",", @vals;
+		}
+		else {
+			$key_string = $s->[$KEY];
+			$val_string = $val;
+		}
+::logDebug("def_ary query will be: insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		eval {
-			$val = $s->quote($fields[0], $s->[$KEY]);
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
-			$s->[$DBI]->do("insert into $s->[$TABLE] ($s->[$KEY]) VALUES ($val)");
+			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		};
 		die "$DBI::errstr\n" if $@;
 		return $fields[0];
@@ -845,14 +871,28 @@ sub delete_record {
 }
 
 sub fields_index {
-	my($fields, $config) = @_;
+	my($fields, $config, $dbh) = @_;
 	my %idx;
 	my $alias = $config->{FIELD_ALIAS} || {};
-	for( my $i = 0; $i < @$fields; $i++) {
+	my $fc = scalar @$fields;
+	for( my $i = 0; $i < $fc; $i++) {
 		$idx{lc $fields->[$i]} = $i;
 		next unless defined $alias->{lc $fields->[$i]};
 #::logDebug("alias found: $fields->[$i] = $alias->{lc $fields->[$i]} = $i");
 		$idx{ $alias->{ lc $fields->[$i] } } = $i;
+	}
+	if($config->{DEFAULT}) {
+		my $def = $config->{DEFAULT};
+		my $def_ary = [];
+		for(keys %$def) {
+			my $k = lc $_;
+#::logDebug("DBI default: checking $k=$_, idx=$idx{$k}");
+			$def_ary->[$idx{$k}] =	exists($config->{NUMERIC}{$k})
+									? $def->{$_}
+									: $dbh->quote($def->{$_});
+#::logDebug("DBI default: checking $k=$def_ary->[$idx[$k]]");
+		}
+		$config->{_Default_ary} = $def_ary;
 	}
 	return \%idx;
 }
@@ -873,8 +913,8 @@ sub list_fields {
 		$sth->fetch();
 	}
 	@fld = @{$sth->{NAME}};
+	$config->{NUMERIC} = {} if ! $config->{NUMERIC};
 	if($config->{GUESS_NUMERIC}) {
-		$config->{NUMERIC} = {} if ! $config->{NUMERIC};
 		eval {
 			for (my $i = 0; $i < @fld; $i++) {
 				my $info =
@@ -886,6 +926,8 @@ sub list_fields {
 			}
 		};
 	}
+	my @num = map { exists $config->{NUMERIC}{$_} ? DBI::SQL_INTEGER : undef } @fld;
+	$config->{_Numeric_ary} = \@num;
 	if($config->{UPPERCASE}) {
 		@fld = map { lc $_ } @fld;
 	}
