@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.20 2001-04-01 03:58:10 heins Exp $
+# $Id: Util.pm,v 1.14.2.21 2001-04-03 14:12:21 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -56,6 +56,7 @@ require Exporter;
 	random_string
 	readfile
 	readin
+	round_to_frac_digits
 	secure_vendUrl
 	setup_escape_chars
 	string_to_ref
@@ -79,7 +80,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.21 $, 10);
 
 BEGIN {
 	eval {
