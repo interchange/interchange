@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.28 2000-10-15 17:58:21 heins Exp $
+# $Id: makecat.PL,v 1.29 2000-10-17 07:55:46 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1455,7 +1455,7 @@ ADDITIONAL: {
 			next unless $true;
 		}
 		$var =~ s/\s+//g;
-		$var =~ s:^(!)::
+		$var =~ s:^!::
 			and $noprompt = 1;
 		$var = lc $var;
 		my $ucvar = uc $var;
@@ -1465,11 +1465,11 @@ ADDITIONAL: {
 			$default = $history[0];
 			sethistory(@history);
 		}
-		if (defined $help{$ucvar}) {
-			$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
-			print $help{$ucvar};
-		}
 		unless ($noprompt) {
+			if (defined $help{$ucvar}) {
+				$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
+				print $help{$ucvar};
+			}
 			print "found more to ask.\n\n" unless $said++;
 			$Conf{$var} = prompt(
 							do_msg("$prompt: ", 50),
@@ -2072,7 +2072,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.28 2000-10-15 17:58:21 heins Exp $
+$Id: makecat.PL,v 1.29 2000-10-17 07:55:46 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2312,8 +2312,6 @@ catalog directories:
 
   diff -r interchange/construct catalogs/construct
 
-NOTE: C<diff> is usually only available on UNIX.
-
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
 For example, if you answered C<www.mydomain.com> at the prompt
@@ -2434,7 +2432,7 @@ its web site:
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
-        http://www.perl.com
+        http://www.perl.com/
 
 =head1 SEE ALSO
 
@@ -2442,7 +2440,7 @@ mvdocs(8), interchange(1), http://www.akopia.com/
 
 =head1 LICENSE
 
-Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY. This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
