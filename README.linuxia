@@ -12,6 +12,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3-5)
 - UI_IMG fix for poweredby.gif (UI_STD_FOOTER: CVS 1.11.4.2)
 - sort by DescriptionField instead of hardcoded field name (item.html: 1.18.4.4)
+- added global_ignore in order to allow extern scripts to work
+  with the Interchange library (Config.pm: 1.23.4.4)
 
 Changes that made into the main branch:
 
