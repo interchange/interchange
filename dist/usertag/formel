@@ -184,4 +184,10 @@ corresponding mv_formel_... form variable values, e.g.:
     [value name="mv_formel_order" set=1 hide=1]
 
 	[value name="mv_formel_signal" set="<BLINK>%s</BLINK>" hide=1]    
+
+To display the label and the form element seperately call C<formel> twice:
+
+	[formel label=Username: name=login format="%s"]
+	[formel name=login order=1 format="%s"]
+
 EOD
