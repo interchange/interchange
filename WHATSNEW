@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.7 released 2003-01-24.
+Interchange 4.8.7 released 2003-01-30.
 
 Core
 ----
@@ -97,6 +97,8 @@ Foundation
 
 * Be more tolerant with zip/postal codes -- don't remove hyphen from
   ZIP+4 (99686-2933) or space from Canadian postal code (T0L 0R0).
+
+* Fix orderline import deficiency found by Karen Gold (KarenG@LOADUP.com).
 
 Miscellaneous
 -------------
