@@ -1,0 +1,39 @@
+UserTag email_html Order to subject reply from extra
+UserTag email_html hasEndTag
+UserTag email_html Interpolate
+UserTag email_html Routine <<EOR
+sub {
+    require MIME::Lite;
+
+    my($to, $subject, $reply, $from, $extra, $body) = @_;
+    my($ok);
+    my($msg);
+
+    $subject = '<no subject>' unless defined $subject && $subject;
+
+    $reply = '' unless defined $reply;
+    $reply = "Reply-to: $reply\n" if $reply;
+	if (! $from) {
+		$from = $Vend::Cfg->{MailOrderTo};
+		$from =~ s/,.*//;
+	}
+
+	$extra =~ s/\s*$/\n/ if $extra;
+    $ok = 0;
+
+    $msg = MIME::Lite -> new (From => $from, To => $to, Subject => $subject,
+                              Type => 'text/html', Data => $body);
+    $ok = $msg -> send;
+
+    if (!$ok) {
+        logError("Unable to send mail using $Vend::Cfg->{'SendMailProgram'}\n" .
+            "To '$to'\n" .
+            "From '$from'\n" .
+            "With extra headers '$extra'\n" .
+            "With reply-to '$reply'\n" .
+            "With subject '$subject'\n" .
+            "And body:\n$body");
+    }
+    $ok;
+}
+EOR

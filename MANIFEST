@@ -573,6 +573,7 @@ dist/usertag/button
 dist/usertag/convert_date
 dist/usertag/db_date
 dist/usertag/email
+dist/usertag/email_html
 dist/usertag/email_raw
 dist/usertag/fcounter
 dist/usertag/formel
