@@ -314,11 +314,6 @@ sub {
 					$op[$i] =~ s/(<td)/$1 $td[$i]/i;
 				}
 			}
-			if($opt->{td}) {
-				for ( my $i = 0; $i < $cols; $i++) {
-					$op[$i] =~ s/(<td)/$1 $td[$i]/i;
-				}
-			}
 			@op = map { s/>/>$td_beg/; $_ }			 @op	if $td_beg;
 			@op = map { s/(<[^<]+)$/$td_end$1/; $_ } @op	if $td_end;
 
