@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.5 2000-12-26 15:44:50 racke Exp $
+# $Id: Data.pm,v 1.13.4.6 2001-01-02 18:17:24 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -108,9 +108,8 @@ sub product_code_exists_ref {
         return $ref->ref() if $ref->record_exists($code);
     }
 
-    my $return;
     foreach $ref (@Vend::Productbase) {
-        return ($return = $ref) if $ref->record_exists($code);
+        return ($ref->ref()) if $ref->record_exists($code);
     }
     return undef;
 }
@@ -147,9 +146,14 @@ sub update_productbase {
 		$Vend::Productbase{$_} = $Vend::Database{$_};
 		$Vend::Basefinder{$Vend::Database{$_}} = $_;
 		push @Vend::Productbase, $Vend::Database{$_};
+		$Vend::OnlyProducts = $_;
 	}
 	$Products = $Vend::Productbase[0];
+
+	undef $Vend::OnlyProducts if scalar @Vend::Productbase > 1;
+	
 #::logError("Productbase: '@Vend::Productbase' --> " . ::uneval(\%Vend::Basefinder));
+	return $Products;
 
 }
 
@@ -287,8 +291,8 @@ sub set_field {
 
 sub product_field {
     my ($field_name, $code, $base) = @_;
-	return database_field($Vend::Cfg->{OnlyProducts}, $field_name, $code)
-		if $Vend::Cfg->{OnlyProducts};
+	return database_field($Vend::OnlyProducts, $field_name, $code)
+		if $Vend::OnlyProducts;
 	my ($db);
     $db = product_code_exists_ref($code, $base || undef)
 		or return '';
