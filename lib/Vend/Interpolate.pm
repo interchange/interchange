@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.48 2002-01-31 20:26:18 mheins Exp $
+# $Id: Interpolate.pm,v 2.49 2002-02-01 00:18:07 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 @EXPORT = qw (
 
@@ -3349,7 +3349,7 @@ sub esc {
 
 # Escapes a scan reliably in three different possible ways
 sub escape_scan {
-	my ($scan, $ref) = @_;
+	my ($scan, $ref, $esc) = @_;
 #::logDebug("escape_scan: scan=$scan");
 	if (ref $scan) {
 		for(@$scan) {
@@ -3381,11 +3381,11 @@ sub escape_scan {
 		}
 	}
 
-	return join '/', 'scan', escape_mv('/', $scan);
+	return join '/', 'scan', escape_mv('/', $scan, undef, $esc);
 }
 
 sub escape_mv {
-	my ($joiner, $scan, $not_scan) = @_;
+	my ($joiner, $scan, $not_scan, $esc) = @_;
 
 	my @args;
 
@@ -3405,8 +3405,13 @@ sub escape_mv {
 	for(@args) {
 		s!/!__SLASH__!g unless defined $not_scan;
 		s!\0!-_NULL_-!g;
-		m!\w=!
-			or (undef $_, next);
+		if ($esc) {
+			s!(\w\w=)(.*)!$1 . esc($2)!eg
+				or (undef $_, next);
+		} else {
+			m!\w=!
+ 			    or (undef $_, next);
+		}
 		s!__SLASH__!::!g unless defined $not_scan;
 	}
 	return join $joiner, grep(defined $_, @args);
