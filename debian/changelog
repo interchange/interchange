@@ -1,3 +1,12 @@
+interchange (4.8.6-1) unstable; urgency=high
+
+  * new upstream release, fixes security problem which allows access via
+    HTTP to files readable by the Interchange daemon. It is very unlikely
+    that Debian installations are vulnerable.
+  * removed unneeded file /usr/lib/interchange/perllocal.pod
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 11 Aug 2002 18:16:16 +0200
+
 interchange (4.8.5.20020527-1) unstable; urgency=low
 
   * release from current CVS (stable branch)
