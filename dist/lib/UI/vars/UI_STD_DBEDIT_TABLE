@@ -12,6 +12,8 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="admin/flex_select">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
+<INPUT TYPE=hidden NAME=ui_meta_view VALUE="[cgi ui_meta_view]">
+<INPUT TYPE=hidden NAME=item_id_left VALUE="[cgi item_id_left]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
 [calc]
@@ -38,10 +40,30 @@ EOF
 [/else]
 [/if-key-exists]
 
-<table __UI_T_PROPERTIES__>
+<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
+<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
+<table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
+
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	&nbsp;
+</TD>
+<TD VALIGN=TOP>
+<B>[button text=" Ok "]
+[return-to click]
+[/button]</B>
+&nbsp;
+&nbsp;
+[button text=" Cancel "]
+mv_todo=return
+[return-to click]
+mv_data_table=[cgi mv_data_table]
+[/button]
+</TD>
+</TR>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
 </tr>
 
 [seti extra_tables]
@@ -63,13 +85,34 @@ EOF
 	if(!$db) {
 		return "<TR><TD>Broken table '$table'</TD></TR>";
 	}
-	my $key		= $Scratch->{arg};
+	my $key		= $CGI->{item_id};
 	my $keycol  = $db->config('KEY');
+	my $passed_fields = $Values->{ui_data_fields};
+	my @extra_cols;
+	my %ok_col;
+	while($passed_fields =~ s/(\w+:+\S+)//) {
+		push @extra_cols, $1;
+	}
 	my (@cols)  = split /\s+/, $Tag->db_columns( {
 										name	=> $table,
-										columns	=> $Values->{ui_data_fields},
+										columns	=> $passed_fields,
 										passed_order => 1,
 									});
+
+	if($Values->{ui_data_fields}) {
+		for(@cols, @extra_cols) {
+			unless (/^(\w+):+(\S+)/) {
+				$ok_col{$_} = 1;
+				next;
+			}
+			my $t = $1;
+			my $c = $2;
+			next unless $Tag->db_columns( { name	=> $t, columns	=> $c, });
+			$ok_col{$_} = 1;
+		}
+		@cols = grep $ok_col{$_}, split /\s+/, $Values->{ui_data_fields};
+	}
+
 	my $super = $Tag->if_mm('super');
 
 	if($db->record_exists($key)) {
@@ -91,96 +134,112 @@ EOF
 			next;
 		}
 		my $currval;
-		if($CGI->{$col} and !tag_data($table, $col, $key) ) {
+		if($col =~ /(\w+):+(\S+)/) {
+			$t = $1;
+			$c = $2;
+			$Scratch->{mv_data_enable} .= " $t "
+				unless $Scratch->{mv_data_enable} =~ /\b$t\b/;
+		}
+		else {
+			$t = $table;
+			$c = $col;
+		}
+		if($CGI->{$col} and !tag_data($t, $c, $key) ) {
 			$currval = $CGI->{$col};
 		}
 		else {
-			$currval = delete $Scratch->{"ui_preload:$table:$col"} || undef;
+			$currval = delete $Scratch->{"ui_preload:$t:$c"} || undef;
 		}
-		my $label = $Tag->field_label( {	table => $table,
-											column =>  $col,
-											key => $key,
-										} );
 		my $meta = '';
+		my $display = $Tag->display({
+										table => $t,
+										column => $c,
+										name => $col,
+										key => $key,
+										default => $currval,
+										arbitrary => $CGI->{ui_meta_view},
+										fallback => 1,
+										template => q(
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B>~META~</FONT>
+</TD>
+<TD VALIGN=TOP>
+	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
+</TD>
+</TR>
+),
+									});
 		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
-			$meta .= '<FONT SIZE=1><BR>';
+			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
 			my $page = $Tag->var('MV_PAGE', 1);
 			$meta .= $Tag->page(
 							{	href => "$base/flex_editor",
 								form => qq{
-										item_id=${table}::$col
+										item_id=${t}::$c
 										mv_data_table=mv_metadata
 										ui_return_to=$page
 										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=mv_data_table=$table
+										ui_return_to=mv_data_table=$t
 										}
 							});
 			$meta .= 'meta</A>';
 			$meta .= '<br>' . $Tag->page(
 							{	href => "$base/flex_editor",
 								form => qq{
-										item_id=${table}::${col}::$key
+										item_id=${t}::${c}::$key
 										mv_data_table=mv_metadata
 										ui_return_to=$page
 										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=mv_data_table=$table
+										ui_return_to=mv_data_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
 				if $CGI->{ui_meta_specific};
 			$meta .= '</FONT>';
 		}
-#Log("Current preload val for $table:$col -- $currval");
-		my $display = $Tag->display({
-										table => $table,
-										column => $col,
-										key => $key,
-										default => $currval,
-									});
-        unless ($label) {
-            $Document->write ($display);
-            next;
-        }
+        #unless ($label) {
+            #$Document->write ($display);
+            #next;
+        #}
 		$Document->write(<<EOF) if $break{$col};
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
 </tr>
 EOF
-		$Document->write(<<EOF);
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right width=__UI_LEFT_WIDTH__ VALIGN=TOP>
-$label$meta
-</td>
-<td bgcolor=__UI_C_INTBLOCK__ width=__UI_RIGHT_WIDTH__ VALIGN=TOP>
-$display
-</td>
-</tr>
-EOF
+		$display =~ s/\~META\~/$meta/g;
+		$Document->write($display);
 	}
 %>
 [/mvasp]
-
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
 </tr>
 
-</table>
-
-<p>
-
-[button text="Ok"]
-junk=
-[/button]
-
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	&nbsp;
+</TD>
+<TD VALIGN=TOP>
+<B>[button text="Ok"]
+[return-to click]
+[/button]</B>
+&nbsp;
+&nbsp;
 [button text="Cancel"]
-mv_todo=back
+mv_todo=return
 [return-to click]
 mv_data_table=[cgi mv_data_table]
 [/button]
 
-<BR>
 [if-mm tables =x]
+<small>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 	[if !value ui_too_large]
 	[if-mm super]
 	<INPUT TYPE=checkbox NAME=mv_auto_export CHECKED VALUE="[value mv_data_table]">
@@ -191,6 +250,13 @@ mv_data_table=[cgi mv_data_table]
 	[/if-mm]
 	[/if]
 [/if-mm]
+</small>
+</TD>
+</TR>
+
+</table>
+</td></tr></table>
+</td></tr></table>
 
 </form>
 
