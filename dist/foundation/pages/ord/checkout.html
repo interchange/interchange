@@ -59,6 +59,7 @@ ui_template_name: noleft
     [/if]
 
     <FORM ACTION="[process secure=1]" METHOD=POST>
+	<input type=hidden name=mv_session_id value="[data session id]">
     <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
     <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/checkout">

@@ -90,6 +90,7 @@ function update_price (form) {
 </SCRIPT>
 
 <FORM ACTION="[area ord/basket]" METHOD=POST>
+<input type="hidden" name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_click	VALUE="arrange_sku">
 <INPUT TYPE=hidden NAME=mv_action	VALUE="refresh">
 <INPUT TYPE=hidden NAME=mv_quantity_update	VALUE="1">

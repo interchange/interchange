@@ -45,6 +45,7 @@ mv_nextpage=new_account
     <INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
     <INPUT TYPE=hidden NAME=mv_successpage VALUE="customerservice">
     <INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
+    <input type=hidden name=mv_session_id value="[data session id]">
 
     <table border="0" align="center">
     <tr>
@@ -92,6 +93,7 @@ mv_nextpage=new_account
 [else]
 
     <FORM ACTION="[process]" METHOD=POST>
+    <input type=hidden name=mv_session_id value="[data session id]">
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
     <INPUT TYPE=hidden NAME=mv_click VALUE=Logout_choice>
     <INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">

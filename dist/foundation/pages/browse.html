@@ -86,6 +86,7 @@ ui_template_name: leftright
 	    <table border="0" cellpadding="3" cellspacing="0">
 
 	      <FORM ACTION="[process-target]" METHOD=POST>
+		  <input type=hidden  name=mv_session_id    value="[data session id]">
 	      <INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
 	      <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[loop-code]">
 	
