@@ -2,8 +2,13 @@
 
 my $SERVER  = 'http://10.10.10.21';
 my $CGICALL = '/cgi-bin/YOURCAT/admin/quickbooks/get_orders';
+
+### These need to be a valid IC UI username/password with
+### the "orders" permission.
 my $USER    = 'USERNAME';
 my $PASS    = 'something';
+
+### Where the output files should go....
 my $LOCDIR  = 'c:\Program Files\Intuit\QuickBooks Pro';
 my $DEC_CMD  = 'gpg --passphrase-fd 0 --batch -d';
 
