@@ -1,39 +1,166 @@
 [set help_name]shipping.edit[/set]
-[set page_title]Shipping options: edit method[/set]
+[seti page_title]Shipping options: edit method [cgi ui_shipmode][/seti]
+[seti page_banner]Shipping options: edit method <I>[cgi ui_shipmode]</I>[/seti]
 [set icon_name]admin/icon_config.gif[/set]
+[set meta_header]
+<SCRIPT LANGUAGE=JavaScript>
+		function check_for_ups(form, mode) {
+			if(mode.substring(0,3) == 'UPS') {
+				form.ui_ship_ups.value = '1';
+				return true;
+			}
+			form.ui_ups.value = '0';
+			return false;
+		}
+</SCRIPT>
+[/set]
 @@UI_STD_HEAD@@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-<!-- read shipping: [read-shipping] -->
+<!-- read shipping:
+		[calc] $Config->{Shipping_line} = []; return; [/calc]
+	[read-shipping] -->
+
+<!-- do update?:
+[if cgi do_update_cmd]
+	[flag type=write table=country]
+	[perl tables=country]
+		my $inmode = $CGI->{ui_shipmode};
+		$inmode =~ s/\W+//g;
+		Log("write inmode=$inmode");
+		my $lines = $Config->{Shipping_line};
+		my $ref;
+		my $idx = -1;
+		for(@$lines) {
+			$idx++;
+			next unless $_->[0] eq $inmode;
+			$ref = $_;
+			last;
+		}
+		if(! $ref) {
+			# append one;
+			$idx++;
+			$ref = [];
+		}
+		my $opt = {};
+		my (@straight) = qw/zone origin adder at_least origin ups round/;
+			
+		for(@straight) {
+			$opt->{$_} = $Values->{"ui_ship_$_"}
+				if length ($Values->{"ui_ship_$_"});
+		}
+		my $type = $opt->{ui_ship_type} = $Values->{ui_ship_type};
+		my $crit = $Values->{ui_ship_criteria} || $Values->{ui_ship_custom_criteria};
+		$crit = '[subtotal noformat=1]' if $crit eq '_subtotal';
+		my $desc = $Values->{ui_ship_description};
+		my $msg  = $Values->{ui_ship_message};
+		$msg =~ /^[a-zA-Z]\s+/ or $msg = "e $msg";
+
+		$Config->{Shipping_line}[$idx] = 
+			[
+				$inmode,
+				$desc,
+				$crit,
+				0,
+				0,
+				$msg,
+				'',
+				$opt,
+			];
+		$Scratch->{ui_update_shipping} = 1;
+		my (@countries) = split /\0/, $CGI->{ui_ship_country};
+		my $db = $Db{country};
+		my $ptr = $db->column_index('shipmodes');
+		my %here;
+		@here{@countries} = @countries;
+		my %change;
+		while( ($k, @f) = $db->each_record() ) {
+			if( $f[$ptr] =~ /\b$inmode\b/o ) {
+				next unless ! $here{$k};
+				Log("changing $k from $f[$ptr], remove");
+				$f[$ptr] =~ s/\b$inmode\b//;
+				$f[$ptr] =~ s/\s+/ /g;
+				$change{$k} = $f[$ptr];
+			}
+			else {
+				next unless $here{$k};
+				Log("changing $k from $f[$ptr], add");
+				$f[$ptr] .= " $inmode";
+				$f[$ptr] =~ s/\s+/ /g;
+				$change{$k} = $f[$ptr];
+			}
+		}
+		$idx = 0;
+		while ( ($k, $v) = each %change) {
+			$db->set_field($k, 'shipmodes', $v);
+		}
+		return 1;
+	[/perl]
+[/if] -->
+[if scratch ui_update_shipping]
+[set ui_update_shipping][/set]
+<!-- update shipping: [write-shipping] -->
+[/if]
 
 [if cgi ui_shipmode]
 	[perl]
-		my $mode = $CGI->{ui_shipmode};
+		my $inmode = $CGI->{ui_shipmode};
+		Log("inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
+		Log("shipping: " . $Tag->uneval( { ref => $lines }) );
+		my $ref;
 		for(@$lines) {
-			next unless $_->[0] eq $mode;
-			my $ref = $_;
+			next unless $_->[0] eq $inmode;
+			$ref = $_;
+			last;
 		}
+		$ref = [] if ! $ref;
 		my ($mode, $desc, $crit, $min, $max, $cost, $query, $opt) = @{$ref};
+		Log("gave: " . join("|", @$ref) );
 		$opt = {} if ! ref $opt;
-		unless ($opt->{ui_ship_type}) {
-			if($crit eq 'weight') {
-				$opt->{ui_ship_type} = 'weight';
+		if ($opt->{ui_ship_type}) {
+				Log("ui_ship_type: $opt->{ui_ship_type}");
+				$Values->{ui_ship_type} = $opt->{ui_ship_type};
+		}
+		elsif ( not $Values->{ui_ship_type} = $CGI->{ui_ship_type} ) {
+			if(! $crit) {
+				# do nothing;
+			}
+			elsif($crit eq 'weight') {
+				$Values->{ui_ship_type} = 'weight';
 			}
 			elsif($crit eq 'volume') {
-				$opt->{ui_ship_type} = 'volume';
+				$Values->{ui_ship_type} = 'volume';
 			}
 			elsif($crit eq 'quantity') {
-				$opt->{ui_ship_type} = 'quantity';
+				$Values->{ui_ship_type} = 'quantity';
 			}
-			elsif($crit =~ /^[subtotal/) {
-				$opt->{ui_ship_type} = '_subtotal';
+			elsif($crit =~ /^\[subtotal/) {
+				$Values->{ui_ship_type} = '_subtotal';
+			}
+			else {
+				$Values->{ui_ship_type} = "custom";
+				$Values->{ui_ship_custom_criteria} = $crit;
 			}
 		}
+		$Values->{ui_ship_message}  = $cost;
+		$Values->{ui_ship_description}  = $desc;
+		$Values->{ui_ship_ups}		= $Values->{ui_ship_type} =~ /^ups/i ? 1 : 0;
+		if(! $crit and $Values->{ui_ship_ups}) {
+			$crit = 'weight';
+		}
+		$Values->{ui_ship_criteria} = $crit;
+		$Values->{ui_ship_adder}	= $opt->{adder};
+		$Values->{ui_ship_at_least}	= $opt->{at_least};
+		$Values->{ui_ship_origin}	= $opt->{origin};
+		$Values->{ui_ship_round}	= $opt->{round};
+		$Values->{ui_ship_zone}		= $opt->{zone};
+		return;
 	[/perl]
 [/if]
-<form action="[area @@MV_PAGE@@] method=POST>
-
+<form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden NAME=ui_ship_ups VALUE="[value ui_ship_ups]">
+<input type=hidden NAME=mv_action VALUE="return">
 <table cellpadding=3 cellspacing=0>
 
 <tr>
@@ -41,26 +168,61 @@
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Name of this method</small>
+<td bgcolor=__UI_C_INTBLOCK__ align=right WIDTH="__UI_LEFT_WIDTH">
+<small>Name of this method</small><BR><small><i>(letters/digits only)</i></small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-<input type=text size=40 name="ui_shipmode" value="[cgi ui_shipmode]">
+<input type=text size=40 name="ui_shipmode" value="[value ui_shipmode]">
 </td>
 </tr>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right WIDTH="__UI_LEFT_WIDTH">
+<small>Label for this method</small>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<input type=text size=40 name="ui_ship_description" value="[value ui_ship_description]">
+</td>
+</tr>
+
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<small>Total based on this criteria</small>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+
+<select name=ui_ship_criteria>
+[loop lr=1 option=ui_ship_criteria list="
+_subtotal	Price
+weight	Weight
+volume	Volume
+quantity	Item quantity
+custom	Custom -->
+"
+]<OPTION VALUE="[loop-code]">[loop-pos 1][/loop]
+</select>&nbsp;<INPUT NAME=ui_ship_custom_criteria VALUE="[value custom_criteria]">
+
+</td>
+</tr>
+
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
 <small>Calculate based on this algorithm</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-
-<select name=algorithm>
-<option value="_subtotal" SELECTED> Standard shipping by price</option>
-<option value="weight"> Standard shipping by weight</option>
-<option value="volume"> Standard shipping by volume</option>
-<option value="quantity"> Standard shipping by quantity</option>
+<select name=ui_ship_type onChange="check_for_ups(this.form,
+			this.form.ui_ship_type.options[this.form.ui_ship_type.selectedIndex].value) && this.form.submit()">
+[loop lr=1 option=ui_ship_type
+		list="_subtotal	Standard shipping by price
+weight	Standard shipping by weight
+volume	Standard shipping by volume
+quantity	Standard shipping by quantity
+UPSI	Internal UPS lookup
 [available_www_shipping]
+"]<OPTION VALUE="[loop-code]">[loop-pos 1]
+[/loop]
 </select>
 
 </td>
@@ -77,6 +239,7 @@
 [loop lr=1 search="
 			ra=yes
 			fi=country
+			st=db
 			ml=1000
 			rf=code,shipmodes
 		"][loop-line]
@@ -84,18 +247,18 @@
 EOF
 	my $mode = $CGI->{ui_shipmode};
 	my (@c) = map { s/\t.*//; $_ } grep /\b$mode\b/, split /\n/, $modes;
-	$Values->{ui_ship_country} = join " ", @c;
+	$Values->{ui_ship_country} = join "\0", @c;
 	return;
 [/calc]
-[value ui_ship_country]
 <select name=ui_ship_country MULTIPLE size=10>
 [loop search="
 			ra=yes
 			fi=country
+			st=db
 			ml=1000
 			tf=name
 			rf=code,name
-		" option=ui_ship_country]
+		" multiple="[value ui_ship_country]" option=ui_ship_country]
 		 <OPTION VALUE="[loop-code]"> [loop-param name]
 [/loop]
 
@@ -110,17 +273,72 @@ EOF
 <small>Minimum shipping charge</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-<input type=text size=10 name="minimum" value="[value minimum]">
+<input type=text size=10 name="ui_ship_at_least" value="[value ui_ship_at_least]">
 </td>
 </tr>
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Additional shipping calculation</small>
+<small>Additional shipping calculation</small><BR><I><SMALL>(number only is additional charge)</SMALL></I>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-<input type=text size=50 name="extra_alg" value="">
+<input type=text size=50 name="ui_ship_adder" value="[value ui_ship_adder]">
 </td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<small>Round up to nearest even [L currency_symbol]$[/L]</small>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<SELECT NAME=ui_ship_round>
+<OPTION VALUE=""> No
+<OPTION VALUE="1" [selected ui_ship_round 1]> Yes
+</SELECT>
+</td>
+</tr>
+
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<small>Message when zero</small>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<INPUT NAME=ui_ship_message VALUE="[either][value ui_ship_message][or]Nothing to ship![/either]">
+</td>
+</tr>
+
+
+[if value ui_ship_ups]
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<small>UPS Origin Zone</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<input type=text size=50 name="ui_ship_origin" value="[value ui_ship_origin]">
+</td>
+</tr>
+
+	[seti available_ups_internal][available_ups_internal][/seti]
+	[if scratch available_ups_internal]
+	<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<small>UPS Zone chart</small><BR><SMALL><I>(internal types)</I></SMALL>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<SELECT NAME=ui_ship_zone>
+	[loop lr=1 option=ui_ship_zone
+		list="[scratch available_ups_internal]"
+	]<OPTION VALUE="[loop-code]">[loop-pos 1]
+	[/loop]
+	</SELECT>
+	</td>
+	</tr>
+	[/if]
+
+[/if]
+
+<tr>
 </tr>
 
 <tr>
@@ -132,7 +350,11 @@ EOF
 <p>
 
 <input type=submit name="do_update_cmd" value="Ok">
-<input type=submit name="do_cancel" value="Cancel">
+[set [L]Cancel[/L]]
+mv_nextpage=__UI_BASE__/ship
+mv_todo=return
+[/set]
+<input type=submit name=mv_click value="Cancel">
 
 </form>
 

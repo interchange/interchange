@@ -2,6 +2,31 @@
 [set page_title]Shipping options: create method[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @@UI_STD_HEAD@@
+<!-- 
+	read=[calc]
+			delete $Config->{Shipping_line};
+			delete $Config->{Shipping_desc};
+			return;
+			[/calc][read-shipping]
+[if cgi ui_ship_action eq delete]
+    ## delete method ##
+	update=[calc]
+		my $count;
+		my @out;
+		my $mode = $CGI->{ui_shipmode};
+		delete $Config->{Shipping_desc}{$mode};
+		for(@{$Config->{Shipping_line}}) {
+			$count++;
+			next if $_->[0] eq $mode;
+			push @out, $_;
+		}
+		$left = scalar @out;
+		$Config->{Shipping_line} = \@out;
+		return sprintf("deleted %d lines, saved %s lines", $count - $left, $left);
+	[/calc]
+	write=[write-shipping]
+[/if]
+	-->
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
@@ -17,7 +42,7 @@
 
 [set Create new method]
 mv_nextpage=__UI_BASE__/ship_edit
-ui_shipmode=
+ui_shipmode=new
 ui_header=Create method
 [/set]
 
@@ -36,7 +61,7 @@ ui_header=Create method
 
 [set Edit method]
 mv_nextpage=__UI_BASE__/ship_edit
-ui_header=Edit method
+ui_header=Edit <I>[cgi ui_shipmode]</I> method
 [/set]
 
 <input type=submit name="mv_click" value="Edit method">
