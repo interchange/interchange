@@ -5,6 +5,14 @@ interchange (5.3.0-1) unstable; urgency=low
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 20 Apr 2004 13:56:38 +0200
 
+interchange (5.2.0-2) unstable; urgency=high
+
+  * applied upstream fix to avoid termination of script, let catalog
+    removal succeed always (Closes: #256093, thanks to Russ Allbery
+    <rra@stanford.edu> for bug analysis and patch)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 26 Sep 2004 15:53:00 +0200
+
 interchange (5.2.0-1) unstable; urgency=low
 
   * new upstream release
