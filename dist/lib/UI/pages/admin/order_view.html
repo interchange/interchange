@@ -1,6 +1,6 @@
-[set page_title]Order manager: View order[/set]
+[set page_title][L]Order manager[/L]: [L]View order[/L][/set]
 [set ui_class]Orders[/set]
-[set page_banner]View order[/set]
+[set page_banner][L]View order[/L][/set]
 [set help_name]order.view[/set]
 [set icon_name]icon_orders.gif[/set]
 @_UI_STD_HEAD_@
@@ -36,7 +36,8 @@
 
 <tr>
 <td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Order number: [loop-code] Order date: [convert-date][loop-data transactions order_date][/convert-date]</b>
+[scratch mv_locale]
+<b>[L]Order number[/L]: [loop-code] [L]Order date[/L]: [convert-date][loop-data transactions order_date][/convert-date]</b>
 </td>
 </tr>
 
