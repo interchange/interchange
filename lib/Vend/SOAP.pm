@@ -1,6 +1,6 @@
 # SOAP.pm:  handle SOAP connections
 #
-# $Id: SOAP.pm,v 1.1.2.2 2001-02-26 00:50:23 heins Exp $
+# $Id: SOAP.pm,v 1.1.2.3 2001-02-26 06:15:10 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -33,7 +33,7 @@ use Vend::SOAP::Transport;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -184,21 +184,31 @@ sub session_id {
 }
 
 sub Values {
+	shift;
 	open_soap_session();
 	my $putref;
 	my $ref = $Vend::Session->{values};
+::logDebug("ref from session is " . ::uneval($ref));
 	if($putref = shift) {
+		$ref = $Vend::Session->{values} = {}
+			if ! ref($ref);
 		%{$ref} = %{$putref};
 	}
 	close_soap_session();
+::logDebug("ref from session is now " . ::uneval($ref));
 	return $ref;
 }
 
 sub Session {
+	shift;
 	open_soap_session();
 	my $putref;
 	my $ref = $Vend::Session;
 	if($putref = shift) {
+		if (! ref($ref)) {
+			Vend::Session::init_session();
+			$ref = $Vend::Session;
+		}
 		%{$ref} = %{$putref};
 	}
 	close_soap_session();
@@ -206,10 +216,13 @@ sub Session {
 }
 
 sub Scratch {
+	shift;
 	open_soap_session();
 	my $putref;
 	my $ref = $Vend::Session->{scratch};
 	if($putref = shift) {
+		$ref = $Vend::Session->{scratch} = {}
+			if ! ref($ref);
 		%{$ref} = %{$putref};
 	}
 	close_soap_session();

@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.15 2001-02-22 19:59:54 heins Exp $
+# $Id: Server.pm,v 1.8.2.16 2001-02-26 06:15:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.16 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -150,19 +150,22 @@ sub log_http_data {
 	return;
 }
 
+sub map_misc_cgi {
+	$CGI::user = $CGI::remote_user;
+	$CGI::host = $CGI::remote_host || $CGI::remote_addr;
+
+	$CGI::script_path = $CGI::script_name;
+	$CGI::script_name = $CGI::server_host . $CGI::script_path
+		if $Global::FullUrl;
+}
+
 sub map_cgi {
 	my $h = shift;
     die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
 		or @Global::argv;
 
-	if($h) {
-		$CGI::user = $CGI::remote_user;
-		$CGI::host = $CGI::remote_host || $CGI::remote_addr;
+	map_misc_cgi() if $h;
 
-		$CGI::script_path = $CGI::script_name;
-		$CGI::script_name = $CGI::server_host . $CGI::script_path
-			if $Global::FullUrl;
-	}
 	my $g = $Global::Selector{$CGI::script_name}
 		or do {
 			my $msg = ::get_locale_message(
@@ -658,6 +661,8 @@ sub http_soap {
 
 	shift(@path);
 	my $catname = shift(@path);
+	$$env{SESSION_ID} = shift(@path);
+
 #::logDebug("catname is $catname");
 
 	if($Global::Selector{$catname} and $Global::AllowGlobal->{$catname}) {
@@ -681,6 +686,9 @@ sub http_soap {
 						($$env{REQUEST_METHOD} .  " " .  $request),
 						)
 		);
+
+	populate($env);
+	map_misc_cgi();
 	return $ref;
 }
 
@@ -1349,6 +1357,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 
 	  my $n;
 	  $c++;
+	  my ($ok, $p, $v);
 	  eval {
 		$rin = $s_vector;
 
@@ -1369,8 +1378,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 			next;
 		}
         else {
-::logDebug("SOAP n=$n pid=$$ c=$c time=" . join '|', times());
-            my ($ok, $p, $v);
+#::logDebug("SOAP n=$n pid=$$ c=$c time=" . join '|', times());
 			while (($p, $v) = each %s_vec_map) {
 #::logDebug("SOAP trying p=$p v=$v vec=$pretty_vector pid=$$ c=$c");
         		next unless vec($rout, $v, 1);
@@ -1381,12 +1389,25 @@ my $pretty_vector = unpack('b*', $s_vector);
 			}
 
 
-			unless (defined $ok) {
-#::logDebug("redo accept on error=$! n=$n p=$p unix=$unix_socket{$p} pid=$$ c=$c");
-				last if $Signal_Terminate;
-				redo;
-			}
 
+	  };
+
+	  last if $Signal_Terminate;
+
+	  if($@) {
+	  	my $msg = $@;
+		$msg =~ s/\s+$//;
+#::logDebug("SOAP died in select, retrying: $msg");
+	    ::logGlobal({ level => 'error' },  "SOAP died in select, retrying: %s", $msg);
+	  }
+
+	  unless (defined $ok) {
+#::logDebug("redo accept on error=$! n=$n p=$p unix=$unix_socket{$p} pid=$$ c=$c");
+		  redo;
+	  }
+
+
+	  eval {
 			my $connector;
 			my $dns_name;
 
@@ -1402,30 +1423,57 @@ my $pretty_vector = unpack('b*', $s_vector);
 			}
 
 			$handled++;
-			my %env; my $entity;
+			my %env;
+			my $entity;
 			$Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity);
-			my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
-			my $result = Vend::SOAP::Transport::Server->new(
-						in => $entity,
-					)
+
+			my $result;
+			my $error;
+			if(! $Vend::Cfg) {
+#::logDebug("we have no catalog");
+				$result = Vend::SOAP::Transport::Server
+					->new( error => 'Catalog not found' )
+					->dispatch_to('', 'Vend::SOAP::Error')
+					->handle();
+			}
+			elsif(! $Vend::Cfg->{SOAP}) {
+#::logDebug("we have no SOAP enable");
+				$result = Vend::SOAP::Transport::Server
+					->new( error => 'SOAP not enabled' )
+					->dispatch_to('', 'Vend::SOAP::Error')
+					->handle();
+			}
+			else {
+#::logDebug("we have our SOAP enable, entity is $entity");
+				($Vend::SessionID, $CGI::cookiehost) = split /:/, $env{SESSION_ID};
+::logDebug("Received ID=$Vend::SessionID, host='$CGI::cookiehost'");
+				$Vend::NoInterpolate = 1
+					unless $Vend::Cfg->{SOAP_Enable}->{interpolate};
+				$result = Vend::SOAP::Transport::Server
+					->new( in => $entity )
 					->dispatch_to('', 'Vend::SOAP')
 					->handle;
-			
+			}
+
 			print MESSAGE $result;
 			close MESSAGE;
-::logDebug("SOAP port=$p n=$n unix=$unix_socket{$p} pid=$$ c=$c time=" . join '|', times);
+#::logDebug("SOAP port=$p n=$n unix=$unix_socket{$p} pid=$$ c=$c time=" . join '|', times);
 		}
-	  };
+	  };	
 
 	  if($@) {
 	  	my $msg = $@;
 		$msg =~ s/\s+$//;
-::logDebug("SOAP died in select, retrying: $msg");
-	    ::logGlobal({ level => 'error' },  "SOAP died in select, retrying: %s", $msg);
+::logDebug("SOAP died in processing: $msg");
+	    ::logGlobal({ level => 'error' },  "SOAP died in processing: %s", $msg);
+		close MESSAGE;
 	  }
 
+	  last if $Signal_Terminate;
 	  return 1 if $handled > ($Global::SOAP_MaxRequests || 10);
-
+	  undef $Vend::Session;
+	  ::put_session() if $Vend::HaveSession;
+	  undef $Vend::HaveSession;
     }
 
 }
@@ -1472,7 +1520,7 @@ sub send_ipc {
 # Can have both INET and UNIX on same system
 sub server_both {
     my ($socket_filename) = @_;
-    my ($n, $rin, $rout, $sin, $sout, $pid, $tick);
+    my ($n, $rin, $rout, $pid, $tick);
 
 	$Vend::MasterProcess = $$;
 
@@ -1693,17 +1741,13 @@ my $pretty_vector = unpack('b*', $rin);
 
 #::logDebug("cycle=$c tick=$cycle vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
-			last if $!{EINTR} and $Signal_Terminate;
+			last if $Signal_Terminate;
 			my $msg = $!;
 			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
 			die "$msg";
         }
 		elsif($n == 0) {
 			undef $spawn;
-#			if( $rin = $s_vector and select($rin, undef, undef, 0) == 1 ) {
-#				start_soap()
-#					unless $SOAP_servers > $Global::MaxServers;
-#			}
 			housekeeping();
 			next;
 		}
@@ -1752,7 +1796,7 @@ my $pretty_vector = unpack('b*', $rin);
 	  if($@) {
 	  	my $msg = $@;
 		$msg =~ s/\s+$//;
-::logDebug("Died in select, retrying: $msg");
+#::logDebug("Died in select, retrying: $msg");
 	    ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $msg);
 	  }
 

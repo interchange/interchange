@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.20 2001-02-22 19:59:53 heins Exp $
+# $Id: Config.pm,v 1.25.2.21 2001-02-26 06:15:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -97,7 +97,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.21 $, 10);
 
 my %CDname;
 
@@ -175,6 +175,11 @@ qw/
 @Locale_directives_code = (
 	[ 'ProductFiles', \&Vend::Data::update_productbase ],
 );
+
+my %HashDefaultBlank = (qw(
+					SOAP			1
+					DatabaseDefault	1
+				));
 
 my %DumpSource = (qw(
 					SpecialPage			1
@@ -358,6 +363,7 @@ sub catalog_directives {
 	['SessionType', 	 undef,     		 'File'],
 	['SessionDatabase',  'relative_dir',     'session'],
 	['SessionLockFile',  undef,     		 'etc/session.lock'],
+	['DatabaseDefault',  'hash',	     	 ''],
 	['Database',  		 'database',     	 ''],
 	['Autoload',		 undef,		     	 ''],
 	['AutoEnd',			 undef,		     	 ''],
@@ -441,6 +447,8 @@ sub catalog_directives {
 	['StaticFly',		 'yesno',     	     'No'],
 	['StaticLogged',	 'yesno',     	     'No'],
 	['StaticDir',		 undef,     	     ''], 
+	['SOAP',			 'yesno',			 'No'],
+	['SOAP_Enable',		 'hash',			 ''],
 	['UserDB',			 'locale',	     	 ''], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
@@ -1710,7 +1718,10 @@ sub parse_special {
 
 sub parse_hash {
 	my($item,$settings) = @_;
-	return {} if ! $settings;
+	if (! $settings) {
+		return $HashDefaultBlank{$item} ? '' : {} if ! $settings;
+	}
+
 	$settings =~ s/^\s+//;
 	$settings =~ s/\s+$//;
 	my(@setting) = Text::ParseWords::shellwords($settings);
@@ -2412,6 +2423,12 @@ sub parse_database {
 		elsif ($d->{'type'} eq '9') { $d->{Class} = 'LDAP'						}
 		else 						{ $d->{Class} = $Global::Default_database	}
 
+		if($C->{DatabaseDefault}) {
+			while ( my($k, $v) = each %{$C->{DatabaseDefault}}) {
+				$d->{$k} = $v;
+			}
+		}
+
 		$d->{HOT} = 1 if $d->{Class} eq 'MEMORY';
 #::logDebug("parse_database: type $type -> $d->{type}");
 	}
@@ -2641,6 +2658,7 @@ sub parse_profile {
 
 	my (@files) = glob($value);
 	for(@files) {
+		next unless $_;
 		config_error(
 		  "No leading / allowed if NoAbsolute set. Contact administrator.\n")
 		if m.^/. and $Global::NoAbsolute;
