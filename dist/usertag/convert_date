@@ -1,0 +1,38 @@
+UserTag convert-date Order days raw
+UserTag convert-date PosNumber 2
+UserTag convert-date HasEndTag
+UserTag convert-date Interpolate
+UserTag convert-date Routine <<EOR
+sub {
+    my ($days, $raw, $text) = @_;
+    my @t;
+
+        my $fmt = '%d-%b-%Y';
+        if($text =~ /\d/) {
+                        $text =~ s/\D//g;
+                        $text =~ /(\d\d\d\d)(\d\d)(\d\d)(?:(\d\d)(\d\d))?/;
+                        $t[2] = $4 || undef;
+                        $t[1] = $5 || undef;
+                        $t[3] = $3;
+                        $t[4] = $2 - 1;
+                        $t[5] = $1;
+                        $t[5] -= 1900;
+        }
+        else {
+                        my $now = time();
+                        if ($days) {
+                                        $now += $days * 86400;
+                        }
+                        @t = localtime($now);
+        }
+
+        if (defined $raw and Vend::Util::is_yes($raw)) {
+                        $fmt = $t[2] && $text ?  '%Y%m%d%H%M' : '%Y%m%d';
+        }
+        elsif ($t[2]) {
+                        $fmt = '%d-%b-%Y %I:%M%p';
+        }
+
+    return POSIX::strftime($fmt, @t);
+}
+EOR
