@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.78 2001-06-18 01:57:03 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.79 2001-06-21 15:15:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.78 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.79 $, 10);
 
 @EXPORT = qw (
 
@@ -1176,13 +1176,6 @@ sub conditional {
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
-	elsif($base eq 'variable') {
-		$CacheInvalid = 1;
-		$op =	qq%$::Variable->{$term}%;
-		$op = "q{$op}" unless defined $noop;
-		$op .=	qq%	$operator $comp%
-				if defined $comp;
-	}
 	elsif($base =~ /^value/) {
 		$CacheInvalid = 1;
 		$op =	qq%$::Values->{$term}%;
@@ -1190,9 +1183,29 @@ sub conditional {
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
+	elsif($base eq 'cgi') {
+		$CacheInvalid = 1;
+		$op =	qq%$CGI::values{$term}%;
+		$op = "q{$op}" unless defined $noop;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
+	}
+	elsif($base eq 'pragma') {
+		$op =	qq%$Vend::Cfg->{Pragma}{$term}%;
+		$op = "q{$op}" unless defined $noop;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
+	}
 	elsif($base eq 'explicit') {
 		undef $noop;
 		$status = $ready_safe->reval($comp);
+	}
+	elsif($base eq 'variable') {
+		$CacheInvalid = 1;
+		$op =	qq%$::Variable->{$term}%;
+		$op = "q{$op}" unless defined $noop;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
 	}
     elsif($base eq 'items') {
         $CacheInvalid = 1;
@@ -1208,13 +1221,6 @@ sub conditional {
         $op .=  qq% $operator $comp%
                 if defined $comp;
     }
-	elsif($base eq 'cgi') {
-		$CacheInvalid = 1;
-		$op =	qq%$CGI::values{$term}%;
-		$op = "q{$op}" unless defined $noop;
-		$op .=	qq%	$operator $comp%
-				if defined $comp;
-	}
 	elsif($base eq 'data') {
 		my($d,$f,$k) = split /::/, $term;
 		$CacheInvalid = 1
@@ -2049,7 +2055,6 @@ sub tag_accessories {
 		if $type =~ /hidden/;
 
 	if($type =~ /^text/i) {
-		HTML::Entities::encode($attrib_value, '"');
 		$opt->{extra} = " $opt->{extra}" if $opt->{extra} ||= $opt->{js};
 		my $cols;
 		if ($type =~ /^textarea(?:_(\d+)_(\d+))?/i) {
@@ -2064,12 +2069,11 @@ sub tag_accessories {
 					$attrib_value,
 					$opt,
 			);
-						
-			return qq|$p<TEXTAREA NAME="$name" ROWS="$rows" COLS="$cols"$opt->{extra}>$attrib_value</TEXTAREA>$a|;
 		}
 		elsif("\L$type" =~ /^text_(\d+)$/) {
 			$cols = $1;
 		}
+		HTML::Entities::encode($attrib_value);
 		$cols = ($opt->{cols} || $opt->{width} || 60)
 			if ! $cols;
 		return qq|$p<INPUT TYPE=text NAME="$name" SIZE="$cols" VALUE="$attrib_value"$opt->{extra}>$a|;
