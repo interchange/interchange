@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.40 2002-07-07 04:02:26 mheins Exp $
+# $Id: interchange.PL,v 2.41 2002-07-19 05:13:16 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -235,6 +235,7 @@ use autouse 'Vend::Imagemap' => qw/action_map/;
 use autouse 'Vend::Control' => qw/
 											signal_reconfig
 											signal_add
+											signal_cron
 											signal_remove
 											control_interchange
 											remove_catalog
@@ -1445,6 +1446,69 @@ EOF
 	return $status;
 }
 
+sub run_in_catalog {
+	my ($cat_name, $directory, $itl) = @_;
+	my ($g,$c);
+
+#::logGlobal("running job in cat=$cat_name");
+	$g = $Global::Catalog{$cat_name};
+	unless (defined $g) {
+		logGlobal( "Can't find catalog '%s'" , $cat_name );
+		return undef;
+	}
+
+	#$Vend::Log_suppress = 1;
+
+	unless ($Vend::Quiet) {
+		logGlobal("Run cron group=%s", $directory || 'INTERNAL');
+	}
+	#undef $Vend::Log_suppress;
+
+	open_cat($cat_name);
+
+	my $dir;
+	my @itl;
+	if($directory) {
+		my $ct = $Vend::Cfg->{TemplateDir} || [];
+		my $gt = $Global::TemplateDir || [];
+
+		for my $d ($Vend::Cfg->{PageDir}, @$ct, @$gt) {
+#::logGlobal("check directory=$d for $directory");
+			$dir = "$d/$directory"
+				if -d "$d/$directory";
+		}
+		if($dir) {
+			my @f = glob("$dir/*");
+			@f = grep ! -d $_, @f;
+			@f = grep $_ !~ /$Vend::Cfg->{HTMLsuffix}$/, @f;
+			for(@f) {
+#::logGlobal("found cron piece file=$_");
+				push @itl, [$_, readfile($_)];
+			}
+		}
+	}
+
+	if ($itl) {
+		push @itl, ["Passed ITL", $itl];
+	}
+
+	if(! @itl) {
+		logGlobal("Empty cron job=%s", $directory);
+	}
+
+	my @out;
+	for(@itl) {
+		logError("Running cron task=%s", $_->[0]);
+		push @out, interpolate_html($_->[1]);
+	}
+
+	close_cat();
+	my $out = join "", @out;
+	$out =~ s/^\s+//;
+	$out =~ s/\s+$/\n/;
+	return $out;
+}
+
 sub config_named_catalog {
 	my ($cat_name, $source, $db_only, $dbconfig) = @_;
 	my ($g,$c);
@@ -1730,28 +1794,32 @@ my %action = (
 					},
 );
 
-sub dispatch {
-	my($http) = @_;
-	$H = $http;
+sub open_cat {
+	my $cat = shift;
 
-	adjust_cgi();
-
-    my($sessionid, $seed);
-	my(@path);
-	my($g, $action);
+	if($cat) {
+		%CGI::values = ();
+		if($Global::Catalog{$cat}) {
+			$CGI::script_path = $Global::Catalog{$cat}->{script};
+			$CGI::script_name = $CGI::script_path;
+		}
+	}
 
 	unless (defined $Global::Selector{$CGI::script_name}) {
 		my $msg = get_locale_message(
 						404,
 						"Undefined catalog: %s",
-						$CGI::script_name,
+						$CGI::script_name || $cat,
 						);
 		$Vend::StatusLine = <<EOF;
 Status: 404 Not Found
 Content-Type: text/plain
 EOF
-		::response($msg);
+		if($H) {
+			::response($msg);
+		}
 		logGlobal($msg);
+		# No close_cat() necessary
 		return;
 	}
 
@@ -1763,25 +1831,6 @@ EOF
 	else {
 		$Vend::Cfg = $Global::Selector{$CGI::script_name};
 	}
-
-## Uncomment this to get global directive setting on a per-catalog basis
-## Probably only useful for:
-##
-##   DebugFile
-##   DisplayErrors
-##   DomainTail
-##   ErrorLog
-##   FullUrl
-##   GlobalSub
-##   HitCount
-##   IpHead
-##   IpQuad
-##   Locale
-##   LockoutCommand
-##   NoAbsolute
-##   SafeUntrap
-##   UserTag
-##   Variable
 
 	$Vend::Cat = $Vend::Cfg->{CatalogName};
 	my $catref = $Global::Catalog{$Vend::Cat};
@@ -1836,7 +1885,7 @@ EOF
 			if  $Vend::Cfg->{ImageDirInternal};
 	}
 
-	if($Global::HitCount) {
+	if($Global::HitCount and ! $cat) {
 		my $ctr = new Vend::CounterFile
 					"$Global::ConfDir/hits.$Vend::Cat";
         $ctr->inc();
@@ -1868,6 +1917,25 @@ EOF
 #show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
 #show_times("end open_database") if $Global::ShowTimes;
+}
+
+sub close_cat {
+	put_session() if $Vend::HaveSession;
+	close_session() if $Vend::SessionOpen;
+	close_database();
+}
+
+sub dispatch {
+	my($http) = @_;
+	$H = $http;
+
+	adjust_cgi();
+
+    my($sessionid, $seed);
+	my(@path);
+	my($g, $action);
+
+	open_cat();
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
@@ -1929,6 +1997,7 @@ Content-Type: text/plain
 EOF
 		::response($msg);
 		logGlobal($msg);
+		close_cat();
 		return;
 	}
 
@@ -2023,6 +2092,7 @@ Status: 403 Forbidden
 Content-Type: text/plain
 EOF
 					::response($msg);
+					close_cat();
 					return;
 			}
 		}
@@ -2341,9 +2411,7 @@ EOF
 	$Vend::Track->filetrack();
 # END TRACK
 
-	put_session() if $Vend::HaveSession;
-	close_session() if $Vend::SessionOpen;
-	close_database();
+	close_cat();
 
 	undef $H;
 
@@ -2442,6 +2510,30 @@ Add a catalog to the system. Information taken from the input file
 The information is in the form of a standard Interchange catalog line,
 and must be in the single-line format.
 
+=item --cron=catalog[=job]
+
+Run a cron group which is a series of files in a directory with
+the name corresponding to the C<job>. For instance, if you 
+set up a directory called "weekly" in your pages directory
+for the catalog C<foundation>, you can run those files with:
+
+	interchange --cron=foundation=weekly
+
+Files ending in .html (or whatever HTMLsuffix is for that catalog)
+are skipped. It is not tree-recursive -- directories are ignored.
+
+Results can be emailed to an address if you specify --email=address,
+and they will be put in the cron log file.
+
+Alternatively jobs can be specified with --job=jobname B<before>
+the --cron option. In other words, this will work:
+
+	interchange --job=weekly --cron=foundation
+
+This will NOT work:
+
+	interchange --cron=foundation --job=weekly
+
 =item -d dir, --dir=dir
 
 Directory for VendRoot. This is where the Interchange configuration file
@@ -2451,6 +2543,10 @@ will go (if not redefined with the ErrorFile directive).
 =item -e name, --exclude=name
 
 Exclude catalog from this startup.
+
+=item -email=address
+
+Email address to email cron job results to.
 
 =item -f file, --config=file
 
@@ -2464,6 +2560,15 @@ Display help on command line options.
 
 Run with internet-domain socket only. Normally Interchange runs with
 both UNIX- and internet-domain sockets (except on Windows).
+
+=item --job=job
+
+Sets the job for --cron if that is not included in the --cron
+call. MUST precede the --cron entry on the command line.
+
+	interchange --job=weekly --cron=foundation
+
+See --cron for an explanation of what this does.
 
 =item --kill [signal]
 
@@ -2555,14 +2660,18 @@ Command line options (first letter will usually work):
 
      --add=catalog         add a catalog to operation; parms taken from the
                            standard input as a "Catalog ..." directive
+     --cron=catalog[=job]  run cron jobs for a particular catalog
+                           (can use --job and -email)
      -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
+     --email=emailaddr     Send results of cron job to emailaddr
      -f file,
         --config=file      configuration file (default interchange.cfg)
      --files spec          filespec (perl regexp OK) for static page tree
      -h, --help            display this message
      -i, --inetmode        run with Internet-domain socket (TCP)
+     --job=jobname         cron jobs to run (hourly, daily, weekly, etc.)
      --kill [signal]       kill server ungracefully (9 or with optional signal)
      -q, --quiet           suppress informational messages on startup
      --reconfig=catalog    reconfig a particular catalog on the server
@@ -2671,6 +2780,9 @@ sub parse_options {
 		version         => sub { version(); exit 0 },
 		stop			=> \&control_interchange,
 		add				=> \&signal_add,
+		email			=> \$Vend::CronEmail,
+		job				=> \$Vend::CronJob,
+		cron			=> \&signal_cron,
 		remove			=> \&signal_remove,
 		kill			=> \&control_interchange,
 		Ignore 			=> \$ignore,
@@ -2728,16 +2840,19 @@ sub parse_options {
 		DEBUG:i
 		Ignore
 		add|a=s
-		confdir=s
-		rundir=s
-		configfile|config|c|f=s
-		dir|vendroot|d=s
-		exclude|e=s
-		help|h
-		inetmode|inet|i
-		kill:s
-		log|logfile|l=s
-		quiet|q
+        confdir=s
+        configfile|config|c|f=s
+        cron=s
+        dir|vendroot|d=s
+        email=s
+        exclude|e=s
+        help|h
+        inetmode|inet|i
+        job=s
+        kill:s
+        log|logfile|l=s
+        quiet|q
+        rundir=s
 		pidfile=s
 		reconfig=s
 		remove=s

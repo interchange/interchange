@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.8 2002-06-27 22:24:10 jon Exp $
+# $Id: Server.pm,v 2.9 2002-07-19 05:13:16 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1113,6 +1113,11 @@ EOF
 						)
 					{
 						::remove_catalog($1);
+					}
+					elsif( $directive =~ /^cron$/i) {
+						my ($cat, @jobs) = grep /\S/, split /[\s,\0]+/, $value;
+#::logGlobal("restart line found value='$value'");
+						run_cron($cat, @jobs);
 					}
 					else {
 						::change_global_directive($directive, $value);
@@ -2309,6 +2314,71 @@ sub touch_pid {
 		or die "create PID file $$: $!\n";
 	lockfile(\*TEMPPID, 1, 0)
 		or die "PID $$ conflict: can't lock\n";
+}
+
+sub cron_job {
+	my ($cat, @jobs) = @_;
+	for my $job (@jobs) {
+		::run_in_catalog($cat, $job);
+	}
+}
+
+sub run_cron {
+	my ($cat, @jobs) = @_;
+
+#::logGlobal("Vend::Server::run_cron: run cron cat=cat jobs=@jobs");
+	my $pid;
+	if($Global::Foreground) {
+		$::Instance = {};
+		eval {
+			cron_job($cat, @jobs);
+		};
+		if($@) {
+			my $msg = $@;
+			::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
+			logError("Runtime cron error: %s", $msg)
+				if defined $Vend::Cfg->{ErrorFile};
+		}
+		clean_up_after_fork();
+		undef $::Instance;
+	}
+	elsif(! defined ($pid = fork) ) {
+		my $msg = ::errmsg("Can't fork: %s", $!);
+		::logGlobal({ level => 'crit' },  $msg );
+		die ("$msg\n");
+	}
+	elsif (! $pid) {
+		#fork again
+		unless ($pid = fork) {
+
+			reset_per_fork();
+			$::Instance = {};
+			eval { 
+				touch_pid() if $Global::PIDcheck;
+				&$Sig_inc;
+				cron_job($cat, @jobs);
+			};
+			if ($@) {
+				my $msg = $@;
+				::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
+				logError("Runtime cron error: %s", $msg)
+					if defined $Vend::Cfg->{ErrorFile};
+			}
+			clean_up_after_fork();
+
+			undef $::Instance;
+			select(undef,undef,undef,0.050) until getppid == 1;
+			if ($Global::PIDcheck) {
+				unlink_pid() and &$Sig_dec;
+			}
+			else {
+				&$Sig_dec;
+			}
+			exit(0);
+		}
+		exit(0);
+	}
+	wait unless $Global::Foreground;
 }
 
 sub unlink_pid {
