@@ -17,7 +17,7 @@ build-stamp:
 
 # Add here commands to compile the package.
 	$(PERL) Makefile.PL force=1 \
-		MINIVEND_USER=interchange \
+		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
 	touch build-stamp
@@ -71,8 +71,6 @@ install: build
 	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
 	mkdir $(TMP)/var/www/ui/navigation
 	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
-# Remove script that shouldn't be there
-	rm $(TMP)/usr/lib/interchange/lib/UI/pages/admin/change_t.pl
 # Build documentation
 	pod2html pod/mvdocs.pod > mvdocs.html
 
