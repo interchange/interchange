@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.3 2000-12-02 20:14:01 heins Exp $
+# $Id: DBI.pm,v 1.25.2.4 2000-12-11 01:56:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.4 $, 10);
 
 use strict;
 
@@ -282,8 +282,25 @@ sub create {
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 	}
 
-	if($config->{GUESS_NUMERIC}) {
-		list_fields($db, $tablename, $config);
+	if(! defined $config->{EXTENDED}) {
+		## side-effects here -- sets $config->{NUMERIC},
+		## $config->{_Numeric_ary}, reads GUESS_NUMERIC
+		if(! $config->{NAME}) {
+			$config->{NAME} = list_fields($db, $tablename, $config);
+		}
+		else {
+			list_fields($db, $tablename, $config);
+		}
+
+		## side-effects here -- sets $config->{_Default_ary} if needed
+		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config, $db)
+			if ! $config->{COLUMN_INDEX};
+
+		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
+							||	defined $config->{FILTER_FROM}
+							||	defined $config->{FILTER_TO}
+							||	$config->{UPPERCASE}
+							||	'';
 	}
 
 	$config->{NAME} = $columns;
@@ -677,7 +694,7 @@ sub set_row {
 			$key_string = $s->[$KEY];
 			$val_string = $val;
 		}
-::logDebug("def_ary query will be: insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
+#::logDebug("def_ary query will be: insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		eval {
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
@@ -1004,8 +1021,8 @@ sub each_nokey {
 			) {
 			$qual = $qual ? "$qual AND " : 'WHERE ';
 			my ($rfield, $rsession) = split /\s*=\s*/, $restrict;
-#::logDebug("qual=$qual");
 			$qual .= "$rfield = '$Vend::Session->{$rsession}'";
+#::logDebug("restricted qual=$qual");
 		}
 		my $query = $db->prepare("select * from $table " . ($qual || '') )
             or die $DBI::errstr;
@@ -1014,6 +1031,7 @@ sub each_nokey {
 		$each = sub {
 			my $ref = $query->fetchrow_arrayref()
 				or return undef;
+#::logDebug("query returned: " . ::uneval($ref));
 			return ($ref);
 		};
         push @$s, $each;
