@@ -1,8 +1,9 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.16 2003-05-07 17:25:19 racke Exp $
+# $Id: UserDB.pm,v 2.17 2003-06-06 23:55:28 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 use vars qw!
 	$VERSION
@@ -47,19 +48,8 @@ billing, and preference information.  It allows the user to return to a
 previous session without the requirement for a "cookie" or other persistent
 session information.
 
-It is object-oriented and called via Perl subroutine. The main software 
-is contained in a module, and is called from Interchange with a GlobalSub.
-The GlobalSub would take the form:
-
-	GlobalSub <<EOF
-	sub userdb {
-		my($function, %options) = @_;
-		use Vend::UserDB;
-		$obj = new Vend::User->DB %options;
-		$obj->$function
-			or return $obj->{ERROR};
-		return $obj->{MESSAGE};
-	}
+It is object-oriented and called via the [userdb] usertag, which calls the
+userdb subroutine.
 
 It restores and manipulates the form values normally stored in the user session
 values -- the ones set in forms and read through the C<[value variable]> tags.
