@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.21 2003-07-15 22:45:51 ramoore Exp $
+# $Id: UserDB.pm,v 2.22 2003-07-24 12:55:03 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 use vars qw!
 	$VERSION
@@ -478,7 +478,7 @@ sub _check_acl {
 sub _set_acl {
 	my ($self, $loc, %options) = @_;
 	return undef unless $self->{OPTIONS}{location};
-	if($options{mode} =~ /^\s*expire\s+(.*)/i) {
+	if($options{mode} =~ /^\s*expires?\s+(.*)/i) {
 		my $secs = Vend::Config::time_to_seconds($1);
 		my $now = time();
 		$options{mode} = $secs + $now;
