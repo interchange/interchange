@@ -7,6 +7,7 @@ README.cvs
 README.debian
 README.rpm
 SPECS/interchange.spec
+TODO
 WHATSNEW
 configure
 debian/TODO
@@ -728,6 +729,7 @@ dist/usertag/var.tag
 dist/usertag/xml_generator.tag
 eg/compact
 eg/globalsub/authorizenet
+eg/globalsub/ccvs
 eg/globalsub/signio
 eg/globalsub/skipjack
 eg/globalsub/skipjack.HOWTO
