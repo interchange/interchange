@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.34 2003-07-02 04:05:51 mheins Exp $
+# $Id: Form.pm,v 2.35 2003-07-03 23:12:56 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1027,7 +1027,7 @@ if($opt->{debug}) {
 	my $look;
 
 	if($look = $opt->{lookup_query}) {
-		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
+		my $tab = $opt->{db} || $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 		my $db = Vend::Data::database_exists_ref($tab);
 		my @looks = split /\s*;\s*/, $look;
 		$data = [];
@@ -1075,7 +1075,7 @@ if($opt->{debug}) {
 	elsif($opt->{passed}) {
 		$data = options_to_array($opt->{passed}, $opt);
 	}
-	elsif($opt->{column} and $opt->{table}) {
+	elsif(! $opt->{already_got_data} and $opt->{column} and $opt->{table} ) {
 		GETDATA: {
 			last GETDATA if $opt->{table} eq 'mv_null';
 			my $key = $opt->{outboard} || $item->{code} || $opt->{code};
