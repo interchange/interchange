@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only][/tmp]
-[tmp page_title]Affiliates -- log in[/tmp]
+[tmp page_title][L]Affiliates[/L] -- [L]log in[/L][/tmp]
 
 [control reset=1]
 
@@ -22,7 +22,7 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-Log in as an affiliate
+[L]Log in as an affiliate[/L]
 
 [set AFLogin]
 [if session logged_in]
@@ -48,7 +48,7 @@ Log in as an affiliate
     <table border="0" cellspacing="0" cellpadding="2">
     <tr> 
       <td align="right">
-        <b>Username:</b>
+        <b>[L]Username[/L]:</b>
       </td>
       <td align="left"> 
         <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
@@ -56,7 +56,7 @@ Log in as an affiliate
     </tr>
     <tr> 
       <td align="right"> 
-        <b>Password:</b>
+        <b>[L]Password[/L]:</b>
       </td>
       <td align="left"> 
         <INPUT TYPE=password NAME=mv_password VALUE="">
@@ -65,7 +65,7 @@ Log in as an affiliate
     <tr> 
       <td>&nbsp;</td>
       <td> 
-        <input type="submit" value="Log In">
+        <input type="submit" value="[L]Log In[/L]">
       </td>
     </tr>
     </table>

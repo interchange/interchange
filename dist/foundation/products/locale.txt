@@ -218,7 +218,7 @@ Welcome	Welcome			Welkom
 Welcome back	Welcome back			Welkom terug
 Welcome to	Welcome to			Welkom bij
 Welcome to __COMPANY__, an Interchange catalog!	Welcome to __COMPANY__, an Interchange catalog!			Welkom bij __COMPANY__, een Interchange catalogus!
-Will one-click order these random items	Will one-click order these random items			
+Will one-click order these random items	Will one-click order these random items			Bestelt deze willekeurige artikelen met een klik
 Yes	Yes			Ja
 You are already logged in.	You are already logged in.			U bent al aangemeld.
 You can contact us the following ways	You can contact us the following ways			U kunt ons als volgt bereiken
@@ -243,6 +243,7 @@ log in	log in			Aanmelden
 mon_decimal_point	.	,	,	.
 mon_thousand_sep		 		
 mon_thousands_sep	,	,	.	,
+none	none			geen
 on	on			op
 p_cs_precedes	1			1
 p_sep_by_space			1	1
