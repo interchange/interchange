@@ -1,41 +1,32 @@
 [comment]
 ui_template: Yes
-ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
+ui_template_name: fullwidth
+ui_template_layout: NOLEFT_TOP, UI_CONTENT, NOLEFT_BOTTOM
+ui_template_description: Page with top/bottom areas only, content in middle.
 
-page_title: 
+page_title:
 	description: Page title
 
-page_banner: 
+page_banner:
 	description: Page banner
-	help: Defaults to page title
+	help: defaults to page_title
+
+bgcolor:
+	options: #FFFFFF=white, pink=pink
+	description: Background color
+	widget: select
 
 members_only:
 	options: 1=Yes,0=No*
-	widget: radio
 	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
+	widget: radio
 [/comment]
 
-[set page_title]__COMPANY__ -- Check Out[/set]
 [set page_banner]Check Out[/set]
-
-__LEFTONLY_TOP__
+[set bgcolor]#FFFFFF[/set]
+[set members_only]0[/set]
+[set page_title]__COMPANY__ -- Check Out[/set]
+__NOLEFT_TOP__
 
 <!-- BEGIN CONTENT -->
 
@@ -164,7 +155,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 [/set]
 
                     <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">Please
-					verify the information below and click the &quot;Place Order&quot; button to process
+					verify the information below and click the "Place Order" button to process
 					your order.</font></p>
 
 <table cellpadding="0" cellspacing="0" border="0">
@@ -867,6 +858,9 @@ mv_todo=submit
 [/set]
 						
 
+
+
+
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+__NOLEFT_BOTTOM__
