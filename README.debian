@@ -7,9 +7,8 @@ Feedback
 --------
 
 Please send your comments and bug reports to Stefan Hornburg (Racke)
-<racke@linuxia.de>. He is a member of the Interchange core team,
-but not employed by Red Hat, so don't blame them if you encounter
-problems with the Interchange Debian packages.
+<racke@linuxia.de>. He is the Interchange core developer responsible 
+for the Interchange Debian packages. 
 
 APT Sources
 ===========
@@ -19,8 +18,8 @@ and unstable (sid) are part of the official Debian distribution.
 
 Up-to-date Interchange Debian packages for stable are available from:
 
-deb http://ftp.interchange.redhat.com/interchange/debian interchange main
-deb-src http://ftp.interchange.redhat.com/interchange/debian interchange main
+deb http://ftp.icdevgroup.org/interchange/debian interchange main
+deb-src http://ftp.icdevgroup.org/interchange/debian interchange main
 
 Debian Specific Changes
 =======================
