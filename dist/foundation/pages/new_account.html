@@ -26,12 +26,15 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
+<br>
+
 [if session logged_in][bounce href="[area account]"][/if]
 [if !scratch new]
 				  
 [if session failure]
 <P>
-<font size="2" __FFACE__><b><font color="#FF0000">[data session failure]</font></b></font>
+<b>[data session failure]</b>
 [data base=session field=failure value=""]
 <P>
 [/if]
@@ -41,8 +44,7 @@ ui_template_name: leftonly
 [/else]
 [/if]
 
-                      <div align="left">
-                        <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#0099FF" bordercolorlight="#0099FF">
+<table border="0" cellspacing="0" cellpadding="0">
 [set NewAccount]
 [if type=explicit compare="[userdb new_account]"]
 mv_nextpage=account
@@ -59,45 +61,45 @@ mv_nextpage=new_account
 
                           <tr> 
                             <td> 
-                              <table width="300" border="0" cellspacing="0" cellpadding="2">
-                                <tr bgcolor="#0099FF"> 
-                                  <td width="81" align="right" bgcolor="#0099FF"><font size="2" __FFACE__><b><font color="#FFFFFF">Username</font></b></font></td>
-                                  <td width="204" bgcolor="#FF9900" align="left"> 
+                              <table border="0" cellspacing="0" cellpadding="2">
+                                <tr> 
+                                  <td align="right" class="contentbar2">
+				    <b>Username:</b></font>
+				  </td>
+                                  <td class="contentbar2" align="left"> 
                                     <input type="text" NAME=mv_username VALUE="">
                                   </td>
                                 </tr>
-                                <tr bgcolor="#0099FF"> 
-                                  <td width="81" align="right" bgcolor="#0099FF"> 
-                                    <font color="#FFFFFF" size="2" __FFACE__><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
-                                  <td width="204" bgcolor="#FF9900" align="left"> 
+                                <tr> 
+                                  <td align="right" class="contentbar2"> 
+                                    <b>Password:</b>
+				  </td>
+                                  <td align="left" class="contentbar2"> 
                                     <INPUT TYPE=password NAME=mv_password VALUE="">
                                   </td>
                                 </tr>
-                                <tr bgcolor="#669999"> 
-                                  <td width="81" align="right" bgcolor="#669999"> 
-                                    <p><font __FFACE__ size="2"><b><font color="#FFFFFF" size="1">Verify 
-                                      Password </font></b> </font></p>
+                                <tr> 
+                                  <td align="right" class="contentbar2"> 
+                                    <b>Verify Password:</b>
                                   </td>
-                                  <td width="204" align="left"> 
+                                  <td align="left" class="contentbar2"> 
                                     <INPUT TYPE=password NAME=mv_verify VALUE="">
-                                    <font size="1" __FFACE__> 
-                                    </font> </td>
+                                  </td>
                                 </tr>
-                                <tr bgcolor="#999999"> 
-                                  <td width="81">&nbsp;</td>
-                                  <td width="204"> 
+                                <tr class="contentbar1"> 
+                                  <td>&nbsp;</td>
+                                  <td> 
                                     <INPUT TYPE=submit VALUE="Create Account">
                                   </td>
                                 </tr>
-                                <tr bgcolor="#999999"> 
-                                  <td width="81" align="right"> 
+                                <tr class="contentbar1"> 
+                                  <td align="right"> 
                                     <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
                                   </td>
-                                  <td width="204"><font __FFACE__ size="1" color="#FFFFFF">Log 
-                                    me in automatically<br>(sets cookie)</font></td>
+                                  <td>Log me in automatically (sets cookie)</td>
                                 </tr>
-                                <tr bgcolor="#999999"> 
-                                  <td width="81" align="right" colspan="2">&nbsp;</td>
+                                <tr class="contentbar1"> 
+                                  <td align="right" colspan="2">&nbsp;</td>
                                 </tr>
                               </table>
                             </td>

@@ -35,15 +35,17 @@ ui_template_name: leftonly
 
 @_LEFTONLY_TOP_@
 
+<br>
+
 <!-- BEGIN CONTENT -->
 [fly-list code="[data session arg]"]
 [set cross_category][item-field category][/set]
 [set upsell][item-data merchandising upsell_to][/set]
 [set cross_codes][item-data merchandising cross_sell][/set]
 
-<table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
+<table width="50%" border="0" cellspacing="0" cellpadding="0">
  <tr valign="middle"> 
-   <td align=center height="5" class=cheader>[item-field category]</td>
+   <td align=center class="contentbar1"><big>[item-field category]</big></td>
    </td>
  </tr>
  <tr valign="middle"> 
@@ -61,8 +63,8 @@ ui_template_name: leftonly
 		   <td valign="top" align="center"> 
 			 <table border="0" cellpadding="3" cellspacing="0">
 			   <tr> 
-				 <td valign="top" class=cdata align=center> 
-				   <p><b><i>[item-description]</i></b></p>
+				 <td valign="top" class="contentbar2" align=center> 
+				   <p><big>[item-description]</big></p>
 				 </td>
 			   </tr>
 			   <tr> 
@@ -111,7 +113,7 @@ ui_template_name: leftonly
 		   </td>
 		 </tr>
 		 <tr> 
-		   <td colspan="2" class=cdata> 
+		   <td colspan="2" class="contentbar1"> 
 			 <p>
 			  [if ordered [item-code]]
 			  <FONT COLOR="__CONTRAST__">This item is currently in your [page ord/basket]shopping cart</a>.</font><br>

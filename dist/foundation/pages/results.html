@@ -43,6 +43,9 @@ ui_template_name: leftright
 @_LEFTRIGHT_TOP_@
 
 <!-- BEGIN CONTENT -->
+
+<br>
+
 [if scratch did_order]
 [include file="templates/components/cart_display"]
 [/if]
@@ -93,42 +96,41 @@ ui_template_name: leftright
 <INPUT TYPE=hidden  NAME="mv_click"        VALUE="munge_quantity">
 [/on-match]
 
+<table width="90%" border="0" cellspacing="2" cellpadding="3">
+<tr class="contentbar2"> 
+  <td width="100" align="center"><b>Product</b></td>
+  <td width="30" align="center"><b>SKU</b></td>
+  <td width="30" align="center"><b>Stock</b></td>						
+  <td width="30" align="center"><b>Price</b></td>
+  <td width="30" align="center"><b>Qty</b></td>
+  <td width="30" align="center"><b>Buy</b></td>										
+</tr>
+</table>
+
 [search-list]
 
 [item-change 1][condition][item-field category][/condition]
-                    <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
-                      <tr> 
-                        <td class="cheader">[either][value banner_text][or][item-field category][/either]</td>
-					  </tr>
+			<br>
+                    <table width="90%" border="0" cellspacing="0" cellpadding="0">
+                      <tr class="contentbar1"> 
+                        <td class="cheader">&nbsp;[either][value banner_text][or][item-field category][/either]</td>
+		      </tr>
                       <tr bgcolor="ffffff" valign="middle"> 
                         <td> 
-                            <table border="0" cellspacing="2" cellpadding="3" bordercolor="#FFFFFF" align="center" width="100%">
-                              <tr> 
-                        <td width="100" align="center" class=cheader><span style="font-size: smaller">Product</span></td>
-                        <td width="30" align="center"  class=cheader><span style="font-size: smaller">Sku</span></td>
-                        <td width="30" align="center"  class=cheader><span style="font-size: smaller">Stock</span></td>						
-                        <td width="30" align="center"  class=cheader><span style="font-size: smaller">Price</span></td>
-                        <td width="30" align="center"  class=cheader><span style="font-size: smaller">Qty</span></td>
-                        <td width="30" align="center"  class=cheader><span style="font-size: smaller">Buy</span></td>										
-                      </tr>
-					  </table>
 					</td></tr>
                     </table>
 
 [/item-change 1]
 					
-                    <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
-                      <tr bgcolor="ffffff" valign="middle"> 
+                    <table width="90%" cellspacing="0" cellpadding="0">
+                      <tr valign="middle"> 
                         <td align=center height="5"> 
                           <div align="left"> 
                             <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center" width="100%">
-							
-							
-							
                               <tr> 
-                                <td valign="top" width="100" class=clisting><INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]"><a href="[area [item-code]]">[item-description]</a></td>
-								<td valign="top" width="30" class=clisting>[item-code]</td>
-								<td valign="top" width="30" align="center" class=clisting>[item-calc]
+                                <td valign="top" width="100"><INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]"><a href="[area [item-code]]">[item-description]</a></td>
+				<td valign="top" width="30">[item-code]</td>
+				<td valign="top" width="30" align="center">[item-calc]
 	my $q = q{[item-data inventory quantity]};
 	if($q > 0) {
 		return <<EOF;
@@ -141,12 +143,9 @@ EOF
 EOF
 	}
 [/item-calc]</td>
-								<td valign="top" width="30" class=clisting>[item-price]</td>
-								<td valign=top width=30 class=clisting><input type=hidden name="mv_oi[item-increment]" value=""><input type=text name=mv_order_quantity size=2 value=""></td>
-								<td valign=top width=30 class=clisting><input type=submit class=cheader value=Buy onClick="this.form.mv_oi[item-increment].value='[item-code]'"></td>
-
-
-								
+				<td valign="top" width="30">[item-price]</td>
+				<td valign=top width=30><input type=hidden name="mv_oi[item-increment]" value=""><input type=text name=mv_order_quantity size=2 value=""></td>
+				<td valign=top width=30><input type=submit value=Buy onClick="this.form.mv_oi[item-increment].value='[item-code]'"></td>
                               </tr>
                             </table>
                           </div>
@@ -156,13 +155,12 @@ EOF
 					
 [/search-list]
 [on-match]
-<div align=right><INPUT TYPE=submit VALUE="Buy list" class=cheader>
+<div align=right><INPUT TYPE=submit VALUE="Buy list">
 </FORM>							  
 [/on-match]
 
 [no-match]
 <BR><BR><BLOCKQUOTE>
-<font __FFACE__ size="2">
 Sorry, no matches for <B>[calc]
 			my $joiner = ' AND ';
 			$joiner = ' OR ' if
@@ -176,22 +174,20 @@ Sorry, no matches for <B>[calc]
 <BR> [value-extended name=mv_search_error joiner="<BR>"]
 </B>
 [/if]
-</font>
 <BR><BR></BLOCKQUOTE>
 [/no-match]
-<font __FFACE__ size="2">
 <BR CLEAR=LEFT>
 [more-list]
-</font>
 <BLOCKQUOTE>
-<font __FFACE__ size="2">
 Matches [matches] of [match-count] found.
 <BR>[more]<BR>
-</font>
 </BLOCKQUOTE>
 [/more-list]
 
 [/search-region]
+
+<br>
+
 <!-- END CONTENT -->
 
 @_LEFTRIGHT_BOTTOM_@

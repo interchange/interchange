@@ -25,40 +25,32 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
+<br>
 				  
 [fly-list code="[data session arg]"]
-                    <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
-                      <tr> 
-                        <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-                        <td width="227"><font __FFACE__ size="1"><b><i><font color="ffffff" size="2">
-[item-field category]				
-						</font></i></b></font></td>
-                        <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
+                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                      <tr class="contentbar1"> 
+                        <td>
+				<big>[item-field category]</big>
+			</td>
                       </tr>
                     </table>
 					
-                    <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
-                      <tr bgcolor="ffffff" valign="middle"> 
-                        <td align=center height="5"> 
-                          <div align="left"> 
+                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                      <tr valign="middle"> 
+                        <td align=center> 
                             <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
                               <tr> 
                                 <td valign="top" align="center"> 
-                                  <table width="25%" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
-                                    <tr> 
-                                      <td>
 [if-item-field image]
 <IMG SRC="items/[item-field image]" ALT="[item-description]" BORDER="0">
 [/if-item-field]							  
-									  </td>
-                                    </tr>
-                                  </table>
                                 </td>
                                 <td valign="top" align="center"> 
                                   <table border="0" cellpadding="3" cellspacing="0">
                                     <tr> 
-                                      <td valign="top"> 
-                                        <p><font __FFACE__ size="1"><b><i>[item-description]</i></b></font></p>
+                                      <td valign="top" class="contentbar2"> 
+                                        <b>[item-description]</b>
                                       </td>
                                     </tr>
                                     <tr> 
@@ -84,15 +76,11 @@ ui_template_name: leftonly
                                 </td>
                               </tr>
                               <tr> 
-                                <td colspan="2"> 
-                                  <p><font __FFACE__ size="1">
-								  [item-field comment]
-								  </font></p>
+                                <td colspan="2" class="contentbar1"> 
+					[item-field comment]
                                 </td>
                               </tr>
                             </table>
-                            <div align="center"><b><i></i></b></div>
-                          </div>
                         </td>
                       </tr>
                     </table><br>
@@ -113,26 +101,19 @@ ui_template_name: leftonly
 
 <TABLE CELLSPACING=0 CELLPADDING=0 width="250">
 <TR>
-<TD __HEADERBG__
-	COLSPAN="[scratch qp_columns]"
-	VALIGN=BOTTOM ALIGN=CENTER>
-	<font __FFACE__>
-	<H3>Quantity Pricing</H3>
-	</font>
+<TD class="contentbar1" COLSPAN="[scratch qp_columns]" VALIGN=BOTTOM ALIGN=CENTER>
 	</TD>
 </tr>
 [table-organize
 			caption="Quantity Pricing"
 			rows="2"
 			columnize="[scratch qp_columns]"
-			tr.0=|BGCOLOR="#0099ff"|
-			tr.1=|BGCOLOR="#ffffff"|
+			tr.0=|class="contentbar2"|
+			tr.1=|class="contentbar1"|
 			cols="[scratch qp_columns]"
 			]
 	<TD WIDTH=70 VALIGN=BOTTOM ALIGN=LEFT>
-	<font __FFACE__ size="2">
 	Part No.
-	</font>
 	</TD>
 	<TD VALIGN=TOP><font __FFACE__ size="2">[part-code]</font></TD>
 	[loop list="[scratch quantities]"]

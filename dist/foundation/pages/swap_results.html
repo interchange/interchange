@@ -42,6 +42,8 @@ ui_template_name: leftright
 
 <!-- BEGIN CONTENT -->
 
+<br>
+
 [search-region]
 
 [tmp cross_category][value-extended name=mv_searchspec index=0][/tmp]
@@ -49,19 +51,16 @@ ui_template_name: leftright
 [search-list]
 
 [item-change 1][condition][item-field category][/condition]
-                    <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
-                      <tr> 
-                        <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-                        <td width="227"><font __FFACE__ size="1"><b><i><font color="ffffff" size="2">[either][value banner_text][or][item-field category][/either]</font></i></b></font></td>
-                        <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
+                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                      <tr class="contentbar1"> 
+                        <td class="contentbar1" width="100%">&nbsp;<big>[either][value banner_text][or][item-field category][/either]</big></td>
                       </tr>
                     </table>
 [/item-change 1]
 					
-                    <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
-                      <tr bgcolor="ffffff" valign="middle"> 
-                        <td align=center height="5"> 
-                          <div align="left"> 
+                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                      <tr valign="middle"> 
+                        <td align=center> 
                             <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
                               <tr> 
                                 <td valign="top" align="center"> 
@@ -71,30 +70,28 @@ ui_template_name: leftright
                                     </tr>
                                   </table>
                                 </td>
-                                <td valign="top" align="center"> 
+                                <td align="center"> 
                                   <table border="0" cellpadding="3" cellspacing="0">
 <FORM ACTION="[process-target]" METHOD=POST>
 <INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
 <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
                                     <tr> 
-                                      <td valign="top"> 
-                                        <p><font __FFACE__ size="1"><b><i>[item-description]</i></b></font></p>
+                                      <td valign="top" class="contentbar2"> 
+                                        <b>&nbsp;[item-description]</b>
                                       </td>
                                     </tr>
                                     <tr> 
-                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
-                                    </tr>
-						
-                                    <tr> 
-                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
+                                      <td align="center">&nbsp;</td>
                                     </tr>
                                     <tr> 
-                                      <td align="center"> <font __FFACE__ size="1">Amount:</font> 
-                                        <input type="text" name="mv_order_quantity" size="8" value="25.00">
+                                      <td align="center">&nbsp;</td>
+                                    </tr>
+                                    <tr> 
+                                      <td align="center">Amount: <input type="text" name="mv_order_quantity" size="8" value="25.00">
                                       </td>
                                     </tr>
                                     <tr> 
-                                      <td align="center"> 
+                                      <td class="contentbar1" align="center"> 
                                         <input type="submit" value="Buy it Now!">
                                       </td>
                                     </tr>
@@ -104,14 +101,10 @@ ui_template_name: leftright
                               </tr>
                               <tr> 
                                 <td colspan="2"> 
-                                  <p><font __FFACE__ size="1">
-								  [item-field comment]
-								  </font></p>
+				  [item-field comment]
                                 </td>
                               </tr>
                             </table>
-                            <div align="center"><b><i></i></b></div>
-                          </div>
                         </td>
                       </tr>
                     </table><br>
@@ -120,25 +113,19 @@ ui_template_name: leftright
 
 [no-match]
 <BR><BR><BLOCKQUOTE>
-<font __FFACE__ size="2">
 Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
 [if value mv_search_error]
 <P><B>Errors:
 <BR> [value-extended name=mv_search_error joiner="<BR>"]
 </B>
 [/if]
-</font>
 <BR><BR></BLOCKQUOTE>
 [/no-match]
-<font __FFACE__ size="2">
 <BR CLEAR=LEFT>
 [more-list]
-</font>
 <BLOCKQUOTE>
-<font __FFACE__ size="2">
 Matches [matches] of [match-count] found.
 <BR>[more]<BR>
-</font>
 </BLOCKQUOTE>
 [/more-list]
 

@@ -22,79 +22,64 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
+<table width="95%"> 
+<tr>
+  <td>
+
+<br>
+
 [if session arg]
 	[seti code][data session arg][/seti]
 [/if]
 
 [if value form_errors]
-      <TABLE cellPadding=8 border="0">
-        <TBODY>
-        <TR>
-          <TD align=left vAlign=top><FONT __FFACE__ size=2 color="red">
-		  <b>[value form_errors] [value name=form_errors set=""]</b></font>
-		  <br><br>
-		  <FONT __FFACE__ size=2>
-		  Please try your request again.
-		  </FONT></TD>
-		</TR>
-		</TBODY>
-	  </TABLE>
-	<p>
+<b>[value form_errors] [value name=form_errors set=""]</b>
+<br><br>
+Please try your request again.
+<p>
 [/if]
 	
-            <table border="0" cellspacing="0" cellpadding="3" align="left">
-			<tr>
-                <td valign="top" align="center"> 
-                  <table width="25%" border="0" cellspacing="0" cellpadding="0">
-                    <tr> 
-                      <td><img src="thumb/[data table=products column=thumb key='[scratch code]']"></td>
-                    </tr>
-                  </table>
-                </td>
-                <td valign="top" align="center"> 
-                  <table border="0" cellpadding="3" cellspacing="0">
-                    <tr> 
-                      <td valign="top"> 
-                        <p align="center"><font __FFACE__ size="1"><b><i>[data table=products column=description key='[scratch code]']</i></b></font></p>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td align="center"><font __FFACE__>[price code='[scratch code]']</font></td>
-                    </tr>
-                  </table>
-                </td>
-			<td valign="top">
-                    <p><font __FFACE__ size="2" color="#000000">
+<table width="95%" border="0" cellspacing="0" cellpadding="3">
+<tr>
+  <td valign="top" align="left"> 
+    <img src="thumb/[data table=products column=thumb key='[scratch code]']"></td>
+  </td>
+  <td valign="top" align="center"> 
+    <table>
+    <tr>
+      <td class="contentbar2">
+        <b>[data table=products column=description key='[scratch code]']</b>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" class="contentbar1">[price code='[scratch code]']</td>
+    </tr>
+    </table>
+  </td>
+  <td valign="top" class="contentbar1">
 					Please complete the form below and we will contact you once the item you have selected becomes
 					available. This is a complementary feature and you are not in any way obligated to purchase
 					the item.
-					</font></p>						
-			</td>			
-              </tr>
-			  <tr><td>&nbsp;</td></tr>
-			  <tr>
-			<td valign="top" colspan="3">
-                    <p><font __FFACE__ size="2" color="#669999">
+  </td>			
+</tr>
+</table>
+
+<br>
+
+<table>
+<tr>
+  <td valign="top" align="left">
 					You may also pre-order the item. When the item becomes available, you will be
 					notified via email and the order will be shipped the same day.
 					<br><br>
 					<a href="[area href=order arg="[scratch code]"]">Click Here To Preorder</a>
-					</font></p>						
-			</td>			
-              </tr>
-			  <tr><td>&nbsp;</td></tr>			  
-                        <tr> 
-                          <td colspan="3">
-                      <table width="350" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#000000" bordercolordark="#000000">
-                        <tr> 
-                          <td> 
-                            <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <tr> 
-                                <td bgcolor="#0099FF"><font __FFACE__><b><font size="1" color="#FFFFFF">Contact Information</font></b></font></td>
-                                <td bgcolor="#0099FF"><i><font __FFACE__ size="1" color="#FFFFFF">&nbsp;</font></i></td>
-                                <td bgcolor="#0099FF">&nbsp;</td>
-                                <td bgcolor="#0099FF">&nbsp;</td>
-                              </tr>
+  </td>			
+</tr>
+</table>
+
+<br>
+
 [set check_alert_form]
 	[if !value email]
 		form_errors=We must have an email address in order to notify you.
@@ -105,29 +90,33 @@ ui_template_name: leftonly
 	[/if]
 [/set]
 [set send-alert]1[/set]
+
 <FORM ACTION="[process-target]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_check VALUE=check_alert_form>
-
+				
+<table align="left" width="95%" cellpadding="0" border="0" cellspacing="0">
+                              <tr class="contentbar2"> 
+                                <td colspan="4"><b>Contact Information</b></td>
+                              </tr>
+				<tr><td colspan="4">&nbsp;</td></tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=fname std_label="First Name" required=1]</font></div>
+                                <td align="right"> 
+                                  [error name=fname std_label="First Name" required=1]
                                 </td>
-                                <td> 
-                                  <div align="left"><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
-                                    </font></b></div>
+                                <td>
+                                  <b><INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20"></b>
                                 </td>
-                                <td><div align="right"><font __FFACE__ size="1">[error name=lname std_label=Last required=1]</font></div></td>
-                                <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
+                                <td>[error name=lname std_label=Last required=1]</td>
+                                <td align="left"><INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=email std_label="Email Address" required=1]</font></div>
+                                <td align="right"> 
+                                  [error name=email std_label="Email Address" required=1]
                                 </td>
-                                <td colspan="3"><b><font __FFACE__ size="1"> 
+                                <td colspan="3"><b>
                                   <INPUT TYPE=text NAME=email VALUE="[value email]" size="51">
-                                  </font></b></td>
+                                  </b></td>
                               </tr>
                               <tr> 
                                 <td>&nbsp;</td>
@@ -135,10 +124,9 @@ ui_template_name: leftonly
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
-                              <tr bgcolor="#FF9900"> 
-                                <td><font __FFACE__ size="1"><b><font color="#FFFFFF">Mailing 
-                                  Status</font></b></font></td>
-                                <td><font __FFACE__ size="1"><b><font color="#FF9900">a</font></b></font></td>
+                              <tr class="contentbar1"> 
+                                <td><b>Mailing Status</b></td>
+                                <td><b>&nbsp;</b></td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
@@ -148,32 +136,36 @@ ui_template_name: leftonly
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
-                              <tr> 
-                                <td align="center" valign="middle"> 
+      <tr> 
+        <td align="center" valign="middle"> 
 <SELECT onChange="this.form.submit()" NAME=mail_list>
 <OPTION VALUE="0">No
 <OPTION [selected mail_list 1] VALUE="1">Yes
 </SELECT>
-                                </td>
-                                <td align="left"><font __FFACE__ size="1">Put 
-                                  me on your email list of infrequent offers</font></td>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                              </tr>
-                            </table>
-						</td>
-						</tr>
-						</table>
-                      <p>
-		<INPUT TYPE=SUBMIT VALUE="Submit Request">
-                      <div align="left"></div>
-                      <p>&nbsp;</p>
-                      </form>
+        </td>
+        <td align="left">Put me on your email list of infrequent offers</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      </table>
 						
-						</td>
-						</tr>
-						</table>
+    </td>						
+  </tr>						
+  </table>
+                      
+  <p>
+  <INPUT TYPE=SUBMIT VALUE="Submit Request">
+  <p>&nbsp;</p>
+						
+  </td>
+</tr>
+</table>
 
+</form>
+
+  </td>
+</tr>
+</table>
 					
 <!-- END CONTENT -->
 
