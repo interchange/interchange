@@ -349,8 +349,8 @@
 [/if-sql-param]
 			   </td>
                <td align=right style="padding: 5px">[sql-param quantity]</td>
-               <td align=right style="padding: 5px">[sql-param price]</td>
-               <td align=right style="padding: 5px">[sql-param subtotal]</td>
+               <td align=right style="padding: 5px">[currency][sql-param price][/currency]</td>
+               <td align=right style="padding: 5px">[currency][sql-param subtotal][/currency]</td>
             </tr>
 [if-sql-param separate_address]
             <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]" valign=top> 
@@ -435,4 +435,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.17 2003-12-04 18:57:34 edl Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.18 2004-01-23 01:05:21 pvinci Exp $ -->
