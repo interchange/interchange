@@ -50,11 +50,27 @@ use lib '/usr/local/interchange';
 BEGIN {
 	($VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
-	$VendRoot = $VendRoot || '/usr/local/interchange';
-#	$VendRoot = $VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
 	$ProgRoot = '/usr/local/interchange';
 	#$ProgRoot = '~_~INSTALLARCHLIB~_~';
+
+	$VendRoot = $Global::VendRoot;
+
+	if(-f "$Global::VendRoot/interchange.cfg") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f "$Global::VendRoot/minivend.cfg") {
+		$Global::ExeName = 'minivend';
+		$Global::ConfigFile = 'minivend.cfg';
+	}
+	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = 'interchange.cfg';
+	}
+
 }
 
 ## END CONFIGURABLE VARIABLES
@@ -120,7 +136,7 @@ options:
     --imageurl=url             The URL to prefix images with
     --linkmode=mode            UNIX or INET (link program vlink or tlink)
     --linkprogram=file         Use file as link program instead of vlink/tlink
-    --nocfg                    Don't add to minivend.cfg
+    --nocfg                    Don't add to $Global::ExeName.cfg
     --nocopy                   Don't actually copy the files, just test
     --norunning                Don't add to running server
     --noumask                  Don't set umask
@@ -1788,7 +1804,7 @@ POSTCMD: {
 	umask(07) unless $Conf{noumask};
 
 	$add = prefix('nocfg') ? 'n' : 'y';
-	$yes = prompt "Add catalog to minivend.cfg? ", $add;
+	$yes = prompt "Add catalog to $Global::ConfigFile? ", $add;
 
 	$add = prefix('norunning') ? 'n' : 'y';
 
@@ -1805,13 +1821,13 @@ POSTCMD: {
 
 	if( is_yes($yes) ) {
 		my ($newcfgline, $mark, @out);
-		my ($tmpfile) = "minivend.cfg.$$";
-		if (-f 'minivend.cfg') {
-			File::Copy::copy ("minivend.cfg", $tmpfile)
-				or die "\nCouldn't copy minivend.cfg: $!\n";
+		my ($tmpfile) = "$Global::ConfigFile.$$";
+		if (-f $Global::ConfigFile) {
+			File::Copy::copy ($Global::ConfigFile, $tmpfile)
+				or die "\nCouldn't copy $Global::ConfigFile: $!\n";
 		}
 		else {
-			File::Copy::copy('minivend.cfg.dist', $tmpfile);
+			File::Copy::copy("$Global::ConfigFile.dist", $tmpfile);
 		}
 		open(CFG, "< $tmpfile")
 			or die "\nCouldn't open $tmpfile: $!\n";
@@ -1828,8 +1844,8 @@ POSTCMD: {
 		if($full) {
 			$full = $Conf{servername};
 		}
-		open(NEWCFG, ">minivend.cfg")
-			or die "\nCouldn't write minivend.cfg: $!\n";
+		open(NEWCFG, ">$Global::ConfigFile")
+			or die "\nCouldn't write $Global::ConfigFile: $!\n";
 
 		$newcfgline = sprintf "%-13s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
@@ -1847,13 +1863,13 @@ POSTCMD: {
 		close NEWCFG || die "close: $!\n";
 		unlink $tmpfile;
 		if($isroot) {
-			chown ($mvuid, $mvgid, 'minivend.cfg')
-				or warn "Couldn't set ownership of 'minivend.cfg': $!\n";
+			chown ($mvuid, $mvgid, $Global::ConfigFile)
+				or warn "Couldn't set ownership of '$Global::ConfigFile': $!\n";
 		}
 	}
 	else {
 		print <<EOF;
-You will need to add the following line to your minivend.cfg file
+You will need to add the following line to your $Global::ConfigFile file
 to activate the catalog.
 
 $newcfgline
@@ -1963,7 +1979,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.12 2000-09-23 18:38:22 heins Exp $
+$Id: makecat.PL,v 1.13 2000-09-23 18:45:39 heins Exp $
 
 =head1 INTRODUCTION
 
@@ -2153,7 +2169,7 @@ The URL to prefix images with.
 
 =item --nocfg
 
-Don't add to minivend.cfg.
+Don't add to interchange.cfg.
 
 =item --nocopy
 
@@ -2246,7 +2262,7 @@ named C<html> and C<images>. These will be recursively copied to
 the directories defined as SampleHTML and ImageDir.
 
 B<IMPORTANT NOTE:> The template directory is located in the Interchange
-software directory, i.e. where C<minivend.cfg> resides. You normally do
+software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
 simple and copy the C<simple> demo directory to it as a starting point.
