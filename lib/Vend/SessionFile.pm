@@ -1,6 +1,6 @@
 # Vend::SessionFile - Stores Interchange session information in files
 #
-# $Id: SessionFile.pm,v 2.2 2003-06-18 17:34:44 jon Exp $
+# $Id: SessionFile.pm,v 2.3 2003-06-19 18:18:02 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 my $SessionDir;
 my $CommDir;
@@ -49,8 +49,8 @@ sub TIEHASH {
 	$SessionDir = $dir;
 	%HaveLock = ();
 	if($nfs) {
-		*lockfile = \*Vend::Util::fcntl_lock;
-		*unlockfile = \*Vend::Util::fcntl_unlock;
+		*lockfile = \*Vend::File::fcntl_lock;
+		*unlockfile = \*Vend::File::fcntl_unlock;
 	}
 	bless {}, $self;
 }
