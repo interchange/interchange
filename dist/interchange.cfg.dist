@@ -6,7 +6,7 @@
 # files you include if you're upgrading.
 ConfigParseComments No
 
-#Catalog   construct /var/lib/interchange/catalogs/construct /cgi-bin/construct
+#Catalog  store  /var/lib/interchange/catalogs/store  /cgi-bin/store
 
 # Set to 1 to include UI
 Variable   UI   1
