@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.18 2002-06-17 22:24:12 jon Exp $
+# $Id: DBI.pm,v 2.19 2002-06-28 05:06:05 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 use strict;
 
@@ -319,6 +319,17 @@ sub create {
 	$keycol = 0 unless defined $keycol;
 	$config->{KEY_INDEX} = $keycol;
 	$config->{KEY} = $key;
+
+	if(ref $config->{PRECREATE}) {
+		for(@{$config->{PRECREATE}} ) {
+			$db->do($_) 
+				or ::logError(
+								"DBI: Post creation query '%s' failed: %s" ,
+								$_,
+								$DBI::errstr,
+					);
+		}
+	}
 
 	if($config->{CREATE_SQL}) {
 #::logDebug("Trying to create with specified CREATE_SQL:\n$config->{CREATE_SQL}");
