@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.216 2004-07-20 01:46:44 mheins Exp $
+# $Id: Interpolate.pm,v 2.217 2004-07-20 05:23:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.216 $, 10);
+$VERSION = substr(q$Revision: 2.217 $, 10);
 
 @EXPORT = qw (
 
@@ -4896,7 +4896,8 @@ sub region {
 						};
 				my $params = escape_scan($opt->{search});
 				Vend::Scan::find_search_params($c, $params);
-				#::logDebug("perform_search");
+				$c->{mv_no_more} = ! $opt->{more};
+#::logDebug("perform_search, c=" . ::uneval($c));
 				$obj = perform_search($c);
 			}
 		}
@@ -5028,6 +5029,7 @@ sub tag_loop_list {
 		$obj->{mv_field_hash} = $fh if $fh;
 		if($opt->{ml}) {
 			$obj->{mv_matchlimit} = $opt->{ml};
+			$obj->{mv_no_more} = ! $opt->{more};
 			$obj->{mv_first_match} = $opt->{mv_first_match} || 0;
 			$obj->{mv_next_pointer} = $opt->{mv_first_match} + $opt->{ml};
 		}

@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.26 2004-07-19 22:26:00 mheins Exp $
+# $Id: Scan.pm,v 2.27 2004-07-20 05:24:00 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 use strict;
 use Vend::Util;
@@ -107,7 +107,7 @@ my @Order = ( qw(
 	mv_unique
 	mv_more_matches
 	mv_value
-	mv_mo_more
+	mv_no_more
 	mv_next_search
 	mv_search_reference
 	prefix
