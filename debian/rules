@@ -57,6 +57,7 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) clean
+	-$(MAKE) -C dist/src/mod_interchange
 
 	dh_clean
 
