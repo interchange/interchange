@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
+# $Id: restart.PL,v 1.5 2000-09-19 20:27:47 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -132,7 +132,7 @@ if (defined $Trysu) {
 	if($^O =~ /bsd|solaris|irix/i) {
 	exec <<EndOfExec or die "Couldn't exec: $!\n";
 su $name <<EOF
-$Global::VendBin/minivend $force -r
+$Global::VendBin/interchange $force -r
 EOF
 EndOfExec
 	}
