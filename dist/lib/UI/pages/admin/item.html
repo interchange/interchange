@@ -198,15 +198,13 @@ EOF
 			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
 		}
 
-		$out_message =  <<EOF;
-<H3>Entries matching "$ui_text_qualification"</H3>
-EOF
+		$out_message = '<H3>' 
+			. errmsg('Entries matching "%s"', $ui_text_qualification) . '</H3>';
 	}
 	elsif ($ui_text_qualification) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
-		$out_message =  <<EOF;
-<H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
-EOF
+		$out_message = '<H3>' 
+			. errmsg('Entries matching "%s"', $ui_text_qualification) . '</H3>';
 		if($Scratch->{ui_owner}) {
 			$CGI->{ui_text_qualification} = <<EOF;
 co=1
