@@ -519,21 +519,7 @@ EoPC
 	</div>
 [/components]
 
-[if !scratch CONTENT_shown]
-
-	<div
-		id="comp_dynformonly"
-		style="
-				border-style: inset;
-				border-width: thin;
-				Position:Absolute; 
-				Left:0; Top:0; Height:100%; Width:100%;
-				Visibility: Hidden;
-				z-index:0;
-				background: #EEEEEE;
-			">
-
-[calc]
+[calcn]
 	$page_content = <<'EoPA';
 [page-param CONTENT]
 EoPA
@@ -547,7 +533,21 @@ EoPC
 		chop $$_;
 	}
 	return;
-[/calc]
+[/calcn]
+
+[if !scratch CONTENT_shown]
+
+	<div
+		id="comp_dynformonly"
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute; 
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+			">
 
 		[table-editor
 			action=return
