@@ -159,7 +159,7 @@ sub {
 	$out .= qq{<INPUT TYPE=hidden NAME="$clickname" VALUE="">} if $image; 
 
 	my $formname;
-	$opt->{form} = 'document.forms[0]'
+	$opt->{form} = 'forms[0]'
 		if ! $opt->{form};
 
 	$confirm .= ' && ' if $confirm;
