@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.59 2002-08-02 13:09:34 racke Exp $
+# $Id: Config.pm,v 2.60 2002-08-03 04:20:30 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 my %CDname;
 
@@ -3108,6 +3108,8 @@ my %tagCanon = ( qw(
 
 	group			Group
 	actionmap		ActionMap
+	arraycode		ArrayCode
+	hashcode		HashCode
 	coretag  		CoreTag
 	filter			Filter
 	formaction		FormAction
@@ -3163,14 +3165,16 @@ my %tagBool = ( qw!
 
 my %current_dest;
 my %valid_dest = qw/
-                    actionmap  ActionMap
-                    coretag    UserTag
-                    filter     Filter
-                    formaction FormAction
-                    itemaction ItemAction
-                    ordercheck OrderCheck
-                    usertag    UserTag
-                    widget     Widget
+					actionmap        ActionMap
+					coretag          UserTag
+					filter           Filter
+					formaction       FormAction
+					itemaction       ItemAction
+					ordercheck       OrderCheck
+					usertag          UserTag
+					hashcode         HashCode
+					arraycode        ArrayCode
+					widget           Widget
 				/;
 
 sub finalize_mapped_code {
@@ -3205,6 +3209,13 @@ sub finalize_mapped_code {
 	}
 }
 
+my %Compiled = qw/
+					Routine     Routine
+					PosRoutine  PosRoutine
+					HashCode    Routine
+					ArrayCode   Routine
+				/;
+
 sub parse_mapped_code {
 	my ($var, $value) = @_;
 
@@ -3234,9 +3245,9 @@ sub parse_mapped_code {
 
 	my $c = $repos->{$dest};
 
-	if($p eq 'Routine') {
-		$c->{Routine} ||= {};
-		parse_action($var, "$tag $val", $c->{Routine});
+	if($Compiled{$p}) {
+		$c->{$Compiled{$p}} ||= {};
+		parse_action($var, "$tag $val", $c->{$Compiled{$p}} ||= {});
 	}
 	elsif(defined $tagAry{$p}) {
 		my(@v) = Text::ParseWords::shellwords($val);

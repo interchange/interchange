@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.98 2002-08-02 18:52:55 mheins Exp $
+# $Id: Interpolate.pm,v 2.99 2002-08-03 04:20:30 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.98 $, 10);
+$VERSION = substr(q$Revision: 2.99 $, 10);
 
 @EXPORT = qw (
 
@@ -4307,6 +4307,74 @@ sub resolve_nested_if {
 	return $where;
 }
 
+use vars qw/%Ary_code/;
+%Ary_code = (
+	accessories => \&tag_accessories,
+	common => \&Vend::Data::product_common,
+	description => \&Vend::Data::product_description,
+	field => \&Vend::Data::product_field,
+	last => \&interpolate_html,
+	next => \&interpolate_html,
+	options => \&tag_options,
+	tag => \&tag_dispatch,
+);
+
+use vars qw/%Hash_code/;
+%Hash_code = (
+	accessories => \&tag_accessories,
+	common => \&Vend::Data::item_common,
+	description => \&Vend::Data::item_description,
+	field => \&Vend::Data::item_field,
+	last => \&interpolate_html,
+	next => \&interpolate_html,
+	options => \&tag_options,
+	tag => \&tag_dispatch,
+);
+
+sub map_list_routines {
+	my($type, $opt) = @_;
+
+	### This allows mapping of new routines to 
+	##    PREFIX-options
+	##    PREFIX-accessories
+	##    PREFIX-description
+	##    PREFIX-common
+	##    PREFIX-field
+	##    PREFIX-price
+	##    PREFIX-tag
+	##    PREFIX-last
+	##    PREFIX-next
+
+	my $nc;
+
+	my $ac; 
+	for $ac ($Global::CodeDef->{$type}, $Vend::Cfg->{CodeDef}{$type}) {
+		next unless $ac and $ac->{Routine};
+		$nc ||= {};
+		for(keys %{$ac->{Routine}}) {
+			$nc->{$_} = $ac->{Routine}{$_};
+		}
+	}
+
+	if($ac = $opt->{maproutine}) {
+		$nc ||= {};
+		if(! ref($ac) ) {
+			$ac =~ s/\s+$//;
+			$ac =~ s/^\s+//;
+			$ac = { split /[\s,=\0]/, $ac };
+		}
+		$ac = {} if ref($ac) ne 'HASH';
+		for(keys %$ac) {
+			$nc->{$_} = $Vend::Cfg->{Sub}{$_} || $Global::GlobalSub->{$_}
+			  or do {
+				  logError("%s: non-existent mapped routine %s.", $type, $_);
+					delete $nc->{$_};
+			  };
+		}
+	}
+	return $nc;
+}
+
 sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
 
@@ -4320,6 +4388,10 @@ sub iterate_array_list {
 		}
 		return $r;
 	}
+
+	my $nc = map_list_routines('ArrayCode', $opt);
+
+	$nc and local(@Ary_code{keys %$nc}) = values %$nc;
 
 	my ($run, $row, $code, $return);
 my $once = 0;
@@ -4416,13 +4488,13 @@ my $once = 0;
 		$run =~ s:$B$QR{_line}:join "\t", @{$row}[ ($1 || 0) .. $#$row]:ige;
 	    $run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
-						tag_accessories($code,$1,{}):ige;
+						$Ary_code{accessories}->($code,$1,{}):ige;
 		$run =~ s:$B$QR{_options}:
-						tag_options($code,$1):ige;
+						$Ary_code{options}->($code,$1):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
-		$run =~ s:$B$QR{_description}:ed(product_description($code)):ige;
-		$run =~ s:$B$QR{_field}:ed(product_field($1, $code)):ige;
-		$run =~ s:$B$QR{_common}:ed(product_common($1, $code)):ige;
+		$run =~ s:$B$QR{_description}:ed($Ary_code{description}->($code)):ige;
+		$run =~ s:$B$QR{_field}:ed($Ary_code{field}->($1, $code)):ige;
+		$run =~ s:$B$QR{_common}:ed($Ary_code{common}->($1, $code)):ige;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
 					currency(product_price($code,$1), $2)!ige;
@@ -4444,7 +4516,7 @@ my $once = 0;
 				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
-                    my $tmp = interpolate_html($1);
+                    my $tmp = $Ary_code{last}->($1);
 					$tmp =~ s/^\s+//;
 					$tmp =~ s/\s+$//;
                     if($tmp && $tmp < 0) {
@@ -4455,7 +4527,7 @@ my $once = 0;
                     }
                     '' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    interpolate_html($1) != 0 ? next : '' #ixge;
+                    $Ary_code{next}->($1) != 0 ? next : '' #ixge;
 		$run =~ s/<option\s*/<OPTION SELECTED /i
 			if $opt_select and $opt_select->($code);
 
@@ -4481,6 +4553,10 @@ sub iterate_hash_list {
 
 	my $code_field = $opt->{code_field} || 'mv_sku';
 	my ($run, $code, $return, $item);
+
+	my $nc = map_list_routines('HashCode', $opt);
+
+	$nc and local(@Hash_code{keys %$nc}) = values %$nc;
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . ::uneval($hash));
 	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
@@ -4567,10 +4643,11 @@ sub iterate_hash_list {
 				  $item->{$3}	?	pull_if($5,$2,$4,$item->{$3})
 								:	pull_else($5,$2,$4,$item->{$3})#ge;
 		$run =~ s:$B$QR{_increment}:$i + 1:ge;
+		
 		$run =~ s:$B$QR{_accessories}:
-						tag_accessories($code,$1,{},$item):ge;
+						$Hash_code{accessories}->($code,$1,{},$item):ge;
 		$run =~ s:$B$QR{_options}:
-						tag_options($item,$1):ige;
+						$Hash_code{options}->($item,$1):ige;
 		$run =~ s:$B$QR{_sku}:$code:ig;
 		$run =~ s:$B$QR{_code}:$item->{code}:ig;
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
@@ -4587,10 +4664,10 @@ sub iterate_hash_list {
 								$1
 								)!ge;
 		$run =~ s:$B$QR{_code}:$code:g;
-		$run =~ s:$B$QR{_field}:ed(item_field($item, $1) || $item->{$1}):ge;
-		$run =~ s:$B$QR{_common}:ed(item_common($item, $1) || $item->{$1}):ge;
+		$run =~ s:$B$QR{_field}:ed($Hash_code{field}->($item, $1) || $item->{$1}):ge;
+		$run =~ s:$B$QR{_common}:ed($Hash_code{common}->($item, $1) || $item->{$1}):ge;
 		$run =~ s:$B$QR{_description}:
-							ed(item_description($item) || $item->{description})
+							ed($Hash_code{description}->($item) || $item->{description})
 							:ge;
 		$run =~ s!$B$QR{_price}!currency(item_price($item,$1), $2)!ge;
 		$run =~ s!$B$QR{_discount_price}!
