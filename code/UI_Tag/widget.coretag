@@ -1,7 +1,7 @@
 UserTag widget Order name
 UserTag widget PosNumber 1
-UserTag widget attrAlias table db
-UserTag widget attrAlias field column
+UserTag widget attrAlias db table
+UserTag widget attrAlias column field
 UserTag widget attrAlias outboard key
 UserTag widget addAttr
 UserTag widget HasEndTag 1
