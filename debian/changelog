@@ -13,8 +13,9 @@ interchange (4.7.3-0.4) unstable; urgency=low
   * Variable DEBUG now configurable by debconf
   * changed makecat.wrapper to run as interchange user instead of root
   * added a link for makecat.cfg
+  * use /var/lib/interchange/catalogs as default for catalog installations
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Jun 2001 12:03:18 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Jun 2001 16:14:50 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
