@@ -25,6 +25,7 @@
 
 [loop list="[cgi user_id]"]
 <form action="[area ui]" method="post">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE=[comment]
 If creating new user, go to password entry page after this.
