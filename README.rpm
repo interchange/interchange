@@ -3,7 +3,7 @@ NAME
 
   VERSION
 
-    4.04
+    4.5.x
 
 SYNOPSIS
     rpm -Uvh interchange-4.X.X-X.rpm
@@ -98,13 +98,9 @@ USING INTERCHANGE
 SEE ALSO
     Documentation and other information on Interchange is at:
 
-            http://www.akopia.com/
-
-    There will soon be a developer site. For now, use:
-
-            http://www.minivend.com/minivend/
+            http://developer.akopia.com/
 
 AUTHOR
     Mike Heins, <heins@akopia.com>. Questions should be directed to the
-    Minivend user list, <minivend-users@minivend.com>.
+    Interchange user list, <interchange-users@lists.akopia.com>.
 
