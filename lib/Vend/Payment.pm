@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.2.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: Payment.pm,v 2.2.2.2 2002-07-18 16:14:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.2.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -306,9 +306,13 @@ sub charge {
 
 	# Uses the {precision} -> MV_PAYMENT_PRECISION options if set
 	my $precision = charge_param('precision') || 2;
+	my $penny     = charge_param('penny_pricing') || 0;
 
 	my $amount = $pay_opt->{amount} || Vend::Interpolate::total_cost();
 	$amount = round_to_frac_digits($amount, $precision);
+	$amount = sprintf "%.${precision}f", $amount;
+	$amount *= 100 if $penny;
+
 	$pay_opt->{total_cost} = $amount;
 	$pay_opt->{amount} = "$currency $amount";
 
