@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.12 2000-09-25 18:35:01 jon Exp $
+# $Id: Order.pm,v 1.13 2000-09-27 22:09:54 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,24 +31,26 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 @ISA = qw(Exporter);
 
 @EXPORT = qw (
-
-add_items
-check_order
-check_required
-cyber_charge
-encrypt_standard_cc
-mail_order
-send_mail
-onfly
-route_order
-validate_whole_cc
-
+	add_items
+	check_order
+	check_required
+	cyber_charge
+	encrypt_standard_cc
+	mail_order
+	onfly
+	route_order
+	validate_whole_cc
 );
+# LEGACY4
+push @EXPORT, qw (
+	send_mail
+);
+# END LEGACY4
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -904,6 +906,7 @@ trying one more time. Fix this.},
 
 #::logDebug("Now ready to send mail, subject=$subject");
 
+#### change this to use Vend::Mail::send
     $ok = send_mail($email, $subject, $body);
     return $ok;
 }
@@ -1588,6 +1591,7 @@ sub route_order {
 
 	foreach $msg (@out) {
 		eval {
+#### change this to use Vend::Mail::send
 			send_mail(@$msg);
 		};
 		if($@) {
@@ -1633,6 +1637,7 @@ sub route_order {
 	}
 	elsif ($main->{errors_to}) {
 		$Vend::Session->{order_error} = $errors;
+#### change this to use Vend::Mail::send
 		send_mail(
 			$main->{errors_to},
 			errmsg("ERRORS on ORDER %s", $::Values->{mv_order_number}),
@@ -1835,6 +1840,8 @@ EOF
 	Vend::Cart::toss_cart($cart);
 }
 
+#### recode this in Vend::Mail as send
+# LEGACY4
 sub send_mail {
     my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
     my($ok);
@@ -1899,6 +1906,7 @@ sub send_mail {
 
     $ok;
 }
+# END LEGACY4
 
 1;
 __END__
