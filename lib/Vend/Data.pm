@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.2.4 2000-12-14 17:31:15 zarko Exp $
+# $Id: Data.pm,v 1.13.2.5 2000-12-14 17:44:16 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -730,8 +730,8 @@ sub import_database {
 		if(Vend::Util::file_name_is_absolute($database_txt)) {
 			if ($Global::NoAbsolute) {
 				my $msg = errmsg(
-						"Security violation for NoAbsolute, trying to import %s",
-						$database_txt);
+									"Security violation for NoAbsolute, trying to import %s",
+									$database_txt);
 				logError( $msg );
 				die "Security violation.\n";
 			}
