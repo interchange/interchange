@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.20 2003-07-06 04:38:28 mheins Exp $
+# $Id: Scan.pm,v 2.21 2003-07-06 04:46:02 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use strict;
 use Vend::Util;
@@ -549,10 +549,6 @@ sub perform_search {
 
 }
 
-BEGIN {
-	eval { require SQL::Statement; };
-}
-
 my %scalar = (qw/ st 1 ra 1 co 1 os 1 sr 1 ml 1/);
 
 sub push_spec {
@@ -588,9 +584,6 @@ sub sql_statement {
 			unless "\L$table" eq 'glimpse';
 # END GLIMPSE
 	}
-
-#	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
-#		unless defined &SQL::Statement::new;
 
 	# Strip possible leading stuff
 	$text =~ s/^\s*sq\s*=//;

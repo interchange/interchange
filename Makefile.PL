@@ -634,10 +634,6 @@ EOF
 				};
 			push(@mods_to_get, 'Digest::MD5') if $@;
 			eval {
-					require SQL::Statement;
-				};
-			push(@mods_to_get, 'SQL::Statement') if $@;
-			eval {
 					require Safe::Hole;
 				};
 			push(@mods_to_get, 'Safe::Hole') if $@;

@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.38 2003-05-22 19:21:41 racke Exp $
+# $Id: Shadow.pm,v 1.39 2003-07-06 04:46:02 mheins Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.38 $, 10);
+$VERSION = substr(q$Revision: 1.39 $, 10);
 
 # CREDITS
 #
@@ -422,14 +422,10 @@ sub _parse_sql {
 	my ($s, $query) = @_;
 	my (%sqlinfo);
 	
-	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
-		unless defined &SQL::Statement::new;
-
-	my ($parser, $stmt);
+	my ($stmt);
 	
-	$parser = SQL::Parser->new('Ansi');
 	eval {
-		$stmt = SQL::Statement->new($query, $parser);
+		$stmt = Vend::SQL_Parser->new($query, $parser);
 	};
 	
 	if ($@) {
