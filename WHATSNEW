@@ -255,6 +255,8 @@ Foundation
 * Added auth_code and tracking_number to transactions table to support
   charge settlement and shipping_tracking in the UI.
 
+* category_vert_toggle component reworked by Randy Moore.
+
 UserTags
 --------
 
