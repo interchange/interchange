@@ -1,6 +1,6 @@
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12.4.1 2000-10-18 21:02:19 racke Exp $
+# $Id: MakeCat.pm,v 1.12.4.2 2000-12-03 16:32:12 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -60,7 +60,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.12.4.2 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -105,7 +105,7 @@ my %Desc = (
 #                         ^^^^^^^^^^^^^^^^
 #
 # We set it to the name of the catalog by default to enable the
-# internal HTTTP server.
+# internal HTTP server.
 #
 EOF
 	basedir    =>  <<EOF,
