@@ -184,7 +184,7 @@ Payment
   give reasonable errors when the module is not working.
 
 * Initial support for CyberCash, AuthorizeNet, Skipjack, iTransact,
-  CCVS, and Signio/Verispam. All documented with in-module POD.
+  CCVS, and Signio/Verisign. All documented with in-module POD.
 
 * There will be a Vend::Payment::Skeleton to show adding your own
   payment module.
