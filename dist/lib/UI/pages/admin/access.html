@@ -74,12 +74,12 @@ mv_nextpage=@@MV_PAGE@@
 [perl table="__UI_ACCESS_TABLE__"]
 	my $db = $Db{__UI_ACCESS_TABLE__};
 	if(! $db) {
-		$Scratch->{ui_message} = errmsg("Bad access table '%s'", __UI_ACCESS_TABLE__");
+		$Scratch->{ui_message} = errmsg("Bad access table '%s'", '__UI_ACCESS_TABLE__');
 		return;
 	}
 	unless ( $db->delete_record($CGI->{user_id}) ) {
 		$Scratch->{ui_message} =
-			errmsg("Failed to delete administrator %s from table %s", $CGI->{user_id}, '__UI_ACCESS_TABLE__';
+			errmsg("Failed to delete administrator %s from table %s", $CGI->{user_id}, '__UI_ACCESS_TABLE__');
 		return;
 	}
 	$Scratch->{ui_message} =
@@ -108,7 +108,7 @@ mv_nextpage=@@MV_PAGE@@
 	"]
   <option value="[loop-code]">[loop-code] -- [loop-data access name][if-loop-data access super]*[/if-loop-data]
 [/loop]
-</select>&nbsp;<B>* Site Administrator</B>
+</select>&nbsp;<B>* [L]Site Administrator[/L]</B>
 </td>
 </tr>
 
