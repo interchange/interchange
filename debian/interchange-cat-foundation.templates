@@ -1,0 +1,9 @@
+Template: interchange-cat-foundation/install
+Type: boolean
+Default: false
+Description: Should I create the Interchange demo catalog ?
+ Whether to install the demo catalog from the foundation template
+ or let you manually install it with makecat.
+Description-de: Möchten Sie den Interchange-Demokatalog angelegt haben ?
+ Ob der Demokatalog aus dem Foundation-Template installiert werden
+ soll oder Sie ihn manuell mit makecat installieren möchten.
