@@ -1,5 +1,7 @@
-# Licensed under the GPL v2. See file LICENSE for details.
-# Copyright 2001 by Ed LaFrance <edl@newmediaems.com>
+# Copyright 2001,2004 Interchange Development Group (http://www.icdevgroup.org)
+# Copyright 2001 Ed LaFrance <edl@newmediaems.com>
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: env.tag,v 1.5 2004-09-24 09:55:11 docelic Exp $
 
 Usertag env Order arg
 Usertag env PosNumber 1
@@ -23,3 +25,4 @@ sub {
 	return $out;
 }
 EOR
+
