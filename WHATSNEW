@@ -39,6 +39,13 @@ Core
   was passed in array (separately from code parameter in sub call). Patch by
   Mark Johnson.
 
+* Apply patch to fix problem found by Cameron Prince -- messing with
+  JavaScript callouts in Vend::Util::change_url().
+
+* Fix bug in change_pass function which could prevent and cause case-matching
+  problems with ignore_case set. Found and patch supplied by Mike Weisenborn
+  <mw@clearbult.com>.
+
 Usertags
 --------
 
@@ -48,6 +55,8 @@ Usertags
 
 * [fedex-query] -- Updated FedEx URL, reported by Rick Boykin
   <rick@epitomedesign.com>
+
+* Allow bounce targets (Window-Target: header).
 
 Admin UI
 --------
@@ -65,6 +74,9 @@ Admin UI
 
 * Import page has a new option to replace existing items seamlessly
   by the imported set.
+
+* Fix spurious "backup" error message in page_edit caused by search without
+  backup database.
 
 Foundation
 ----------
@@ -98,6 +110,9 @@ Packaging
   <cfm@maine.com> for the suggestion.
 
 * doc-base support added to libapache-mod-interchange Debian package.
+
+* Fix bug in Makefile.PL when nocopy option passed, which wasn't fatal
+  before Perl 5.8.0.
 
 I18N
 ----
