@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.5 2002-06-27 22:24:10 jon Exp $
+# $Id: Session.pm,v 2.6 2002-07-15 14:20:00 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -431,6 +431,7 @@ sub init_session {
 		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}} },
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
+		'levies'	=> {main => []},
     };
 	$Vend::Session->{shost} = $CGI::remote_addr
 		if $CGI::secure;
