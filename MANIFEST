@@ -846,6 +846,7 @@ dist/usertag/email.tag
 dist/usertag/email_raw.tag
 dist/usertag/fcounter.tag
 dist/usertag/fedex_query.tag
+dist/usertag/formel.tag
 dist/usertag/get_url.tag
 dist/usertag/loc.tag
 dist/usertag/rand.tag
