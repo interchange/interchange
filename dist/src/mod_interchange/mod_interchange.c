@@ -1,16 +1,16 @@
 /*
- *	$Id: mod_interchange.c,v 2.6 2002-11-28 22:19:24 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.7 2003-01-09 04:54:26 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.27
+ *	Version: 1.28
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
  *
  *	Copyright (c) 1999 Francis J. Lacoste, iNsu Innovations.
- *	Copyright (c) 2000-2002 Cursor Software Limited.
+ *	Copyright (c) 2000-2003 Cursor Software Limited.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define	MODULE_VERSION	"mod_interchange/1.27"
+#define	MODULE_VERSION	"mod_interchange/1.28"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -446,7 +446,6 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	int env_count,rc;
 	char request_uri[HUGE_STRING_LEN];
 	char redirect_url[HUGE_STRING_LEN];
-char DEBUG[100];
 
 	/*
 	 *	send the Interchange-link arg parameter
@@ -491,6 +490,7 @@ char DEBUG[100];
 	request_uri[0] = '\0';
 	redirect_url[0] = '\0';
 	for (e = env; *e != NULL; e++){
+		int len;
 		if (strncmp(*e,"PATH_INFO=",10) == 0)
 			continue;
 		if (strncmp(*e,"REDIRECT_URL=",13) == 0){
@@ -505,9 +505,11 @@ char DEBUG[100];
 			if (*(*e + 12 + conf_rec->loclen) == '/')
 				*(*e + 12 + conf_rec->loclen) = '\0';
 		}
-		if (ap_bprintf(ic_buff,"%d %s\n",strlen(*e),*e) < 0){
-			ap_log_reason("error writing to Interchange",r->uri,r);
-			return HTTP_INTERNAL_SERVER_ERROR;
+		if (len = strlen(*e)){
+			if (ap_bprintf(ic_buff,"%d %s\n",len,*e) < 0){
+				ap_log_reason("error writing to Interchange",r->uri,r);
+				return HTTP_INTERNAL_SERVER_ERROR;
+			}
 		}
 		ap_reset_timeout(r);
 	}
@@ -516,9 +518,8 @@ char DEBUG[100];
 	while (*rp == '/')
 		rp++;
 
-	if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0){
+	if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0)
 		rp += conf_rec->loclen;
-	}
 
 	strcpy(request_uri,rp);
 	for (rp = request_uri; *rp != '\0'; rp++){
@@ -643,7 +644,6 @@ char DEBUG[100];
 static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 {
 	const char *location;
-	BUFF *client_buff = r->connection->client;
 	int rc,ic_sock;
 	char sbuf[MAX_STRING_LEN],argsbuffer[HUGE_STRING_LEN];
 
@@ -894,3 +894,7 @@ module MODULE_VAR_EXPORT interchange_module ={
 	NULL,			/* process exit/cleanup               */
 	NULL			/* [1]  post read_request handling    */
 };
+
+/*
+ *	vim:ts=8:sw=8
+ */
