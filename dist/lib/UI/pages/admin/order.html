@@ -3,7 +3,7 @@
 		delete $Values->{showpending};
 		$Values->{showarchive} = 1;
 		$Scratch->{archive_sense} = 'eq';
-		$Scratch->{archive_img} = 'admin/left.gif';
+		$Scratch->{archive_img} = '@_UI_IMG_@admin/left.gif';
 		$Scratch->{archive_nm} = 'unarchive';
 		$Scratch->{archive_label} = 'archived';
 	}
@@ -11,7 +11,7 @@
 		delete $Values->{showarchive};
 		$Values->{showpending} = 1;
 		$Scratch->{archive_sense} = 'ne';
-		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_img} = '@_UI_IMG_@admin/right.gif';
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
@@ -19,7 +19,7 @@
 		delete $Values->{showarchive};
 		$Values->{showpending} = 1;
 		$Scratch->{archive_sense} = 'ne';
-		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_img} = '@_UI_IMG_@admin/right.gif';
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
