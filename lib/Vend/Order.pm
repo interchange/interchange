@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.32 2002-09-16 23:06:31 mheins Exp $
+# $Id: Order.pm,v 2.33 2002-09-18 19:07:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -55,6 +55,7 @@ use Vend::Interpolate;
 use Vend::Session;
 use Vend::Data;
 use Text::ParseWords;
+use Errno qw/:POSIX/;
 use strict;
 
 use autouse 'Vend::Error' => qw/do_lockout/;
@@ -853,15 +854,25 @@ sub pgp_encrypt {
 #::logDebug("after  pgp_encrypt key=$key cmd=$cmd");
 
 	my $fpre = $Vend::Cfg->{ScratchDir} . "/pgp.$Vend::Session->{id}.$$";
-	$cmd .= ">$fpre.out";
+	$cmd .= " >$fpre.out";
 	$cmd .= " 2>$fpre.err" unless $cmd =~ /2>/;
 	open(PGP, "|$cmd")
 			or die "Couldn't fork: $!";
 	print PGP $body;
 	close PGP;
+
 	if($?) {
-		logError("PGP failed with status %s: %s", $? >> 8, $!);
-		return 0;
+		my $errno = $?;
+		my $status = $errno;
+		if($status > 255) {
+			$status = $status >> 8;
+			$! = $status;
+		}
+		logError("PGP failed with error level %s, status %s: $!", $?, $status);
+		if($status) {
+			logError("PGP hard failure, command that failed: %s", $cmd);
+			return;
+		}
 	}
 	$body = readfile("$fpre.out");
 	unlink "$fpre.out";
