@@ -82,7 +82,7 @@
 		my $on = $Scratch->{ship_notice_order_number} = $CGI->{code};
 		my $user       = $tdb->field($on, 'username');
 		my $wants_copy = $udb->field($user, 'email_copy');
-Log("Order number=$on username=$user wants=$wants_copy");
+#Log("Order number=$on username=$user wants=$wants_copy");
 		delete $Scratch->{ship_notice_username};
 		delete $Scratch->{ship_notice_email};
 		if($wants_copy) {

@@ -45,7 +45,7 @@
 [/set]
 
 <tr>
-<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -76,10 +76,10 @@
 <br>
 
 <small>
-[button text="Section properties" hspace=2 vspace=5 src="admin/icon_pages.gif" hidetext=1]
+[button text="Section properties" hspace=2 vspace=5 src="@_UI_IMG_@admin/icon_pages.gif" hidetext=1]
 [/button]
 
-[button text="Sort section higher" src="admin/up.gif" hidetext=1]
+[button text="Sort section higher" src="@_UI_IMG_@admin/up.gif" hidetext=1]
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
@@ -93,7 +93,7 @@
 [/button]
 
 
-[button text="Sort section lower" src="admin/down.gif" hidetext=1]
+[button text="Sort section lower" src="@_UI_IMG_@admin/down.gif" hidetext=1]
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
@@ -106,13 +106,13 @@
 	[/perl]
 [/button]
 
-[button text="Create section" src="admin/plus.gif" hidetext=1]
+[button text="Create section" src="@_UI_IMG_@admin/plus.gif" hidetext=1]
 	mv_todo=back
 	newarea=NEW
 [/button]
 
 [button
-	text="Delete section" src="admin/delete.gif" 
+	text="Delete section" src="@_UI_IMG_@admin/delete.gif" 
 	confirm="Are you sure you want to delete this section?"
  hidetext=1]
 	[tag flag write]area[/tag]
@@ -173,9 +173,9 @@
 </select>
 <br>
 <small>
-[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="admin/icon_pages.gif"][/button]
+[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="@_UI_IMG_@admin/icon_pages.gif"][/button]
 
-[button text="Sort category higher" hidetext=1 src="admin/up.gif"]
+[button text="Sort category higher" hidetext=1 src="@_UI_IMG_@admin/up.gif"]
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
@@ -188,7 +188,7 @@
 	[/perl]
 [/button]
 
-[button text="Sort category lower" hidetext=1 src="admin/down.gif"]
+[button text="Sort category lower" hidetext=1 src="@_UI_IMG_@admin/down.gif"]
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
@@ -201,12 +201,12 @@
 	[/perl]
 [/button]
 
-[button text="Create category" hidetext=1 src="admin/plus.gif"]
+[button text="Create category" hidetext=1 src="@_UI_IMG_@admin/plus.gif"]
 	mv_todo=back
 	newcat=NEW
 [/button]
 
-[button text="Delete category" hidetext=1 src="admin/delete.gif"
+[button text="Delete category" hidetext=1 src="@_UI_IMG_@admin/delete.gif"
 	 confirm="Are you sure you want to delete this category?"
 ]
 	[tag flag write]cat[/tag]
@@ -248,7 +248,7 @@
 [set name="<--"]
 [/set]
 
-[button text="Move category left" hidetext=1 src="admin/left.gif"]
+[button text="Move category left" hidetext=1 src="@_UI_IMG_@admin/left.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -275,7 +275,7 @@
 [/if-mm]
 [/button]
 
-[button text="Move category right" hidetext=1 src="admin/right.gif"]
+[button text="Move category right" hidetext=1 src="@_UI_IMG_@admin/right.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -386,7 +386,7 @@ setarea=[cgi selector]
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="admin/icon_pages.gif">&nbsp;Section Properties</td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="@_UI_IMG_@admin/icon_pages.gif">&nbsp;Section Properties</td>
 </tr>
 
 <tr>
@@ -737,7 +737,7 @@ return;
 
 <table __UI_T_PROPERTIES__>
 
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="admin/icon_pages.gif">&nbsp;Category properties</td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="@_UI_IMG_@admin/icon_pages.gif">&nbsp;Category properties</td>
 </tr>
 
 <tr>
@@ -1022,11 +1022,11 @@ return;
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [/then]
@@ -1035,7 +1035,7 @@ return;
 </tr>
 
 <tr>
-<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/else]
 [/if]

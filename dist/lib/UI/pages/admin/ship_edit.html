@@ -99,10 +99,15 @@
 		return 1;
 	[/perl]
 [/if] -->
+
 [if scratch ui_update_shipping]
 [set ui_update_shipping][/set]
 <!-- update shipping: [write-shipping] -->
-[bounce page="__UI_BASE__/ship"]
+[bounce page="[either][cgi ui_bounce_url][or]__UI_BASE__/ship[/either]"]
+[/if]
+
+[if cgi ui_bounce_url]
+	[bounce page="[either][cgi ui_bounce_url][or]__UI_BASE__/ship[/either]"]
 [/if]
 
 [if cgi ui_shipmode]
@@ -171,7 +176,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -387,15 +392,19 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
 
 <p>
 
-[button text="Ok"]
+[button text="Finished"]
 	do_update_cmd=Ok
+[/button]
+[button text="Next -->"]
+	do_update_cmd=Ok
+	ui_bounce_url=__UI_BASE__/ship_data
 [/button]
 [button text="[L]Cancel[/L]"]
 	mv_nextpage=__UI_BASE__/ship

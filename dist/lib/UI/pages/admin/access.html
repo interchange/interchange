@@ -30,14 +30,14 @@
 <center>
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [if-mm advanced access=c]
 
 <tr>
 <td colspan=2 bgcolor="__UI_C_INTBLOCK__">
 
-[button text="Create new administrator" src="admin/create.gif"]
+[button text="Create new administrator" src="@_UI_IMG_@admin/create.gif"]
 mv_nextpage=__UI_BASE__/user_edit
 user_id=NEW
 ui_hide_key=0
@@ -47,7 +47,7 @@ ui_hide_key=0
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/if-mm]
 
@@ -55,18 +55,18 @@ ui_hide_key=0
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
 [if-mm advanced access=e]
-	[button name=mv_junk value="Edit administrator" src="admin/edit.gif"][/button]<p>
+	[button name=mv_junk value="Edit administrator" src="@_UI_IMG_@admin/edit.gif"][/button]<p>
 [/if-mm]
 
 [if-mm advanced perm=v]
-[button value="Show permissions" src="admin/show.gif"]
+[button value="Show permissions" src="@_UI_IMG_@admin/show.gif"]
 mv_nextpage=__UI_BASE__/access_permissions
 ui_return_to=@@MV_PAGE@@
 [/button]<p>
 [/if-mm]
 
 [if-mm advanced access=e]
-[button value="Change password" src="admin/change_password.gif"]
+[button value="Change password" src="@_UI_IMG_@admin/change_password.gif"]
 mv_nextpage=__UI_BASE__/user_change_pass
 ui_hide_key=0
 [/button]
@@ -119,7 +119,7 @@ mv_nextpage=@@MV_PAGE@@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

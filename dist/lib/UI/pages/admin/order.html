@@ -292,7 +292,7 @@ th a:visited { text-decoration: none }
 		deleteorder=1
 		order=[item-code]
 	']"
-	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG SRC="admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="@_UI_IMG_@admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
 </TD>
 <TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
 <TD>
@@ -325,11 +325,11 @@ Orders [matches] displayed. More orders: [decade-next][/decade-next] [more] [dec
 [/more-list]
 </table>
 [if-mm advanced order=d]
-[button form=batch text="Delete checked orders" src="admin/delete.gif-NO"
+[button form=batch text="Delete checked orders" src="@_UI_IMG_@admin/delete.gif"
  confirm='Are you sure you want to delete the checked orders?']deleteorder=1
 [/button]
 [/if-mm]
-&nbsp;&nbsp;&nbsp;[button form=batch src="admin/[scratch archive_img]-NO"
+&nbsp;&nbsp;&nbsp;[button form=batch src="@_UI_IMG_@admin/[scratch archive_img]"
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
 			return "\u$tmp";
