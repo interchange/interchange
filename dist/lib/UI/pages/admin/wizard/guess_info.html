@@ -1,0 +1,55 @@
+[perl]
+
+my @domain = split /\./, $Variable->{SERVER_NAME};
+my $domain = join ".", @domain[ $#domain - 1, $#domain ];
+my $cc = pop @domain;
+if(length ($cc) < 3) {
+	$cc = uc $cc;
+}
+else {
+	$cc = 'US',
+}
+
+my $zip;
+my ($city, $state) = split /\s*,\s*/, $Variable->{CITY}, 2;
+$state =~ s/\s+([\d][-\d]+)// and $zip = $1;
+$state =~ s/\W+//g;
+$state = uc $state;
+
+%vars = (
+	address => qq{__ADDRESS__},
+	adminuser => qq{},
+	adminpass => qq{},
+	city => $city,
+	code => qq{store},
+	company => qq{__COMPANY__},
+	country => $cc,
+	domainname => $domain,
+	mailorderto => q{__MailOrderTo__},
+	emailservice => q{service@} . $domain,
+	emailinfo => q{info@} . $domain,
+	logo => q{logo.gif},
+	paycheck => q{__CHECK_ACCEPTED__},
+	paycod => q{__COD_ACCEPTED__},
+	paygate => q{__MV_PAYMENT_MODE__},
+	paymo => undef,
+	paypo => q{__PO_ACCEPTED__},
+	phone => q{__PHONE__},
+	shipmethod => join("\n", keys %{$Config->{Shipping_desc}}),
+	shipzip => q{__UPS_ORIGIN__},
+	shoppass => qq{},
+	shopuser => qq{},
+	smlogo => q{__SMLOGO__},
+	state => $state,
+	tollfree => qq{__TOLLFREE__},
+	zip => $zip,
+);
+
+for(keys %vars) {
+	$Values->{$_} = $vars{$_};
+	$out .= "$_=$Values->{$_}<BR>";
+}
+return $out;
+[/perl]
+
+[bounce page=__UI_BASE__/wizard/step_company]
