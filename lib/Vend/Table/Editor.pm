@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.38 2003-07-15 02:06:05 jon Exp $
+# $Id: Editor.pm,v 1.39 2003-07-19 22:42:56 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.38 $, 10);
+$VERSION = substr(q$Revision: 1.39 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1731,7 +1731,15 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 		}
 	}
 
+	my $regin = $opt->{all_opts} ? 1 : 0;
+
 	resolve_options($opt, undef, $data);
+
+	if($regin) {
+		## Must reset these in case they get set from all_opts.
+		$hidden = $opt->{hidden};
+	}
+
 	$table = $opt->{table};
 	$key = $opt->{item_id};
 	if($opt->{save_meta}) {
