@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.35 2001-04-18 06:12:08 heins Exp $
+# $Id: Server.pm,v 1.8.2.36 2001-04-25 08:02:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.35 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.36 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1705,6 +1705,7 @@ my $pretty_vector = unpack('b*', $rin);
 			my $msg = $@;
 			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $msg );
 
+			Vend::Session::close_session();
 			$Vend::Cfg = { } if ! $Vend::Cfg;
 
 			my $content;
@@ -2253,6 +2254,7 @@ my $pretty_vector = unpack('b*', $rin);
 			my $msg = $@;
 			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $msg );
 
+			Vend::Session::close_session();
 			$Vend::Cfg = { } if ! $Vend::Cfg;
 
 			my $content;
