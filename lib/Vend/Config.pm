@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.2.1 2000-10-20 16:35:40 zarko Exp $
+# $Id: Config.pm,v 1.23.2.2 2000-11-07 22:51:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ require Exporter;
 
 @ISA = qw(Exporter);
 
-@EXPORT		= qw( config global_config );
+@EXPORT		= qw( config global_config config_named_catalog );
 
 @EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database);
 
@@ -61,7 +61,7 @@ my $OldDirectives = q{
 	Mv_LinkColor
 	Mv_TextColor
 	Mv_VlinkColor
-    NewEscape
+	NewEscape
 	NewReport
 	NewTags
 	OldShipping
@@ -72,16 +72,16 @@ my $OldDirectives = q{
 	ReceiptPage
 	RecordDelimiter
 	ReportIgnore
-    RetireDBM
+	RetireDBM
 	Rotate
-    SearchCache
+	SearchCache
 	SearchFrame
 	SearchOverMsg
 	SecureOrderMsg
 	SpecialFile
 	SubArgs
 	TolerateGet
-    TransparentItem
+	TransparentItem
 	Tracking
 };
 
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.23.2.2 $, 10);
 
 my %CDname;
 
@@ -111,20 +111,17 @@ for( qw(search refresh cancel return secure unsecure submit control checkout) ) 
 	$Global::LegalAction{$_} = 1;
 }
 
-@Locale_directives_currency = (
-qw/
-		CommonAdjust
-		PriceCommas
-		PriceDivide
-		PriceField
-		PriceDefault
-		SalesTax
-		TaxShipping
+@Locale_directives_currency = (qw/
+	CommonAdjust
+	PriceCommas
+	PriceDivide
+	PriceField
+	PriceDefault
+	SalesTax
+	TaxShipping
+/);
 
-/	);
-
-@Locale_keys_currency = (
-qw/
+@Locale_keys_currency = (qw/
 	currency_symbol
 	frac_digits
 	int_curr_symbol
@@ -138,37 +135,33 @@ qw/
 	p_cs_precedes
 	p_sep_by_space
 	positive_sign
+/);
 
-/   );
+@Locale_directives_scalar = (qw/
+	Autoload
+	AutoEnd
+	CommonAdjust
+	DescriptionField
+	ImageDir
+	ImageDirSecure
+	PageDir
+	SpecialPageDir
+	PriceDivide
+	PriceCommas
+	PriceField
+	PriceDefault
+	SalesTax
+	StaticPath
+	HTMLsuffix
+	TaxShipping
+/);
 
-@Locale_directives_scalar = (
-qw/
-		Autoload
-		AutoEnd
-		CommonAdjust
-		DescriptionField
-		ImageDir
-		ImageDirSecure
-		PageDir
-		SpecialPageDir
-		PriceDivide
-		PriceCommas
-		PriceField
-		PriceDefault
-		SalesTax
-		StaticPath
-		HTMLsuffix
-		TaxShipping
-
-/   );
-
-@Locale_directives_ary = (
-qw/
+@Locale_directives_ary = (qw/
 	PriceAdjustment
 	ProductFiles
 	UseModifier
 	AutoModifier
-/   );
+/);
 
 my %DumpSource = (qw(
 					SpecialPage			1
@@ -189,7 +182,7 @@ my $configfile;
 
 # Report a fatal error in the configuration file.
 sub config_error {
-    my($msg) = @_;
+	my($msg) = @_;
 
 	if($msg =~ /unknown\s+directive\s+'(\w+)/i) {
 		my $check = $1;
@@ -204,19 +197,18 @@ sub config_error {
 			$configfile,
 			$Vend::config_line,
 	);
-    if ($Vend::ExternalProgram) {
+	if($Vend::ExternalProgram) {
 		warn "$msg\n" unless $Vend::Quiet;
-	}
-	else {
+	} else {
 		::logGlobal({level => 'warn'}, $msg);
 		die "$msg\n";
 	}
 }
 
 sub config_warn {
-    my($msg) = @_;
+	my($msg) = @_;
 
-    ::logGlobal({level => 'notice'},
+	::logGlobal({level => 'notice'},
 				errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 						$msg,
 						$.,
@@ -231,242 +223,241 @@ sub setcat {
 }
 
 sub global_directives {
-
 	my $directives = [
-#   Order is not really important, catalogs are best first
 
-#   Directive name      Parsing function    Default value
+	# Order is not really important, catalogs are best first
 
-	['ConfigDir',		  undef,	         'etc/lib'],
-	['ConfigDatabase',	 'config_db',	     ''],
-	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
-	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
-    ['Message',          'message',           ''],
-    ['VarName',          'varname',           ''],
-    ['DumpStructure',	 'yesno',     	     'No'],
-    ['DisplayErrors',    'yesno',            'No'],
-    ['TcpPort',          'warn',             ''],
-    ['TcpMap',           'hash',             ''],
-	['Environment',      'array',            ''],
-    ['TcpHost',           undef,             'localhost 127.0.0.1'],
-	['SendMailProgram',  'executable',		$Global::SendMailLocation
-												|| '/usr/lib/sendmail'],
-	['PIDfile',     	  undef,             "$Global::VendRoot/etc/$Global::ExeName.pid"],
-	['SocketFile',     	  undef,             "$Global::VendRoot/etc/socket"],
-	['SocketPerms',      'integer',          0600],
-	['HouseKeeping',     'integer',          60],
-	['Mall',	          'yesno',           'No'],
-	['ActionMap',		 'action',			 ''],
-	['FormAction',		 'action',			 ''],
-	['MaxServers',       'integer',          10],
-	['GlobalSub',		 'subroutine',       ''],
-	['Database',		 'database',         ''],
-	['FullUrl',			 'yesno',            'No'],
-	['Locale',			 'locale',            ''],
-	['HitCount',		 'yesno',            'No'],
-	['IpHead',			 'yesno',            'No'],
-	['IpQuad',			 'integer',          '1'],
-	['TemplateDir',      'root_dir', 	     ''],
-	['DomainTail',		 'yesno',            'Yes'],
-	['SafeSignals',	 	 'warn',             ''],
-	['AcrossLocks',		 'yesno',            'No'],
-	['PIDcheck',		 'integer',          '0'],
-    ['LockoutCommand',    undef,             ''],
-    ['SafeUntrap',       'array',            'ftfile sort'],
-	['NoAbsolute',		 'yesno',			 'No'],
-	['AllowGlobal',		 'boolean',			 ''],
-	['AddDirective',	 'directive',		 ''],
-	['UserTag',			 'tag',				 ''],
-	['AdminSub',		 'boolean',			 ''],
-	['AdminUser',		  undef,			 ''],
-	['AdminHost',		  undef,			 ''],
-    ['HammerLock',		 'integer',     	 30],
-    ['DebugMode',		 'warn',     	     ''],
-    ['DebugFile',		  undef,     	     ''],
-    ['ErrorFile',		  undef,     	     undef],
-    ['SysLog',			 'hash',     	     undef],
-    ['CheckHTML',		  undef,     	     ''],
-	['Variable',	  	 'variable',     	 ''],
-	['Profiles',	  	 'profile',     	 ''],
-    ['Catalog',			 'catalog',     	 ''],
-    ['SubCatalog',		 'catalog',     	 ''],
+	# Directive name      Parsing function    Default value
+	['ConfigDir',		 undef,		'etc/lib'],
+	['ConfigDatabase',	'config_db',	''],
+	['ConfigAllBefore',	'array',	"$Global::VendRoot/catalog_before.cfg"],
+	['ConfigAllAfter',	'array',	"$Global::VendRoot/catalog_after.cfg"],
+	['Message',		'message',	''],
+	['VarName',		'varname',	''],
+	['DumpStructure',	'yesno',	'No'],
+	['DisplayErrors',	'yesno',	'No'],
+	['TcpPort',		'warn',		''],
+	['TcpMap',		'hash',		''],
+	['Environment',		'array',	''],
+	['TcpHost',		 undef,		'localhost 127.0.0.1'],
+	['SendMailProgram',	'executable',	$Global::SendMailLocation
+											|| '/usr/lib/sendmail'],
+	['PIDfile',		 undef,		"$Global::VendRoot/etc/$Global::ExeName.pid"],
+	['SocketFile',		 undef,		"$Global::VendRoot/etc/socket"],
+	['SocketPerms',		'integer',	0600],
+	['HouseKeeping',	'integer',	60],
+	['Mall',		'yesno',	'No'],
+	['ActionMap',		'action',	''],
+	['FormAction',		'action',	''],
+	['MaxServers',		'integer',	10],
+	['GlobalSub',		'subroutine',	''],
+	['Database',		'database',	''],
+	['FullUrl',		'yesno',	'No'],
+	['Locale',		'locale',	''],
+	['HitCount',		'yesno',	'No'],
+	['IpHead',		'yesno',	'No'],
+	['IpQuad',		'integer',	'1'],
+	['TemplateDir',		'root_dir',	''],
+	['DomainTail',		'yesno',	'Yes'],
+	['SafeSignals',		'warn',		''],
+	['AcrossLocks',		'yesno',	'No'],
+	['PIDcheck',		'integer',	'0'],
+	['LockoutCommand',	 undef,		''],
+	['SafeUntrap',		'array',	'ftfile sort'],
+	['NoAbsolute',		'yesno',	'No'],
+	['AllowGlobal',		'boolean',	''],
+	['AddDirective',	'directive',	''],
+	['UserTag',		'tag',		''],
+	['AdminSub',		'boolean',	''],
+	['AdminUser',		 undef,		''],
+	['AdminHost',		 undef,		''],
+	['HammerLock',		'integer',	30],
+	['DebugMode',		'warn',		''],
+	['DebugFile',		 undef,		''],
+	['ErrorFile',		 undef,		undef],
+	['SysLog',		'hash',		undef],
+	['CheckHTML',		 undef,		''],
+	['Variable',		'variable',	''],
+	['Profiles',		'profile',	''],
+	['Catalog',		'catalog',	''],
+	['SubCatalog',		'catalog',	''],
 
-    ];
+	];
 	return $directives;
 }
 
-
 sub catalog_directives {
-
 	my $directives = [
-#   Order is somewhat important, the first 6 especially
 
-#   Directive name      Parsing function    Default value
+	# Order is somewhat important, the first 6 especially
 
-	['ErrorFile',        undef,              'error.log'],
-	['ActionMap',		 'action',			 ''],
-	['FormAction',		 'action',			 ''],
-	['PageDir',          'relative_dir',     'pages'],
-	['SpecialPageDir',   undef,     		 'special_pages'],
-	['ProductDir',       'relative_dir',     'products'],
-	['OfflineDir',       'relative_dir',     'offline'],
-	['ConfigDir',        'relative_dir',	 'config'],
-	['TemplateDir',      'dir_array', 		 ''],
-	['ConfigDatabase',	 'config_db',	     ''],
-	['Require',			 'require',			 ''],
-    ['Message',          'message',           ''],
-	['Variable',	  	 'variable',     	 ''],
-	['ScratchDefault',	 'hash',     	 	 ''],
-	['Profile',			 'hash',     	 	 ''],
-	['ValuesDefault',	 'hash',     	 	 ''],
-    ['ProductFiles',	 'array_complete',  'products'],
-    ['DisplayErrors',    'yesno',            'No'],
-    ['ParseVariables',	 'yesno',     	     'No'],
-    ['SpecialPage',		 'special',     	 'order ord/basket results results search results flypage flypage'],
-	['Sub',				 'subroutine',       ''],
-	['VendURL',          'url',              undef],
-	['SecureURL',        'url',              undef],
-	['History',          'integer',          0],
-	['OrderReport',      undef,       'etc/report'],
-	['ScratchDir',       'relative_dir',     'tmp'],
-	['SessionDB',  		 undef,     		 ''],
-	['SessionType', 	 undef,     		 'File'],
-	['SessionDatabase',  'relative_dir',     'session'],
-	['SessionLockFile',  undef,     		 'etc/session.lock'],
-	['Database',  		 'database',     	 ''],
-	['Autoload',		 undef,		     	 ''],
-	['AutoEnd',			 undef,		     	 ''],
-	['Replace',			 'replace',     	 ''],
-	['Member',		  	 'variable',     	 ''],
-	['WritePermission',  'permission',       'user'],
-	['ReadPermission',   'permission',       'user'],
-	['SessionExpire',    'time',             '1 hour'],
-	['SaveExpire',       'time',             '30 days'],
-	['MailOrderTo',      undef,              undef],
-	['SendMailProgram',  'executable',		$Global::SendMailProgram],
-	['PGP',              undef,       		 ''],
+	# Directive name      Parsing function    Default value
+	['ErrorFile',		 undef,			'error.log'],
+	['ActionMap',		'action',		''],
+	['FormAction',		'action',		''],
+	['PageDir',		'relative_dir',		'pages'],
+	['SpecialPageDir',	 undef,			'special_pages'],
+	['ProductDir',		'relative_dir',		'products'],
+	['OfflineDir',		'relative_dir',		'offline'],
+	['ConfigDir',		'relative_dir',		'config'],
+	['TemplateDir',		'dir_array',		''],
+	['ConfigDatabase',	'config_db',		''],
+	['Require',		'require',		''],
+	['Message',		'message',		''],
+	['Variable',		'variable',		''],
+	['ScratchDefault',	'hash',			''],
+	['Profile',		'hash',			''],
+	['ValuesDefault',	'hash',			''],
+	['ProductFiles',	'array_complete',	'products'],
+	['DisplayErrors',	'yesno',		'No'],
+	['ParseVariables',	'yesno',		'No'],
+	['SpecialPage',		'special',		'order ord/basket results results search results flypage flypage'],
+	['Sub',			'subroutine',		''],
+	['VendURL',		'url',			undef],
+	['SecureURL',		'url',			undef],
+	['History',		'integer',		0],
+	['OrderReport',		 undef,			'etc/report'],
+	['ScratchDir',		'relative_dir',		'tmp'],
+	['SessionDB',		 undef,			''],
+	['SessionType',		 undef,			'File'],
+	['SessionDatabase',	'relative_dir',		'session'],
+	['SessionLockFile',	 undef,			'etc/session.lock'],
+	['Database',		'database',		''],
+	['Autoload',		 undef,			''],
+	['AutoEnd',		 undef,			''],
+	['Replace',		'replace',		''],
+	['Member',		'variable',		''],
+	['WritePermission',	'permission',		'user'],
+	['ReadPermission',	'permission',		'user'],
+	['SessionExpire',	'time',			'1 hour'],
+	['SaveExpire',		'time',			'30 days'],
+	['MailOrderTo',		 undef,			undef],
+	['SendMailProgram',	'executable',		$Global::SendMailProgram],
+	['PGP',			 undef,			''],
 # GLIMPSE
-    ['Glimpse',          'executable',       ''],
+	['Glimpse',		'executable',		''],
 # END GLIMPSE
- 	['Locale',           'locale',           ''],
-    ['Route',            'locale',           ''],
-	['LocaleDatabase',    undef,             ''],
-	['DbDatabase',        'dbdatabase',        ''],
-	['RouteDatabase',     'routeconfig',        ''],
-	['DirectiveDatabase', 'dbconfig',        ''],
-	['VariableDatabase',  'dbconfig',        ''],
-    ['RequiredFields',   undef,              ''],
-    ['NoSearch',         'wildcard',         'userdb'],
-    ['OrderCounter',	 undef,     	     ''],
-    ['ImageAlias',	 	 'hash',     	     ''],
-    ['TableRestrict',	 'hash',     	     ''],
-    ['Filter',		 	 'hash',     	     ''],
-    ['ImageDirSecure',   undef,     	     ''],
-    ['ImageDirInternal', undef,     	     ''],
-    ['ImageDir',	 	 undef,     	     ''],
-    ['UseCode',		 	 undef,     	     'yes'],
-    ['SetGroup',		 'valid_group',      ''],
-    ['UseModifier',		 'array',     	     ''],
-    ['AutoModifier',	 'array',     	     ''],
-    ['LogFile', 		  undef,     	     'etc/log'],
-    ['Pragma',		 	 'boolean',     	 ''],
-    ['DynamicData', 	 'boolean',     	 ''],
-    ['NoImport',	 	 'boolean',     	 ''],
-    ['NoImportExternal', 'yesno',	     	 'no'],
-    ['CommonAdjust',	 undef,  	     	 ''],
-    ['PriceAdjustment',	 'array',  	     	 ''],
-    ['PriceBreaks',	 	 'array',  	     	 ''],
-    ['PriceDivide',	 	 undef,  	     	 1],
-    ['PriceCommas',		 'yesno',     	     'Yes'],
-    ['MixMatch',		 'yesno',     	     'No'],
-    ['DifferentSecure',	 'boolean',  	     ''],
-    ['AlwaysSecure',	 'boolean',  	     ''],
-	['Password',         undef,              ''],
-    ['ExtraSecure',		 'yesno',     	     'No'],
-    ['FallbackIP',		 'yesno',     	     'No'],
-    ['WideOpen',		 'yesno',     	     'No'],
-    ['Cookies',			 'yesno',     	     'Yes'],
-	['CookieLogin',      'yesno',            'No'],
-	['CookieDomain',     undef,              ''],
-    ['MasterHost',		 undef,     	     ''],
-    ['UserTag',			 'tag', 	    	 ''],
-    ['RemoteUser',		 undef,     	     ''],
-    ['TaxShipping',		 undef,     	     ''],
-	['FractionalItems',  'yesno',			 'No'],
-	['SeparateItems',    'yesno',			 'No'],
-    ['PageSelectField',  undef,     	     ''],
-    ['NonTaxableField',  undef,     	     ''],
-    ['CyberCash',	 	 'yesno',     	     'No'],
-    ['CreditCardAuto',	 'yesno',     	     'No'],
-    ['NoCache',	     	 'boolean',    	     ''],
-    ['ClearCache',	     'yesno',     	     'No'],
-    ['FormIgnore',	     'boolean',    	     ''],
-    ['EncryptProgram',	 undef,     	     ''],
-    ['AsciiTrack',	 	 undef,     	     ''],
-    ['TrackFile',	 	 undef,     	     ''],
-    ['SalesTax',		 undef,     	     ''],
-    ['SalesTaxFunction', undef,     	     ''],
-    ['StaticDBM',  	 	 undef,     	     ''],
-    ['Static',   	 	 'yesno',     	     'No'],
-    ['StaticAll',		 'yesno',     	     'No'],
-    ['StaticDepth',		 undef,     	     '1'],
-    ['StaticFly',		 'yesno',     	     'No'],
-    ['StaticLogged',	 'yesno',     	     'No'],
-    ['StaticDir',		 undef,     	     ''], 
-	['UserDB',			 'locale',	     	 ''], 
-	['UserDatabase',	 undef,		     	 ''],  #undocumented
-    ['RobotLimit',		 'integer',		      0],
-    ['OrderLineLimit',	 'integer',		      0],
-    ['StaticPage',		 'boolean',     	 ''],
-    ['StaticPath',		 undef,     	     '/'],
-    ['StaticPattern',	 'regex',     	     ''],
-    ['StaticSuffix',	 undef,     	     '.html'],
-    ['HTMLsuffix',	     undef,     	     '.html'],
-    ['CustomShipping',	 undef,     	     ''],
-    ['DefaultShipping',	 undef,     	     'default'],
-    ['UpsZoneFile',		 undef,     	     ''],
-    ['OrderProfile',	 'profile',     	 ''],
-    ['SearchProfile',	 'profile',     	 ''],
-    ['OnFly',		 	 undef,     	     ''],
-    ['HTMLmirror',		 'yesno',            'No'],
-    ['DescriptionField', undef,              'description'],
-    ['PriceDefault',	 undef,              'price'],
-    ['PriceField',		 undef,              'price'],
-	['Shipping',         'locale',           ''],
-    ['IPC',		 		 'array',     	 	 ''],
-    ['IPCmode',		 	 'integer',    	 	 '0777'],
-    ['IPCdir',		 	 undef,    	 	     ''],
+	['Locale',		'locale',		''],
+	['Route',		'locale',		''],
+	['LocaleDatabase',	 undef,			''],
+	['DbDatabase',		'dbdatabase',		''],
+	['RouteDatabase',	'routeconfig',		''],
+	['DirectiveDatabase',	'dbconfig',		''],
+	['VariableDatabase',	'dbconfig',		''],
+	['RequiredFields',	 undef,			''],
+	['NoSearch',		'wildcard',		'userdb'],
+	['OrderCounter',	 undef,			''],
+	['ImageAlias',		'hash',			''],
+	['TableRestrict',	'hash',			''],
+	['Filter',		'hash',			''],
+	['ImageDirSecure',	 undef,			''],
+	['ImageDirInternal',	 undef,			''],
+	['ImageDir',		 undef,			''],
+	['UseCode',		 undef,			'yes'],
+	['SetGroup',		'valid_group',		''],
+	['UseModifier',		'array',		''],
+	['AutoModifier',	'array',		''],
+	['LogFile',		 undef,			'etc/log'],
+	['Pragma',		'boolean',		''],
+	['DynamicData',		'boolean',		''],
+	['NoImport',		'boolean',		''],
+	['NoImportExternal',	'yesno',		'no'],
+	['CommonAdjust',	 undef,			''],
+	['PriceAdjustment',	'array',		''],
+	['PriceBreaks',		'array',		''],
+	['PriceDivide',		 undef,			1],
+	['PriceCommas',		'yesno',		'Yes'],
+	['MixMatch',		'yesno',		'No'],
+	['DifferentSecure',	'boolean',		''],
+	['AlwaysSecure',	'boolean',		''],
+	['Password',		 undef,			''],
+	['ExtraSecure',		'yesno',		'No'],
+	['FallbackIP',		'yesno',		'No'],
+	['WideOpen',		'yesno',		'No'],
+	['Cookies',		'yesno',		'Yes'],
+	['CookieLogin',		'yesno',		'No'],
+	['CookieDomain',	 undef,			''],
+	['MasterHost',		 undef,			''],
+	['UserTag',		'tag',			''],
+	['RemoteUser',		 undef,			''],
+	['TaxShipping',		 undef,			''],
+	['FractionalItems',	'yesno',		'No'],
+	['SeparateItems',	'yesno',		'No'],
+	['PageSelectField',	 undef,			''],
+	['NonTaxableField',	 undef,			''],
+	['CyberCash',		'yesno',		'No'],
+	['CreditCardAuto',	'yesno',		'No'],
+	['NoCache',		'boolean',		''],
+	['ClearCache',		'yesno',		'No'],
+	['FormIgnore',		'boolean',		''],
+	['EncryptProgram',	 undef,			''],
+	['AsciiTrack',		 undef,			''],
+	['TrackFile',		 undef,			''],
+	['SalesTax',		 undef,			''],
+	['SalesTaxFunction',	 undef,			''],
+	['StaticDBM',		 undef,			''],
+	['Static',		'yesno',		'No'],
+	['StaticAll',		'yesno',		'No'],
+	['StaticDepth',		 undef,			'1'],
+	['StaticFly',		'yesno',		'No'],
+	['StaticLogged',	'yesno',		'No'],
+	['StaticDir',		 undef,			''],
+	['UserDB',		'locale',		''],
+	['UserDatabase',	 undef,			''],  #undocumented
+	['RobotLimit',		'integer',		0],
+	['OrderLineLimit',	'integer',		0],
+	['StaticPage',		'boolean',		''],
+	['StaticPath',		 undef,			'/'],
+	['StaticPattern',	'regex',		''],
+	['StaticSuffix',	 undef,			'.html'],
+	['HTMLsuffix',		 undef,			'.html'],
+	['CustomShipping',	 undef,			''],
+	['DefaultShipping',	 undef,			'default'],
+	['UpsZoneFile',		 undef,			''],
+	['OrderProfile',	'profile',		''],
+	['SearchProfile',	'profile',		''],
+	['OnFly',		 undef,			''],
+	['HTMLmirror',		'yesno',		'No'],
+	['DescriptionField',	 undef,			'description'],
+	['PriceDefault',	 undef,			'price'],
+	['PriceField',		 undef,			'price'],
+	['Shipping',		'locale',		''],
+	['IPC',			'array',		''],
+	['IPCmode',		'integer',		'0777'],
+	['IPCdir',		 undef,			''],
 
-    ];
-
+	];
 	push @$directives, @$Global::AddDirective
 		if $Global::AddDirective;
 	return $directives;
 }
 
 sub set_directive {
-    my ($directive, $value, $global) = @_;
-    my $directives;
+	my ($directive, $value, $global) = @_;
+	my $directives;
 
-	if($global)	{ $directives = global_directives(); }
-	else		{ $directives = catalog_directives(); }
+	if($global) {
+		$directives = global_directives();
+	} else {
+		$directives = catalog_directives();
+	}
 
-    my ($d, $dir, $parse);
-    no strict 'refs';
-    foreach $d (@$directives) {
-        next unless (lc $directive) eq (lc $d->[0]);
-        if (defined $d->[1]) {
-            $parse = 'parse_' . $d->[1];
-        } else {
-            $parse = undef;
-        }
-        $dir = $d->[0];
-        $value = &{$parse}($dir, $value)
-            if defined $parse;
-        last;
-    }
-    return [$dir, $value] if defined $dir;
-    return undef;
+	my ($d, $dir, $parse);
+	no strict 'refs';
+	foreach $d (@$directives) {
+		next unless (lc $directive) eq (lc $d->[0]);
+		if(defined $d->[1]) {
+			$parse = 'parse_' . $d->[1];
+		} else {
+			$parse = undef;
+		}
+		$dir = $d->[0];
+		$value = &{$parse}($dir, $value)
+			if defined $parse;
+		last;
+	}
+	return [$dir, $value] if defined $dir;
+	return undef;
 }
 
 
@@ -504,10 +495,9 @@ sub evaluate_ifdef {
 	my $cond = $3;
 	my $var_ref = ! $global ? $C->{Variable} : $Global::Variable;
 #::logDebug("Variable value '$var_ref->{$var}'");
-	if (! $cond) {
+	if(! $cond) {
 		$status = ! (not $var_ref->{$var});
-	}
-	elsif ($cond) {
+	} elsif($cond) {
 		my $val = $var_ref->{$var} || '';
 		my $safe = new Safe;
 		my $code = "q{$val}" . " " . $cond;
@@ -529,13 +519,17 @@ sub evaluate_ifdef {
 # This is what happens when ParseVariables is true
 sub substitute_variable {
 	my($val) = @_;
+
 	# Return after globals so can others can be contained
 	$val =~ s/\@\@([A-Z][A-Z_0-9]+[A-Z0-9])\@\@/$Global::Variable->{$1}/g
 		and return $val;
 	return $val unless $val =~ /([_%])\1/;
+
 	1 while $val =~ s/__([A-Z][A-Z_0-9]*?[A-Z0-9])__/$C->{Variable}->{$1}/g;
+
 	# YALOS (yet another level)
 	return $val unless $val =~ /%%[A-Z]/;
+
 	$val =~ s/%%([A-Z][A-Z_0-9]+[A-Z0-9])%%/$Global::Variable->{$1}/g;
 	$val =~ s/__([A-Z][A-Z_0-9]*?[A-Z0-9])__/$C->{Variable}->{$1}/g;
 	return $val;
@@ -549,8 +543,8 @@ sub substitute_variable {
 
 sub config {
 	my($catalog, $dir, $confdir, $subconfig) = @_;
-    my($directives, $d, %parse, $var, $value, $lvar, $parse);
-    my($directive);
+	my($directives, $d, %parse, $var, $value, $lvar, $parse);
+	my($directive);
 	%CDname = ();
 	$C = {};
 	$C->{CatalogName} = $catalog;
@@ -560,20 +554,19 @@ sub config {
 	unless (defined $subconfig) {
 		$C->{ErrorFile} = 'error.log';
 		$C->{ConfigFile} = 'catalog.cfg';
-	}
-	else {
-        $C->{ConfigFile} = "$catalog.cfg";
+	} else {
+		$C->{ConfigFile} = "$catalog.cfg";
 		$C->{BaseCatalog} = $subconfig;
 	}
 
-    no strict 'refs';
+	no strict 'refs';
 
-    $directives = catalog_directives();
+	$directives = catalog_directives();
 
 	foreach $d (@$directives) {
 		($directive = $d->[0]) =~ tr/A-Z/a-z/;
 		$CDname{$directive} = $d->[0];
-		if (defined $d->[1]) {
+		if(defined $d->[1]) {
 			$parse = 'parse_' . $d->[1];
 		} else {
 			$parse = undef;
@@ -590,7 +583,7 @@ sub config {
 				 ? $d->[2]
 				 : $MV::Default{$catalog}{$d->[0]};
 
-		if (defined $parse and defined $value and ! defined $subconfig) {
+		if(defined $parse and defined $value and ! defined $subconfig) {
 			$value = &$parse($d->[0], $value);
 		}
 		$C->{$CDname{$directive}} = $value;
@@ -610,7 +603,7 @@ sub config {
 						 ;
 
 	# Backwards because of unshift;
-	for (@hidden_config) {
+	for(@hidden_config) {
 		unshift @include, $_;
 	}
 
@@ -619,7 +612,7 @@ sub config {
 							 @{$Global::ConfigAllAfter},
 						 ;
 
-	for (@hidden_config) {
+	for(@hidden_config) {
 		push @include, $_;
 	}
 
@@ -633,8 +626,7 @@ sub config {
 			my ($d, $v) = split /\s+/, $_, 2;
 			if($v =~ /\n/) {
 				$v = "<<EndOfMvD\n$v\nEndOfMvD\n";
-			}
-			else {
+			} else {
 				$v .= "\n";
 			}
 			printf CMDLINE '%-19s %s', $d, $v;
@@ -656,8 +648,7 @@ sub config {
 		# and set the $C->directive variable
 		if($tie) {
 			watch ( $CDname{$lvar}, $value );
-		}
-		else {
+		} else {
 			$C->{$CDname{$lvar}} = $value;
 		}
 	};
@@ -675,22 +666,21 @@ CONFIGLOOP:
 	# main configuration file.  If there is a file, then we
 	# will do it (after pushing the main one on @include).
 	
-    -f $configfile && open(CONFIG, "< $configfile")
+	-f $configfile && open(CONFIG, "< $configfile")
 		or do {
 			my $msg = "Could not open configuration file '" . $configfile .
 					"' for catalog '" . $catalog . "':\n$!";
 			if(defined $done_one) {
 				warn "$msg\n";
 				open (CONFIG, '');
-			}
-			else {
+			} else {
 				die "$msg\n";
 			}
 		};
 	seek(CONFIG, $tellmark, 0) if $tellmark;
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
-    while(<CONFIG>) {
+	while(<CONFIG>) {
 		chomp;			# zap trailing newline,
 		if(/^#endif\s*$/) {
 			undef $ifdef;
@@ -730,7 +720,7 @@ CONFIGLOOP:
 		($lvar = $var) =~ tr/A-Z/a-z/;
 		my($codere) = '[-\w_#/.:]+';
 
-		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
+		if($value =~ /^(.*)<<(\w+)\s*/) {				# "here" value
 			my $begin  = $1 || '';
 			$begin .= "\n" if $begin;
 			my $mark  = $2;
@@ -740,8 +730,7 @@ CONFIGLOOP:
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
 			}
-		}
-		elsif ($value =~ /^(.*)<&(\w+)\s*/) {                # "here sub" value
+		} elsif($value =~ /^(.*)<&(\w+)\s*/) {				# "here sub" value
 			my $begin  = $1 || '';
 			$begin .= "\n" if $begin;
 			my $mark  = $2;
@@ -751,10 +740,9 @@ CONFIGLOOP:
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
 			}
-			if ($CanTie) {
+			if($CanTie) {
 				$tie = 1;
-			}
-			else {
+			} else {
 				config_warn errmsg(
 					"No Tie::Watch module installed at %s, setting %s to default.",
 								$startline,
@@ -762,8 +750,7 @@ CONFIGLOOP:
 							);
 				$value = '';
 			}
-		}
-		elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
+		} elsif($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {		# read from file
 			$value = $1 || '';
 			my $file = $3;
 			$value .= "\n" if $value;
@@ -830,7 +817,7 @@ EOF
 				unless defined $status;
 
 			# use extended value field if necessary or directed
-			if (length($value) > 250 or $UseExtended{$nm}) {
+			if(length($value) > 250 or $UseExtended{$nm}) {
 				$extended = $value;
 				$extended =~ s/(\S+)\s*//;
 				$value = $1 || '';
@@ -847,9 +834,9 @@ EOF
 			$recno++;
 		}
 		
-    }
+	}
 	$done_one = 1;
-    close CONFIG;
+	close CONFIG;
 
 	# See if we have an active configuration database
 	if($C->{ConfigDatabase}->{ACTIVE}) {
@@ -882,7 +869,7 @@ EOF
 
 } # end CONFIGLOOP
 
-    # check for unspecified directives that don't have default values
+	# check for unspecified directives that don't have default values
 
 	# but set some first if appropriate
 	set_defaults();
@@ -891,7 +878,7 @@ EOF
 		last REQUIRED if defined $subconfig;
 		last REQUIRED if defined $Vend::ExternalProgram;
 		foreach $var (keys %CDname) {
-			if (! defined $C->{$CDname{$var}}) {
+			if(! defined $C->{$CDname{$var}}) {
 				my $msg = errmsg(
 					"Please specify the %s directive in the configuration file '%s'",
 					$CDname{$var},
@@ -914,13 +901,13 @@ sub read_here {
 	my $startline = $.;
 	my $value = '';
 	while (<$handle>) {
-		if ($_ =~ m{^$marker$}) {
+		if($_ =~ m{^$marker$}) {
 			$foundeot = 1;
 			last;
 		}
 		$value .= $_;
 	}
-    return undef unless $foundeot;
+	return undef unless $foundeot;
 	#untaint
 	$value =~ /([\000-\377]*)/;
 	$value = $1;
@@ -934,21 +921,21 @@ sub read_here {
 # in the config file.
 
 sub global_config {
-    my($directives, $d, %name, %parse, $var, $value, $lvar, $parse);
-    my($directive, $seen_catalog);
-    no strict 'refs';
+	my($directives, $d, %name, %parse, $var, $value, $lvar, $parse);
+	my($directive, $seen_catalog);
+	no strict 'refs';
 
-    $directives = global_directives();
+	$directives = global_directives();
 
 	$Global::Structure = {} unless $Global::Structure;
 
 	# Prevent parsers from thinking it is a catalog
 	undef $C;
 
-    foreach $d (@$directives) {
+	foreach $d (@$directives) {
 		($directive = $d->[0]) =~ tr/A-Z/a-z/;
 		$name{$directive} = $d->[0];
-		if (defined $d->[1]) {
+		if(defined $d->[1]) {
 			$parse = 'parse_' . $d->[1];
 		} else {
 			$parse = undef;
@@ -962,11 +949,11 @@ sub global_config {
 				 ? $d->[2]
 				 : $MV::Default{mv_global}{$d->[0]};
 
-		if (defined $DumpSource{$name{$directive}}) {
+		if(defined $DumpSource{$name{$directive}}) {
 			$Global::Structure->{ $name{$directive} } = $value;
 		}
 
-		if (defined $parse and defined $value) {
+		if(defined $parse and defined $value) {
 			$value = &$parse($d->[0], $value);
 		}
 
@@ -976,8 +963,7 @@ sub global_config {
 			$Global::Structure->{ $name{$directive} } = $value
 				unless defined $DontDump{ $name{$directive} };
 		}
-
-    }
+	}
 
 	my (@include) = $Global::ConfigFile; 
 
@@ -995,7 +981,7 @@ sub global_config {
 		$parse = $parse{$lvar};
 					# call the parsing function for this directive
 
-		if (defined $DumpSource{$name{$directive}}) {
+		if(defined $DumpSource{$name{$directive}}) {
 			$Global::Structure->{ $name{$directive} } = $value;
 		}
 
@@ -1014,7 +1000,7 @@ GLOBLOOP:
 #print "recalling $configfile (pos $tellmark)\n";
 		}
 
-    -f $configfile && open(GLOBAL, "< $configfile")
+	-f $configfile && open(GLOBAL, "< $configfile")
 		or do {
 			my $msg = errmsg(
 						"Could not open global configuration file '%s': %s",
@@ -1024,15 +1010,14 @@ GLOBLOOP:
 			if(defined $done_one) {
 				warn "$msg\n";
 				open (GLOBAL, '');
-			}
-			else {
+			} else {
 				die "$msg\n";
 			}
 		};
 	seek(GLOBAL, $tellmark, 0) if $tellmark;
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
-    while(<GLOBAL>) {
+	while(<GLOBAL>) {
 		if(/^#endif\s*$/) {
 			undef $ifdef;
 			undef $begin_ifdef;
@@ -1074,7 +1059,7 @@ GLOBLOOP:
 		($lvar = $var) =~ tr/A-Z/a-z/;
 		my($codere) = '[-\w_#/.]+';
 
-		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
+		if($value =~ /^(.*)<<(\w+)\s*/) {				# "here" value
 			my $begin  = $1 || '';
 			$begin .= "\n" if $begin;
 			my $mark = $2;
@@ -1084,8 +1069,7 @@ GLOBLOOP:
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
 			}
-		}
-		elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
+		} elsif($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {		# read from file
 			$value = $1 || '';
 			my $file = $3;
 			$value .= "\n" if $value;
@@ -1110,20 +1094,19 @@ GLOBLOOP:
 		}
 
 		&$read($lvar, $value);
-
-   }
-    close GLOBAL;
+	}
+	close GLOBAL;
 	$done_one = 1;
 } # end GLOBLOOP;
 
-    # check for unspecified directives that don't have default values
-    foreach $var (keys %name) {
+	# check for unspecified directives that don't have default values
+	foreach $var (keys %name) {
 		last if defined $Vend::ExternalProgram;
-        if (!defined ${'Global::' . $name{$var}}) {
-            die "Please specify the $name{$var} directive in the\n" .
-            "configuration file '$Global::ConfigFile'\n";
-        }
-    }
+		if(!defined ${'Global::' . $name{$var}}) {
+			die "Please specify the $name{$var} directive in the\n" .
+			"configuration file '$Global::ConfigFile'\n";
+		}
+	}
 
 	# Inits Global UserTag entries
 	ADDTAGS: {
@@ -1135,6 +1118,137 @@ GLOBLOOP:
 	return 1;
 }
 
+sub config_named_catalog {
+	my ($cat_name, $source, $build) = @_;
+	my ($g,$c,$conf);
+
+	$g = $Global::Catalog{$cat_name};
+	unless (defined $g) {
+		logGlobal( "Can't find catalog '%s'" , $cat_name );
+		return undef;
+	}
+
+	$Vend::Log_suppress = 1;
+	logGlobal( "Config '%s' %s", $g->{'name'}, $source )
+		unless $Vend::Quiet;
+	undef $Vend::Log_suppress;
+
+	chdir $g->{'dir'}
+		or die "Couldn't change to $g->{'dir'}: $!\n";
+	$conf = $g->{'dir'} . '/etc';
+	eval {
+		$c = config($g->{'name'},
+					$g->{'dir'},
+					$conf,
+					$g->{'base'} || undef,
+# OPTION_EXTENSION
+#					$Vend::CommandLine->{$g->{'name'}} || undef
+# END OPTION_EXTENSION
+					);
+	};
+
+	if($@) {
+		my $msg = $@;
+		logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
+		return undef;
+	}
+
+	return $c if defined $g->{'base'};
+
+	eval {
+		$Vend::Cfg = $c;	
+# STATICPAGE
+		READSTATIC: {
+			my $basedir = $c->{PageDir};
+			if($c->{Static}) {
+				last READSTATIC if $c->{StaticDBM};
+				last READSTATIC if ! -f "$basedir/.static";
+				print "loading static page names..." unless $Vend::Quiet;
+				last READSTATIC if $c->{StaticDBM};
+				open STATICPAGE, "< $basedir/.static"
+					or warn <<EOF;
+Couldn't read static page status file $basedir/.static: $!
+EOF
+				while(<STATICPAGE>) {
+					chomp;
+					s/\t(.*)//;
+					$c->{StaticPage}->{$_} = $1 || '';
+				}
+				close STATICPAGE;
+			}
+		}
+# END STATICPAGE
+		$::Variable = $Vend::Cfg->{Variable};
+		Vend::Data::read_salestax();
+		Vend::Data::read_shipping();
+		open_database(1);
+		my $db;
+
+		LREAD: {
+			last LREAD unless $db = $Vend::Cfg->{LocaleDatabase};
+			$db = database_exists_ref($db)
+				or last LREAD;
+			$db = $db->ref();
+			my ($k, @f);	# key and fields
+			my @l;			# refs to locale repository
+			my @n;			# names of locales
+
+			@n = $db->columns();
+			my $extra;
+			for(@n) {
+				$Vend::Cfg->{Locale_repository}{$_} = {}
+					unless $Vend::Cfg->{Locale_repository}{$_};
+				push @l, $Vend::Cfg->{Locale_repository}{$_};
+			}
+			my $i;
+			while( ($k , @f ) = $db->each_record) {
+				for ($i = 0; $i < @f; $i++) {
+					next unless length($f[$i]);
+					$l[$i]->{$k} = $f[$i];
+				}
+			}
+			unless ($Vend::Cfg->{Locale}) {
+				for(@n) {
+					next unless $Vend::Cfg->{Locale_repository}{$_}{'default'};
+					$Vend::Cfg->{DefaultLocale} = $_;
+					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$_};
+					last;
+				}
+				unless ($Vend::Cfg->{Locale}) {
+					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$n[0]};
+					$Vend::Cfg->{DefaultLocale} = $n[0];
+				}
+			}
+		}
+
+		close_database();
+	};
+
+	undef $Vend::Cfg;
+	undef $Vend::BuildingPages;  # In case of eval error
+	if($@) {
+		my $msg = $@;
+		$msg =~ s/\s+$//;
+		logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
+		return undef;
+	}
+
+	if($c->{IPC}) {
+		my $dir = '.';
+		$dir = $c->{IPCdir} if $c->{IPCdir};
+		dump_structure($c, "$dir/$g->{name}");
+		chmod($c->{IPCmode} | 0644 , "$dir/$g->{name}")
+	}
+	dump_structure($c, $g->{name}) if $Global::DumpStructure;
+
+	undef $c->{Source};
+	my $stime = scalar localtime();
+	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
+	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
+
+	return $c;
+}
+
 # Use Tie::Watch to attach subroutines to config variables
 sub watch {
 	my($name, $value) = @_;
@@ -1144,13 +1258,11 @@ sub watch {
 #::logDebug("watch ref=array");
 		$ref = $C->{$name};
 		$orig = [ @{ $C->{$name} } ];
-	}
-	elsif(ref($C->{$name}) =~ /HASH/) {
+	} elsif(ref($C->{$name}) =~ /HASH/) {
 #::logDebug("watch ref=hash");
 		$ref = $C->{$name};
 		$orig = { %{ $C->{$name} } };
-	}
-	else {
+	} else {
 #::logDebug("watch ref=scalar");
 		$ref = \$C->{$name};
 		$orig = $C->{$name};
@@ -1180,13 +1292,12 @@ sub parse_action {
 	my $c;
 	if(defined $C) {
 		$c = $C->{$var};
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$var"};
 		
 	}
-	if (defined $C and ! $c->{_mvsafe}) {
+	if(defined $C and ! $c->{_mvsafe}) {
 		my $calc = Vend::Interpolate::reset_calc();
 		$c->{_mvsafe} = $calc;
 	}
@@ -1200,8 +1311,7 @@ sub parse_action {
 		$c->{$name} = $Global::GlobalSub->{$_}
 			if defined $Global::GlobalSub->{$_};
 		return $c;
-	}
-	elsif ( $sub !~ /^sub\b/) {
+	} elsif( $sub !~ /^sub\b/) {
 		my $code = <<EOF;
 sub {
 				return Vend::Interpolate::interpolate_html(<<EndOfThisHaiRYTHING);
@@ -1210,12 +1320,10 @@ EndOfThisHaiRYTHING
 }
 EOF
 		$c->{$name} = eval $code;
-	}
-	elsif (! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
+	} elsif(! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
 		package Vend::Interpolate;
 		$c->{$name} = eval $sub;
-	}
-	else {
+	} else {
 		package Vend::Interpolate;
 		$c->{$name} = $c->{_mvsafe}->reval($sub);
 	}
@@ -1223,7 +1331,6 @@ EOF
 		config_warn(errmsg("Action '%s' did not compile correctly.", $name));
 	}
 	return $c;
-	
 }
 
 # Checks to see if a globalsub, sub, or usertag is present
@@ -1238,12 +1345,10 @@ sub parse_require {
 	if($val =~ s/^globalsub\s+//i) {
 		$require = $Global::GlobalSub;
 		$name = 'GlobalSub';
-	}
-	elsif($val =~ s/^sub\s+//i) {
+	} elsif($val =~ s/^sub\s+//i) {
 		$require = $C->{Sub};
 		$name = 'Sub';
-	}
-	elsif($val =~ s/^usertag\s+//i) {
+	} elsif($val =~ s/^usertag\s+//i) {
 		$require = $Global::UserTag->{Routine};
 		$name = 'UserTag';
 	}
@@ -1266,7 +1371,7 @@ INITVARS: {
 }
 
 sub parse_varname {
-    my($item,$settings) = @_;
+	my($item,$settings) = @_;
 	my($iv,$vn,$k,$v,@set);
 #logDebug("parse_varname: $settings");
 	if(defined $C) {
@@ -1275,14 +1380,12 @@ sub parse_varname {
 		$C->{VN} = { %{$Global::VN} } if ! $C->{VN};
 		$iv = $C->{IV};
 		$vn = $C->{VN};
-	}
-	else {
-		if (! $Global::VarName) {
+	} else {
+		if(! $Global::VarName) {
 			unless (-s "$Global::ConfDir/varnames" && -r _) {
 				$settings = $Varnames . "\n$settings";
 				Vend::Util::writefile("$Global::ConfDir/varnames", $Varnames);
-			}
-			else {
+			} else {
 				$settings = Vend::Util::readfile("$Global::ConfDir/varnames");
 			}
 		}
@@ -1293,7 +1396,7 @@ sub parse_varname {
 		$vn = $Global::VN;
 	}
 
-    @set = grep /\S/, split /\s+/, $settings;
+	@set = grep /\S/, split /\s+/, $settings;
 	while( $k = shift @set, $v = shift @set ) {
 		$vn->{$k} = $v;
 		$iv->{$v} = $k;
@@ -1304,7 +1407,7 @@ sub parse_varname {
 
 # Allow addition of a new catalog directive
 sub parse_directive {
-    my($name, $val) = @_;
+	my($name, $val) = @_;
 
 	return '' unless $val;
 	my($dir, $parser, $default) = split /\s+/, $val, 3 ;
@@ -1317,11 +1420,11 @@ sub parse_directive {
 
 # Allow a subcatalog value to completely replace a base value
 sub parse_replace {
-    my($name, $val) = @_;
+	my($name, $val) = @_;
 
 	return {} unless $val;
 
-    $C->{$val} = get_catalog_default($val);
+	$C->{$val} = get_catalog_default($val);
 	$C->{$name}->{$val} = 1;
 	$C->{$name};
 }
@@ -1330,11 +1433,11 @@ sub parse_replace {
 # Send a message during configuration, goes to terminal if during
 # daemon startup, always goes to error log
 sub parse_message {
-    my($name, $val) = @_;
+	my($name, $val) = @_;
 
 	return '' unless $val;
 
-    ::logGlobal({level => 'info'},
+	::logGlobal({level => 'info'},
 				errmsg($val,
 						$name,
 						$.,
@@ -1346,11 +1449,11 @@ sub parse_message {
 
 # Warn about directives no longer supported in the configuration file.
 sub parse_warn {
-    my($name, $val) = @_;
+	my($name, $val) = @_;
 
 	return '' unless $val;
 
-    ::logGlobal({level => 'info'},
+	::logGlobal({level => 'info'},
 				errmsg("Directive %s no longer supported at line %s of %s.",
 						$name,
 						$.,
@@ -1373,8 +1476,7 @@ sub parse_boolean {
 
 	if(defined $C) {
 		$c = $C->{$item} || {};
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$item"} || {};
 	}
@@ -1397,18 +1499,17 @@ use POSIX qw(
 # the moment).  Otherwise uses US-English settings if not set.
 #
 sub parse_locale {
-    my($item,$settings) = @_;
+	my($item,$settings) = @_;
 	return ($settings || '') unless $settings =~ /[^\d.]/;
 	$settings = '' if "\L$settings" eq 'default';
-    my $name;
-    my ($c, $store);
+	my $name;
+	my ($c, $store);
 	if(defined $C) {
 		$c = $C->{$item} || { };
 		$C->{$item . "_repository"} = {}
 			unless $C->{$item . "_repository"};
 		$store = $C->{$item . "_repository"};
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$item"} || {};
 		${"Global::$item" . "_repository"} = {}
@@ -1416,22 +1517,21 @@ sub parse_locale {
 		$store = ${"Global::$item" . "_repository"};
 	}
 
-    # Try POSIX first if Locale.
-    $name = POSIX::setlocale(POSIX::LC_ALL, $settings)
+	# Try POSIX first if Locale.
+	$name = POSIX::setlocale(POSIX::LC_ALL, $settings)
 		if $item eq 'Locale';
 
 	my ($eval, $safe);
-    if (defined $name and $name and $item eq 'Locale') {
-        $c = POSIX::localeconv();
-        $c->{mon_thousands_sep} = ','
-            unless $c->{mon_thousands_sep};
-        $c->{decimal_point} = '.'
-            unless $c->{decimal_point};
-        $c->{frac_digits} = 2
-            unless defined $c->{frac_digits};
+	if(defined $name and $name and $item eq 'Locale') {
+		$c = POSIX::localeconv();
+		$c->{mon_thousands_sep} = ','
+			unless $c->{mon_thousands_sep};
+		$c->{decimal_point} = '.'
+			unless $c->{decimal_point};
+		$c->{frac_digits} = 2
+			unless defined $c->{frac_digits};
 		$store->{$name} = $c;
-    }
-    elsif ($settings =~ s/^\s*(\w+)\s+//) {
+	} elsif($settings =~ s/^\s*(\w+)\s+//) {
 		$name = $1;
 
 		undef $eval;
@@ -1449,25 +1549,23 @@ sub parse_locale {
 #				printf "%-5s %-16s %s\n", $name, $_, $store->{$name}{$_};
 #			}
 #		}
-        my($sethash);
-		if ($eval) {
+		my($sethash);
+		if($eval) {
 			$sethash = $safe->reval($settings)
 				or config_warn(errmsg("bad Locale setting in %s: %s", $name,$settings)),
 						$sethash = {};
-		}
-		elsif(index($settings, "\n") > -1) {
+		} elsif(index($settings, "\n") > -1) {
 			$settings =~ s/^(\S+\s+)"([\000-\377]*)"\s+$/$1$2/;
 			$sethash = {};
 			%{$sethash} = split(/\s+/, $settings, 2);
-		}
-		else {
+		} else {
 			$sethash = {};
 			%{$sethash} = Text::ParseWords::shellwords($settings);
 		}
 		$c = $store->{$name} || {};
-        for (keys %{$sethash}) {
-            $c->{$_} = $sethash->{$_};
-        }
+		for (keys %{$sethash}) {
+			$c->{$_} = $sethash->{$_};
+		}
 		if($item eq 'Locale') {
 			$Vend::Cfg->{DefaultLocale} = $name;
 			$c->{mon_thousands_sep} = ','
@@ -1477,14 +1575,13 @@ sub parse_locale {
 			$c->{frac_digits} = 2
 				unless defined $c->{frac_digits};
 		}
-    }
-    else {
-        config_error("Bad locale setting $settings.\n");
-    }
+	} else {
+		config_error("Bad locale setting $settings.\n");
+	}
 
 	$store->{$name} = $c unless $store->{$name};
 
-    return $c;
+	return $c;
 }
 
 #
@@ -1501,8 +1598,7 @@ sub parse_structure {
 	if(defined $C) {
 		$c = $C->{$item};
 		$e = $c->{$key} || { };
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$item"};
 		$e = $c->{$key} || {};
@@ -1549,8 +1645,7 @@ sub parse_hash {
 
 	if(defined $C) {
 		$c = $C->{$item} || {};
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$item"} || {};
 	}
@@ -1565,7 +1660,6 @@ sub parse_hash {
 
 # Set up illegal values for certain directives
 my %IllegalValue = (
-
 		AutoModifier => { qw/   mv_mi 1
 								mv_si 1
 								mv_ib 1
@@ -1626,7 +1720,7 @@ my %Default = (
 		ProductFiles => sub {
 							shift;
 							my $setting = $C->{ProductFiles};
-							if (defined $C->{Variable}{MV_DEFAULT_SEARCH_FILE}
+							if(defined $C->{Variable}{MV_DEFAULT_SEARCH_FILE}
 								and  ! ref $C->{Variable}{MV_DEFAULT_SEARCH_FILE})
 							{
 								$C->{Variable}{MV_DEFAULT_SEARCH_FILE} =
@@ -1640,8 +1734,7 @@ my %Default = (
 								if( defined $Vend::Cfg->{OnlyProducts} ) {
 									undef $Vend::Cfg->{OnlyProducts};
 									next;
-								}
-								else {
+								} else {
 									$Vend::Cfg->{OnlyProducts} = 
 										$C->{Database}{$_}{'name'};
 								}
@@ -1683,8 +1776,7 @@ sub parse_array {
 
 	if(defined $C) {
 		$c = $C->{$item} || [];
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$item"} || [];
 	}
@@ -1712,7 +1804,7 @@ sub parse_array_complete {
 }
 # Make a dos-ish regex into a Perl regex, check for errors
 sub parse_wildcard {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 
 	$value =~ s/\./\\./g;
 	$value =~ s/\*/.*/g;
@@ -1726,14 +1818,14 @@ sub parse_wildcard {
 	if($@) {
 		config_error("Bad regular expression in $var.");
 	}
-    return $value;
+	return $value;
 }
 
 
 # Check that a regex won't cause a syntax error. Uses m{}, which
 # should be used for all user-input regexes.
 sub parse_regex {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 
 	eval {  
 		my $never = 'NeVAirBE';
@@ -1743,33 +1835,33 @@ sub parse_regex {
 	if($@) {
 		config_error("Bad regular expression in $var.");
 	}
-    return $value;
+	return $value;
 }
 
 # Prepend the Global::VendRoot pathname to the relative directory specified,
 # unless it already starts with a leading /.
 
 sub parse_root_dir {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 	return [] unless $value;
-    $value = "$Global::VendRoot/$value"
+	$value = "$Global::VendRoot/$value"
 		unless Vend::Util::file_name_is_absolute($value);
-    $value =~ s./+$..;
+	$value =~ s./+$..;
 	no strict 'refs';
-    my $c = ${"Global::$var"} || [];
-    push @$c, $value;
+	my $c = ${"Global::$var"} || [];
+	push @$c, $value;
 	return $c;
 }
 
 sub parse_dir_array {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 	return [] unless $value;
-    $value = "$C->{VendRoot}/$value"
+	$value = "$C->{VendRoot}/$value"
 		unless Vend::Util::file_name_is_absolute($value);
-    $value =~ s./+$..;
-    $C->{$var} = [] unless $C->{$var};
-    my $c = $C->{$var} || [];
-    push @$c, $value;
+	$value =~ s./+$..;
+	$C->{$var} = [] unless $C->{$var};
+	my $c = $C->{$var} || [];
+	push @$c, $value;
 	return $c;
 }
 
@@ -1777,38 +1869,36 @@ sub parse_dir_array {
 # unless it already starts with a leading /.
 
 sub parse_relative_dir {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 
 	config_error(
 	  "No leading / allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if Vend::Util::file_name_is_absolute($value) and $Global::NoAbsolute;
+	) if Vend::Util::file_name_is_absolute($value) and $Global::NoAbsolute;
 	config_error(
 	  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if $value =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+	) if $value =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
 
-    $value = "$C->{VendRoot}/$value"
+	$value = "$C->{VendRoot}/$value"
 		unless Vend::Util::file_name_is_absolute($value);
-    $value =~ s./+$..;
-    $value;
+	$value =~ s./+$..;
+	$value;
 }
 
 # Ensure only an integer value in the directive
 sub parse_integer {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 	$value = hex($value) if $value =~ /^0x[\dA-Fa-f]+$/;
 	$value = oct($value) if $value =~ /^0[0-7]+$/;
-    config_error("The $var directive (now set to '$value') must be an integer\n")
+	config_error("The $var directive (now set to '$value') must be an integer\n")
 		unless $value =~ /^\d+$/;
-    $value;
+	$value;
 }
 
 # Make sure no trailing slash in VendURL etc.
 sub parse_url {
-    my($var, $value) = @_;
-    $value =~ s,/+$,,;
-    $value;
+	my($var, $value) = @_;
+	$value =~ s,/+$,,;
+	$value;
 }
 
 # Parses a time specification such as "1 day" and returns the
@@ -1816,62 +1906,59 @@ sub parse_url {
 # not be parsed.
 
 sub time_to_seconds {
-    my($str) = @_;
-    my($n, $dur);
+	my($str) = @_;
+	my($n, $dur);
 
-    ($n, $dur) = ($str =~ m/(\d+)[\s\0]*(\w+)?/);
-    return undef unless defined $n;
-    if (defined $dur) {
-	$_ = $dur;
-	if (m/^s|sec|secs|second|seconds$/i) {
-	} elsif (m/^m|min|mins|minute|minutes$/i) {
-	    $n *= 60;
-	} elsif (m/^h|hour|hours$/i) {
-	    $n *= 60 * 60;
-	} elsif (m/^d|day|days$/i) {
-	    $n *= 24 * 60 * 60;
-	} elsif (m/^w|week|weeks$/i) {
-	    $n *= 7 * 24 * 60 * 60;
-	} else {
-	    return undef;
+	($n, $dur) = ($str =~ m/(\d+)[\s\0]*(\w+)?/);
+	return undef unless defined $n;
+	if(defined $dur) {
+		$_ = $dur;
+		if(m/^s|sec|secs|second|seconds$/i) {
+		} elsif(m/^m|min|mins|minute|minutes$/i) {
+			$n *= 60;
+		} elsif(m/^h|hour|hours$/i) {
+			$n *= 60 * 60;
+		} elsif(m/^d|day|days$/i) {
+			$n *= 24 * 60 * 60;
+		} elsif(m/^w|week|weeks$/i) {
+			$n *= 7 * 24 * 60 * 60;
+		} else {
+			return undef;
+		}
 	}
-    }
 
-    $n;
+	$n;
 }
 
 sub parse_valid_group {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 
 	return '' unless $value;
 
 	my($name,$passwd,$gid,$members) = getgrnam($value);
 
-    config_error("$var: Group name '$value' is not a valid group\n")
+	config_error("$var: Group name '$value' is not a valid group\n")
 		unless defined $gid;
 	$name = getpwuid($<);
-    config_error("$var: Interchange user '$name' not in group '$value'\n")
+	config_error("$var: Interchange user '$name' not in group '$value'\n")
 		unless $members =~ /\b$name\b/;
-    $gid;
+	$gid;
 }
 
 sub parse_executable {
-    my($var, $value) = @_;
-    my($x);
+	my($var, $value) = @_;
+	my($x);
 	my $root = $value;
 	$root =~ s/\s.*//;
 
 	return $value if $Global::Windows;
 	if( ! defined $value or $value eq '') {
 		$x = '';
-	}
-	elsif( $value eq 'none') {
+	} elsif( $value eq 'none') {
 		$x = 'none';
-	}
-	elsif ($root =~ m#^/# and -x $root) {
+	} elsif($root =~ m#^/# and -x $root) {
 		$x = $value;
-	}
-	else {
+	} else {
 		my @path = split /:/, $ENV{PATH};
 		for (@path) {
 			next unless -x "$_/$root";
@@ -1879,21 +1966,21 @@ sub parse_executable {
 		}
 	}
 
-    config_error("Can't find executable ('$value') for the $var directive\n")
+	config_error("Can't find executable ('$value') for the $var directive\n")
 		unless defined $x;
-    $x;
+	$x;
 }
 
 sub parse_time {
-    my($var, $value) = @_;
-    my($n);
+	my($var, $value) = @_;
+	my($n);
 
 	$C->{Source}->{$var} = [$value];
 
-    $n = time_to_seconds($value);
-    config_error("Bad time format ('$value') in the $var directive\n")
-	unless defined $n;
-    $n;
+	$n = time_to_seconds($value);
+	config_error("Bad time format ('$value') in the $var directive\n")
+		unless defined $n;
+	$n;
 }
 
 # Determine catalog structure from Catalog config line(s)
@@ -1918,13 +2005,12 @@ sub parse_catalog {
 					/;
 
 	my ($cat, $key, $value);
-	if ($Global::Catalog{$name}) {
+	if($Global::Catalog{$name}) {
 		# already defined
 		$cat   = $Global::Catalog{$name};
 		$key   = shift @rest;
 		$value = shift @rest;
-	}
-	elsif(
+	} elsif(
 			$var =~ /subcatalog/i and
 			@rest > 2
 			and file_name_is_absolute($rest[1]) 
@@ -1939,8 +2025,7 @@ sub parse_catalog {
 		splice(@rest, 0, 3);
 		$cat->{alias} = [ @rest ]
 			if @rest;
-	}
-	elsif( file_name_is_absolute($rest[0]) ) {
+	} elsif( file_name_is_absolute($rest[0]) ) {
 		$cat = {
 			name   => $name,
 			dir    => $rest[0],
@@ -1949,8 +2034,7 @@ sub parse_catalog {
 		splice(@rest, 0, 2);
 		$cat->{alias} = [ @rest ]
 			if @rest;
-	}
-	else {
+	} else {
 		$key   = shift @rest;
 		$value = shift @rest;
 		$cat = { name   => $name };
@@ -1960,16 +2044,13 @@ sub parse_catalog {
 
 	if(! $key) {
 		# Nada
-	}
-	elsif($key eq 'alias' or $key eq 'server') {
+	} elsif($key eq 'alias' or $key eq 'server') {
 		$cat->{$key} = [] if ! $cat->{$key};
 		push @{$cat->{$key}}, $value;
 		push @{$cat->{$key}}, @rest if @rest;
-	}
-	elsif($key eq 'global') {
+	} elsif($key eq 'global') {
 		$cat->{$key} = $Global::AllowGlobal{$name} = is_yes($value);
-	}
-	elsif($key eq 'directive') {
+	} elsif($key eq 'directive') {
 		no strict 'refs';
 		my $p = $value;
 		my $v = join " ", @rest;
@@ -1983,12 +2064,10 @@ sub parse_catalog {
 			for (keys %{$ref->[1]}) {
 				$cat->{$key}{$ref->[0]}{$_} = $ref->[1]->{$_};
 			}
-		}
-		else {
+		} else {
 			$cat->{$key}{$ref->[0]} = $ref->[1];
 		}
-	}
-	else {
+	} else {
 		$cat->{$key} = $value;
 	}
 
@@ -2016,7 +2095,7 @@ my %Ary_ref = (   qw!
 					! );
 
 sub parse_config_db {
-    my($name, $value) = @_;
+	my($name, $value) = @_;
 	my ($d, $new);
 	unless (defined $value && $value) { 
 		$d = {};
@@ -2025,8 +2104,7 @@ sub parse_config_db {
 
 	if($C) {
 		$d = $C->{ConfigDatabase};
-	}
-	else {
+	} else {
 		$d = $Global::ConfigDatabase;
 	}
 
@@ -2039,45 +2117,35 @@ sub parse_config_db {
 		$d->{'file'} = $file;
 		if(		$type =~ /^\d+$/	) {
 			$d->{'type'} = $type;
-		}
-		elsif(	$type =~ /^(dbi|sql)\b/i	) {
+		} elsif(	$type =~ /^(dbi|sql)\b/i	) {
 			$d->{'type'} = 8;
 			if($type =~ /^dbi:/) {
 				$d->{DSN} = $type;
 			}
-		}
 # LDAP
-		elsif(	$type =~ /^ldap\b/i) {
+		} elsif(	$type =~ /^ldap\b/i) {
 			$d->{'type'} = 9;
 			if($type =~ /^ldap:(.*)/i) {
 				$d->{LDAP_HOST} = $1;
 			}
-		}
 # END LDAP
-		elsif(	"\U$type" eq 'TAB'	) {
+		} elsif(	"\U$type" eq 'TAB'	) {
 			$d->{'type'} = 6;
-		}
-		elsif(	"\U$type" eq 'PIPE'	) {
+		} elsif(	"\U$type" eq 'PIPE'	) {
 			$d->{'type'} = 5;
-		}
-		elsif(	"\U$type" eq 'CSV'	) {
+		} elsif(	"\U$type" eq 'CSV'	) {
 			$d->{'type'} = 4;
-		}
-		elsif(	"\U$type" eq 'DEFAULT'	) {
+		} elsif(	"\U$type" eq 'DEFAULT'	) {
 			$d->{'type'} = 1;
-		}
-		elsif(	$type =~ /[%]{1,3}|percent/i	) {
+		} elsif(	$type =~ /[%]{1,3}|percent/i	) {
 			$d->{'type'} = 3;
-		}
-		elsif(	$type =~ /line/i	) {
+		} elsif(	$type =~ /line/i	) {
 			$d->{'type'} = 2;
-		}
-		else {
+		} else {
 			$d->{'type'} = 1;
 			$d->{DELIMITER} = $type;
 		}
-	}
-	else {
+	} else {
 		my($p, $val) = split /\s+/, $remain, 2;
 		$p = uc $p;
 
@@ -2090,13 +2158,11 @@ sub parse_config_db {
 				($k,$v) = split /\s*=\s*/, $_;
 				$d->{$p}->{$k} = $v;
 			}
-		}
-		elsif(defined $Ary_ref{$p}) {
+		} elsif(defined $Ary_ref{$p}) {
 			my(@v) = Text::ParseWords::shellwords($val);
 			$d->{$p} = [] unless defined $d->{$p};
 			push @{$d->{$p}}, @v;
-		}
-		else {
+		} else {
 			config_warn errmsg(
 				"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
 							$p,
@@ -2113,8 +2179,7 @@ sub parse_config_db {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
 			or config_error("Config database $name failed import.\n");
-	}
-	elsif($d->{LOAD} and ! $d->{OBJECT}) {
+	} elsif($d->{LOAD} and ! $d->{OBJECT}) {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
 			or config_error("Config database $name failed import.\n");
@@ -2124,14 +2189,13 @@ sub parse_config_db {
 	}
 
 	return $d;
-	
 }
 
 sub parse_database {
 	my ($var, $value) = @_;
 	my ($c, $new);
 
-	if (! $value) {
+	if(! $value) {
 		$c = {};
 		return $c;
 	}
@@ -2153,51 +2217,45 @@ sub parse_database {
 		$d->{'file'} = $file;
 		if(		$type =~ /^\d+$/	) {
 			$d->{'type'} = $type;
-		}
-		elsif(	$type =~ /^(dbi|sql)\b/i	) {
+		} elsif(	$type =~ /^(dbi|sql)\b/i	) {
 			$d->{'type'} = 8;
 			if($type =~ /^dbi:/) {
 				$d->{DSN} = $type;
 			}
-		}
 # LDAP
-		elsif(	$type =~ /^ldap\b/i) {
+		} elsif(	$type =~ /^ldap\b/i) {
 			$d->{'type'} = 9;
 			if($type =~ /^ldap:(.*)/i) {
 				$d->{LDAP_HOST} = $1;
 			}
-		}
 # END LDAP
-		elsif(	"\U$type" eq 'TAB'	) {
+		} elsif(	"\U$type" eq 'TAB'	) {
 			$d->{'type'} = 6;
-		}
-		elsif(	"\U$type" eq 'PIPE'	) {
+		} elsif(	"\U$type" eq 'PIPE'	) {
 			$d->{'type'} = 5;
-		}
-		elsif(	"\U$type" eq 'CSV'	) {
+		} elsif(	"\U$type" eq 'CSV'	) {
 			$d->{'type'} = 4;
-		}
-		elsif(	"\U$type" eq 'DEFAULT'	) {
+		} elsif(	"\U$type" eq 'DEFAULT'	) {
 			$d->{'type'} = 1;
-		}
-		elsif(	$type =~ /[%]{1,3}|percent/i	) {
+		} elsif(	$type =~ /[%]{1,3}|percent/i	) {
 			$d->{'type'} = 3;
-		}
-		elsif(	$type =~ /line/i	) {
+		} elsif(	$type =~ /line/i	) {
 			$d->{'type'} = 2;
-		}
-		else {
+		} else {
 			$d->{'type'} = 1;
 			$d->{DELIMITER} = $type;
 		}
-		if    ($d->{'type'} eq '8')	{ $d->{Class} = 'DBI'						}
-		elsif ($d->{'type'} eq '9') { $d->{Class} = 'LDAP'						}
-		else 						{ $d->{Class} = $Global::Default_database	}
+		if($d->{'type'} eq '8') {
+			$d->{Class} = 'DBI';
+		} elsif($d->{'type'} eq '9') {
+			$d->{Class} = 'LDAP';
+		} else {
+			$d->{Class} = $Global::Default_database;
+		}
 
 		$d->{HOT} = 1 if $d->{Class} eq 'MEMORY';
 #::logDebug("parse_database: type $type -> $d->{type}");
-	}
-	else {
+	} else {
 		my($p, $val) = split /\s+/, $remain, 2;
 		$p = uc $p;
 #::logDebug("parse_database: parameter $p = $val");
@@ -2211,24 +2269,19 @@ sub parse_database {
 				($k,$v) = split /\s*=\s*/, $_;
 				$d->{$p}->{$k} = $v;
 			}
-		}
-		elsif(defined $Ary_ref{$p}) {
+		} elsif(defined $Ary_ref{$p}) {
 			my(@v) = Text::ParseWords::shellwords($val);
 			$d->{$p} = [] unless defined $d->{$p};
 			push @{$d->{$p}}, @v;
-		}
-		elsif ($p =~ /^(MEMORY|GDBM|DB_FILE|LDAP)$/i) {
+		} elsif($p =~ /^(MEMORY|GDBM|DB_FILE|LDAP)$/i) {
 			$d->{Class} = uc $p;
-		}
-		elsif ($p eq 'ALIAS') {
-			if (defined $c->{$val}) {
+		} elsif($p eq 'ALIAS') {
+			if(defined $c->{$val}) {
 				config_warn("Database '$val' already exists, can't alias.");
-			}
-			else {
+			} else {
 				$c->{$val} = $d;
 			}
-		}
-		else {
+		} else {
 			config_warn errmsg(
 				"ConfigDatabase scalar parameter %s redefined to '%s', was %s.",
 							$p,
@@ -2262,8 +2315,7 @@ sub get_configdb {
 			);
 			return '';
 		}
-	}
-	else {
+	} else {
 		$table = $value;
 	}
 
@@ -2338,7 +2390,7 @@ sub parse_dbconfig {
 	my $extra;
 	for(@n) {
 		my $real = $CDname{lc $_};
-		if (! ref $Vend::Cfg->{$real} or $Vend::Cfg->{$real} !~ /HASH/) {
+		if(! ref $Vend::Cfg->{$real} or $Vend::Cfg->{$real} !~ /HASH/) {
 			# ignore non-existent directive, but put in hash
 			my $ref = {};
 			push @l, $ref;
@@ -2409,8 +2461,7 @@ sub parse_profile {
 		$sref = $C->{Source};
 		$ref = $C->{"${var}Name"};
 		$c = $C->{$var} || [];
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$sref = $Global::Source;
 		${"Global::${var}Name"} = {}
@@ -2446,39 +2497,32 @@ sub save_variable {
 	my ($var, $value) = @_;
 	my ($c, $name, $param);
 
-    if(defined $C) {
-        $c = $C->{$var};
-    }
-    else { 
-        no strict 'refs';
-        $c = ${"Global::$var"};
-    }
+	if(defined $C) {
+		$c = $C->{$var};
+	} else { 
+		no strict 'refs';
+		$c = ${"Global::$var"};
+	}
 
-	if ($var eq 'Variable' || $var eq 'Member') {
+	if($var eq 'Variable' || $var eq 'Member') {
 		$value =~ s/^\s*(\w+)\s*//;
 		$name = $1;
 		return 1 if defined $c->{'save'}->{$name};
 		$value =~ s/\s+$//;
 		$c->{'save'}->{$name} = $value;
-	}
-	elsif ( !defined $C) { 
+	} elsif( !defined $C) { 
 		return 0;
-	}
-	elsif ( defined $C->{Source}{$var} && ref $C->{Source}{$var}) {
+	} elsif( defined $C->{Source}{$var} && ref $C->{Source}{$var}) {
 		push @{$C->{Source}{$var}}, $value;
-	}
-	elsif ( defined $C->{Source}{$var}) {
+	} elsif( defined $C->{Source}{$var}) {
 		$C->{Source}{$var} .= "\n$value";
-	}
-	else {
+	} else {
 		$C->{Source}{$var} = $value;
 	}
 	return 1;
-
 }
 
 my %tagCanon = ( qw(
-
 	alias			Alias
 	addattr  		addAttr
 	attralias		attrAlias
@@ -2500,7 +2544,6 @@ my %tagCanon = ( qw(
 	replacehtml		replaceHTML
 	required		Required
 	routine			Routine
-
 ));
 
 
@@ -2544,7 +2587,6 @@ sub parse_tag {
 	}
 
 	if($p eq 'Routine' or $p eq 'posRoutine') {
-
 		my $sub;
 		$c->{Source}->{$tag}->{$p} = $val;
 		unless(!defined $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
@@ -2583,8 +2625,7 @@ sub parse_tag {
 						)
 			);
 			return $c;
-		}
-		else {
+		} else {
 			config_warn(
 				errmsg(
 					"UserTag '%s' code is not a subroutine reference",
@@ -2595,24 +2636,20 @@ sub parse_tag {
 		$c->{$p}{$tag} = $sub;
 		$c->{Order}{$tag} = []
 			unless defined $c->{Order}{$tag};
-	}
-	elsif(defined $tagAry{$p}) {
+	} elsif(defined $tagAry{$p}) {
 		my(@v) = Text::ParseWords::shellwords($val);
 		$c->{$p}{$tag} = [] unless defined $c->{$p}{$tag};
 		push @{$c->{$p}{$tag}}, @v;
-	}
-	elsif(defined $tagHash{$p}) {
+	} elsif(defined $tagHash{$p}) {
 		my(%v) = Text::ParseWords::shellwords($val);
 		$c->{$p}{$tag} = {} unless defined $c->{$p}{$tag};
 		for (keys %v) {
 		  $c->{$p}{$tag}{$_} = $v{$_};
 		}
-	}
-	elsif(defined $tagBool{$p}) {
+	} elsif(defined $tagBool{$p}) {
 		$c->{$p}{$tag} = 1
 			unless defined $val and $val =~ /^[0nf]/i;
-	}
-	else {
+	} else {
 		config_warn errmsg("UserTag %s scalar parameter %s redefined.", $tag, $p)
 			if defined $c->{$p}{$tag};
 		$c->{$p}{$tag} = $val;
@@ -2640,8 +2677,7 @@ sub parse_variable {
 
 	if(defined $C) {
 		$c = $C->{$var};
-	}
-	else {
+	} else {
 		no strict 'refs';
 		$c = ${"Global::$var"};
 	}
@@ -2649,8 +2685,7 @@ sub parse_variable {
 	if($value =~ /\n/) {
 		($name, $param) = split /\s+/, $value, 2;
 		chomp $param;
-	}
-	else {
+	} else {
 		($name, $param) = split /\s+/, $value, 2;
 	}
 	$c->{$name} = $param;
@@ -2677,12 +2712,10 @@ sub parse_subroutine {
 	$value = $1;
 	if(! defined $C) {
 		$c->{$name} = eval $value;
-	}
-	elsif($Global::AllowGlobal->{$C->{CatalogName}}) {
+	} elsif($Global::AllowGlobal->{$C->{CatalogName}}) {
 		package Vend::Interpolate;
 		$c->{$name} = eval $value;
-	}
-	else {
+	} else {
 		package Vend::Interpolate;
 		my $calc = Vend::Interpolate::reset_calc();
 		package Vend::Config;
@@ -2714,30 +2747,26 @@ sub parse_delimiter {
 # Returns 1 for Yes and 0 for No.
 
 sub parse_yesno {
-    my($var, $value) = @_;
-    $_ = $value;
-    if (m/^y/i || m/^t/i || m/^1/) {
+	my($var, $value) = @_;
+	$_ = $value;
+	if(m/^y/i || m/^t/i || m/^1/) {
 		return 1;
-    }
-	elsif (m/^n/i || m/^f/i || m/^0/) {
+	} elsif(m/^n/i || m/^f/i || m/^0/) {
 		return 0;
-    }
-	else {
+	} else {
 		config_error("Use 'yes' or 'no' for the $var directive\n");
-    }
+	}
 }
 
 sub parse_permission {
-    my($var, $value) = @_;
+	my($var, $value) = @_;
 
-    $_ = $value;
-    tr/A-Z/a-z/;
-    if ($_ ne 'user' and $_ ne 'group' and $_ ne 'world') {
-	config_error(
-"Permission must be one of 'user', 'group', or 'world' for
-the $var directive\n");
-    }
-    $_;
+	$_ = $value;
+	tr/A-Z/a-z/;
+	if($_ ne 'user' and $_ ne 'group' and $_ ne 'world') {
+		config_error("Permission must be one of 'user', 'group', or 'world' for the $var directive\n");
+	}
+	$_;
 }
 
 1;
