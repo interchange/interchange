@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.3 2001-03-06 15:16:13 heins Exp $
+# $Id: Scan.pm,v 1.7.2.4 2001-03-21 16:55:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.4 $, 10);
 
 use strict;
 use Vend::Util;
@@ -84,6 +84,8 @@ my @Order = ( qw(
 	mv_start_match
 	mv_return_spec
 	mv_spelling_errors
+	mv_like_field
+	mv_like_spec
 	mv_search_field
 	mv_search_group
 	mv_search_label
@@ -122,8 +124,10 @@ my %Scan = ( qw(
 	hs  mv_head_skip
 	ix  mv_index_delim
 	lb  mv_search_label
+	lf  mv_like_field
 	lo  mv_list_only
 	lr  mv_search_line_return
+	ls  mv_like_spec
 	md  mv_more_decade
 	mi  mv_more_id
 	ml  mv_matchlimit
@@ -200,6 +204,8 @@ my %Parse = (
 	mv_return_file_name     =>  \&_yes,
 	mv_save_context         =>  \&_array,
 	mv_searchspec           =>  \&_verbatim_array,
+	mv_like_field           =>  \&_array,
+	mv_like_spec            =>  \&_verbatim_array,
 	mv_sort_field           =>  \&_array,
 	mv_sort_option          =>  \&_opt,
 	mv_unique               =>  \&_yes,

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.15 2001-03-18 19:31:27 heins Exp $
+# $Id: DBI.pm,v 1.25.2.16 2001-03-21 16:55:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.16 $, 10);
 
 use strict;
 
@@ -139,6 +139,10 @@ my %known_capability = (
 	},
 	ALTER_ADD	 => { 
 		mysql => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
+	},
+	UPPER_COMPARE	 => { 
+		Oracle => 1,
+		Pg	   => 1,
 	},
 );
 

@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7.6.4 2000-12-21 11:25:15 heins Exp $
+# $Id: DbSearch.pm,v 1.7.6.5 2001-03-21 16:55:39 heins Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.7.6.5 $, 10);
 
 use Search::Dict;
 use strict;
@@ -175,6 +175,37 @@ sub search {
 
 	$@  and  return $s->search_error("Function creation: $@");
 
+	if(ref $s->{mv_like_field} and ref $s->{mv_like_spec}) {
+#::logDebug("Entering like_spec");
+		my $ary = [];
+		for(my $i = 0; $i < @{$s->{mv_like_field}}; $i++) {
+			my $col = $s->{mv_like_field}[$i];
+#::logDebug("Checking column '$col'");
+			next unless length($col);
+			my $val = $s->{mv_like_spec}[$i];
+			length($val) or next;
+			next unless defined $dbref->test_column($col);
+			$val = $dbref->quote("$val%");
+			if(
+				! $dbref->config('UPPER_COMPARE')
+					or 
+				$s->{mv_case_sensitive} and $s->{mv_case_sensitive}[0]
+				)
+			{
+				push @$ary, "$col like $val";
+			}
+			else {
+				$val = uc $val;
+				push @$ary, "UPPER($col) like $val";
+			}
+		}
+		if(@$ary) {
+			$s->{eq_specs_sql} = [] if ! $s->{eq_specs_sql};
+			push @{$s->{eq_specs_sql}}, @$ary;
+		}
+#::logDebug("like_spec: " . join ",", @$ary);
+	}
+
 	my $qual;
 	if($s->{eq_specs_sql}) {
 		$qual = ' WHERE ';
@@ -252,7 +283,7 @@ sub search {
 		$delayed_return = $s->get_return(1);
 		@out = map { $delayed_return->($_) } @out;
 	}
-#::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
+#::logDebug("after delayed return: self=" . ::Vend::Util::uneval({%$s}));
 
 	if($s->{mv_unique}) {
 		my %seen;
