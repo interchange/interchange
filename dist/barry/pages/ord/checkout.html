@@ -31,60 +31,6 @@ __NO_LEFT__
 [/if]
 -->
 
-[comment]
-Uncomment the area below to add some shipping modes "on the fly"
-[/comment]
-[comment]
-[shipping
-		mode="upsr upsb upsg ups3"
-		default=1
-		hide=1
-		add=|
-upsr: UPS Red with adder
-
-			min 0
-			max 0
-			perl 1
-			crit weight
-			qual $Values->{state};
-			cost e
-
-			min 0
-			max 150
-			cost u
-			crit AK HI
-			geo zip
-			table NextDayAir
-			adder 20
-			round yes
-
-			min 0
-			max 150
-			cost u
-			crit 
-			geo zip
-			table NextDayAir
-			adder 3
-			round yes
-			at_least 12
-
-			min 150
-			max 999999
-			cost e
-
-ups3: Priority Mail (max 10 lbs.)
-			min 0
-			max 10
-			crit weight
-			cost 5
-			min 10
-			max 999999
-			cost e
-
-|
-			]
-[/comment]
-
 [if !items]
 <TABLE WIDTH=450>
 <TR><TD COLSPAN=4 __HEADERBG__>
@@ -357,8 +303,21 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 [/if]
 
 [if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
-<TABLE WIDTH=450><TR><TD __HEADERBG__>
-<FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<IMG SRC="smallvisa.png">&nbsp;&nbsp;<IMG SRC="smallmc.png">
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[calc]
+	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
+	my (@out);
+	my (@cc);
+	my $out;
+	push @cc, 'visa' if $accepted =~ /visa/;
+	push @cc, 'mc' if $accepted =~ /mc/;
+	push @cc, 'disc' if $accepted =~ /discover/;
+	push @cc, 'amex' if $accepted =~ /amex/;
+	for (@cc) {
+		push @out, qq{<IMG SRC="small$_.png">};
+	}
+	return join '&nbsp;&nbsp;', @out;
+[/calc]
 </TD></TR></TABLE>
 
 <P>  
