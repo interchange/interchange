@@ -1,4 +1,4 @@
-SKU	quantity
+sku	quantity	account	cogs_account
 os28108	98
 os28009	100
 os28044	99

@@ -7,7 +7,7 @@ CITY	Anytown, USA 45056	Company
 COD_ACCEPTED	0	Payment
 COMPANY	Construct Something	Company
 CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
-DOCROOT	__MVC_DOCROOT__	Directories and Paths
+DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 ENCRYPTOR	none	Payment
 FAX	513-555-5556	Company
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
@@ -16,6 +16,7 @@ LOGO		Template
 MULTIORDER		Order
 MYSQL	1	Database
 ORDERS_TO	__MVC_MAILORDERTO__	Order
+ORDER_ROUTES	log main copy_user	Order
 PGSQL		Database
 PHONE	(555) 555-5555	Company
 PO_ACCEPTED	0	Payment

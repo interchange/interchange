@@ -1,4 +1,4 @@
-sku	quantity	stock_message	
+sku	quantity	stock_message	account	cogs_account
 00-0010	10	2-4 days
 00-0011	10	4-6 weeks
 00-0011a	10	4-6 weeks

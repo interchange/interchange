@@ -16,6 +16,7 @@ LOGGED_STATIC	1	Static pages
 MULTIORDER	__MVC_MULTIORDER__	Order
 MYSQL	__MVC_MYSQL__	Database
 ORDERS_TO	__MVC_MAILORDERTO__	Order
+ORDER_ROUTES	log main copy_user	Order
 PGSQL	__MVC_PGSQL__	Database
 PHONE	__MVC_PHONE__	Company
 PO_ACCEPTED	0	Payment

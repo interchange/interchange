@@ -8,3 +8,5 @@ Database  inventory  PASS         __SQLPASS__
 Database  inventory  KEY          sku
 Database  inventory  COLUMN_DEF   "sku=VARCHAR(14) NOT NULL PRIMARY KEY"
 Database  inventory  COLUMN_DEF   "quantity=VARCHAR(12) NOT NULL"
+Database  inventory  COLUMN_DEF   "account=char(20)"
+Database  inventory  COLUMN_DEF   "cogs_account=char(20)"
