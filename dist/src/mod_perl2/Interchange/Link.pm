@@ -2,10 +2,10 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: Link.pm,v 1.1 2004-04-22 19:30:40 mheins Exp $
+# $Id: Link.pm,v 1.2 2004-06-29 05:48:42 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc.
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2004 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.1 $
+$Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -116,6 +116,8 @@ Finally, you specify a location like:
     SetHandler perl-script
      PerlResponseHandler  Interchange::Link
      PerlOptions +GlobalRequest
+	 # Make sure you set SocketPerms to 0666 (or 0660 with appropriate
+	 # setgid group ownership of the directory)
      PerlSetVar InterchangeServer /var/run/interchange/socket
      PerlSetVar OrdinaryFileList "/foundation/images/ /foundation/dl/"
   </Location>
@@ -145,6 +147,13 @@ host:port specification if you want to use INET mode.
 Normally this takes the form of:
 
      PerlSetVar InterchangeServer /var/run/interchange/socket
+
+Note that your file permissions for the socket file need to allow the
+Apache User uid to read and write it. This usually means "SocketPerms
+0666" or in interchange.cfg.  You can also do "SocketPerms 0666" if you
+set the group of the containing directory to the Apache Group value,
+and change the directory permissions to enable the setgid bit. (That is
+accomplished with "chmod g+s <directory>".)
 
 If you want to specify more than one so that a backup server can provide
 request support in case of failure:
@@ -309,7 +318,7 @@ Send bug reports and suggestions to the Interchange users list,
 =head1 COPYRIGHT AND LICENSE
 
  Copyright (C) 1996-2002 Red Hat, Inc.
- Copyright (C) 2002-2003 Interchange Development Group
+ Copyright (C) 2002-2004 Interchange Development Group
 
 This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
