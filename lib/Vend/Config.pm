@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.134 2004-03-07 03:14:41 mheins Exp $
+# $Id: Config.pm,v 2.135 2004-03-07 06:59:50 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.134 $, 10);
+$VERSION = substr(q$Revision: 2.135 $, 10);
 
 my %CDname;
 my %CPname;
@@ -299,6 +299,7 @@ sub global_directives {
 	['SOAP_Socket',       'array',            ''],
 	['SOAP_Perms',        'integer',          0600],
 	['MaxRequestsPerChild','integer',           50],
+	['ChildLife',         'time',             0],
 	['StartServers',      'integer',          0],
 	['PreFork',		      'yesno',            0],
 	['SOAP_MaxRequests', 'integer',           50],
@@ -2916,7 +2917,9 @@ sub parse_time {
 	my($var, $value) = @_;
 	my($n);
 
-	$C->{Source}->{$var} = [$value];
+	return $value unless $value;
+
+#	$C->{Source}->{$var} = [$value];
 
 	$n = time_to_seconds($value);
 	config_error("Bad time format ('$value') in the $var directive\n")
