@@ -53,8 +53,8 @@ phone_day: [value filter=strip name=phone_day]
 phone_night: [value filter=strip name=phone_night]
 b_fname: [value filter=strip name=b_fname]
 b_lname: [value filter=strip name=b_lname]
-b_address1: [value filter=strip name=b_address1]
-b_address2: [value filter=strip name=b_address2]
+b_address1: [value filter="strip mac" name=b_address1]
+b_address2: [value filter="strip mac" name=b_address2]
 b_city: [value filter=strip name=b_city]
 b_state: [value filter=strip name=b_state]
 b_zip: [value filter=strip name=b_zip]
@@ -65,8 +65,10 @@ order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
 order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
 order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
 status: pending
-deleted: 
-archived: 
+deleted: 0
+archived: 0
+complete: 0
+comments: [value filter=mac name=gift_note]
 affiliate: [data session source]
 campaign: [value campaign]
 parent: __PARENT__

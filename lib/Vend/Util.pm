@@ -1,8 +1,8 @@
-# Util.pm - Minivend utility functions
+# Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.3 2000-07-05 19:05:41 heins Exp $
+# $Id: Util.pm,v 1.4 2000-07-12 03:08:12 heins Exp $
 # 
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -74,7 +74,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 BEGIN {
 	eval {

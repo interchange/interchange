@@ -1,4 +1,4 @@
-Minivend-4.5.0 changes -- the start of the Tallyman merge.
+Interchange-4.5.0 changes -- the start of the Tallyman merge.
 * Many, many, changes and improvments to the user interface. So
   much that Minimate is broken out again and made separate.
   See the UI online help for changes.
@@ -17,8 +17,6 @@ Minivend-4.5.0 changes -- the start of the Tallyman merge.
   This means you can edit your Variable settings in a database, reconfigure,
   and then use the values farther down in the configuration file.
 
-* 
-
 * Order.pm: fixed multiple problems in precedence for order profiles.
   Thanks to Ton Verhagen. Also added "isbn" profile check written
   by Ton Verhagen.
@@ -26,6 +24,8 @@ Minivend-4.5.0 changes -- the start of the Tallyman merge.
   Busarow.
 * Config.pm: Fixed default declaration of "HOT" for memory databases,
   now should work properly as default database.
+* Other changes much too numerous to mention. This will be the last
+  version of this changes document; there are too many.
 
 Minivend-4.04 changes:
 * Demo: Fixed COLSPAN=0 in logo bars -- it was killing Gecko rendering.

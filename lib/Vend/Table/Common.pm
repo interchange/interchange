@@ -1,8 +1,8 @@
-# Table/Common.pm: Common access methods for MiniVend Databases
+# Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.5 2000-07-11 20:05:24 heins Exp $
+# $Id: Common.pm,v 1.6 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 use strict;
 
 package Vend::Table::Common;

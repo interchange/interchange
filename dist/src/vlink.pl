@@ -1,9 +1,9 @@
 #!/usr/bin/perl -wT
 # vlink.pl: runs as a cgi program and passes request to Vend server
 #           via TCP UNIX-domain socket
-#   $Id: vlink.pl,v 1.1 2000-05-26 18:50:22 heins Exp $
+#   $Id: vlink.pl,v 1.2 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996,1997 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 #    This program is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU General Public License as
@@ -39,16 +39,16 @@ sub server_not_running {
 	my $msg;
 
 	if($ERROR_ACTION =~ /not/i) {
-		warn "ALERT: MiniVend server not running for $ENV{SCRIPT_NAME}\n";	
+		warn "ALERT: Interchange server not running for $ENV{SCRIPT_NAME}\n";	
 	}
 
 	$| = 1;
 	print <<EOF;
 Content-type: text/html
 
-<HTML><HEAD><TITLE>MiniVend server not running</TITLE></HEAD>
+<HTML><HEAD><TITLE>Interchange server not running</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<H3>We're sorry, the MiniVend server is unavailable...</H3>
+<H3>We're sorry, the Interchange server is unavailable...</H3>
 <P>
 We are out of service or may be experiencing high system demand,
 please try again soon.
@@ -66,7 +66,7 @@ sub die_page {
   printf("system error.\r\n\r\n");
   printf("%s: %s (%d)\r\n", $_[0], $!, $?);
   if($ERROR_ACTION =~ /not/i) {
-	warn "ALERT: MiniVend $ENV{SCRIPT_NAME} $_[0]: $! ($?)\n";
+	warn "ALERT: Interchange $ENV{SCRIPT_NAME} $_[0]: $! ($?)\n";
   }
   exit(1);
 }

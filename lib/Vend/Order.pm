@@ -1,10 +1,8 @@
 #!/usr/bin/perl
 #
-# MiniVend version 4.0
+# $Id: Order.pm,v 1.5 2000-07-12 03:08:11 heins Exp $
 #
-# $Id: Order.pm,v 1.4 2000-06-25 00:47:03 heins Exp $
-#
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -33,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -599,7 +597,7 @@ sub charge {
     my($orderID);
     my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
-    # We'll make an order ID based on date, time, and MiniVend session
+    # We'll make an order ID based on date, time, and Interchange session
 
     # $mon is the month index where Jan=0 and Dec=11, so we use
     # $mon+1 to get the more familiar Jan=1 and Dec=12
@@ -643,7 +641,7 @@ sub charge {
 	}
     elsif ($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
 		my $status = $1 || 'success';
-		# Minivend test mode
+		# Interchange test mode
 		my %payment = (
 			'host' => $::Variable->{CYBER_HOST} || 'localhost',
 			'port' => $::Variable->{CYBER_PORT} || 8000,

@@ -1,8 +1,8 @@
-# Error.pm - Handle MiniVend error pages and messages
+# Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.2 2000-06-05 05:36:34 heins Exp $
+# $Id: Error.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 

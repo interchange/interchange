@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend link program configurator
+# Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+# $Id: compile_link.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # See the file 'Changes' for information.
 #
@@ -81,7 +81,7 @@ my $USAGE = <<EOF;
 usage: $prog [-t tcp_port] [-s sockfile] [-h host] [-w secs] \
              [--perl] [-o outputfile] [--suid]
 
-Configures a Minivend link program.
+Configures Interchange link program.
 
 options:
 
@@ -318,7 +318,7 @@ if($Output) {
 
 =head1 NAME
 
-compile_link -- compile and copy MiniVend link CGI
+compile_link -- compile and copy Interchange link CGI
 
 =head1 VERSION
 
@@ -332,12 +332,12 @@ compile_link -- compile and copy MiniVend link CGI
 =head1 DESCRIPTION
 
 The C<compile_link> program configures (including compilation if
-necessary) a link CGI for talking to the MiniVend server daemon.
+necessary) a link CGI for talking to the Interchange server daemon.
 
 If the --perl option is given, it will not compile but instead use the
 tlink.pl program, setting its variables as needed.
 
-Designed to be used in conjunction with MiniVend's makecat.
+Designed to be used in conjunction with Interchange's makecat.
 
 =head1 OPTIONS
 
@@ -346,7 +346,7 @@ Designed to be used in conjunction with MiniVend's makecat.
 =item -b dir, --build=dir
 
 Sets the directory where the build files will be made. Default is C<src> in
-the Minivend software directory.
+the Interchange software directory.
 
 =item -h hostname, --host=hostname
 
@@ -369,7 +369,7 @@ overridden by C<MINIVEND_SOCKET> in the environment of the executing process.
 =item --source=dir
 
 Sets the directory containing the source files. Default is C<src> in
-the Minivend software directory.
+the Interchange software directory.
 
 =item -w N, --timeout=N
 
@@ -385,7 +385,7 @@ makecat(1), http://www.minivend.com
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>
+Mike Heins, <heins@akopia.com>
 
 
 _EoP_

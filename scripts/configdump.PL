@@ -23,7 +23,7 @@ DOIT: {
 #!/usr/bin/perl 
 ##!~_~perlpath~_~    
 #
-# MiniVend configuration dumper (version see POD documentation)
+# Interchange configuration dumper (version see POD documentation)
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -154,7 +154,7 @@ sub print_values {
 
 =head1 NAME
 
-configdump - MiniVend configuration dumper
+configdump - Interchange configuration dumper
 
 =head1 SYNOPSIS
 
@@ -175,7 +175,7 @@ mvdocs(8), dump(1), makecat(1), minivend(1)
 
 =head1 LICENSE
 
-MiniVend comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 

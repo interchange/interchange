@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.4 2000-07-11 20:05:23 heins Exp $
+# $Id: UserDB.pm,v 1.5 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # **** ALL RIGHTS RESERVED ****
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -21,7 +21,7 @@ my $ready = new Safe;
 
 =head1 NAME
 
-UserDB.pm -- MiniVend User Database Functions
+UserDB.pm -- Interchange User Database Functions
 
 =head1 SYNOPSIS
 
@@ -29,13 +29,13 @@ userdb $function, %options
 
 =head1 DESCRIPTION
 
-The MiniVend user database saves information for users, including shipping,
+The Interchange user database saves information for users, including shipping,
 billing, and preference information.  It allows the user to return to a
 previous session without the requirement for a "cookie" or other persistent
 session information.
 
 It is object-oriented and called via Perl subroutine. The main software 
-is contained in a module, and is called from MiniVend with a GlobalSub.
+is contained in a module, and is called from Interchange with a GlobalSub.
 The GlobalSub would take the form:
 
 	GlobalSub <<EOF

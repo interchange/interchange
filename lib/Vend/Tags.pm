@@ -1,9 +1,9 @@
 #!/usr/bin/perl
-# Tags.pm - Interpret MiniVend tags for Safe
+# Tags.pm - Interpret Interchange tags for Safe
 # 
-# $Id: Tags.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Tags.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

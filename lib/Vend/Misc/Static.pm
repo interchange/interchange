@@ -1,8 +1,8 @@
-# Static.pm - MiniVend static page routines
+# Static.pm - Interchange static page routines
 # 
-# $Id: Static.pm,v 1.2 2000-07-11 20:05:24 heins Exp $
+# $Id: Static.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>

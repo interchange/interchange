@@ -108,6 +108,10 @@
 	}
 	my $out = <<EOF;
 <tr>
+	<td bgcolor=__UI_C_INTBLOCK__><b>Page file</b></td>
+	<td bgcolor=__UI_C_INTBLOCK__>$page<INPUT TYPE=hidden NAME=ui_page VALUE="$page"></td>
+</tr>
+<tr>
 	<td bgcolor=__UI_C_INTBLOCK__><b>Template name</b></td>
 	<td bgcolor=__UI_C_INTBLOCK__>$t_name</td>
 </tr>
@@ -116,8 +120,16 @@
 	<td bgcolor=__UI_C_INTBLOCK__>$t_desc</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__><b>Page file</b></td>
-	<td bgcolor=__UI_C_INTBLOCK__>$page<INPUT TYPE=hidden NAME=ui_page VALUE="$page"></td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<b>Template sequence</b><br>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__ VALIGN=top><INPUT NAME=ui_elements SIZE=80 VALUE="$ref->{ui_template_layout}"></td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+		<small><i>UI_CONTENT is the content portion(s), all others refer
+		to Knar elements.</i></small>
+	</td>
 </tr>
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
@@ -167,7 +179,6 @@ EOF
 
 <tr>
 	<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
-		<INPUT NAME=ui_elements type=hidden VALUE="$ref->{ui_template_layout}">
 		<TEXTAREA NAME=ui_content COLS=80 ROWS=20>$content</TEXTAREA>
 	</td>
 </tr>

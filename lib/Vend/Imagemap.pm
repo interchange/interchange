@@ -2,7 +2,7 @@
 #
 # Imagemap.pm -- interpret NCSA imagemap in CGI program
 #
-# $Id: Imagemap.pm,v 1.1 2000-05-26 18:50:38 heins Exp $
+# $Id: Imagemap.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
 #
 # This module adapted from the Perl imagemap program by:
 #
@@ -50,7 +50,7 @@ require Exporter;
 @EXPORT = qw(action_map);
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 my $Action = "";
 my $minDistance = -1;
@@ -95,7 +95,7 @@ sub action_map {
   if ($Action eq "") {
     # if we have not set $Action by this time, there is no match in the
     # given set of shapes.  Just return undef and let the default in
-    # MiniVend do the work;
+    # Interchange do the work;
     return undef;
   } else {
   	return $Action;

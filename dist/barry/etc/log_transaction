@@ -68,8 +68,10 @@ status: pending
 affiliate: [data session source]
 campaign: [value campaign]
 parent: __PARENT__
-deleted: 
-archived: 
+deleted: 0
+archived: 0
+complete: 0
+comments: [value filter=mac name=gift_note]
 po_number: [value filter=strip po_number] 
 [/import]
 [comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]

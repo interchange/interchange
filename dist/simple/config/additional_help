@@ -19,8 +19,8 @@ you can have only one. Should correspond to TAXAREA.
 
 SOMESQL
 .
-Minivend has a workable internal database, but many things will
-work better (and a few worse) if you use a SQL database. Minivend
+Interchange has a workable internal database, but many things will
+work better (and a few worse) if you use a SQL database. Interchange
 can configure MySQL and Postgres in a test configuration.
 
 MYSQL
@@ -45,7 +45,7 @@ based on their locale.)
 
 MULTIORDER
 .
-MiniVend can do order pages in any way; two examples are provided.
+Interchange can do order pages in any way; two examples are provided.
 The default is single-page.
 
 TEMPLATE
@@ -62,7 +62,7 @@ used. If you want to add a handling charge, do it here.
 
 SUPERUSER
 .
-You can use MiniVend's companion configuration interface to
+You can use Interchange's companion configuration interface to
 do upload/download of files, manipulation of the database,
 reconfiguration of the catalog, and much more.
 .

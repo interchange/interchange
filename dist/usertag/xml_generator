@@ -19,7 +19,7 @@ or C<[loop search=""]> MML tag.
 =item session
 
 When the type is not delimited, it can contain any hash reference into
-the Minivend session. Examples are:
+the Interchange session. Examples are:
 
 	values       The form values
 	scratch      Scratch values

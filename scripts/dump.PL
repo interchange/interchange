@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend session dumper
+# Interchange session dumper
 #
-# $Id: dump.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+# $Id: dump.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -158,7 +158,7 @@ else {
 	if (defined $Vend::Cfg->{SessionLockFile}) { 
 		die <<EOF unless -f $Vend::Cfg->{SessionLockFile};
 Session lock file '$Vend::Cfg->{SessionLockFile}' doesn't exist.
-Create one if you are sure the MiniVend server is down, then try
+Create one if you are sure the Interchange server is down, then try
 again.
 EOF
 	}
@@ -235,11 +235,11 @@ Vend::Session::close_session();
 
 =head1 NAME
 
-dump -- MiniVend session dumper
+dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+$Id: dump.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 
 =head1 SEE ALSO
 

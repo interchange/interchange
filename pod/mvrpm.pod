@@ -101,6 +101,6 @@ the minivend user ID.
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>. Questions should be directed to the
+Mike Heins, <heins@akopia.com>. Questions should be directed to the
 Minivend user list, <minivend-users@minivend.com>.
 

@@ -1,8 +1,8 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.3 2000-07-11 20:05:23 heins Exp $
+# $Id: Server.pm,v 1.4 2000-07-12 03:08:11 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -583,7 +583,7 @@ sub http_server {
 		if (! $$env{REMOTE_USER}) {
 			$Vend::StatusLine = <<EOF;
 HTTP/1.0 401 Unauthorized
-WWW-Authenticate: Basic realm="MiniVend Admin"
+WWW-Authenticate: Basic realm="Interchange Admin"
 EOF
 			$doc = "Requires correct username and password.\n";
 			$path = '';
@@ -604,7 +604,7 @@ EOF
 #::logDebug("not found");
 		$status = 404;
 		$Vend::StatusLine = "HTTP/1.0 404 Not found";
-		$doc = "$path not a MiniVend catalog or help file.\n";
+		$doc = "$path not a Interchange catalog or help file.\n";
 	}
 
 	if($$env{REQUEST_METHOD} eq 'HEAD') {
@@ -1292,13 +1292,13 @@ sub run_server {
         $pid = grab_pid();
         if ($pid) {
 			print errmsg(
-				"The MiniVend server is already running (process id %s)\n",
+				"The Interchange server is already running (process id %s)\n",
 				$pid,
 				);
 			exit 1;
         }
 
-        print errmsg("MiniVend server started (%s) (%s)\n", $$, $server_type);
+        print errmsg("Interchange server started (%s) (%s)\n", $$, $server_type);
 		$next = server_both($Global::SocketFile);
     }
     else {
@@ -1334,13 +1334,13 @@ sub run_server {
                 $pid = grab_pid();
                 if ($pid) {
                     print errmsg(
-						"The MiniVend server is already running (process id %s)\n",
+						"The Interchange server is already running (process id %s)\n",
 						$pid,
 						);
                     exit 1;
                 }
                 print errmsg(
-						"MiniVend server started in %s mode(s) (process id %s)\n",
+						"Interchange server started in %s mode(s) (process id %s)\n",
 						$server_type,
 						$$,
 					 ) unless $Vend::Quiet;

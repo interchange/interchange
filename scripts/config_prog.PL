@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend program configurator
+# Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+# $Id: config_prog.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # See the file 'Changes' for information.
 #
@@ -59,7 +59,7 @@ $prog =~ s:.*/::;
 my $USAGE = <<EOF;
 usage: $prog [-o file] [defines] -- file
 
-Configures a Minivend program/script file with defaults.
+Configures an Interchange program/script file with defaults.
 
 options:
 
@@ -149,11 +149,11 @@ if($Output) {
 
 =head1 NAME
 
-config_prog -- Configure MiniVend programs with MakeMaker variables
+config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+$Id: config_prog.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 
 =head1 DESCRIPTION
 

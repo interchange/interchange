@@ -48,4 +48,5 @@ Database  transactions  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
 Database  transactions  COLUMN_DEF   "update_date=timestamp"
 Database  transactions  COLUMN_DEF   "status=VARCHAR(32)"
 Database  transactions  COLUMN_DEF   "parent=VARCHAR(9)"
+Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  ChopBlanks   1

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# checkstat.sh -- check minivend daemon status, and restart if not there
+# checkstat.sh -- check Interchange daemon status, and restart if not there
 # 
 
 ####  EDIT THIS!  ########
@@ -36,7 +36,7 @@ else
 	cat <<EOF
 ALERT: MINIVEND SERVER IS DOWN!
 
-The latest check of the MiniVend server indicates it is not
+The latest check of the Interchange server indicates it is not
 running.
 
 We will try to restart the server now, but if there are

@@ -1,8 +1,8 @@
-# Data.pm - Minivend databases
+# Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.3 2000-06-18 08:42:46 heins Exp $
+# $Id: Data.pm,v 1.4 2000-07-12 03:08:10 heins Exp $
 # 
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -12,7 +12,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation and modified by the MiniVend license;
+# the Free Software Foundation and modified by the Interchange license;
 # either version 2 of the License, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,

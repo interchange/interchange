@@ -2,6 +2,7 @@
 [seti transaction_record]
 [tag flag write]transactions orderline userdb inventory[/tag]
 [if cgi new_customer_id]
+[or !cgi customer_id]
 Add new customer: [value name=customer_id set="[fcounter etc/customer.number]"]
 Set password:  [value name=password set="[value name=zip filter='word uc']"]
 [/if]
@@ -113,6 +114,10 @@ order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
 status: pending
 affiliate: ORDER_DESK
 po_number: [value filter=strip po_number] 
+deleted: 0
+archived: 0
+complete: 0
+comments: [value filter=mac name=gift_note]
 [/import]
 [perl] Log("Past transactions entry."); [/perl][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]

@@ -1,6 +1,6 @@
-# Track.pm - MiniVend User Tracking
+# Track.pm - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.2 2000-06-26 08:53:57 heins Exp $
+# $Id: Track.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
 #
 # Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -33,7 +33,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 @ISA = qw(Exporter);
 

@@ -22,7 +22,7 @@ open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
 	or die "open: $!\n";
 
 print CONFIG <<EOF;
-MailOrderTo mikeh\@minivend.com
+MailOrderTo info\@akopia.com
 VendURL      http:/test
 SecureURL    http:/test
 Database     products products.asc DEFAULT

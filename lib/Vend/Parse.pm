@@ -1,8 +1,8 @@
-# Parse.pm - Parse MiniVend tags
+# Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Parse.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Parse.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -1492,7 +1492,7 @@ sub _find_tag {
 			last;
 		} else {
 			# assume attribute with implicit value, which 
-			# means in MiniVend no value is set and the
+			# means in Interchange no value is set and the
 			# eaten value is grown. Note that you should
 			# never use an implicit tag when setting up an Alias.
 			$old = 1;

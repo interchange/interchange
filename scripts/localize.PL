@@ -22,11 +22,11 @@ DOIT: {
 	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 #
-# MiniVend localizer
+# Interchange localizer
 #
-# $Id: localize.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+# $Id: localize.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ Two-page mode requires two files (one for each language) to compare and
 merge into one locale definition.
 
 The merge file for the -m option should use the Perl reference form --
-see the MiniVend documentation for more information.
+see the Interchange documentation for more information.
 
 If [L msg_key]default text[/L] keys are found, will produce a comment
 with the default text for reference.
@@ -349,11 +349,11 @@ print $def_text;
 
 =head1 NAME
 
-localize -- produce MiniVend localization file from set of pages
+localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+$Id: localize.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 
 =head1 SYNOPSIS
 
@@ -361,7 +361,7 @@ C<localize -l lg_CC [-d lg_CC] [-m file|-t] file [file2 file3 ...]>
 
 =head1 DESCRIPTION
 
-Helps manage Minivend pages by finding, adding, and merging localization strings.
+Helps manage Interchange pages by finding, adding, and merging localization strings.
 
 =head1 OPTIONS
 
@@ -408,7 +408,7 @@ Two-page mode requires two files (one for each language) to compare and
 merge into one locale definition.
 
 The merge file for the C<-m> option should use the Perl reference form --
-see the MiniVend documentation for more information.
+see the Interchange documentation for more information.
 
 If [L msg_key]default text[/L] keys are found, will produce a comment
 with the default text for reference.
@@ -422,7 +422,7 @@ mvdocs(8), http://www.minivend.com
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>. Valuable contributions made by Stefan Hornburg,
+Mike Heins, <heins@akopia.com>. Valuable contributions made by Stefan Hornburg,
 <racke@linuxia.net>.
 =cut
 

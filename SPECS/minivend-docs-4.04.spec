@@ -4,7 +4,7 @@
 %define mvdocs_name mvdocs
 
 Name: minivend-docs
-Summary:	Extended documentation for Minivend
+Summary:	Extended documentation for Interchange
 Group:		Applications/Internet
 Version: %{minivend_version}
 Copyright: GNU General Public License
@@ -19,7 +19,7 @@ BuildRoot: /var/tmp/minivend_docs
 
 # From the manual
 %description
-Provides the complete documentation for Minivend in HTML.
+Provides the complete documentation for Interchange in HTML.
 Use either:
 
 	file:/usr/doc/%{minivend_package}-%{minivend_version}/index.html

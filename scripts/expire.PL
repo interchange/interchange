@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend session expiration
+# Interchange session expiration
 #
-# $Id: expire.PL,v 1.1 2000-05-26 18:50:46 heins Exp $
+# $Id: expire.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -167,7 +167,7 @@ GETOPT: {
 	if (defined $Vend::Cfg->{SessionLockFile}) { 
 		die <<EOF unless -f $Vend::Cfg->{SessionLockFile};
 Session lock file '$Vend::Cfg->{SessionLockFile}' doesn't exist.
-Create one if you are sure the MiniVend server is down, then try
+Create one if you are sure the Interchange server is down, then try
 again.
 EOF
 	}
@@ -265,7 +265,7 @@ release_session() unless $reorg;
 
 =head1 NAME
 
-expire -- expire Minivend session files and databases
+expire -- expire Interchange session files and databases
 
 =head1 VERSION
 
@@ -277,11 +277,11 @@ expire -- expire Minivend session files and databases
 
 =head1 DESCRIPTION
 
-Minivend's C<expire> expires the various session database and temporary
-files used by the MiniVend daemon.
+Interchange's C<expire> expires the various session database and temporary
+files used by the Interchange daemon.
 
 If the program C<tmpwatch> is available, it is called with the appropriate 
-arguments. Otherwise, MiniVend will remove all files itself with a recursive
+arguments. Otherwise, Interchange will remove all files itself with a recursive
 routine.
 
 =head1 OPTIONS
@@ -300,7 +300,7 @@ files.
 
 =item -e spec
 
-Accepts a Minivend expire time setting like "6 hours", "3 days", etc.
+Accepts a Interchange expire time setting like "6 hours", "3 days", etc.
 The expire time is applied directly to sessions, and may be padded for
 temporary files.
 
@@ -312,7 +312,7 @@ mvdocs(8), expireall(1), http://www.minivend.com
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>
+Mike Heins, <heins@akopia.com>
 
 
 _EoP_

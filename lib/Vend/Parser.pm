@@ -1,17 +1,17 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Parser.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
 #
 #
 # Copyright 1996 Gisle Aas. All rights reserved.
 #
-# Modifications for MiniVend Copyright 1997-2000 by Michael J. Heins
-# <mikeh@minivend.com>
+# Modifications for Interchange Copyright 1997-2000 by Michael J. Heins
+# <heins@akopia.com>
 #
 
 =head1 NAME
 
-Vend::Parser - MiniVend parser class
+Vend::Parser - Interchange parser class
 
 =head1 SYNOPSIS
 
@@ -30,7 +30,7 @@ Vend::Parser - MiniVend parser class
 
 =head1 DESCRIPTION
 
-The C<Vend::Parser> will tokenize a MiniVend page when the $p->parse()
+The C<Vend::Parser> will tokenize a Interchange page when the $p->parse()
 method is called.  The document to parse can be supplied in arbitrary
 chunks.  Call $p->eof() the end of the document to flush any remaining
 text.  The return value from parse() is a reference to the parser
@@ -55,7 +55,7 @@ within the start tag.  The attribute keys are converted to lower case.
 Entities found in the attribute values are already expanded.  The
 third argument is a reference to an array with the lower case
 attribute keys in the original order.  The fourth argument is the
-original MiniVend page.
+original Interchange page.
 
 =item $self->end($tag)
 
@@ -97,14 +97,14 @@ Copyright 1996 Gisle Aas. All rights reserved.
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-Modified for use by MiniVend.
+Modified for use by Interchange.
 
-Copyright 1997-1998 Mike Heins.  
+Copyright 1997-2000 Akopia, Inc.  
 
 =head1 AUTHOR
 
 Gisle Aas <aas@sn.no>
-Modified by Mike Heins <mikeh@minivend.com>  
+Modified by Mike Heins <heins@akopia.com>  
 
 =cut
 
@@ -113,7 +113,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 
 sub new

@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# offline - MiniVend database builder and indexer
+# offline - Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.1 2000-05-26 18:50:47 heins Exp $
+# $Id: offline.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -259,11 +259,11 @@ foreach my $name (@Catalogs) {
 
 =head1 NAME
 
-offline -- Minivend offline database builder
+offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.1 2000-05-26 18:50:47 heins Exp $
+$Id: offline.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
 
 =head1 DESCRIPTION
 

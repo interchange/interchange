@@ -1,10 +1,10 @@
 /* vlink.c:  runs as a cgi program and passes request to Vend server
 
-   $Id: vlink.c,v 1.1 2000-05-26 18:50:22 heins Exp $
+   $Id: vlink.c,v 1.2 2000-07-12 03:08:10 heins Exp $
 
    Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 
-   Modified by Mike Heins <mikeh@minivend.com>
+   Modified by Mike Heins <heins@akopia.com>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ void server_not_running()
 {
   printf("Content-type: text/html\r\n\r\n");
   printf("<HTML><TITLE>No response</TITLE></HEAD><BODY  BGCOLOR=\"#FFFFFF\">");
-  printf("<H3>We're sorry, the MiniVend server is unavailable...</H3>\r\n");
+  printf("<H3>We're sorry, the Interchange server is unavailable...</H3>\r\n");
   printf("We are out of service or may be experiencing high system\r\n");
   printf("demand, please try again soon.</BODY></HTML>\r\n");
   exit(1);

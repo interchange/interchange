@@ -1,10 +1,8 @@
 #!/usr/bin/perl
 #
-# MiniVend version 3.12
+# $Id: Cart.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
 #
-# $Id: Cart.pm,v 1.1 2000-05-26 18:50:37 heins Exp $
-#
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -29,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use strict;
 

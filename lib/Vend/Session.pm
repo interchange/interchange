@@ -1,8 +1,8 @@
-# Session.pm - Minivend Sessions
+# Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.2 2000-06-28 07:18:55 heins Exp $
+# $Id: Session.pm,v 1.3 2000-07-12 03:08:11 heins Exp $
 # 
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 @ISA = qw(Exporter);
 

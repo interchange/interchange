@@ -1,8 +1,8 @@
-# Rare.pm - MiniVend routines rarely used or not requiring much performance
+# Rare.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.1 2000-05-26 18:50:37 heins Exp $
+# $Id: Control.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -73,7 +73,7 @@ sub control_minivend {
 
 	unless(-f $Global::PIDfile) {
 		warn errmsg(
-			"The Minivend server was not running (%s).\n",
+			"The Interchange server was not running (%s).\n",
 			$Global::PIDfile,
 			) unless $Vend::Quiet;
 		exit 1 unless $restart;
@@ -89,7 +89,7 @@ sub control_minivend {
 	Vend::Server::unlink_pid();
 	if(! $pid) {
 		warn errmsg(<<EOF);
-The previous Minivend server was not running and probably
+The previous Interchange server was not running and probably
 terminated with an error.
 EOF
 		return if $restart;
@@ -97,10 +97,10 @@ EOF
 	if(! $sig) {
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
 	}
-	print "Killing Minivend server $pid with $sig.\n"
+	print "Killing Interchange server $pid with $sig.\n"
 		unless $Vend::Quiet;
 	kill $sig, $pid
-		or die errmsg("MiniVend server would not stop.\n");
+		or die errmsg("Interchange server would not stop.\n");
 	exit 0 unless $restart;
 }
 

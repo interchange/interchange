@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.2 2000-06-26 08:53:57 heins Exp $
+# $Id: Search.pm,v 1.3 2000-07-12 03:08:11 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use strict;
 use vars qw($VERSION);

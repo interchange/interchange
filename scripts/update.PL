@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# update - MiniVend database updater
+# update - Interchange database updater
 #
-# $Id: update.PL,v 1.1 2000-05-26 18:50:47 heins Exp $
+# $Id: update.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -280,7 +280,7 @@ close_database();
 
 =head1 NAME
 
-update -- command line setting of Minivend databases
+update -- command line setting of Interchange databases
 
 =head1 VERSION
 
@@ -292,8 +292,8 @@ update -- command line setting of Minivend databases
 
 =head1 DESCRIPTION
 
-Minivend's C<update> is a rudimentary method of directly setting the
-DBM files (not the ASCII files) of a MiniVend DBM database.
+Interchange's C<update> is a rudimentary method of directly setting the
+DBM files (not the ASCII files) of a Interchange DBM database.
 
 NOTE: This command DOES NOT APPLY TO SQL databases. They have their own
 command line monitors that are more flexible.
@@ -324,7 +324,7 @@ http://www.minivend.com
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>
+Mike Heins, <heins@akopia.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

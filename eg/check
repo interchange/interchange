@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 #
-# check - MiniVend support program
+# check - Interchange support program
 #
-# $Id: check,v 1.1 2000-05-26 18:50:31 heins Exp $
+# $Id: check,v 1.2 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996-1999 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 
-# Set the MiniVend root directory
+# Set the Interchange root directory
 BEGIN {
 	$VendRoot = '/home/minivend';
 	($VendRoot = $ENV{MINIVEND_ROOT})
@@ -47,7 +47,7 @@ $RESTART_HARD = "kill -9 `cat $VendRoot/etc/minivend.pid`; rm -f $VendRoot/etc/s
 
 =head1 NAME
 
-check -- URL checker for MiniVend
+check -- URL checker for Interchange
 
 =head1 SYNOPSIS
 
@@ -56,10 +56,10 @@ check -- URL checker for MiniVend
 
 =head1 DESCRIPTION
 
-This URL checker will test the health of MiniVend and restart it
+This URL checker will test the health of Interchange and restart it
 if appropriate.  In its simplest form, you can just run it and it will
 stay in the background, executing the link program every 60 seconds
-to see if it gets a page back from MiniVend.  It relies on the default
+to see if it gets a page back from Interchange.  It relies on the default
 page (normally I<catalog.html>) being of greater than a certain watermark
 (default is 500 bytes).
 
@@ -69,14 +69,14 @@ actual web server itself with the LWP libraries and a Perl script like:
 	use LWP::Simple;
 	getprint "http://localhost/cgi-bin/simple";
 
-If MiniVend is not responding, its link program will time out and
+If Interchange is not responding, its link program will time out and
 respond with a short error message that should be less than the watermark.
 At that time, the restart script will be run once.  If the restart fails,
 then the RESTART_HARD setting will be run. If you define a custom restart
 script passed with the C<-r> option, then a C<-f> will be appended to
 it as a parameter to indicate a hard restart.
 
-Counts of good and bad runs are kept in the MiniVend root directory
+Counts of good and bad runs are kept in the Interchange root directory
 in the files F<.bad.count> and F<.ok.count> -- PID is in F<.check.pid>, and
 is locked to prevent two programs running at the same time.
 
@@ -129,7 +129,7 @@ If you have a very small default (F<catalog.html>) page:
 
 If your catalog.html page is less than 250 bytes (or whatever you have
 hacked the error message to) then you can specify a different page
-in the MiniVend PageDir:
+in the Interchange PageDir:
 
 	check -a prettybig.html
 
@@ -138,7 +138,7 @@ in the MiniVend PageDir:
 Can't check for health of web server. A good indication just indicates
 that the link program can communicate through the TCP or UNIX-domain socket.
 
-Must be run as the same user ID which runs MiniVend unless a custom
+Must be run as the same user ID which runs Interchange unless a custom
 restart script is provided.
 
 Link timeout must be waited for.  To correct this, you can compile 
@@ -146,7 +146,7 @@ a custom link with LINK_TIMEOUT set to a small value.
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>.
+Mike Heins, <heins@akopia.com>.
 
 =cut
 
@@ -291,7 +291,7 @@ sub mail_message {
 
 if($opt_d || $opt_d) {
 	print <<EOF;
-MiniVend check program $0 parameters:
+Interchange check program $0 parameters:
 
 ERRORS_TO   =$ERRORS_TO
 GOOD_SIZE   =$GOOD_SIZE
@@ -333,10 +333,10 @@ for (;;) {
                     if($restarted > 1) {
                         mail_message <<EOF;
 To: $ERRORS_TO
-Subject: MiniVend down HARD
-X-From: MiniVend Check Program ($0)
+Subject: Interchange down HARD
+X-From: Interchange Check Program ($0)
 
-MiniVend would not restart. PROBABLY MUST DO MANUAL RESTART.
+Interchange would not restart. PROBABLY MUST DO MANUAL RESTART.
 We tried:
 
  $RESTART_HARD
@@ -350,10 +350,10 @@ EOF
                     else {
                         mail_message <<EOF;
 To: $ERRORS_TO
-Subject: MiniVend restarted
-X-From: MiniVend Check Program ($0)
+Subject: Interchange restarted
+X-From: Interchange Check Program ($0)
                         
-MiniVend not responding, restarted. OK: $good BAD: $not
+Interchange not responding, restarted. OK: $good BAD: $not
 
 Script: $LINK_PROG
 Restart: $RESTART

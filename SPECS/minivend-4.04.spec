@@ -2,10 +2,10 @@
 %define minivend_user		minivend
 %define build_cats          basic simple
 
-%define see_base For a description of Minivend see http://www.minivend.com
+%define see_base For a description of Interchange see http://www.minivend.com
 
 Name: minivend
-Summary:	Minivend is a powerful database access and HTML templating daemon focused on e-commerce.
+Summary:	Interchange is a powerful database access and HTML templating daemon focused on e-commerce.
 Group:		Applications/Internet
 Version: 4.04
 Copyright: GNU General Public License
@@ -20,10 +20,8 @@ BuildRoot: /var/tmp/minivend
 
 # From the manual
 %description
-MiniVend is the most powerful free shopping cart system available today. Its features
+Interchange is the most powerful free shopping cart system available today. Its features
 and power rival the costliest commercial systems.
-
-MiniMate is the companion administration application for Minivend.
 
 %prep
 %setup
@@ -82,7 +80,7 @@ fi
 
 # Create a minivend user. Do not report any problems if it already
 # exists. We do it first so it won't error on chmod
-useradd -M -r -d /var/lib/minivend -s /bin/bash -c "Minivend server" minivend 2> /dev/null || true 
+useradd -M -r -d /var/lib/minivend -s /bin/bash -c "Interchange server" minivend 2> /dev/null || true 
 
 %files
 %config(noreplace) /etc/minivend.cfg
@@ -105,10 +103,10 @@ useradd -M -r -d /var/lib/minivend -s /bin/bash -c "Minivend server" minivend 2>
 /var/run/minivend
 
 %post
-# Make Minivend start/shutdown automatically when the machine does it.
+# Make Interchange start/shutdown automatically when the machine does it.
 /sbin/chkconfig --add minivend
 
-# Change permissions so that the user that will run the Minivend daemon
+# Change permissions so that the user that will run the Interchange daemon
 # owns all database files.
 chown -R minivend.minivend /var/lib/minivend
 chown -R minivend.minivend /var/log/minivend
@@ -160,7 +158,7 @@ done
 
 if test -n "$missing"
 then
-        echo "Minivend will work without them, but it will work much"
+        echo "Interchange will work without them, but it will work much"
 		echo "better if you install these Perl modules:"
 		echo ""
 		echo "$missing"
@@ -177,7 +175,7 @@ fi
 # Allow minivend to start and print a message before we exit
 sleep 2
 echo ""
-echo You should now be able to access the Minivend demos with:
+echo You should now be able to access the Interchange demos with:
 echo ""
 echo "	http://$HOST/basic"
 echo "	http://$HOST/simple"

@@ -27,7 +27,7 @@ my $Prompt_sub;
 my @mods_to_get;
 my $Lock_troubles;
 
-$VERSION = '4.5.2';
+$VERSION = '4.5.3';
 
 # See if we have the CPAN module
 my $Cpan = 0;
@@ -159,11 +159,11 @@ sub copyright_prompt {
 
 	print <<EOF;
 
- MiniVend V$VERSION
+ Interchange V$VERSION
  
- Copyright 1996-2000 by Michael J. Heins <mikeh\@minivend.com>
+  Copyright (C) 1996-2000 Akopia, Inc. <info\@akopia.com>
 
- MiniVend is free under the terms of the GNU General Public License.
+ Interchange is free under the terms of the GNU General Public License.
 
 EOF
 }
@@ -188,7 +188,7 @@ sub cpan_get {
 	print <<EOF unless defined $CpanInit;
 
 Since you have the CPAN module installed and initialized,
-we can go and get optional modules that help MiniVend work a
+we can go and get optional modules that help Interchange work a
 bit better and faster. At least we can if you are connected
 to the Internet and have one of the following on your machine:
 
@@ -205,7 +205,7 @@ If you don't know a URL to use, you can try:
 	ftp://ftp.funet.fi/pub/languages/perl/CPAN
 
 If you have never used CPAN before, you may want to reply NO.
-MiniVend should work anyway -- it just won't be quite as easy
+Interchange should work anyway -- it just won't be quite as easy
 to build the demo catalogs.
 
 If you have errors during the process, don't worry. Either
@@ -288,7 +288,7 @@ of your session files.
 
 If you reply YES and you use any GDBM or DB_File databases
 they will NEED TO BE REMADE for ALL CATALOGS using this
-MiniVend server instance.
+Interchange server instance.
 EOF
 
 		if($ENV{MINIVEND_STORABLE_DB} || -f "$realdir/_db_storable" || -f "_db_storable") {
@@ -389,7 +389,7 @@ sub initialize {
 	my $uid;
 	if($> == 0 and ! $MV::Default{MINIVEND_USER} and ! $Windows) {
 		$uid = my_prompt(
-			qq{MiniVend cannot be run as root. Which user should run MiniVend? },
+			qq{Interchange cannot be run as root. Which user should run Interchange? },
 			'minivend',
 		);
 		open(UID, ">_uid")
@@ -431,7 +431,7 @@ sub initialize {
 		&copyright_prompt();
 
 		$realdir = my_prompt(
-								"Where is your MiniVend to be installed? ",
+								"Where is your Interchange to be installed? ",
 								$MV::Default{PREFIX},
 								);
 		print "\n";
@@ -712,7 +712,7 @@ if($Windows) {
 }
 else {
 	WriteMakefile(
-		NAME       => "MiniVend",
+		NAME       => "Interchange",
 		MAN3PODS => {
 						'pod/mvdocs.pod' => 'blib/man3/mvdocs.8',
 						'pod/mvtags.pod' => 'blib/man3/mvtags.8',

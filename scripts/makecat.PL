@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# makecat = MiniVend catalog configurator
+# makecat = Interchange catalog configurator
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,13 +101,13 @@ options:
     --cgibase=url_fragment   Base URL for link programs
     --documentroot=directory The directory where HTML is based
     --minivendgroup=group    The default group files should be owned by
-    --minivenduser=username  The user ID which runs MiniVend
+    --minivenduser=username  The user ID which runs Interchange
     --serverconf=filename    Location of httpd.conf
-    --vendroot=filename      Location of MiniVend software
+    --vendroot=filename      Location of Interchange software
     --homedir=directory      Use instead of \$HOME to set defaults
 
     Required:
-    --catroot=directory      Directory where MiniVend catalog files go
+    --catroot=directory      Directory where Interchange catalog files go
     --cgidir=directory       The directory the CGI link should go to
     --servername=server      Name of server (www.whatever.domain)
     --cgiurl=url_fragment    The path to the CGI link (no server name)
@@ -286,7 +286,7 @@ my $Servers;
 my $Done_defaults;
 
 print <<EOF;
-makecat -- MiniVend catalog installation program.
+makecat -- Interchange catalog installation program.
 
 *** We will be making a catalog named '$catalog_name'. ***
 
@@ -728,7 +728,7 @@ FINDCONF: {
 	}
 	print <<EOF unless @conf;
 
-If you are using the Apache or NCSA web server, MiniVend can set
+If you are using the Apache or NCSA web server, Interchange can set
 some of the default parameters for you by reading the file.
 
 If you use the Netscape Enterprise server or other non-NCSA HTTP server,
@@ -739,7 +739,7 @@ EOF
 		print <<EOF;
 
 Try using the UP arrow at some of the prompts -- you have the
-Term::ReadLine module installed, and MiniVend may find some
+Term::ReadLine module installed, and Interchange may find some
 default values in your HTTP server configuration file.  You can
 cycle among them with the UP and DOWN arrows.
 
@@ -766,7 +766,7 @@ EOF
 		else {
 			print <<EOF;
 
-MiniVend can look for Apache or NCSA HTTP server configuration
+Interchange can look for Apache or NCSA HTTP server configuration
 files for you by a slow method (using the system find
 command). This may take as many as several minutes.
 
@@ -850,20 +850,20 @@ MULTIPLE GROUP or GROUP is appropriate when multiple users will be running
 catalogs on the same server.
 
 MULTIPLE GROUP is the best way. Put each user in their own group, and
-place the MiniVend user in that group.  In this mode, only the user of
-each catalog and the MiniVend server may read database and error files --
+place the Interchange user in that group.  In this mode, only the user of
+each catalog and the Interchange server may read database and error files --
 files that may contain sensitive information. If the user's default UMASK
 is 2 on a UNIX system, then this the most troublefree mode of operation.
 
-GROUP mode causes all files to be owned by the MiniVend user, with group
-ownership set to the group the user belongs to. This allows the MiniVend
+GROUP mode causes all files to be owned by the Interchange user, with group
+ownership set to the group the user belongs to. This allows the Interchange
 user and each individual user to read and write the files associated with
 a catalog, but others in that group may read files from a catalog. This
 may not be secure, and may cause problems when the user creates new
-files that must be read/write to the MiniVend user.
+files that must be read/write to the Interchange user.
 
 USER mode is appropriate when only one user owns all catalogs running
-on this server, and the MiniVend daemon is run by the same user.
+on this server, and the Interchange daemon is run by the same user.
 
   M) MULTIPLE GROUP
   G) GROUP
@@ -898,7 +898,7 @@ EOF
 
 	print <<EOF if defined $Vend::MakeCat::Prompt_sub;
 
-MiniVend can set many of the defaults for you if it knows the server
+Interchange can set many of the defaults for you if it knows the server
 name that is going to be used.
 
 Enter the default server that should be used. This is only a default, to
@@ -1173,7 +1173,7 @@ SETLINKMODE: {
 	}
 	print <<EOF;
 
-MiniVend can use either UNIX- or internet-domain sockets.
+Interchange can use either UNIX- or internet-domain sockets.
 Most ISPs would prefer UNIX mode, and it is more secure.
 
 If you already have a program there, or use a common program
@@ -1627,7 +1627,7 @@ sub wanted {
 				print <<EOF;
 
 My test indicates you can't change vlink to SUID mode.
-This will cause big problems -- you can make MiniVend work anyway
+This will cause big problems -- you can make Interchange work anyway
 by changing the ReadPermission and WritePermission directives in
 all of your catalogs to 'world', but this is not secure. If you can,
 you should run this as root, or su to root and do:
@@ -1894,7 +1894,7 @@ In any case, you should get direct access at:
 
 	http://$Conf{servername}$Conf{cgiurl}
 
-That is, after you START or RESTART the MiniVend server.  8-)
+That is, after you START or RESTART the Interchange server.  8-)
 It is best done with:
 
 	$start_string
@@ -1928,7 +1928,7 @@ EOF
 		}
 	}
 
-	print "Good luck with MiniVend!\n" if defined $newconfig;
+	print "Good luck with Interchange!\n" if defined $newconfig;
 
 	if($Conf{'reference'}) {
 		$Data::Dumper::Terse = 1;
@@ -1938,7 +1938,7 @@ EOF
 
 =head1 NAME
 
-makecat - Build a MiniVend catalog from a template
+makecat - Build an Interchange catalog from a template
 
 =head1 SYNOPSIS
 
@@ -1946,11 +1946,11 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.4 2000-07-11 21:52:06 heins Exp $
+$Id: makecat.PL,v 1.5 2000-07-12 03:08:12 heins Exp $
 
 =head1 INTRODUCTION
 
-The makecat program builds a MiniVend catalog from a template based on your
+The makecat program builds a Interchange catalog from a template based on your
 server configuration.  It interrogates for parameters like the directories to
 use, URL to base the catalog in, HTTP server definitions, and file ownership.
 It is self-documenting in that it asks verbose questions and gives relevant
@@ -1998,7 +1998,7 @@ Force make of catalog with defaults supplied on command line.
 
 =item C<-f>
 
-Configuration file -- default is makecat.cfg in Minivend Confdir (etc) directory.
+Configuration file -- default is makecat.cfg in Interchange Confdir (etc) directory.
 
 =item C<-l>
 
@@ -2046,7 +2046,7 @@ The default group files should be owned by.
 
 =item --minivenduser=username
 
-The user ID which runs MiniVend.
+The user ID which runs Interchange.
 
 =item --serverconf=filename
 
@@ -2054,7 +2054,7 @@ Location of httpd.conf; you will be queried otherwise.
 
 =item --vendroot=filename
 
-Location of MiniVend software.
+Location of Interchange software.
 
 =item --homedir=directory
 
@@ -2069,7 +2069,7 @@ default will often be correct if you have set the above options correctly.
 
 =item --catroot=directory
 
-Directory where MiniVend catalog files go. This is the base directory
+Directory where Interchange catalog files go. This is the base directory
 for this catalog.
 
 =item --cgidir=directory
@@ -2172,7 +2172,7 @@ Don't set umask to the value implied by mode.
 =head1 DESCRIPTION
 
 C<makecat> needs a template catalog to operate on. The I<simple> and
-I<barry> demo templates are distributed with MiniVend. You can also look for
+I<barry> demo templates are distributed with Interchange. You can also look for
 older demo catalogs (mostly for ideas) at C<ftp.minivend.com>.
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
@@ -2227,16 +2227,16 @@ not just the catalog.cfg file. There are two special directories
 named C<html> and C<images>. These will be recursively copied to
 the directories defined as SampleHTML and ImageDir.
 
-B<IMPORTANT NOTE:> The template directory is located in the MiniVend
+B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<minivend.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
 simple and copy the C<simple> demo directory to it as a starting point.
-Templates are normally placed in the MiniVend base directory, but can
+Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
 
-In addition to the standard parameters prompted for by MiniVend, and
+In addition to the standard parameters prompted for by Interchange, and
 the standard catalog creation procedure, you may define four other
 files in the C<config> directory of the template:
 
@@ -2276,12 +2276,12 @@ If the file I<config/precopy_commands> exists, it will be read as
 a command followed by the prompt/help value.
 
     mysqladmin create __MVC_CATALOGNAME__
-    We need to create an SQL database for your Minivend
+    We need to create an SQL database for your Interchange
     database tables.
      
 This will cause the prompt:
 
-    We need to create an SQL database for your Minivend
+    We need to create an SQL database for your Interchange
     database tables.
      
     Run command "mysqladmin create simple"?
@@ -2296,15 +2296,15 @@ The file I<config/postcopy_commands> is exactly the same as I<precopy_commands>
 except you are prompted I<after> the catalog files are copied and
 macro substitution is performed on all files.
 
-=head1 ABOUT MINIVEND IN GENERAL
+=head1 ABOUT INTERCHANGE IN GENERAL
 
-MiniVend has many, many, functions and features; they are too numerous
+Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
         http://www.minivend.com
 
-MiniVend requires Perl 5.005 or higher; more information on Perl can
+Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
         http://www.perl.com
@@ -2315,26 +2315,26 @@ mvdocs(8), minivend(1), http://www.minivend.com
 
 =head1 LICENSE
 
-MiniVend comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Mike Heins. All rights reserved except as in the
+Copyright 1995-2000, Akopia, Inc.. All rights reserved except as in the
 license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>. Please do not contact the author for
-direct help with the system. Use the Minivend mail lists:
+Mike Heins, <heins@akopia.com>. Please do not contact the author for
+direct help with the system. Use the Interchange mail lists:
 
-    minivend-users@minivend.com (English, subscribe at majordomo@Minivend.com)
-    minivend-de@minivend.com    (Deutsch, subscribe at majordomo@Minivend.com)
+    minivend-users@minivend.com (English, subscribe at majordomo@minivend.com)
+    minivend-de@minivend.com    (Deutsch, subscribe at majordomo@minivend.com)
 
-General information and documentation for Minivend is at:
+General information and documentation for Interchange is at:
 
     http://www.minivend.com
 

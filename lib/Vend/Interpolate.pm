@@ -1,9 +1,9 @@
 #!/usr/bin/perl
-# Interpolate.pm - Interpret MiniVend tags
+# Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.11 2000-07-11 20:05:23 heins Exp $
+# $Id: Interpolate.pm,v 1.12 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 @EXPORT = qw (
 
@@ -403,7 +403,7 @@ sub substitute_image {
 
 #
 # This is one entry point for page display.
-# Evaluates all of the MiniVend tags. Does some basic cache management
+# Evaluates all of the Interchange tags. Does some basic cache management
 # for static page building.
 #
 
@@ -466,7 +466,7 @@ sub cache_html {
 
 #
 # This is one entry point for page display.
-# Evaluates all of the MiniVend tags.
+# Evaluates all of the Interchange tags.
 #
 
 sub vars_and_comments {
@@ -1870,7 +1870,7 @@ sub log {
 }
 
 sub _mime_id {
-	'<MiniVend.' . $::VERSION . '.' .
+	'<Interchange.' . $::VERSION . '.' .
 	$Vend::TIMESTAMP . '.' .
 	$Vend::SessionID . '.' .
 	++$Vend::Session->{pageCount} . '@' .
@@ -1952,7 +1952,7 @@ sub tag_cgi {
 	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
 	$value = $CGI::values{$var} || '';
     if ($value) {
-		# Eliminate any MiniVend tags
+		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
 		$value =~ s/\[/&#91;/g;
     }
@@ -2185,7 +2185,7 @@ sub tag_value {
 	$::Values->{$var} = $opt->{set} if defined $opt->{set};
 	$value = $::Values->{$var} || '';
     if ($value) {
-		# Eliminate any MiniVend tags
+		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
 		$value =~ s/\[/&#91;/g;
     }
@@ -4728,7 +4728,7 @@ sub shipping {
 
 	goto SHIPFORMAT unless $field;
 
-	# See if the field needs to be returned by a MiniVend function.
+	# See if the field needs to be returned by a Interchange function.
 	# If a space is encountered, a qualification code
 	# will be set up, with any characters after the first space
 	# used to determine geography or other qualifier for the mode.

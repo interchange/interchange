@@ -1,9 +1,9 @@
 /* minivend.c:  runs as a command line or cgi program and starts up
-			    MiniVend in various modes
+			    Interchange in various modes
 
-   $Id: mvctl.c,v 1.1 2000-05-26 18:50:22 heins Exp $
+   $Id: mvctl.c,v 1.2 2000-07-12 03:08:10 heins Exp $
 
-   Copyright 1997 by Mike Heins <mikeh@minivend.com>
+   Copyright (C) 1997-2000 Akopia, Inc. <info@akopia.com>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

@@ -3,9 +3,10 @@ ui_template: Yes
 ui_template_name: standalone
 ui_template_layout: LOGOBAR, MENUBAR, UI_CONTENT, MENUBOTTOM, COPYRIGHT
 ui_template_description: Page with top logo bar. menu bar and copyright at bottom.
-ui_control_element: page_title
-ui_control_element: members_only 0=No,1=Yes
-ui_control_description: Settable: Page title, Members only
+ui_control_element: page_title :
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title : Page title
+ui_control_description: members_only : Members only
 [/comment]
 [set members_only][/set]
 [set page_title]Enter Billing Address[/set]

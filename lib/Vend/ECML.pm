@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Vend::ECML -- map MiniVend forms/userdb to ECML checkout
+Vend::ECML -- map Interchange forms/userdb to ECML checkout
 
 =head1 VERSION
 
@@ -19,7 +19,7 @@ Magic database entry from country database:
 
 	[ecml country]
 
-Map values back to MiniVend variables for saving in UserDB:
+Map values back to Interchange variables for saving in UserDB:
 
 	<INPUT TYPE=hidden NAME=mv_click CHECKED VALUE="ECML_map">
 	[set ECML_map]
@@ -28,13 +28,13 @@ Map values back to MiniVend variables for saving in UserDB:
 
 =head1 DESCRIPTION
 
-This package implements the ECML standard for the MiniVend demo.
+This package implements the ECML standard for the Interchange demo.
 ECML stands for "Electronic Commerce Modeling Language", but at this 
 writing it is a simple standard for naming variables so that "electronic
 wallets" can pre-fill-in your checkout form based on users past purchase
 from other companies.
 
-It translates into ECML from the following MiniVend variables:
+It translates into ECML from the following Interchange variables:
 
   Ecom_BillTo_Online_Email            b_email
   Ecom_BillTo_Postal_City             b_city
@@ -91,9 +91,9 @@ It translates into ECML from the following MiniVend variables:
   Ecom_ShipTo_Telecom_Phone_Number    phone
   Ecom_TransactionComplete            end_transaction_flag
 
-Once the form variables are input and sent to MiniVend, the [ecml function=mapback]
+Once the form variables are input and sent to Interchange, the [ecml function=mapback]
 tag will cause the input results to be mapped back from the ECML names to the
-MiniVend names.
+Interchange names.
 
 If you only have a C<name> variable in your UserDB, the module will attempt to
 split it into first name and last name for ECML purposes and map the results
@@ -159,7 +159,7 @@ local($^W) = 0;
 
 =head2 [ecml function=name name=common]
 
-Returns the ECML name for the MiniVend common usage.
+Returns the ECML name for the Interchange common usage.
 
 =cut
 

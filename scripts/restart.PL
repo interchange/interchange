@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend restarter
+# Interchange restarter
 #
-# $Id: restart.PL,v 1.1 2000-05-26 18:50:47 heins Exp $
+# $Id: restart.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # See the file 'Changes' for information.
 #
@@ -97,11 +97,11 @@ sub get_id {
 
 if ($< == 0) {
 	$name = get_id() || 'YOUR_MINIVEND_USER_NAME';
-	die "Minivend user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_MINIVEND_USER_NAME';
+	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_MINIVEND_USER_NAME';
 	if(-t) {
 		print <<EOM unless $force;
 
-The MiniVend server should not be run as root. It should run
+The Interchange server should not be run as root. It should run
 as a the user name you configured in when you set up the catalogs.
 
 The name we think should run it is: $name
@@ -164,7 +164,7 @@ user ID. (This is the contents of the $Global::VendRoot/_uid file.)
 
 =head1 OPTIONS
 
-The C<-f> flag prevents the prompt for superuser and forces quiet mode; this is how you might call MiniVend from 
+The C<-f> flag prevents the prompt for superuser and forces quiet mode; this is how you might call Interchange from 
 a system startup script.
 
 =head1 SEE ALSO
@@ -173,7 +173,7 @@ minivend(1), mvdocs(8), http://www.minivend.com
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>
+Mike Heins, <heins@akopia.com>
 
 
 _EoP_

@@ -1,5 +1,5 @@
 # This is how you can use Signio PayPro with
-# Minivend.
+# Interchange.
 # 
 Variable SIGNIO_HELP <<EOV
 
@@ -22,7 +22,7 @@ Variable SIGNIO_HELP <<EOV
 
  4. Make sure CreditCardAuto is off (default in MV4)
 
- 5. Restart Minivend.
+ 5. Restart Interchange.
 
 EOV
 
@@ -101,7 +101,7 @@ sub signio {
     my($orderID);
     my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
-    # We'll make an order ID based on date, time, and MiniVend session
+    # We'll make an order ID based on date, time, and Interchange session
 
     # $mon is the month index where Jan=0 and Dec=11, so we use
     # $mon+1 to get the more familiar Jan=1 and Dec=12

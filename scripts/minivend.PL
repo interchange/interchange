@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# MiniVend version 4.0xxx
+# Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.10 2000-07-11 20:05:24 heins Exp $
+# $Id: minivend.PL,v 1.11 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -99,7 +99,7 @@ if($^O =~ /win32/i) {
 #$ENV{MINIVEND_STORABLE_DB} = 1;
 
 # Uncomment AND SET next line to set PGP path to somewhere besides
-# the MiniVend user path
+# the Interchange user path
 #$ENV{PGPPATH} = '/usr/local/pgp';
 
 # Use the Storable module for storing data in DBM files.
@@ -111,7 +111,7 @@ if (-f "$Global::VendRoot/_db_storable") {
 	$ENV{MINIVEND_STORABLE_DB} = 1;
 }
 
-# MiniVend can use syslog via the "logger" command
+# Interchange can use syslog via the "logger" command
 # This prevents parsing of the value, default is syslog off
 $Global::SysLog		= '';
 
@@ -123,7 +123,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.5.2';
+	$VERSION = '4.5.3';
 }
 
 
@@ -1485,7 +1485,7 @@ EOF
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
 							response( <<EOF);
-<HTML><HEAD><TITLE>Fatal MiniVend Error</TITLE></HEAD><BODY>
+<HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
 <PRE>$msg</PRE>
 </BODY></HTML>
@@ -1701,8 +1701,7 @@ sub dump_env {
 }
 
 sub version {
-	print "MiniVend version $VERSION Copyright 1995 Andrew M. Wilcox\n";
-	print "                      Copyright 1996-1998 Michael J. Heins\n";
+	print "Interchange version $VERSION Copyright 1996-2000 Akopia, Inc.\n";
 }
 
 =head1 NAME
@@ -1719,25 +1718,25 @@ minivend [--options] [file]
 
 =head1 DESCRIPTION
 
-MiniVend is a database access and retrieval system focused on e-commerce.
+Interchange is a database access and retrieval system focused on e-commerce.
 It allows customers to select items to buy from catalog pages. The program
 tracks user information in sessions and interacts with an HTTP server
 through sockets.
 
-MiniVend has many, many, functions and features; they are too numerous
+Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
 		http://www.minivend.com
 
-MiniVend requires Perl 5.005 or higher; more information on Perl can
+Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
 		http://www.perl.com
 
 =head1 OPTIONS
 
-MiniVend uses the Getopt::Long module, and most options will be recognized
+Interchange uses the Getopt::Long module, and most options will be recognized
 if they uniquely identifiable. The canonical forms are:
 
 =over 4 
@@ -1749,7 +1748,7 @@ Add a catalog to the system. Information taken from the input file
 
   echo "Catalog simple /catalogs/simple /simple.cgi" | bin/minivend -a
 
-The information is in the form of a standard MiniVend catalog line,
+The information is in the form of a standard Interchange catalog line,
 and must be in the single-line format.
 
 =item C<-b catalog, --build=catalog>
@@ -1758,7 +1757,7 @@ Build static page tree for C<catalog>.
 
 =item -d dir, --dir=dir
 
-Directory for VendRoot. This is where the MiniVend configuration file
+Directory for VendRoot. This is where the Interchange configuration file
 will be looked for (if not redefined with C<-f>), and where the log file
 will go (if not redefined with the ErrorFile directive).
 
@@ -1780,7 +1779,7 @@ Display help on command line options.
 
 =item -i, --inetmode
 
-Run with internet-domain socket only. Normally MiniVend runs with
+Run with internet-domain socket only. Normally Interchange runs with
 both UNIX- and internet-domain sockets (except on Windows).
 
 =item --kill [signal]
@@ -1819,11 +1818,11 @@ Stop server gracefully with a TERM signal.
 =item -t, --test
 
 Report problems with config files; causes a complete configuration of 
-the Minivend server but no server start.
+the Interchange server but no server start.
 
 =item -u, --unix
 
-Run with unix-domain socket only. Normally MiniVend runs with
+Run with unix-domain socket only. Normally Interchange runs with
 both UNIX- and internet-domain sockets. This will not work on Windows.
 
 =item -v, --version
@@ -1839,7 +1838,7 @@ various things.
 
 =item Directive=value
 
-Set a MiniVend global directive upon start (or --restart). Example:
+Set a Interchange global directive upon start (or --restart). Example:
 
 	minivend SocketPerms=0666
 
@@ -1849,7 +1848,7 @@ re-specify the directive if it is still to have that value.
 
 =item name:Directive=value
 
-Set a MiniVend directive for catalog C<name> upon start (or --restart). Example:
+Set a Interchange directive for catalog C<name> upon start (or --restart). Example:
 
 	minivend simple:VendURL="http://localhost/cgi-bin/simple"
 
@@ -1865,7 +1864,7 @@ sub usage {
 	version();
 	print <<'END';
 
-MiniVend comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
@@ -2092,7 +2091,7 @@ sub main_loop {
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
 	parse_options() or die usage() . "\n";
 	if($> == 0 and ! $Global::Windows) {
-		die errmsg("The Minivend server must not be run as root.\n")
+		die errmsg("The Interchange server must not be run as root.\n")
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
 
@@ -2135,7 +2134,7 @@ sub main_loop {
 	$Global::ConfigFile = "$Global::VendRoot/minivend.cfg"
 		if ! $Global::ConfigFile;
 
-	die "MiniVend not configured, no $Global::ConfigFile.\n"
+	die "Interchange not configured, no $Global::ConfigFile.\n"
 		unless -f $Global::ConfigFile;
 
 # OPTION_EXTENSION
@@ -2162,7 +2161,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	}
 
 	$| = 1;
-	logGlobal( "MiniVend V$VERSION");
+	logGlobal( "Interchange V$VERSION");
 	CATCONFIG: {
 		my $i = 0;
 		my ($g, $c, $name);
@@ -2281,7 +2280,7 @@ http://www.minivend.com
 
 =head1 LICENSE
 
-MiniVend comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
@@ -2294,48 +2293,56 @@ license.
 
 =head1 AUTHOR
 
-Mike Heins, <mikeh@minivend.com>. Please do not contact the author for
-direct help with the system. Use the Minivend mail lists:
+Mike Heins, <heins@akopia.com>. Please do not contact the author for
+direct help with the system. Use the Interchange mail lists:
 
-	minivend-users@minivend.com (English, subscribe at majordomo@Minivend.com)
-	minivend-de@minivend.com    (Deutsch, subscribe at majordomo@Minivend.com)
+	minivend-users@minivend.com (English, subscribe at majordomo@minivend.com)
+	minivend-de@minivend.com    (Deutsch, subscribe at majordomo@minivend.com)
 
-General information and documentation for Minivend is at:
+General information and documentation for Interchange is at:
 
 	http://www.minivend.com
 
 =head1 ACKNOWLEDGEMENTS
 
-Original author of the Vend was Andrew Wilcox. MiniVend was based
+Original author of the Vend was Andrew Wilcox. Interchange was based
 on Vend 0.2, with portions from Vend 0.3; both were produced in 1995.
 
-Contributions to MiniVend have been made by:
+Contributions to Interchange have been made by:
 
-    Andreas Koenig         
+    Andreas Koenig     
     Bill Randle
-    Birgitt Funk           
-    Bob Jordan             
-    Brian Bullen           
-    Bruce Albrecht         
+    Birgitt Funk       
+    Bob Jordan         
+    Brian Bullen       
+    Bruce Albrecht     
     Christian Mueller
-	Christopher Thompson
-    Don Grodecki           
-    Frank Bonita           
-    Gunnar Hellekson       
-    Heinz Wittenbecher     
-    Keiko                    
+    Christopher Thompson
+    Dan Busarow
+    Dave Wingate
+    Dennis Cronin
+    Don Grodecki       
+    Frank Bonita       
+    Gunnar Hellekson   
+    Heinz Wittenbecher
+    Jason Holt
     Jochen Wiedmann
+    Jon Jensen
+    Keiko
+    Keith Oberlin
     Larry Leszczynski
     Marc Austin
     Michael McCune
     Mike Frager
     Raj Goel
+    Sonny Cook
     Stefan Hornburg   
     Tim Baverstock
+    Ton Verhagen
     William Dan Terry
-    many others       
+    many others
 
-and, of course, the entire Perl team without whom MiniVend could not exist.
+and, of course, the entire Perl team without whom Interchange could not exist.
 
 =cut
 

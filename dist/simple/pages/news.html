@@ -16,7 +16,7 @@ __LEFTSIDE__
 
 <BLOCKQUOTE>
 <FONT FACE="arial,helvetica" SIZE="-1">
-You may note a new look for MiniVend's "simple" demo.
+You may note a new look for Interchange's "simple" demo.
 <P>
 [page reconfig/reconfig]Reconfigure the catalog[/page]
 (must be user <B><TT>minivend</TT></B>)
@@ -116,7 +116,7 @@ You can use a form here, too:
             $Session->{key}          Direct reference to session area
             $Tag->tagname(@args)     Call a tag as a routine (UserTag too!)
             $Values->{key}           Direct reference to user form values
-            $Variable->{key}         Direct reference to MiniVend Variable 
+            $Variable->{key}         Direct reference to Interchange Variable 
             &Log($msg)               Log to the error log
 </XMP>
 
@@ -168,7 +168,7 @@ You can use a form here, too:
         <INPUT TYPE=text NAME=phone VALUE="[value name=!phone:digits!]">
 </XMP>
       This guarantees that the value of "phone" will be digits only
-      when sent to MiniVend. Filters include:
+      when sent to Interchange. Filters include:
 <PRE>
           uc          UPPER CASE 
           lc          lower case 
@@ -217,7 +217,7 @@ You can use a form here, too:
       positional parameters are used.
 
 <LI> ECML is supported via the Vend::ECML module. To map the 
-      checkout form values from MiniVend UserDB names, with an [ecml ...]
+      checkout form values from Interchange UserDB names, with an [ecml ...]
       tag:
 <XMP>
             [ecml state]
@@ -260,102 +260,6 @@ You can use a form here, too:
               StaticDBM static
 </XMP>
 </UL>
-<H2>MiniVend 3.15 Features</H2>
-
-<ul>
-  <li>Users maintain a &quot;shopping cart&quot; for ordered items </li>
-  <li>Multiple independent or shared catalogs allow one server to run many storefronts or a
-    &quot;mall&quot; </li>
-  <li>Complete SQL database support, inluding ODBC, via the powerful Perl DBI/DBD interface </li>
-  <li>Complete built-in database, no SQL is required to run MiniVend
-  <li>SSL support means secure and practical credit card ordering </li>
-  <li>PGP support for secure off-site mailing of orders </li>
-  <li>Built in support for <i>CyberCash</i> </li>
-  <li>Catalogs can be of almost unlimited size with <b>excellent</b> performance </li>
-  <li>Multi-server mode for very high capacity on systems with sufficient memory </li>
-  <li>Full-featured user database and access control</li>
-  <li>Cookie support allows browsers to leave catalog and come back without losing session
-    state -- browsers that don't accept cookies will still work fine</li>
-  <li>Multiple shopping carts allow buy-sell operations or classified ad exchanges </li>
-  <li>Built-in addressable database support with virtually unlimited rows and columns and
-    field sizes -- no SQL is required to run Minivend </li>
-  <li>Many, many, other features </li>
-</ul>
-
-<h3>Powerful search capability</h3>
-
-<ul>
-  <li>Fast binary search </li>
-  <li>One-click scan and search -- build a whole search in a single HREF </li>
-  <li>Complete Glimpse interface </li>
-  <li>Range searching, numeric and alphanumeric</li>
-  <li>Delayed search feature for immediate response even on long searches</li>
-  <li>Embed searches within searches </li>
-  <li>Independent field search selection and return </li>
-  <li>Search any file, build results from any database </li>
-</ul>
-
-<h3>Complete control of appearance</h3>
-
-<ul>
-  <li>Over 90 predefined tag functions </li>
-  <li><B>Powerful</B> user-definable tags </li>
-  <li>Tags can be embedded within HTML tags to work with popular HTML editors</li>
-  <li>Catalog pages automatically selected -- either built &quot;on the fly&quot; from the
-    database or pre-made for popular items </li>
-  <li>Embedded Perl and conditional HTML allow complex and flexible catalog pages to be
-    completely built from the database </li>
-  <li>ASP-style programming supported
-  <li>Full frames support </li>
-  <li>Full client-side imagemap support, including frame targets and form submits </li>
-</ul>
-
-<h3>Flexible Ordering Process</h3>
-
-<ul>
-  <li>Single- or multi-level order screens with configurable field verification </li>
-  <li>Shipping calculation, mixed modes, with UPS table lookup </li>
-  <li>Sales tax calculation, with fully independent non-taxable item and taxed shipping </li>
-  <li>Fully-configurable discounts with coupons or across-the-board discounts </li>
-  <li>Fully-configurable quantity pricing </li>
-  <li>Powerful global subroutines and user-definable tags allow communication
-  with any other system interface for back end order entry</li>
-  <li>Fully configurable order reports</li>
-  <li>Route orders to multiple fulfillment houses with complete configurability</li>
-  <li>Easy to configure for downloadable product delivery</li>
-</ul>
-
-<h3>Easy Administration</h3>
-
-<ul>
-  <li>Automated installation and configuration </li>
-  <li>Numerous administration utilities </li>
-  <li>Runs under Perl 5.004 and almost any UNIX</li>
-  <li>Runs under Perl 5.004 and 32-bit Windows</li>
-  <li>Works well with <i>all</i> browsers </li>
-</ul>
-
-
-<P>
-Andrew Wilcox wrote <I>Vend,</I> the copylefted shopping cart
-software. MiniVend was originally based on Vend V0.2, but has been
-greatly enhanced, adding powerful relational database functions, user-definable
-tags, support
-for frames, powerful searching, remote administration, super<I>fast</I>
-server mode, conditional HTML, user-customizable help and displays, and
-much more.  This version of MiniVend includes an automatic configuration
-and installation utility, and continues to be free under the GNU copyleft.
-
-<P>
-To learn more about <STRONG>MiniVend</STRONG>, see the
-<A HREF="http://www.minivend.com/minivend/mvtoc.html">
-HTML documentation</A>,
-<A HREF="http://www.minivend.com/minivend/faq/">FAQ</A>,
-visit the <A HREF="http://www.minivend.com/minivend/">offical <I>MiniVend</I>
-site</A>, or
-<A HREF="http://www.minivend.com/minivend/download.html">download</A> it.
-<P>
-</BODY>
 </BLOCKQUOTE>
 [/mvasp]
 

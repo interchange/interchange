@@ -1,8 +1,8 @@
-# Tagref.pm - Document MiniVend tags
+# Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Tagref.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Tagref.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -223,13 +223,13 @@ See C<[if ...]>.
 accessories
 %%
 
-The C<[accessories ...]> tag allows you to access MiniVend's option
+The C<[accessories ...]> tag allows you to access Interchange's option
 attribute facility in any of several ways.
 
 If passed any of the optional arguments, initiates special processing
 of item attributes based on entries in the product database.
 
-MiniVend allows item attributes to be set for each ordered item. This
+Interchange allows item attributes to be set for each ordered item. This
 allows a size, color, or other modifier to be attached to a line
 item in the shopping cart. Previous attribute values can be resubmitted
 by means of a hidden field on a form.
@@ -266,7 +266,7 @@ their names if the variable is the same name as the attribute name you
 select, as the C<[modifier-name size]> variables will be placed in the
 user session as the form variables size0, size1, size2, etc.
 
-MiniVend will automatically generate the select boxes
+Interchange will automatically generate the select boxes
 when the C<[accessories <code> size]> or C<[item-accessories size]>
 tags are called. They have the syntax:
 
@@ -483,7 +483,7 @@ HTML example:
 
     <A MV="area dir/page" HREF="dir/page.html">
 
-Produces the URL to call a MiniVend page, without the surrounding
+Produces the URL to call a Interchange page, without the surrounding
 A HREF notation. This can be used to get control of your HREF items,
 perhaps to place an ALT string or a Javascript construct.
 
@@ -510,7 +510,7 @@ The two form values I<mv_session_id> and I<mv_arg> are automatically added
 when appropriate. (I<mv_arg> is the C<arg> parameter for the tag.)
 
 If the parameter C<href> is not supplied, I<process> is used, causing
-normal MiniVend form processing.
+normal Interchange form processing.
 
 This would generate a form that ordered item number 99-102 on
 a separate line (C<mv_separate_items> being set), with size C<L>,
@@ -518,7 +518,7 @@ in quantity 2. Since the page is not set, you will go to the default
 shopping cart page -- equally you could set C<mv_orderpage=yourpage>
 to go to C<yourpage>.
 
-All normal MiniVend form caveats apply -- you must have an action,
+All normal Interchange form caveats apply -- you must have an action,
 you must supply a page if you don't want to go to the default,
 etc.
 
@@ -530,21 +530,21 @@ to do something like that you will have to write a UserTag.
 banner
 %%
 The [banner ...] tag is designed to implement random or rotating
-banner displays in your Minivend pages. See the main Minivend documentation,
+banner displays in your Interchange pages. See the main Interchange documentation,
 section I<Banner/Ad rotation>.
 
 %%%
 bounce
 %%
 The [bounce ...] tag is designed to send an HTTP redirect (302 status code)
-to the browser and redirect it to another (possibly MiniVend-parsed) page.
+to the browser and redirect it to another (possibly Interchange-parsed) page.
 
 It will stop MML code execution at that point; further tags will not
 be run through the parser. Bear in mind that if you are inside a looping
 list, that list will run to completion and the [bounce] tag will not
 be seen until the loop is complete.
 
-Example of bouncing to a MiniVend parsed page:
+Example of bouncing to an Interchange parsed page:
 
 	[if !scratch real_user]
 	[bounce href="[area violation]"]
@@ -559,7 +559,7 @@ cause a browser warning:
 	[bounce href="/"]
 	[/if]
 
-But running something like one of the MiniVend demos you can
+But running something like one of the Interchange demos you can
 do:
 
 	[if value go_home]
@@ -586,7 +586,7 @@ will display:
     4
 
 The [calc] tag is really the same as the [perl] tag, except
-that it doesn't accept arguments, interpolates surrounded MiniVend
+that it doesn't accept arguments, interpolates surrounded Interchange
 tags by default, and is slightly more efficient to parse.
 
 TIP: The [calc] tag will remember variable values inside one page, so
@@ -632,7 +632,7 @@ comment
 
 syntax: [comment] code [/comment]
 
-Comments out MiniVend tags (and anything else) from a page. The contents
+Comments out Interchange tags (and anything else) from a page. The contents
 are never displayed to the user.
 
 %%%
@@ -677,7 +677,7 @@ namespace. If the optional B<value> is supplied, the entry will be
 changed to that value.  If the option increment* is present, the field
 will be atomically incremented with the value in B<value>. Use negative
 numbers in C<value> to decrement. The C<append> attribute causes the value
-to be appended; and finally, the C<filter> attribute is a set of MiniVend
+to be appended; and finally, the C<filter> attribute is a set of Interchange
 filters that are applied to the data 1) after it is read; or 2)before it
 is placed in the table.
 
@@ -688,22 +688,22 @@ B<This must be done before ANY access to that table.>
 
 DEPRECATED BEHAVIOR: (replace with C<session> tag).
 In addition, the C<[data ...]> tag can access a number of elements in
-the MiniVend session database:
+the Interchange session database:
 
     accesses           Accesses within the last 30 seconds
     arg                The argument passed in a [page ...] or [area ...] tag
     browser            The user browser string
     cybercash_error    Error from last CyberCash operation
     cybercash_result   Hash of results from CyberCash (access with usertag)
-    host               MiniVend's idea of the host (modified by DomainTail)
+    host               Interchange's idea of the host (modified by DomainTail)
     last_error         The last error from the error logging
-    last_url           The current MiniVend path_info
+    last_url           The current Interchange path_info
     logged_in          Whether the user is logged in (add-on UserDB feature)
     pageCount          Number of unique URLs generated
     prev_url           The previous path_info
     referer            HTTP_REFERER string
     ship_message       The last error messages from shipping
-    source             Source of original entry to MiniVend
+    source             Source of original entry to Interchange
     time               Time (seconds since Jan 1, 1970) of last access
     user               The REMOTE_USER string
     username           User name logged in as (UserDB feature)
@@ -797,7 +797,7 @@ If you want to display the discount amount, use the [item-discount] tag.
     [/item-list]
 
 Finally, if you want to display the discounted subtotal in a way that
-doesn't correspond to a standard MiniVend tag, you can use the [calc] tag:
+doesn't correspond to a standard Interchange tag, you can use the [calc] tag:
 
     [item-list]
     Discounted subtotal for [item-code]: [currency][calc]
@@ -831,7 +831,7 @@ error
         var is the error name, e.g. "session"
 
 The [error ...] tag is designed to manage form variable checking
-for the Minivend C<submit> form processing action. It works in
+for the Interchange C<submit> form processing action. It works in
 conjunction with the definition set in C<mv_order_profile>, and can
 generate error messages in any format you desire.
 
@@ -938,7 +938,7 @@ file
 
 Inserts the contents of the named file. The file should normally
 be relative to the catalog directory -- file names beginning with
-/ or .. are not allowed if the MiniVend server administrator
+/ or .. are not allowed if the Interchange server administrator
 has set I<NoAbsolute> to C<Yes>.
 
 The optional C<type> parameter will do an appropriate ASCII translation
@@ -948,7 +948,7 @@ on the file before it is sent.
 filter
 %%
 
-Applies any of MiniVend's standard filters to an arbitray value, or 
+Applies any of Interchange's standard filters to an arbitray value, or 
 you may define your own. The filters are also available as parameters
 to the C<cgi>, C<data>, and C<value> tags.
 
@@ -1248,7 +1248,7 @@ negated: [if type="!type" term="field" op="op" compare="compare"]
 
 Positional call example: [if !type field op compare]
 
-Allows conditional building of HTML based on the setting of various MiniVend
+Allows conditional building of HTML based on the setting of various Interchange
 session and database values. The general form is:
 
     [if type term op compare]
@@ -1311,7 +1311,7 @@ or better yet
         Shipping name matches billing name.
     [/if]
 
-MiniVend also supports a limited [and ...] and [or ...]
+Interchange also supports a limited [and ...] and [or ...]
 capability:
 
     [if value name =~ /Mike/]
@@ -1334,8 +1334,8 @@ There are many test targets available:
 
 =item config Directive
 
-The MiniVend configuration variables. These are set
-by the directives in your MiniVend configuration file (or
+The Interchange configuration variables. These are set
+by the directives in your Interchange configuration file (or
 the defaults).
 
     [if config CreditCardAuto]
@@ -1344,7 +1344,7 @@ the defaults).
 
 =item data  database::field::key
 
-The MiniVend databases. Retrieves a field in the database and
+The Interchange databases. Retrieves a field in the database and
 returns true or false based on the value.
 
     [if data products::size::99-102]
@@ -1410,7 +1410,7 @@ C<ftfile> (which is the default).
 
 =item items
 
-The MiniVend shopping carts. If not specified, the cart
+The Interchange shopping carts. If not specified, the cart
 used is the main cart. Usually used as a litmus test to
 see if anything is in the cart, for example:
 
@@ -1420,7 +1420,7 @@ see if anything is in the cart, for example:
 
 =item ordered
 
-Order status of individual items in the MiniVend shopping
+Order status of individual items in the Interchange shopping
 carts. If not specified, the cart used is the main cart.
 The following items refer to a part number of 99-102.
 
@@ -1446,7 +1446,7 @@ The following items refer to a part number of 99-102.
 
 =item scratch
 
-The MiniVend scratchpad variables, which can be set
+The Interchange scratchpad variables, which can be set
 with the [set name]value[/set] element. 
 
     [if scratch mv_separate_items]
@@ -1560,9 +1560,9 @@ Named attributes:
             separator=c]
 
 Import one or more records into a database. The C<type> is any
-of the valid MiniVend delimiter types, with the default being defined
+of the valid Interchange delimiter types, with the default being defined
 by the setting of the database I<DELIMITER>. The table must already be a defined
-MiniVend database table; it cannot be created on the fly. (If you need
+Interchange database table; it cannot be created on the fly. (If you need
 that, it is time to use SQL.)
 
 The C<type> of C<LINE> and C<continue> setting of C<NOTES> is particularly
@@ -1595,7 +1595,7 @@ a form-feed character (^L).
 include
 %%
 
-Same as C<[file name]> except interpolates for all MiniVend tags
+Same as C<[file name]> except interpolates for all Interchange tags
 and variables. Does NOT do locale translations.
 
 %%%
@@ -1613,10 +1613,10 @@ items ordered by the customer so far. It works by repeating the source
 between [item_list] and [/item_list] once for each item ordered.
 
 NOTE: The special tags that reference item within the list are not normal
-MiniVend tags, do not take named attributes, and cannot be contained in
+Interchange tags, do not take named attributes, and cannot be contained in
 an HTML tag (other than to substitute for one of its values or provide
 a conditional container). They are interpreted only inside their
-corresponding list container. Normal MiniVend tags can be interspersed,
+corresponding list container. Normal Interchange tags can be interspersed,
 though they will be interpreted I<after> all of the list-specific tags.
 
 Between the item_list markers the following elements will return
@@ -1694,7 +1694,7 @@ for numbering search matches or order items in the list.
 
 =item [item-last]tags[/item-last]
 
-Evaluates the output of the MiniVend tags encased inside the tags,
+Evaluates the output of the Interchange tags encased inside the tags,
 and if it evaluates to a numerical non-zero number (i.e. 1, 23, or -1)
 then the list iteration will terminate. If the evaluated number is
 B<negative>, then the item itself will be skipped. If the evaluated
@@ -1721,7 +1721,7 @@ Evaluates to the modifier value of C<attribute> for the current item.
 
 =item [item-next]tags[/item_next]
 
-Evaluates the output of the MiniVend tags encased inside, and
+Evaluates the output of the Interchange tags encased inside, and
 if it evaluates to a numerical non-zero number (i.e. 1, 23, or -1) then
 the item will be skipped with no output. Example:
 
@@ -1796,7 +1796,7 @@ as the [item-list] tag, except for order-item-specific values. Intended
 to pull multiple attributes from an item modifier -- but can be useful
 for other things, like building a pre-ordained product list on a page.
 
-Loop lists can be nested reliably in MiniVend 3.06 by using the 
+Loop lists can be nested reliably in Interchange 3.06 by using the 
 with="tag" parameter. New syntax:
 
     [loop arg="A B C"]
@@ -1880,7 +1880,7 @@ for numbering items in the list.
 
 =item [loop-last]tags[/loop-last]
 
-Evaluates the output of the MiniVend tags encased inside,
+Evaluates the output of the Interchange tags encased inside,
 and if it evaluates to a numerical non-zero number (i.e. 1, 23, or -1)
 then the loop iteration will terminate. If the evaluated number is
 B<negative>, then the item itself will be skipped. If the evaluated
@@ -1901,7 +1901,7 @@ but will be the last item shown.
 
 =item [loop-next]tags[/loop-next]
 
-Evaluates the output of the MiniVend tags encased inside, and
+Evaluates the output of the Interchange tags encased inside, and
 if it evaluates to a numerical non-zero number (i.e. 1, 23, or -1) then
 the loop will be skipped with no output. Example:
 
@@ -1953,7 +1953,7 @@ a href="http://machine.company.com/cgi-bin/vlink/shirts?WehUkATn;;1">. The
 catalog page displayed will come from "shirts.html" in the
 pages directory.
 
-The additional argument will be passed to MiniVend and placed in the
+The additional argument will be passed to Interchange and placed in the
 {arg} session parameter. This allows programming of a conditional page
 display based on where the link came from. The argument is then available
 with the tag [data session arg], or the embedded Perl session variable
@@ -1961,8 +1961,8 @@ $Session->{arg}. Spaces and some other characters
 will be escaped with the %NN HTTP-style notation and unescaped when the
 argument is read back into the session.
 
-A bit of magic occurs if MiniVend has built a static plain HTML page
-for the target page. Instead of generating a normal MiniVend-parsed
+A bit of magic occurs if Interchange has built a static plain HTML page
+for the target page. Instead of generating a normal Interchange-parsed
 page reference, a static page reference will be inserted if the user
 has accepted and sent back a cookie with the session ID.
 
@@ -1979,8 +1979,8 @@ The two form values I<mv_session_id> and I<mv_arg> are automatically added
 when appropriate. (I<mv_arg> is the C<arg> parameter for the tag.)
 
 If the parameter C<href> is not supplied, I<process> is used, causing
-normal MiniVend form processing. If the C<href> points to an http://
-link no MiniVend URL processing will be done, but the mv_session_id
+normal Interchange form processing. If the C<href> points to an http://
+link no Interchange URL processing will be done, but the mv_session_id
 
 This would generate a form that ordered item number 99-102 on
 a separate line (C<mv_separate_items> being set), with size C<L>,
@@ -1988,7 +1988,7 @@ in quantity 2. Since the page is not set, you will go to the default
 shopping cart page -- equally you could set C<mv_orderpage=yourpage>
 to go to C<yourpage>.
 
-All normal MiniVend form caveats apply -- you must have an action,
+All normal Interchange form caveats apply -- you must have an action,
 you must supply a page if you don't want to go to the default,
 etc.
 
@@ -1996,7 +1996,7 @@ You can theoretically submit any form with this, though none of the
 included values can have newlines or trailing whitespace. If you want
 to do something like that you will have to write a UserTag.
 
-MiniVend allows you to pass a search in a URL. Just specify the
+Interchange allows you to pass a search in a URL. Just specify the
 search with the special page reference C<scan>. Here is an
 example:
 
@@ -2007,7 +2007,7 @@ example:
      [/page]
 
 Here is the same thing from a home page (assuming /cgi-bin/vlink is
-the CGI path for MiniVend's vlink):
+the CGI path for Interchange's vlink):
 
      <A HREF="/cgi-bin/vlink/scan/se=Impressionists/sf=category">
         Impressionist Paintings
@@ -2185,12 +2185,12 @@ HTML example:
         return "Hi, $name! How do you like your $browser?
     </PRE>
 
-Perl code can be directly embedded in MiniVend pages. The code
+Perl code can be directly embedded in Interchange pages. The code
 is specified as [perl arguments*] any_legal_perl_code [/perl]. The
 value returned by the code will be inserted on the page.
 
-Object references are available for most MiniVend tags and 
-functions, as well as direct references to MiniVend session and
+Object references are available for most Interchange tags and 
+functions, as well as direct references to Interchange session and
 configuration values.
 
   $CGI->{key}               Hash reference to raw submitted values
@@ -2210,7 +2210,7 @@ configuration values.
   &HTML($html)              Same as $Document->write($html);
   &Log($msg)                Log to the error log
 
-For full descriptions of these objects, see I<MiniVend Programming>.
+For full descriptions of these objects, see I<Interchange Programming>.
 
 If you wish to use database values in your Perl code, you must
 pre-open the table(s) you will be using. This can be done by including
@@ -2244,11 +2244,11 @@ argument B<base>. The optional argument B<quantity> selects an entry
 from the quantity price list. To receive a raw number, with no currency
 formatting, use the option C<noformat=1>.
 
-MiniVend maintains a price in its database for every product. The price
+Interchange maintains a price in its database for every product. The price
 field is the one required field in the product database -- it is necessary
 to build the price routines.
 
-For speed, MiniVend builds the code that is used to determine a product's
+For speed, Interchange builds the code that is used to determine a product's
 price at catalog configuration time. If you choose to change a directive
 that affects product pricing you must reconfigure the catalog.
 
@@ -2485,9 +2485,9 @@ The arguments that may be given are:
 
 =item export database file* type*
 
-Exports a complete MiniVend database to its text source file (or any
+Exports a complete Interchange database to its text source file (or any
 specified file). The integer C<n>, if specified, will select export in
-one of the enumerated MiniVend export formats. The following tag will
+one of the enumerated Interchange export formats. The following tag will
 export the products database to products.txt (or whatever you have
 defined its source file as), in the format specified by the
 I<Database> directive:
@@ -2507,10 +2507,10 @@ an absolute path name if I<NoAbsolute> is set to C<No>.
 
 =item flag arg
 
-Sets a MiniVend condition.
+Sets an Interchange condition.
 
 The following enables writes on the C<products> and C<sizes> databases
-held in MiniVend internal DBM format:
+held in Interchange internal DBM format:
 
     [tag flag write]products sizes[/tag]
 
@@ -2523,7 +2523,7 @@ forces search or page caching (not usually wise).
 
 =item log dir/file
 
-Logs a message to a file, fully interpolated for MiniVend tags.
+Logs a message to a file, fully interpolated for Interchange tags.
 The following tag will send every item code and description in the user's
 shopping cart to the file logs/transactions.txt:
 
@@ -2572,7 +2572,7 @@ session ID, page count, and time.
 
 =item show_tags
 
-The encased text will not be substituted for with MiniVend tags, 
+The encased text will not be substituted for with Interchange tags, 
 with < and [ characters changed to C<&>#lt; and C<&>#91; respectively.
 
     [tag show_tags][value whatever][/tag]
@@ -2606,7 +2606,7 @@ including sales tax (if any).
 userdb
 %%
 
-MiniVend provides a C<[userdb ...]> tag to access the UserDB functions.
+Interchange provides a C<[userdb ...]> tag to access the UserDB functions.
 
  [userdb
         function=function_name
@@ -2677,8 +2677,8 @@ Expands into the current value of the customer/form input field named
 by field. If C<flag> is present, single quotes will be escaped with a
 backslash; this allows you to contain the C<[value ...]> tag within
 single quotes. (It is somewhat better to use other quoting methods.)
-When the value is returned, any MiniVend tags present in the value will
-be escaped. This prevents users from entering MiniVend tags in form values,
+When the value is returned, any Interchange tags present in the value will
+be escaped. This prevents users from entering Interchange tags in form values,
 which would be a serious security risk.
 
 If the C<set> value is present, the form variable value will be set
@@ -2783,14 +2783,15 @@ mvtags - MML TAG REFERENCE
 
 =head1 DESCRIPTION
 
-MML stands for Minivend Markup Language.
+MML stands for Minivend Markup Language. Minivend was the predecessor
+to Interchange.
 
 There are dozens of MML pre-defined tag functions. If you don't see
 just what you need, you can use C<USER DEFINED TAGS> to create tags just as
 powerful as the pre-defined ones.
 
 There are two styles of supplying parameters to a tag -- named and
-positional. In addition, you can usually embed MiniVend tags within
+positional. In addition, you can usually embed Interchange tags within
 HTML tags.
 
 In the named style you supply a parameter/value pair just as most
@@ -2803,7 +2804,7 @@ The same thing can be accomplished for the C<[value]> tag with
     [value foo]
 
 The parameter C<name> is the first positional parameter for the C<[value]>
-tag. Some people find positional usage simpler for common tags, and MiniVend
+tag. Some people find positional usage simpler for common tags, and Interchange
 interprets them somewhat faster. If you wish to avoid ambiguity you can
 always use named calling.
 
@@ -2823,7 +2824,7 @@ place it within a named and quoted attribute:
     [page href=scan arg="se=[scratch somevar]"]
 
 
-MiniVend tags can be specified within HTML to make it easier to
+Interchange tags can be specified within HTML to make it easier to
 interface to some HTML editors. Consider:
 
     <TABLE MV="if items">
@@ -2856,14 +2857,14 @@ an end tag, i.e. C<[tag] stuff [/tag]>. A standalone tag has no end
 tag, as in [area href=somepage].  (Note that [page ...] and [order ..]
 are B<not> container tags.)
 
-A container tag will have its output re-parsed for more MiniVend tags
+A container tag will have its output re-parsed for more Interchange tags
 by default. If you wish to inhibit this behavior, you must explicitly
 set the attribute B<reparse> to 0.  Note that you will almost always
 wish the default action. The only container MML tag that doesn't have
 reparse set by default is C<[mvasp]>.
 
 With some exceptions ([include] is among them) among them) the
-output of a standalone tag will not be re-interpreted for MiniVend tag
+output of a standalone tag will not be re-interpreted for Interchange tag
 constructs. All tags accept the INTERPOLATE=1 tag modifier, which causes
 the interpretation to take place. It is frequent that you will B<not>
 want to interpret the contents of a [set variable] TAGS [/set] pair,
@@ -3165,7 +3166,7 @@ as [prefix-param bar].
 =item [PREFIX-price]
 
 The price of the current code, formatted for currency. If
-MiniVend's pricing routines cannot determine the price (i.e. it is not
+Interchange's pricing routines cannot determine the price (i.e. it is not
 a valid product or on-the-fly item) then zero is returned. If the list
 is a hash list, the price will be modified by its C<quantity> or other
 applicable attributes (like C<size> in the demo).
@@ -3234,15 +3235,10 @@ END
 
 =head1 User-defined Tags
 
-MiniVend 3.04 allows the definition of user tags when using the new
-parsed HTML syntax (a [new] tag is on the page).  They will not work
-with the old syntax. 3.06 adds the tags on a server-wide basis, defined
-in C<minivend.cfg>.
-
 To define a tag that is catalog-specific, place I<UserTag> directives in
 your catalog.cfg file. For server-wide tags, define them in minivend.cfg.
 Catalog-specific tags take precedence if both are defined -- in fact,
-you can override the base MiniVend tag set with them. The directive
+you can override the base Interchange tag set with them. The directive
 takes the form:
 
    UserTag  tagname  property  value
@@ -3267,7 +3263,7 @@ A simple subroutine:
 
     UserTag company_name Routine   sub { "Your company name" }
 
-When you place a [company-name] tag in a MiniVend page, the text 
+When you place a [company-name] tag in an Interchange page, the text 
 C<Your company name> will be substituted.
 
 A subroutine with a passed text as an argument:
@@ -3333,7 +3329,7 @@ form:
 
     UserTag tagname attrAlias   alias attr
 
-As an example, the standard MiniVend C<value> tag takes a named
+As an example, the standard Interchange C<value> tag takes a named
 attribute of C<name> for the variable name, meaning that C<[value name=var]>
 will display the value of form field C<var>. If you put this line
 in catalog.cfg:
@@ -3344,7 +3340,7 @@ then C<[value identifier=var]> will be an equivalent tag.
 
 =item CanNest
 
-Notifies MiniVend that this tag must be checked for nesting.
+Notifies Interchange that this tag must be checked for nesting.
 Only applies to tags that have I<HasEndTag> defined, of course.
 NOTE: Your routine must handle the subtleties of nesting, so
 don't use this unless you are quite conversant with parsing
@@ -3385,7 +3381,7 @@ tag, in effect adding an attribute=value pair (or pairs).
 
     UserTag tagname InsertHTML   htmltag  mvtag|mvtag2|mvtagN
 
-In MiniVend's standard tags, among others, the <OPTION ...> tag has the
+In Interchange's standard tags, among others, the <OPTION ...> tag has the
 [selected ..] and [checked ...] tags included with them, so
 that you can do:
 
@@ -3407,7 +3403,7 @@ HTML tag, use the InsideHTML setting.
 
     UserTag tagname InsideHTML   htmltag  mvtag|mvtag2|mvtagN
 
-In MiniVend's standard tags, the only InsideHTML tag is the
+In Interchange's standard tags, the only InsideHTML tag is the
 <SELECT> tag when used with I<loop>, which causes this:
 
    <SELECT MV="loop upsg upsb upsr" NAME=mv_shipmode>
@@ -3432,7 +3428,7 @@ on your page.
 The behavior for this attribute depends on whether the tag is a container
 (i.e. C<HasEndTag> is defined). If it is not a container, the C<Interpolate>
 attribute causes the B<the resulting HTML> from the C<UserTag> will be
-re-parsed for more MiniVend tags.  If it is a container, C<Interpolate>
+re-parsed for more Interchange tags.  If it is a container, C<Interpolate>
 causes the contents of the tag to be parsed B<before> the tag routine
 is run.
 
@@ -3461,7 +3457,7 @@ it will be the last argument.
 
 Identical to the Routine argument -- a subroutine that will be called when
 the new syntax is not used for the call, i.e. C<[usertag argument]> instead
-of C<[usertag ARG=argument]>. If not defined, I<Routine> is used, and MiniVend
+of C<[usertag ARG=argument]>. If not defined, I<Routine> is used, and Interchange
 will usually do the right thing.
 
 =item ReplaceAttr
@@ -3472,9 +3468,9 @@ will be replaced in the insertion operation..
   UserTag tagname ReplaceAttr  htmltag attr
 
 An example is the standard HTML <A HREF=...> tag. If you want to use the
-MiniVend tag C<[area pagename]> inside of it, then you would normally
+Interchange tag C<[area pagename]> inside of it, then you would normally
 want to replace the HREF attribute. So the equivalent to the following
-is defined within MiniVend:
+is defined within Interchange:
 
   UserTag  area  ReplaceAttr  a  href
 
@@ -3490,7 +3486,7 @@ when intepreted.
     
 =item ReplaceHTML
 
-For HTML-style tag use only. Causes the tag containing the MiniVend tag to
+For HTML-style tag use only. Causes the tag containing the Interchange tag to
 be stripped and the result of the tag to be inserted, for certain tags.
 For example:
 
@@ -3498,7 +3494,7 @@ For example:
   UserTag company_name HasEndTag
   UserTag company_name ReplaceHTML  b    company_name
 
-<BR> is the HTML tag, and "company_name" is the MiniVend tag.
+<BR> is the HTML tag, and "company_name" is the Interchange tag.
 At that point, the usage:
 
     <B MV="company-name"> Company </B>  --->>  Company: XYZ Company
@@ -3532,6 +3528,6 @@ first, followed by any encapsulated text (I<HasEndTag> is set).
 =back
 
 Note that the UserTag facility, combined with AllowGlobal, allows the
-user to define tags just as powerful as the standard MiniVend tags.
+user to define tags just as powerful as the standard Interchange tags.
 This is not recommended for the novice, though -- keep it simple. 8-)
 

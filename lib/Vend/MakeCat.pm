@@ -2,9 +2,9 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.2 2000-06-16 20:04:52 heins Exp $
+# $Id: MakeCat.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
 #
-# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -61,7 +61,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -109,9 +109,9 @@ my %Desc = (
 EOF
 	basedir    =>  <<EOF,
 # 
-# DIRECTORY where the MiniVend catalog directories will go. These
+# DIRECTORY where the Interchange catalog directories will go. These
 # are the catalog files, such as the ASCII database source,
-# MiniVend page files, and catalog.cfg file. Catalogs will
+# Interchange page files, and catalog.cfg file. Catalogs will
 # be an individual subdirectory of this directory.
 #
 EOF
@@ -158,14 +158,13 @@ EOF
 # distributed are:
 #
 #    simple   -- database-based catalog, not really simple 8-)
-#    basic    -- simplified set of features
 #    barry    -- Barry's Books version of "simple"
 #
 # If you have defined your own custom template catalog,
 # you can enter it's name.
 #
-# If you are new to MiniVend and not a sophisticated web designer,
-# use "basic" to start with.
+# If you are new to Interchange and not a sophisticated web designer,
+# use "barry" to start with.
 EOF
 	documentroot    =>  <<EOF,
 # The base directory for HTML for this (possibly virtual) domain.
@@ -188,14 +187,14 @@ EOF
 #        M is recommended, G works for most installations.
 EOF
 	minivenduser  =>  <<EOF,
-# The user name the MiniVend server runs under on this machine. This
+# The user name the Interchange server runs under on this machine. This
 # should not be the same as the user that runs the HTTP server (i.e.
 # NOT nobody).
 #
 EOF
 	minivendgroup    =>  <<EOF,
 # The group name the server-owned files should be set to.  This is
-# only important if MiniVend catalogs will be owned by multiple users
+# only important if Interchange catalogs will be owned by multiple users
 # and the group to be used is not the default for the catalog user.
 #
 # Normally this is left blank.
@@ -216,7 +215,7 @@ EOF
 #
 EOF
 	samplehtml =>  <<EOF,
-# Where the sample HTML files (not MiniVend pages) should be
+# Where the sample HTML files (not Interchange pages) should be
 # installed. There is a difference.  Usually a subdirectory of
 # your HTML directory.
 #
@@ -240,7 +239,7 @@ EOF
 #
 EOF
 	catroot   =>  <<EOF,
-# Where the MiniVend files for this catalog will go, pages,
+# Where the Interchange files for this catalog will go, pages,
 # products, config and all.  This should not be in HTML document
 # space! Usually a 'catalogs' directory below your home directory
 # works well. Remember, you will want a test catalog and an online
@@ -249,7 +248,7 @@ EOF
 EOF
 
 	vendroot  =>  <<EOF,
-# The directory where the MiniVend software is installed.
+# The directory where the Interchange software is installed.
 #
 EOF
 
@@ -474,7 +473,7 @@ my $term;
 eval {
     require Term::ReadLine;
     import Term::ReadLine;
-    $term = new Term::ReadLine::Perl 'MiniVend Configuration';
+    $term = new Term::ReadLine::Perl 'Interchange Configuration';
 	die "No Term::ReadLine::Perl" unless defined $term;
 
 	readline::rl_bind('C-B', 'catch_at');
