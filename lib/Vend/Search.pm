@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.9 2001-04-26 10:59:22 racke Exp $
+# $Id: Search.pm,v 1.8.2.10 2001-04-26 12:16:49 racke Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.10 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -367,15 +367,21 @@ sub more_matches {
 
 sub more_alpha {
 	my ($s, $out) = @_;
-	my ($letter, $sortkey, $last, @alphaspecs, $i);
+	my ($sfpos, $letter, $sortkey, $last, @alphaspecs, $i);
 	my $alphachars = $s->{mv_more_alpha_chars} || 3;
-		
+
+	# determine position of sort field within results
+	for ($i = 0; $i < @{$s->{mv_return_fields}}; $i++) {
+		last if $s->{mv_return_fields}->[$i] == $s->{mv_sort_field}->[0];
+	}
+	$sfpos = $i;
+	
 	# add dummy record
 	@alphaspecs = (['']);
 		
 	$last = 0;
 	for ($i = 0; $i < @$out; $i++) {
-		$sortkey = $out->[$i]->[$s->{mv_sort_field}->[0]];
+		$sortkey = $out->[$i]->[$sfpos];
 		$letter = substr($sortkey,0,1);
 
 		if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
