@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.11 2000-09-15 09:49:31 heins Exp $
+# $Id: Common.pm,v 1.12 2000-09-23 21:09:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -210,6 +210,10 @@ sub columns {
     my ($s) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     return @{$s->[$COLUMN_NAMES]};
+}
+
+sub column_exists {
+	return defined test_column(@_);
 }
 
 sub test_column {

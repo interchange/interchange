@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: LDAP.pm,v 1.3 2000-09-23 21:09:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 use strict;
 
 use vars qw(
@@ -619,6 +619,8 @@ e:logDebug("opt is: " . Vend::Util::uneval($opt));
 
 # Unfortunate hack need for Safe searches
 *column_index	= \&Vend::Table::Common::column_index;
+*column_exists	= \&Vend::Table::Common::column_exists;
 *numeric		= \&Vend::Table::Common::numeric;
+*test_column	= \&Vend::Table::Common::test_column;
 
 1;
