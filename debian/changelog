@@ -1,4 +1,4 @@
-interchange (4.6.3-2) unstable; urgency=low
+interchange (4.6.3-1.1) unstable; urgency=low
 
   * don't abuse debconf any longer
   * interchange recommends interchange-ui now (suggested by
@@ -6,8 +6,9 @@ interchange (4.6.3-2) unstable; urgency=low
   * new option maxlength for usertag formel (suggested by
     Dan Browning <danb@cyclonecomputers.com>)
   * interchange-cat-construct.files added
+  * select now supported by usertag formel
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 14 Mar 2001 13:04:04 -0500
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 22 Mar 2001 09:34:43 +0100
 
 interchange (4.6.3-1) unstable; urgency=low
 
