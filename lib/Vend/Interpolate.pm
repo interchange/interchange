@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.2.2 2000-10-09 18:25:09 zarko Exp $
+# $Id: Interpolate.pm,v 1.29.2.3 2000-10-20 17:00:08 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.3 $, 10);
 
 @EXPORT = qw (
 
@@ -193,6 +193,7 @@ my $Spacef = '(?:%20|\s)+';
 my $Spaceo = '(?:%20|\s)*';
 
 my $Optx = '(?:\s+)?([-\w:#=/.%]+)?';
+my $Optr = '(?:\s+([^]]+))?';
 my $Mand = '\s+([-\w#/.]+)';
 my $Opt = '(?:\s+)?([-\w#/.]+)?';
 my $T    = '\]';
@@ -265,10 +266,13 @@ my @th = (qw!
 		comment
 		condition
 		discount_price
-		discount_subtotal
+		_discount_price
+		_discount_subtotal
+		_difference
 		else
 		elsif
 		matches
+		match_count
 		modifier_name
 		more
 		more_list
@@ -334,29 +338,32 @@ my @th = (qw!
 
 	'_description'	=> qr($T{_description}\]),
 	'_discount'		=> qr($T{_discount}(?:\s+(?:quantity=)?"?(\d+)"?)?$Optx\]),
+	'_difference'	=> qr($T{_difference}(?:\s+(?:quantity=)?"?(\d+)"?)?$Optx\]),
 	'_field'		=> qr($T{_field}$Mandf\]),
-	'_field_if'		=> qr($T{_field}$Spacef(!?)\s*($Codere)\]($Some)),
-	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere)\]),
+	'_field_if'		=> qr($T{_field}$Spacef(!?)\s*($Codere)$Optr\]($Some)),
+	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere$Optr)\]),
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
 	'_line'			=> qr($T{_line}$Opt\]),
 	'_modifier'		=> qr($T{_modifier}$Spacef(\w+)\]),
-	'_modifier_if'	=> qr($T{_modifier}$Spacef(!?)$Spaceo($Codere)\]($Some)),
+	'_modifier_if'	=> qr($T{_modifier}$Spacef(!?)$Spaceo($Codere)$Optr\]($Some)),
 	'_next'			=> qr($T{_next}\]\s*($Some)\s*),
 	'_param'		=> qr($T{_param}$Mandf\]),
-	'_param_if'		=> qr($T{_param}$Spacef(!?)\s*($Codere)\]($Some)),
+	'_param_if'		=> qr($T{_param}$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_pos' 			=> qr($T{_pos}$Spacef(\d+)\]),
-	'_pos_if'		=> qr($T{_pos}$Spacef(!?)\s*(\d+)\]($Some)),
+	'_pos_if'		=> qr($T{_pos}$Spacef(!?)\s*(\d+)$Optr\]($Some)),
 	'_price'		=> qr!$T{_price}(?:\s+(\d+))?$Optx\]!,
 	'_quantity'		=> qr($T{_quantity}\]),
 	'_subtotal'		=> qr($T{_subtotal}$Opt\]),
 	'condition'		=> qr($T{condition}$T($Some)$T{'/condition'}),
 	'condition_begin' => qr(^\s*$T{condition}\]($Some)$T{'/condition'}),
+	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Opt\]),
 	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Opt\]),
-	'discount_subtotal' => qr($T{discount_subtotal}$Opt\]),
+	'_discount_subtotal' => qr($T{_discount_subtotal}\]),
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
+	'match_count'		=> qr($T{match_count}\]),
 	'modifier_name'	=> qr($T{modifier_name}$Spacef(\w+)\]),
 	'more'			=> qr($T{more}\]),
 	'more_list'		=> qr($T{more_list}$Optx$Optx$Optx$Optx$Optx\]($Some)$T{'/more_list'}),
@@ -740,6 +747,7 @@ sub tag_data {
 						$val = sprintf("%.${places}f", $val) if $places;
 						return Vend::Util::commify($val);
 				},
+	'integer' => sub { return int(shift); },
 	'lookup' =>	sub {
 						my ($val, $tag, $table, $column) = @_;
 						return tag_data($table, $column, $val) || $val;
@@ -824,6 +832,13 @@ sub tag_data {
 					my $val = shift;
 					return crypt($val, ::random_string(2));
 				},
+	'html2text' => sub {
+					my $val = shift;
+					$val =~ s|\s*<BR>\s*|\n|gi;
+					$val =~ s|\s*<P>\s*|\n|gi;
+					$val =~ s|\s*</P>\s*||gi;
+					return $val;
+				},
 	'namecase' => sub {
 					use locale;
 					my $val = shift;
@@ -896,8 +911,8 @@ sub tag_data {
 				},
 	'text2html' => sub {
 					my $val = shift;
-					$val =~ s|\r?\n\r?\n|<P>|;
-					$val =~ s|\r?\n|<BR>|;
+					$val =~ s|\r?\n\r?\n|<P>|g;
+					$val =~ s|\r?\n|<BR>|g;
 					return $val;
 				},
 	'urlencode' => sub {
@@ -1674,7 +1689,6 @@ sub tag_perl {
 		}
 	}
 
-	#init_calc() if ! $Calc_initialized;
 	init_calc() if ! $Calc_initialized;
 	$ready_safe->share(@share) if @share;
 
@@ -2591,8 +2605,57 @@ sub tag_self_contained_if {
 	return $out;
 }
 
+my %cond_op = (
+	eq  => sub { $_[0] eq $_[1] },
+	ne  => sub { $_[0] ne $_[1] },
+	gt  => sub { $_[0] gt $_[1] },
+	ge  => sub { $_[0] ge $_[1] },
+	le  => sub { $_[0] le $_[1] },
+	lt  => sub { $_[0] lt $_[1] },
+   '>'  => sub { $_[0]  > $_[1] },
+   '<'  => sub { $_[0]  < $_[1] },
+   '>=' => sub { $_[0] >= $_[1] },
+   '<=' => sub { $_[0] <= $_[1] },
+   '==' => sub { $_[0] == $_[1] },
+   '!=' => sub { $_[0] != $_[1] },
+   '=~' => sub { 
+   				 my $re;
+				 $_[1] =~ s:^/(.*)/$:$1:;
+   				 eval { $re = qr/$_[1]/ };
+				 if($@) {
+					::logError("bad regex %s in if-PREFIX-data", $_[1]);
+					return undef;
+				 }
+				 return $_[0] =~ $re;
+				},
+   '!~' => sub { 
+   				 my $re;
+				 $_[1] =~ s:^/(.*)/$:$1:;
+   				 eval { $re = qr/$_[1]/ };
+				 if($@) {
+					::logError("bad regex %s in if-PREFIX-data", $_[1]);
+					return undef;
+				 }
+				 return $_[0] !~ $re;
+				},
+);
+
+sub pull_cond {
+	my($string, $reverse, $cond, $lhs) = @_;
+#::logDebug("pull_cond string='$string' rev='$reverse' cond='$cond' lhs='$lhs'");
+	my ($op, $rhs) = split /\s+/, $cond;
+	$rhs =~ s/^(["'])(.*)\1$/$2/;
+	if(! defined $cond_op{$op} ) {
+		::logError("bad conditional operator %s in if-PREFIX-data", $op);
+		return pull_else($string, $reverse);
+	}
+	return 	$cond_op{$op}->($lhs, $rhs)
+			? pull_if($string, $reverse)
+			: pull_else($string, $reverse);
+}
 
 sub pull_if {
+	return pull_cond(@_) if $_[2];
 	my($string, $reverse) = @_;
 	return pull_else($string) if $reverse;
 	$string =~ s:$QR{else_end}::o;
@@ -2600,6 +2663,7 @@ sub pull_if {
 }
 
 sub pull_else {
+	return pull_cond(@_) if $_[2];
 	my($string, $reverse) = @_;
 	return pull_if($string) if $reverse;
 	return $1 if $string =~ s:$QR{else_end}::;
@@ -3098,6 +3162,7 @@ sub tag_more_list {
 	$m = $first . '-' . $last;
 	$r =~ s,$QR{more},$list,g;
 	$r =~ s,$QR{matches},$m,g;
+	$r =~ s,$QR{match_count},$q->{matches},g;
 
 	$r;
 
@@ -3132,7 +3197,7 @@ sub sort_cart {
 # D   Data
 # I   If
 my $LdD = qr{\s+([-\w:#/.]+)\]};
-my $LdI = qr{\s+([-\w:#/.]+)\]($Some)};
+my $LdI = qr{\s+([-\w:#/.]+)$Optr\]($Some)};
 my $LdB;
 my $LdIB;
 my $LdIE;
@@ -3174,11 +3239,6 @@ sub tag_labeled_data_row {
     while($$text =~ $LdExpr) {
 		$table = $1;
 		$tabRE = qr/$table/;
-#::logDebug("In row: table=$table tabRE=$tabRE");
-		if($Vend::UPPERCASE{$table}) {
-			$$text =~ s#($LdB$tabRE)$LdD#$1 \U$2]#g;
-			$$text =~ s#($LdIB$tabRE)$LdD#$1 \U$2]#g;
-		}
 		$row = $Data_cache{"$table.$key"}
 				|| ( $Data_cache{"$table.$key"}
 						= Vend::Data::database_row($table, $key)
@@ -3186,8 +3246,8 @@ sub tag_labeled_data_row {
 				|| {};
 		$done = 1;
 		$$text =~ s#$LdIB$tabRE$LdI$LdIE#
-					$row->{$2}	? pull_if($3,$1)
-								: pull_else($3,$1)#ge
+					$row->{$2}	? pull_if($4,$1,$3,$row->{$2})
+								: pull_else($4,$1,$3,$row->{$2})#ge
 			and undef $done;
 #::logDebug("after if: table=$table 1=$1 2=$2 3=$3 $$text =~ s#$LdIB $tabRE $LdI $LdIE#");
 
@@ -3404,18 +3464,19 @@ my $once = 0;
 											:	pull_if($2)#ige;
 		$run =~ s#$IB$QR{_param_if}$IE$QR{'/_param'}#
 				  (defined $fh->{$2} ? $row->[$fh->{$2}] : '')
-				  					?	pull_if($3,$1)
-									:	pull_else($3,$1)#ige;
+				  					?	pull_if($4,$1,$3,$row->[$2])
+									:	pull_else($4,$1,$3,$row->[$2])#ige;
 	    $run =~ s#$B$QR{_param}#defined $fh->{$1} ? $row->[$fh->{$1}] : ''#ige;
 		$run =~ s#$IB$QR{_pos_if}$IE$QR{'/_pos'}#
 				  $row->[$2] 
-						?	pull_if($3,$1)
-						:	pull_else($3,$1)#ige;
+						?	pull_if($4,$1,$3,$row->[$2])
+						:	pull_else($4,$1,$3,$row->[$2])#ige;
 	    $run =~ s#$B$QR{_pos}#$row->[$1]#ig;
 #::logDebug("fh: " . ::uneval($fh) . ::uneval($row)) unless $once++;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
-				  Vend::Data::product_field($2, $code)	?	pull_if($3,$1)
-											:	pull_else($3,$1)#ige;
+				  my $tmp = Vend::Data::product_field($2, $code);
+				  $tmp	?	pull_if($4,$1,$3,$tmp)
+						:	pull_else($4,$1,$3,$tmp)#ge;
 		$run =~ s:$B$QR{_line}:join "\t", @{$row}[ ($1 || 0) .. $#$row]:ige;
 	    $run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
@@ -3477,14 +3538,15 @@ sub iterate_hash_list {
 		tag_labeled_data_row($code,\$run);
 		$run =~ s:$B$QR{_line}:join "\t", @{$hash}:ge;
 		$run =~ s#$IB$QR{_param_if}$IE$QR{'/_param'}#
-				  $item->{$2}	?	pull_if($3,$1)
-								:	pull_else($3,$1)#ige;
+				  $item->{$2}	?	pull_if($4,$1,$3,$item->{$2})
+								:	pull_else($4,$1,$3,$item->{$2})#ige;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
-				  Vend::Data::product_field($2, $code)	?	pull_if($3,$1)
-											:	pull_else($3,$1)#ge;
+				  my $tmp = Vend::Data::product_field($2, $code);
+				  $tmp	?	pull_if($4,$1,$3,$tmp)
+						:	pull_else($4,$1,$3,$tmp)#ge;
 		$run =~ s#$IB$QR{_modifier_if}$IE$QR{'/_modifier'}#
-				  $item->{$2}	?	pull_if($3,$1)
-								:	pull_else($3,$1)#ge;
+				  $item->{$2}	?	pull_if($4,$1,$3,$item->{$2})
+								:	pull_else($4,$1,$3,$item->{$2})#ge;
 		$run =~ s:$B$QR{_increment}:$i + 1:ge;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{},$item):ge;
@@ -3494,7 +3556,7 @@ sub iterate_hash_list {
 		$run =~ s:$QR{quantity_name}:quantity$item->{mv_ip}:g;
 		$run =~ s:$QR{modifier_name}:$1$item->{mv_ip}:g;
 		$run =~ s!$B$QR{_subtotal}!currency(Vend::Data::item_subtotal($item),$1)!ge;
-		$run =~ s!$B$QR{discount_subtotal}!
+		$run =~ s!$B$QR{_discount_subtotal}!
 						currency( discount_price(
 										$item,Vend::Data::item_subtotal($item)
 									),
@@ -3504,19 +3566,42 @@ sub iterate_hash_list {
 		$run =~ s!$B$QR{_field}!Vend::Data::item_field($item, $1) || $item->{$1}!ge;
 		$run =~ s!$B$QR{_description}!Vend::Data::item_description($item) || $item->{description}!ge;
 		$run =~ s!$B$QR{_price}!currency(Vend::Data::item_price($item,$1), $2)!ge;
-		$run =~ s!$QR{discount_price}!
+		$run =~ s!$B$QR{_discount_price}!
 					currency(
 						discount_price($item, Vend::Data::item_price($item,$1), $1 || 1)
 						, $2
-						)!ge;
+						)!ge
+				or
+				$run =~ s!$QR{discount_price}!
+							currency(
+								discount_price($item, item_price($item,$1), $1 || 1)
+								, $2
+								)!ge;
+		$run =~ s!$B$QR{_difference}!
+					currency(
+							item_difference(
+								$item->{code},
+								item_price($item, $item->{quantity}),
+								$item->{quantity},
+							),
+							$2,
+					)!ge;
 		$run =~ s!$B$QR{_discount}!
-					currency(item_discount($item->{code},
-											Vend::Data::item_price($item, $1),
-											$item->{quantity}), $2)!ge;
+					currency(
+							item_discount(
+								$item->{code},
+								Vend::Data::item_price($item, $item->{quantity}),
+								$item->{quantity},
+							),
+							$2,
+					)!ge;
 		1 while $run =~ s!$B$QR{_change}$E$QR{'/_change'}\1\]!
 							check_change($1,$3,undef,$2)
 											?	pull_if($4)
 											:	pull_else($4)!ige;
+		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
+		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/item_last'}#
                     my $tmp = interpolate_html($1);
                     if($tmp && $tmp < 0) {
@@ -3918,9 +4003,14 @@ sub fly_page {
 	return labeled_list( {}, $page, { mv_results => [[$code]] });
 }
 
+sub item_difference {
+	my($code,$price,$q) = @_;
+	return $price - discount_price($code,$price,$q);
+}
+
 sub item_discount {
 	my($code,$price,$q) = @_;
-	return ($price * $q) - discount_price($code,$price,$q);
+	return ($price * $q) - discount_price($code,$price,$q) * $q;
 }
 
 sub discount_price {
