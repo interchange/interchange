@@ -385,6 +385,7 @@ dist/construct/tmp/.empty
 dist/construct/upload/.empty
 dist/error.log
 dist/etc/.empty
+dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/pages/admin/access.html
 dist/lib/UI/pages/admin/access_permissions.html
@@ -551,7 +552,6 @@ dist/lib/UI/vars/UI_STD_FILE_NAV
 dist/lib/UI/vars/UI_STD_FOOTER
 dist/lib/UI/vars/UI_STD_HEAD
 dist/locale.error
-dist/minivend.cfg.dist
 dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure
