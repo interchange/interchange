@@ -160,12 +160,11 @@
 [if scratch ui_change_options]
 [then]
 <H2>
-        Select option type and/or
-        [if scratch ui_never_options]
-                enable
-        [else]
-                disable
-        [/else][/if] options
+[if scratch ui_never_options]
+[L]Select option type and/or enable options[/L]
+[else]
+[L]Select option type and/or disable options[/L]
+[/else][/if]
 </H2>
 
 [perl tables="[cgi mv_data_table]"]
@@ -198,12 +197,12 @@
 
 <FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
 <INPUT TYPE=HIDDEN NAME="item_id" VALUE="[cgi item_id]">
-<INPUT TYPE=RADIO NAME="setting" VALUE="none" [if scratch setting eq 'none']CHECKED[/if]> No Options<BR>
-<INPUT TYPE=RADIO NAME="setting" VALUE="simple" [if scratch setting eq 'simple']CHECKED[/if]> Simple Options<BR>
-<INPUT TYPE=RADIO NAME="setting" VALUE="matrix" [if scratch setting eq 'matrix']CHECKED[/if]> Matrix Options, one widget<BR>
-<INPUT TYPE=RADIO NAME="setting" VALUE="matrix-separate" [if scratch setting eq 'matrix-separate']CHECKED[/if]> Matrix Options, separate widgets<BR>
-<INPUT TYPE=RADIO NAME="setting" VALUE="modular" [if scratch setting eq 'modular']CHECKED[/if] > Modular Options<BR>
-[button text="Update" mv_check="Update"]
+<INPUT TYPE=RADIO NAME="setting" VALUE="none" [if scratch setting eq 'none']CHECKED[/if]> [L]No Options[/L]<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="simple" [if scratch setting eq 'simple']CHECKED[/if]> [L]Simple Options[/L]<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="matrix" [if scratch setting eq 'matrix']CHECKED[/if]> [L]Matrix Options, one widget[/L]<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="matrix-separate" [if scratch setting eq 'matrix-separate']CHECKED[/if]> [L]Matrix Options, separate widgets[/L]<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="modular" [if scratch setting eq 'modular']CHECKED[/if] > [L]Modular Options[/L]<BR>
+[button text="[L]Update[/L]" mv_check="[L]Update[/L]"]
 mv_todo=return
 mv_nextpage="@@MV_PAGE@@"
 [/button]
