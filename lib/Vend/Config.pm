@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.126 2003-09-10 16:55:14 mheins Exp $
+# $Id: Config.pm,v 2.127 2003-09-10 17:01:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.126 $, 10);
+$VERSION = substr(q$Revision: 2.127 $, 10);
 
 my %CDname;
 my %CPname;
@@ -522,6 +522,7 @@ sub catalog_directives {
 	['SOAP_Action',		 'action',			 ''],				   
 	['SOAP_Control',     'action',             ''],		  
 	['UserDB',			 'locale',	     	 ''], 
+	['UserControl',		 'yesno',	     	 'No'], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
@@ -2480,6 +2481,13 @@ my %Default = (
 						$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
 						$C->{AdminUserDB}{$_} = $set->{$_}{admin};
 					}
+					return 1;
+				},
+		UserControl => sub {
+					shift;
+					return 1 unless defined $C;
+					return 1 unless $C->{UserControl};
+					require Vend::UserControl;
 					return 1;
 				},
 		AutoModifier => sub {

@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.24 2003-08-01 15:30:43 jon Exp $
+# $Id: UserDB.pm,v 2.25 2003-09-10 17:01:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use vars qw!
 	$VERSION
@@ -292,6 +292,7 @@ sub new {
 						LAST		=> $options{time_field} || 'mod_time',
 						EXPIRATION	=> $options{expire_field} || 'expiration',
 						OUTBOARD_KEY=> $options{outboard_key_col},
+						GROUPS		=> $options{groups_field}|| 'groups',
 						SUPER		=> $options{super_field}|| 'super',
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
@@ -1000,16 +1001,14 @@ sub login {
 		unless($self) {
 			$self = new Vend::UserDB %options;
 		}
-		if(
-			$Vend::Cfg->{CookieLogin}
-			and (! $Vend::Cfg->{DifferentSecure} || ! $CGI::secure)
-			)
-		{
+
+		if($Vend::Cfg->{CookieLogin}) {
 			$self->{USERNAME} = Vend::Util::read_cookie('MV_USERNAME')
 				if ! $self->{USERNAME};
 			$self->{PASSWORD} = Vend::Util::read_cookie('MV_PASSWORD')
 				if ! $self->{PASSWORD};
 		}
+
 		if ($self->{OPTIONS}{ignore_case}) {
 			$self->{PASSWORD} = lc $self->{PASSWORD};
 			$self->{USERNAME} = lc $self->{USERNAME};
@@ -1152,6 +1151,15 @@ sub login {
 			}
 		}
 
+		if($self->{PRESENT}->{ $self->{LOCATION}{GROUPS} } ) {
+			$Vend::groups
+			= $Vend::Session->{groups}
+			= $udb->field(
+						$self->{USERNAME},
+						$self->{LOCATION}{GROUPS},
+						);
+		}
+
 		username_cookies($self->{USERNAME}, $pw) 
 			if $Vend::Cfg->{CookieLogin};
 
@@ -1216,6 +1224,50 @@ sub scrub {
 		delete $CGI::values{$_};
 		delete $::Values->{$_};
 	}
+}
+
+sub logout {
+	my $self = shift or return undef;
+	scrub();
+
+	my $opt = $self->{OPTIONS};
+
+	if( is_yes($opt->{clear}) ) {
+		$self->clear_values();
+	}
+
+	Vend::Interpolate::tag_profile("", { restore => 1 });
+	no strict 'refs';
+
+	my @dels = qw/
+					groups
+					admin
+					superuser
+					login_table
+					username
+					logged_in
+				/;
+
+	for(@dels) {
+		delete $Vend::Session->{$_};
+		undef ${"Vend::$_"};
+	}
+
+	delete $CGI::values{mv_username};
+	delete $::Values->{mv_username};
+	$self->log('logout') if $opt->{log};
+	$self->{MESSAGE} = ::errmsg('Logged out.');
+	if ($opt->{clear_cookie}) {
+		my @cookies = split /[\s,\0]+/, $opt->{clear_cookie};
+		my $exp = time() + $Vend::Cfg->{SaveExpire};
+		for(@cookies) {
+			Vend::Util::set_cookie($_, '', $exp);
+		}
+	}
+	if ($opt->{clear_session}) {
+		Vend::Session::init_session();
+	}
+	return 1;
 }
 
 sub change_pass {
@@ -1498,7 +1550,6 @@ sub new_account {
 
 sub username_cookies {
 		my ($user, $pw) = @_;
-		return if $Vend::Cfg->{DifferentSecure} && $CGI::secure;
 		return unless
 			 $CGI::values{mv_cookie_password}		or
 			 $CGI::values{mv_cookie_username}		or
@@ -1521,14 +1572,17 @@ sub get_cart {
 
 	my $from = $self->{NICKNAME};
 	my $to;
-	if ($options{target}) {
-		$to = ($::Carts->{$options{target}} ||= []);
+
+	my $opt = $self->{OPTIONS};
+
+	if ($opt->{target}) {
+		$to = ($::Carts->{$opt->{target}} ||= []);
 	}
 	else {
 		$to = $Vend::Items;
 	}
 
-#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval_it($from));
+#::logDebug ("to=$to nick=$opt->{target} from=$from cart=" . ::uneval_it($from));
 
 	my $field_name = $self->{LOCATION}->{CARTS};
 	my $cart = [];
@@ -1559,9 +1613,9 @@ sub get_cart {
 		$self->{ERROR} = $@;
 		return undef;
 	}
-#::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval_it($cart));
+#::logDebug ("to=$to nick=$opt->{target} from=$from cart=" . ::uneval_it($cart));
 
-	if($options{merge}) {
+	if($opt->{merge}) {
 		$to = [] unless ref $to;
 		push(@$to,@$cart);
 	} else {
@@ -1574,8 +1628,11 @@ sub set_cart {
 
 	my $from;
 	my $to   = $self->{NICKNAME};
-	if ($self->{OPTIONS}{source}) {
-		$from = $::Carts->{$self->{OPTIONS}{source}} || [];
+
+	my $opt = $self->{OPTIONS};
+
+	if ($opt->{source}) {
+		$from = $::Carts->{$opt->{source}} || [];
 	}
 	else {
 		$from = $Vend::Items;
@@ -1595,7 +1652,7 @@ sub set_cart {
 
 		die ::errmsg("eval failed?")				unless ref $d;
 
-		if($options{merge}) {
+		if($opt->{merge}) {
 			$d->{$to} = [] unless ref $d->{$to};
 			push(@{$d->{$to}}, @{$from});
 		}
@@ -1633,12 +1690,16 @@ sub userdb {
 	my $status = 1;
 	my $user;
 
+	my $module = $Vend::Cfg->{UserControl} ? 'Vend::UserControl' : 'Vend::UserDB';
+
 	if($function eq 'login') {
 		$Vend::Session->{logged_in} = 0;
 		delete $Vend::Session->{username};
+		delete $Vend::Session->{groups};
 		undef $Vend::username;
+		undef $Vend::groups;
 		undef $Vend::admin;
-		$user = new Vend::UserDB %options;
+		$user = $module->new(%options);
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
@@ -1656,7 +1717,7 @@ sub userdb {
 		}
 	}
 	elsif($function eq 'new_account') {
-		$user = new Vend::UserDB %options;
+		$user = $module->new(%options);
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
@@ -1669,43 +1730,19 @@ sub userdb {
 		}
 	}
 	elsif($function eq 'logout') {
-		$user = new Vend::UserDB %options;
-		scrub();
-		unless (defined $user) {
-			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
-			return undef;
-		}
-		if( is_yes($options{clear}) ) {
-			$user->clear_values();
-		}
-		Vend::Interpolate::tag_profile("", { restore => 1 });
-		delete $Vend::Session->{logged_in};
-		undef $Vend::admin;
-		undef $Vend::superuser;
-		delete $Vend::Session->{login_table};
-		delete $Vend::Session->{username};
-		delete $CGI::values{mv_username};
-		undef $Vend::username;
-		delete $::Values->{mv_username};
-		$user->log('logout') if $options{'log'};
-		$user->{MESSAGE} = ::errmsg('Logged out.');
-		if ($user->{OPTIONS}{clear_cookie}) {
-			my @cookies = split /[\s,\0]+/, $user->{OPTIONS}{clear_cookie};
-			my $exp = time() + $Vend::Cfg->{SaveExpire};
-			for(@cookies) {
-				Vend::Util::set_cookie($_, '', $exp);
-			}
-		}
-		if ($user->{OPTIONS}{clear_session}) {
-			Vend::Session::init_session();
-		}
+		$user = $module->new(%options)
+			or do {
+				$Vend::Session->{failure} = ::errmsg("Unable to create user object.");
+				return undef;
+			};
+		$user->logout();
 	}
 	elsif (! $Vend::Session->{logged_in}) {
 		$Vend::Session->{failure} = ::errmsg("Not logged in.");
 		return undef;
 	}
 	elsif($function eq 'save') {
-		$user = new Vend::UserDB %options;
+		$user = $module->new(%options);
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
@@ -1713,7 +1750,7 @@ sub userdb {
 		$status = $user->set_values();
 	}
 	elsif($function eq 'load') {
-		$user = new Vend::UserDB %options;
+		$user = $module->new(%options);
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
@@ -1721,7 +1758,7 @@ sub userdb {
 		$status = $user->get_values();
 	}
 	else {
-		$user = new Vend::UserDB %options;
+		$user = $module->new(%options);
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
