@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.13 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.14 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -169,9 +169,9 @@ sub ui_acl_enabled {
 	my $try = shift;
 	my $table;
 	$Global::SuperUserFunction = \&is_super;
-	my $default = defined $Global::Variable->{UI_ACL}
-				 ? (! $Global::Variable->{UI_ACL})
-				 : 1;
+	my $default = defined $Global::Variable->{UI_SECURITY_OVERRIDE}
+				? $Global::Variable->{UI_SECURITY_OVERRIDE}
+				: 0;
 	$table = $::Variable->{UI_ACCESS_TABLE} || 'access';
 	$Vend::WriteDatabase{$table} = 1;
 	my $db = Vend::Data::database_exists_ref($table);
