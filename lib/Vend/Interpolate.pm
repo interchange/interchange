@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.31 2001-03-19 23:42:54 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.32 2001-03-21 17:40:23 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.31 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.32 $, 10);
 
 @EXPORT = qw (
 
@@ -5851,7 +5851,17 @@ sub tag_error {
 			next unless $err;
 			$found_error++;
 			my $string = '';
-			$string .= "$_: " if $opt->{show_var};
+			if ($opt->{show_label}) {
+				if ($Vend::Session->{errorlabels}{$_}) {
+					$string .= $Vend::Session->{errorlabels}{$_};
+					$string .= " ($_)" if $opt->{show_var};
+					$string .= ": ";
+				} else {
+					$string .= "($_): ";
+				}
+			} else {
+				$string .= "$_: " if $opt->{show_var};
+			}
 			$string .= $err;
 			push @errors, $string;
 		}
@@ -5868,6 +5878,9 @@ sub tag_error {
 	return !(not $found_error)
 		unless $opt->{std_label} || $text || $opt->{show_error};
 	if($opt->{std_label}) {
+		# store the error label in user's session for later
+		# possible use in [error show_label=1] calls
+		$Vend::Session->{errorlabels}{$var} = $opt->{std_label};
 		if($text) {
 		}
 		elsif(defined $::Variable->{MV_ERROR_STD_LABEL}) {
