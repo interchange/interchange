@@ -11,9 +11,13 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
+<tr>
+  <td align=left class=rnorm>
+		<table style="margin-left: 20px" width="70%">
+		[table-organize columnize=1 cols=4]
 [loop search="
 		fi=variable
 		st=db
@@ -23,23 +27,8 @@
 		tf=pref_group
 		ml=10000
 "]
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-[comment]
-<a href="[area href="__UI_BASE__/spread" form=|
-                mv_data_table=variable
-                page_title=Preferences -- [loop-code]
-                ui_meta_specific=1 
-                ui_hide_key=1
-                ui_data_fields=Variable pref_group
-                ui_text_qualification=pref_group=[loop-code]
-                ui_spreadsheet_rows=20
-                ui_spread_size:variable=50
-                ui_spread_meta:variable=1
-                ui_return_to=__UI_BASE__/preferences
-                help_name=knar.main
-|]"> [loop-code] </a>
-[/comment]
+<TD width="25%">
+[if-loop-pos 0]
 <a href="[area href="__UI_BASE__/flex_select" form=|
 				mv_data_table=variable
 				ui_meta_specific=1
@@ -50,19 +39,35 @@
 				ui_return_to=ui_text_qualification=pref_group=[loop-code]
 				ui_return_to=ui_hide_key=1
 				help_name=knar.main
-|]"> [loop-code] </a>
+|]">[loop-code]</A>
+[else]
+<a href="[area href="__UI_BASE__/flex_select" form=|
+				mv_data_table=variable
+				ui_meta_specific=1
+				ui_hide_key=1
+				ui_text_qualification=pref_group=
+				ui_return_to=__UI_BASE__/preferences
+				ui_return_to=page_title=[L]Preferences[/L] -- [loop-code]
+				ui_return_to=ui_text_qualification=pref_group=[loop-code]
+				ui_return_to=ui_hide_key=1
+				help_name=knar.main
+|]">(no category)</a>
+[/else]
+[/if-loop-pos]
 </font>
-</td></tr>
+</TD>
 
 [/loop]
+		[/table-organize]
+		</table>
 
 [if-mm super]
 <tr>
-<td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	[if type=explicit compare=`
 			return
 				(! defined $Values->{ui_meta_force} and $Variable->{UI_META_LINK})
@@ -91,11 +96,11 @@
 [/if-mm]
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<table width="100%">
 		<tr>
 			<td width="30%">
@@ -119,7 +124,40 @@ Search for a preference: <input NAME=ui_text_qualification size=16><INPUT TYPE=s
 </td></tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+	<td class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+	<td class=rnorm valign=top>
+		<form action="[process href="@@MV_PAGE@@"]">
+		<b>[L]Personal CSS[/L]</b>
+		[if cgi personal_css]
+			[if type=explicit compare="[userdb function=save profile=ui]"]
+				<span class=cmessage>(saved successfully)</span>
+			[else]
+				<span class=cerror>(save FAILED)</span>
+			[/else]
+			[/if]
+		[/if]
+		<input type=submit value="[L]Set styles[/L]"
+				style="vertical-align: sub;
+						font-size: 8pt;
+						">
+		<br>
+		<table>
+			<tr>
+				<td>
+		<input type=hidden name=mv_session_id value="[data session id]">
+		<input type=hidden name=mv_action value="go">
+		<input type=hidden name=mv_check value="userdb_save">
+		<textarea name=personal_css rows=24 cols=50>[value personal_css]</textarea>
+				</td>
+		</form>
+	</td>
+</tr>
+
+<tr>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

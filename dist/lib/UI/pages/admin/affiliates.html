@@ -71,25 +71,30 @@
 	return;
 [/calc]
 <TABLE border=0 CELLSPACING=0 width="90%">
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=affiliate\n" . sortrev('sku');
-	`]Code</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+<tr class=rspacer><td colspan=8></td></tr>
+<tr class=rmarq>
+<td>[page
+					extra=rmarq
+					href=@@MV_PAGE@@
+					form=`
+							return "ui_sort_field=affiliate\n" . sortrev('affiliate');
+					`]Code</td>
+<td>[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=name\n" . sortrev('name');
-	`]Name</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Linkback and entry URLs</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Reports</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=active\n" . sortrev('active');
-	`]Active</TH>
+	` extra=rmarq]Name</td>
+<td class=rmarq>Linkback and entry URLs</td>
+<td align=center class=rmarq>Reports</td>
+	<td align=center class=rmarq>
+	[page href=@@MV_PAGE@@ extra=rmarq
+		form=`
+			return "ui_sort_field=active\n" . sortrev('active');
+		`]Active</a>
+	</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=5></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=5></td></tr>
+<tr class=rsspacer><td colspan=5></td></tr>
 [/on-match]
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
 <TD VALIGN=top>[page
 				href=__UI_BASE__/flex_editor
 				form="

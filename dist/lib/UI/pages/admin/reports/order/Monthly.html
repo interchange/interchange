@@ -10,31 +10,22 @@
 @_UI_STD_HEAD_@
 
 <TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Date[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Affiliate[/L]/[L]Campaign[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Number of Orders[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN=right VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Revenue[/L]</B>
-</FONT>
-</TD>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN="top" width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD VALIGN="top">
+		[L]Affiliate[/L]/[L]Campaign[/L]
+	</TD>
+	<TD ALIGN=center VALIGN="top">
+		[L]Number of Orders[/L]
+	</TD>
+	<TD ALIGN=right VALIGN="top">
+		[L]Revenue[/L]
+	</TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
+<tr class=rborder height=1><td colspan=4></td></tr>
 
 <!-- will default to current if not set:
 		[seti today][tag time]%Y%m[/tag][/seti]
@@ -135,7 +126,7 @@ EOF
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	$url&nbsp;
 	</FONT>
@@ -159,7 +150,7 @@ EOF
 		$total_quantity     += $subtotal_quantity;
 		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	&nbsp;
 	</FONT>
@@ -181,7 +172,7 @@ EOF
 	}
 		$total_sales  = $Tag->currency({}, $total_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN="top">
 	$Scratch->{TOTAL}
 	</FONT>
@@ -199,7 +190,7 @@ EOF
 	</FONT>
 	</TD>
 	</TR>
-	<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+	<tr class=rborder height=1><td colspan=4></td></tr>
 EOF
 [/perl]
 </TABLE>

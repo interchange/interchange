@@ -12,10 +12,10 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width="__UI_LEFT_WIDTH__" valign=top colspan=2>
+<td class=rnorm width="__UI_LEFT_WIDTH__" valign=top colspan=2>
 
 [calc]
 	%sku = (
@@ -70,6 +70,16 @@ EOF
 			}
 		}
 	}
+
+	for(keys %sku) {
+		delete $sku{$_} if ! $_;
+	}
+
+	my @count = keys %sku;
+
+	return errmsg("No order history found.")
+		if ! @count;
+
 	my $mdb = $Db{merchandising};
 	for(sort keys %sku) {
 		my $val = $Tag->uneval( { ref => $sku{$_} } );
@@ -83,7 +93,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -39,25 +39,25 @@ If creating new user, go to password entry page after this.
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <input type="hidden" name="user_id" value="[cgi user_id]">
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>[L]Real name[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=40 name=name maxlength=100 value="[filter entities][loop-data __UI_ACCESS_TABLE__ name][/filter]">
 </td>
 </tr>
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>[L]User name[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [if cgi ui_hide_key]
 	<input type=hidden name=mv_data_function value="update">
 	<input type=hidden name=username value="[loop-code]">[loop-code]
@@ -75,21 +75,21 @@ If creating new user, go to password entry page after this.
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>[L]Super-user[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <INPUT type=checkbox name=super value=1 [if-loop-data __UI_ACCESS_TABLE__ super]checked[/if-loop-data]>
 </td>
 </tr>
 
-<tr><td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=1 height=1></td></tr>
+<tr><td colspan=2 class=rborder><img src="bg.gif" width=1 height=1></td></tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>[L]Groups[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [calc]
 	$Values->{groups} = q{[loop-data __UI_ACCESS_TABLE__ groups]};
 	$Values->{groups} =~ s/(\w+)/:$1/g;
@@ -118,7 +118,7 @@ If creating new user, go to password entry page after this.
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>

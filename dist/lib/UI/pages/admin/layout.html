@@ -8,7 +8,7 @@
 
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
-<table __UI_T_PROPERTIES__>
+<table __UI_T_PROPERTIES__ width="90%">
 
 [flag type=write table=area]
 [flag type=write table=cat]
@@ -35,11 +35,11 @@
 [/set]
 
 <tr class=rtitle>
-<td [if value area]colspan=3[/if] class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1>[page __UI_BASE__/layout_auto]auto-populate</A></td>
+<td [if value area]colspan=3[/if] class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1>[page href=__UI_BASE__/layout_auto extra=rmarq]auto-populate</A></td>
 </tr>
 
 <tr>
-<td valign=top bgcolor="__UI_C_INTBLOCK__">
+<td valign=top class=rnorm>
 
 <FORM METHOD=GET ACTION="[process]" name="areaform">
 <input type=hidden name=mv_session_id  value="[data session id]">
@@ -74,7 +74,7 @@
 		option=area ]
 <option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter][loop-calc]
 	push @{ $Scratch->{area_sort} }, [
-		q/[loop-code]/,
+		q{[loop-code]},
 		sprintf('%03d', ++$Scratch->{start_sort})
 	];
 	return;
@@ -84,9 +84,8 @@
 
 [perl tables=area]
 	my $db = $Db{area} || return;
-	my $settor = $db->field_settor('sort');
 	foreach ( @{ $Scratch->{area_sort} } ) {
-		$settor->( @$_ );
+		$db->set_field( $_->[0], 'sort', $_->[1] );
 	}
 	delete $Scratch->{start_sort};
 	return;
@@ -185,7 +184,7 @@
 
 [if cgi area]
 [then]
-<td valign=top bgcolor="__UI_C_INTBLOCK__">
+<td valign=top class=rnorm>
 
 <B>Contains:</B><BR>
 
@@ -219,9 +218,8 @@
 
 [perl tables=cat]
 	my $db = $Db{cat} || return;
-	my $settor = $db->field_settor('sort');
 	foreach ( @{ $Scratch->{cat_sort} } ) {
-		$settor->( @$_ );
+		$db->set_field( $_->[0], 'sort', $_->[1] );
 	}
 	delete $Scratch->{start_sort};
 	return;
@@ -314,7 +312,7 @@
 
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" valign=top>
+<td class=rnorm valign=top>
 
 
 <table>
@@ -409,9 +407,9 @@
 </tr>
 </table>
 
-<table __UI_T_PROPERTIES__>
+<table __UI_T_PROPERTIES__ width="90%">
 <tr>
-<td valign=top bgcolor="__UI_C_INTBLOCK__">
+<td valign=top class=rnorm>
 <!--- BEGIN SECTION PROPERTIES -->
 
 [value name=mv_data_table set="area" hide=1]
@@ -460,27 +458,27 @@ setarea=[cgi selector]
 <INPUT TYPE=hidden name=mv_data_fields value="code sel which_page link_type name display_type">
 <INPUT TYPE=hidden NAME=code VALUE="[table-code]">
 
-<table __UI_T_PROPERTIES__>
+<table __UI_T_PROPERTIES__ width="90%">
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="icon_pages.gif">&nbsp;Section Properties</td>
+<td class=rmarq colspan=2><img src="icon_pages.gif">&nbsp;Section Properties</td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Name</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT SIZE=40 NAME=name Value="[table-data area name]">
 	</td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Page&nbsp;class</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<input type=hidden name="ui_filter:which_page" value="null_to_space">
 	<table> <tr> <td>
 		<small>
@@ -517,10 +515,10 @@ setarea=[cgi selector]
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Page area</b>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<input type=hidden name="ui_filter:sel" value="nullselect">
 	<table><tr><td>
@@ -549,16 +547,16 @@ setarea=[cgi selector]
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+<td colspan=2 class=rnorm><HR></td>
 </tr>
 
 [set ui_area_type][table-data area link_type][/set]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Link type</b>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		[display table=area column=link_type key="[value area]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
@@ -566,10 +564,10 @@ setarea=[cgi selector]
 [if scratch ui_area_type eq external]
 <INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>External</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT SIZE=40 NAME=url value="[table-data area url]">
 	</td>
@@ -577,10 +575,10 @@ setarea=[cgi selector]
 [elsif scratch ui_area_type eq internal]
 <INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Interchange page</B></small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<input type=hidden name="ui_filter:url" value="null_to_space">
 	<select name=url>
@@ -602,10 +600,10 @@ setarea=[cgi selector]
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Parameters</B></small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
 	</td>
@@ -618,7 +616,7 @@ setarea=[cgi selector]
 	return;
 [/calc]
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>Table
 	</td>
 	<td>
@@ -630,20 +628,20 @@ setarea=[cgi selector]
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>field=column pairs
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small>
 		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data area selector]</TEXTAREA>
 	</td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>Results page
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small>
 		<select name=page>
 		[calc]
@@ -672,7 +670,7 @@ setarea=[cgi selector]
 <INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to value="area=[table-code]">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	[set Create]
 	mv_todo=back
 	mv_nextpage=__UI_BASE__/search_wizard
@@ -684,7 +682,7 @@ setarea=[cgi selector]
 							this.form.ui_searchblob.value=this.form.search.value;
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		[calc]
 		my $n = 4;
@@ -710,16 +708,16 @@ setarea=[cgi selector]
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+<td colspan=2 class=rnorm><HR></td>
 </tr>
 
 [set ui_area_display][table-data area display_type][/set]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Display type</b>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		[display table=area column=display_type key="[value area]" js=|onChange="this.form.submit()"|]
 	</td>
@@ -730,20 +728,20 @@ setarea=[cgi selector]
 <INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
 <input type=hidden name="ui_filter:image" value="nullselect">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Image</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<small>
 	[display table=area column=image key="[value area]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Image properties</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		<input name="image_prop" size=30 VALUE="[calc]
 		$image_prop = q{[table-data area image_prop]};
@@ -754,10 +752,10 @@ setarea=[cgi selector]
 </tr>
 [/if]
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Link template</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<input type=hidden name=mv_data_fields value=link_template>
 	[display table=area column=link_template key="[value area]"]
@@ -774,7 +772,7 @@ setarea=[cgi selector]
 <!--- END SECTION PROPERTIES -->
 
 <!--- BEGIN CATEGORY PROPERTIES -->
-<td valign=top bgcolor="__UI_C_INTBLOCK__" width=50%">
+<td valign=top class=rnorm width="50%">
 
 [value name=mv_data_table set="cat" hide=1]
 
@@ -821,16 +819,17 @@ return;
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="code link_type name display_type">
 <INPUT TYPE=hidden NAME=code VALUE="[table-code]">
 
-<table __UI_T_PROPERTIES__>
+<table __UI_T_PROPERTIES__ width="90%">
 
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="icon_pages.gif">&nbsp;Category properties</td>
+<tr>
+<td class=rmarq colspan=2><img src="icon_pages.gif">&nbsp;Category properties</td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Name</B></small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT SIZE=40 NAME=name Value="[table-data cat name]">
 	</td>
@@ -839,10 +838,10 @@ return;
 [set ui_cat_type][table-data cat link_type][/set]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Link type</b>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		[display table=cat column=link_type key="[value cat]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
@@ -851,10 +850,10 @@ return;
 [if scratch ui_cat_type eq external]
 <INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>External</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT SIZE=40 NAME=url value="[table-data cat url]">
 	</td>
@@ -862,10 +861,10 @@ return;
 [elsif scratch ui_cat_type eq internal]
 <INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Interchange page</B></small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<input type=hidden name="ui_filter:url" value="null_to_space">
 	<select name=url>
@@ -887,10 +886,10 @@ return;
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Parameters</B></small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
 	</td>
@@ -898,10 +897,10 @@ return;
 [/elsif]
 [elsif scratch ui_cat_type eq explode]
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Explode file</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<select name=explode>
 	[calc]
@@ -929,7 +928,7 @@ return;
 	return;
 [/calc]
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>Table
 	</td>
 	<td>
@@ -941,20 +940,20 @@ return;
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>field=column pairs
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small>
 		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data cat selector]</TEXTAREA>
 	</td>
 </tr>
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small><b>Results page
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<small>
 		<select name=page>
 		[calc]
@@ -984,7 +983,7 @@ return;
 <INPUT TYPE=hidden NAME=ui_return_to value="area=[cgi area]">
 <INPUT TYPE=hidden NAME=ui_return_to value="cat=[table-code]">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	[set Create]
 	mv_todo=back
 	mv_nextpage=__UI_BASE__/search_wizard
@@ -996,7 +995,7 @@ return;
 							this.form.ui_searchblob.value=this.form.search.value;
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		[calc]
 		my $n = 4;
@@ -1024,21 +1023,21 @@ return;
 
 [if scratch needs_banner_info]
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_text">
 	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_image">
 	<small><b>Banner Text
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<INPUT SIZE=40 NAME=banner_text value="[table-data cat banner_text]">
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><b>Banner Image
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		<INPUT SIZE=40 NAME=banner_img value="[table-data cat banner_img]">
 	</td>
@@ -1046,16 +1045,16 @@ return;
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+<td colspan=2 class=rnorm><HR></td>
 </tr>
 
 [set ui_cat_display][table-data cat display_type][/set]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small><B>Display type</b>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		[display table=cat column=display_type key="[value cat]" js=|onChange="this.form.submit()"|]
 	</td>
@@ -1066,20 +1065,20 @@ return;
 <INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
 <input type=hidden name="ui_filter:image" value="nullselect">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Image</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<small>
 	[display table=cat column=image key="[value cat]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Image properties</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 		<input name="image_prop" size=30 VALUE="[calc]
 		$image_prop = q{[table-data cat image_prop]};
@@ -1091,10 +1090,10 @@ return;
 [/if]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<B>Link template</B>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<small>
 	<input type=hidden name=mv_data_fields value=link_template>
 	[display table=cat column=link_template key="[value cat]"]
@@ -1118,11 +1117,11 @@ return;
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [/then]
@@ -1131,7 +1130,7 @@ return;
 </tr>
 
 <tr>
-<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=2[/if] class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/else]
 [/if]

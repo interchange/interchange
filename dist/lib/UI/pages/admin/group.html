@@ -1,4 +1,4 @@
-[calc] $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
+[calc]$Config->{NoSearch} = ''; $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
 [set page_title][L]Administration Group Manager[/L][/set]
 [set ui_class]Admin[/set]
 [set page_perm]group=l[/set]
@@ -21,9 +21,9 @@
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/group_edit">
 <INPUT TYPE=hidden NAME=ui_hide_key VALUE="1">
 
-<table __UI_T_PROPERTIES__>
+<table cellpadding=3 cellspacing=0 width="70%">
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 [set [L]Create new group[/L]]
@@ -65,17 +65,17 @@ mv_nextpage=@@MV_PAGE@@
 [/set]
 
 <tr>
-<td colspan=2 bgcolor="__UI_C_INTBLOCK__">
+<td colspan=2 class=rnorm>
 <input type="submit" name="mv_click" value="[L]Create new group[/L]">
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=150>
+<td class=rnorm width=150>
 <input type="submit" value="[L]Edit group[/L]"><br><br>
 <input type="submit" name="mv_click" value="[L]Show permissions[/L]"><p>
 [if-mm advanced access=d]
@@ -84,7 +84,7 @@ mv_nextpage=@@MV_PAGE@@
 [/if-mm]
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" width=450>
+<td class=rnorm width=450>
 <select name="group_id" size=10>
 [loop search="fi=access/st=db/co=yes/sf=username/se=:/bs=yes/tf=name"]
   <option value="[loop-code]">[loop-data access name]
@@ -94,7 +94,7 @@ mv_nextpage=@@MV_PAGE@@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>

@@ -10,31 +10,22 @@
 
 @_UI_STD_HEAD_@
 <TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Date[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Affiliate[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Number of Orders[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN=right VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Revenue[/L]</B>
-</FONT>
-</TD>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Affiliate[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Number of Orders[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Revenue[/L]
+	</TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
+<tr class=rborder height=1><td colspan=4></td></tr>
 
 [calc]
 	if($Session->{arg}) {
@@ -131,14 +122,14 @@ EOF
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	$url&nbsp;
 	</TD>
 	<TD VALIGN=top>
 	<A HREF="$burl&affiliate=$syn">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
 	</TD>
-	<TD ALIGN=center VALIGN=top>
+	<TD ALIGN=right VALIGN=top>
 	$record->{orders}
 	</TD>
 	<TD ALIGN=right VALIGN=top>
@@ -151,14 +142,14 @@ EOF
 		$total_quantity += $subtotal_quantity;
 		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	&nbsp;
 	</TD>
 	<TD VALIGN=top>
 	$Scratch->{ALL}<BR><HR color=black size=1>
 	</TD>
-	<TD ALIGN=center VALIGN=top>
+	<TD ALIGN=right VALIGN=top>
 	$subtotal_quantity
 	</TD>
 	<TD ALIGN=right VALIGN=top>
@@ -169,7 +160,7 @@ EOF
 	}
 		$total_sales  = $Tag->currency({}, $total_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN="top">
 
 	$Scratch->{TOTAL}
@@ -178,7 +169,7 @@ EOF
 
 	$Scratch->{ALL}
 	</TD>
-	<TD ALIGN=center VALIGN="top">
+	<TD ALIGN=right VALIGN="top">
 
 	$total_quantity
 	</TD>
@@ -187,7 +178,7 @@ EOF
 	$total_sales
 	</TD>
 	</TR>
-	<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+	<tr class=rborder height=1><td colspan=4></td></tr>
 
 EOF
 [/perl]

@@ -139,7 +139,7 @@
 
 <!-- ----- Show the active/inactive buttons ----- -->
 
-<form action="[area __UI_BASE__/customer]" method=POST>
+<form action="[process href=@@MV_PAGE@@]" method=POST>
 <input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
@@ -147,12 +147,12 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [if value showinactive]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
+<td class=rnorm width=__UI_MAIN_WIDTH__ colspan=2>
 [button name="showactive" text="Show active customers"][/button]
 [set active_sense]eq[/set]
 </td>
@@ -160,7 +160,7 @@
 [else]
 [value name=showinactive set=""]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
+<td class=rnorm width=__UI_MAIN_WIDTH__ colspan=2>
 <input type=submit name="showinactive" value="Show inactive customers">
 [set active_sense]ne[/set]
 </td>
@@ -169,13 +169,13 @@
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rnorm><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 [button name="viewcustomer" text="View customer"][/button]<br>
 
@@ -218,7 +218,7 @@ mv_todo=return
 <input type=submit name="xload" value="Export customers">
 [/comment]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 <SMALL>Specific customer <INPUT TYPE=text NAME=customer VALUE="">
 [button text="Start list here"]
 [calc]
@@ -256,7 +256,7 @@ mv_nextpage=@@MV_PAGE@@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 

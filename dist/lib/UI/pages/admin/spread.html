@@ -121,10 +121,10 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-<TR BGCOLOR="__UI_C_INTBLOCK__" CELLPADDING=2>
+<TR class=rnorm CELLPADDING=2>
 	<TH ALIGN=CENTER>&nbsp;</TH>
 	<TH ALIGN=CENTER>[value ui_data_key_name]</TH>
 	[row-edit
@@ -135,12 +135,12 @@
 </TR>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 	[search-list]
 	[if-mm keys [item-code]]
-<TR BGCOLOR="__UI_C_INTBLOCK__">
+<TR class=rnorm>
 	<td><input type=checkbox name="batch_id" value="[item-code]"><input type=hidden name="[value ui_data_key_name]" value="[item-code]"></td>
 	<TD>
 	[page href="__UI_BASE__/flex_editor"
@@ -168,7 +168,7 @@
 	[set row_number][item-increment][/set]
 	[/search-list]
 
-<TR BGCOLOR="__UI_C_INTBLOCK__">
+<TR class=rnorm>
 	<td COLSPAN=2>
 	<input type=text size=12 name="[value ui_data_key_name]">
 	</TD>
@@ -177,27 +177,27 @@
 
 [more-list]
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>&nbsp;</td>
-<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>&nbsp;</td>
+<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" class=rnorm>
 	<FONT SIZE="+1">[msg arg.0="[more]"]More pages: %s[/msg] </FONT>
 </td>
 </tr>
 [/more-list]
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>&nbsp;</td>
-<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>&nbsp;</td>
+<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" class=rnorm>
 
 
 	<B></B>&nbsp;&nbsp;&nbsp;[button text="[L]Ok[/L]" bold=1]

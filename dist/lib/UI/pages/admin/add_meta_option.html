@@ -188,14 +188,14 @@ EOF
 [/else]
 [/if-key-exists]
 
-<table width="60%" border="" cellspacing="0" cellpadding="0">
+<table width="60%" cellspacing=0 cellpadding=0>
 <tr>
   <td>
 
-<table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+<table cellspacing=0 cellmargin=0 width="100%" cellpadding=2 align=center border=0>
 
-<tr bgcolor="__UI_C_TITLEBARBG__"> 
-<td align=right colspan=2><img src="bg.gif" width=1 height=3 alt=x></td>
+<tr class=rborder> 
+<td align=right colspan=2><img src="bg.gif" width=1 height=1 alt=x></td>
 </tr>
 
 [comment]
@@ -206,7 +206,7 @@ Display an extra Ok/Cancel button pair if there are more than
       my $linecount = (split / /, $CGI->{ui_data_fields}) - 1;
       my $out = '';
       $out .= <<'EOF' if $linecount > 4;
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
+<TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left>
 <B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
@@ -216,8 +216,8 @@ Display an extra Ok/Cancel button pair if there are more than
 </TD>
 </TR>
 
-<tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="bg.gif" width=1 height=3 alt=x></td>
+<tr class=rborder>
+<td colspan=2><img src="bg.gif" width=3 height=1 alt=x></td>
 </tr>
 
 EOF
@@ -347,17 +347,17 @@ EOF
 										arbitrary => $CGI->{ui_meta_view},
 										fallback => 1,
 										template => q(
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
-   <td align=left width=150> 
-     <font color="__UI_C_TEXT__" size="-1"><b>$LABEL$</b>~META~
+<TR class=rnorm>
+   <td align=left width=150 class=clabel> 
+     <b>$LABEL$</b>~META~
    </td>
-   <td valign=TOP> 
+   <td valign=TOP class=cdata> 
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
-         <td width="60%"> 
+         <td width="60%" class=cdata> 
            <FONT SIZE="-1">$WIDGET$</FONT>
          </td>
-         <td><FONT SIZE="-1"><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</FONT></td>
+         <td class=chelp><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</FONT></td>
        </tr>
      </table>
    </td>
@@ -399,7 +399,7 @@ EOF
             #next;
         #}
 		$Document->write(<<EOF) if $break{$col};
-<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TR class=rnorm>
 	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
@@ -412,10 +412,10 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="[cgi ui_data_fields]">
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="bg.gif" height=3 alt=x></td>
+<td colspan=2 class=rspacer><img src="bg.gif" height=1 alt=x></td>
 </tr>
 
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
+<tr class=rnorm>
 <td>&nbsp;</td>
 <td align=left>
 <B>[button text="Ok"]
@@ -448,7 +448,7 @@ mv_data_table=[cgi mv_data_table]
 </tr>
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="bg.gif" height=3 alt=x></td>
+<td colspan=2 class=rspacer><img src="bg.gif" height=3 alt=x></td>
 </tr>
 
 </table>

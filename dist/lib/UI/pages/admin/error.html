@@ -12,12 +12,12 @@
 [tmp loginhint][msg arg.0="[page __UI_BASE__/login]<U><B>" arg.1="</b></U></A>"]Maybe you need to %slog in%s?[/msg][/tmp]
 <table __UI_T_PROPERTIES__>
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [if session ui_error]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+class=rnorm>
 &nbsp;
 <p>
 
@@ -37,45 +37,41 @@
 
 [if scratch ui_error]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-&nbsp;
-<p>
+	<td class=rnorm>
+		&nbsp;
+		<p>
 
-[L]The following error occurred:[/L]
-<p>
-<BLOCKQUOTE>
-<b>[scratchd ui_error]</b>
-</BLOCKQUOTE>
-<p>
-[L]Please correct and try again.[/L]
-&nbsp;
-</td>
+		[L]The following error occurred:[/L]
+		<blockquote class=cerror>
+			[scratchd ui_error]
+		</blockquote>
+		[L]Please correct and try again.[/L]
+		&nbsp;
+	</td>
 </tr>
 [/if]
 
 
 [if scratch violation]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-&nbsp;
-<p>
+	<td class=rnorm>
+		&nbsp;
+		<p>
 
-[L]The following violation occurred:[/L]
-<p>
-<BLOCKQUOTE>
-<b>[scratchd violation]</b>
-</BLOCKQUOTE>
-<p>
-[L]Please correct and try again.[/L]
-<p>
-<i>[scratch loginhint]</i>
-&nbsp;
-</td>
+		[L]The following violation occurred:[/L]
+			<blockquote class=cerror>
+				[scratchd violation]
+			</blockquote>
+		[L]Please correct and try again.[/L]
+		<p>
+			<i>[scratch loginhint]</i>
+	&nbsp;
+	</td>
 </tr>
 [/if]
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

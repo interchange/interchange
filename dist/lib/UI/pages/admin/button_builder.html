@@ -34,11 +34,11 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
+<td colspan=2  class=rnorm>
 
 <B>Build an order button or link</B>
 
@@ -48,14 +48,14 @@
 [scratch item_result]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Type</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <SELECT NAME=item_button>
 <OPTION VALUE=0>Link
 <OPTION VALUE=1 [selected item_button 1]>Button
@@ -68,10 +68,10 @@
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Item code</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [perl]
 	my $table = $Config->{ProductFiles}[0];
 	$Scratch->{keypos} = $Config->{Database}{$table}{KEYINDEX} || '0';
@@ -99,10 +99,10 @@ Or enter SKU: <INPUT NAME=item_id SIZE=16>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Specific Quantity</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <INPUT NAME=item_quantity> <I>(Separate multiple quantities by commas)</I>
 
@@ -114,10 +114,10 @@ Or enter SKU: <INPUT NAME=item_id SIZE=16>
 	return unless scalar @$ary > 1;
 	my $out = <<'EOF';
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 A specific database
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <SELECT NAME=item_db>
 EOF
 	for(@$ary) {
@@ -131,10 +131,10 @@ EOF
 [/calc]
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Separate line?</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <SELECT NAME=item_separate>
 	<OPTION VALUE=0> No
@@ -148,10 +148,10 @@ EOF
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Group items?</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <SELECT NAME=item_group>
 	<OPTION VALUE=""> No
@@ -161,10 +161,10 @@ EOF
 </tr>
 [loop prefix=macro list=`join "\n", @{$Config->{UseModifier}};`]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>[macro-code] (if any)</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <SELECT NAME=item_modifier_[macro-code]>
 <OPTION VALUE=""> --none specified--
 [calc]
@@ -190,10 +190,10 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Affiliate code</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <select name="affiliate">
 <option value=""> --no affiliate --
 [loop search="
@@ -213,23 +213,23 @@ EOF
 
 [if config OnFly]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Description</B>
 <BR>
 <font size="-1"><i>(on-the-fly only)</i></font>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input name="description" size=50>
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Price</B>
 <BR>
 <font size="-1"><i>(on-the-fly only)</i></font>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input name="price" size=8>
 </td>
 </tr>
@@ -241,10 +241,10 @@ EOF
 	for(@{$Config->{UseModifier}}) {
 		$out .= <<EOF;
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>$_ (if any)</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <INPUT NAME=item_modifier_$_>
  <I>(Separate multiple values by commas)</I>
 </SELECT>
@@ -256,16 +256,16 @@ EOF
 [/calc]
 [/comment]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Action</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <INPUT TYPE=submit VALUE=Build>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

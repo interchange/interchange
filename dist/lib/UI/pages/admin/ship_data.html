@@ -126,7 +126,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=5 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [perl]
@@ -162,8 +162,8 @@ EOF
 		}
 		my @out;
 		push (@out, <<EOF);
-<tr>
-<td colspan=5 align=left bgcolor=__UI_C_INTBLOCK__>
+<tr class=rnorm>
+<td colspan=5 align=left>
 &nbsp;
 <p>
 <b>[cgi ui_shipmode] -- [shipping-desc mode="[cgi ui_shipmode]"]</b>
@@ -176,15 +176,15 @@ $algomessage
 </tr>
 
 <tr>
-<td align=left colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=1 height=1></td>
+<td align=left colspan=5 class=rborder><img src="bg.gif" width=1 height=1></td>
 </tr>
 
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__><INPUT TYPE=hidden NAME=ui_shipmode VALUE="$inmode"><b>Start range</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>End range</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Charge type</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Charge amount</b></td>
-<td bgcolor=__UI_C_INTBLOCK__> &nbsp; </td>
+<tr class=rnorm>
+<td class=ctitle><INPUT TYPE=hidden NAME=ui_shipmode VALUE="$inmode">Start range</td>
+<td class=ctitle>End range</td>
+<td class=ctitle>Charge type</td>
+<td class=ctitle>Charge amount</td>
+<td> &nbsp; </td>
 </tr>
 EOF
 		my $idx = -1;
@@ -283,19 +283,19 @@ EOF
 			$ref->[4] = 9999999 if ! length $ref->[4];
 			if ($ref->[4] > 9999998 and ! $modes[$idx + 1]) {
 				$max_display = qq{<INPUT TYPE=hidden NAME=max$idx VALUE=9999999>(infinity)};
-				$bgcolor = '__UI_C_TOPBLOCKBAR__';
+				$class = 'rborder';
 			}
 			else {
 				$max_display = qq{<INPUT size=7 name=max$idx VALUE="$ref->[4]">};
-				$bgcolor = '__UI_C_INTBLOCK__';
+				$class = 'rnorm';
 			}
 			$out = <<EOF;
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__ align=center><input type=hidden name=mode$idx value="$inmode"><input size=7 name=min$idx value="$ref->[3]"></td>
-<td bgcolor=$bgcolor>
+<td class=rborder align=center><input type=hidden name=mode$idx value="$inmode"><input size=7 name=min$idx value="$ref->[3]"></td>
+<td class=$class>
 $max_display
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="cost$idx">
 EOF
@@ -316,11 +316,11 @@ EOF
 </select>
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input size=20 name="cost$idx" value="$ref->[5]">
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=image name="ui_delete_range$idx" src="delete.gif" alt="Delete this range" width=20 height=20 border=0>
 </td>
 
@@ -334,13 +334,13 @@ EOF
 <tr>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_INTBLOCK__>
+<td colspan=5 class=rnorm>
 <INPUT TYPE=image name=ui_add_line src="plus.gif" alt="Add a new range" width=20 height=20 border=0>
 </td>
 </tr>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 border=0></td>
+<td colspan=5 class=rnorm><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 border=0></td>
 </tr>
 
 </table>

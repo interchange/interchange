@@ -92,16 +92,16 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=6 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View list[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View detail[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Create[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Edit[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Delete[/L]</td>
+<td class=rnorm valign=top>&nbsp;</td>
+<td class=rnorm valign=top>[L]View list[/L]</td>
+<td class=rnorm valign=top>[L]View detail[/L]</td>
+<td class=rnorm valign=top>[L]Create[/L]</td>
+<td class=rnorm valign=top>[L]Edit[/L]</td>
+<td class=rnorm valign=top>[L]Delete[/L]</td>
 </tr>
 
 [seti tables][list-databases][/seti]
@@ -155,7 +155,7 @@
 #DEBUG
 #	$out .= <<EOF;
 #<tr>
-#<td colspan=6 bgcolor=__UI_C_INTBLOCK__ valign=top>
+#<td colspan=6 class=rnorm valign=top>
 #$string
 #</td>
 #EOF
@@ -167,14 +167,14 @@
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_functions">
 </td>
 EOF
 		for(@some) {
 			$out .= <<EOF;
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <INPUT type=checkbox value=$_ name="yes_functions"$ref->{$_}>
 </td>
 EOF
@@ -184,7 +184,7 @@ EOF
 	my $ref = $permref->{order};
 	$out .= <<EOF;
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=6 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
@@ -194,11 +194,11 @@ EOF
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <b>[L]Order manager[/L]:</b>
 <INPUT type=hidden value="order=" name="yes_functions">
 <li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
@@ -211,7 +211,7 @@ EOF
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top ROWSPAN=2>
+<td class=rnorm valign=top ROWSPAN=2>
 EOF
 	@permissions = (
 		orderstats		=> 'Order statistics utility',
@@ -245,7 +245,7 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <b>[L]Customer Edit Permissions[/L]:</b>
 <INPUT type=hidden value="userdb=" name="yes_functions">
 <li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
@@ -263,7 +263,7 @@ EOF
 [/perl]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>
@@ -273,27 +273,27 @@ EOF
 <table cellpadding=3 cellspacing=0 width=100%>
 
 <tr>
-<td colspan=9 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=9 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td colspan=9 bgcolor=__UI_C_INTBLOCK__ ALIGN=center><B>[L]Table Permissions[/L]</B></td>
+<td colspan=9 class=rnorm ALIGN=center><B>[L]Table Permissions[/L]</B></td>
 </tr>
 
 <tr>
-<td colspan=9 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=9 class=rspacer><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]HIDE[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Edit[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Create[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Delete[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Import[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Export[/L]</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Owner field[/L]</td>
+<td class=rnorm valign=top>&nbsp;</td>
+<td class=rnorm valign=top>[L]HIDE[/L]</td>
+<td class=rnorm valign=top>[L]View[/L]</td>
+<td class=rnorm valign=top>[L]Edit[/L]</td>
+<td class=rnorm valign=top>[L]Create[/L]</td>
+<td class=rnorm valign=top>[L]Delete[/L]</td>
+<td class=rnorm valign=top>[L]Import[/L]</td>
+<td class=rnorm valign=top>[L]Export[/L]</td>
+<td class=rnorm valign=top>[L]Owner field[/L]</td>
 </tr>
 
 [perl]
@@ -353,17 +353,17 @@ EOF
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_tables">
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <INPUT type=checkbox value="$perm" name="no_tables"$no{$perm}>
 </td>
 EOF
 		for(@all) {
 			$out .= <<EOF;
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <INPUT type=checkbox value=$_ name="yes_tables"$ref->{$_}>
 </td>
 EOF
@@ -374,7 +374,7 @@ EOF
 			$of = $tc->{$perm}{owner_field};
 		}
 		$out .= <<EOF;
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=rnorm valign=top>
 <INPUT type=hidden value="$perm=" name="owner_field">
 <INPUT type=text value="$of" name="owner_field" size=10>
 <INPUT type=hidden value="," name="owner_field">
@@ -387,13 +387,22 @@ EOF
 	[/perl]
 
 <tr>
-<td colspan=9 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=9 class=rspacer><img src="bg.gif" width=600 height=1></td>
+</tr>
+
+
+<tr>
+<td colspan=9 class=rnorm>
+	<input type=submit value="[L]Ok[/L]">
+	<input type=submit name=mv_click value="[L]Cancel[/L]">
+</td>
+</tr>
+
+<tr>
+<td colspan=9 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>
-
-<input type=submit value="[L]Ok[/L]">
-<input type=submit name=mv_click value="[L]Cancel[/L]">
 
 <BR>
 

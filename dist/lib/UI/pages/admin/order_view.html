@@ -32,17 +32,17 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" height=1></td>
+<td colspan=6 class=rborder><img src="bg.gif" height=1></td>
 </tr>
 
 <tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=6 align=left class=rnorm>
 <b>[L]Order number[/L]: [loop-code] [L]Order date[/L]: [convert-date][loop-data transactions order_date][/convert-date]</b>
 </td>
 </tr>
 
 <tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=6 align=left class=rnorm>
 <b>[L]Customer[/L]: 
 [if-loop-data transactions username]
 <A HREF="[area
@@ -60,7 +60,7 @@
 <!-- ----- Affiliate Check ----- -->
 [if-loop-data transactions affiliate]
 <tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=6 align=left class=rnorm>
 <b>[L]Affiliate[/L]: [data table=affiliate column=name key="[loop-data transactions affiliate]"]</b>
 </td>
 </tr>
@@ -197,36 +197,36 @@
 <!-- ----- Order information ----- -->
 
 <tr>
-<td width=50 align=center bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=50 align=center class=rborder>
 <font size=2>
 <b>[L]Status[/L]</b></font></td>
 
-<td width=230 align=left bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=230 align=left class=rborder>
 <font size=2>
 <b>[L]Name[/L]</b></font></td>
 
-<td width=100 align=left bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=100 align=left class=rborder>
 <font size=2>
 <b>[L]SKU[/L]</b></font></td>
 
-<td width=50 align=center bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=50 align=right class=rborder>
 <font size=2>
 <b>[L]Qty.[/L]</b></font></td>
 
-<td width=70 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=70 align=right class=rborder>
 <font size=2>
 <b>[L]Each[/L]</b></font></td>
 
-<td width=70 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=70 align=right class=rborder>
 <font size=2>
 <b>[L]Discount[/L]</b></font></td>
 
-<td width=80 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=80 align=right class=rborder>
 <font size=2>
 <b>[L]Total[/L]</b></font></td>
 </tr>
 [query st=db sql="select * from orderline where order_number = '[loop-data transactions order_number]'" list=1]
-<tr><td width=50 align=center bgcolor=__UI_C_INTBLOCK__>
+<tr><td width=50 align=center class=rnorm>
 <font size=2>
 [calc]
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
@@ -236,7 +236,7 @@
 <BR>&nbsp;
 </font></td>
 
-<td width=330 bgcolor=__UI_C_INTBLOCK__>
+<td width=330 class=rnorm>
 <font size=2>
 [either][sql-data orderline description][or][data table=__ProductFiles_0__ col=description key="[sql-data orderline sku]"][/either]
 [if-sql-data orderline size]
@@ -254,27 +254,27 @@
 [/if-sql-data]
 </font></td>
 
-<td width=100 align=left bgcolor=__UI_C_INTBLOCK__>
+<td width=100 align=left class=rnorm>
 <font size=2>
 [sql-data orderline sku]
 </font></td>
 
-<td width=50 align=right bgcolor=__UI_C_INTBLOCK__>
+<td width=50 align=right class=rnorm>
 <font size=2>
 [sql-data orderline quantity]
 </font></td>
 
-<td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
+<td width=70 align=right class=rnorm>
 <font size=2>
 [currency][sql-data orderline price][/currency]
 </font></td>
 
-<td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
+<td width=70 align=right class=rnorm>
 <font size=2>
 &nbsp;[sql-data orderline discount]
 </font></td>
 
-<td width=80 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=80 align=right class=rborder>
 <font size=2>
 [currency][sql-data orderline subtotal][/currency]
 
@@ -288,7 +288,7 @@
 <td colspan=6 align=right>
 <font size=2>[L]Product Total[/L]:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=2>[currency][loop-data transactions subtotal][/currency]</font>
 </td>
 </tr>
@@ -299,7 +299,7 @@
 <td colspan=6 align=right>
 <font size=2>[L]Tax[/L]:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=2>[currency][loop-data transactions salestax][/currency]</font>
 </td>
 </tr>
@@ -310,7 +310,7 @@
 <td colspan=6 align=right>
 <font size=2>[L]Shipping[/L]: [loop-data transactions shipmode]</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=2>
 [currency][loop-data transactions shipping][/currency]</font>
 </td>
@@ -322,7 +322,7 @@
 <td colspan=6 align=right>
 <font size=3><b>[L]Grand total[/L]:</b></font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=3><b>[currency][loop-data transactions total_cost][/currency]<br></b></font>
 </td>
 </tr>
@@ -335,7 +335,7 @@
 <td colspan=6 align=right>
 <font size=2>[L]Total weight[/L]:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=2>[calc] $total_weight [/calc]</font>
 </td>
 </tr>
@@ -346,7 +346,7 @@
 <td colspan=6 align=right>
 <font size=2>[L]Total volume[/L]:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right class=rborder>
 <font size=2>0</font>
 </td>
 </tr>
@@ -357,13 +357,13 @@
 </tr>
 
 <tr>
-<td colspan=7 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=7 align=left class=rnorm>
 <pre>[loop-data transactions comments]</pre>
 </td>
 </tr>
 
 <tr>
-<td colspan=7 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" height=1></td>
+<td colspan=7 class=rborder><img src="bg.gif" height=1></td>
 </tr>
 
 </table>

@@ -64,12 +64,12 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
 <tr>
-<td colspan=2 bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td colspan=2 class=rnorm width=__UI_LEFT_WIDTH__>
 [button text="[L]Create new method[/L]"]
 mv_nextpage=__UI_BASE__/ship_edit
 ui_shipmode=new
@@ -79,11 +79,11 @@ ui_header=Create method
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 [button text="[L]Edit method[/L]"]
 mv_nextpage=__UI_BASE__/ship_edit
@@ -110,7 +110,7 @@ ui_ship_action=delete
 
 <!-- Read the current shipping def, success=[read-shipping] -->
 
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 <select name=ui_shipmode size=10>
 [perl]
 	@modes = sort keys %{$Config->{Shipping_desc}};
@@ -129,7 +129,7 @@ ui_ship_action=delete
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -87,51 +87,46 @@
 <input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=tax_format VALUE=do>
 <TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>[L]Location[/L]</b>
-</td>
-<TD align=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>[L]Tax Rate[/L] (%)</b>
-</td>
-<TD align=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>[L]Apply tax to shipping charge[/L]</b>
-</td>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-&nbsp;
-</td>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top width="20%">
+		[L]Location[/L]
+	</td>
+	<TD align=center VALIGN=top>
+		[L]Tax Rate[/L] (%)
+	</td>
+	<TD align=center VALIGN=top>
+		[L]Apply tax to shipping charge[/L]
+	</td>
+	<TD VALIGN=top>
+	&nbsp;
+	</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
+<tr class=rborder height=1><td colspan=4></td></tr>
 
 [loop lr=1 list="[scratch its]"]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 <input type=text name="taxarea[loop-code]" size=40 value="[loop-pos 1]">
 </td>
 
-<td align=center bgcolor="__UI_C_INTBLOCK__">
+<td align=center class=rnorm>
 <input type=text name="taxrate[loop-code]" 
  size=7 value="[loop-pos 2]">
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" align=center valign=center>
+<td class=rnorm align=center valign=center>
 <INPUT TYPE=CHECKBOX NAME=taxship[loop-code] VALUE="1"[if-loop-pos 3] CHECKED[/if-loop-pos]>
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" align=lrft valign=center>
+<td class=rnorm align=lrft valign=center>
 <INPUT TYPE=image src="delete.gif" width=20 height=20 border=0 NAME=Delete[loop-code]>
 </td>
 
 </tr>
 [/loop]
 <tr>
-<td colspan=4 bgcolor="__UI_C_INTBLOCK__"><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="plus.gif" width=20 height=20 border=0></a></td>
+<td colspan=4 class=rnorm><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="plus.gif" width=20 height=20 border=0></a></td>
 </tr>
 
 <tr bgcolor="#000000" height=1><td colspan=4></td></tr>

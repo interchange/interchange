@@ -17,51 +17,34 @@
 @_UI_STD_HEAD_@
 
 <TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Date</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Affiliate</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Visits</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Hits</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Pages</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Prod. Views</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Items in cart</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Orders</B>
-</FONT>
-</TD>
+<tr class=rborder height=1><td colspan=8></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Affiliate[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Visits[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Hits[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Pages[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Prod. Views[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Items in cart[/L]
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+		[L]Orders[/L]
+	</TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 
 [perl tables=affiliate]
 
@@ -221,7 +204,7 @@
 		my $date;
 		$date = $day ? "$names{$mon} $day, $yr" : "$names{$mon} $yr";
 		$out = <<EOF;
-<TR BGCOLOR=__UI_C_INTBLOCK__><TD VALIGN="top">
+<TR class=rnorm><TD VALIGN="top">
 $date
 </TD>
 EOF
@@ -274,7 +257,7 @@ EOF
   }
   return join "\n\n", @out;
 [/perl]
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 
 </TABLE>
 @_UI_STD_FOOTER_@

@@ -118,19 +118,39 @@
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
-<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/gentable">
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+	<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td class=clabel>Table Name</td>
+	<td class=cdata>
+		
+		<select name="mv_data_table">
+		[loop
+			list="[list-databases extended=i]"
+			option=mv_data_table
+		]<option value="[loop-code]">[loop-code][/loop]
+		</select>
+	</td>
+</tr>
+<tr class=rnorm>
+	<td class=clabel>Import from File</td>
+	<td class=cdata>
+	<input type=file name=upload_file>
+	<BR>
+	<input type="submit" value="[L]Import[/L]">
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-<input type=file name=upload_file>
-<BR>
-<input type="submit" value="[L]Import[/L]">
+	<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td colspan=2>
 <br>
-<hr>
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> [L]Add new items if present[/L]
 	<OPTION VALUE=cleanse> [L]Replace existing items[/L]
@@ -149,17 +169,11 @@
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> [L]Show summary messages only[/L]
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> [L]Show *no* messages[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
 
-<select name="mv_data_table">
-[loop list="[list-databases extended=i]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
-[/loop]
-</select>
-</td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

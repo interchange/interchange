@@ -176,49 +176,48 @@
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
-<tr bgcolor=000000 height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<tr class=rborder height=1><td colspan=8></td></tr>
+<TR class=rmarq>
 <th>&nbsp;</th>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=LEFT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=code\n" . sortrev('code');
 	`][L]Order[/L]</A>
 </TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=LEFT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=lname,fname\n" . sortrev('lname');
 	`][L]User[/L]</A>
 </TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=LEFT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=country,state,city\n" . sortrev('country');
 	`][L]Location[/L]</A>
 </TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=LEFT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=order_date\n" . sortrev('order_date');
 	`][L]Date[/L]/[L]Time[/L]</A>
 </TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=LEFT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
 `][L]Items[/L]</A>
 </TH>
-<TH ALIGN=CENTER><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=CENTER>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
 `][L]Total[/L]</A>
 </TH>
-<TH ALIGN=RIGHT><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
-[page href=@@MV_PAGE@@ form=`
+<TH ALIGN=RIGHT>
+[page href=@@MV_PAGE@@ extra=rmarq form=`
 	return "ui_sort_field=status\n" . sortrev('status');
 `][L]Status[/L]</A>
 </TH>
 </tr>
-<tr bgcolor=000000 height=1><td colspan=8></td></tr>
-<tr bgcolor=FFFFFF height=2><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
 <TD>
 <INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
 		[item-calc]
@@ -255,19 +254,21 @@
 [/search-list]
 [no-match]
 <tr>
-<td colspan=6>
+<td colspan=8>
 <br>
 <B>[L]No orders[/L]</B>
 <br><br>
 </td>
 </tr>
 [/no-match]
-<tr bgcolor=000000 height=1><td colspan=8></td></tr>
-<tr bgcolor=FFFFFF height=8><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 [more-list]
-<tr>
-<td colspan=6 align=center>
-[msg arg.0="[matches]" arg.1="[value mv_search_match_count]"]Orders %s of %s [scratch archive_label] displayed.[/msg] [L]More orders[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+<tr class=ralt>
+<td colspan=8 align=center>
+<br>
+<b>[msg arg.0="[matches]" arg.1="[value mv_search_match_count]"]Orders %s of %s [scratch archive_label] displayed.[/msg] [L]More orders[/L]:</b> [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+<br>
+&nbsp;
 </td>
 </tr>
 [/more-list]

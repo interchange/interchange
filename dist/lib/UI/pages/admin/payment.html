@@ -66,23 +66,28 @@ EOF
 <INPUT TYPE=hidden NAME=change_payment VALUE=do>
 
 <table __UI_T_PROPERTIES__>
+
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__><b>Name</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Accepted</b></td>
+<td class=rmarq>Name</td>
+<td class=rmarq>Accepted</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [loop list="[scratch its]" lr=1]
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [loop-pos 1]
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="cc_accepted[loop-increment]">
 <option value=""> Not Accepted
@@ -95,11 +100,11 @@ EOF
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Online Check
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="check">
 <option value="0"> Not Accepted
@@ -112,11 +117,11 @@ Online Check
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 COD
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="cod">
 <option value="0"> Not Accepted
@@ -130,11 +135,11 @@ COD
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Postal billing
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="postal">
 <option value="0"> Not Accepted
@@ -147,11 +152,11 @@ Postal billing
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Purchase Order
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="po">
 <option value="0"> Not Accepted
@@ -161,8 +166,21 @@ Purchase Order
 </td>
 
 </tr>
+
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td>&nbsp;</td>
+	<td>
+		<input type=submit name="update" value="Update">
+	</td>
+</tr>
+
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
@@ -171,8 +189,6 @@ Purchase Order
 [/loop]
 
 <p>
-
-<input type=submit name="update" value="Update">
 
 </form>
 

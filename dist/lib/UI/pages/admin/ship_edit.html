@@ -176,33 +176,33 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right WIDTH="__UI_LEFT_WIDTH">
+<td class=rnorm align=right WIDTH="__UI_LEFT_WIDTH">
 <small>Name of this method</small><BR><small><i>(letters/digits only)</i></small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=40 name="ui_shipmode" value="[value ui_shipmode]">
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right WIDTH="__UI_LEFT_WIDTH">
+<td class=rnorm align=right WIDTH="__UI_LEFT_WIDTH">
 <small>Label for this method</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=40 name="ui_ship_description" value="[value ui_ship_description]">
 </td>
 </tr>
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Total based on this criteria</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name=ui_ship_criteria>
 [loop lr=1 option=ui_ship_criteria list="
@@ -220,10 +220,10 @@ custom	Custom -->
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Calculate based on this algorithm</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <select name=ui_ship_type onChange="check_for_ups(this.form,
 			this.form.ui_ship_type.options[this.form.ui_ship_type.selectedIndex].value) && this.form.submit()">
 [loop lr=1 option=ui_ship_type
@@ -241,10 +241,10 @@ UPSI	Internal UPS lookup
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right valign=top>
+<td class=rnorm align=right valign=top>
 <BR><small>Apply this method by country<BR><I>(select as many as desired)</I></small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <FONT SIZE=-1>
 [calc]
 	$modes = <<'EOF';
@@ -281,28 +281,28 @@ EOF
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Minimum shipping charge</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=10 name="ui_ship_at_least" value="[value ui_ship_at_least]">
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Additional shipping calculation</small><BR><I><SMALL>(number only is additional charge)</SMALL></I>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=50 name="ui_ship_adder" value="[value ui_ship_adder]">
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Round up to nearest even [L currency_symbol]$[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <SELECT NAME=ui_ship_round>
 <OPTION VALUE=""> No
 <OPTION VALUE="1" [selected ui_ship_round 1]> Yes
@@ -312,10 +312,10 @@ EOF
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Allow to be zero cost</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <SELECT NAME=ui_ship_free>
 <OPTION VALUE=""> No
 <OPTION VALUE="1" [selected ui_ship_free 1]> Yes
@@ -325,10 +325,10 @@ EOF
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Message when zero</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <INPUT NAME=ui_ship_message VALUE="[either][value ui_ship_message][or]Nothing to ship![/either]">
 </td>
 </tr>
@@ -339,10 +339,10 @@ EOF
   [if value ui_ship_ups_internal]
 	[seti available_ups_internal][available_ups_internal][/seti]
 	<tr>
-	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<td class=rnorm align=right>
 	<small>UPS Zone chart</small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<SELECT NAME=ui_ship_zone>
 	[loop lr=1 option=ui_ship_zone
 		list="[scratch available_ups_internal]"
@@ -353,10 +353,10 @@ EOF
 	</tr>
 
 	<tr>
-	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<td class=rnorm align=right>
 	<small>Table for lookups</small>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<SELECT NAME=ui_ship_table>
 	[loop option=ui_ship_table list="[list-databases]"]
 	<OPTION>[loop-code]
@@ -367,10 +367,10 @@ EOF
 
   [else]
 	<tr>
-	<td bgcolor=__UI_C_INTBLOCK__ align=right>
+	<td class=rnorm align=right>
 	<small>UPS Origin Zone</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 	<input type=text size=50 name="ui_ship_origin" value="[value ui_ship_origin]">
 	</td>
 	</tr>
@@ -378,10 +378,10 @@ EOF
   [/if]
 
   <tr>
-  <td bgcolor=__UI_C_INTBLOCK__ align=right>
+  <td class=rnorm align=right>
   <small>Field that chooses UPS destination</small>[if variable UPS_POSTCODE_FIELD]<BR><SMALL><I>(default __UPS_POSTCODE_FIELD__)</I></SMALL>[/if]
   </td>
-  <td bgcolor=__UI_C_INTBLOCK__>
+  <td class=rnorm>
   <input type=text size=50 name="ui_ship_geo" value="[value ui_ship_geo]">
   </td>
   </tr>
@@ -392,7 +392,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

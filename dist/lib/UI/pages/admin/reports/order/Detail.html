@@ -10,46 +10,31 @@
 @_UI_STD_HEAD_@
 
 <TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Order[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Affiliate[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Campaign[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Address[/L]</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Date[/L]/[L]Time[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN="right" VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Amount[/L]</B>
-</FONT>
-</TD>
-<TD ALIGN="right" VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>[L]Status[/L]</B>
-</FONT>
-</TD>
+<tr class=rborder height=1><td colspan=7></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top>
+	[L]Order[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Affiliate[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Campaign[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Address[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Date[/L]/[L]Time[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Amount[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Status[/L]
+	</TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=7></td></tr>
+<tr class=rborder height=1><td colspan=7></td></tr>
 
 <!-- will default to current if not set:
 		[seti today][tag time]%Y%m[/tag][/seti]
@@ -96,7 +81,7 @@ EOF
 
 [perl tables="store"]
 	return <<EOF unless $Tmp->{main};
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	<H2>Bad query specified, caused error.</H2>
 	</TD>
@@ -108,7 +93,7 @@ EOF
 	    $line->{status} = $Tag->loc('', $line->{status});
 		$url = $Tag->area('__UI_BASE__/order_view', $line->{order_number});
 		$out .= <<EOF;
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	<A HREF="$url">$line->{order_number}</A>
 	</TD>
@@ -135,33 +120,32 @@ EOF
 	}
 		$total_sales  = sprintf '$%.2f', $total_sales;
 		$out .= <<EOF;
-<tr bgcolor="#FFFFFF" height=2><td colspan=7></td></tr>
-<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
-	<TD VALIGN="top">
-	[L]GRAND TOTAL[/L]
+<tr class=rborder height=1><td colspan=7></td></tr>
+	<TR class=rnorm>
+	<TD VALIGN=top>
+		[L]GRAND TOTAL[/L]
 	</TD>
-	<TD VALIGN="top">
+	<TD VALIGN=top>
 	&nbsp;
 	</TD>
-	<TD VALIGN="top">
+	<TD VALIGN=top>
 	&nbsp;
 	</TD>
-	<TD ALIGN="right" VALIGN="top">
+	<TD ALIGN=right VALIGN=top>
 	&nbsp;
 	</TD>
-	<TD ALIGN="right" VALIGN="top">
+	<TD ALIGN=right VALIGN=top>
 	&nbsp;
 	</TD>
-	<TD ALIGN="right" VALIGN="top">
+	<TD ALIGN=right VALIGN=top>
 	$total_sales
 	</TD>
-	<TD ALIGN="right" VALIGN="top">
+	<TD ALIGN=right VALIGN=top>
 	&nbsp;
 	</FONT>
 	</TD>
 	</TR>
-	<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
+	<tr class=rborder height=1><td colspan=7></td></tr>
 
 EOF
 [/perl]

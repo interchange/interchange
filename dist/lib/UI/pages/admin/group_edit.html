@@ -7,6 +7,7 @@
 [set icon_name]icon_config.gif[/set]
 [calc]
 	$CGI->{mv_data_table} = $Values->{mv_data_table} = '__UI_ACCESS_TABLE__'; 
+	$Config->{NoSearch} = '';
 	return;
 [/calc]
 
@@ -29,28 +30,28 @@
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="username name">
 
-<table __UI_T_PROPERTIES__>
+<table cellpadding=3 cellspacing=0 width="80%" align=center>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <input type="hidden" name="group_id" value="1001">
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Group name</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input type=text size=40 name=name maxlength=100 value="[filter entities][loop-data __UI_ACCESS_TABLE__ name][/filter]">
 </td>
 </tr>
 
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <small>Group ID</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [if cgi ui_hide_key]
 	<input type=hidden name=mv_data_function value="update">
 	<input type=hidden name=username value="[loop-code]">[loop-code]
@@ -68,38 +69,44 @@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=600 height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=600 height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td>&nbsp;</td>
+	<td>
+
+	[if-mm advanced access=e]
+		[set Ok]
+		[calc]
+			$CGI->{username} =~ s/\W+//g;
+			$CGI->{username} =~ s/^/:/;
+			return;
+		[/calc]
+		mv_todo=set
+		[/set]
+		<input type=submit name="mv_click" value="Ok">
+		<input type=submit value="Cancel">
+	[else]
+		[set Back]
+		mv_todo=back
+		[/set]
+		<input type=submit value="Back">
+	[/else]
+	[/if-mm]
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>
-
-<p>
-
-[if-mm advanced access=e]
-	[set Ok]
-	[calc]
-		$CGI->{username} =~ s/\W+//g;
-		$CGI->{username} =~ s/^/:/;
-		return;
-	[/calc]
-	mv_todo=set
-	[/set]
-	<input type=submit name="mv_click" value="Ok">
-	<input type=submit value="Cancel">
-[else]
-	[set Back]
-	mv_todo=back
-	[/set]
-	<input type=submit value="Back">
-[/else]
-[/if-mm]
 
 
 </form>
 
 [/loop]
-
-</form>
 
 @_UI_STD_FOOTER_@
 

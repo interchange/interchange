@@ -12,7 +12,7 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [perl tables="__UI_COMPONENT_TABLE__ __UI_META_TABLE__"] 
 	my $ref;
@@ -119,31 +119,31 @@
 	}
 	my $out = <<EOF;
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__><b>Page file</b></td>
-	<td bgcolor=__UI_C_INTBLOCK__>$page<INPUT TYPE=hidden NAME=ui_page VALUE="$page"></td>
+	<td class=rnorm><b>Page file</b></td>
+	<td class=rnorm>$page<INPUT TYPE=hidden NAME=ui_page VALUE="$page"></td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__><b>Template name</b></td>
-	<td bgcolor=__UI_C_INTBLOCK__>$t_name</td>
+	<td class=rnorm><b>Template name</b></td>
+	<td class=rnorm>$t_name</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__><b>Template description</b></td>
-	<td bgcolor=__UI_C_INTBLOCK__>$t_desc</td>
+	<td class=rnorm><b>Template description</b></td>
+	<td class=rnorm>$t_desc</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__>
+	<td class=rnorm>
 		<b>Template sequence</b><br>
 	</td>
-	<td bgcolor=__UI_C_INTBLOCK__ VALIGN=top><INPUT NAME=ui_elements SIZE=80 VALUE="$ref->{ui_template_layout}"></td>
+	<td class=rnorm VALIGN=top><INPUT NAME=ui_elements SIZE=80 VALUE="$ref->{ui_template_layout}"></td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<td class=rnorm colspan=2>
 		<small><i>UI_CONTENT is the content portion(s), all others refer
 		to Knar elements.</i></small>
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rnorm><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -151,16 +151,16 @@ EOF
 	for(@controls) {
 		$out .= <<EOF unless $table_done++;
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<td class=rnorm colspan=2>
 		<B>Control elements</B>
 		<input type=hidden name=ui_definition value="$def_string">
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
-		$out .= qq{<tr><td bgcolor=__UI_C_INTBLOCK__><b>$_->[0]</td><td bgcolor=__UI_C_INTBLOCK__>$_->[1]</td></tr>};
+		$out .= qq{<tr><td class=rnorm><b>$_->[0]</td><td class=rnorm>$_->[1]</td></tr>};
 	}
 
 	if($current) {
@@ -176,20 +176,20 @@ EOF
 
 	$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ COLSPAN=2>
+	<td class=rnorm COLSPAN=2>
 	<b>Content</b>
 	</td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-	<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
+	<td colspan=2 class=rnorm>
 		<TEXTAREA NAME=ui_content COLS=80 ROWS=20>$content</TEXTAREA>
 	</td>
 </tr>
@@ -202,11 +202,11 @@ EOF
 [/perl]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
+<td colspan=2 class=rnorm>
 [set Preview]
 mv_nextpage=__UI_BASE__/page_preview
 [/set]
@@ -228,7 +228,7 @@ mv_todo=back
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

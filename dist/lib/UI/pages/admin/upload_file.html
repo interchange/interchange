@@ -22,11 +22,11 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	[if type=explicit compare=`$Session->{arg} =~ m{[^/]$}`]
 	[msg arg.0="[data session arg]"]Uploading file <b>%s</B>[/msg]
 	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
@@ -53,20 +53,20 @@
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [set existing][/set]
 [if type=explicit compare=`$CGI->{ui_image_preview} =~ m{[^/]$}`]
 [set existing]1[/set]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [L]Preview:[/L] <BR>
 <IMG SRC="[cgi ui_image_preview]">
 </td>
 </tr>
 [/if]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <B>[L]Local file[/L]</B><BR>
 	<BLOCKQUOTE>
 	<INPUT TYPE=file NAME="ui_upload_file" SIZE=40>
@@ -135,7 +135,7 @@
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

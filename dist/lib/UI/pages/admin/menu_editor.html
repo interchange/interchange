@@ -65,7 +65,7 @@ __UI_META_TABLE__
 			$Tag->backup_file($menufile) if -f $menufile;
 			if($Tag->write_relative_file($menufile, $text) ) {
 				$Tag->warnings( errmsg(
-									"Menu '%s' saved to file %s.",
+									"Menu '%s' saved to file %s. Active on next access.",
 									$menuname,
 									$menufile,
 								));

@@ -86,9 +86,9 @@
 	}
 	if(@errors) {
 		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
+		return "<span class=cerror>Error$plural:<UL><LI>" .
 				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
+				"</UL></span><BR>";
 	}
 	if($CGI->{viewnext}) {
 		#Log("viewnext");
@@ -179,15 +179,6 @@
 
 @_UI_STD_HEAD_@
 
-
-[if scratch ui_message]
-<BLOCKQUOTE>
-[scratch ui_message]
-</BLOCKQUOTE>
-[set ui_message][/set]
-[/if]
-</font>
-
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <!-- ----- Show the active/inactive buttons ----- -->
@@ -249,35 +240,39 @@ mv_nextpage=@@MV_PAGE@@
 	}
 	return;
 [/calc]
-<TABLE border=0 __UI_T_PROPERTIES__>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<br>
+<table __UI_T_PROPERTIES__>
+<tr class=rmarq>
 	<th>&nbsp;</th>
-	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	<TH ALIGN=left>[page extra=rmarq href=@@MV_PAGE@@ form=`
 	$qual = '';
 	if($CGI->{ui_text_qualification}) {
 		$qual .= "ui_text_qualification=$CGI->{ui_text_qualification}";
 	}
     return "ui_sort_field=username\n" . sortrev('username');
     `][L]ID[/L]</a></TH>
-	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	<TH ALIGN=left>[page extra=rmarq href=@@MV_PAGE@@ form=`
     return "$qual\nui_sort_field=lname,fname\n" . sortrev('lname');
     `][L]Name[/L]</A></TH>
-	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	<TH ALIGN=left>[page extra=rmarq href=@@MV_PAGE@@ form=`
     return "$qual\nui_sort_field=company,lname\n" . sortrev('company');
     `][L]Company[/L]</A></TH>
-	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-    return "$qual\nui_sort_field=country,state,city\n" . sortrev('country');
-    `][L]Location[/L]</A></TH>
+	<TH ALIGN=left>
+		[page
+			href=@@MV_PAGE@@
+			extra=rmarq
+			form=`
+				return "$qual\nui_sort_field=country,state,city\n" . sortrev('country');
+			`][L]Location[/L]</A></TH>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<tr class=rborder><td colspan=8 class=rspacer></td></tr>
 
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
 
 	<TD><INPUT TYPE=checkbox NAME=customer VALUE="[item-code]">
 [page href="@@MV_PAGE@@"
+	extra="title=[scratch active_nm]"
 	form="
 		[scratch active_nm]=1
 		customer=[item-code]
@@ -289,7 +284,9 @@ mv_nextpage=@@MV_PAGE@@
 		deletecustomer=1
 		customer=[item-code]
 	']"
-	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"
+	title=delete
+><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
 [/if]
 </td><td>
 [page href=__UI_BASE__/customer_view
@@ -326,10 +323,10 @@ so there's a full line across the page even if table cells are blank.
 	</td>
 </tr>
 [/more-list]
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
+<tr class=rborder><td colspan=8></td></tr>
 
 </table>
+<br>
 [on-match]
 [if scratch can_delete]
 [button form=batch text="[L]Delete checked customers[/L]"

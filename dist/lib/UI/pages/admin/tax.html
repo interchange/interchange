@@ -23,22 +23,22 @@
 <table __UI_T_PROPERTIES__>
 <input type=hidden name=mv_action value="go">
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
+<td colspan=2  class=rnorm>
 <B>Set tax type</B>
 </td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Country</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	      <SELECT onChange="this.form.submit()" NAME=taxcountry>
 		  <OPTION VALUE="US">[L]United States[/L]
 	      [loop option=taxcountry search="
@@ -115,10 +115,10 @@
 			);
 	return qq{
 		<tr>
-		<td bgcolor=__UI_C_INTBLOCK__ align=right>
+		<td class=rnorm align=right>
 		<B>Action</B>
 		</td>
-		<td bgcolor=__UI_C_INTBLOCK__>
+		<td class=rnorm>
 		$out
 		</td>
 		</tr>
@@ -127,10 +127,10 @@
 [/try]
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Tax type</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [catch]Trouble getting/setting tax data.[/catch]
 	      <SELECT NAME=taxtype>
 		  <OPTION VALUE="">[L]No tax[/L]
@@ -141,17 +141,17 @@
 </tr>
 	[if value taxdata]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <B>Tax Data</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	      <TEXTAREA NAME=taxdata ROWS=8 COLS=60>[value taxdata]</TEXTAREA>
 </td>
 </tr>
 	[/if]
 	[if value taxtype eq 'state']
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right colspan=2>
+<td class=rnorm align=right colspan=2>
 <B>State Tax Data</B>
 </td>
 </tr>
@@ -161,11 +161,11 @@
 	sql="select code,name,tax from state where country = '[value taxcountry]'"
 	]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td class=rnorm align=right>
 <INPUT TYPE=hidden NAME=taxstate VALUE="[sql-code]">
 [sql-param name]
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <INPUT TYPE=text SIZE=60 NAME=taxstate_data VALUE="[sql-param tax]">
 </td>
 </tr>
@@ -173,10 +173,10 @@
 	[/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
+<td colspan=2  class=rnorm>
 <B>
 <INPUT TYPE=submit NAME=tax_set VALUE="[L]Set tax type[/L]">
 </B>
@@ -184,10 +184,10 @@
 </tr>
 [else]
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
+<td colspan=2  class=rnorm>
 <B>
 <INPUT TYPE=submit VALUE="[L]Get current tax data[/L]">
 </B>
@@ -196,7 +196,7 @@
 [/else]
 [/if]
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 </FORM>

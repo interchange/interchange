@@ -11,15 +11,14 @@
 [set help_name]stats.traffic[/set]
 @_UI_STD_HEAD_@
 
-<table border=0 __UI_T_PROPERTIES__>
-<tr bgcolor="#000000" height=1><td colspan=2></td></tr>
+<table border=0 __UI_T_PROPERTIES__ width="60%">
+<tr class=rborder height=1><td colspan=2></td></tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__">[L]View stats for this month only[/L]</FONT></td>
+<td colspan=2 class=rmarq>[L]View stats for this month only[/L]</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+<td class=rnorm colspan=2>
 
 <A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate]">[L]Overall by month[/L]</A><BR>
 <A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate
@@ -30,16 +29,16 @@
 
 </td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 
 </table>
 <br>
-<table border=0 __UI_T_PROPERTIES__>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<table border=0 __UI_T_PROPERTIES__ width="60%">
+<tr class=rborder height=1><td colspan=8></td></tr>
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__">[L]View stats for any period of time[/L]</FONT></td>
+<td colspan=3 class=rmarq>[L]View stats for any period of time[/L]</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 <tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
 
 <FORM ACTION="[process]">
@@ -48,20 +47,20 @@
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/traffic/ByAffiliate">
 
 <TR>
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
 [L]Beginning:[/L]<BR>
 	[widget type=date name=ui_begin_date]
 
 </TD>
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
 [L]Ending:[/L]<BR>
 	[widget type=date name=ui_end_date]
 
 </TD>
 [if-mm advanced affiliate=l]
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
 [L]For affiliate:[/L]<BR>
 	<SELECT NAME=affiliate>
@@ -80,11 +79,11 @@
 </TD>
 </TR>
 <TR>
-<TD COLSPAN=3 bgcolor="__UI_C_INTBLOCK__">
+<TD COLSPAN=3 class=rnorm>
 [else]
 </TR>
 <TR>
-<TD COLSPAN=3 bgcolor="__UI_C_INTBLOCK__">
+<TD COLSPAN=3 class=rnorm>
 [/else]
 [/if-mm]
 	[set [L]By day[/L]]
@@ -95,7 +94,7 @@
 	</BLOCKQUOTE>
 </TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 </TABLE>
 </FORM>
 </td>

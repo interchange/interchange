@@ -431,7 +431,7 @@ EOF
 </FORM>
 [set tmp_ncols][/set]
 <!-- tq: [scratch sparams] -->
-<TABLE CELLSPACING=1 cellmargin=3>
+<TABLE __UI_T_PROPERTIES__>
 	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 	[if cgi ui_meta_view]
@@ -449,7 +449,7 @@ EOF
 	[/else]
 	[/if]
 	<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-	<TR BGCOLOR="__UI_C_TITLEBARBG__">
+	<TR class=rmarq>
 	[loop list="[cgi ui_description_fields]"]
 	<TH[loop-calc]
 				my $extra = '';
@@ -458,7 +458,7 @@ EOF
 					$extra .= " $1";
 				}
 				return $extra || ' ALIGN=LEFT';
-			[/loop-calc]><FONT COLOR="__UI_C_TITLEBARTXT__">
+			[/loop-calc]>
 		[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
 		<A HREF="[area href='__UI_BASE__/flex_group'
 						form='
@@ -468,9 +468,9 @@ EOF
 					]"><IMG ALT="select by [loop-code]" SRC="smindex.gif" BORDER=0></A></TH>
 	[/loop]
 	</tr>
-	<TR BGCOLOR="__UI_C_TITLEBARBG__">
+	<TR class=rmarq>
 	[loop list="[cgi ui_description_fields]"]
-	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+	<TH ALIGN=LEFT>
 		[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
 		<A HREF="[area href='@@MV_PAGE@@'
 						form=`
@@ -488,7 +488,7 @@ EOF
 								ui_sort_option=$o
 							);
 						`
-					]">[loop-code]</TH>
+					]" class=rmarq>[loop-code]</TH>
 	[/loop]
 	</tr>
 	[tmp tmp_url]
@@ -505,7 +505,7 @@ EOF
 		[/if][/tmp]
 	[search-region more=1 form="ui_meta_specific=[cgi ui_meta_specific]" arg="[scratch sparams]"]
 	[search-list]
-	<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+	<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
 
 	<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/flex_editor form=|
 								[scratch tmp_url]

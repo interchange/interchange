@@ -183,14 +183,14 @@ EOF
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 [L]Table to export[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 <select name="mv_data_table" onChange="populateTable(
 			this.form.mv_data_table.options,
 			this.form.ui_sort_field.options,
@@ -205,10 +205,10 @@ EOF
 
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 [L]Export as[/L]<BR>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
         <SELECT NAME="mv_data_export_type">
             <OPTION VALUE=""> [L]Current type[/L]
             <OPTION VALUE="DEFAULT"> [L]System default[/L]
@@ -222,20 +222,20 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	[L]Export to file[/L]<br>
 	<small><I>([L]leave empty for default file[/L])</I></small>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
  <INPUT NAME=mv_data_file SIZE=40>
 </td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 [L]Sort by column[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	<SELECT NAME=ui_sort_field>
 		<OPTION VALUE=""> [L]unsorted[/L]
 		[loop list=|
@@ -248,10 +248,10 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	[L]Sort options[/L]<BR>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	<SELECT NAME=ui_sort_option>
 		<OPTION VALUE=""> [L]default (alpha)[/L]
 		<OPTION VALUE="r"> [L]reverse[/L]
@@ -264,7 +264,7 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+<td class=rnorm colspan=2>
 
 <center>
 <INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]">
@@ -277,7 +277,7 @@ ui_export_database=1
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

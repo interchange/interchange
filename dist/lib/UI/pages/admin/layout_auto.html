@@ -29,15 +29,16 @@
 <input type=hidden name=mv_session_id  value="[data session id]">
 <input type=hidden name=mv_action value=back>
 
-<table border=0 __UI_T_PROPERTIES__>
+<table border=0 __UI_T_PROPERTIES__ width="70%">
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-<tr bgcolor="__UI_C_INTBLOCK__">
-<td width="25%">
+<tr class=rnorm>
+<td class=clabel>1.</td>
+<td class=clabel width="25%">
 
-1. Choose a table as the source:
+Choose a table as the source:
 
 </td>
 <td>
@@ -66,11 +67,12 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td>
-2. Choose a column to populate areas:
+<tr class=rnorm>
+<td class=clabel>2.</td>
+<td class=clabel>
+Choose a column to populate areas:
 </td>
-<td>
+<td class=clabel>
 <select name="area_column">
 <option value=""> -- none --
 [loop list="[db-columns table='[value area_table]']" option=area_column]
@@ -79,9 +81,10 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td>
-3. Choose a column to populate categories:
+<tr class=rnorm>
+<td class=clabel>3.</td>
+<td class=clabel>
+Choose a column to populate categories:
 </td>
 <td>
 <select name="cat_column">
@@ -92,9 +95,10 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td>
-4. Choose a search type:
+<tr class=rnorm>
+<td class=clabel>4.</td>
+<td class=clabel>
+Choose a search type:
 </td>
 <td>
 <select name="cat_type" onChange="change_ta(this.form.search_code,this.form.cat_type.value)">
@@ -104,9 +108,10 @@ size=1>
 </select>
 </td>
 </tr>
-<tr>
-<td valign=top>
-5. Complex search code:
+<tr class=rnorm>
+<td class=clabel valign=top>5.</td>
+<td valign=top class=clabel>
+Complex search code:
 </td>
 <td>
 NOTE: Not active unless complex search selected above.<br>
@@ -133,33 +138,37 @@ NOTE: Not active unless complex search selected above.<br>
 </textarea>
 </td>
 </tr>
-<tr bgcolor="__UI_C_INTBLOCK__">
-<td>
-6. Select the page class:
+<tr class=rnorm>
+<td class=clabel>6.</td>
+<td class=clabel>
+Select the page class:
 </td>
 <td>
 <INPUT NAME=which_page VALUE=all>
 </td>
 </tr>
-<tr bgcolor="__UI_C_INTBLOCK__">
-<td>
-7. Select the page area:
+<tr class=rnorm>
+<td class=clabel>7.</td>
+<td class=clabel>
+Select the page area:
 </td>
 <td>
 <INPUT NAME=sel VALUE=left>
 </td>
 </tr>
-<tr bgcolor="__UI_C_INTBLOCK__">
-<td>
-8. Decide whether to remove previous settings:
+<tr class=rnorm>
+<td class=clabel>8.</td>
+<td class=clabel>
+Decide whether to remove previous settings:
 </td>
 <td>
 <SELECT NAME=nuke><OPTION VALUE=0>No <OPTION VALUE=1>Yes</SELECT>
 </td>
 </tr>
-<tr>
-<td>
-9. Click this button to populate:
+<tr class=rnorm>
+<td class=clabel>9.</td>
+<td class=clabel>
+Click this button to populate:
 </td>
 <td>
 [button text="Populate"]
@@ -292,7 +301,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

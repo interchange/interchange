@@ -122,36 +122,36 @@ return;
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="code status archived deleted">
-<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
+<table width="95%"><tr><td class=rborder>
+<table width="100%"><tr><td class=rnorm>
 <table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 [loop list="[cgi order]"]
 <TR>
-<TD ALIGN=RIGHT><B>[L]Order date[/L]</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>[L]Order date[/L]</TD>
+<TD class=rnorm>
 [convert-date][loop-data transactions order_date][/convert-date]</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><B>[L]Status last updated[/L]</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>[L]Status last updated[/L]</TD>
+<TD class=rnorm>
 [convert-date][loop-data transactions update_date][/convert-date]</TD>
 </TR>
 [loop prefix=row list="status deleted archived"]
 [display table=transactions column="[row-code]" key="[loop-code]" applylocale=1
 										template=|
-<TR BGCOLOR="__UI_T_ROW_ODD__">
-<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
-	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B></FONT>
+<TR class=rnorm>
+<TD ALIGN=right class=rmarq>
+	$LABEL$
 </TD>
-<TD VALIGN=TOP>
+<TD VALIGN=TOP class=rnorm>
 	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
 </TD>
 </TR>
 |]
 [/loop]
 <TR>
-<TD ALIGN=RIGHT>&nbsp;</TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>&nbsp;</TD>
+<TD class=rnorm>
 [if-mm advanced order]
 	[button form=transactions bold=1 text="[L]Ship checked order lines, send email to customer if appropriate[/L]"]
 	mv_todo=back
@@ -343,26 +343,26 @@ return;
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="code">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="code status">
-<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
+<table width="95%"><tr><td class=rborder>
+<table width="100%"><tr><td>
 <table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 <TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]SKU[/L]/[L]Description[/L]</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>[L]SKU[/L]/[L]Description[/L]</TD>
+<TD class=rnorm>
 [L]SKU[/L]: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
 [loop-data orderline description]
 </TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]Last updated[/L]</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>[L]Last updated[/L]</TD>
+<TD class=rnorm>
 [convert-date][loop-data orderline update_date][/convert-date]</TD>
 </TR>
 [display table=orderline column="status" key="[loop-code]"
 										template=|
-<TR BGCOLOR="__UI_T_ROW_ODD__">
-<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
-	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B></FONT>
+<TR class=rnorm>
+<TD ALIGN=right class=rmarq>
+	$LABEL$
 </TD>
 <TD VALIGN=TOP>
 	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
@@ -370,8 +370,8 @@ return;
 </TR>
 |]
 <TR>
-<TD ALIGN=RIGHT>&nbsp;</TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
+<TD ALIGN=RIGHT class=rmarq>&nbsp;</TD>
+<TD class=rnorm>
 <INPUT TYPE=submit VALUE="[msg arg.0="[loop-increment]"]Update status of line %s[/msg]">
 </TD>
 </table>

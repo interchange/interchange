@@ -144,13 +144,13 @@ EOF
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Sort field</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		Sort field
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<small>
 
 	[loop list="0 1 2"]
@@ -171,23 +171,21 @@ EOF
 	[/loop]
 
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	You can sort the search return on one or more fields, with some options.
-	</small>
 	</TD>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Search return field</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		Search return field
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<small>
 	[loop list="1 2 3 4 5"]
 	<SELECT NAME="return[loop-code]">
@@ -198,17 +196,15 @@ EOF
 	[/loop]
 	</small>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<small>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	By default, the database key for the searched table or file is returned. If
 	you are designing your own results page, you can optionally return more
 	fields for use with the &#91PREFIX-param field] tags.
-	</small>
 	</TD>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCK__>
+<td colspan=3 class=rspacer>
 [button text="Cancel search"]
 	saved_search=
 	mv_todo=return

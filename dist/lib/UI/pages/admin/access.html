@@ -33,12 +33,12 @@
 <center>
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [if-mm advanced access=c]
 
 <tr>
-<td colspan=2 bgcolor="__UI_C_INTBLOCK__">
+<td colspan=2 class=rnorm>
 
 [button text="[L]Create new user[/L]"]
 mv_nextpage=__UI_BASE__/user_edit
@@ -50,12 +50,12 @@ ui_hide_key=0
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/if-mm]
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 [if-mm advanced access=e]
 	[button name=mv_junk value="[L]Edit user[/L]"][/button]<p>
@@ -115,7 +115,7 @@ dest=admin/index
 
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 <select name="user_id" size=10>
 [loop search="
 		fi=access
@@ -136,7 +136,7 @@ dest=admin/index
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

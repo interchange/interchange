@@ -3,36 +3,29 @@
 <title>
 [L]Quicklinks[/L]
 </title>
-<style type="text/css">
-<!--
- a:visited { text-decoration: none }
- a:active { text-decoration: none }
- a:link { text-decoration: none }
-  -->
-</style>
+<link href="@_UI_IMAGE_DIR_@ic.css" rel="stylesheet" type="text/css" title="Main IC stylesheet">
+[if value personal_css]<style>[value personal_css]</style>[/if]
 </head>
 
 <body bgcolor="__UI_P_BG__" link="__UI_P_LINK__" alink="__UI_P_ALINK__" vlink="__UI_P_VLINK__">
 
 <div valign=middle>
 <center>
-<table border=0 width=120 cellpadding=1 cellspacing=0 bgcolor="__UI_C_TOPBLOCKBAR__">
+<table border=0 width=120 cellpadding=1 cellspacing=0 class=rborder>
 <tr>
-<td>
+<td class=rtitle>
 
-<table border=0 width=100% cellpadding=1 cellspacing=0>
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" nowrap>
-
-<font size=2 face="Verdana,Arial,Helvetica,sans-serif">
+<table border=0 width="100%" cellpadding=1 cellspacing=0>
+<tr class=rnorm>
+<td class=rnorm nowrap style="font-size: smaller">
 
 [if !scratch window_override]
 [seti win][data session arg][/seti]
 [/if]
 
-[menu menu-type=simple name=Quicklinks]
+[menu menu-type=simple name=Quicklinks menu_group=mgroup]
 {PAGE:}
-	<b>{NAME}:</b>
+	<b>{NAME?}{NAME}{/NAME?}</b>
 	<br>
 {/PAGE:}{PAGE?}
 &nbsp;&nbsp;&nbsp;

@@ -7,23 +7,8 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<center>
-<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td></td></tr>
-<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-[L]Database tables[/L]
-</font>
-</td></tr>
-<tr bgcolor="#000000" height=1><td></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td></td></tr>
-
-
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-
 <!-- touch metatable [data __UI_META_TABLE__ test test] -->
-<table border=0 cellspacing=0 cellmargin=0 cellpadding=3>
+<table cellpadding=2 cellspacing=0 width="60%">
 [loop list="[list-databases]"]
 [loop-sub db_action]
 
@@ -120,36 +105,26 @@ sub {
 					},
 	};
 	my $out = '';
-	my @litems;
-	if($Variable->{UI_DBCONFIG}) {
-		@litems = (
+	my @litems = (
 				'[L]edit[/L]',
 				'[L]import[/L]',
 				'[L]export[/L]',
 				'[L]upload[/L]',
 				'[L]download[/L]',
-				'[L]config[/L]',
-				'[L]Table name[/L] ([L]description[/L])',
-				);
-	}
-	else {
-		@litems = (
-				'[L]edit[/L]',
-				'[L]import[/L]',
-				'[L]export[/L]',
-				'[L]upload[/L]',
-				'[L]download[/L]',
-				'[L]Table name[/L] ([L]description[/L])',
-				);
-	}
+			);
+	push @litems, '[L]config[/L]' if $Variable->{UI_DBCONFIG};
+	push @litems, '[L]Table name[/L] ([L]description[/L])';
+	
 	if(! $dblist_done_one++) {
 		$out .= '<tr>';
+		my $i = 0;
 		for(@litems) {  # Add "report"
-			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
+			my $align = $i++ == $#litems ? 'left' : 'center';
+			$out .= qq{<td class=rmarq align=$align>$_</td>};
 		}
 		$out .= "</tr>";
 	}
-	$out .= '<tr>';
+	$out .= '<tr class=rnorm>';
 
 	my @mitems = (qw/edit import export upload download/);
 	if($Variable->{UI_DBCONFIG}) {
@@ -171,14 +146,11 @@ EOF
 [/loop-sub]
 [loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
 [/loop]
+<tr class=rborder>
+	<td colspan=6><img src="bg.gif" height=1></td>
+</tr>
 </table>
 
-</td></tr>
-
-<tr bgcolor="#000000" height=1><td></td></tr>
-
-</table>
-</center>
 [if-mm super]
 <blockquote>
 	[L]Hidden admin tables[/L]:
