@@ -38,6 +38,8 @@
 	[/else]
 	[/if]
 [/seti]
+[set ui_class]Orders[/set]
+[tmp page_perm]order=l[/tmp]
 
 @_UI_STD_HEAD_@
 
@@ -48,9 +50,6 @@
 [/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
-
-[set ui_class]Orders[/set]
-[tmp page_perm]order=l[/tmp]
 
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
