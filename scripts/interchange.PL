@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.2
 #
-# $Id: interchange.PL,v 2.48 2002-08-02 11:40:59 racke Exp $
+# $Id: interchange.PL,v 2.49 2002-08-10 01:59:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -567,10 +567,6 @@ sub update_data {
 	}
 
 
-	if (! $Vend::Cfg->{Database}{$table}) {
-		logError("set: non-existent table %s", $table);
-		return undef;
-	}
 	$Vend::WriteDatabase{$table} = 1;
 
     my $base_db = database_exists_ref($table)
