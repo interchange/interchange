@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.43 2001-04-21 05:29:25 heins Exp $
+# $Id: Config.pm,v 1.25.2.44 2001-04-24 15:30:33 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.43 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.44 $, 10);
 
 my %CDname;
 
@@ -141,6 +141,7 @@ qw/
 		Autoload
 		AutoEnd
 		CommonAdjust
+		CategoryField
 		DescriptionField
 		ImageDir
 		ImageDirSecure
@@ -477,6 +478,7 @@ sub catalog_directives {
 	['SearchProfile',	 'profile',     	 ''],
 	['OnFly',		 	 undef,     	     ''],
 	['HTMLmirror',		 'yesno',            'No'],
+	['CategoryField',    undef,              'category'],
 	['DescriptionField', undef,              'description'],
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],

@@ -1,6 +1,6 @@
 # Track.pm - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.3.6.2 2001-02-22 19:54:32 heins Exp $
+# $Id: Track.pm,v 1.3.6.3 2001-04-24 15:30:34 racke Exp $
 #
 # Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -24,8 +24,10 @@
 # check if tracking information is available
 # tag to add "view product" tracking information
 # support for quantity changes
+# consider other carts
 
 # DOCUMENTATION
+# "CategoryField" should be set
 # "DescriptionField" should be set
 # flypage should be used
 
@@ -33,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -55,7 +57,9 @@ sub add_item {
 
 	push (@{$self->{actions}},
 		  ['ADDITEM', {code => $item->{'code'},
-					   description => item_description($item)}]);
+					   description => item_description($item),
+					   category => item_category($item)
+					  }]);
 }
 
 sub user {
@@ -66,8 +70,24 @@ sub user {
 
 sub finish_order {
 	my ($self) = @_;
-
-	push (@{$self->{actions}}, ['ORDER', {}]);
+	my (@items, $item, $itemout);
+	
+	foreach my $item (@{$::Carts->{'main'}}) {
+		$itemout = {code => $item->{'code'},
+					description => item_description($item),
+					category => item_category($item),
+					quantity => $item->{'quantity'},
+					price => item_price($item)
+					};
+		push (@items, $itemout);
+	}
+		
+	push (@{$self->{actions}}, ['ORDER', {}],
+		  ['ORDERINFO', {total => Vend::Interpolate::total_cost (),
+					 payment => '',
+					 shipmode => Vend::Interpolate::tag_shipping_desc (),
+					 items => \@items
+					}]);
 }
 
 sub view_page {
@@ -79,15 +99,28 @@ sub view_page {
 sub view_product {
 	my ($self, $code) = @_;
 
-	push (@{$self->{actions}}, ['VIEWPROD', {code => $code}]);
+	push (@{$self->{actions}},
+		  ['VIEWPROD', {code => $code,
+						description => product_description($code),
+						category => product_category($code)
+					   }]);
 }
 
 # HEADER
 
 my %hdrsubs = ('ADDITEM' => sub {my $href = shift; join (',', $href->{'code'}, $href->{'description'});},
 			   'ORDER' => sub {my $href = shift; $::Values->{mv_order_number}},
+			   'ORDERINFO' => sub {my $href = shift;
+							   join ('/',
+									 join ("\t", $href->{'total'}, $href->{'payment'}, $href->{'shipmode'}),
+									 map {join ("\t", $_->{'code'},
+											   $_->{'description'},
+											   $_->{'category'},
+											   $_->{'quantity'},
+											   $_->{'price'})}
+									 @{$href->{'items'}});},
 			   'VIEWPAGE' => sub {my $href = shift; $href->{'page'}},
-			   'VIEWPROD' => sub {my $href = shift; join (',', $href->{'code'}, $href->{'description'});});
+			   'VIEWPROD' => sub {my $href = shift; join ("\t", $href->{'code'}, $href->{'description'}, $href->{'category'});});
 
 sub header {
 	my ($self) = @_;
