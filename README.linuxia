@@ -80,12 +80,12 @@ Changes that made into the main branch:
 - typo fixed in access_permissions.html (1.8, 2000-12-7)
 - fix for the infinite loop if run by root and INTERCHANGE_USER doesn't exist
   (Makefile.PL: 1.23.4.10, modified, 2001-1-25)
+- Pragma substitute_table_image added (Interpolate.pm: 1.29.4.4, 2001-02-03)
 
 Changes that made into the development branch:
 
 - imagehelper widget (interchange.PL: 1.15.2.4, Primitive.pm: 1.25.4.2,
   modified, 2000-12-03)
-- Pragma substitute_table_image added (Interpolate.pm: 1.29.4.4, 2001-01-28)
 
 Candidates for 4.7:
 
