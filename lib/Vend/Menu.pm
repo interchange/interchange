@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.10 2002-08-15 06:18:23 mheins Exp $
+# $Id: Menu.pm,v 2.11 2002-08-15 06:42:56 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 use Vend::Util;
 use strict;
@@ -357,7 +357,13 @@ EOF
 			row_repository => [],
 			full        => '1',
 			spacing     => '4',
+			_transform   => $opt->{_transform},
 		);
+	
+	for(@{$opt->{_transform} || []}) {
+		$o{$_} = $opt->{$_};
+	}
+
 	push @out, Vend::Tags->tree(\%o);
 
 	my $rows = $o{row_repository} || [];
@@ -639,7 +645,13 @@ EOF
 			iterator    => \&tree_line,
 			full        => '1',
 			spacing     => '4',
+			_transform   => $opt->{_transform},
 		);
+	
+	for(@{$opt->{_transform} || []}) {
+		$o{$_} = $opt->{$_};
+	}
+
 	push @out, Vend::Tags->tree(\%o);
 #::logDebug("out now=" . ::uneval(\@out) );
 	if(defined $CGI::values{open}) {
