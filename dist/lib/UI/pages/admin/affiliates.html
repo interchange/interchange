@@ -48,7 +48,7 @@
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
 		[else]
-			tf=description
+			tf=name
 		[/else]
 		[/if]
 		st=db
@@ -70,11 +70,12 @@
 	}
 	return;
 [/calc]
+[seti key][dbinfo table=__UI_AFFILIATE_TABLE__ attrib=KEY][/seti]
 <TABLE border=0 CELLSPACING=0 width="90%">
 <tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=affiliate\n" . sortrev('sku');
+	return "ui_sort_field=$Scratch->{key}\n" . sortrev($Scratch->{key});
 	`]Code</TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=name\n" . sortrev('name');
