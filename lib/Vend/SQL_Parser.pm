@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.3 2003-07-06 19:29:39 racke Exp $
+# $Id: SQL_Parser.pm,v 2.4 2003-07-07 00:00:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 sub new {
 	my $class = shift;
@@ -165,7 +165,7 @@ sub tables {
 		push @try, grep /\S/, split /\s*,\s*/, $tab;
 	}
 	elsif($s->{command} eq 'SELECT') {
-		$st =~ s/(.*?)\s+from\s+//;
+		$st =~ s/(.*?)\s+from\s+//is;
 		$s->{raw_columns} = $1;
 		my @t = Text::ParseWords::quotewords('\s*,\s*', 0, $st);
 		my $last;
