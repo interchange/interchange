@@ -35,7 +35,6 @@ This file documents all changes of the LINUXIA branch of Interchange.
   UI_STD_EDIT_TABLE: 1.18.4.5)
 - safeguards for missing track files 
   (reports/traffic/ByAffiliate.html: 1.6.4.2)
-- Pragma substitute_table_image added (Interpolate.pm: 1.29.4.4)
 - emit error message on undefined filters (Interpolate.pm: 1.29.4.3)
 [useful for debugging, please review for stable]
 - page_* works without any template 
@@ -84,6 +83,7 @@ Changes that made into the development branch:
 
 - imagehelper widget (interchange.PL: 1.15.2.4, Primitive.pm: 1.25.4.2,
   modified, 2000-12-03)
+- Pragma substitute_table_image added (Interpolate.pm: 1.29.4.4, 2001-01-28)
 
 Candidates for 4.7:
 
