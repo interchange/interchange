@@ -1270,6 +1270,7 @@ lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/MCVE.pm
+lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
