@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 1.25.4.19 2001-07-06 17:38:32 heins Exp $
+# $Id: Primitive.pm,v 1.25.4.20 2001-07-06 18:25:52 heins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.19 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.20 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -737,8 +737,8 @@ sub uploadhelper_widget {
 sub imagehelper_widget {
     my ($name, $val, $path, $imagebase, $size) = @_;
 	
-	Vend::Interpolate::vars_and_comments($path);
-	Vend::Interpolate::vars_and_comments($imagebase);
+	Vend::Interpolate::vars_and_comments(\$path);
+	Vend::Interpolate::vars_and_comments(\$imagebase);
 	if ($imagebase ||= '') {
 		$imagebase =~ s/^\s+//;
 		$imagebase =~ s:[\s/]*$:/:;
