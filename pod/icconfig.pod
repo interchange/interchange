@@ -950,6 +950,33 @@ The current locale for language.
 
 =back
 
+Some global variables can be set to affect Interchange:
+
+=over 4
+
+=item MV_DOLLAR_ZERO
+
+This determines what Interchange does to Perl's $0 variable, which
+contains the operating system's name of the running process, for
+example in the ps(1) or top(1) commands. Valid settings are:
+
+=back
+
+ Setting                           Result
+ (not set)                         'interchange'
+ 0                                 (do nothing)
+ 1                                 'interchange --> (CATROOT)'
+ string                            'string'
+
+=over 4
+
+=item
+
+Note that this is set globally once only when the Interchange daemon
+is started, so it's pointless to change the variable after that.
+
+=back
+
 =head2 VarName *global*
 
 Sets the names of variables that will be remapped to and from the URL
