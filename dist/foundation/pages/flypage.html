@@ -53,6 +53,35 @@ ui_template_name: leftonly
 	      [item-field comment]
 	    </td>
 	  </tr>
+	  [if file products/specs.txt]
+	  [loop search="
+	  	fi=specs.txt
+		st=text
+		sf=sku
+		se=[item-code]
+		co=yes
+		rf=header,detail
+	  "][on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3>
+		</tr>
+	  [/on-match]
+	  [list]<tr>
+	    <td style="contentbar1">
+	      <B>[loop-param header]:</b>
+	    </td>
+	    <td>
+	      [loop-param detail]
+	    </td>
+	  </tr>
+	  [/list]
+	  [on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3>
+		</tr>
+	  [/on-match]
+	  [/loop]
+	  [/if]
 	  <tr> 
 	    <td colspan="2">&nbsp;</td>
 	  </tr>
