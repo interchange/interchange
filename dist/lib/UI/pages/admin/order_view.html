@@ -116,6 +116,20 @@
                               <tr> 
                                  <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
                               </tr>
+[if type=file term="[either]__ORDER_DIRECTORY__[or]orders[/either]/[loop-code]"]
+        <tr>            
+            <td align=right>&nbsp;</td>
+            <td>[page href="process/[loop-code].pgp"
+                  add_dot_html=0
+                  form="
+                deliver_encrypted=1
+                mv_todo=return
+                mv_nextpage=@@MV_PAGE@@
+                order=[loop-code]
+                "][L]Decrypt Credit Card[/L]</a>
+            </td>    
+        </tr>           
+[/if]
                            </table>
                         </td>
                      </tr>
@@ -383,4 +397,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.9 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.10 2003-01-28 18:05:38 mheins Exp $ -->
