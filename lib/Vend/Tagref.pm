@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.5 2000-09-26 18:15:35 zarko Exp $
+# $Id: Tagref.pm,v 1.6 2000-10-12 21:45:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.5 2000-09-26 18:15:35 zarko Exp $
+# $Id: Tagref.pm,v 1.6 2000-10-12 21:45:52 zarko Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -655,6 +655,8 @@ Causes the counter to count down instead of up.
 =item value=1
 
 Shows the value of the counter without incrementing or decrementing it.
+
+=back
 
 %%%
 currency
