@@ -1,109 +1,25 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
-[/comment]
-[comment]
-
-[query
-	list=1
-	st=db
-	sql=|
-		select max(code) from ship_addresses
-	|
-]
-			[seti current_code][sql-code][/seti]
-[/query]
-[if !scratch current_code]
-[set new_code]1[/set]
-[else]
-[seti new_code][calc][scratch current_code] + 1[/calc][/seti]
-[/else]
-[/if]
-
-[query
-	list=1
-	st=db
-	sql=|
-		select max(entry) from ship_addresses
-		where username = '[data session username]'
-	|
-]
-			[seti current_entry][sql-code][/seti]
-[/query]
-[if !scratch current_entry]
-[set new_entry]1[/set]
-[else]
-[seti new_entry][calc][scratch current_entry] + 1[/calc][/seti]
-[/else]
-[/if]
-
-[seti add_address]
-[tag flag write]ship_addresses[/tag]
-[try]
-[import table=ship_addresses type=LINE continue=NOTES]
-code: [scratch new_code]
-username: [data session username]
-entry: [scratch new_entry]
-addr_nick: [value addrnick]
-company: [value sa_company]
-fname: [value sa_fname]
-lname: [value sa_lname]
-address_1: [value sa_address1]
-address_2: [value sa_address2]
-city: [value sa_city]
-state: [value sa_state]
-zip: [value sa_zip]
-country: [value sa_country]
-[/import]
-[/try]
-[catch] There was an error adding the new bible record entry. [/catch]
-[/seti]
-
 [/comment]
 
-[set page_title]__COMPANY__ -- Recurring Order Added[/set]
+[set component_after][/set]
+[set members_only]0[/set]
 [set page_banner]Recurring Order Added[/set]
-
-__LEFTONLY_TOP__
+[set component_hsize]2[/set]
+[set hbanner][/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Recurring Order Added[/set]
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-
 <br>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+<font __FFACE__ size="2">
 Please use the form below to add items to the order.
 </font>
 <P>			
 
-
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

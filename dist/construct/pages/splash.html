@@ -1,35 +1,15 @@
 [comment]
 ui_template: Yes
 ui_template_name: fullwidth
-ui_template_layout: NOLEFT_TOP, UI_CONTENT, NOLEFT_BOTTOM
-ui_template_description: Page with top/bottom areas only, content in middle.
-
-page_title:
-	description: Page title
-
-page_banner:
-	description: Page banner
-	help: defaults to page_title
-
-bgcolor:
-	options: #FFFFFF=white, pink=pink
-	description: Background color
-	widget: select
-
-members_only:
-	options: 1=Yes,0=No*
-	description: Members only
-	widget: radio
-
 [/comment]
-[set page_title]Welcome to __COMPANY__, an Interchange catalog![/set]
+
 [set page_banner]Welcome to Interchange[/set]
-[set members_only][/set]
-[set bgcolor][/set]
+[set bgcolor]#FFFFFF[/set]
+[set members_only]0[/set]
+[set page_title]Welcome to __COMPANY__, an Interchange catalog![/set]
+@_NOLEFT_TOP_@
 
-__NOLEFT_TOP__
 <!-- BEGIN CONTENT -->
-
 <CENTER>
 <H1>Welcome to __COMPANY__!</H1>
 <P>
@@ -76,7 +56,6 @@ catalog system. Links that will help you to use this software:</I>
 </TD></TR></TABLE>
 
 <!-- current page: @@MV_PAGE@@ -->
-
 <!-- END CONTENT -->
 
-__NOLEFT_BOTTOM__
+@_NOLEFT_BOTTOM_@
