@@ -10,7 +10,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [if-mm advanced items]
@@ -24,7 +24,15 @@
 [if-mm advanced userdb]
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 <font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/quickbooks/import_items]">Upload and Import Customers</a>
+<a href="[area __UI_BASE__/quickbooks/export_items]">Export Items (items.iif)</a>
+</font>
+</td></tr>
+[/if-mm]
+
+[if-mm advanced userdb]
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<font size="+1" face="arial,helvetica,sans-serif">
+<a href="[area __UI_BASE__/quickbooks/export_coa]">Export Chart of Accounts (coa.iif)</a>
 </font>
 </td></tr>
 [/if-mm]
@@ -38,7 +46,7 @@
 [/if-mm]
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
