@@ -1,4 +1,12 @@
 [perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
 	if(! $CGI->{ui_elements}) {
 		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
 		$CGI->{ui_elements} = $Tag->read_ui_template( 
