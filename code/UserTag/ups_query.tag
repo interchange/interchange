@@ -178,7 +178,7 @@ Any valid Business::UPS mode (required). Example: 1DA,2DA,GNDCOM
 
 =item origin
 
-Origin zip code. Default is $Variable->{UPS_ORIGION}.
+Origin zip code. Default is $Variable->{UPS_ORIGIN}.
 
 =item zip
 
