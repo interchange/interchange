@@ -7,9 +7,9 @@ This file documents all changes of the LINUXIA branch of Interchange.
   change of spread (CVS 1.9.4.2)
 - superfluous she-bang removed from MakeCat.pm (CVS 1.12.4.1)
 - new UserTag formel
-- insert without primary key (interchange.PL: 1.8.4.4, DBI.pm: 1.19.4.2, UI_STD_DBEDIT_HEAD: 1.5.4.3)
+- insert without primary key (interchange.PL: 1.8.4.4, DBI.pm: 1.19.4.2, UI_STD_DBEDIT_HEAD: 1.5.4.3, item_edit.html: 1.12.4.4)
 - replaced hardcoded name for affiliate table with UI_AFFILIATE_TABLE
-  (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3-5,
+  (catalog_before.cfg: 1.17.4.3+5, affiliates.html: 1.10.4.3-5,
   order_view.html: 1.16.4.2)
 - UI_IMG fix for poweredby.gif (UI_STD_FOOTER: CVS 1.11.4.2)
 - sort by DescriptionField instead of hardcoded field name (item.html: 1.18.4.4)
@@ -28,6 +28,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (reports/order/ByAffiliate.html: 1.10.4.3)
 - imagehelper widget added (Primitive.pm: 1.21.4.5, interchange.PL: 1.8.4.7, 
   UI_STD_EDIT_TABLE: 1.18.4.5)
+- safeguards for missing track files 
+  (reports/traffic/ByAffiliate.html: 1.6.4.2)
 
 Changes that made into the main branch:
 
