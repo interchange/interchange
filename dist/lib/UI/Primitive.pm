@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.5 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.6 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -796,7 +796,7 @@ sub meta_display {
 	}
 
 	push @tries, { type => $o->{type} }
-		if $o->{type};
+		if $o->{type} || $o->{label};
 
 	for $metakey (@tries) {
 #::logDebug("enter metadisplay record $metakey");
@@ -915,6 +915,16 @@ sub meta_display {
 					if ! $record->{passed};
 			}
 		}
+		elsif ($record->{type} eq 'yesno') {
+			$record->{passed}  = '=' . ::errmsg('No');
+			$record->{passed} .= ',1=' . ::errmsg('Yes');
+			$o->{type} = 'select' unless $o->{type} =~ /radio/;
+		}
+		elsif ($record->{type} eq 'noyes') {
+			$record->{passed}  = '1=' . ::errmsg('No');
+			$record->{passed} .= ',=' . ::errmsg('Yes');
+			$o->{type} = 'select' unless $o->{type} =~ /radio/;
+		}
 		elsif ($record->{type} eq 'option_format') {
 			my $w = option_widget($column, $value);
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="option_format">};
@@ -982,6 +992,9 @@ sub meta_display {
 			}
 		}
 
+		if(! $o->{type} and ! $record->{type}) {
+			$o->{type} = 'text' unless $record->{passed};
+		}
 		$opt = {
 			attribute	=> ($record->{'attribute'}	|| $column),
 			table		=> ($record->{'db'}			|| $meta_db),
