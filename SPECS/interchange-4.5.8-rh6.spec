@@ -95,6 +95,12 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{int
 %doc README
 %doc README.rpm
 %doc README.cvs
+%doc pdf/icbackoffice.pdf
+%doc pdf/icconfig.pdf
+%doc pdf/icdatabase.pdf
+%doc pdf/icinstall.pdf
+%doc pdf/icintro.pdf
+%doc pdf/ictemplates.pdf
 %config(noreplace) /etc/interchange.cfg
 %config(noreplace) /etc/logrotate.d/interchange
 %config /etc/rc.d/init.d/interchange
