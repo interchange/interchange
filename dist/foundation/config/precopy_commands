@@ -1,20 +1,11 @@
-{MYSQL}mysqladmin -u __MVC_SQLUSER__ -p__MVC_SQLPASS__ create test___MVC_CATALOGNAME__
-Since you selected the MySQL option, you need to create
-a database named "test___MVC_CATALOGNAME__". In a default MySQL
-configuration, any user may create and drop and modify
-test_* databases, but some administrators disable this.
+{MYSQL}mysqladmin -u __MVC_SQLUSER__ -p__MVC_SQLPASS__ create __MVC_SQLDB__
+Since you selected the MySQL option, you need to create a database named
+"__MVC_SQLDB__". In a default MySQL configuration, any user may create
+and drop and modify test_* databases, but some administrators disable this.
   
 
-{PGSQL}createdb test___MVC_CATALOGNAME__
-Since you selected the PostgreSQL option, you need to create
-a database named "test___MVC_CATALOGNAME__". This will only work if
-your administrator allowed it.
-  
+{PGSQL}createdb __MVC_SQLDB__
+Since you selected the PostgreSQL option, you need to create a database named
+"__MVC_SQLDB__". This will only work if your administrator allowed it.
 
-
-{DB2SQL}createdb test___MVC_CATALOGNAME__
-Since you selected the DB2 option, you need to create
-a database named "test___MVC_CATALOGNAME__". This will only work if
-your administrator allowed it.
-  
 
