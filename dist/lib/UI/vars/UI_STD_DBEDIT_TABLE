@@ -6,7 +6,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
 [/if]
 
-<FORM METHOD=POST ACTION="[area ui]">
+<FORM METHOD=POST ACTION="[area ui]" ENCTYPE="multipart/form-data">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi ui_nextpage][or]__UI_BASE__/flex_select[/either]">

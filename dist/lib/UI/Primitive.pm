@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.21.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.21.4.5 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -696,6 +696,22 @@ sub date_widget {
 	$out .= qq{</SELECT>};
 }
 
+sub imagehelper_widget {
+    my ($name, $val, $path) = @_;
+
+    if ($val) {
+        qq{<A HREF="$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">
+<INPUT TYPE=file NAME="$name" VALUE="$val">};      
+    } else {
+        qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="">
+<INPUT TYPE=file NAME="$name">};
+    }
+}
+
 my $base_entry_value;
 
 sub meta_display {
@@ -828,7 +844,9 @@ sub meta_display {
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
 		}
-
+		elsif ($record->{type} eq 'imagehelper') {
+            return imagehelper_widget($column, $value, $record->{outboard});
+        }
 		for(qw/append prepend/) {
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});

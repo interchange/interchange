@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.8.4.6 2000-10-26 09:31:38 racke Exp $
+# $Id: interchange.PL,v 1.8.4.7 2000-10-26 17:09:41 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -461,6 +461,10 @@ sub update_data {
 	unshift(@fields, $prikey);
 	$function = 'update' unless $function;
 
+    my @file_fields = split /[\s\0,]+/, $CGI::values{mv_data_file_field};
+    my @file_paths = split /[\s\0,]+/, $CGI::values{mv_data_file_path};
+    my @file_oldfiles = split /[\s\0,]+/, $CGI::values{mv_data_file_oldfile};
+
 	my (%data);
 	for(@fields) {
 		$data{$_} = [];
@@ -470,6 +474,37 @@ sub update_data {
         next unless defined $data{$key};
 		@{$data{$key}} = split /\0/, $value;
 	}
+
+    my $outfile;
+    my $Tag = new Vend::Tags;
+ 
+    for (my $i = 0; $i < @file_fields; $i++) {
+        unless (length($data{$file_fields[$i]}->[0])) {
+            # no need for a file update
+            $data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
+            next;
+        }
+
+        # remove path components
+        $data{$file_fields[$i]}->[0] =~ s/.*\\//; 
+
+        if (length ($file_paths[$i])) {
+            # real file upload
+            $outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
+
+            if ($Tag->if_mm ('!files', $outfile)) {
+                ::logError ("Not allowed to upload \"$outfile\"");
+                next;
+            }   
+            Vend::Interpolate::tag_value_extended ($file_fields[$i],
+                {outfile => $outfile, umask => '022'});
+        } else {
+            # preparing to dump file contents into database column
+            $data{$file_fields[$i]}->[0]
+                = Vend::Interpolate::tag_value_extended ($file_fields[$i],
+                    {file_contents => 1});
+        }
+    }
 
     if ($function eq 'insert' && $base_db->config('AUTO_INCREMENT')) {
         # special insertion case => key not needed
