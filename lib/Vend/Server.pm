@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.33 2001-04-15 05:59:11 heins Exp $
+# $Id: Server.pm,v 1.8.2.34 2001-04-16 00:47:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.33 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.34 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -403,7 +403,7 @@ sub canon_status {
 sub respond {
 	# $body is now a reference
     my ($s, $body) = @_;
-show_times("begin response send") if $Global::ShowTimes;
+#show_times("begin response send") if $Global::ShowTimes;
 	my $status;
 	if($Vend::StatusLine) {
 		$status = $Vend::StatusLine =~ /(?:^|\n)Status:\s+(.*)/i
@@ -431,7 +431,7 @@ show_times("begin response send") if $Global::ShowTimes;
 		print MESSAGE $$body;
 		undef $Vend::StatusLine;
 		$Vend::ResponseMade = 1;
-show_times("end response send") if $Global::ShowTimes;
+#show_times("end response send") if $Global::ShowTimes;
 		return;
 	}
 
@@ -446,7 +446,7 @@ show_times("end response send") if $Global::ShowTimes;
 
 	if($Vend::ResponseMade || $CGI::values{mv_no_header} ) {
 		print $fh $$body;
-show_times("end response send") if $Global::ShowTimes;
+#show_times("end response send") if $Global::ShowTimes;
 		return 1;
 	}
 
@@ -487,7 +487,7 @@ show_times("end response send") if $Global::ShowTimes;
 		my @paths;
 		@paths = ('/');
 		if($Global::Mall) {
-			my $ref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
+			my $ref = $Global::Catalog{$Vend::Cat};
 			@paths = ($ref->{script});
 			push (@paths, @{$ref->{alias}}) if defined $ref->{alias};
 			if ($Global::FullUrl) {
@@ -520,7 +520,7 @@ show_times("end response send") if $Global::ShowTimes;
 
     print $fh "\r\n";
     print $fh $$body;
-show_times("end response send") if $Global::ShowTimes;
+#show_times("end response send") if $Global::ShowTimes;
     $Vend::ResponseMade = 1;
 }
 
@@ -909,7 +909,6 @@ sub connection {
 ## Signals
 
 my $Signal_Terminate;
-my $Signal_Debug;
 my $Signal_Restart;
 my %orig_signal;
 my @trapped_signals = qw(INT TERM);
@@ -969,10 +968,24 @@ sub reset_vars {
 #::logDebug("Reset vars");
 }
 
+sub reset_per_fork {
+	%Vend::Table::DBI::DBI_connect_cache = ();
+	%Vend::Table::DBI::DBI_connect_bad = ();
+}
+
+sub clean_up_after_fork {
+	for(values %Vend::Table::DBI::DBI_connect_cache) {
+		next if ! ref $_;
+		$_->disconnect();
+	}
+	%Vend::Table::DBI::DBI_connect_cache = ();
+	%Vend::Table::DBI::DBI_connect_bad = ();
+}
+
 sub setup_signals {
     @orig_signal{@trapped_signals} =
         map(defined $_ ? $_ : 'DEFAULT', @SIG{@trapped_signals});
-    $Signal_Terminate = $Signal_Debug = '';
+    $Signal_Terminate = '';
     $SIG{PIPE} = 'IGNORE';
 
 	if ($Global::Windows) {
@@ -994,7 +1007,6 @@ sub setup_signals {
     else {
         $Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
         $Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
-        #$Sig_dec = sub { send_ipc($$); };
     }
 }
 
@@ -1020,6 +1032,46 @@ sub housekeeping {
 	my ($c, $num,$reconfig, $restart, @files);
 	my @pids;
 
+		if($Global::PreFork) {
+			my $count = 0;
+			my @bad_pids;
+			my (@pids) = sort keys %Page_pids;
+			my $count = scalar @pids;
+			while ($count > ($Global::StartServers + 1) ) {
+#::logDebug("too many pids");
+				my ($bad) = shift(@pids);
+#::logDebug("scheduling %s for death", $bad);
+				push @bad_pids, $bad;
+				$count--;
+			}
+
+			foreach my $pid (@pids) {
+				kill(0, $pid) and next;
+#::logDebug("Unresponsive server at PID %s", $pid);
+				push @bad_pids, $pid;
+			}
+
+			while($count < $Global::StartServers) {
+#::logDebug("Spawning page server to reach StartServers");
+				start_page(undef,$Global::PreFork,1);
+				$count++;
+			}
+			for my $pid (@bad_pids) {
+#::logDebug("Killing excess or unresponsive server at PID %s", $pid);
+				if(kill 'TERM', $pid) {
+#::logDebug("Server at PID %s terminated OK", $pid);
+					# This is OK
+				}
+				elsif (kill 'TERM', $pid) {
+					::logGlobal("page server pid %s required KILL", $pid);
+				}
+				else {
+					::logGlobal("page server pid %s won't die!", $pid);
+				}
+				delete $Page_pids{$pid};
+			}
+		}
+
 		opendir(Vend::Server::CHECKRUN, $Global::ConfDir)
 			or die "opendir $Global::ConfDir: $!\n";
 		@files = readdir Vend::Server::CHECKRUN;
@@ -1032,7 +1084,9 @@ sub housekeeping {
 			$Num_servers = 0;
 			@pids = grep /^pid\.\d+$/, @files;
 		}
-		#scalar grep($_ eq 'stop_the_server', @files) and exit;
+
+		my $respawn;
+
 		if (defined $restart) {
 			$Signal_Restart = 0;
 			open(Vend::Server::RESTART, "+<$Global::ConfDir/restart")
@@ -1080,6 +1134,7 @@ EOF
 				or die "close $Global::ConfDir/restart: $!\n";
 			unlink "$Global::ConfDir/restart"
 				or die "unlink $Global::ConfDir/restart: $!\n";
+			$respawn = 1;
 		}
 		if (defined $reconfig) {
 			open(Vend::Server::RECONFIG, "+<$Global::ConfDir/reconfig")
@@ -1124,7 +1179,49 @@ EOF
 				or die "close $Global::ConfDir/reconfig: $!\n";
 			unlink "$Global::ConfDir/reconfig"
 				or die "unlink $Global::ConfDir/reconfig: $!\n";
+			$respawn = 1;
+			
 		}
+
+		if($respawn) {
+			if($Global::PreFork) {
+				# We need to respawn all the servers to pick up the new config
+				my @pids = keys %Page_pids;
+				for(@pids) {
+					::logGlobal(
+						{ level => 'info' },
+						"respawning page server pid %s to pick up config change",
+						$_,
+					);
+					(kill 'TERM', $_ and delete $Page_pids{$_})
+						or ::logGlobal(
+								"page server pid %s won't terminate: %s",
+								$_,
+								$!,
+							);
+					start_page(undef,$Global::PreFork,1);
+				}
+			}
+			if($Global::SOAP) {
+				# We need to respawn all the SOAP servers to pick up the new config
+				my @pids = keys %SOAP_pids;
+				for(@pids) {
+					::logGlobal(
+						{ level => 'info' },
+						"respawning SOAP server pid %s to pick up config change",
+						$_,
+					);
+					(kill 'TERM', $_ and delete $SOAP_pids{$_})
+						or ::logGlobal(
+								"SOAP server pid %s won't terminate: %s",
+								$_,
+								$!,
+							);
+					start_soap(undef,1);
+				}
+			}
+		}
+
         for (@pids) {
             $Num_servers++;
             my $fn = "$Global::ConfDir/$_";
@@ -1359,6 +1456,8 @@ sub start_page {
 
 				my $next;
 				$::Instance = {};
+
+				reset_per_fork();
 				eval { 
 					$next = server_page($no_fork);
 				};
@@ -1369,6 +1468,7 @@ sub start_page {
 						if defined $Vend::Cfg->{ErrorFile};
 				}
 
+				clean_up_after_fork();
 				send_ipc("respawn page $$")		if $next;
 				
 				undef $::Instance;
@@ -1437,6 +1537,7 @@ sub start_soap {
 
 				send_ipc("register soap $$");
 
+				reset_per_fork();
 				my $next;
 				$::Instance = {};
 				eval { 
@@ -1449,6 +1550,7 @@ sub start_soap {
 						if defined $Vend::Cfg->{ErrorFile};
 				}
 
+				clean_up_after_fork();
 				send_ipc("respawn soap $$")		if $next;
 				
 				undef $::Instance;
@@ -1620,8 +1722,7 @@ my $pretty_vector = unpack('b*', $rin);
 			and $Global::MaxRequestsPerChild
 			and $handled >= $Global::MaxRequestsPerChild;
 
-		return if $Signal_Terminate || $Signal_Debug;
-		send_ipc("$$");
+		return if $Signal_Terminate;
 
     }
 }
@@ -1708,6 +1809,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 			$Vend::OnlyInternalHTTP = $Global::OnlyInternalHTTP;
 
 			$Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity);
+			$Vend::Cat = $Vend::Cfg->{CatalogName};
 
 			my $result;
 			my $error;
@@ -1769,17 +1871,6 @@ sub process_ipc {
 		close $fh;
 		$Num_servers--;
 	}
-	elsif ($thing =~ /^register soap (\d+)/) {
-		$SOAP_pids{$1} = 1;
-#::logDebug("registered SOAP pid $1");
-		$SOAP_servers++;
-	}
-	elsif ($thing =~ /^respawn soap (\d+)/) {
-		delete $SOAP_pids{$1};
-#::logDebug("deleted SOAP pid $1");
-		$SOAP_servers--;
-		start_soap(undef, 1);
-	}
 	elsif ($thing =~ /^register page (\d+)/) {
 		$Page_pids{$1} = 1;
 #::logDebug("registered Page pid $1");
@@ -1790,6 +1881,17 @@ sub process_ipc {
 #::logDebug("deleted Page pid $1");
 		$Page_servers--;
 		start_page(undef,$Global::PreFork,1);
+	}
+	elsif ($thing =~ /^register soap (\d+)/) {
+		$SOAP_pids{$1} = 1;
+#::logDebug("registered SOAP pid $1");
+		$SOAP_servers++;
+	}
+	elsif ($thing =~ /^respawn soap (\d+)/) {
+		delete $SOAP_pids{$1};
+#::logDebug("deleted SOAP pid $1");
+		$SOAP_servers--;
+		start_soap(undef, 1);
 	}
 	elsif($thing =~ /^\d+$/) {
 		close $fh;
@@ -2040,7 +2142,7 @@ my $pretty_vector = unpack('b*', $rin);
         }
 		elsif($n == 0) {
 			undef $spawn;
-			housekeeping();
+			housekeeping($tick);
 			next;
 		}
         else {
@@ -2110,6 +2212,7 @@ my $pretty_vector = unpack('b*', $rin);
 				#fork again
 				unless ($pid = fork) {
 
+					reset_per_fork();
 					$::Instance = {};
 					eval { 
 						touch_pid() if $Global::PIDcheck;
@@ -2122,6 +2225,7 @@ my $pretty_vector = unpack('b*', $rin);
 						logError("Runtime error: %s", $msg)
 							if defined $Vend::Cfg->{ErrorFile};
 					}
+					clean_up_after_fork();
 
 					undef $::Instance;
 					select(undef,undef,undef,0.050) until getppid == 1;
@@ -2160,7 +2264,7 @@ my $pretty_vector = unpack('b*', $rin);
 			close MESSAGE;
 		}
 
-		last if $Signal_Terminate || $Signal_Debug;
+		last if $Signal_Terminate;
 	  	$only_ipc = $master_ipc;
 
 	  eval {
