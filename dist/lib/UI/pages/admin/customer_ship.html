@@ -5,6 +5,7 @@
 	if(! $CGI->{item_id} and $Session->{arg}) {
 		$CGI->{item_id} = $CGI->{customer} = $Session->{arg};
 	}
+	$CGI->{customer} = $CGI->{item_id} if ! $CGI->{customer};
 	return if ! $CGI->{item_id};
 	if(! $CGI->{mv_data_table}) {
 		$CGI->{ui_hide_key} = 1;
@@ -12,16 +13,33 @@
 	}
 	if(! $CGI->{ui_data_fields}) {
 		$CGI->{ui_data_fields} = 'username company fname lname address1 address2 city state zip country email phone_day phone_night';
+		$CGI->{ui_display_only} = 'email phone_night';
+		$CGI->{"ui_te_pre_filter:email"} = 'mailto';
+	}
+	if(! $CGI->{mv_blob_field}) {
+		$CGI->{mv_blob_title} = '<B>Address book</B>';
+		$CGI->{mv_blob_field} = 'address_book';
+		$CGI->{mv_blob_label} = 'city';
+		$CGI->{mv_blob_pointer} = 's_nickname';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'address1 email';
+	}
+	if(! $CGI->{ui_return_to}) {
+		$CGI->{ui_return_to} = join "\0",
+									'__UI_BASE__/customer_view',
+									"customer=$CGI->{item_id}",
+								;
+
 	}
 	return;
 [/calc]
 [if !cgi item_id]
 	[bounce page="__UI_BASE__/customer"]
 [/if]
+[comment]
 @_UI_STD_DBEDIT_HEAD_@
+[/comment]
 
 [set ui_class]Customers[/set]
 [seti page_title]Customer shipping information -- [cgi customer][/seti]
@@ -31,7 +49,10 @@
 
 @_UI_STD_HEAD_@
 <P>
+[table-editor cgi=1]
+[comment]
 @_UI_STD_DBEDIT_TABLE_@
+[/comment]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
