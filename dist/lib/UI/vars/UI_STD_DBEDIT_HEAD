@@ -26,16 +26,29 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 
 [perl tables="[value mv_data_table]"]
 my $table = $Values->{mv_data_table};
-$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
-if ($table ne $Values->{mv_data_table}) {
-	$Values->{mv_data_table} = $table;
+my $db = $Db{$table};
+if(! $db) {
+	$Scratch->{ui_error} = "Bad table '$table'.";
+	$Tag->bounce( { page => '__UI_BASE__/error' } );
 }
+
+$Values->{ui_data_key_name} = $db->config('KEY');
+
 $Values->{ui_data_fields} =
 	$CGI->{ui_data_fields} ||
 	$CGI->{mv_data_fields} ||
-	$Values->{"$table:ui_data_fields"} || '' ;
-$Values->{ui_data_fields} =~ s/\0+/ /g;
+	$Values->{"$table:ui_data_fields"} || 
+	join " ", $db->columns();
+
+$Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+
+
+my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
+@cols = grep /:/ || $db->column_exists($_), @cols;
+
+$Values->{ui_data_fields} = $CGI->{ui_data_fields} = join " ", @cols;
 return;
+
 [/perl]
 
 [set process_filter]
