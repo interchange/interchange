@@ -30,48 +30,38 @@
  ] 
 <table border="0" cellspacing="0" cellpadding="0">
 	<tr class="categorybar" align="center" valign="middle"> 
-		  <td class="categorybar">
-		    <b>[scratch vbanner]</b>
-		  </td>
+	  <td class="categorybar"><b>[control banner Other items you might like...]</b></td>
 	</tr>
+	<tr><td>&nbsp;</td></tr>
 	<tr align="center"> 
 	  <td>
 	     [list]
 		<table border="0" cellspacing="0" cellpadding="0">
 		  <tr> 
-			<td align="center">
+			<td align="center" colspan="2" class="contentbar1">
 				<b>[loop-field description]</b>
 			</td>
 		  </tr>
 		  <tr> 
-			<td align="center">
-				<b>[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
+			<td align="center" colspan="2"> 
+			  <img src="thumb/[loop-field thumb]" width="80" height="80">
 			</td>
 		  </tr>
 		  <tr> 
-			<td align="center"> 
-			  <table border="0" cellspacing="0" cellpadding="0">
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
-				</tr>
-			  </table>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center" height="5">&nbsp;</td>
-		  </tr>
-		  <tr> 
-			<td align="center">
-			  Our Price: [loop-price]
+			<td align="center" colspan="2">
+			  Our Price: <b>[loop-price]</b>
 			</td>
 		  </tr>
 		  <tr> 
 			<td align="center">
-			  <A HREF="[area [loop-code]]">More Information</a>
+			  <A HREF="[area [loop-code]]">More Info</a>&nbsp;
+			</td>
+			<td align="center">
+				[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]
 			</td>
 		  </tr>
 		  <tr> 
-			<td align="center">&nbsp;</td>
+			<td align="center" colspan="2">&nbsp;</td>
 		  </tr>
 		</table>
 [/list]

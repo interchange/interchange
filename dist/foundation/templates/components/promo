@@ -26,8 +26,6 @@ banner:
 
 <!-- BEGIN COMPONENT [control component promo] -->
 
-<br clear=all>
-
 <table width="95%" align=center>
 <tr class="categorybar"> 
   <td class="categorybar" align="left"><b>[control banner Specials]</b></td>
@@ -68,7 +66,7 @@ banner:
         <td> 
 	  <table border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
-		<td align="center">
+		<td align="center" colspan="2" class="contentbar1">
 		  <b>
 		  [if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
@@ -79,38 +77,32 @@ banner:
 		</td>
 	  </tr>
 	  <tr> 
-		<td align="center">
-		  <b>
-		  [if-loop-data options o_modular]
-				[page [loop-code]]
-				[else][order [loop-code]]
-				[/else]
-				[/if-loop-data]<img border="0" alt="buy now" src="__THEME_IMG_DIR__buynow.gif">[/order]</b>
-		</td>
-	  </tr>
-	  <tr> 
-		<td align="center"> 
+		<td align="center" colspan="2"> 
 		  <img src="thumb/[loop-field thumb]" height="80">
 		</td>
 	  </tr>
 	  <tr> 
-		<td align="center" height="5">&nbsp;</td>
-	  </tr>
-	  <tr> 
-		<td align="center">
-		  Our Price:
+		<td align="center" colspan="2">
+		  Our Price: <b>[loop-price]</b>
 		</td>
 	  </tr>
 	[if-loop-data merchandising blurb_end]
 	  <tr> 
-		<td align="center">
+		<td align="center" colspan="2">
 		  <a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
 		</td>
 	  </tr>
 	[else]
 	  <tr> 
 		<td align="center">
-			<a href="[area [loop-code]]">More Information</a>
+		  <a href="[area [loop-code]]">More Info</a>&nbsp;
+		</td>
+		<td align="center">
+		  [if-loop-data options o_modular]
+				[page [loop-code]]
+				[else][order [loop-code]]
+				[/else]
+				[/if-loop-data]<img border="0" alt="buy now" src="__THEME_IMG_DIR__buynow.gif">[/order]
 		</td>
 	  </tr>
 	[/else]

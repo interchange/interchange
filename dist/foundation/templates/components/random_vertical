@@ -37,11 +37,11 @@ banner:
 <table width="[control table_width 95%]" align="center">
 <tr> 
   <td class="categorybar">
-    <b>[control banner See also...]</b>
+    &nbsp;<b>[control banner See also...]</b>
   </td>
 </tr>
 <tr>
-  <td> 
+  <td align="center"> 
     [calc]
   	my $n = [control cols 2];
 	$Scratch->{width_percent} = int(100 / $n) . '%';
@@ -58,12 +58,25 @@ banner:
 					ra=yes
 					ml=[control pool 1000]
 				"]
-      <TD width="[scratch width_percent]"> 
-	<table border="0" cellspacing="0" cellpadding="0">
+      <TD width="[scratch width_percent]" valign="top" align="center"> 
+	<table border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr> 
-	  <td>[loop-description]</td>
+	  <td colspan="2" class="contentbar1">[loop-description]</td>
 	</tr>
 	<tr> 
+	  <td align="center" colspan="2"> 
+		<img src="thumb/[loop-field thumb]">
+	  </td>
+	</tr>
+	<tr> 
+	  <td colspan="2">
+	    Our Price: <b>[loop-price]</b>
+	  </td>
+	</tr>
+	<tr> 
+	  <td>
+	    <a href="[area [loop-code]]">More Info</a>&nbsp;
+	  </td>
 	  <td>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
@@ -72,27 +85,6 @@ banner:
 		[/else]
 		[/if-loop-data]
 	    <img src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
-	  </td>
-	</tr>
-	<tr> 
-	  <td align="center"> 
-	    <table cellspacing="0" cellpadding="0">
-	    <tr> 
-	      <td>
-		<img src="thumb/[loop-field thumb]">
-	      </td>
-	    </tr>
-	    </table>
-	  </td>
-	</tr>
-	<tr> 
-	  <td>
-	    Our Price: <b>[loop-price]</b>
-	  </td>
-	</tr>
-	<tr> 
-	  <td>
-	    <a href="[area [loop-code]]">More Info</a>
 	  </td>
 	</tr>
 	</table>

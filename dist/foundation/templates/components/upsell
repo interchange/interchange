@@ -51,9 +51,22 @@ random:
 	  <TD width="[scratch width_percent]"> 
 		<table border="0" cellspacing="0" cellpadding="0">
 		  <tr> 
-			<td align="center">[loop-description]</td>
+			<td align="center" colspan="2" class="contentbar1">[loop-description]</td>
 		  </tr>
 		  <tr> 
+			<td align="center" colspan="2"> 
+				  <td><img src="thumb/[loop-field thumb]"></td>
+			</td>
+		  </tr>
+		  <tr> 
+			<td colspan="2">
+				Our Price: <b>[loop-price]</b>
+			</td>
+		  </tr>
+		  <tr> 
+			<td>
+				<a href="[area [loop-code]]">More Info</a>&nbsp;
+			</td>
 			<td align="center">
 				[if-loop-data options o_modular]
 					[page [loop-code]]
@@ -63,32 +76,7 @@ random:
 				[/if-loop-data]
 				  <img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">
 				</A>
-				</td>
-		  </tr>
-		  <tr> 
-			<td align="center"> 
-			  <table cellspacing=0 cellpadding=0>
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]"></td>
-				</tr>
-			  </table>
 			</td>
-		  </tr>
-		  <tr> 
-			<td align="center" height="5">&nbsp;</td>
-		  </tr>
-		  <tr> 
-			<td>
-				Our Price: [loop-price]
-			</td>
-		  </tr>
-		  <tr> 
-			<td>
-				<a href="[area [loop-code]]">More Information</a>
-			</td>
-		  </tr>
-		  <tr> 
-			<td>&nbsp;</td>
 		  </tr>
 		</table>
 	  </TD>

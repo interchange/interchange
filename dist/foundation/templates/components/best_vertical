@@ -27,6 +27,7 @@ banner:
 	ml=[control size 3]
 "] 
 
+
 <table border="0" cellspacing="0" cellpadding="0">
 <tr class="categorybar" align="center" valign="middle"> 
 	<td class="categorybar">
@@ -37,12 +38,26 @@ banner:
 	<td>
 		[list]
 		<table border="0" cellspacing="0" cellpadding="0">
+		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr> 
-			<td align="center">
+			<td align="center" colspan="2" class="contentbar1">
 				<b>[loop-field description]</b>
 			</td>
 		</tr>
 		<tr> 
+			<td align="center" colspan="2"> 
+				<img src="thumb/[loop-field thumb]" width="80" height="80">
+			</td>
+		</tr>
+		<tr> 
+			<td align="center" colspan="2">
+				Our Price: <b>[loop-price]</b>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				<A HREF="[area [loop-code]]">More Info</a>&nbsp;
+			</td>
 			<td align="center">
 				<b>
 				[if-loop-data options o_modular]
@@ -52,24 +67,9 @@ banner:
 				[/if-loop-data]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
 			</td>
 		</tr>
-		<tr> 
-			<td align="center"> 
-				<img src="thumb/[loop-field thumb]" width="80" height="80">
-			</td>
-		</tr>
-		<tr> 
-			<td align="center">
-				Our Price: [loop-price]
-			</td>
-		</tr>
-		<tr> 
-			<td align="center">
-				<A HREF="[area [loop-code]]">More Information</a>
-			</td>
-		</tr>
-		<tr> 
-			<td align="center">&nbsp;</td>
-		</tr>
+		<tr>
+		  <td colspan="2">&nbsp;</td>
+		<tr>
 		</table>
 		[/list]
 	</td>
