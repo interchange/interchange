@@ -1,4 +1,4 @@
-interchange (4.8.1-2) unstable; urgency=low
+interchange (4.8.2-1) unstable; urgency=low
 
   * upstream fixes and enhancements from CVS
   * install README.debian into /usr/share/doc
@@ -9,7 +9,7 @@ interchange (4.8.1-2) unstable; urgency=low
     to the Interchange owner/group
   * let makecat write into /etc/interchange/catalogs.cfg
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun,  2 Sep 2001 22:59:21 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 19 Sep 2001 21:02:53 +0200
 
 interchange (4.8.1-1) unstable; urgency=low
 
