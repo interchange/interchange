@@ -103,6 +103,7 @@ install: build
 # UI images and stuff
 	mkdir -p $(TMP)/var/www/interchange
 	for dir in $(TMP)/usr/lib/interchange/share/interchange/*; do mv $$dir $(TMP)/var/www/interchange; done
+	chmod -x -R $(TMP)/var/www/interchange
 	rm -r $(TMP)/usr/lib/interchange/share/interchange
 # mod_interchange
 	mkdir -p $(TMP)/usr/lib/apache/1.3
