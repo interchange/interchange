@@ -130,6 +130,9 @@ Core
 UserTag
 -------
 
+* Added new usps_query usertag for real-time rate quotes from U.S. Postal
+  Service's webtools API. Documentation in tag.
+
 * Add new UserTag option "attrDefault", which allows default attributes to
   be set globally or catalog-wide for a given usertag. Two examples:
  
@@ -172,6 +175,9 @@ UI
 
 Foundation
 ----------
+
+* Added entries to shipping.asc for USPS rate queries, and two new vars to
+  variable.txt. 
 
 * Remove "default" column from mv_metadata.asc, as it is not used anywhere.
   This allows the addition of mv_metadata to MySQL, as otherwise the
