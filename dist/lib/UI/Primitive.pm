@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.10 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.11 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -885,7 +885,7 @@ sub meta_display {
 				elsif($passed eq 'filters') {
 					$record->{passed} = $Vend::Interpolate::Tag->filters(1),
 				}
-				elsif($passed =~ /^columns(::(\w*))?$/) {
+				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
 					$tname = $base_entry_value if $total eq '::';
@@ -894,7 +894,7 @@ sub meta_display {
 					$record->{passed} = join (',', "=--none--", $db->columns())
 						if $db;
 				}
-				elsif($passed =~ /^keys(::(\w+))?$/) {
+				elsif($passed =~ /^keys(::(\w+))?\s*$/) {
 					my $tname = $2 || $record->{db} || $table;
 					$record->{passed} = "=--none--," . list_keys($tname, { joiner => ',' });
 				}
