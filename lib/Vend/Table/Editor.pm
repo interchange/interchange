@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.39 2003-07-19 22:42:56 mheins Exp $
+# $Id: Editor.pm,v 1.40 2003-07-21 17:58:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.39 $, 10);
+$VERSION = substr(q$Revision: 1.40 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1237,6 +1237,7 @@ sub resolve_options {
 		link_row_qual
 		link_auto_number
 		link_rows_blank
+		link_blank_auto
 		link_sort
 		link_table
 		link_template
@@ -2854,6 +2855,7 @@ EOF
 		my @lrq;
 		my @lra;
 		my @lrb;
+		my @lba;
 		my @lbefore;
 		my @lsort;
 		my $tcount = 1;
@@ -2868,6 +2870,7 @@ EOF
 			@lrq     = @{$opt->{link_row_qual}};
 			@lra     = @{$opt->{link_auto_number}};
 			@lrb     = @{$opt->{link_rows_blank}};
+			@lba     = @{$opt->{link_blank_auto}};
 			@lbefore = @{$opt->{link_before}};
 			@lsort   = @{$opt->{link_sort}};
 		}
@@ -2882,6 +2885,7 @@ EOF
 			@lrq     = $opt->{link_row_qual};
 			@lra     = $opt->{link_auto_number};
 			@lrb     = $opt->{link_rows_blank};
+			@lba     = $opt->{link_blank_auto};
 			@lbefore = $opt->{link_before};
 			@lsort   = $opt->{link_sort};
 		}
@@ -2896,6 +2900,7 @@ EOF
 			my $lrq = shift @lrq;
 			my $lra = shift @lra;
 			my $lrb = shift @lrb;
+			my $lba = shift @lba;
 
 			my $rcount = 0;
 
@@ -2915,6 +2920,12 @@ EOF
 			my $l_pkey = $ldb->config('KEY');
 			$lrq ||= $l_pkey;
 
+			if($lba) {
+				my @f = grep /\w/, split /[\s,\0]+/, $lf;
+				@f = grep $_ ne $lk && $_ ne $l_pkey, @f;
+				$lf = join " ", @f;
+			}
+
 			my $an_piece = '';
 			if($lra) {
 				$an_piece = <<EOF;
@@ -2923,26 +2934,35 @@ EOF
 EOF
 			}
 
+			## Have to produce two field lists -- one for
+			## in link_blank_auto mode (no link_key for row_edit)
+			## and one with all when not in link_blank_auto
+
 			my @cf = grep /\S/, split /[\s,\0]+/, $lf;
 			@cf = grep $_ ne $l_pkey, @cf;
 			$lf = join " ", @cf;
+
+			unshift @cf, $lk if $lba;
+			my $df = join " ", @cf;
+
 			my $lextra = $opt->{link_extra} || '';
 			$lextra = " $lextra" if $lextra;
 
 			my @lout = q{<table cellspacing=0 cellpadding=1>};
 			push @lout, qq{<tr><td$lextra>
 <input type=hidden name="mv_data_table__$tcount" value="$lt">
-<input type=hidden name="mv_data_fields__$tcount" value="$lf">
+<input type=hidden name="mv_data_fields__$tcount" value="$df">
 <input type=hidden name="mv_data_multiple__$tcount" value="1">
 <input type=hidden name="mv_data_key__$tcount" value="$l_pkey">
 <input type=hidden name="mv_data_multiple_qual__$tcount" value="$lrq">
 $an_piece
 $l_pkey</td>};
-			push @lout, $Tag->row_edit({ table => $lt, columns => $lf });
+			push @lout, $Tag->row_edit({ table => $lt, columns => "$lk $lf" });
 			push @lout, '</tr>';
 
 			my $tname = $ldb->name();
-			my $lfor = $key;
+			my $k = $key;
+			my $lfor = $k;
 			$lfor = $ldb->quote($key, $lk);
 			my $q = "SELECT $l_pkey FROM $tname WHERE $lk = $lfor";
 			$q .= " ORDER BY $ls" if $ls;
@@ -2954,6 +2974,12 @@ $l_pkey</td>};
 				$hid .= HTML::Entities::encode($rk);
 				$hid .= qq{">};
 				push @lout, qq{<tr><td$lextra>$rk$hid</td>};
+				if($lba) {
+					my $hid = qq{<input type=hidden name="$pp${lk}__$tcount" value="};
+					$hid .= HTML::Entities::encode($k);
+					$hid .= qq{">};
+					push @lout, qq{<td$lextra>$k$hid</td>};
+				}
 				my %o = (
 					table => $lt,
 					key => $_->[0],
@@ -2966,6 +2992,13 @@ $l_pkey</td>};
 				push @lout, $Tag->row_edit(\%o);
 				push @lout, "</tr>";
 			}
+
+			if($lba and $lrq eq $lk || $lrq eq $l_pkey) {
+				my $colcount = scalar(@cf) + 1;
+				push @lout, "<td colspan=$colcount>Link row qualifier must be different than link_key and primary code when in auto mode.</td>";
+				$lnb = 1;
+			}
+
 			unless($lnb) {
 				my $start_ptr = 999000;
 				$lrb ||= 1;
@@ -2978,9 +3011,17 @@ $l_pkey</td>};
 						stacker => $tcount,
 						columns => $lf,
 					);
+					my $ktype = $lba ? 'hidden' : 'text';
 					push @lout, qq{<tr><td$lextra>};
-					push @lout, qq{<input size=8 name="${start_ptr}_${l_pkey}__$tcount" value="">};
+					push @lout, qq{<input size=8 type=$ktype name="${start_ptr}_${l_pkey}__$tcount" value="">};
+					push @lout, '(auto)' if $lba;
 					push @lout, '</td>';
+					if($lba) {
+						my $hid = qq{<input type=hidden name="${start_ptr}_${lk}__$tcount" value="};
+						$hid .= HTML::Entities::encode($k);
+						$hid .= qq{">};
+						push @lout, qq{<td$lextra>$k$hid</td>};
+					}
 					push @lout, $Tag->row_edit(\%o);
 					push @lout, '</tr>';
 					$start_ptr++;

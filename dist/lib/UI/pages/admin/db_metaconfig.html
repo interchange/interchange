@@ -100,8 +100,8 @@
 		extended.link_sort
 		extended.link_fields
 		extended.link_auto_number extended.link_row_qual
-		extended.link_rows_blank extended.link_view
-		extended.link_extra
+		extended.link_rows_blank extended.link_blank_auto
+		extended.link_view extended.link_extra
 
 		=Included form
 
@@ -176,6 +176,7 @@
 		'extended.ui_special_add'		=> 'Special Additions',
 		'extended.link_table'			=> 'Table to link in cell',
 		'extended.link_rows_blank'		=> 'Number of blank rows',
+		'extended.link_blank_auto'		=> 'Auto handling blank row link key',
 		'extended.link_row_qual'		=> 'Field indicating valid row',
 		'extended.link_auto_number'		=> 'Allow auto_number in link',
 		'extended.link_before'			=> 'Column to appear before',
@@ -227,7 +228,8 @@
 </pre>
 			</blockquote>},
 		'extended.link_rows_blank'		=> 'default 1',
-		'extended.link_row_qual'		=> 'Default is key field, needs to be different field if auto-numbering.',
+		'extended.link_row_qual'		=> 'Default is key field, needs to be different field if auto-numbering. Must not be same as Foreign Key if in auto mode.',
+		'extended.link_blank_auto'		=> 'Requires link row qualifier be separate from primary key and foreign key in linked table.',
 		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
 		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
 		'extended.tab_width'			=> 'Default 100 pixels.',
@@ -288,6 +290,7 @@
 		'extended.link_fields'			=> 'text_70',
 		'extended.link_key'			=> 'text_20',
 		'extended.link_rows_blank'	=> 'text_3',
+		'extended.link_blank_auto'		=> 'yesno',
 		'extended.link_row_qual'	=> 'text_12',
 		'extended.link_auto_number'	=> 'yesno',
 		'extended.top_buttons'		=> 'yesno',
@@ -358,4 +361,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.15 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.16 $ -->
