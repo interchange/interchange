@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.23 2000-09-25 16:45:59 zarko Exp $
+# $Id: makecat.PL,v 1.24 2000-09-25 16:50:49 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -133,7 +133,7 @@ options:
     --cgidir=directory         The directory the CGI link should go to
     --servername=server        Name of server (www.whatever.domain)
     --cgiurl=url_fragment      The path to the CGI link (no server name)
-    --demotype=template        The template catalog (simple is the default)
+    --demotype=template        The template catalog (construct is the default)
     --mailorderto=email        Email address to send orders
 
     Optional:
@@ -445,7 +445,7 @@ my %Prefix = (
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
-	demotype     =>  $ENV{MVC_DEMOTYPE} || 'simple',
+	demotype     =>  $ENV{MVC_DEMOTYPE} || 'construct',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
 							($isroot ? '' : $Conf{'interchangeuser'})
@@ -2058,7 +2058,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.23 2000-09-25 16:45:59 zarko Exp $
+$Id: makecat.PL,v 1.24 2000-09-25 16:50:49 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2205,18 +2205,18 @@ For testing on your local machine, just use C<localhost>.
 =item --cgiurl=url_fragment
 
 The path to the CGI link (no server name). For a catalog named
-C<simple>, this would normally be one of:
+C<construct>, this would normally be one of:
 
-    --cgiurl=/cgi-bin/simple
+    --cgiurl=/cgi-bin/construct
 
 or 
 
-    --cgiurl=/simple.cgi
+    --cgiurl=/construct.cgi
 
 
 =item --demotype=template
 
-The template catalog. The default is <simple>.
+The template catalog. The default is <construct>.
 
 =item --mailorderto=email
 
@@ -2292,11 +2292,11 @@ B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
 
 A catalog template contains an image of a configured catalog. The best
-way to see what the makecat program does is to configure the simple
+way to see what the makecat program does is to configure the 'construct'
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-  diff -r mvend/simple catalogs/simple
+  diff -r interchange/construct catalogs/construct
 
 NOTE: C<diff> is usually only available on UNIX.
 
@@ -2325,7 +2325,7 @@ substituted, and include (at least):
     MVC_DOCUMENTROOT MVC_VENDROOT
     MVC_ENCRYPTOR
 
-(Not all of these are present in the simple or sample templates, and
+(Not all of these are present in the construct template, and
 quite a few more may be defined.)  In fact, any environment variable that
 is set and begins with MVC_ will be substituted for by the C<makecat>
 script. So if you wanted to set up a configurable parameter to customize
@@ -2344,7 +2344,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-simple and copy the C<simple> demo directory to it as a starting point.
+construct and copy the C<constructconstructconstruct> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
@@ -2397,7 +2397,7 @@ This will cause the prompt:
     We need to create an SQL database for your Interchange
     database tables.
      
-    Run command "mysqladmin create simple"?
+    Run command "mysqladmin create test_construct"?
 
 If the response is "y" or "yes", then the command will be run
 by passing it through the Perl system() function. As with any
