@@ -1,7 +1,19 @@
-[set page_title]Prepare to Launch[/set]
+[set page_title]Launch[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.launch[/set]
 @_UI_STD_HEAD_@
+
+<p>
+To launch your site, click <u>launch</u>. The following will occur:
+<UL>
+<LI>All orders will be deleted from the order database (if selected.) 
+<LI>All customer records will be deleted from the user database (if selected.)
+<LI>The order number will be reset.
+<LI>The secure web server will be enabled. (If you don't accept credit cards,
+this is optional.)
+</UL>
+
+<p>
 
 [table-editor 
 	table=variable
@@ -51,29 +63,5 @@
 	widget.enablesecure=select
 	passed.enablesecure="0=No, 1=Yes"
 ]
-
-<table><tr><td width=500>
-<P>
-When you press <B>Launch</B>, the following will occur:
-</P>
-<UL>
-<LI>The order database will be emptied of all orders unless you select No
-above
-<LI>The user database will be emptied of all customer records unless you select No
-above
-<LI>The order number will be reset
-<LI>The secure web server should be enabled. If you don't accept credit cards,
-this is optional.
-</UL>
-
-<P>
-At that point you may begin testing by following the Preview link, and
-changing the configuration with Interchange's administration tool.
-</P>
-<P>
-After you are satisfied with your catalog, you can launch and begin taking
-orders.
-</P>
-</td></tr></table>
 
 @_UI_STD_FOOTER_@
