@@ -1,6 +1,6 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.9 2002-06-23 01:20:10 jon Exp $
+# $Id: TextSearch.pm,v 2.10 2002-07-15 13:41:12 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use Search::Dict;
 use strict;
@@ -140,14 +140,6 @@ sub search {
 	$s->{mv_return_delim} = $s->{mv_index_delim}
 		unless defined $s->{mv_return_delim};
 
-	if(ref $s->{mv_range_look}) {
-		unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-				scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
-			$s->{mv_search_warning}
-				= "Must have min and max values for range -- aborting range look.";
-			undef $s->{mv_range_look};
-		}
-	}
 	@specs = @{$s->{mv_searchspec}};
 
 	@pats = $s->spec_check(@specs);

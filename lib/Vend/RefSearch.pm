@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.4 2002-06-23 02:57:57 edl Exp $
+# $Id: RefSearch.pm,v 2.5 2002-07-15 13:41:12 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use strict;
 
@@ -126,15 +126,6 @@ sub search {
 
 #::logDebug("Called RefSearch, object=" . ::uneval($s));
 	@specs = @{$s->{mv_searchspec}};
-
-	if(ref $s->{mv_range_look}) {
-		unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-				scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
-			$s->{mv_search_warning}
-				= "Must have min and max values for range -- aborting range look.";
-			undef $s->{mv_range_look};
-		}
-	}
 
 	@pats = $s->spec_check(@specs);
 
