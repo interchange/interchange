@@ -203,7 +203,6 @@ code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
 code/UserTag/var.tag
-code/UserTag/xml_generator.tag
 code/Widget/imagedir.widget
 code/Widget/imagehelper.widget
 code/Widget/uploadhelper.widget
