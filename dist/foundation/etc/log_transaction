@@ -1,6 +1,8 @@
 #### begin [value mv_order_number] #####
 [tmp transaction_record]
-
+[loop list="transactions orderline inventory userdb"]
+[flag type=write table="[loop-code]"]
+[/loop]
 [if type=explicit compare=`
 		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
 		return 0;
