@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: expire.PL,v 2.1 2002-01-16 18:57:52 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -251,7 +251,8 @@ print "$Vend::Cfg->{CatalogName} expire="
   if $opt_v;
 
 
-if ($Vend::Cfg->{SessionType} eq 'File' ) {
+if ($Vend::Cfg->{SessionType} eq 'File'
+	or $Vend::Cfg->{SessionType} eq 'NFS') {
 	require File::Find;
 	my $expire = $Vend::Cfg->{SessionExpire} + 60;
 	$expire /= 86400;
