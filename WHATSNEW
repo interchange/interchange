@@ -150,6 +150,18 @@ Core
 * Fix bug where bad [nitems compare=...] could cause server error. Now
   just silently causes bad compare.
 
+* Allow alternate values spaces with $CGI->{mv_values_space}. This allows
+  fill-in wizards, surveys, and such to not pollute the user's normal
+  values.
+
+  Use with caution -- if someone is in the practice of using $Values
+  to set catalog behavior (usually a poor idea) then it can cause
+  anomalies.
+
+* Clean up a few references to $Vend::Session->{values} which should
+  never be done anymore -- we had handled almost all of this previously.
+  It should always reference $::Values.
+
 Installation
 ------------
 
