@@ -1,8 +1,9 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 2.0 2001-07-18 02:23:22 jon Exp $
+# $Id: Interchange.pm,v 2.0.2.1 2002-11-26 03:21:13 jon Exp $
 # 
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +31,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 BEGIN {
 	require 5.005;

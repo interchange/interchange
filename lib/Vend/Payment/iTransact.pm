@@ -1,12 +1,13 @@
 # Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 2.0.2.2 2002-01-24 05:07:03 jon Exp $
+# $Id: iTransact.pm,v 2.0.2.3 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/ and others.
 #
-# Written by Cameron Prince <cprince@redhat.com> and
-# Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mheins@redhat.com>
+# Written by Cameron Prince <cameronbprince@yahoo.com> and
+# Mark Johnson <mark@endpoint.com>,
+# based on code by Mike Heins <mike@perusion.com>.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +28,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 2.0.2.2 $
+Vend::Payment::iTransact $Revision: 2.0.2.3 $
 
 =head1 SYNOPSIS
 
@@ -163,7 +164,7 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
+If all else fails, consultants are available to help
 with integration for a fee.
 
 =back
@@ -175,8 +176,8 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Johnson <markj@redhat.com> and Cameron Prince <cprince@redhat.com>, based
-on original code by Mike Heins <mheins@redhat.com>.
+Mark Johnson <mark@endpoint.com> and Cameron Prince <cameronbprince@yahoo.com>,
+based on original code by Mike Heins <mike@perusion.com>.
 
 =cut
 

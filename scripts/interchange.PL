@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange version 4.8.7
 #
-# $Id: interchange.PL,v 2.7.2.17 2002-09-02 00:54:35 mheins Exp $
+# $Id: interchange.PL,v 2.7.2.18 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -2391,7 +2392,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-		http://interchange.redhat.com/
+		http://www.icdevgroup.org/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2951,7 +2952,7 @@ if ($@) {
 
 compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), offline(1), restart(1), update(1),
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
 =head1 LICENSE
 
@@ -2968,17 +2969,17 @@ license.
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>, along with Dave Adams, Jon Jensen,
-Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
-Solutions Group. Please do not contact the author for direct help with
-the system. Use the Interchange mail list:
+Mike Heins, <mike@perusion.com>, along with Dave Adams, Jon Jensen,
+Brev Patterson, Jason Kohles, and others of the Interchange Development
+Group. Please do not contact the author for direct help with the
+system. Use the Interchange mail list:
 
     interchange-users
 
 Information on subscribing to the list, as well as general information and
 documentation for Interchange is at:
 
-    http://interchange.redhat.com/
+    http://www.icdevgroup.org/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 

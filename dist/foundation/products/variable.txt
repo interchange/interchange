@@ -49,8 +49,8 @@ TAXSHIPPING	__MVC_TAXSHIPPING__	Tax
 SHIP_FLAT_INTL_RATE	10	Shipping
 SHIP_FLAT_DOM_RATE	5	Shipping
 TOLLFREE	__MVC_TOLLFREE__	Company
-UI_ABOUT_LOGIN_URL	http://interchange.redhat.com/	Admin layout
-UI_ABOUT_NORMAL_URL	http://interchange.redhat.com/	Admin layout
+UI_ABOUT_LOGIN_URL	http://www.icdevgroup.org/	Admin layout
+UI_ABOUT_NORMAL_URL	http://www.icdevgroup.org/	Admin layout
 UI_ADMIN_TABLES	mv_metadata locale variable dict icmenu ichelp route access	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_HELP_HEIGHT	480	Admin layout

@@ -1,8 +1,9 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.1.2.2 2002-06-27 22:38:24 jon Exp $
+# $Id: Cart.pm,v 2.1.2.3 2002-11-26 03:21:09 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -24,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.3 $, 10);
 
 use strict;
 

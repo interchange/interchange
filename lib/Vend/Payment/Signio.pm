@@ -1,12 +1,13 @@
 # Vend::Payment::Signio - Interchange Signio support
 #
-# $Id: Signio.pm,v 2.0.2.2 2002-08-27 22:07:59 jon Exp $
+# $Id: Signio.pm,v 2.0.2.3 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/ and others
 #
-# Written by Cameron Prince <cprince@redhat.com> and
-# Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mheins@redhat.com>
+# Written by Cameron Prince <cameronbprince@yahoo.com>,
+# Mark Johnson <mark@endpoint.com>,
+# based on code by Mike Heins <mike@perusion.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +28,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 2.0.2.2 $
+Vend::Payment::Signio $Revision: 2.0.2.3 $
 
 =head1 SYNOPSIS
 
@@ -186,7 +187,7 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
+If all else fails, consultants are available to help
 with integration for a fee.
 
 =back
@@ -204,7 +205,7 @@ to Vend::Payment and places things there.
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>.
+Mike Heins, <mike@perusion.com>
 
 =cut
 

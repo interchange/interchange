@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.6 2002-08-11 15:24:03 mheins Exp $
+# $Id: makecat.PL,v 2.5.2.7 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2355,7 +2356,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.6 2002-08-11 15:24:03 mheins Exp $
+# $Id: makecat.PL,v 2.5.2.7 2002-11-26 03:21:13 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2596,7 +2597,7 @@ has been designed for the use with Debian installations.
 C<makecat> needs a template catalog to operate on. The I<Foundation
 Store> demo template is distributed with Interchange. You can
 also look for additional demo catalogs (mostly for ideas) at
-http://interchange.redhat.com/.
+http://www.icdevgroup.org/
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
@@ -2723,7 +2724,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://interchange.redhat.com/
+        http://www.icdevgroup.org/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2742,14 +2743,14 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
-license.
+Copyright 1995-2002, Red Hat, Inc., and the Interchange Development Group.
+All rights reserved except as in the license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>. Please do not contact the author for
+Mike Heins, <mike@perusion.com>. Please do not contact the author for
 direct help with the system. Use the Interchange mail list:
 
     interchange-users
@@ -2757,7 +2758,7 @@ direct help with the system. Use the Interchange mail list:
 Information on subscribing to the list, and general information and
 documentation for Interchange is at:
 
-    http://interchange.redhat.com/
+    http://www.icdevgroup.org/
 
 =cut
 

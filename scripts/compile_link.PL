@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.0.2.2 2002-01-24 05:07:03 jon Exp $
+# $Id: compile_link.PL,v 2.0.2.3 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -413,11 +414,11 @@ sending its timeout page.
 
 =head1 SEE ALSO
 
-makecat(1), http://interchange.redhat.com/
+makecat(1), http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>
+Mike Heins, <mike@perusion.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

@@ -1,8 +1,9 @@
 # Vend::ECML - map Interchange forms/userdb to ECML checkout
 #
-# $Id: ECML.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: ECML.pm,v 2.0.2.2 2002-11-26 03:21:10 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

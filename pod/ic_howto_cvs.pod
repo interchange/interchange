@@ -594,7 +594,7 @@ Ease of use.
 Ease of use is one reason not to remove anything from your catalog
 before importing it, because it creates the ability to have a
 completely working catalog from just one checkout (much like the CVS
-tree at interchange.redhat.com).  Whereas if you leave out other
+tree at cvs.icdevgroup.org).  Whereas if you leave out other
 directories like etc/ session/ orders/, etc., then you must first
 combine your checkout with the other working parts of a catalog before
 the catalog is viable.  But this is slower and will bring up lots of

@@ -1,8 +1,9 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.7 2002-11-04 04:46:24 mheins Exp $
+# $Id: Server.pm,v 2.0.2.8 2002-11-26 03:21:10 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -25,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.8 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;

@@ -1,11 +1,12 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.1.2.4 2002-04-27 20:58:29 kwalsh Exp $
+# $Id: AuthorizeNet.pm,v 2.1.2.5 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/ and others
 #
 # by mark@summersault.com with code reused and inspired by
-#	Mike Heins <mheins@redhat.com>
+#	Mike Heins <mike@perusion.com>
 #	webmaster@nameastar.net
 #   Jeff Nappi <brage@cyberhighway.net>
 #   Paul Delys <paul@gi.alaska.edu>
@@ -38,7 +39,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.1.2.4 $
+Vend::Payment::AuthorizeNet $Revision: 2.1.2.5 $
 
 =head1 SYNOPSIS
 
@@ -209,7 +210,7 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
+If all else fails, consultants are available to help
 with integration for a fee.
 
 =back
@@ -222,7 +223,7 @@ to Vend::Payment and places things there.
 =head1 AUTHORS
 
 Mark Stosberg <mark@summersault.com>, based on original code by Mike Heins
-<mheins@redhat.com>.
+<mike@perusion.com>.
 
 =head1 CREDITS
 

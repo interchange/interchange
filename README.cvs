@@ -22,7 +22,7 @@ for download locations if you don't have it.
 
 If you are already an experienced CVS user, the information is:
 
-	CVSROOT   :pserver:cvs@cvs.akopia.com:/var/cvs
+	CVSROOT   :pserver:cvs@cvs.icdevgroup.org:/var/cvs
 	password  (none)
 	module    interchange
 
@@ -34,7 +34,7 @@ probably a src/ subdirectory:
 	$ cd
 	$ mkdir src
 	$ cd src
-	$ cvs -z3 -d :pserver:cvs@cvs.akopia.com:/var/cvs checkout -P interchange
+	$ cvs -z3 -d :pserver:cvs@cvs.icdevgroup.org:/var/cvs checkout -P interchange
 
 It will take a while, as there are several megabytes of files to download.
 
@@ -65,7 +65,7 @@ Unpack the tar file and install as normal. See the README file and other
 documentation for help. You should already be familiar with the Interchange
 developer website at:
 
-	http://interchange.redhat.com/
+	http://www.icdevgroup.org/
 
 Make sure you don't check out your CVS copy into $HOME/interchange
 and then install on top of it, since $HOME/interchange is the default

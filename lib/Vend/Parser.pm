@@ -1,8 +1,9 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: Parser.pm,v 2.0.2.2 2002-11-26 03:21:10 jon Exp $
 #
-# Copyright (C) 1997-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1997-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -55,7 +56,7 @@ modify it under the same terms as Perl itself.
 
 =head1 AUTHORS
 
-Vend::Parser - Mike Heins <mheins@redhat.com>  
+Vend::Parser - Mike Heins <mike@perusion.com>
 HTML::Parser - Gisle Aas <aas@sn.no>
 
 =cut
@@ -66,7 +67,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 
 sub new

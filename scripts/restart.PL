@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 2.0.2.1 2002-01-24 05:07:04 jon Exp $
+# $Id: restart.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -198,11 +199,11 @@ a system startup script.
 
 =head1 SEE ALSO
 
-interchange(1), http://interchange.redhat.com/
+interchange(1), http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>
+Mike Heins, <mike@perusion.com>
 
 
 _EoP_

@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 2.0.2.1 2002-01-24 05:07:04 jon Exp $
+# $Id: expireall.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -172,7 +173,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-# $Id: expireall.PL,v 2.0.2.1 2002-01-24 05:07:04 jon Exp $
+# $Id: expireall.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
 
 =head1 DESCRIPTION
 
@@ -180,7 +181,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-expire(1), http://interchange.redhat.com/
+expire(1), http://www.icdevgroup.org/
 
 
 =cut

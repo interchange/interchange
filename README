@@ -4,18 +4,12 @@
 
 Interchange 4.8.7
 
-Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+Copyright (C) 1996-2002 Red Hat, Inc., and others
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
+This program is offered without warranty of any kind.
 See the file LICENSE for redistribution terms.
-
-This program is offered without warranty of any kind. We are interested
-in problems, suggestions, or comments, but do not offer free individual
-support in most cases. Our professional services group offers paid
-consulting services, which are detailed at:
-
-http://interchange.redhat.com/
 
 -----------------------------------------------------------------------------
 
@@ -83,8 +77,12 @@ gzip -dc interchange-4.8.?.tar.gz | tar xvf -
 cd interchange-4.8.?
 ./configure
 
-Then you will need to make your first Interchange catalog, as described in
-the next section.
+The configure script asks where you'd like to install Interchange, and
+(against common practice) also install it.
+
+The Interchange server doesn't do much if it isn't servicing one or more
+actual catalogs, so you next need to make your first Interchange catalog,
+as described in the next section.
 
 -----------------------------------------------------------------------------
 
@@ -106,7 +104,7 @@ Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
 MySQL or PostgreSQL.
 
-Visit http://demo.interchange.redhat.com/ to see a live demo on our servers.
+Visit http://demo.icdevgroup.org/ to try out a live demo.
 
 -----------------------------------------------------------------------------
 
@@ -115,10 +113,10 @@ Visit http://demo.interchange.redhat.com/ to see a live demo on our servers.
 The included documentation is in POD and man(1) formats. The developer web
 site is located at:
 
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
-It offers user-annotated documentation, the documentation in other formats,
-and a user-contributed code library.
+It offers user-annotated documentation, documentation in other formats,
+and mailing lists.
 
 -----------------------------------------------------------------------------
 

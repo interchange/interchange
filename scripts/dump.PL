@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 2.0.2.2 2002-06-27 22:38:25 jon Exp $
+# $Id: dump.PL,v 2.0.2.3 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -268,7 +269,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-# $Id: dump.PL,v 2.0.2.2 2002-06-27 22:38:25 jon Exp $
+# $Id: dump.PL,v 2.0.2.3 2002-11-26 03:21:13 jon Exp $
 
 =head1 SEE ALSO
 

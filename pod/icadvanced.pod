@@ -818,7 +818,7 @@ is done by editing the files within the catalog directory.
 The makecat script requires a catalog skeleton to work from. The
 Foundation demo is distributed with Interchange. See the icfoundation
 document for information on building the Foundation demo store. Other
-demo catalogs are available at http://interchange.redhat.com/.
+demo catalogs are available at http://www.icdevgroup.org/
 
 It is not normally necessary for you to understand how to build
 catalog skeletons for use with makecat, but the following information
@@ -1266,7 +1266,7 @@ consulted.
 Check the README file, the FAQ, and mail list archive at the official
 Interchange web site for information:
 
-       http://interchange.redhat.com/
+       http://www.icdevgroup.org/
 
 Double check the following items:
 

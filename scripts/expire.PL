@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.0.2.4 2002-06-27 22:38:25 jon Exp $
+# $Id: expire.PL,v 2.0.2.5 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -383,11 +384,11 @@ temporary files.
 
 =head1 SEE ALSO
 
-expireall(1), http://interchange.redhat.com/
+expireall(1), http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>
+Mike Heins, <mike@perusion.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

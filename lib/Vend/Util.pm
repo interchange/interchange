@@ -1,8 +1,9 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.10 2002-07-20 14:59:41 mheins Exp $
+# $Id: Util.pm,v 2.1.2.11 2002-11-26 03:21:10 jon Exp $
 # 
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -74,7 +75,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.10 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.11 $, 10);
 
 BEGIN {
 	eval {

@@ -1,13 +1,14 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.3.2.3 2002-03-28 15:53:49 jon Exp $
+# $Id: BoA.pm,v 1.3.2.4 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/ and others.
 #
-# by Mark Johnson <markj@redhat.com> based off of
+# by Mark Johnson <mark@endpoint.com> based off of
 # AuthorizeNet.pm by
 # mark@summersault.com
-# Mike Heins <mheins@redhat.com>
+# Mike Heins <mike@perusion.com>
 # webmaster@nameastar.net
 # Jeff Nappi <brage@cyberhighway.net>
 # Paul Delys <paul@gi.alaska.edu>
@@ -33,7 +34,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.3.2.3 $
+Vend::Payment::BoA $Revision: 1.3.2.4 $
 
 =head1 SYNOPSIS
 
@@ -222,7 +223,7 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
+If all else fails, consultants are available to help
 with integration for a fee.
 
 =back
@@ -234,8 +235,8 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Johnson <markj@redhat.com>, based on original code by Mike Heins
-<mheins@redhat.com>.
+Mark Johnson <mark@endpoint.com>, based on original code by Mike Heins
+<mike@perusion.com>.
 
 =head1 CREDITS
 

@@ -1,10 +1,11 @@
 # Vend::Payment::CCVS - Interchange CCVS support
 #
-# $Id: CCVS.pm,v 2.0.2.1 2002-01-24 05:07:03 jon Exp $
+# $Id: CCVS.pm,v 2.0.2.2 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
-# Author: Mike Heins <mheins@redhat.com>
+# Author: Mike Heins <mike@perusion.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@ package Vend::Payment::CCVS;
 
 =head1 Interchange CCVS support
 
-Vend::Payment::CCVS $Revision: 2.0.2.1 $
+Vend::Payment::CCVS $Revision: 2.0.2.2 $
 
 =head1 SYNOPSIS
 
@@ -153,11 +154,11 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mike Heins <mheins@redhat.com>.
+Mike Heins <mike@perusion.com>
 
 =head1 CREDITS
 
-Doug DeJulio <ddj@redhat.com>
+Doug DeJulio
 
 =cut
 

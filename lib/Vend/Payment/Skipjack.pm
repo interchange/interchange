@@ -1,12 +1,13 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.0.2.4 2002-09-04 16:28:20 mheins Exp $
+# $Id: Skipjack.pm,v 2.0.2.5 2002-11-26 03:21:12 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/ and others.
 #
-# Written by Cameron Prince <cprince@redhat.com> and
-# Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mheins@redhat.com>
+# Written by Cameron Prince <cameronbprince@yahoo.com> and
+# Mark Johnson <mark@endpoint.com>,
+# based on code by Mike Heins <mike@perusion.com>.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +28,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 2.0.2.4 $
+Vend::Payment::Skipjack $Revision: 2.0.2.5 $
 
 =head1 SYNOPSIS
 
@@ -235,7 +236,7 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
+If all else fails, consultants are available to help
 with integration for a fee.
 
 =back
@@ -255,7 +256,7 @@ Modified for GetCareer.com by Slipstream.com by Troy Davis <troy@slipstream.com>
 LWP/Crypt::SSLeay interface code by Matthew Schick,
 <mschick@brightredproductions.com>.
 
-Interchange implementation by Mike Heins, <mheins@redhat.com>.
+Interchange implementation by Mike Heins, <mike@perusion.com>.
 
 =cut
 

@@ -4,18 +4,9 @@ Version: 1.04
 Release: 1
 Copyright: GPL
 Group: WWW/Applications
-Source: http://ftp.akopia.com/interchange/%{name}-%{version}.tar.gz
-URL: http://interchange.redhat.com/
+Source: http://ftp.icdevgroup.org/interchange/%{name}-%{version}.tar.gz
+URL: http://www.icdevgroup.org/
 BuildRoot: /var/tmp/%{name}-%{version}-root
-
-#
-# To do:
-#
-# Deal with Red Hat 6 vs. 7 Apache doc root location difference.
-#
-# Update httpd.conf with an IfDefine section so this works without any
-# further user intervention.
-#
 
 %description
 Apache module that replaces the tlink and vlink program from the 

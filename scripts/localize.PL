@@ -50,9 +50,10 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.0.2.5 2002-01-24 05:07:04 jon Exp $
+# $Id: localize.PL,v 2.0.2.6 2002-11-26 03:21:13 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -397,7 +398,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.0.2.5 2002-01-24 05:07:04 jon Exp $
+# $Id: localize.PL,v 2.0.2.6 2002-11-26 03:21:13 jon Exp $
 
 =head1 SYNOPSIS
 
@@ -475,11 +476,11 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>.
+Mike Heins, <mike@perusion.com>
 
 Valuable contributions made by Stefan Hornburg, <racke@linuxia.de>.
 

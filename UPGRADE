@@ -4,7 +4,7 @@
 
 Interchange is designed to be compatible between major versions, and
 for the most part a catalog designed under Interchange 4.6 should
-be compatible with 4.7.
+be compatible with 4.7 and 4.8.
 
 Full information on upgrades is available in the document icupgrade(8)
 (in the distribution in pod/icupgrade.pod).
