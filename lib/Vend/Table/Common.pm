@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.8 2001-12-29 19:49:33 mheins Exp $
+# $Id: Common.pm,v 2.9 2002-01-08 04:45:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1320,7 +1320,7 @@ sub import_from_ic_db {
 #::logDebug("idb=$idb odb=$odb");
 	eval {
 		my $f;
-		while($f = $idb->each_nokey()) {
+		while($f = $idb->each_nokey($options->{MIRROR_QUAL})) {
 #::logDebug("importing key=$f->[0]");
 			$odb->set_row(@$f);
 		}
