@@ -653,6 +653,8 @@ UI
 * Add shipmethod to display in order_view page, make some display 
   fields conditional.
 
+* Fix bug in address display in customer_view page.
+
 Payment
 -------
 
@@ -666,6 +668,13 @@ Payment
   comment1 and comment2 by default in Payment.pm, but can be remapped.
 
   Also put SHIPTOZIP in the varmap for simplicity, but same function.
+
+* Minor data filtering modifications to BoA module.
+
+* Map company and b_company for payment use.
+
+* Send to Authorize.Net customer shipping address information and company
+  where available.
 
 Shipping
 --------
