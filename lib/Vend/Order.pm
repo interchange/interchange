@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.29 2002-07-28 05:17:03 mheins Exp $
+# $Id: Order.pm,v 2.30 2002-09-07 18:42:47 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -210,8 +210,39 @@ my %Parse = (
 								my $msg = errmsg("%s set failed.", $var);
 								return ($value, $var, $msg);
 							},
-);
+	future => sub {
+							my($name, $value, $code) = @_;
+							my $message;
 
+							my @code = Text::ParseWords::shellwords($code);
+							if($code =~ /(["']).+?\1$/) {
+								$message = pop(@code);
+							}
+							my $adjust = join " ", @code;
+							if(! $message) {
+								$message = errmsg(
+											"Date must be in the future at least %s",
+											$adjust,
+											);
+							}
+							if($value =~ /\0/) {
+								$value = Vend::Interpolate::filter_value(
+											'date_change',
+											$value,
+										);
+							}
+							my $current = Vend::Interpolate::mvtime(
+													undef,
+													{ adjust => $adjust },
+													"%Y%m%d%H%M",
+													);
+#::logDebug("current time: $current input value=$value");
+							if($value lt $current) {
+								return (0, $name, $message);
+							}
+							return (1, $name, '');
+						},
+);
 
 sub _update {
 	$Update = is_yes($_[1]);
