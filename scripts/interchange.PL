@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.3
 #
-# $Id: interchange.PL,v 2.7.2.4 2001-10-18 16:24:36 mheins Exp $
+# $Id: interchange.PL,v 2.7.2.5 2001-11-26 22:33:00 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2882,12 +2882,19 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 		# Here we prepare enter the daemon mode.
 
-		# Set the $0 to something not having 'perl' (won't
-		# work on Solaris and IRIX among possibly others)
-		if(defined $Global::Variable->{MV_DOLLAR_ZERO}) {
-			$0 = $Global::Variable->{MV_DOLLAR_ZERO};
-			$0 = "interchange --> $Global::VendRoot"
-					if length($0) < 2;
+		# Set $0 to something pretty for ps(1).
+		# Won't work on Solaris and IRIX among possibly others.
+		# Dumps core on FreeBSD 4 stock Perl build.
+		if (defined $Global::Variable->{MV_DOLLAR_ZERO}) {
+			if ($Global::Variable->{MV_DOLLAR_ZERO}) {
+				if (length($Global::Variable->{MV_DOLLAR_ZERO}) > 1) {
+					$0 = $Global::Variable->{MV_DOLLAR_ZERO};
+				}
+				else {
+					$0 = "interchange --> $Global::VendRoot";
+				}
+			}
+			# do nothing if MV_DOLLAR_ZERO is defined but false
 		}
 		else {
 			$0 = 'interchange';
