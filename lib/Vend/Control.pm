@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.7 2003-06-18 17:34:44 jon Exp $
+# $Id: Control.pm,v 2.8 2003-07-27 16:06:53 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -55,14 +55,20 @@ sub signal_jobs {
 	shift;
 	$Vend::mode = 'jobs';
 	my $arg = shift;
-	my ($cat, $job) = split /\s*=\s*/, $arg, 2;
+	my ($cat, $job, $delay) = split /\s*=\s*/, $arg, 3;
+	
 	$Vend::JobsCat = $cat;
+	if ($delay =~ /^(\d+)$/) {
+		$delay + time;
+	} else {
+		$delay = 0;
+	}
 #::logGlobal("signal_jobs: called cat=$cat job=$job");
 	$job = join ",", $job, $Vend::JobsJob;
 	$job =~ s/^,+//;
 	$job =~ s/,+$//;
 	$Vend::JobsJob = $job;
-	Vend::Util::writefile("$Global::RunDir/restart", "jobs $cat $job\n");
+	Vend::Util::writefile("$Global::RunDir/jobs", "jobs $cat $delay $job\n");
 #::logGlobal("signal_jobs: wrote file, ready to control_interchange");
 	control_interchange('jobs', 'HUP');
 }

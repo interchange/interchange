@@ -315,6 +315,23 @@ Jobs
 
 * filter option added for Job output
 
+* Jobs are now listed and queued in $Global::RunDir/jobs instead
+  of $Global::RunDir/reconfig
+
+* Add global Jobs configuration directive:
+ 
+  Jobs MaxLifetime 3600
+  Jobs MaxServers  3
+
+  After a job has been running for MaxLifetime seconds, it will be
+  removed by next housekeeping run. The default MaxLifetime is 10
+  minutes. This setting is only available if PIDcheck has been set.
+
+  MaxServers is the number of jobs allowed to be run simulatenously,
+  which should be significantly smaller than the value in the
+  MaxServers directive to avoid unaccessibility of Interchange for
+  users. The default for MaxServers is 1.
+  
 SQL Parsing
 -----------
 
