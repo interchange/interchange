@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.17 2002-06-17 22:24:06 jon Exp $
+# $Id: Primitive.pm,v 2.18 2002-08-02 04:39:16 mheins Exp $
 
 # Copyright (C) 1998-2002 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 $DEBUG = 0;
 
@@ -568,11 +568,11 @@ sub rotate {
 
 	my $motion = $options->{Motion} || 'save';
 
+	$options->{max} = 10 if ! defined $options->{max};
 
 	$dir =~ s:/+$::;
 
 	if("\L$motion" eq 'save' and ! -f "$dir/$base+") {
-			require File::Copy;
 			File::Copy::copy("$dir/$base", "$dir/$base+")
 				or die "copy $dir/$base to $dir/$base+: $!\n";
 	}
@@ -604,6 +604,10 @@ sub rotate {
 	my $base_exists = -f $base;
 	push @forward, $base if $base_exists;
 
+	if (@forward > $options->{max}) {
+		$#forward = $options->{max};
+	}
+
 	for(reverse sort @forward) {
 		next unless -f $_;
 		rename $_, $_ . $add or die "rename $_ => $_+: $!\n";
@@ -614,6 +618,11 @@ sub rotate {
 	@backward = sort @backward;
 
 	unshift @backward, $base;
+
+	if (@backward > $options->{max}) {
+		$#backward = $options->{max};
+	}
+
 	my $i;
 	for($i = 0; $i < $#backward; $i++) {
 		rename $backward[$i+1], $backward[$i]
