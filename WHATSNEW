@@ -57,6 +57,48 @@ Core
 * Don't run set_defaults at all for a subcatalog, as they should be set
   for the base catalog.
 
+* Allow for SELECT statements in parentheses or other non-word characters.
+
+* Enable [order] tag to specify a variant, not just a base product, when
+  options are in use, e.g.:
+
+  [order code="ABCD" variant="ABCD-XYZ"]Buy now</a>
+
+* Fix a problem where the following worked:
+
+		$Tag->price({ code => $sku });
+
+  but the following failed:
+
+		$Tag->price($sku);
+
+  The problem was highlighted by Paul Vinciguerra, in IRC.
+
+* Add date-based counter capability to Vend::CounterFile.
+
+  -- In a database, you just add
+
+	   Database tablename AUTO_NUMBER_DATE 1
+
+     To have real autonumbering, you still must define AUTO_NUMBER.
+     This of course does not work with AUTO_SEQUENCE.
+
+     You must make sure your key field type is at least 12 chars.
+
+  -- In a counter tag, you do:
+
+	   [counter file=filename.ctr date=local]
+
+         or
+
+  	   $Tag->counter({ file => $fn, date => 'local'});
+
+     To define GMT as being used for the numbering, you do:
+
+	   [counter file=filename.ctr date=gmt]
+
+* Fix problems that GDBM and some other types would not honor HIDE_AUTO_FILES.
+
 Tables
 ------
 
@@ -141,6 +183,9 @@ Shipping
 * Add ability to build weight adjustments based on Simple options
   settings. Requires a "weight" field in the options table.
 
+* Add hide_error option to suppress error message when no shipping methods
+  are found.
+
 UI
 --
 
@@ -178,12 +223,49 @@ UI
 
 * Write the selected PGP/GPG key to the Variable table setting.
 
+* Missing session id added to form in user_edit 
+  (thanks to Paul Vinciguerra <pvinci@vinciguerra.com> for the patch).
+
+* Add check to disallow invalid option names.
+
+* Old-style simple option updates were ineffective because the
+  "Commit Changes" button's mv_nextpage was set to "admin/item"
+  instead of @@MV_PAGE@@.
+
+* Allow tracking number to be updated on ship. 
+  Fix contributed by Sebastian Braun.
+
+* Get rid of strange extra loop for billing information in customer_view
+  pages that just caused extra queries for [bill-data userdb ...] calls.
+
+* Check whether userdb is LARGE instead of transactions on customer page.
+
+* Ensure that secure mode is forced before we bounce to login.
+
+* Fix the long-standing problem that sorts and groupings would not
+  work on query-by-example search returns.
+
 Form
 ----
 
 * Honor flag telling we already have data.
 
 * Honor "db" passed parameter in lookup_query.
+
+Menu
+----
+
+* Add cheesy auto_format page/URL detection facility to try and
+  tolerate user-built menus a bit better. In particular, this will
+  recognize a non http: anchored absolute URL and will tolerate
+  anchors in the page name.
+
+  Called with auto-format=1 as a param.
+
+* Remove IE-specific bounding box code in flyout menus. Turns out that
+  caused absolute positioning problems when the page was scrolled, and
+  that the DOM standard code I developed for Mozilla works just fine
+  on MSIE 6.
 
 Table Editor
 ------------
@@ -254,6 +336,9 @@ Table Editor
      once entered)
   -- Making both those fields hidden and non-changeable.
 
+* Make tabbed-display relative now that Mozilla supports this. Should make
+  setting html-width and table-width in metadata moot.
+
 Foundation
 ----------
 
@@ -272,6 +357,10 @@ Foundation
 * Add support for all IC-recognized credit card types.
 
 * Removed obsolete log_entry route and etc/log_entry file.
+
+* Bring MV_DEFAULT_SEARCH_{TABLE,FILE} into catalog.cfg so it is easier
+  to hunt down. We can't unset it in catalog_before.cfg because it will
+  break just about every catalog out there.
 
 Usertags
 --------
@@ -308,6 +397,34 @@ Usertags
 * Allow database text files in subsidiary directories of products
   for [xfer-catalog] Usertag.
 
+* Add form parameter to [history-scan] Usertag to avoid invalid
+  and error-prone constructs like [history-scan]&collapseall=1.
+
+* Add "no-computer" option to [fortune] Usertag in order to make the 
+  fortune more palatable to non-geek sites.
+
+  This is highly dependent on the fortune setup; this will work with
+  fortune on RHL 7.x and 8.x.
+
+Filters
+-------
+
+* new alpha filter to keep only alphabetics A-Z and a-z
+
+* new filter pgbool which munges any value into a valid PostgreSQL boolean 
+  to be used in a quotable string environment, with a hybrid of 
+  Perl/Interchange/PostgreSQL truth rules:
+
+	undef, '', F, f, false, 0 -> f
+	everything else -> t
+
+* new filter pgbooln which is the same as pgbool, except assume that undefs 
+  will pass through as NULLs to whatever does the query:
+
+	undef -> NULL
+	'', F, f, false, 0 -> f
+	everything else -> t
+
 Jobs
 ----
 
@@ -331,7 +448,9 @@ Jobs
   which should be significantly smaller than the value in the
   MaxServers directive to avoid unaccessibility of Interchange for
   users. The default for MaxServers is 1.
-  
+
+* Add job to automatically calculate topsellers.
+
 SQL Parsing
 -----------
 
@@ -383,6 +502,18 @@ Debian
 * Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
   apache-dev already has the proper dependency (Closes: #198136)
 
+* Fix hang of build process caused by non-existant user interchange
+  (Closes: #202063, thanks to Adrian Bunk <bunk@fs.tum.de> for his
+  bugreport and help to trace down the problem) 
+
+* Install manual pages in the correct location.
+  
+* Avoid lintian warning in interchange-ui package.
+
+* Mark update_locales job as conffile.
+
+* Fix bashisms in interchange-cat-foundation's config script.
+
 Miscellaneous
 -------------
 
@@ -391,6 +522,18 @@ Miscellaneous
 * Various minor cleanup, prevents warnings on startup.
 
 * Call tracking functions only if Vend::Track object exists.
+
+* Label first section of the POD documentations in the modules
+  as NAME, this is common, looks nicer in man and helps to
+  fix Debian Bug #203926.
+
+* Add POD documentation to findtags.PL.
+
+* Search for literal strings in bar_link, rather than treating them as
+  regexes. Fix from Paul Vinciguerra. 
+
+* Use 127.0.0.1 instead of localhost for default INET host values to avoid
+  DNS lookup, as per bug #516.
 
 Extensions
 ----------
