@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.71 2001-06-12 14:20:00 jason Exp $
+# $Id: Interpolate.pm,v 1.40.2.72 2001-06-13 21:39:28 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.71 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.72 $, 10);
 
 @EXPORT = qw (
 
@@ -1876,7 +1876,7 @@ sub tag_options {
 	my @rf;
 	if($record->{o_matrix}) {
 #::logDebug("matrix options, item='$item'");
-		for(qw/code o_enable o_group description price weight volume differential/) {
+		for(qw/code o_enable o_group description price weight volume differential o_widget/) {
 			push @rf, ($map{$_} || $_);
 		}
 		my $lcol = $map{sku} || 'sku';
@@ -1942,7 +1942,7 @@ sub tag_options {
 							'',
 							{ 
 								passed => $ref->[3],
-								type => $ref->[5],
+								type => $opt->{type} || $ref->[5] || 'select',
 								attribute => $ref->[2],
 								price_data => $ref->[6],
 								price => $opt->{price},
