@@ -30,8 +30,6 @@ my $Lock_troubles;
 
 $VERSION = '4.8.4';
 
-# See if we have the CPAN module
-
 my @os_hints;
 eval {
 	# gets package 'mvhints'
@@ -627,7 +625,7 @@ You do not appear to have all the required modules installed. You are missing:
 
 Please run src/cpan_local_install to install them.
 EOF
-  				exit 1;
+  				exit ($MV::Default{force} ? 0 : 1);
 			} else {
 				print <<EOF;
 You do not appear to have all the required modules installed. You are missing:
