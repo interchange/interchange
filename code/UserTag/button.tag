@@ -194,9 +194,27 @@ sub {
 
 	$out .= <<EOF;
 <A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
-	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
+	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
 	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position>$a_before$anchor$a_after
 EOF
+
+	my $function = '';
+	unless ($::Instance->{js_functions}{mv_do_click}++) {
+		$function = "\n" . <<'EOJS';
+function mv_click_map_unique(myform, clickname, clicktext) {
+	for (var i = 0; i < myform.length; i++) {
+		var widget = myform.elements[i];
+		if (
+			(widget.type == 'hidden')
+			&& (widget.name != 'mv_click_map')
+			&& (widget.name.indexOf('mv_click_') == 0)
+		)
+			widget.value = (widget.name == clickname) ? clicktext : '';
+	}
+	return true;
+}
+EOJS
+	}
 
 	# Must escape backslashes and single quotes for JavaScript write function.
 	# Also must get rid of newlines and carriage returns.
@@ -204,7 +222,7 @@ EOF
 	$out =~ s/[\n\r]+/ /g;
 	$out = <<EOV;
 <script language="javascript1.2">
-<!--
+<!--$function
 document.write('$out');
 // -->
 </script>
