@@ -37,7 +37,7 @@ ui_template_name: leftonly
     <p>&nbsp;</p>
 
     [if cgi mv_successpage]
-		<B>Welcome back, [value fname] [value lname]!</B>
+		<B>Welcome back[if value fname], [value fname][/if]!</B>
 	    <p>&nbsp;</p>
 	[/if]
 
