@@ -5,6 +5,22 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.8.5 released 2002-05-06.
+
+* Fix bug in Vend::Util::send_mail, introduced when preventing possible
+  security breach. The sendmail command needs the -t option if recipient is
+  only listed in the headers. Thanks to Kari Suomela and Gur for reporting.
+
+* Improved German UI localization file.
+
+* Clean up minor things on a few Foundation and UI pages.
+
+* Remove last uses of implicit 'int' tag attribute in some UI pages.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.8.4 released 2002-04-30.
 
 Core
