@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.1 2001-11-13 19:55:34 mheins Exp $
+# $Id: BoA.pm,v 1.2 2001-11-13 19:59:32 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.1 $
+Vend::Payment::BoA $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -362,7 +362,7 @@ sub boa {
 
     $order_id = gen_order_id($opt);
 
-::logDebug("transtype: $transtype");
+#::logDebug("transtype: $transtype");
 
     $opt->{script} = '/payment.mart';
 
@@ -439,7 +439,7 @@ sub boa {
 	);
     }
 
-::logDebug("BoA query: " . ::uneval(\%query));
+#::logDebug("BoA query: " . ::uneval(\%query));
     $opt->{extra_headers} = { Referer => $referer };
 
     my $call_gateway = sub {
@@ -447,7 +447,7 @@ sub boa {
 	my $thing    = post_data($opt, $query);
 	my $page     = $thing->{result_page};
 	my $response = $thing->{status_line};
-::logDebug("BoA post_data response: " . ::uneval($thing) );
+#::logDebug("BoA post_data response: " . ::uneval($thing) );
 	
 	my %result;
 	if ($trans eq 'auth') {
@@ -466,7 +466,7 @@ sub boa {
 		$result{"\L$key"} = $value;
 	}
 
-::logDebug("BoA result hash: " . ::uneval(\%result) );
+#::logDebug("BoA result hash: " . ::uneval(\%result) );
 
 	return %result;
     };
@@ -490,7 +490,7 @@ sub boa {
 			if defined $result{$result_map{$_}};
 	}
 
-::logDebug(qq{BoA %result after result_map loop:\n} . ::uneval(\%result) );
+#::logDebug(qq{BoA %result after result_map loop:\n} . ::uneval(\%result) );
 
 	if (exists $boa_accept_map{ $result{ioc_response_code} } ) {
 		$result{MStatus} = 'success';
@@ -522,7 +522,7 @@ sub boa {
 	   IOC_authorization_code	=> $result{ioc_authorization_code}
 	);
 
-::logDebug("BoA sale query: " . ::uneval(\%query));
+#::logDebug("BoA sale query: " . ::uneval(\%query));
 
 	my %sale_result = $call_gateway->($opt,\%query);
 
