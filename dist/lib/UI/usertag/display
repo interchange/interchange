@@ -5,12 +5,7 @@ UserTag display posNumber 3
 UserTag display Routine <<EOR
 sub {
 	my ($table,$column,$key,$opt) = @_;
-	my $db;
-	if($table) {
-		$db = Vend::Data::database_exists_ref($table);
-		return "NON-EXISTENT DATABASE '$table' for display" unless defined $db;
-		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
-	}
+	
 	my $text;
 	my $size;
 	my $widget;
@@ -34,7 +29,7 @@ EOF
 	}
 
 #::logDebug("meta call: table=$table col=$column key=$key text=$text");
-	$text = tag_data($table, $column, $key);
+	$text = tag_data($table, $column, $key) if $table and $column and $key;
 	if($opt->{override}) {
 		$text = $opt->{default};
 	}
@@ -44,7 +39,7 @@ EOF
 #::logDebug("data call failed: $@") if $@;
 
 	if(! $CGI::values{ui_no_meta_display}) {
-#::logDebug("meta call: table=$table col=$column key='$key' text=$text");
+::logDebug("meta call: table=$table col=$column key='$key' text=$text");
 		($widget, $label, $help, $help_url) = UI::Primitive::meta_display($table,$column,$key,$text,undef,undef,$opt);
 #::logDebug("past meta_display, help=$help url=$help_url label=$label");
 		$widget =~ s/<(input|select)\s+/<$1 $opt->{js} /i
