@@ -67,6 +67,7 @@ Click here for more information on this product	Click here for more information 
 Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.
 Code	Code			
 Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
+Collapse tree		Baum zuklappen
 Comment	Comment			Commentaar
 Comments on %s		Meinungen zu		
 Comment on this product.	Comment on this product.	Meinung zu diesem Produkt		Geef uw mening over dit product.
@@ -100,6 +101,7 @@ Enter as customer	Enter as customer			Betreedt als klant
 Errors	Errors	Fehler		Fouten
 Evening Phone	Evening Phone	Telefon abends		Telefoon avond
 Expiration	Expiration			Expiratiedatum
+Explode tree		Baum ausklappen
 Extension	Extension	Summe		Bedrag
 FAILED_MSG1	We're sorry, but your order could not be processed at this time due totechnical problems.  Please print the order page and give us a call.We will follow up as soon as possible.			
 Fax	Fax			Fax
