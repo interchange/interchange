@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.16 2001-06-15 04:53:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.17 2001-06-24 14:45:31 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -1315,7 +1315,6 @@ EOF
 		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
 
 		$default = 7786;
-		my $lp;
 		while(! $lp) {
 			$lp = prompt("TCP socket to use? ", $default);
 			if($lp !~ /^\d+$/ or $lp < 1024) {
@@ -1324,7 +1323,6 @@ EOF
 			}
 		}
 		$default = 'localhost';
-		my $lh;
 		while(! $lh) {
 			$lh = prompt("Link host? ", $default);
 		}
@@ -2183,7 +2181,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.16 2001-06-15 04:53:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.17 2001-06-24 14:45:31 heins Exp $
 
 =head1 INTRODUCTION
 
