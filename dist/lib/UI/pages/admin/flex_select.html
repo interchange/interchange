@@ -41,7 +41,7 @@
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field help help_url
+				 ui_data_fields=code name height field options help help_url
 				 ui_break_before=height
 				 page_title=Change display information: [loop-code]
 				 ui_return_to=__UI_BASE__/gentable
@@ -52,6 +52,13 @@
 [/tmp]
 [tmp help_name][either][cgi help_name][or]flex.select[/either][/tmp]
 [tmp icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/tmp]
+
+[if cgi ui_return_table]
+	[calc]
+		$CGI->{mv_data_table} = delete $CGI->{ui_return_table};
+		return;
+	[/calc]
+[/if]
 
 [if-mm function="!tables" table="[cgi mv_data_table]"]
 [bounce page="__UI_BASE__/error"]
