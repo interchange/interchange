@@ -14,7 +14,7 @@ Database  orderline  COLUMN_DEF   "order_number=VARCHAR2(14)"
 Database  orderline  INDEX         order_number
 Database  orderline  COLUMN_DEF   "session__MVC_FIELDMUNGE__=VARCHAR2(32)"
 Database  orderline  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT ''"
-Database  orderline  COLUMN_DEF   "shipmode=VARCHAR2(32) DEFAULT ''"
+Database  orderline  COLUMN_DEF   "shipmode=VARCHAR2(255) DEFAULT ''"
 Database  orderline  COLUMN_DEF   "sku=VARCHAR2(64)"
 Database  orderline  COLUMN_DEF   "quantity=VARCHAR2(9)"
 Database  orderline  COLUMN_DEF   "price=VARCHAR2(12)"

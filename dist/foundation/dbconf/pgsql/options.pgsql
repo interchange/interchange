@@ -14,7 +14,7 @@ Database options NO_SEARCH    1
 Database options COLUMN_DEF "code=varchar(64) primary key NOT NULL"
 Database options COLUMN_DEF "description=text"
 Database options COLUMN_DEF "differential=varchar(20)"
-Database options COLUMN_DEF "mv_shipmode=varchar(128)"
+Database options COLUMN_DEF "mv_shipmode=varchar(255)"
 Database options COLUMN_DEF "o_default=varchar(64)"
 Database options COLUMN_DEF "o_enable=varchar(1)"
 Database options COLUMN_DEF "o_group=varchar(20)"

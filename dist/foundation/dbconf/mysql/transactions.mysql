@@ -13,7 +13,7 @@ Database  transactions  COLUMN_DEF   "order_number=varchar(14) NOT NULL"
 Database  transactions  INDEX         order_number
 Database  transactions  COLUMN_DEF   "session=varchar(32) NOT NULL"
 Database  transactions  COLUMN_DEF   "username=varchar(20) default '' NOT NULL"
-Database  transactions  COLUMN_DEF   "shipmode=varchar(32) NOT NULL"
+Database  transactions  COLUMN_DEF   "shipmode=varchar(255) NOT NULL"
 Database  transactions  COLUMN_DEF   "nitems=varchar(9) NOT NULL"
 Database  transactions  COLUMN_DEF   "subtotal=varchar(12) NOT NULL"
 Database  transactions  COLUMN_DEF   "shipping=varchar(12) NOT NULL"

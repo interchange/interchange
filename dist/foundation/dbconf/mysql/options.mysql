@@ -25,7 +25,7 @@ Database options COLUMN_DEF "price=varchar(20)"
 Database options COLUMN_DEF "wholesale=varchar(20)"
 Database options COLUMN_DEF "volume=varchar(20)"
 Database options COLUMN_DEF "weight=varchar(20)"
-Database options COLUMN_DEF "mv_shipmode=varchar(128)"
+Database options COLUMN_DEF "mv_shipmode=varchar(255)"
 Database options COLUMN_DEF "o_height=int"
 Database options COLUMN_DEF "o_width=int"
 

@@ -14,7 +14,7 @@ Database  transactions  COLUMN_DEF   "order_number=VARCHAR2(14)"
 Database  transactions  INDEX         order_number
 Database  transactions  COLUMN_DEF   "session__MVC_FIELDMUNGE__=VARCHAR2(32)"
 Database  transactions  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT ''"
-Database  transactions  COLUMN_DEF   "shipmode=VARCHAR2(32)"
+Database  transactions  COLUMN_DEF   "shipmode=VARCHAR2(255)"
 Database  transactions  COLUMN_DEF   "nitems=VARCHAR2(9)"
 Database  transactions  COLUMN_DEF   "subtotal=VARCHAR2(12)"
 Database  transactions  COLUMN_DEF   "shipping=VARCHAR2(12)"
