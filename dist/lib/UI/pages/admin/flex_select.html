@@ -215,7 +215,9 @@
 	$Scratch->{keyname} = $ref->config('KEY');
 
 	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
-	$CGI->{ui_meta_specific} ||= $meta->{ui_meta_specific};
+	for(qw/ui_more_alpha ui_more_decade ui_meta_specific/) {
+		$CGI->{$_} ||= $meta->{$_};
+	}
 	$Config->{NoSearch} = '';
 	$ui_text_qualification = $CGI->{ui_text_qualification};
 	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
@@ -408,7 +410,8 @@ EOF
 	st=db
 	$CGI->{ui_text_qualification}
 	su=1
-	md=1
+	ma=$CGI->{ui_more_alpha}
+	md=$CGI->{ui_more_decade}
 	ml=$CGI->{ui_list_size}
 	tf=$CGI->{ui_sort_field}
 	to=$CGI->{ui_sort_option}
@@ -638,4 +641,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.18 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.19 2003-02-08 05:00:56 mheins Exp $ -->

@@ -79,6 +79,8 @@
 		extended.ui_sort_combined
 		extended.ui_show_fields
 		extended.ui_special_add
+		extended.ui_more_alpha
+		extended.ui_more_decade
 		fieldmeta
 
 		=Edit page
@@ -165,6 +167,9 @@
 		'extended.view_from'			=> 'Custom view from field',
 		'extended.ui_show_fields'		=> 'Show on select page',
 		'extended.ui_sort_field'		=> 'Sort by on select page',
+		'extended.ui_more_alpha'		=> 'More with alpha links',
+		'extended.ui_more_decade'		=> 'More decade',
+		'extended.ui_more_alpha'		=> 'Display [more] with alpha links instead of page numbers',
 		'extended.ui_sort_option'		=> 'Sort modifier for select page',
 		'extended.ui_sort_combined'		=> 'Complex sort for select page',
 		'extended.ui_special_add'		=> 'Special Additions',
@@ -227,6 +232,8 @@
 		'extended.tabbed'				=> 'Use the tabbed display, broken into tabs as you label sections.',
 		'extended.ui_data_fields'		=> 'Breaks can be embedded in the fields by placing &quot;=Title String&quot; on a line by itself and surrounding with blank lines.',
 		'extended.ui_display_only'		=> 'Will not be set, only shown.',
+		'extended.ui_more_decade'		=> 'Maximum number of pages for [more] before [next] links show up',
+		'extended.ui_more_alpha'		=> 'Display [more] on oversize pages with alpha links instead of page numbers',
 		'extended.ui_special_add'		=> 'Only applies to certain pages (Items uses this)',
 		'extended.ui_sort_combined'		=> 'WARNING: overrides sort field and sort option. Should contain a comma-separated list of sort fields, with possible colon-separated modifiers. Example: <blockquote>price:r, description:f</blockquote>',
 	}`
@@ -264,6 +271,8 @@
 		'extended.view_from'			=> 'select',
 		'extended.ui_show_fields'		=> 'move_combo_8',
 		'extended.ui_sort_field'		=> 'select',
+		'extended.ui_more_alpha'		=> 'yesno',
+		'extended.ui_more_decade'		=> 'select',
 		'extended.ui_sort_option'		=> 'multiple',
 		'extended.ui_sort_combined'		=> 'text_50',
 		'extended.bottom_buttons'		=> 'yesno',
@@ -332,10 +341,12 @@
 		'extended.panel_shade'			=> 'f=white,e=Light gray,d=Medium gray,c=Dark gray',
 		'extended.link_table'			=> 'tables',
 		'extended.link_before'			=> '',
+		'extended.ui_more_decade'		=> '0=No,5,10*,15,20,25,50,100',
 		'extended.ui_sort_option'		=> q{=none,n=numeric,r=reverse,f=case-insensitive},
 		'extended.ui_special_add'		=> q{NONE,
 Qty price;pricing:q5:rn=Qty price,
-Options;options:o_enable:r=Options,
+Option;products:option_type=Options,
+Options;options:o_enable:r=Old Options,
 Up-sell;merchandising:upsell_to:r=Up-sell,
 Cross-sell;merchandising:cross_sell:r=Cross-sell,
 Promo;merchandising:featured:r=Promo,
@@ -344,4 +355,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.11 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.12 $ -->
