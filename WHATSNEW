@@ -56,6 +56,9 @@ Admin UI
 * Edit button which appears on flex_select page if database attribute
   LARGE is set works now as expected.
 
+* Fixed funny bug in date widget which occurred only on the 29th through
+  31st days of the month.
+
 * Personal CSS removed from preferences. Neither worked nor maked much
   sense.
 
@@ -122,6 +125,9 @@ Miscellaneous
 
 * stop expire script if catalog configuration fails and add catalog name
   to error message
+
+* restricted item description in quickbooks extension to 30 characters
+  to avoid coredumps (thanks to Michael Wilk for pursuing this long enough)
 
 ------------------------------------------------------------------------------
 
