@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.8 2001-08-06 16:12:13 heins Exp $
+# $Id: Interpolate.pm,v 2.9 2001-08-06 16:15:24 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 @EXPORT = qw (
 
@@ -5901,6 +5901,8 @@ sub read_shipping {
 	my $row;
 	my %zones;
 	my %def_opts;
+	$def_opts{PriceDivide} = 1 if $Vend::Cfg->{Locale};
+
 	foreach $row (@shipping) {
 		my $cost = $row->[COST];
 		my $o = get_option_hash($row->[OPT]);
