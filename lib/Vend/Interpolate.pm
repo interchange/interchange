@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.93 2001-07-02 21:46:33 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.94 2001-07-03 15:12:21 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.93 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.94 $, 10);
 
 @EXPORT = qw (
 
@@ -1992,9 +1992,11 @@ sub tag_options {
 		}
 		my $lcol = $map{sku} || 'sku';
 		my $lval = $db->quote($sku, $lcol);
+
+		my $rsort = $map{o_sort} || 'o_sort';
 		
 		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $table where $lcol = $lval";
+		$q .= " FROM $table where $lcol = $lval ORDER BY $rsort";
 		my $ary = $db->query($q); 
 		my $ref;
 		my $price = {};
