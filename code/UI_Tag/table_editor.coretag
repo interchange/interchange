@@ -981,7 +981,7 @@ EOF
 EOF
 			push @out, <<EOF unless $opt->{nocancel};
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">$mlabel
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">
 EOF
 
 			push @out, <<EOF if $opt->{show_reset};
