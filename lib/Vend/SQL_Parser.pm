@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.2 2003-07-06 17:06:10 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.3 2003-07-06 19:29:39 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -16,8 +16,6 @@ Vend::SQL_Parser - Interchange SQL parser class
 
 C<Vend::SQL_Parser> will tokenize a SQL query so that it can
 be evaluated for an Interchange search spec.
-
-=back
 
 =head1 COPYRIGHT
 
@@ -40,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 sub new {
 	my $class = shift;
