@@ -23,6 +23,18 @@ Core
   of other browsers, to get intermittent "CGI mapping error" failures
   when POSTing forms.
 
+* Fixed a bug in profiles that kept &calc, &return, etc. from ever failing
+  (because no variable name was associated with them). Even if you returned
+  a false value, the profile passed. Now false values cause the profile to
+  fail properly.
+
+Usertags
+--------
+
+* Fixed a bug in profile handling of table-editor tag that kept '$' in
+  profiles from working right ($Values->{whatever} etc.). Also tolerate
+  profiles that don't end with a newline (e.g. when quoted with |...|).
+
 Packaging
 ---------
 
@@ -34,6 +46,7 @@ Miscellaneous
 -------------
 
 * Expire script didn't work with a VariableDatabase in SQL.
+
 
 ------------------------------------------------------------------------------
 
