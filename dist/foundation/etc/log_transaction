@@ -158,7 +158,6 @@ There was an error adding you to the customer table.
 	[if !value customer_id]
 	Auto-create of user failed.
 	[perl] die errmsg("Auto-create of user failed."); [/perl]
-	[/else]
 	[/if]
 [/try]
 [catch error-set="Customer record creation" error-scratch="mv_route_failed"]
