@@ -1,16 +1,15 @@
-[set page_title]Launch[/set]
+[set page_title][L]Launch[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.launch[/set]
 @_UI_STD_HEAD_@
 
 <p>
-To launch your site, click <u>launch</u>. The following will occur:
+[L]To launch your site, click <u>launch</u>. The following will occur[/L]:
 <UL>
-<LI>All orders will be deleted from the order database (if selected.) 
-<LI>All customer records will be deleted from the user database (if selected.)
-<LI>The order number will be reset.
-<LI>The secure web server will be enabled. (If you don't accept credit cards,
-this is optional.)
+<LI>[L]All orders will be deleted from the order database (if selected).[/L]
+<LI>[L]All customer records will be deleted from the user database (if selected).[/L]
+<LI>[L]The order number will be reset.[/L]
+<LI>[L]The secure web server will be enabled. (If you don't accept credit cards, this is optional.)[/L]
 </UL>
 
 <p>
@@ -35,24 +34,24 @@ this is optional.)
 
 	ui_wizard_fields="nukeorders nukeusers orderstart enablesecure"
 
-	label.nukeorders="Delete sample order data"
-	help.nukeorders="Select Yes if you wish to start with an empty order database"
+	label.nukeorders="[L]Delete sample order data[/L]"
+	help.nukeorders="[L]Select Yes if you wish to start with an empty order database[/L]"
 	widget.nukeorders=yesno
 	default.nukeorders=1
 
-	label.nukeusers="Delete sample user data"
-	help.nukeusers="Select Yes if you wish to start with an empty customer database"
+	label.nukeusers="[L]Delete sample user data[/L]"
+	help.nukeusers="[L]Select Yes if you wish to start with an empty customer database[/L]"
 	widget.nukeusers=yesno
 	default.nukeusers=1
 
-	label.orderstart="Starting order number"
-	help.orderstart="First order number -- only letters/digits"
+	label.orderstart="[L]Starting order number[/L]"
+	help.orderstart="[L]First order number -- only letters/digits[/L]"
 	widget.orderstart=text_8
 	filter.orderstart=alphanumeric
 	default.orderstart=01000
 
-	label.enablesecure="Enable Secure (SSL)"
-	help.enablesecure="Select Yes if your Stronghold secure server is set up"
+	label.enablesecure="[L]Enable Secure (SSL)[/L]"
+	help.enablesecure="[L]Select Yes if your Stronghold secure server is set up[/L]"
 	override.enablesecure=1
 	widget.enablesecure=select
 	passed.enablesecure="0=No, 1=Yes"
