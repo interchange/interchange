@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.12 2003-04-04 04:43:20 mheins Exp $
+# $Id: UserDB.pm,v 2.13 2003-04-05 01:29:39 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 use vars qw!
 	$VERSION
@@ -475,7 +475,7 @@ sub _check_acl {
 	$options{mode} = 'r' if ! defined $options{mode};
 	my $acl = $self->{DB}->field( $self->{USERNAME}, $loc);
 	my $f = $ready->reval($acl);
-	return 0 unless exists $f->{$options{location}};
+	return undef unless exists $f->{$options{location}};
 	return 1 if ! $options{mode};
 	if($options{mode} =~ /^\s*expire\b/i) {
 		my $cmp = $f->{$options{location}};
