@@ -45,7 +45,6 @@ EOF
 EOF
 
 	$Scratch->{page_banner} = $string;
-	$CGI->{ui_meta_view} = 'metaconfig';
 	if(! $CGI->{mv_data_table}) {
 		$CGI->{mv_data_table} = '__UI_META_TABLE__';
 	}
@@ -117,7 +116,8 @@ EOF
 	   lookup
 	   field
 	   db
-	   lookup_query
+	   extended.lookup_query
+	   extended.lookup_merge
 	   lookup_exclude
 
 	   =Advanced
@@ -127,9 +127,6 @@ EOF
 	   prepend
 	   append
 
-	   =Extended
-
-	   extended
 	"
 	widget.extended="textarea_5_50"
 	ui_style=1
@@ -138,4 +135,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.6 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.7 $ -->
