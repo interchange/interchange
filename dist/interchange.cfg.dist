@@ -21,7 +21,7 @@ Variable  TRAFFIC  low
 
 # Set up individual catalogs here.
 
-#Catalog  store  /var/lib/interchange/catalogs/store  /cgi-bin/store
+#Catalog  store  /var/lib/interchange/store  /cgi-bin/store
 
 #========================================================================#
 
