@@ -474,6 +474,9 @@ sub initialize {
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
 		install_file('.', $realdir, $_) for @sharefiles;
+		# install code/ files from MANIFEST
+		chomp(my @codefiles = grep m:^code/:, @files);
+		install_file('.', $realdir, $_) for @codefiles;
 		# create symbolic links for images used for
 		# other languages either not yet translated
 		# or without embedded text
