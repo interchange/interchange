@@ -1,6 +1,7 @@
 UserTag deliver Order type
 UserTag deliver HasEndTag
 UserTag deliver addAttr
+UserTag deliver Version $Revision: 1.3 $
 UserTag deliver Routine <<EOR
 sub {
 	my ($type, $opt, $body) = @_;
@@ -19,11 +20,14 @@ sub {
 	elsif($body) {
 		$out = \$body;
 	}
-	$type ||= 'application/octet-stream';
-	$Tag->tag( { op => 'header', name => 'Content-Type', content => $type } );
 
 	## This is a bounce, returns
 	if($opt->{location}) {
+		$type and $Tag->tag( {
+						op => 'header',
+						name => 'Content-Type',
+						content => $type,
+					} );
 		$Tag->tag( {	op => 'header',
 							name => 'Status',
 							content => $opt->{status} || '302 moved',
@@ -32,9 +36,17 @@ sub {
 							name => 'Location',
 							content => $opt->{location},
 						} );
+		if(! $body) {
+			$body = qq{Redirecting to <A href="%s">%s</a>.};
+			$body = errmsg($body, $opt->{location}, $opt->{location});
+		}
+		::response($body);
 		$Vend::Sent = 1;
 		return 1;
 	}
+
+	$type ||= 'application/octet-stream';
+	$Tag->tag( { op => 'header', name => 'Content-Type', content => $type } );
 
 	if($opt->{get_encrypted}) {
 		$opt->{get_encrypted} = 1 unless $opt->{get_encrypted} =~ /^\d+$/;
