@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.6 2000-09-21 23:09:07 zarko Exp $
+# $Id: MakeCat.pm,v 1.7 2000-09-23 19:26:06 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,7 +61,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -581,7 +581,7 @@ sub add_catalog {
 		if($dynamic and ! $Windows) {
 			my $pidfile = $dynamic;
 			$pidfile =~ s:/[^/]+$::;
-			$pidfile .= '/minivend.pid';
+			$pidfile .= "/$Global::ExeName.pid";
 			my $pid;
 			PID: {
 				local ($/);
