@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.39 2004-03-01 19:04:23 mheins Exp $
+# $Id: Menu.pm,v 2.40 2004-07-15 17:27:00 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 use Vend::Util;
 use strict;
@@ -604,6 +604,8 @@ EOF
 
 	push @out, <<EOF;
 var ${vpf}anchor_down = $opt->{anchor_down};
+var ${vpf}link_prepend = '$opt->{link_prepend}';
+var ${vpf}link_target = '$opt->{link_target}';
 var ${vpf}last_level = $last;
 var ${vpf}link_class = '$opt->{link_class}';
 var ${vpf}link_class_open = '$opt->{link_class_open}';
@@ -657,12 +659,16 @@ EOF
 		out += '>';
 		var tstyle = ${vpf}link_style;
 		var tclass = ${vpf}link_class;
+		var ttarget = ${vpf}link_target;
+		var tprepend = ${vpf}link_prepend;
 		if(l[${vpf}PAGE]) {
-			out = out + '<a href="' + l[ ${vpf}PAGE ] + '"';
+			out = out + '<a href="' + tprepend + l[ ${vpf}PAGE ] + '"';
 			if(tclass)
 				out = out + ' class="' + tclass + '"';
 			if(tstyle)
 				out = out + ' style="' + tstyle + '"';
+			if(ttarget)
+				out = out + ' target="' + ttarget + '"';
 			if(l[${vpf}DESCRIPTION])
 				out = out + ' title="' + l[ ${vpf}DESCRIPTION ] + '"';
 			out = out + '>';
@@ -898,6 +904,526 @@ EOF
 	}
 
 	return join "", @out;
+}
+
+sub file_tree {
+	my($name, $opt, $template) = @_;
+	my @out;
+	# out 0
+
+	my $vpf = $opt->{js_prefix} ||= 'mv_';
+	$opt->{toggle_class} ||= '';
+	$opt->{explode_url} ||= "javascript:${vpf}do_explode(); void(0)";
+	$opt->{collapse_url} ||= "javascript:${vpf}do_collapse(); void(0)";
+	my $explode_label = errmsg($opt->{explode_label} || 'Explode tree');
+	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
+	$opt->{header_template} ||= <<EOF;
+<P>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br>
+<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
+</P>
+EOF
+
+	my $header;
+	$header = ::interpolate_html($opt->{header_template})
+		if $opt->{header_template};
+	if($header =~ /\S/) {
+		$header = Vend::Tags->uc_attr_list($opt, $header);
+		push @out, $header;
+	}
+
+	$opt->{div_style} ||= '';
+	push @out, <<EOF;
+
+<div id=${vpf}treebox style="visibility: Visible">
+Test.
+</div>
+<script language="JavaScript1.3">
+var ${vpf}lines = new Array;
+var ${vpf}sary = new Array;
+EOF
+
+	my %o = (
+			start       => $opt->{tree_selector} || 'Products',
+			table       => $opt->{table} || $::Variable->{MV_TREE_TABLE} || 'tree',
+			master      => 'parent_fld',
+			file		=> $opt->{file},
+			subordinate => 'code',
+			autodetect  => '1',
+			open_variable => $opt->{open_variable} || 'open',
+			sort        => $opt->{sort} || 'code',
+			js_prefix	=> $vpf,
+			full        => '1',
+			timed		=> $opt->{timed},
+			spacing     => '4',
+			_transform   => $opt->{_transform},
+		);
+	
+	for(@{$opt->{_transform} || []}) {
+		$o{$_} = $opt->{$_};
+	}
+
+	my $main;
+	my $rows;
+	if($opt->{iterator}) {
+		$o{iterator} = $opt->{iterator};
+		$main =  Vend::Tags->tree(\%o);
+		$rows = $o{object}{mv_results};
+	}
+	else {
+		$o{iterator} = \&transforms_only;
+		Vend::Tags->tree(\%o);
+		reset_transforms();
+		delete $o{_transform};
+		my @o;
+		for(@{$o{object}{mv_results}}) {
+			next if $_->{deleted};
+			push @o, $_ unless $_->{deleted};
+			$main .= tree_line(undef, $_, \%o);
+		}
+		$rows = \@o;
+	}
+
+	$rows->[-1]{mv_last_row} = 1 if @$rows;
+
+	my $openvar = $opt->{open_variable} || 'open';
+
+	push @out, $main;
+	if(defined $CGI::values{$openvar}) {
+		 $::Scratch->{dhtml_tree_open} = $CGI::values{$openvar};
+	}
+	else {
+		$CGI::values{$openvar} = $::Scratch->{dhtml_tree_open};
+	}
+	my $out = "  var ${vpf}openstatus = [";
+	my @open =  split /,/, $CGI::values{$openvar};
+	my @o;
+
+	my %hsh = (map { ($_, 1) } @open);
+
+	for(0 .. $open[$#open]) {
+		push @o, ($hsh{$_} ? 1 : 0);
+	}
+	$out .= join ",", @o;
+	$out .= "];\n";
+	$out .= " var ${vpf}explode = ";
+	$out .= $CGI::values{$opt->{explode_variable} || 'explode'} ? 1 : 0;
+	$out .= ";\n";
+	$out .= " var ${vpf}collapse = ";
+	$out .= $CGI::values{$opt->{collapse_variable} || 'collapse'} ? 1 : 0;
+	$out .= ";\n";
+
+	push @out, $out;
+
+	my $Tag = new Vend::Tags;
+
+	if($opt->{specific_image_toggle}) {
+		$opt->{specific_image_toggle} =~ s/\D+//;
+		if(defined $opt->{specific_image_base}) {
+			$opt->{specific_image_base} =~ s:/*$:/:;
+		}
+		else {
+			$opt->{specific_image_base} = $Vend::Cfg->{ImageDir};
+		}
+	}
+
+	if($opt->{specific_image_link}) {
+		if(defined $opt->{specific_image_base}) {
+			$opt->{specific_image_base} =~ s:/*$:/:;
+		}
+		else {
+			$opt->{specific_image_base} = $Vend::Cfg->{ImageDir};
+		}
+	}
+
+	$opt->{image_link_extra} = $Tag->jsq($opt->{image_link_extra});
+	$opt->{image_link_extra} ||= qq{'border=0'};
+
+	$opt->{specific_image_toggle} ||= 0;
+
+	$opt->{img_node} ||= 'node.gif';
+	$opt->{img_lastnode} ||= 'lastnode.gif';
+	$opt->{img_spacenode} ||= 'vertline.gif';
+	my $node_extra = $opt->{img_clear_extra};
+	$node_extra =~ s/\bheight\s*=\s*"?\d+"?\s*//;
+
+	for(qw/img_node img_lastnode img_spacenode/) {
+			$opt->{$_} = $Tag->image({
+									src => $opt->{$_},
+									border => 0,
+									extra => 'align=absbottom',
+								});
+#::logDebug("$_=$opt->{$_}");
+	}
+
+	my $canonwidth;
+	$opt->{img_node} =~ m{\bwidth\s*=\s*"?(\d+)"?} 
+		and $canonwidth = $1;
+
+	my $canonheight;
+	$opt->{img_node} =~ m{\bheight\s*=\s*"?(\d+)"?} 
+		and $canonheight = $1;
+
+	if($canonwidth) {
+		$opt->{toggle_anchor_clear} =~ s{\bwidth\s*=\s*"*\d+"*}{width=$canonwidth};
+	}
+	if($canonheight) {
+		$opt->{toggle_anchor_clear} =~ s{\bheight\s*=\s*"*\d+"*}{height=$canonheight};
+	}
+
+	$opt->{toggle_anchor_clear} =~ s{\balign\s*=\s*"*\w+"*}{}i;
+	$opt->{toggle_anchor_clear} =~ s{\s*>}{ align=absbottom>}i;
+
+#::logDebug("toggle_anchor_clear=$opt->{toggle_anchor_clear}");
+
+	my $width = $1;
+	my $ihash;
+	$opt->{icon_by_type} ||= qq{
+		pdf=pdf.gif
+		html=html.gif
+		htm=html.gif
+		xls=xls.gif
+		ppt=ppt.gif
+		doc=doc.gif
+	};
+
+	if($opt->{icon_by_type} and $ihash = get_option_hash($opt->{icon_by_type}) ) {
+		push @out, <<EOF;
+var ${vpf}icon_by_type = 1;
+var ${vpf}icon = new Array;
+var ${vpf}img_node = '$opt->{img_node}';
+var ${vpf}img_lastnode = '$opt->{img_lastnode}';
+var ${vpf}img_spacenode = '$opt->{img_spacenode}';
+if(! ${vpf}img_lastnode)
+	${vpf}img_lastnode = ${vpf}img_node;
+EOF
+		for(keys %$ihash) {
+			my $img = $Tag->image({
+								src => $ihash->{$_},
+								src_only => 1,
+							});
+			push @out, qq{${vpf}icon['$_'] = '$img';\n};
+		}
+	}
+	else {
+		push @out, <<EOF;
+var ${vpf}icon_by_type = 0;
+EOF
+	}
+
+	$opt->{no_open} = $opt->{no_open} ? 1 : 0;
+
+	push @out, <<EOF;
+var ${vpf}next_level = 0;
+var ${vpf}no_open = $opt->{no_open};
+var ${vpf}no_wrap = '$opt->{no_wrap}';
+var ${vpf}openstring = '';
+var ${vpf}link_prepend = '$opt->{link_prepend}';
+var ${vpf}link_target = '$opt->{link_target}';
+var ${vpf}link_class = '$opt->{link_class}';
+var ${vpf}link_class_open = '$opt->{link_class_open}';
+var ${vpf}link_class_closed = '$opt->{link_class_closed}';
+var ${vpf}link_style = '$opt->{link_style}';
+var ${vpf}link_style_open = '$opt->{link_style_open}';
+var ${vpf}link_style_closed = '$opt->{link_style_closed}';
+var ${vpf}specific_image_toggle = $opt->{specific_image_toggle};
+var ${vpf}specific_image_base = '$opt->{specific_image_base}';
+var ${vpf}specific_image_link;
+var ${vpf}image_link_extra = $opt->{image_link_extra};
+var ${vpf}toggle_class = '$opt->{toggle_class}';
+var ${vpf}toggle_anchor_clear = '$opt->{toggle_anchor_clear}';
+var ${vpf}toggle_anchor_closed = '$opt->{toggle_anchor_closed}';
+var ${vpf}toggle_anchor_open = '$opt->{toggle_anchor_open}';
+var ${vpf}treebox = document.getElementById('${vpf}treebox');
+if(${vpf}image_link_extra)
+	${vpf}image_link_extra = ' ' + ${vpf}image_link_extra;
+var alert_shown;
+EOF
+
+	push @out, "${vpf}specific_image_link = 1;"
+		if $opt->{specific_image_link};
+
+	push @out, <<EOF unless $opt->{no_emit_code};
+
+function ${vpf}image_link (rec) {
+	if(rec == undefined)
+		return;
+	var out;
+	if(rec[ ${vpf}IMG_UP ]) {
+		out = '<img src="';
+		out += ${vpf}specific_image_base;
+		out += rec[ ${vpf}IMG_UP ];
+		out += '"';
+		out += ${vpf}image_link_extra;
+		out += '>';
+// alert('img=' + out);
+	}
+	else {
+		out = rec[${vpf}NAME];
+	}
+	return out;
+}
+
+var donewarn = 0;
+
+function ${vpf}tree_link (idx) {
+
+	var out = '';
+
+	if(${vpf}no_wrap) {
+		out += '<div style="white-space: nowrap; margin: 0; padding: 0">';
+	}
+
+	var l = ${vpf}lines[idx];
+	var nxt_l = ${vpf}lines[idx + 1];
+	if(! nxt_l) 
+		nxt_l = new Array;
+
+	if(l == undefined) {
+		alert("Bad idx=" + idx + ", no line there.");
+		return;
+	}
+
+	if(l[${vpf}MV_LEVEL] > ${vpf}next_level)
+		return '';
+
+	var spec_toggle = 0;
+	if(${vpf}specific_image_toggle > 0) {
+		var toglevel = ${vpf}specific_image_toggle - 1;
+// if(alert_shown == undefined) {
+// alert('specific image toggle triggered, toglevel=' + toglevel + ", mv_level=" + l[${vpf}MV_LEVEL]);
+// alert_shown = 1;
+// }
+		if(l[${vpf}MV_LEVEL] <= toglevel) {
+			spec_toggle = 1;
+		}
+	}
+
+	var needed = l[${vpf}MV_LEVEL];
+	var spacer = '';
+	var nodeimg = '';
+	if(l[${vpf}MV_LEVEL] && ${vpf}icon_by_type) {
+		var k;
+		for(k = idx + 1; ${vpf}lines[k] && ${vpf}lines[k][${vpf}MV_LEVEL] > l[${vpf}MV_LEVEL]; k++) {
+			// do nothing
+		}
+		if( ! ${vpf}lines[k] || ${vpf}lines[k][${vpf}MV_LEVEL] < l[${vpf}MV_LEVEL] ) {
+			nodeimg = ${vpf}img_lastnode;
+			${vpf}sary[needed] = ${vpf}toggle_anchor_clear;
+		}
+		else {
+			nodeimg = ${vpf}img_node;
+			${vpf}sary[needed] = ${vpf}img_spacenode;
+		}
+	}
+	else {
+		${vpf}sary[needed] = '&nbsp;&nbsp;&nbsp;&nbsp;';
+	}
+
+	var i;
+
+	if(${vpf}icon_by_type && needed)  {
+		needed -= 1;
+	}
+
+	for(i = 1; i <= needed; i++)
+		out += ${vpf}sary[i];
+
+	var tstyle = ${vpf}link_style;
+	var tclass = ${vpf}link_class;
+	var ttarget = ${vpf}link_target;
+	var tprepend = ${vpf}link_prepend;
+	if(l[${vpf}MV_CHILDREN] > 0) {
+		if(l[${vpf}MV_LEVEL] && ${vpf}icon_by_type) {
+			var k;
+			for(k = idx; ${vpf}lines[k][${vpf}MV_LEVEL] > l[${vpf}MV_LEVEL]; k++) {
+				// do nothing
+			}
+			out += nodeimg;
+		}
+		if(${vpf}openstatus[idx] == 1) {
+			tclass = ${vpf}link_class_open;
+			tstyle = ${vpf}link_style_open;
+			if(spec_toggle > 0) {
+				tanchor = '<img border=0 align=absbottom  src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+			}
+			else {
+				tanchor = ${vpf}toggle_anchor_open;
+			}
+			${vpf}next_level = l[${vpf}MV_LEVEL] + 1;
+		}
+		else {
+			tclass = ${vpf}link_class_closed;
+			tstyle = ${vpf}link_style_closed;
+			if(spec_toggle > 0) {
+				tanchor = '<img border=0 align=absbottom  src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+// if(alert_shown < 2) {
+// alert('tanchor=' + tanchor);
+// alert_shown = 2;
+// }
+			}
+			else {
+				tanchor = ${vpf}toggle_anchor_closed;
+			}
+			${vpf}next_level = l[${vpf}MV_LEVEL];
+		}
+
+		out = out + '<a href="javascript:${vpf}toggit(' + idx + ');void(0)"';
+		if(tclass)
+			out = out + ' class="' + tclass + '"';
+		if(tstyle)
+			out = out + ' style="' + tstyle + '"';
+		out = out + '>';
+		out = out + tanchor;
+		out = out + '</a>';
+	}
+	else {
+		if(! ${vpf}icon_by_type)
+			out = out + ${vpf}toggle_anchor_clear;
+		next_level = l[${vpf}MV_LEVEL];
+	}
+
+	if(spec_toggle == 0) {
+		if(l[${vpf}PAGE]) {
+			out = out + '<a href="' + tprepend + l[${vpf}PAGE];
+
+			if(! ${vpf}no_open) 
+				out += ${vpf}openstring;
+
+			out += '"';
+
+			if(tclass)
+				out = out + ' class="' + tclass + '"';
+			if(tstyle)
+				out = out + ' style="' + tstyle + '"';
+			if(ttarget)
+				out = out + ' target="' + ttarget + '"';
+			if(l[${vpf}DESCRIPTION])
+				out = out + ' title="' + l[${vpf}DESCRIPTION] + '"';
+			out = out + '>';
+			if(${vpf}icon_by_type) {
+				var fn = l[ ${vpf}PAGE ];
+				var fpos = fn.lastIndexOf('.');
+				var ext = fn.substr(fpos + 1);
+
+				if(${vpf}img_node) {
+					out += nodeimg;
+				}
+
+				if(${vpf}icon[ ext ]) {
+					out += '<img border=0 align=absbottom src="';
+					out += ${vpf}icon[ ext ];
+					out += '">';
+				}
+			}
+			if(${vpf}specific_image_link) 
+				out += ${vpf}image_link(l);
+			else
+				out += l[${vpf}NAME];
+			out += '</a>';
+		}
+		else {
+			if(tstyle || tclass) {
+				out += "<span";
+				if(tclass) 
+					out += ' class="' + tclass + '"';
+				if(tstyle) 
+					out += ' style="' + tstyle + '"';
+				out += ">" + l[${vpf}NAME] + '</span>';
+			}
+			else {
+				out = out + l[${vpf}NAME];
+			}
+		}
+	}
+
+	if(${vpf}no_wrap) {
+		out += '</div>';
+	}
+	else {
+		out += '<br>';
+	}
+
+	return out;
+}
+
+function ${vpf}toggit (idx) {
+
+	var l = ${vpf}lines[idx];
+	if(l == undefined) {
+		alert("bad index " + idx);
+		return;
+	}
+	if(l[${vpf}MV_CHILDREN] < 1) {
+		alert("nothing to toggle at index " + idx);
+		return;
+	}
+
+	${vpf}openstatus[idx] = ${vpf}openstatus[idx] == 1 ? 0 : 1;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
+}
+function ${vpf}gen_openstring () {
+	${vpf}openstring = '';
+
+	for(var p = 0; p < ${vpf}openstatus.length; p++) {
+		if(${vpf}openstatus[p])
+			${vpf}openstring += p + ',';
+	}
+	${vpf}openstring = ${vpf}openstring.replace(/,+\$/, '');
+	return;
+}
+function ${vpf}do_explode () {
+	for(var i = 0; i < ${vpf}lines.length; i++)
+		${vpf}openstatus[i] = 1;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
+}
+function ${vpf}do_collapse () {
+	for(var i = 0; i < ${vpf}lines.length; i++)
+		${vpf}openstatus[i] = 0;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
+}
+function ${vpf}rewrite_tree () {
+	var thing = '';
+	for(i = 0; i < ${vpf}lines.length; i++) {
+		thing = thing + ${vpf}tree_link(i);
+	}
+	${vpf}treebox.innerHTML = thing;
+	${vpf}next_level = 0;
+}
+
+// END CLIP
+
+EOF
+
+	push @out, <<EOF;
+
+if(${vpf}collapse == 1 || ${vpf}explode == 1) {
+	${vpf}openstatus.length = 0;
+}
+for( var i = 0; i < ${vpf}lines.length; i++) {
+	if(${vpf}openstatus[i] == undefined)
+		${vpf}openstatus[i] = ${vpf}explode;
+}
+
+${vpf}collapse = 0;
+${vpf}explode = 0;
+${vpf}gen_openstring();
+${vpf}rewrite_tree();
+</script>
+EOF
+
+	my $footer;
+	$footer = ::interpolate_html($opt->{footer_template})
+		if $opt->{footer_template};
+	if($footer =~ /\S/) {
+		$footer = Vend::Tags->uc_attr_list($opt, $footer);
+		push @out, $footer;
+	}
+
+	return join "\n", @out;
 }
 
 sub dhtml_tree {
@@ -1261,6 +1787,7 @@ EOF
 	return join "\n", @out;
 }
 
+
 my %menu_default_img = (
 		clear  => 'bg.gif',
 		closed => 'fc.gif',
@@ -1505,6 +2032,76 @@ EOF
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
+sub annfile {
+	my $fn = shift;
+	my $afn = $fn;
+	$afn =~ s{(.*)/(.*)}{$2};
+	my $base = $afn;
+	if(my $dir = $1) {
+		$afn = "...$afn";
+		$afn = join "/", $dir, $afn;
+	}
+	else {
+		$afn = "...$afn";
+	}
+	return $base unless -f $afn and -r _;
+	
+	open AFILE, "< $afn"
+		or die "Cannot open annotation file $afn: $!\n";
+	my $text = join "", <AFILE>;
+	close AFILE;
+	$text =~ s/^\s+//;
+	$text =~ s/\s+$//;
+	return $text;
+}
+
+sub make_tree_from_directory {
+	my ($dir, $level, $prepend, $outfile) = @_;
+	my @files = glob "$dir/*";
+	my @out;
+	$prepend ||= '';
+	local $/;
+	for(@files) {
+		my %record;
+		$record{msort} = $level;
+		$record{name} = annfile($_);
+		$record{description} = $_;
+		if(-d $_) {
+			push @out, \%record;
+			push @out, make_tree_from_directory($_, $level + 1, $prepend);
+		}
+		else {
+			if($prepend) {
+				my $fn = $_;
+				$fn =~ s:^/*[^/]+?/::;
+				$record{page} = "$prepend$fn";
+			}
+			else {
+				$record{page} = $_;
+			}
+			push @out, \%record;
+		}
+	}
+
+	return @out unless $outfile;
+
+	open OUT, "> $outfile"
+		or do {
+			logError("Couldn't write outfile %s: %s", $outfile, $!);
+			return undef;
+		};
+
+	my @fields = qw/msort name page description/;
+	print OUT join("\t", 'code', @fields);
+	print OUT "\n";
+	my $code = '0001';
+	for(@out) {
+		print OUT join "\t", $code++, @{$_}{@fields};
+		print OUT "\n";
+	}
+	close OUT;
+}
+
 sub open_script {
 	my $opt = shift;
 	my $vpf = $opt->{js_prefix} || 'mv_';
@@ -1644,6 +2241,15 @@ sub menu {
 		else {
 			$opt->{no_image} = 0;
 			my $nm = "img_$_";
+			if($opt->{file_tree}) {
+				for(qw/ no_open no_wrap /) {
+					$opt->{$_} = 1 unless defined $opt->{$_};
+				}
+
+				$opt->{img_open} ||= 'openfolder.gif';
+				$opt->{img_closed} ||= 'closedfolder.gif';
+			}
+
 			$opt->{toggle_anchor_open} = Vend::Tags->image( {
 							src => $opt->{img_open}  || $menu_default_img{open},
 							border => 0,
@@ -1663,6 +2269,7 @@ sub menu {
 							border => 0,
 							extra => $opt->{img_clear_extra},
 							});
+#::logDebug("toggle_anchor_clear=$opt->{toggle_anchor_clear}");
 		}
 
 		if($opt->{use_file}) {
@@ -1674,8 +2281,24 @@ sub menu {
 			$opt->{file} .= "/$nm.txt";
 			undef $opt->{file} unless -f $opt->{file};
 		}
+		elsif($opt->{directory}) {
+			my $d = "$Vend::Cfg->{ScratchDir}/filetree";
+			mkdir $d, 0777 unless -d $d;
+			$opt->{file} = "$Vend::Cfg->{ScratchDir}/filetree/$Vend::SessionID.txt";
+			make_tree_from_directory(
+									$opt->{directory},
+									0,
+									delete $opt->{link_prepend},
+									$opt->{file},
+								)
+				or do {
+					logError("Unable to make tree from directory %s", $opt->{directory});
+					return;
+				};
+		}
 
 		return old_tree($name,$opt,$template) unless $opt->{dhtml_browser};
+		return file_tree($name,$opt,$template) if $opt->{file_tree};
 		return dhtml_tree($name,$opt,$template);
 	}
 	elsif($opt->{menu_type} eq 'flyout') {
