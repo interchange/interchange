@@ -195,8 +195,8 @@ ui_template_name: noleft
 	  <TD align=center valign=top>
 	    <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
  	  </TD>
-	  <TD><b>[item-code]</b></TD>
-	  <TD>[page [item-code]]<b>[item-description]</b></a>
+	  <TD><b>[item-sku]</b></TD>
+	  <TD>[page [item-sku]]<b>[item-data products description]</b></a>
 
 	    [if scratch dealer]
 	    [if-item-data pricing sku]
@@ -204,6 +204,15 @@ ui_template_name: noleft
 	      QUANTITY PRICING</A>
  	    [/if-item-data]
 	    [/if]
+
+        [if-item-data options o_enable]
+            [if-item-data !options o_modular]
+                [table-organize cols=4 table=' ' font="size=1" pretty=1]
+                    [item-options td=1 label=1 bold=1 price=1]
+                [/table-organize]
+            [/if-item-data]
+        [/if-item-data]
+
 	    [if-item-field weight]
 	    [seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
 	    [/if-item-field]
