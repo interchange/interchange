@@ -95,7 +95,7 @@
 		$qual = "co=1\nop=eq\nse=$s\nsf=$f";
 	}
 	elsif ($CGI->{ui_text_qualification}) {
-		$qual = "se=$CGI->{ui_text_qualification}";
+		$qual = "se=$CGI->{ui_text_qualification}\nsu=1";
 	}
 	else {
 		$qual = "ra=yes";
