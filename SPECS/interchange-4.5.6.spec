@@ -10,7 +10,7 @@ Summary: Interchange is a powerful database access and HTML templating daemon fo
 Group: Applications/Internet
 Version: 4.5.6
 Copyright: GNU General Public License
-Release: 2
+Release: 4
 URL: http://developer.akopia.com/
 Packager: Mike Heins <nospam@minivend.com>
 Distribution: Red Hat Linux Applications CD
@@ -66,7 +66,7 @@ sh build/makecat.redhat %{build_cats} 2>/dev/null
 find $RBR/var/lib/interchange -type d | xargs chmod 755
 find $RBR/usr/lib/interchange/bin -type f | xargs chmod 755
 
-mkdir $RBR/var/log/interchange
+#mkdir $RBR/var/log/interchange
 for i in %{build_cats}
 do
 	touch $RBR/var/log/interchange/$i.error.log
@@ -90,7 +90,7 @@ fi
 
 # Create an interch user. Do not report any problems if it already
 # exists. We do it first so it won't error on chmod
-useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" interch 2> /dev/null || true 
+useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{interchange_user} 2> /dev/null || true 
 
 %files
 %config(noreplace) /etc/interchange.cfg
@@ -98,8 +98,9 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" inter
 %config /etc/rc.d/init.d/interchange
 /home/httpd/cgi-bin/construct
 /home/httpd/html/construct
+/home/httpd/html/akopia
 /var/lib/interchange/construct
-/usr/lib/bin/interchange
+/usr/sbin/interchange
 /usr/lib/interchange
 /usr/man/man1
 /usr/man/man8
@@ -114,21 +115,20 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" inter
 
 # Change permissions so that the user that will run the Interchange daemon
 # owns all database files.
-chown -R interchange.interchange /var/lib/interchange
-chown -R interchange.interchange /var/log/interchange
-chown -R interchange.interchange /var/run/interchange
-ln -s /home/httpd/html/barry/images /var/lib/interchange/barry
-ln -s /home/httpd/html/simple/images /var/lib/interchange/simple
+chown -R %{interchange_user}.%{interchange_user} /var/lib/interchange
+chown -R %{interchange_user}.%{interchange_user} /var/log/interchange
+chown -R %{interchange_user}.%{interchange_user} /var/run/interchange
 
 for i in %{build_cats}
 do
-	chown interchange.interchange /home/httpd/cgi-bin/$i
+	ln -s /home/httpd/html/$i/images /var/lib/interchange/$i
+	chown %{interchange_user}.%{interchange_user} /home/httpd/cgi-bin/$i
 	chmod 4755 /home/httpd/cgi-bin/$i
 done
 
 # Set the hostname
 HOST=`hostname`
-perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g"	/var/lib/interchange/*/catalog.cfg /var/lib/interchange/*/products/variable.txt /home/httpd/html/barry/index.html /home/httpd/html/simple/index.html
+perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g"	/var/lib/interchange/*/catalog.cfg /var/lib/interchange/*/products/variable.txt /home/httpd/html/construct/index.html
 
 # Get to a place where no random Perl libraries should be found
 cd /usr

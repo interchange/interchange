@@ -28,18 +28,18 @@ else
 	ETCBASE=/etc
 fi
 
-HASMVUSER=`grep '^interchange:' /etc/passwd`
+HASICUSER=`grep '^interch:' /etc/passwd`
 if test -n "$RPM_BUILD_ROOT"
 then
 	echo
-elif test -z "$HASMVUSER"
+elif test -z "$HASICUSER"
 then
-	adduser -d $LIBBASE/interchange -c "Interchange daemon" -r interchange
+	adduser -d $LIBBASE/interchange -c "Interchange daemon" -r interch
 fi
 
 ETCDIRS="rc.d/init.d logrotate.d"
 LIBDIRS="interchange"
-MVDIRS="$RPM_BUILD_ROOT$RUNBASE/interchange $RPM_BUILD_ROOT$LOGBASE/interchange"
+ICDIRS="$RPM_BUILD_ROOT$RUNBASE/interchange $RPM_BUILD_ROOT$LOGBASE/interchange"
 
 for i in $ETCDIRS
 do
@@ -51,12 +51,12 @@ do
 	mkdir -p $RPM_BUILD_ROOT$LIBBASE/$i
 done
 
-for i in $MVDIRS
+for i in $ICDIRS
 do
 	mkdir -p $i
 	if test -z "$RPM_BUILD_DIR"
 	then
-		chown interchange.interchange $i
+		chown interch.interch $i
 		chmod 751 $i
 	fi
 done
@@ -64,7 +64,7 @@ done
 if test -n "$RPM_BUILD_ROOT"
 then
 	mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
-	mkdir -p $RPM_BUILD_ROOT/usr/local/bin
+	mkdir -p $RPM_BUILD_ROOT/usr/sbin
 fi
 
 cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
@@ -125,10 +125,10 @@ cat > $RPM_BUILD_ROOT/etc/logrotate.d/interchange <<EOF
 }
 EOF
 
-cat > $RPM_BUILD_ROOT/usr/local/bin/interchange <<EOF
+cat > $RPM_BUILD_ROOT/usr/sbin/interchange <<EOF
 #!/bin/sh
 
-RUNSTRING="/usr/local/interchange/bin/interchange -q \\
+RUNSTRING="/usr/lib/interchange/bin/interchange -q \\
 	-configfile $ETCBASE/interchange.cfg \\
 	-pidfile $RUNBASE/interchange/interchange.pid \\
 	-logfile $LOGBASE/interchange/error.log \\
@@ -140,13 +140,13 @@ RUNSTRING="/usr/local/interchange/bin/interchange -q \\
 USER=\`whoami\`
 if test \$USER = "root"
 then 
-	exec su interchange -c "\$RUNSTRING \$*"
+	exec su interch -c "\$RUNSTRING \$*"
 else
 	exec \$RUNSTRING \$*
 fi
 EOF
 
-chmod +x $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange $RPM_BUILD_ROOT/usr/local/bin/interchange
+chmod +x $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange $RPM_BUILD_ROOT/usr/sbin/interchange
 
 if test -z "$RPM_BUILD_ROOT"
 then
