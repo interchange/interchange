@@ -129,15 +129,15 @@ size=1>
 
 	my $regex;
 	if($sf =~ m{(^|[^\\])\(} and $sf =~ m{[^\\]\)}) {
-Debug("regex with parens, '$sf'");
+#Debug("regex with parens, '$sf'");
 		$sf =~ s/(.*?)\((.*)\)(.*)/($1)($2)($3)/;
-Debug("regex with parens, now '$sf'");
+#Debug("regex with parens, now '$sf'");
 		$regex = $cs ? qr{$sf} : qr{(?i)$sf};
 	}
 	else {
-Debug("regex without parens, '$sf'");
+#Debug("regex without parens, '$sf'");
 		$regex = $cs ? qr{()($sf)()} : qr{(?i)()($sf)()}i;
-Debug("regex without parens, now '$sf'");
+#Debug("regex without parens, now '$sf'");
 	}
 
 	delete $Scratch->{try_message};

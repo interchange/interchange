@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.15 2002-02-04 01:31:17 mheins Exp $
+# $Id: Primitive.pm,v 2.16 2002-02-04 23:35:37 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 $DEBUG = 0;
 
@@ -36,14 +36,19 @@ use vars qw!
 	!;
 
 use File::Find;
-use Vend::CounterFile;
-use Text::ParseWords;
 use Exporter;
 use strict;
 use Vend::Util qw/errmsg/;
 $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
-@EXPORT = qw( ui_check_acl ui_acl_enabled meta_record) ;
+@EXPORT = qw(
+		list_glob
+		list_images
+		list_pages
+		meta_record
+		ui_acl_enabled
+		ui_check_acl
+	);
 
 =head1 NAME
 
@@ -624,16 +629,25 @@ sub rotate {
 
 
 sub meta_record {
-	my ($item, $view, $mtable) = @_;
+	my ($item, $view, $mdb) = @_;
+
+#::logDebug("meta_record: item=$item view=$view mdb=$mdb");
 	return undef unless $item;
-	$mtable ||= $::Variable->{UI_META_TABLE} || 'mv_metadata',
-	my $mdb = Vend::Data::database_exists_ref($mtable)
+
+	if(! ref ($mdb)) {
+		my $mtable = $mdb || $::Variable->{UI_META_TABLE} || 'mv_metadata';
+#::logDebug("meta_record mtable=$mtable");
+		$mdb = Vend::Data::database_exists_ref($mtable)
 		or return undef;
+	}
+#::logDebug("meta_record has an item=$item and mdb=$mdb");
+
 	my $record;
 	if($view) {
 		$record = $mdb->row_hash("${view}::$item");
 	}
 	$record = $mdb->row_hash($item) if ! $record;
+#::logDebug("meta_record  record=$record");
 
 	return undef if ! $record;
 
@@ -658,217 +672,6 @@ sub meta_record {
 	}
 #::logDebug("return meta_record=" . ::uneval($record) );
 	return $record;
-}
-
-my $base_entry_value;
-
-sub meta_display {
-	my ($table,$column,$key,$value,$meta_db,$query,$o) = @_;
-
-	my $metakey;
-	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
-	$o = {} if ! ref $o;
-	my $meta = Vend::Data::database_exists_ref($meta_db)
-		or return undef;
-	$meta = $meta->ref();
-	if($column eq $meta->config('KEY')) {
-		if($o->{arbitrary} and $value !~ /::.+::/) {
-			$base_entry_value = ($value =~ /^([^:]+)::(\w+)$/)
-								? $1
-								: $value;
-		}
-		else {
-			$base_entry_value = $value =~ /::/ ? $table : $value;
-		}
-	}
-
-	my (@tries) = "${table}::$column";
-	unshift @tries, "${table}::${column}::$key"
-		if $key;
-
-	my $view;
-	if($view = $o->{arbitrary}) {
-		unshift @tries, "$o->{arbitrary}::${table}::${column}";
-		unshift @tries, "$o->{arbitrary}::${table}::${column}::$key" if $key;
-	}
-
-	my $sess = $Vend::Session->{mv_metadata} || {};
-
-	push @tries, { type => $o->{type} }
-		if $o->{type} || $o->{label};
-
-#::logDebug("calling meta_display with type=$o->{type}");
-	for $metakey (@tries) {
-		my $record;
-		unless ( $record = $sess->{$metakey} and ref $record ) {
-			if(ref $metakey) {
-				$record = $metakey;
-				undef $metakey;
-			}
-			else {
-				next unless $meta->record_exists($metakey);
-				$record = $meta->row_hash($metakey);
-			}
-		}
-		if($query) {
-			return $record->{query};
-		}
-		my $opt;
-
-		# Get additional settings from extended field, which is a serialized
-		# hash
-		my $hash;
-		if($record->{extended}) {
-			$hash = Vend::Util::get_option_hash($record->{extended});
-			if(ref $hash) {
-				@$record{keys %$hash} = values %$hash;
-			}
-			else {
-				undef $hash;
-			}
-		}
-
-		# Allow view settings to be placed in the extended area
-		if($view and $hash and $hash->{view}) {
-			my $view_hash = $record->{view}{$view};
-			ref $view_hash
-				and @$record{keys %$view_hash} = values %$view_hash;
-		}
-
-		## Here we allow override with the display tag, even with views and
-		## extended
-		my @override = qw/
-							append
-							attribute
-							db
-							extra
-							field
-							filter
-							height
-							help
-							help_url
-							label
-							lookup
-							lookup_exclude
-							lookup_query
-							name
-							options
-							outboard
-							passed
-							pre_filter
-							prepend
-							type
-							width
-							/;
-		for(@override) {
-			delete $record->{$_} if ! length($record->{$_});
-			next unless defined $o->{$_};
-			$record->{$_} = $o->{$_};
-		}
-
-		$record->{name} ||= $column;
-
-		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
-#::logDebug("checking options");
-			PASS: {
-				my $passed = $record->{options};
-
-				if($passed eq 'tables') {
-					$record->{passed} = "=--none--," . list_tables({ joiner => ',' });
-				}
-				elsif($passed eq 'filters') {
-					$record->{passed} = $Vend::Interpolate::Tag->filters(1),
-				}
-				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
-					my $total = $1;
-					my $tname = $2 || $record->{db} || $table;
-::logDebug("columns options, total=$total tname=$tname base_entry_value=$base_entry_value");
-					if ($total eq '::' and $base_entry_value) {
-						$tname = $base_entry_value;
-					}
-					my $db = ::database_exists_ref($tname);
-					$record->{passed} = join (',', "=--none--", $db->columns())
-						if $db;
-				}
-				elsif($passed =~ /^keys(::(\w+))?\s*$/) {
-					my $tname = $2 || $record->{db} || $table;
-					$record->{passed} = "=--none--," . list_keys($tname, { joiner => ',' });
-				}
-			}
-		}
-
-		if ($record->{type} =~ s/^custom\s+//s) {
-			my $wid = lc $record->{type};
-			$wid =~ tr/-/_/;
-			my $w;
-			$record->{attribute} ||= $column;
-			$record->{table}     ||= $meta_db;
-			$record->{rows}      ||= $record->{height};
-			$record->{cols}      ||= $record->{width};
-			$record->{field}     ||= 'options';
-			$record->{name}      ||= $column;
-			$record->{outboard}  ||= $metakey;
-			my $Tag = new Vend::Tags;
-			eval {
-				$w = $Tag->$wid($record->{name}, $value, $record, $o);
-			};
-			if($@) {
-				::logError("error using custom widget %s: %s", $wid, $@);
-			}
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-		}
-
-		for(qw/append prepend/) {
-			next unless $record->{$_};
-			$record->{$_} = Vend::Util::resolve_links($record->{$_});
-			$record->{$_} =~ s/_UI_VALUE_/$value/g;
-			$record->{$_} =~ /_UI_URL_VALUE_/
-				and do {
-					my $tmp = $value;
-					$tmp =~ s/(\W)/sprintf '%%%02x', ord($1)/eg;
-					$record->{$_} =~ s/_UI_URL_VALUE_/$tmp/g;
-				};
-			$record->{$_} =~ s/_UI_TABLE_/$table/g;
-			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
-			$record->{$_} =~ s/_UI_KEY_/$key/g;
-		}
-
-		if(! $o->{type} and ! $record->{type}) {
-			$o->{type} = 'text' unless $record->{passed};
-		}
-# Copied above
-# append attribute db extra field filter height help help_url js label lookup
-# lookup_exclude name options outboard passed pre_filter prepend
-# type width
-
-::logDebug("passed=$record->{passed}") if $record->{debug};
-		my %things = (
-			attribute	=> $column,
-			cols	 	=> $o->{cols}   || $record->{width},
-			field	 	=> $column,
-			passed	 	=> $record->{options},
-			rows 		=> $o->{rows}	|| $record->{height},
-			table		=> $table,
-			value		=> $value,
-		);
-
-		while( my ($k, $v) = each %things) {
-			next if length $record->{$k};
-			$record->{$k} = $v;
-		}
-		
-		my $w = Vend::Form::display($record);
-		my $filter;
-		if($record->{filter}) {
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="};
-			$w .= $record->{filter};
-			$w .= '">';
-		}
-		return $w unless $o->{template};
-		return ($w, $record->{label}, $record->{help}, $record->{help_url});
-	}
-	return undef;
 }
 
 1;

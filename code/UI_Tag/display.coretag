@@ -1,19 +1,252 @@
 UserTag display Order table column key
+UserTag display attrAlias col column
 UserTag display addAttr 1
 UserTag display Interpolate 1
 UserTag display posNumber 3
 UserTag display Routine <<EOR
+use UI::Primitive;
+use vars qw/$Tag/;
+my $base_entry_value;
 sub {
 	my ($table,$column,$key,$opt) = @_;
-	
-	my $text;
-	my $size;
-	my $widget;
-	my $label;
-	my $help;
-	my $help_url;
+
+	if( ref($opt) ne 'HASH' ) {
+		$opt = get_option_hash($opt);
+	}
 
 	my $template = $opt->{type} eq 'hidden' ? '' : $opt->{template};
+
+	if($opt->{override}) {
+		$opt->{value} = defined $opt->{default} ? $opt->{default} : undef;
+	}
+
+	if(! defined $opt->{value} and $table and $column and length($key)) {
+		$opt->{value} = tag_data($table, $column, $key);
+	}
+
+	my $mtab;
+	my $record;
+
+	METALOOK: {
+		## No meta display wanted
+		last METALOOK if $CGI::values{no_meta_display};
+		## No meta display possible
+		$table and $column or $opt->{meta}
+			or last METALOOK;
+
+		## We get a metarecord directly, though why it would be here
+		## and not in options I don't know
+		if($opt->{meta} and ref($opt->{meta}) eq 'HASH') {
+			$record = $opt->{meta};
+			last METALOOK;
+		}
+
+		$mtab = $opt->{meta_table} || $::Variable->{UI_META_TABLE} || 'mv_metadata'
+			or last METALOOK;
+		my $meta = Vend::Data::database_exists_ref($mtab)
+			or do {
+				::logError("non-existent meta table: %s", $mtab);
+				undef $mtab;
+				last METALOOK;
+			};
+
+		my $view = $opt->{view} || $opt->{arbitrary};
+
+		## This is intended to trigger on the first access
+		if($column eq $meta->config('KEY')) {
+			if($view and $opt->{value} !~ /::.+::/) {
+				$base_entry_value = ($opt->{value} =~ /^([^:]+)::(\w+)$/)
+									? $1
+									: $opt->{value};
+			}
+			else {
+				$base_entry_value = $opt->{value} =~ /::/
+									? $table
+									: $opt->{value};
+			}
+		}
+
+		my (@tries) = "${table}::$column";
+		unshift @tries, "${table}::${column}::$key"
+			if length($key)
+				and $CGI::values{ui_meta_specific} || $opt->{specific};
+
+		my $sess = $Vend::Session->{mv_metadata} || {};
+
+		push @tries, { type => $opt->{type} }
+			if $opt->{type} || $opt->{label};
+
+		for my $metakey (@tries) {
+			## In case we were passed a meta record
+			last if $record = $sess->{$metakey} and ref $record;
+			$record = UI::Primitive::meta_record($metakey, $view, $meta)
+				and last;
+		}
+	}
+
+	my $w;
+
+	METAMAKE: {
+		last METAMAKE unless $record;
+
+		## Here we allow override with the display tag, even with views and
+		## extended
+		my @override = qw/
+							append
+							attribute
+							db
+							extra
+							field
+							filter
+							height
+							help
+							help_url
+							label
+							lookup
+							lookup_exclude
+							lookup_query
+							name
+							options
+							outboard
+							passed
+							pre_filter
+							prepend
+							type
+							width
+							/;
+		for(keys %$record) {
+			delete $record->{$_} if ! length($record->{$_});
+			next unless defined $opt->{$_};
+			$record->{$_} = $opt->{$_};
+		}
+
+		$record->{name} ||= $column;
+
+		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
+#::logDebug("checking options");
+			PASS: {
+				my $passed = $record->{options};
+
+				if($passed eq 'tables') {
+					my @tables = $Tag->list_databases();
+					$record->{passed} = join (',', "=--none--", @tables);
+				}
+				elsif($passed eq 'filters') {
+					$record->{passed} = $Tag->filters(1),
+				}
+				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
+					my $total = $1;
+					my $tname = $2 || $record->{db} || $table;
+					if ($total eq '::' and $base_entry_value) {
+						$tname = $base_entry_value;
+					}
+					$record->{passed} = join ",",
+											"=--none--",
+											$Tag->db_columns($tname),
+										;
+				}
+				elsif($passed =~ /^keys(::(\w+))?\s*$/) {
+					my $tname = $2 || $record->{db} || $table;
+					$record->{passed} = join ",",
+											"=--none--",
+											$Tag->list_keys($tname),
+										;
+				}
+			}
+		}
+
+		if ($record->{type} =~ s/^custom\s+//s) {
+			my $wid = lc $record->{type};
+			$wid =~ tr/-/_/;
+			my $w;
+			$record->{attribute} ||= $column;
+			$record->{table}     ||= $mtab;
+			$record->{rows}      ||= $record->{height};
+			$record->{cols}      ||= $record->{width};
+			$record->{field}     ||= 'options';
+			$record->{name}      ||= $column;
+			my $Tag = new Vend::Tags;
+			eval {
+				$w = $Tag->$wid($record->{name}, $opt->{value}, $record, $opt);
+			};
+			if($@) {
+				::logError("error using custom widget %s: %s", $wid, $@);
+			}
+			last METAMAKE;
+		}
+
+		for(qw/append prepend/) {
+			next unless $record->{$_};
+			$record->{$_} = Vend::Util::resolve_links($record->{$_});
+			$record->{$_} =~ s/_UI_VALUE_/$opt->{value}/g;
+			$record->{$_} =~ /_UI_URL_VALUE_/
+				and do {
+					my $tmp = $opt->{value};
+					$tmp =~ s/(\W)/sprintf '%%%02x', ord($1)/eg;
+					$record->{$_} =~ s/_UI_URL_VALUE_/$tmp/g;
+				};
+			$record->{$_} =~ s/_UI_TABLE_/$table/g;
+			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
+			$record->{$_} =~ s/_UI_KEY_/$key/g;
+		}
+
+#::logDebug("passed=$record->{passed}") if $record->{debug};
+		my %things = (
+			attribute	=> $column,
+			cols	 	=> $opt->{cols}   || $record->{width},
+			field	 	=> $column,
+			passed	 	=> $record->{options},
+			rows 		=> $opt->{rows}	|| $record->{height},
+			table		=> $table,
+			value		=> $opt->{value},
+		);
+
+		while( my ($k, $v) = each %things) {
+			next if length $record->{$k};
+			$record->{$k} = $v;
+		}
+		
+		$w = Vend::Form::display($record);
+		if($record->{filter}) {
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="};
+			$w .= $record->{filter};
+			$w .= '">';
+		}
+	}
+
+	if(! defined $w) {
+		my $text = $opt->{value};
+		my $iname = $opt->{name} || $column;
+		my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
+
+		# Count lines for textarea
+		my $count;
+		$count = $text =~ s/(\r\n|\r|\n)/$1/g;
+
+		HTML::Entities::encode($text, '&');
+		HTML::Entities::encode($text, $DECODE_CHARS);
+		my $size;
+		if ($count) {
+			$count++;
+			$count = 20 if $count > 20;
+			$w = <<EOF;
+	<TEXTAREA NAME="$iname" COLS=60 ROWS=$count>$text</TEXTAREA>
+EOF
+		}
+		elsif ($text =~ /^\d+$/) {
+			my $cur = length($text);
+			$size = $cur > 8 ? $cur + 1 : 8;
+		}
+		else {
+			$size = 60;
+		}
+			$w = <<EOF;
+	<INPUT NAME="$iname" SIZE=$size VALUE="$text">
+EOF
+	}
+
+	return $w unless $template;
+
 	if($template and $template !~ /\s/) {
 		$template = <<'EOF';
 <TR>
@@ -25,62 +258,21 @@ sub {
 </TD>
 </TR>
 EOF
-		$opt->{template} = 1;
 	}
 
-#::logDebug("meta call: table=$table col=$column key=$key text=$text");
-	$text = tag_data($table, $column, $key) if $table and $column and $key;
-	if($opt->{override}) {
-		$text = $opt->{default};
-	}
-	elsif (not defined $text) {
-		$text = length($opt->{default}) ? $opt->{default} : $CGI::values{$column};
-	}
-#::logDebug("data call failed: $@") if $@;
+	$record->{label} ||= $column;
 
-	if(! $CGI::values{ui_no_meta_display}) {
-#::logDebug("meta call: table=$table col=$column key='$key' text=$text");
-		($widget, $label, $help, $help_url) = UI::Primitive::meta_display($table,$column,$key,$text,undef,undef,$opt);
-#::logDebug("past meta_display, help=$help url=$help_url label=$label");
-		$widget =~ s/<(input|select)\s+/<$1 $opt->{js} /i
-			if $opt->{js};
-	}
-
-	if(! $widget and $opt->{type} ne 'value') {
-		my $iname = $opt->{name} || $column;
-		my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
-
-		# Count lines for textarea
-		my $count;
-		$count = $text =~ s/(\r\n|\r|\n)/$1/g;
-
-		HTML::Entities::encode($text, '&');
-		HTML::Entities::encode($text, $DECODE_CHARS);
-		if ($count) {
-			$count++;
-			$count = 20 if $count > 20;
-			$widget = <<EOF;
-	<TEXTAREA NAME="$iname" COLS=60 ROWS=$count>$text</TEXTAREA>
-EOF
-		}
-		elsif ($text =~ /^\d+$/) {
-			$size = 8;
-		}
-		else {
-			$size = 60;
-		}
-			$widget = <<EOF;
-	<INPUT NAME="$iname" SIZE=$size VALUE="$text">
-EOF
-	}
-	return $widget unless $template;
-	$label = $column if ! $label;
 	my %sub = (
-		WIDGET		=> $widget,
-		HELP		=> $opt->{applylocale} ? errmsg($help) : $help,
-		HELP_URL	=> $help_url,
-		LABEL		=> $opt->{applylocale} ? errmsg($label) : $label,
+		WIDGET		=> $w,
+		HELP		=> $opt->{applylocale}
+						? errmsg($record->{help})
+						: $record->{help},
+		HELP_URL	=> $record->{help_url},
+		LABEL		=> $opt->{applylocale}
+						? errmsg($record->{label})
+						: $record->{label},
 	);
+
 	# Strip the {TAG} {/TAG} pairs if nothing there
 	$template =~ s#{([A-Z_]+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;
 	# Insert the TAG
@@ -88,4 +280,3 @@ EOF
 	return $template;
 }
 EOR
-

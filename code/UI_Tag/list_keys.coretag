@@ -62,6 +62,7 @@ sub {
 #::logDebug("list_keys acl: ". ::uneval($acl));
 		@keys = UI::Primitive::ui_acl_grep( $acl, 'keys', @keys);
 	}
+	return @keys if wantarray;
 	return join("\n", @keys);
 }
 EOR

@@ -1,4 +1,3 @@
-
 UserTag list-databases Order nohide extended
 UserTag list-databases routine <<EOR
 sub {
@@ -32,6 +31,7 @@ sub {
 		@dbs = $nohide ? (@dbs) : (@outdb);
 	}
 
+	return @dbs if wantarray;
 	my $string = join " ", grep /\S/, @dbs;
 	return $string;
 }

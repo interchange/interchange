@@ -47,6 +47,7 @@ sub {
 		@cols = UI::Primitive::ui_acl_grep( $acl, 'fields', @cols);
 	}
 
+	return @cols if wantarray;
 	return join $joiner, @cols;
 }
 EOR

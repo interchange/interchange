@@ -120,7 +120,7 @@
 	my $view = $CGI->{ui_meta_view};
 	my $ref = $Db{$tab};
 	my $meta = $Tag->meta_record($tab, $view);
-Debug("Meta record: " . uneval($meta));
+#Debug("Meta record: " . uneval($meta));
 	if (! $ref) {
 		$Scratch->{keypos} = 0;
 		return;
@@ -236,7 +236,7 @@ EOF
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
 	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
-Debug("CGI->{ui_show_fields}=$CGI->{ui_show_fields}");
+#Debug("CGI->{ui_show_fields}=$CGI->{ui_show_fields}");
 	if(! $CGI->{ui_show_fields}) {
 		$CGI->{ui_show_fields} = '*';
 		$CGI->{ui_description_fields} = join ",", $ref->columns();
@@ -245,7 +245,7 @@ Debug("CGI->{ui_show_fields}=$CGI->{ui_show_fields}");
 		my $i = 0;
 		$CGI->{ui_show_fields} =~
 			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
-Debug("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
+#Debug("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
