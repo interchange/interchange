@@ -26,6 +26,7 @@ sub {
 				attribute	=> $opt->{attribute} || 'attribute',
 				db			=> $opt->{table} || undef,
 				field		=> $opt->{field} || undef,
+				extra		=> $opt->{extra} || $opt->{js} || undef,
 				cols		=> $opt->{cols} || undef,
 				rows		=> $opt->{rows} || undef,
 				name		=> $name,
