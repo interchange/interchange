@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.34 2003-07-01 10:46:32 racke Exp $
+# $Id: Server.pm,v 2.35 2003-07-11 04:39:43 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -36,6 +36,8 @@ use Config;
 use Socket;
 use Symbol;
 use strict;
+
+my $ppidsub = \&getppid;
 
 sub new {
     my ($class, $fh, $env, $entity) = @_;
@@ -1609,7 +1611,7 @@ my $pretty_vector = unpack('b*', $rin);
 					}
 
 					undef $::Instance;
-					select(undef,undef,undef,0.050) until getppid == 1;
+					select(undef,undef,undef,0.050) until $ppidsub->() == 1;
 					&$Sig_dec and unlink_pid();
 					exit(0);
 				}
@@ -1888,7 +1890,7 @@ sub server_both {
 
     setup_signals();
 
-#::logDebug("Starting server socket file='$socket_filename' hosts='$host'\n");
+#::logDebug("Starting server socket file='$socket_filename'\n");
 
 	my $spawn;
 
@@ -2166,7 +2168,7 @@ my $pretty_vector = unpack('b*', $rin);
 					clean_up_after_fork();
 
 					undef $::Instance;
-					select(undef,undef,undef,0.050) until getppid == 1;
+					select(undef,undef,undef,0.050) until $ppidsub->() == 1;
 					if ($Global::IPCsocket) {
 						&$Sig_dec and unlink_pid();
 					}
@@ -2305,7 +2307,7 @@ sub run_jobs {
 			clean_up_after_fork();
 
 			undef $::Instance;
-			select(undef,undef,undef,0.050) until getppid == 1;
+			select(undef,undef,undef,0.050) until $ppidsub->() == 1;
 			if ($Global::PIDcheck) {
 				unlink_pid() and &$Sig_dec;
 			}
@@ -2337,7 +2339,7 @@ sub grab_pid {
         no strict 'subs';
         truncate($fh, 0) or die "Couldn't truncate pid file: $!\n";
     }
-    print $fh ($Global::mod_perl ? getppid : $$), "\n";
+    print $fh ($Global::mod_perl ? $ppidsub->() : $$), "\n";
     return 0;
 }
 
@@ -2364,8 +2366,19 @@ sub read_pidfile {
 
 sub run_server {
     my $next;
-	
+#::logDebug("trying to run server");
+
+	if($Global::Variable->{MV_GETPPID_BROKEN}) {
+#::logDebug("setting getppid broken");
+		my $num = $Global::Variable->{MV_GETPPID_BROKEN} > 1
+				? $Global::Variable->{MV_GETPPID_BROKEN}
+				: 64;
+		$ppidsub = sub {
+			return syscall($num);
+		};
+	}
     my $pidh = open_pid($Global::PIDfile);
+#::logDebug("Opened pid file");
 
 	if($Global::AcceptRedirect) {
 		push @Map, @RedirMap
@@ -2468,7 +2481,7 @@ sub run_server {
             }
             else {
                 # child 2
-                sleep 1 until getppid == 1;
+                sleep 1 until $ppidsub->() == 1;
 
                 my $running = grab_pid($pidh);
                 if ($running) {
