@@ -141,13 +141,13 @@ function visible (index, base) {
 <td valign=top>
 
 [on-match]
-<h3>Component Attributes</h3>
+<h3>[L]Component Attributes[/L]</h3>
 <div align=right>
-	Description:
+	[L]Description[/L]:
 		<input type=text name=ui_label size=30 value="[comp-param ui_label]"><BR>
-	Classes:
+	[L]Classes[/L]:
 		<input type=text name=ui_class size=30 value="[comp-param ui_class]"><BR>
-	Groups:
+	[L]Groups[/L]:
 		<input type=text name=ui_group size=30 value="[comp-param ui_group]"><br>
 	<input type=submit name=mv_click value="[L]Save[/L]" onClick="return check_change()">
 </div>
@@ -155,24 +155,24 @@ function visible (index, base) {
 [/on-match]
 
 <div id=clicker0 style="border: 1; border-style: thin">
-	<h3>Component HTML</h3>
-	Action:
+	<h3>[L]Component Body[/L]</h3>
+	[L]Action[/L]:
 		<A NAME=clicker0
 			HREF="javascript:void(0)"
 			onClick="visible(0)"
-		>edit body</A>
+		>[L]edit body[/L]</A>
 		<br>
-	<INPUT TYPE=checkbox VALUE=1 NAME=changed_ui_body id=changed_ui_body> changed
+	<INPUT TYPE=checkbox VALUE=1 NAME=changed_ui_body id=changed_ui_body> [L]changed[/L]
 </div>
 <hr>
-<h3>Component Controls</h3>
+<h3>[L]Component Controls[/L]</h3>
 [comp-list]
 <div id=clicker[comp-increment] style="border: 1; border-style: thin">
 [if-comp-param code]
-Name: <A HREF="javascript:void(0)" NAME=clicker[comp-increment] onClick="visible([comp-increment])">[comp-param code]</A><BR>
-Label: [comp-param label]<br>
-Widget: [comp-param type]<br>
-Action: 
+[L]Name[/L]: <A HREF="javascript:void(0)" NAME=clicker[comp-increment] onClick="visible([comp-increment])">[comp-param code]</A><BR>
+[L]Label[/L]: [comp-param label]<br>
+[L]Widget[/L]: [comp-param type]<br>
+[L]Action[/L]: 
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -180,7 +180,7 @@ Action:
 		ui_content_op=delete
 		ui_name="[comp-parent name]"
 		ui_type=component
-]" onClick="return check_change()">delete</A>&nbsp;&nbsp;
+]" onClick="return check_change()">[L]delete[/L]</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -189,7 +189,7 @@ Action:
 		ui_content_op=motion
 		ui_name="[comp-parent name]"
 		ui_type=component
-]" onClick="return check_change()">up</A>&nbsp;&nbsp;
+]" onClick="return check_change()">[L]up[/L]</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -198,10 +198,10 @@ Action:
 		ui_content_op=motion
 		ui_name="[comp-parent name]"
 		ui_type=component
-]" onClick="return check_change()">down</A><BR>
-<INPUT TYPE=checkbox VALUE=1 NAME="changed_[comp-param code]" id="changed_[comp-param code]"> changed
+]" onClick="return check_change()">[L]down[/L]</A><BR>
+<INPUT TYPE=checkbox VALUE=1 NAME="changed_[comp-param code]" id="changed_[comp-param code]"> [L]changed[/L]
 [else]
-<A HREF="javascript:void(0)" NAME=clicker[comp-increment] onClick="visible([comp-increment])">Add a new control</A><BR>
+<A HREF="javascript:void(0)" NAME=clicker[comp-increment] onClick="visible([comp-increment])">[L]Add a new control[/L]</A><BR>
 [/else]
 [/if-comp-param]
 </div>
@@ -226,7 +226,7 @@ mv_nextpage=__UI_BASE__/content
 <input type=hidden name=mv_action value="return">
 <input style="font-weight: bold" type=submit onClick="return check_change()" name=mv_click value="[L]Publish[/L]"> &nbsp;
 <input type=submit onClick="return check_change()" name=mv_click value="[L]Cancel[/L]"><br>
-New name: <input type=text name=ui_destination size=22 value="">
+[L]New name[/L]: <input type=text name=ui_destination size=22 value="">
 </form>
 </td>
 <td>
