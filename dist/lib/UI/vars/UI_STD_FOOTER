@@ -21,7 +21,7 @@ Variable UI_STD_FOOTER  <<EOV
       <td valign="top" align="left" nowrap>
         <table cellpadding="0" cellspacing="0">
         <tr><td nowrap>
-  	  <font size="1">&nbsp; <a href="__INTERCHANGE_URL__"><font size="1"><b>Interchange</b></font></a><font size="1"><b> - &copy; 2000-2002 Red Hat, Inc. and Interchange Development Group</font></font>
+  	  <font size="1">&nbsp; <a href="__INTERCHANGE_URL__"><font size="1"><b>Interchange</b></font></a><font size="1"><b> - &copy; 2000-2003 Red Hat, Inc. and Interchange Development Group</font></font>
         </td></tr>
         <tr><td nowrap>
           <font size="1">&nbsp; [msg]Username[/msg]: [either][data session username][or](none)[/either] &nbsp;&nbsp;&nbsp; [msg]StoreID[/msg]: <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a></font>

@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.15 2003-01-24 05:01:47 jon Exp $
+# $Id: Config.pm,v 2.2.2.16 2003-01-24 06:51:52 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -96,7 +96,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.15 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.16 $, 10);
 
 my %CDname;
 

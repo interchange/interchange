@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# $Id: configure,v 2.0.2.8 2002-11-26 03:21:08 jon Exp $
+# $Id: configure,v 2.0.2.9 2003-01-24 06:51:51 jon Exp $
 
 cat <<EOF
 
  Interchange Version 4.8.7 Configuration
 
- Copyright 1996-2002 Red Hat, Inc. and Interchange Development Group.
+ Copyright 1996-2003 Red Hat, Inc. and Interchange Development Group.
 
  Interchange was originally based on Vend 0.2 and 0.3
  Copyright 1995, 1996 Andrew M. Wilcox <amw@wilcoxsolutions.com>

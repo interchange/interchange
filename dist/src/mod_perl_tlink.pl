@@ -2,9 +2,9 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: mod_perl_tlink.pl,v 2.0.2.2 2002-11-26 03:21:09 jon Exp $
+# $Id: mod_perl_tlink.pl,v 2.0.2.3 2003-01-24 06:51:51 jon Exp $
 #
-# Copyright (C) 1998-2002 Red Hat, Inc. and Interchange Development Group
+# Copyright (C) 1998-2003 Red Hat, Inc. and Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as

@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.0.2.3 2003-01-23 19:08:04 jon Exp $
+# $Id: update.PL,v 2.0.2.4 2003-01-24 06:51:54 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify

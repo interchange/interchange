@@ -1,8 +1,8 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.28 2003-01-24 05:08:54 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.29 2003-01-24 06:51:52 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.28 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.29 $, 10);
 
 @EXPORT = qw (
 

@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.0.2.5 2002-11-26 03:21:13 jon Exp $
+# $Id: expire.PL,v 2.0.2.6 2003-01-24 06:51:53 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3

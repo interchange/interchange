@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange version 4.8.7
 #
-# $Id: interchange.PL,v 2.7.2.19 2003-01-24 05:10:36 jon Exp $
+# $Id: interchange.PL,v 2.7.2.20 2003-01-24 06:51:53 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -2372,7 +2372,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2002 Red Hat, Inc.\n";
+	print "Interchange version $VERSION\nCopyright 1996-2003 Red Hat, Inc., and Interchange Development Group\n";
 }
 
 =head1 NAME
@@ -2970,8 +2970,8 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
-license.
+Copyright 1995-2003, Red Hat, Inc., and Interchange Development Group.
+All rights reserved except as in the license.
 
 =cut
 

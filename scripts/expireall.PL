@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
+# $Id: expireall.PL,v 2.0.2.3 2003-01-24 06:51:53 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and
+# Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program is free software; you can redistribute it and/or modify
@@ -173,7 +173,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-# $Id: expireall.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
+# $Id: expireall.PL,v 2.0.2.3 2003-01-24 06:51:53 jon Exp $
 
 =head1 DESCRIPTION
 
