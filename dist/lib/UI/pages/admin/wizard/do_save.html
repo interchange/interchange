@@ -15,10 +15,10 @@
 	[/calc]
 
 	[if value pgpkeyid]
-	<P>GPG key (id [value pgpkeyid]) imported.</P>
+	<P>[msg arg.0="[value pgpkeyid]"]GPG key (id %s) imported.[/msg]</P>
 	[value name=pgpkeytext set=""]
 	[else]
-	<P>GPG key import FAILED.</P>
+	<P>[L]GPG key import FAILED.[/L]</P>
 	[/else]
 	[/if]
 
@@ -692,17 +692,17 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	my $go_page = 'index';
 	$CGI->{mv_nextpage} = '@@MV_PAGE@@';
 	my $ptab = 'products'
-		or return "no area source table";
+		or return errmsg("no area source table");
 	my $pdb = $Db{$ptab}
-		or return "area source table bad";
+		or return errmsg("area source table bad");
 	my $adb = $Db{area}
-		or return "no area table";
+		or return errmsg("no area table");
 	my $cdb = $Db{cat}
-		or return "no cat table";
+		or return errmsg("no cat table");
 	my $acol = 'prod_group';
 	my $ccol = 'category';
 	if(! $acol and ! $ccol ) {
-		return "no column to populate either";
+		return errmsg("no column to populate either");
 	}
 
 	my $selector = '';
@@ -733,14 +733,14 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	$cdb->query('delete from cat');
 	if($acol) {
 		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('_Auto_number');
-		return "area column $acol doesn't exist"
+		return errmsg("area column $acol doesn't exist")
 			unless $pdb->column_exists($acol);
 		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
-			or return "area column query failed";
+			or return errmsg("area column query failed");
 		for(@$ary) {
 			my ($area) = (@$_);
 			my $key = $adb->set_row('');
-			return "no autonumbering available" if ! $key;
+			return errmsg("no autonumbering available") if ! $key;
 			$catmap{$area} = $key;
 			for(keys %area_defaults_left) {
 				$adb->set_field($key, $_, $area_defaults_left{$_} || $area);
@@ -756,15 +756,15 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	my %catdone;
 	if($ccol) {
 		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
-		return "cat column $ccol doesn't exist"
+		return errmsg("cat column $ccol doesn't exist")
 			unless $pdb->column_exists($ccol);
 		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
-			or return "cat column query failed";
+			or return errmsg("cat column query failed");
 		for(@$ary) {
 			my ($area, $cat) = (@$_);
 			next if $catdone{$cat}++;
 			my $key = $cdb->set_row('');
-			return "no cat autonumbering available" if ! $key;
+			return errmsg("no cat autonumbering available") if ! $key;
 
 			$cat_defaults{name} = $cat;
 			$cat_defaults{sel} = $catmap{$area};
@@ -779,19 +779,19 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	my $out = $Tag->uneval( { ref => \%catmap } );
 	$out =~ s/,/,\n/g;
 	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
-	return "<P>Categories built.</P>";
+	return "<P>" . errmsg("Categories built.") . "</P>";
 [/perl]
 [/if]
 <P>[if type=explicit compare="[reconfig]"]
-Catalog activated with new values.
+[L]Catalog activated with new values.[/L]
 [/if]</P>
 <P>
-Your catalog is now operational for testing.
+[L]Your catalog is now operational for testing.[/L]
 </P>
 <blockquote>
-<A HREF="[area index]" target="_new"><font size="+1">Preview</font></A>
+<A HREF="[area index]" target="_new"><font size="+1">[L]Preview[/L]</font></A>
 </blockquote>
-You may need to click your browser's Reload button to see the changes.
+[L]You may need to click your browser's Reload button to see the changes.[/L]
 <p>
 Once your site is ready, continue on to the 
 <a href="[area __UI_BASE__/wizard/step_launch]"><font size="+1">Launch</font></a>  
