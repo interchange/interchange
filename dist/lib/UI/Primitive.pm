@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -538,7 +538,7 @@ sub meta_display {
 			}
 		}
 		elsif ($record->{type} eq 'imagedir') {
-			my $dir = $record->{'db'} || 'images';
+			my $dir = $record->{'outboard'} || $column;
 			my @files = list_images($dir);
 			$record->{type} = 'combo';
 			$record->{passed} = join ",",
