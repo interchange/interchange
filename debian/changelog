@@ -1,6 +1,6 @@
-interchange (4.6.1-0) unstable; urgency=low
+interchange (4.6.1-1) unstable; urgency=low
 
-  * upstream patches
+  * new upstream release
   * pragma substitute_table_image added
   * emit error message on undefined filters
   * user/group configuration introduced
@@ -17,7 +17,7 @@ interchange (4.6.1-0) unstable; urgency=low
   * imagehelper widget fix
   * wrapper for interchange and makecat added
   
- -- Stefan Hornburg <racke@linuxia.de>  Thu, 23 Nov 2000 13:37:20 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  3 Dec 2000 18:27:20 +0100
 
 interchange (4.6.0-1) unstable; urgency=low
 
