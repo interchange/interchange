@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.6 2003-12-04 03:52:18 mheins Exp $
+# $Id: Matrix.pm,v 1.7 2004-01-08 22:36:31 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 =head1 NAME
 
@@ -206,6 +206,10 @@ sub display_options {
 			# skip unless o_value
 			$phony->{mv_sku} = $def[$i];
 
+			my $passed = $ref->[SEP_VALUE];
+			if($opt->{blank_label}) {
+				$passed = "=$opt->{blank_label}, $passed";
+			}
 			if ($opt->{label}) {
 				$ref->[SEP_LABEL] = "<B>$ref->[SEP_LABEL]</b>" if $opt->{bold};
 				push @out, $ref->[SEP_LABEL];
@@ -214,7 +218,7 @@ sub display_options {
 							$sku,
 							'',
 							{ 
-								passed => $ref->[SEP_VALUE],
+								passed => $passed,
 								type => $opt->{type} || $ref->[SEP_WIDGET] || 'select',
 								attribute => 'mv_sku',
 								price_data => $ref->[SEP_PRICE],
@@ -301,6 +305,11 @@ sub display_options {
 			$price->{$ref->[CODE]} = $ref->[PRICE];
 			push @out, "$ref->[CODE]=$desc";
 		}
+
+		if($opt->{blank_label}) {
+			unshift @out, "=$opt->{blank_label}";
+		}
+
 		$out .= "<td>" if $opt->{td};
 		$out .= Vend::Interpolate::tag_accessories(
 							$sku,

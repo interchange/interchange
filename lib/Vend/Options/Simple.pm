@@ -1,6 +1,6 @@
 # Vend::Options::Simple - Interchange Simple product options
 #
-# $Id: Simple.pm,v 1.3 2003-09-08 12:25:18 jon Exp $
+# $Id: Simple.pm,v 1.4 2004-01-08 22:36:31 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Simple;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 =head1 NAME
 
@@ -213,6 +213,11 @@ sub display_options {
 		my $precursor = $opt->{report}
 					  ? "$ref->[GROUP]$opt->{separator}"
 					  : qq{<input type=hidden name="mv_item_option" value="$ref->[GROUP]">};
+
+		my $passed = $ref->[VALUE];
+		if($opt->{blank_label}) {
+			$passed = "=$opt->{blank_label}, $passed";
+		}
 		push @out, $precursor . Vend::Interpolate::tag_accessories(
 						$sku,
 						'',
@@ -224,7 +229,7 @@ sub display_options {
 							js => $opt->{js},
 							name => $ishash ? undef : "mv_order_$ref->[GROUP]",
 							option_template => $opt->{option_template},
-							passed => $ref->[VALUE],
+							passed => $passed,
 							price => $opt->{price},
 							price_data => $ref->[PRICE],
 							height => $opt->{height} || $ref->[HEIGHT],
