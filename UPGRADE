@@ -4,7 +4,7 @@
 
 Interchange is designed to be compatible between major versions, and
 for the most part a catalog designed under Interchange 4.8 should
-be compatible with 4.9 and 5.0.
+be compatible with 5.0.
 
 More information on upgrades is available in the document icupgrade, part
 of the Interchange documentation package.
@@ -54,8 +54,18 @@ It is recommended that you:
 
 That should be it. Test the catalog to make sure it works. 
 
+UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
+-------------------------------------------
+
+Add new columns extended and default to products/mv_metadata.asc.
+
+Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
+them to the new location, e.g. replace /interchange/
+with /interchange-5/.
+
 TO TEST BEFORE YOU UPGRADE
 --------------------------
+
 YOU SHOULD STILL BACK UP, and in addition it is recommended you back
 up your catalog. While the new server should not impact your running
 catalog beyond normal catalog interaction for orders, statistics,
@@ -64,8 +74,8 @@ something could happen. It should not happen in a catalog that is
 based on Foundation and not heavily customized (i.e. using global UserTag
 routines).
 
-1. Install the new Interchange 5.x Interchange (4.9 for alpha/beta versions)
-in /usr/lib/interchange-5 using the procedure from INSTALL.
+1. Install the new Interchange 5.x Interchange in /usr/lib/interchange-5
+using the procedure from INSTALL.
 
 2. Make /usr/lib/interchange-5/interchange.cfg match your
 /usr/lib/interchange.cfg. Note that there may be new options; but the
