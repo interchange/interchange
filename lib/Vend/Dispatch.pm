@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.36 2004-03-07 03:14:41 mheins Exp $
+# $Id: Dispatch.pm,v 1.37 2004-04-09 20:40:18 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.36 $, 10);
+$VERSION = substr(q$Revision: 1.37 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1129,6 +1129,9 @@ sub dispatch {
 		$Vend::Cookie = 1;
 		$Vend::Cfg->{ScratchDefault}{mv_no_count} = 1;
 		$Vend::Cfg->{ScratchDefault}{mv_no_session_id} = 1;
+	}
+	elsif ($sessionid and $CGI::values{mv_force_session}) {
+		# do nothing
 	}
 	elsif ($::Instance->{CookieName} and defined $CGI::cookie) {
 		$CGI::cookie =~ m{$::Instance->{CookieName}=($Vend::Cfg->{CookiePattern})};
