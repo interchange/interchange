@@ -1,4 +1,0 @@
-code	username	entry	addr_nick	company	fname	lname	address_1	address_2	city	state	zip	country
-1	jking	1	office	Car Parts, Inc.	Sarah	King	64 Halibut Drive		Miama	FL	33101	
-3	bobospeew	1	Site3	Yo Poppa Construction	bobo	schleprock	123 secondary street		yourtown	VA	20190	USA
-2	bobospeew	1	Site3	Yo Mamma Construction	bobo	schleprock	123 main street		yourtown	VA	20190	USA
