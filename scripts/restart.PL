@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.7 2000-09-20 20:03:09 zarko Exp $
+# $Id: restart.PL,v 1.8 2000-09-25 16:24:05 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -46,10 +46,18 @@ DOIT: {
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
-$Global::VendBin = $Global::VendBin || '/usr/local/interchange/bin';
-#$Global::VendBin = $Global::VendBin || '~_~INSTALLBIN~_~';
+use strict;
+
+BEGIN {
+	($Global::VendRoot = $ENV{MINIVEND_ROOT})
+		if defined $ENV{MINIVEND_ROOT};
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendBin = $Global::VendBin || '/usr/local/interchange/bin';
+#	$Global::VendBin = $Global::VendBin || '~_~INSTALLBIN~_~';
+}
+
+### END CONFIGURATION VARIABLES
 
 my $force;
 if($ARGV[0] eq '-f') {
@@ -95,6 +103,7 @@ sub get_id {
 	return $uid;
 }
 
+my($name,$Trysu);
 if ($< == 0) {
 	$name = get_id() || 'YOUR_INTERCHANGE_USER_NAME';
 	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_INTERCHANGE_USER_NAME';
@@ -109,39 +118,36 @@ The name we think should run it is: $name
 If you are starting the server from /etc/rc.local or another
 startup file, you can use this:
 
-su -f -c $VendBin/start $name
+su -f -c $Global::VendBin/restart $name
 
 or if that fails:
 
 	su $name <<EOF
-$Global::VendBin/start
+$Global::VendBin/restart
 EOF
 
 EOM
 		my $ask = prompt("Do you want me to start it as '$name' now? ", 'y');
 		exit 2 unless $ask =~ /^\s*y/i;
 		$Trysu = 1;
-	}
-	else {
+	} else {
 		$Trysu = 1;
 	}
 
 }
 
-if (defined $Trysu) {
+if(defined $Trysu) {
 	if($^O =~ /bsd|solaris|irix/i) {
 	exec <<EndOfExec or die "Couldn't exec: $!\n";
 su $name <<EOF
 $Global::VendBin/interchange $force -r
 EOF
 EndOfExec
-	}
-	else {
+	} else {
 		exec qq{su -f -c "$Global::VendBin/interchange $force -r" $name};
 	}
-}
-else {
-		exec qq{$Global::VendBin/interchange $force -r};
+} else {
+	exec qq{$Global::VendBin/interchange $force -r};
 }
 
 =head1 NAME
