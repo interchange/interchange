@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.58 2002-02-08 23:08:21 mheins Exp $
+# $Id: Interpolate.pm,v 2.59 2002-02-16 08:17:14 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 @EXPORT = qw (
 
@@ -304,6 +304,7 @@ my @th = (qw!
 		_next
 		_options
 		_param
+		_parent
 		_pos
 		_price
 		_quantity
@@ -400,6 +401,8 @@ my @th = (qw!
 	'_options'		=> qr($T{_options}($Spacef[^\]]+)?\]),
 	'_param_if'		=> qr($T{_param}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_param'		=> qr($T{_param}$Mandf\]),
+	'_parent_if'	=> qr($T{_parent}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
+	'_parent'		=> qr($T{_parent}$Mandf\]),
 	'_pos_if'		=> qr($T{_pos}(\d*)$Spacef(!?)\s*(\d+)$Optr\]($Some)),
 	'_pos' 			=> qr($T{_pos}$Spacef(\d+)\]),
 	'_price'		=> qr!$T{_price}(?:\s+(\d+))?$Optx\]!,
@@ -2862,6 +2865,7 @@ sub escape_form {
 	my @args = split /\n+/, $val;
 
 	for(@args) {
+		next if /^[\w=]+$/;
 		s!\0!-_NULL_-!g;
 		s!(\w=)(.*)!$1 . esc($2)!eg
 			or (undef $_, next);
@@ -2912,6 +2916,7 @@ sub form_link {
 		my %skip = qw/form 1 href 1 reparse 1/;
 		while( my ($k, $v) = each %$opt) {
 			next if $skip{$k};
+			$k =~ s/^__//;
 			$form .= "$k=$v\n";
 		}
 		$opt->{form} = $form;
@@ -3898,9 +3903,6 @@ sub labeled_list {
 
 	my $r;
 	if($ary->[0] =~ /HASH/) {
-		for (my $i = 0; $i < @$ary; $i++) {
-			$ary->[$i]{mv_ip} = $i;
-		}
 		$ary = tag_sort_hash($opt->{sort}, $ary) if $opt->{sort};
 		$r = iterate_hash_list($i, $end, $count, $text, $ary, $opt_select, $opt);
 	}
@@ -4308,7 +4310,7 @@ sub iterate_hash_list {
 	# Optimize for no-match, on-match, etc
 	# Ugly second regex is for quantity-name/modifier-name, wish they would
 	# go away
-	if($text !~ /\[(?:if-)?$Prefix-/ and $text !~ /\[[qm][uo]/i) {
+	if($text !~ /\[/) {
 		for(; $i <= $end; $i++) {
 			$r .= $text;
 		}
@@ -4373,6 +4375,9 @@ sub iterate_hash_list {
 		1 while $run =~ s#$IB$QR{_param_if}$IE[-_]param\1\]#
 				  $item->{$3}	?	pull_if($5,$2,$4,$item->{$3})
 								:	pull_else($5,$2,$4,$item->{$3})#ige;
+		1 while $run =~ s#$IB$QR{_parent_if}$IE[-_]parent\1\]#
+				  $item->{$3}	?	pull_if($5,$2,$4,$opt->{$3})
+								:	pull_else($5,$2,$4,$opt->{$3})#ige;
 		1 while $run =~ s#$IB$QR{_field_if}$IE[-_]field\1\]#
 				  my $tmp = item_field($item, $3);
 				  $tmp	?	pull_if($5,$2,$4,$tmp)
@@ -4390,6 +4395,7 @@ sub iterate_hash_list {
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
 		$run =~ s:$B$QR{_modifier}:ed($item->{$1}):ge;
 		$run =~ s:$B$QR{_param}:ed($item->{$1}):ge;
+		$run =~ s:$B$QR{_parent}:ed($opt->{$1}):ge;
 		$run =~ s:$QR{quantity_name}:quantity$item->{mv_ip}:g;
 		$run =~ s:$QR{modifier_name}:$1$item->{mv_ip}:g;
 		$run =~ s!$B$QR{_subtotal}!currency(item_subtotal($item),$1)!ge;
@@ -4634,6 +4640,16 @@ sub tag_sql_list {
 
 # Displays a search page with the special [search-list] tag evaluated.
 
+sub opt_region {
+	my $opt = pop @_;
+#::logDebug("opt_region called, prefix=$Prefix, text=$_[-1]");
+	my $new = { %$opt };
+	my $out = iterate_hash_list(@_,[$new]);
+	$Prefix = $Orig_prefix;
+#::logDebug("opt_region prefix=$Prefix, results=$out");
+	return $out;
+}
+
 sub region {
 
 	my($opt,$page) = @_;
@@ -4747,20 +4763,21 @@ sub region {
 	$IB = qr(\[if[-_]$Prefix)i;
 	$IE = qr(\[/if[-_]$Prefix)i;
 
+	my $new;
 	$page =~ s!$QR{more_list}! tag_more_list($1,$2,$3,$4,$5,$opt,$6)!ge;
 	$page =~   s!
 					\[ ( $mprefix  on[-_]match )\]
 						($Some)
 					\[/\1\]
 				!
-					$obj->{matches} > 0 ? iterate_hash_list(0,0,1,$2,[$opt]) : ''
+					$obj->{matches} > 0 ? opt_region(0,0,1,$2,$opt) : ''
 				!xige;
 	$page =~   s!
 					\[ ( $mprefix  no[-_]match )\]
 						($Some)
 					\[/\1\]
 				!
-					$obj->{matches} > 0 ? '' : iterate_hash_list(0,0,1,$2,[$opt])
+					$obj->{matches} > 0 ? '' : opt_region(0,0,1,$2,$opt)
 				!xige;
 	$page =~ s:\[($lprefix)\]($Some)\[/\1\]:labeled_list($opt,$2,$obj):ige
 		or $page = labeled_list($opt,$page,$obj);

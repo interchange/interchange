@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.14 2002-02-09 03:16:05 mheins Exp $
+# $Id: Form.pm,v 2.15 2002-02-16 08:17:14 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 @EXPORT = qw (
 	display
@@ -831,7 +831,7 @@ sub options_to_array {
 
 	if (ref $passed eq 'ARRAY') {
 		for(@$passed) {
-			push @out, [split /\s*=\s*/, $_, 2];
+			push @out, [split /\s*=\s*/, HTML::Entities::decode($_), 2];
 		}
 		return \@out;
 	}
@@ -946,19 +946,6 @@ if($opt->{debug}) {
 	if($opt->{passed}) {
 		$data = options_to_array($opt->{passed}, $opt);
 	}
-	elsif($opt->{column} and $opt->{table}) {
-		GETDATA: {
-		my $key = $opt->{outboard} || $item->{code} || $opt->{code};
-			last GETDATA unless length($key);
-			last GETDATA unless ::database_exists_ref($opt->{table});
-			$opt->{passed} = $Tag->data($opt->{table}, $opt->{column}, $key)
-				and
-		$data = options_to_array($opt->{passed}, $opt);
-	}
-	}
-	elsif(! $Global::VendRoot) {
-		# Not in Interchange
-	}
 	elsif($look = $opt->{lookup_query}) {
 		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 		my $db = Vend::Data::database_exists_ref($tab);
@@ -993,6 +980,17 @@ if($opt->{debug}) {
 					}
 				}
 			};
+		}
+	}
+	elsif($opt->{column} and $opt->{table}) {
+		GETDATA: {
+			last GETDATA if $opt->{table} eq 'mv_null';
+			my $key = $opt->{outboard} || $item->{code} || $opt->{code};
+			last GETDATA unless length($key);
+			last GETDATA unless ::database_exists_ref($opt->{table});
+			$opt->{passed} = $Tag->data($opt->{table}, $opt->{column}, $key)
+				and
+			$data = options_to_array($opt->{passed}, $opt);
 		}
 	}
 
