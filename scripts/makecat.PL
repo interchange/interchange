@@ -23,9 +23,13 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# makecat = Interchange catalog configurator
+# Interchange catalog configurator
+#
+# $Id: makecat.PL,v 1.23 2000-09-25 16:45:59 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+#
+# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,16 +51,29 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
+#use strict;
+use Config;
+use File::Find;
+use File::Copy;
+use File::Path;
+use Vend::MakeCat;
+use Vend::Util;
+use Getopt::Long;
+use IniConf;
+use Cwd;
+use vars qw/$CGIwrap/;
+
+Getopt::Long::config(qw/permute/);
+#Getopt::Long::config(qw/debug/);
+
 BEGIN {
-	($VendRoot = $ENV{MINIVEND_ROOT})
+	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
-	$ProgRoot = '/usr/local/interchange';
-	#$ProgRoot = '~_~INSTALLARCHLIB~_~';
-
-	$VendRoot = $Global::VendRoot;
+	$Global::ProgRoot = '/usr/local/interchange';
+#	$Global::ProgRoot = '~_~INSTALLARCHLIB~_~';
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
 		$Global::ExeName = 'interchange';
@@ -73,22 +90,10 @@ BEGIN {
 
 }
 
-## END CONFIGURABLE VARIABLES
+### END CONFIGURATION VARIABLES
 
 $| = 1; select STDERR; 
 $| = 1; select STDOUT; 
-
-use Config;
-use File::Find;
-use File::Copy;
-use File::Path;
-use Vend::MakeCat;
-use Vend::Util;
-use Getopt::Long;
-use IniConf;
-use Cwd;
-
-#use strict;
 
 my $Removeconfig;
 my $Reconfigure = 0;
@@ -153,105 +158,96 @@ options:
 EOF
 
 if (scalar @ARGV > 1) {
+	my %optctl = (
+	    'F'                 => \$Vend::MakeCat::Force,
+	    'aliases'           => \$Conf{aliases},
+	    'basedir'           => \$Conf{basedir},
+	    'catalogname'       => \$catalog_name,
+	    'catroot'           => \$Conf{catroot},
+	    'catuser'           => \$Conf{catuser},
+	    'cgibase'           => \$Conf{cgibase},
+	    'cgidir'            => \$Conf{cgidir},
+	    'cgiurl'            => \$Conf{cgiurl},
+	    'demotype'          => \$Conf{demotype},
+	    'documentroot'      => \$Conf{documentroot},
+	    'f'                 => \$Configfile,
+	    'homedir'           => \$Conf{homedir},
+	    'imagedir'          => \$Conf{imagedir},
+	    'imageurl'          => \$Conf{imageurl},
+	    'l'                 => \$Logfile,
+	    'linkmode'          => \$Conf{linkmode},
+	    'linkprogram'       => \$Conf{linkprogram},
+	    'mailorderto'       => \$Conf{mailorderto},
+	    'interchangegroup'  => \$Conf{interchangegroup},
+	    'interchangeuser'   => \$Conf{interchangeuser},
+	    'nocfg'             => \$Conf{nocfg},
+	    'nocopy'            => \$Conf{nocopy},
+	    'norunning'         => \$Conf{norunning},
+	    'noumask'           => \$Conf{noumask},
+	    'permtype'          => \$Conf{permtype},
+	    'r'                 => \$Reconfigure,
+	    'reference'         => \$Conf{reference},
+	    'relocate'          => \$Conf{relocate},
+	    'samplehtml'        => \$Conf{samplehtml},
+	    'sampleurl'         => \$Conf{sampleurl},
+	    'sharedir'          => \$Conf{sharedir},
+	    'shareurl'          => \$Conf{shareurl},
+	    'serverconf'        => \$Conf{serverconf},
+	    'servername'        => \$Conf{servername},
+	    'vendroot'          => \$Conf{vendroot},
+	    '<>'                => sub {
+                            my $arg = shift;
+                            return unless $arg =~ /=/;
+                            my ($opt, $val) = split /=/, $arg, 2;
+                            $opt = lc $opt;
+                            die "Can't set \U$opt\E twice.\n$USAGE\n"
+                                if defined $Conf{$opt};
+                            $Conf{$opt} = $val;
+                            return;
+                            },
+	);
 
-Getopt::Long::config(qw/permute/);
+	my @options = ( qw/
+	    F
+	    aliases=s
+	    basedir|base=s
+	    catalogname|name=s
+	    catroot|dir=s
+	    catuser|user=s
+	    cgibase=s
+	    cgidir=s
+	    cgiurl|script=s
+	    demotype|template=s
+	    documentroot=s
+	    f
+	    i
+	    homedir=s
+	    imagedir=s
+	    imageurl=s
+	    l=s
+	    linkmode=s
+	    linkprogram=s
+	    mailorderto=s
+	    interchangegroup|minivendgroup|group=s
+	    interchangeuser|minivenduser|mvuser=s
+	    nocfg
+	    nocopy
+	    norunning
+	    permtype=s
+	    r
+	    reference
+	    relocate=s
+	    samplehtml|html=s
+	    sampleurl=s
+	    serverconf|conf=s
+	    servername|server=s
+	    sharedir=s
+	    shareurl=s
+	    vendroot|mvdir=s
+	    <>
+	/);
 
-#Getopt::Long::config(qw/debug/);
-
-my %optctl = (
-
-    'F'                 => \$Vend::MakeCat::Force,
-    'aliases'           => \$Conf{aliases},
-    'basedir'           => \$Conf{basedir},
-    'catalogname'       => \$catalog_name,
-    'catroot'           => \$Conf{catroot},
-    'catuser'           => \$Conf{catuser},
-    'cgibase'           => \$Conf{cgibase},
-    'cgidir'            => \$Conf{cgidir},
-    'cgiurl'            => \$Conf{cgiurl},
-    'demotype'          => \$Conf{demotype},
-    'documentroot'      => \$Conf{documentroot},
-    'f'                 => \$Configfile,
-    'homedir'           => \$Conf{homedir},
-    'imagedir'          => \$Conf{imagedir},
-    'imageurl'          => \$Conf{imageurl},
-    'l'                 => \$Logfile,
-    'linkmode'          => \$Conf{linkmode},
-    'linkprogram'       => \$Conf{linkprogram},
-    'mailorderto'       => \$Conf{mailorderto},
-    'interchangegroup'  => \$Conf{interchangegroup},
-    'interchangeuser'   => \$Conf{interchangeuser},
-    'nocfg'             => \$Conf{nocfg},
-    'nocopy'            => \$Conf{nocopy},
-    'norunning'         => \$Conf{norunning},
-    'noumask'           => \$Conf{noumask},
-    'permtype'          => \$Conf{permtype},
-    'r'                 => \$Reconfigure,
-    'reference'         => \$Conf{reference},
-    'relocate'          => \$Conf{relocate},
-    'samplehtml'        => \$Conf{samplehtml},
-    'sampleurl'         => \$Conf{sampleurl},
-    'sharedir'          => \$Conf{sharedir},
-    'shareurl'          => \$Conf{shareurl},
-    'serverconf'        => \$Conf{serverconf},
-    'servername'        => \$Conf{servername},
-    'vendroot'          => \$Conf{vendroot},
-	'<>'				=> sub {
-							my $arg = shift;
-							return unless $arg =~ /=/;
-							my ($opt, $val) = split /=/, $arg, 2;
-							$opt = lc $opt;
-							die "Can't set \U$opt\E twice.\n$USAGE\n"
-								if defined $Conf{$opt};
-							$Conf{$opt} = $val;
-							return;
-							},
-);
-
-my @options = ( qw/
-
-	F
-    aliases=s
-    basedir|base=s
-    catalogname|name=s
-    catroot|dir=s
-    catuser|user=s
-    cgibase=s
-    cgidir=s
-    cgiurl|script=s
-    demotype|template=s
-    documentroot=s
-    f
-    i
-    homedir=s
-    imagedir=s
-    imageurl=s
-    l=s
-    linkmode=s
-    linkprogram=s
-    mailorderto=s
-    interchangegroup|minivendgroup|group=s
-    interchangeuser|minivenduser|mvuser=s
-    nocfg
-    nocopy
-    norunning
-    permtype=s
-    r
-    reference
-    relocate=s
-    samplehtml|html=s
-    sampleurl=s
-    serverconf|conf=s
-    servername|server=s
-    sharedir=s
-    shareurl=s
-    vendroot|mvdir=s
-    <>
-
-/ );
-
-GetOptions(\%optctl, @options)			or die "\n$USAGE\n";
-
+	GetOptions(\%optctl, @options)			or die "\n$USAGE\n";
 }
 
 $catalog_name = shift unless $catalog_name;
@@ -304,7 +300,7 @@ if ($Vend::MakeCat::Force) {
 	select LOGOUT;
 }
 
-$Configfile = "$VendRoot/etc/makecat.cfg" unless $Configfile;
+$Configfile = "$Global::VendRoot/etc/makecat.cfg" unless $Configfile;
 my $Servername;
 my $Servers;
 my $Done_defaults;
@@ -433,7 +429,7 @@ my %Initial;
 my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1));
 
 my %Prefix = (
-	vendroot     =>  $VendRoot,
+	vendroot     =>  $Global::VendRoot,
 	basedir      =>  sub {
 							return prefix('basedir', 1) if prefix('basedir', 1);
 							return "$Conf{vendroot}/catalogs"
@@ -1205,7 +1201,7 @@ else {
 # Find the perl path
 $Conf{'perl'} = $Config{perlpath};
 
-# Now change to the directory defined as VendRoot
+# Now change to the directory defined as Global::VendRoot
 chdir "$Conf{relocate}$Conf{vendroot}"
 	or die "Couldn't change directory to $Conf{relocate}$Conf{vendroot}: $!\n";
 
@@ -1220,7 +1216,6 @@ for ( $Conf{catroot}, $Conf{documentroot}, $Conf{basedir},
 die "\n" if $warn;
 
 my $prog;
-use vars qw/$CGIwrap/;
 my ($lh, $lp);
 
 SETLINKMODE: {
@@ -1317,10 +1312,10 @@ EOF
 		if($Config{osname} =~ /win32/i) {
 			# do nothing
 		}
-		elsif (@history = glob("$VendRoot/src/?link.???*")) {
+		elsif (@history = glob("$Global::VendRoot/src/?link.???*")) {
 			# do nothing
 		}
-		elsif (@history = glob("$ProgRoot/src/?link.???*")) {
+		elsif (@history = glob("$Global::ProgRoot/src/?link.???*")) {
 			# do nothing
 		}
 		elsif(findexe('locate')) {
@@ -1410,7 +1405,7 @@ for(qw(catroot samplehtml imagedir)) {
 }
 print "done.\n";
 
-# Now change to the directory defined as VendRoot if the checks
+# Now change to the directory defined as Global::VendRoot if the checks
 # have left us elsewhere
 chdir "$Conf{relocate}$Conf{vendroot}"
 		or die "Couldn't change directory to $Conf{relocate}$Conf{vendroot}: $!\n";
@@ -2063,7 +2058,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.22 2000-09-25 15:41:27 jon Exp $
+$Id: makecat.PL,v 1.23 2000-09-25 16:45:59 zarko Exp $
 
 =head1 INTRODUCTION
 
