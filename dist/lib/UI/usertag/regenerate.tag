@@ -211,6 +211,13 @@ EOF
 	undef $Vend::AccumulatingLinks;
 
 	::response("\n\n        Generating....\n");
+	# we need to restore some settings from the original configuration
+	# for static page building first
+	my @confsafe = ('ImageDir', 'ImageDirSecure');
+	my %safehash;
+	for (@confsafe) {$safehash{$_} = $Vend::Cfg->{$_}}
+	$Vend::Cfg->{ImageDir} = $Vend::Cfg->{ImageDirOriginal}; 
+	$Vend::Cfg->{ImageDirSecure} = $Vend::Cfg->{ImageDirSecureOriginal}; 
 
 	my $umask = umask(022);
 	my $statpath = $Vend::Cfg->{StaticPath};
@@ -248,6 +255,9 @@ EOF
 				if $verbose;
 		}
 	};
+	# get back to the UI configuration settings
+	for (@confsafe) {$Vend::Cfg->{$_} = $safehash{$_}}
+
 	my $success;
 	if($@) {
 		push (@regen_messages, "during file write: $@\n");
