@@ -1,0 +1,67 @@
+CodeDef decrypt Filter
+CodeDef decrypt Routine <<EOR
+sub {
+	my ($body, $tag, $key, $cmd) = @_;
+#::logDebug("called filter decrypt key=$key cmd=$cmd");
+
+        $cmd = $Vend::Cfg->{EncryptProgram} unless $cmd;
+        $key = $Vend::Cfg->{EncryptKey}     unless $key;
+
+        if("\L$cmd" eq 'none') {
+                return ::errmsg("NEED ENCRYPTION ENABLED.");
+        }
+        elsif($cmd =~ m{^(?:/\S+/)?\bgpg$}) {
+                $cmd .= " -q --batch --always-trust -d  -r '%s'";
+        }
+        elsif($cmd =~ m{^(?:/\S+/)?pgpe$}) {
+                $cmd .= " -fat -r '%s'";
+        }
+        elsif($cmd =~ m{^(?:/\S+/)?\bpgp$}) {
+                $cmd .= " -fat - '%s'";
+        }
+
+        if($cmd =~ /[;|]/) {
+                die ::errmsg("Illegal character in encryption command: %s", $cmd);
+        }
+
+        if($key) {
+                $cmd =~ s/%%/:~PERCENT~:/g;
+                $key =~ s/'/\\'/g;
+                $cmd =~ s/%s/$key/g;
+                $cmd =~ s/:~PERCENT~:/%/g;
+        }
+
+#::logDebug("filter decrypt after key=$key cmd=$cmd");
+
+	my $fpre = $Vend::Cfg->{ScratchDir} . "/pgp.$Vend::Session->{id}.$$";
+
+        open(ENC, "> $fpre.in");
+        print ENC $body;
+        close(ENC);
+
+        $cmd .= "<$fpre.in";
+        $cmd .= " 2>$fpre.err" unless $cmd =~ /2>/;
+        open(PGP, "$cmd |")
+                        or die "Couldn't fork: $!";
+        my @results = <PGP>;
+        close PGP;
+
+        if($?) {
+                my $errno = $?;
+                my $status = $errno;
+                if($status > 255) {
+                        $status = $status >> 8;
+                        $! = $status;
+                }
+                logError("PGP failed with error level %s, status %s: $!", $?, $status);
+                if($status) {
+                        logError("PGP hard failure, command that failed: %s", $cmd);
+                        return;
+                } 
+        }
+        $body = join "\n", @results;
+        unlink "$fpre.in";
+        unlink "$fpre.err";
+        return $body;
+}
+EOR
