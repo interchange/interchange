@@ -1,9 +1,97 @@
 __NAME__ db_maintenance
-[if cgi deleterecords]
+
+[comment]
+	I suppose this is odd, but I am always looking for better ways. 8-)
+[/comment]
+
+[set nevair]1[/set]
+[if session logged_in]
+[and session login_table ne __UI_ACCESS_TABLE__]
+[then]
+	[calc]
+		return if $CGI->{item_id} ne $Session->{username};
+		return if delete $CGI->{deleterecords};
+		delete $Scratch->{nevair};
+		return;
+	[/calc]
+[/then]
+[else]
 	[if-mm !tables =d]
-		[seti ui_error]Not allowed to delete from table [cgi mv_data_table].[/seti]
+		[seti ui_error]Not allowed to delete data from table [cgi mv_data_table].[/seti]
 		[bounce page="__UI_BASE__/error"]
 	[else]
+		[set nevair][/set]
+	[/else]
+	[/if-mm]
+[/else]
+[/if]
+
+[if cgi mv_blob_function]
+[and !scratch nevair]
+	[flag type=write tables="[cgi mv_data_table]"]
+	[perl tables="[cgi mv_data_table]"]
+	return if $Scratch->{nevair};
+	my $db = $Db{$CGI->{mv_data_table}}
+		or push (@errors, "no table") and return;
+	my $key = $CGI->{item_id};
+	my $col = $CGI->{mv_blob_field};
+
+	$db->record_exists($key)
+		or push (@errors, errmsg("no record %s", $key) ) and return;
+	$db->column_exists($col)
+		or push (@errors, errmsg("no column", $col)    ) and return;
+	my $function = delete $CGI->{mv_blob_function}
+		or push (@errors, errmsg("no function")) and return;
+
+	my $string = $db->field($key, $col);
+	my $blob;
+	if($string) {
+		$blob = $Tag->calc($string);
+		if(! $blob) {
+			push @errors, errmsg("Bad reference in col %s", $col);
+			return;
+		}
+	}
+	else {
+		push @errors, errmsg("Nothing to manage, blob empty.");
+		return;
+	}
+	my $nick	 = $CGI->{mv_blob_nick};
+	my $saveit;
+
+	if($function eq 'delete') {
+		return "no nick to delete" unless $nick;
+		my @keys = split /\0/, $CGI->{mv_blob_nick};
+		for(@keys) {
+			delete $blob->{$_}    and $saveit = 1;
+		}
+	}
+	elsif ($function eq 'rename') {
+		my $new = $CGI->{mv_blob_nick_new}
+			or do {
+				push @errors, errmsg("no new nick to apply");
+				return;
+				};
+		my $hash = delete $blob->{$nick}
+			or do {
+				push @errors, errmsg("nick %s does not exist", $nick);
+				return;
+				};
+		$blob->{newnick} = $hash;
+		$saveit = 1;
+	}
+
+	if($saveit) {
+		$db->set_field($key, $col, $Tag->uneval( { ref => $blob } ));
+	}
+
+	[/perl]
+	[/else]
+	[/if-mm]
+[/if]
+
+[if cgi deleterecords]
+[and !scratch nevair]
 	[flag type=write tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
 	[perl tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
 		my $idp;
@@ -60,15 +148,16 @@ __NAME__ db_maintenance
 			}
 		}
 
-		if(@errors) {
-			my $plural = @errors > 1 ? 's' : '';
-			$out .= "<FONT CLASS=error>Error$plural:<UL><LI>" .
-					join ("<LI>", @errors)                    .
-					"</UL></FONT><BR>";
-		}
-		$Scratch->{ui_message} = $out;
-		return;
 	[/perl]
-	[/else]
-	[/if-mm]
 [/if]
+
+[perl]
+	if(@errors) {
+		my $plural = @errors > 1 ? 's' : '';
+		$out .= "<FONT CLASS=error>Error$plural:<UL><LI>" .
+				join ("<LI>", @errors)                    .
+				"</UL></FONT><BR>";
+	}
+	$Scratch->{ui_failure} = $out;
+	return;
+[/perl]
