@@ -509,7 +509,7 @@ ui_template_name: noleft
 	      [perl tables="__UI_META_TABLE__ mv_metadata"]
 	      return;
               [/perl]
-	      [input-filter name=mail_list op=null_to_space][/input-filter]
+	      [value name=mail_list filter=null_to_space hide=1]
 	      [display table=userdb type=multiple column=mail_list key="[data session username]"]
 	    </td>
 	    <td class="contentbar1"><B>Mail lists (if any)</B></td>
