@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.6 2002-07-07 04:02:27 mheins Exp $
+# $Id: Cart.pm,v 2.7 2002-07-18 19:08:10 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,27 +24,64 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use strict;
 
 sub TIESCALAR {
 	my $class = shift;
 	my $instance = shift || undef;
+	$Vend::CurrentCart = 'main';
+	$::Levies = $Vend::Session->{levies}{main} ||= [];
 	return bless \$instance => $class;
 }
 
 sub FETCH {
-	return scalar ($::Carts->{$Vend::CurrentCart || 'main'} ||= []);
+	my $cartname = $Vend::CurrentCart;
+	$::Levies = $Vend::Session->{levies}{$cartname} ||= [];
+	return scalar ($::Carts->{$cartname} ||= []);
 }
 
 sub STORE {
 	my ($self, $cart) = @_;
 	my $name;
-	if(ref $cart) {
+	if( ref($cart) eq 'ARRAY' ) {
 		for(keys %$::Carts) {
+#::logDebug("checking name $_ via ref comparison");
 			$name = $_ if $::Carts->{$_} eq $cart;
 		}
+
+		if (! $name) {
+			$name = $cart->[0]{mv_cartname} if $cart->[0]{mv_cartname};
+		}
+
+		if (! $name) {
+			for my $pname (keys %$::Carts) {
+#::logDebug("checking name $pname via line comparison");
+				my $pros = $::Carts->{$pname};
+				next if ref($pros) ne 'ARRAY';
+				next if @$pros != @$cart;
+				CHECKLINES: {
+					for( my $i = 0; $i < @$pros; $i++ ) {
+						my $p = $pros->[$i];
+						my $c = $cart->[$i];
+						my @k1 = keys %$p;
+						my @k2 = keys %$c;
+						last CHECKLINES if @k1 != @k2;
+						foreach my $k (@k1) {
+							last CHECKLINES
+								unless exists $c->{$k};
+							last CHECKLINES
+								unless $c->{$k} eq $p->{$k};
+						}
+					}
+#::logDebug("found name $pname via line comparison");
+					$name = $pname;
+				}
+				last if $name;
+			}
+		}
+
 		if (! $name) {
 			$name = 'UNKNOWN';
 			$::Carts->{UNKNOWN} = $cart;
