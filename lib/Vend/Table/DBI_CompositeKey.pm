@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.1 2004-04-11 05:05:49 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.2 2004-04-11 15:55:03 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use strict;
 
@@ -684,7 +684,9 @@ sub set_field {
 
 	undef $value if $value eq '' and exists $s->[$CONFIG]{PREFER_NULL}{$column};
 
-	$s->set_slice($key, [$column], [$value]);
+	$s->set_slice($key, [$column], [$value])
+		and return $value;
+	return undef;
 }
 
 sub ref {
