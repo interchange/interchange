@@ -3,40 +3,50 @@ ui_template: Yes
 ui_template_name: leftright
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Advanced Search[/tmp]
+[set page_title]__COMPANY__ -- Advanced Search[/set]
+[set page_banner]Advanced Search[/set]
+[set bgcolor]#FFFFFF[/set]
 
 [control reset=1]
 
-[control-set]
-[component]search_box_small[/component]
-[/control-set]
+			[control-set]
+			[component]search_box_small[/component]
+			[/control-set]
 
-[control-set]
-[component]cart_tiny[/component]
-[/control-set]
+			[tmp use_tiny_cart]1[/tmp]
+			[if scratch use_tiny_cart]
+			  [control-set]
+			  [component]cart_tiny[/component]
+			  [/control-set]
+			[else]
+			  [control-set]
+			  [component][/component]
+			  [/control-set]
+			[/else]
+			[/if]
 
-[control-set]
-[component]category_vertical[/component]
-[/control-set]
+			[control-set]
+			[component]category_vertical[/component]
+			[/control-set]
 
-[control-set]
-[component][/component]
-[/control-set]
+			[control-set]
+			[component][/component]
+			[/control-set]
 
-[control-set]
-[component]cross[/component]
-[size]2[/size]
-[cols]2[/cols]
-[banner]Specials[/banner]
-[/control-set]
+			[control-set]
+			[component]cross_horizontal[/component]
+			[size]2[/size]
+			[cols]2[/cols]
+			[banner]Specials[/banner]
+			[/control-set]
 
-[control-set]
-[component]random[/component]
-[size]3[/size]
-[cols]1[/cols]
-[banner]See also...[/banner]
-[/control-set]
-
+			[control-set]
+			[component]random[/component]
+			[size]3[/size]
+			[cols]1[/cols]
+			[banner]See also...[/banner]
+			[/control-set]			
+					
 [control reset=1]
 
 @_LEFTRIGHT_TOP_@
@@ -49,36 +59,18 @@ ui_template_name: leftright
     <br>
 
 	<big><b>Advanced Search</b></big>
-	<br><br>
+	<br><br> 
 
 	<form action="[area search]">
 	[set asearch]su=yes/fi=products[/set]
         <input type=hidden name=mv_profile value=asearch>
-
-		[comment] *****
-
-		The following block of code will display a list of 
-		all the categories.  I just couldn't get the search to
-		work with it.
-
-                <select name=category>
-                  [loop option=category search="
-                        ra=yes
-                        fi=cat
-                        rf=code,name
-                        ml=1000
-                        tf=name
-                  "]
-                  <option value="[loop-code]"> [loop-data cat name]</option>
-                  [/loop]
-                </select>
-		
-		****** [/comment]
-
 	<table>
-        <tr>
-          <td>Search field:</td>
-          <td>
+	<tr>
+	  <td>
+	    <b>Search by Field:</b><br>
+	    Search for  
+		<input type="text" name=mv_searchspec>
+          in the 
               <select name=mv_search_field>
 		<option value="description">Description
               	<option value="sku">SKU
@@ -87,25 +79,50 @@ ui_template_name: leftright
 		<option value="color">Color
 		<option value="size">Size		 
 	      </select>
-          </td>
-        </tr>
-	<tr>
-	  <td>Search string:</td>
-	  <td>
-		<input type="text" name=mv_searchspec><br>
-	  </td>
-	</tr>
-	<tr>
-	  <td>&nbsp;</td>
-	  <td>		
-		<br>
-		<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
-	  </td>
-	</tr>
+
+          field. 
+		  <input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+      </td>
+    </tr>
 	</table>
 	</form>
 
-    <br><br>
+  <form action="[area search]" method=post>
+  <input type=hidden name=mv_substring_match value="Yes">
+  <input type=hidden name=mv_search_map value="
+    mv_searchspec=search1
+    mv_searchspec=search2
+    ">
+  <input type=hidden name=mv_search_field value="category">
+  <input type=hidden name=mv_search_field value="*">
+
+  <table>
+  <tr>
+    <td>
+      <b>Search by Category:</b><br>
+      Search for  
+      <input type="text" name=search2 value=""> 
+      in the 
+      <select name=search1>
+                  [loop option=category search="
+                        ra=yes
+                        fi=cat
+                        rf=code,name
+                        ml=1000
+                        tf=name
+                  "]
+                  <option value="[loop-data cat name]"> [loop-data cat name]</option>
+                  [/loop]
+  </select>
+   category.  
+      <input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+
+    </td>
+  </tr>
+  </table>
+
+  </form>
+
   </td>
 </tr>
 </table>
