@@ -38,7 +38,9 @@ PIDcheck     120
 # No real downside to adding this....
 Mall       Yes
 
-SafeUntrap ftfile sort rand
+# Additional Safe operations to untrap beyond the standard
+# "ftfile sort"
+SafeUntrap  rand
 
 TcpMap 7786 -
 
