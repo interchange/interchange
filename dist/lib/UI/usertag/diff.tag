@@ -4,13 +4,15 @@ UserTag diff addAttr
 UserTag diff Routine <<EOR
 sub {
     my ($curr, $prev, $opt) = @_;
-    if($opt->{context}) {
-        $opt->{flags} = ' -c';
-    }
+
+	$opt->{flags} .= ' -c' if $opt->{context};
+	$opt->{flags} .= ' -u' if $opt->{unified};
+
     unless($opt->{flags} =~ /^[-\s\w.]*$/) {
         Log("diff tag: Security violation with flags: $opt->{flags}");
         return "Security violation with flags: $opt->{flags}. Logged.";
     }
+
     my $currfn;
     my $prevfn;
     my $codere = '[-\w#/.]+';
