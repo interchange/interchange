@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.7
 #
-# $Id: interchange.PL,v 2.7.2.18 2002-11-26 03:21:13 jon Exp $
+# $Id: interchange.PL,v 2.7.2.19 2003-01-24 05:10:36 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -87,6 +87,12 @@ BEGIN {
 	
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
+
+	## This should only happen in "make test"
+	if($Global::VendRoot =~ m{/blib$}) {
+		shift @INC;
+		shift @INC;
+	}
 	
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
@@ -2777,10 +2783,12 @@ sub main_loop {
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
 
+# LEGACY
 	# Kept here for compatibility
 	eval {
 		require Vend::Payment::CyberCash;
 	};
+# END LEGACY
 
 	$Vend::CyberCash = ! $@;
 
