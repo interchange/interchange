@@ -68,7 +68,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	# replace catalog directory
 	mkdir /var/lib/interchange/catalogs/$CATALOG
 	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
-
+	SERVERNAME=`hostname --fqdn`
 	MVC_ENABLESECURE=1 MVC_UISECURE=1 /usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
@@ -78,10 +78,10 @@ if [ "$GOAHEAD" = "true" ]; then
 		--catroot=$BASEDIR/$CATALOG \
 		--documentroot=$DOCROOT \
 		--samplehtml=$DOCROOT/$CATALOG \
-		--sampleurl=http://`hostname`.`dnsdomainname`/cgi-bin/ic/$CATALOG \
+		--sampleurl=http://$SERVERNAME/cgi-bin/ic/$CATALOG \
 		--imagedir=$DOCROOT/$CATALOG/images \
 		--imageurl=/shops/$CATALOG/images \
-		--servername=`hostname`.`dnsdomainname` \
+		--servername=$SERVERNAME \
 		--sharedir=NONE \
 		--shareurl='' \
 		--cgidir=/usr/lib/cgi-bin/ic \
@@ -98,6 +98,9 @@ if [ "$GOAHEAD" = "true" ]; then
 		--nocfg
 
 	interchangeconfig USE_FOUNDATION=1
+
+	# add catalog to running server
+	echo 'Catalog foundation /var/lib/interchange/catalogs/foundation /cgi-bin/ic/foundation' | /usr/sbin/interchange --add foundation
 fi
 
 
