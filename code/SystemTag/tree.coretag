@@ -173,7 +173,8 @@ EOF
 		}  # END ROW
 #::logDebug("last row");
 	} # END ARY
+	$opt->{object} = { mv_results => \@rows };
 #::logDebug("last ary, results =" . ::uneval(\@rows));
-	return labeled_list($opt, $text, {mv_results => \@rows});
+	return labeled_list($opt, $text, $opt->{object});
 }
 EOR
