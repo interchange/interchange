@@ -29,9 +29,26 @@ sub {
 
 	$country = uc $country;
 
+    my %exception;
+
+	$exception{UK} = 'GB';
+
+	if(! $::Variable->{UPS_COUNTRY_REMAP} ) {
+		# do nothing
+	}
+	elsif ($::Variable->{UPS_COUNTRY_REMAP} =~ /=/) {
+		Vend::Util::get_option_hash($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+	}
+	else {
+		Vend::Util::hash_string($::Variable->{UPS_COUNTRY_REMAP}, \%exception);
+	}
+
+	$country = $exception{$country} if $exception{$country};
+
 	# In the U.S., UPS only wants the 5-digit base ZIP code, not ZIP+4
 	$country eq 'US' and $zip =~ /^(\d{5})/ and $zip = $1;
 
+#::logDebug("calling with: " . join("|", $mode, $origin, $zip, $weight, $country));
 	my $cache;
 	my $cache_code;
 	my $db;
