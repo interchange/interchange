@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.11 2001-02-07 15:53:42 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.12 2001-03-23 13:29:08 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.11 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.12 $, 10);
 
 @EXPORT = qw (
 
@@ -2075,7 +2075,7 @@ sub tag_cgi {
 
 	local($^W) = 0;
 	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
-	$value = $CGI::values{$var} || '';
+	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
     if ($value) {
 		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
@@ -3040,7 +3040,10 @@ sub tag_more_list {
 	$prefix = $q->{prefix} || '';
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
-	$form_arg .= "\nmi=$q->{mv_more_id}" if $q->{mv_more_id};
+	if($q->{mv_more_id}) {
+		$more_id = $q->{mv_more_id};
+		$form_arg .= "\nmi=$more_id";
+	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
 		$border = $1;
