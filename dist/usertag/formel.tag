@@ -1,7 +1,7 @@
 #
 # UserTag formel - see POD documentation for more information
 #
-# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.07
+UserTag formel Version 0.08
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -32,7 +32,18 @@ sub {
 
 	$labelproc = sub {
 		my ($label, $keep) = @_;
-	    if ($Tag->error({name => $checkfor, keep => $keep})) {
+		my ($error);
+
+		if ($opt->{cause}) {
+			if ($error = $Tag->error({name => $checkfor, keep => 1})) {
+				$label .= $Tag->error({name => $checkfor, keep => $keep, 
+									   text => $opt->{cause}});
+			}
+		} else {
+			$error = $Tag->error({name => $checkfor, keep => $keep});
+		}
+
+	    if ($error) {
 			if ($opt->{signal}) {
 				sprintf($opt->{signal}, $label);
 			} else {
@@ -46,7 +57,7 @@ sub {
     # set defaults
     $type = 'text' unless $type;
     
-    for ('format', 'order', 'reset', 'signal', 'size') {
+    for ('cause', 'format', 'order', 'reset', 'signal', 'size') {
         next if $opt->{$_};
         if ($::Values->{"mv_formel_$_"}) {
             $opt->{$_} = $::Values->{"mv_formel_$_"};
@@ -184,6 +195,11 @@ specify width and height (e.g. 70x10 or 20,4).
 
 Other options are:
 
+=item cause
+
+Format string for the error message. Appends the result string to
+the label if set. You can use C< (%s)> for example.
+
 =item checkfor
 
 The name which get passed to the Error tag. The default
@@ -225,10 +241,13 @@ CONTRAST doesn't exist, the color red is used instead.
 
 =back
 
-You can set defaults for format, order, reset, signal and size with the
+You can set defaults for cause, format, order, reset, signal and size with the
 corresponding mv_formel_... form variable values, e.g.:
 
+    [value name="mv_formel_cause" set=" (<I>%s</I>)" hide=1]
+
     [value name="mv_formel_format" set="<TR><TD>%s</TD><TD>%s</TD></TR>" hide=1]
+
     [value name="mv_formel_order" set=1 hide=1]
 
 	[value name="mv_formel_signal" set="<BLINK>%s</BLINK>" hide=1]    
