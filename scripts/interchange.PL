@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.6
 #
-# $Id: interchange.PL,v 1.15.2.55 2001-07-10 07:39:51 racke Exp $
+# $Id: interchange.PL,v 1.15.2.56 2001-07-17 15:30:08 ton Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1231,8 +1231,8 @@ my %form_action = (
 
 #::logDebug("Routing status status=$status final=$final errors=$missing");
 					if($status) {
-						$CGI::values{mv_nextpage} = $::Values->{mv_successpage} 
-							if $::Values->{mv_successpage};
+						$CGI::values{mv_nextpage} = $CGI::values{mv_successpage} 
+							if $CGI::values{mv_successpage};
 						$CGI::values{mv_nextpage} = $::Values->{mv_orderpage} 
 							if ! $CGI::values{mv_nextpage};
 					}
