@@ -1,3 +1,4 @@
+UserTag history-scan Version 0.10
 UserTag history-scan Order find exclude default
 UserTag history-scan addAttr
 
@@ -14,6 +15,7 @@ Options:
 
 	default=      Page to return if nothing else matches
 	exclude=      A RegEx of page names to skip
+	include=      A RegEx of only page names allowed
 	form=         Additional form parameters
 	pageonly=1    Return just the name of a page, not a link to it.
 	count=#N      Skip the #N most recently visited pages
@@ -77,9 +79,14 @@ sub {
 	}
 	my ($hist, $href, $cgi);
 	$exclude = qr/$exclude/ if $exclude;
+	my $include;
+	$include = qr/$opt->{include}/ if $opt->{include};
 	for (my $i = $#$ref - abs($opt->{count}); $i >= 0; $i--) {
 		next if $ref->[$i][0] eq 'expired';
 		if ($exclude and $ref->[$i][0] =~ $exclude) {
+			next;
+		}
+		if ($include and $ref->[$i][0] !~ $include) {
 			next;
 		}
 		if($find) {
