@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.85 2002-12-12 03:16:42 mheins Exp $
+# $Id: Config.pm,v 2.86 2002-12-13 04:45:17 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.85 $, 10);
+$VERSION = substr(q$Revision: 2.86 $, 10);
 
 my %CDname;
 
@@ -288,6 +288,7 @@ sub global_directives {
 	['TagDir',      	 'root_dir_array', 	 'code'],
 	['TemplateDir',      'root_dir_array', 	 ''],
 	['DomainTail',		 'yesno',            'Yes'],
+	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
 	['RobotUA',			 'list_wildcard',      ''],
 	['RobotIP',			 'list_wildcard_full', ''],

@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.23 2002-11-24 05:36:07 mheins Exp $
+# $Id: Server.pm,v 2.24 2002-12-13 04:45:17 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -116,6 +116,30 @@ sub populate {
         ${"CGI::$field"} = $cgivar->{$cgi} if defined $cgivar->{$cgi};
 #::logDebug("CGI::$field=" . ${"CGI::$field"});
     }
+
+	# try to get originating host's IP address if request was
+	# forwarded through a trusted proxy
+	my $ip;
+	if ($Global::TrustProxy
+		and ($CGI::remote_addr =~ $Global::TrustProxy
+			or $CGI::remote_host =~ $Global::TrustProxy)
+		and $ip = $cgivar->{HTTP_X_FORWARDED_FOR}) {
+		# trim off intermediate proxies in comma-separated list
+		$ip =~ s/,.*//;
+		$ip =~ s/^\s+//; $ip =~ s/\s+$//;
+		if ($ip =~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+			$CGI::remote_addr = $ip;
+			undef $CGI::remote_host;
+		}
+		else {
+			::logGlobal(
+				{ level => 'info' },
+				"Unknown HTTP_X_FORWARDED_FOR header set from trusted proxy %s: '%s'",
+				$CGI::remote_addr,
+				$cgivar->{HTTP_X_FORWARDED_FOR},
+			);
+		}
+	}
 }
 
 sub log_http_data {
