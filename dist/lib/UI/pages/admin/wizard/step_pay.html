@@ -5,9 +5,9 @@
 @_UI_STD_HEAD_@
 
 [if session browser =~ /mozilla.*gecko/i]
-	[set options_paygate]~~Offline credit card handling~~,none=no credit cards, pgp=PGP sent Credit cards,~~Real-time payment~~, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
+	[set options_paygate]~~[L]Offline credit card handling[/L]~~,none=[L]no credit cards[/L], pgp=[L]PGP sent Credit cards[/L],~~[L]Real-time payment[/L]~~, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
 [else]
-	[set options_paygate]none=no credit cards, pgp=PGP sent Credit cards, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
+	[set options_paygate]none=[L]no credit cards[/L], pgp=[L]PGP sent Credit cards[/L], authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
 [/else]
 [/if]
 
