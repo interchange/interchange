@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.92 2002-07-28 05:28:12 mheins Exp $
+# $Id: Interpolate.pm,v 2.93 2002-07-28 05:44:24 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.92 $, 10);
+$VERSION = substr(q$Revision: 2.93 $, 10);
 
 @EXPORT = qw (
 
@@ -6720,6 +6720,7 @@ sub levies {
 		if($type eq 'salestax') {
 			my $save;
 			$sort = $l->{sort} || '010';
+			my $lab_field = $l->{label_value} || $Vend::Cfg->{SalesTax};
 			if($l->{tax_fields}) {
 				$save = $Vend::Cfg->{SalesTax};
 				$Vend::Cfg->{SalesTax} = $l->{tax_fields};
@@ -6731,7 +6732,7 @@ sub levies {
 			$cost = salestax(undef, { tax_type => $l->{tax_type} } );
 			$desc = errmsg(
 						$l->{description} || 'Sales Tax',
-						$::Values->{$Vend::Cfg->{SalesTax}},
+						$::Values->{$lab_field},
 					);
 			$Vend::Cfg->{SalesTax} = $save if defined $save;
 		}
