@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.79 2002-11-06 04:13:53 mheins Exp $
+# $Id: Config.pm,v 2.80 2002-11-06 04:36:18 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.79 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 my %CDname;
 
@@ -2439,9 +2439,9 @@ sub parse_list_wildcard {
 }
 
 sub parse_list_wildcard_full {
-	my $value = '^(' . get_wildcard_list(@_,1) . ')$';
+	my $value = get_wildcard_list(@_,1);
 	return '' unless length($value);
-	return qr/$value/i;
+	return qr/^($value)$/i;
 }
 
 # Make a dos-ish regex into a Perl regex, check for errors
