@@ -20,7 +20,7 @@ $state = uc $state;
 	address => qq{__ADDRESS__},
 	adminuser => qq{},
 	adminpass => qq{},
-	city => $city,
+	city => q{__TOWN__} || $city,
 	code => qq{store},
 	colorset => q{__STYLE__},
 	company => q{__COMPANY__},
@@ -34,7 +34,7 @@ $state = uc $state;
 	instock => q{__IN_STOCK_OPTS__},
 	outstock => q{__IN_STOCK_NOTIFY__},
 	logo => q{__LOGO__},
-	paycheck => q{__CHECK_ACCEPTED__},
+	paycheck => q{__CHECK_ACCEPTED_},
 	paycod => q{__COD_ACCEPTED__},
 	paygate => q{__MV_PAYMENT_MODE__},
 	paymentid => q{__MV_PAYMENT_ID__},
@@ -49,13 +49,13 @@ $state = uc $state;
 	shoppass => qq{},
 	shopuser => qq{},
 	smlogo => q{__SMLOGO__},
-	state => $state,
+	state => q{__STATE__} || $state,
 	taxrate => q{__TAXRATE__},
 	taxlocation => q{__TAXAREA__},
 	tinycart => q{__USE_TINY_CART__},
 	taxship => q{__TAXSHIP__},
 	tollfree => qq{__TOLLFREE__},
-	zip => $zip,
+	zip => q{__ZIP__} || $zip,
 );
 
 for(keys %vars) {

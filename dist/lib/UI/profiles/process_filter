@@ -38,9 +38,12 @@ __NAME__ process_filter
 #Debug("cgi->$key isfile='$isfile'");
 		next unless $isfile;
 		$path =~ s,/+$,,;
-		$CGI->{$key} = $Tag->filter('filesafe', $CGI->{$key});
+		my $fn = $CGI->{$key};
+		$fn =~ s,.*/,,;
+		$fn =~ s,.*\\,,;
+		$fn = $Tag->filter('filesafe', $fn);
 #Debug("cgi->$key now='$CGI->{$key}'");
-		my $out = "$path/$CGI->{$key}";
+		my $out = "$path/$fn";
 		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1} ) ) {
 			$Scratch->{ui_failure} .= "\nFailed to write upload file $out";
 		}
