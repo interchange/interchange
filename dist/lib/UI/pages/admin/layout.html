@@ -1,5 +1,5 @@
 [set page_title]Layout Editor[/set]
-[set page_banner]Layout Editor: Organize your site into areas and categories[/set]
+[set page_banner]Layout Editor: Organize your site into categories[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]admin/icon_pages.gif[/set]
 
@@ -14,61 +14,70 @@
 <tr>
 <td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
-<tr>
-<td colspan=3  bgcolor=__UI_C_INTBLOCK__>
-<center>
-
-Edit site area:
-<select name="area">
-<option>Foo
-<option>Bar
-</select>
-
-&nbsp;&nbsp; -- OR -- &nbsp; &nbsp;
-
-Create new area:
-<input name="newarea" size=15>
-<input type="submit" value="Create!">
-
-</center>
-</td>
-</tr>
-
-<!--
-<tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
-</tr>
--->
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
-Categories in this area:<br>
+View Category:<br>
 <select name="cat" size=10>
 <option>Category the first
 <option>Category the second
 </select>
 <br>
 
-Add an existing category to this area:<br>
-<select name="existingcat">
-<option>Category the first
-<option>Category the second
-<option>Category the third
-<option>Category the fourth
-</select>
-<input type=submit value="Add!">
+<input onclick="window.open('layout_create.html', 'create_window', 
+			    'resizable=1,width=240,height=120')" 
+	type="submit" value="Create new category">
+
 <br>
 
-Add a new category to this area:<br>
-<input name="newcat" size=20>
-<input type=submit value="Add new!">
+<input onclick="window.open('layout_subcat.html', 'create_window', 
+			    'resizable=1,width=240,height=120')" 
+	type=submit value="Create subcategory">
+
+<br>
+
+<input type=submit value="Category Properties">
+
 </td>
 
 
 <td bgcolor="__UI_C_TOPBLOCKBAR__" width=1><img src="admin/cleardot.gif" width=1></td>
 
 <td bgcolor="__UI_C_INTBLOCK__">
-Some other stuff that takes up a whole lot of space!
+<input type="submit" value="Add item to category:">
+<select name="sku">
+<option>Frob
+<option>Super Frob
+<option>Mega Frob
+<option>Uber Frob
+<option>Hyper Frob
+<option>Frob o Tron
+</select>
+
+<br>
+<br>
+
+<table>
+<tr>
+
+<td>
+Items in this category:<br>
+
+<select name="existing_items" size=10>
+<option>Frob
+<option>Frob o Tron
+</select>
+</td>
+
+<td>
+<input type=submit value="Remove item from category">
+<br>
+<input type=submit value="Edit item">
+</td>
+
+</tr>
+</table>
+
 </td>
 
 </tr>
