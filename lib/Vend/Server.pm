@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7 2000-09-19 18:58:39 zarko Exp $
+# $Id: Server.pm,v 1.7.4.1 2000-11-27 02:31:48 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.7.4.1 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -164,6 +164,11 @@ sub parse_post {
 			= split /;/, $pairs[0], 3;
 #::logDebug("found session stuff: $CGI::values{mv_session_id} --> $CGI::values{mv_arg}  --> $CGI::values{mv_pc} ");
 		shift @pairs;
+	}
+	elsif ($#pairs == 1 and $pairs[0] !~ /=/) {	# Must be an isindex
+		$CGI::values{ISINDEX} = $pairs[0];
+		$CGI::values_array{ISINDEX} =  [ split /\+/, $pairs[0] ];
+		@pairs = ();
 	}
 	my $redo;
   CGIVAL: {
