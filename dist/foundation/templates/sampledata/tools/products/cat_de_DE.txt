@@ -26,7 +26,7 @@ code	name
 00042	Maﬂe
 00006	H‰mmer
 00029	Augenschutz
-00010	Wasserwagen
+00010	Wasserwaagen
 00033	Hands‰gen
 00041	Rollen
 00005	Geschenkgutschein
