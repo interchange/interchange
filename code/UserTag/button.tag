@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.8 2003-03-31 20:40:23 ramoore Exp $
+UserTag button Version $Id: button.tag,v 1.9 2003-04-29 20:03:09 mheins Exp $
 UserTag button Documentation <<EOD
 
 =pod
@@ -44,6 +44,11 @@ try:
 The text of the button, also the name of the scratch action
 (VALUE is an alias for TEXT.) 
 
+=item wait-text             
+
+The text of the button after a click -- also the name of the scratch action
+instead of "text" when this is set.
+
 =item border, height, width, vspace, hspace, align
 
 The image alignment parameters. Border defaults to 0.
@@ -73,6 +78,15 @@ Set to the anchor text value, defaults to TEXT
 
 Set true if you don't want the anchor displayed
 
+=item extra
+
+Extra HTML you want placed inside the link or button. You can
+use class,id, or style for those attributes.
+
+=item id,class,style
+
+The normal HTML attributes.
+
 =back
 
 =cut
@@ -82,9 +96,19 @@ UserTag button Routine <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
 
+	my $trigger_text;
+
+	if($opt->{wait_text}) {
+		$trigger_text = $opt->{wait_text};
+	}
+	else {
+		$trigger_text = $text;
+	}
+
 	my @js;
 	my $image;
 
+	my @from_html = qw/class id style/;
 
 	if($src) {
 		my $dr = $::Variable->{DOCROOT};
@@ -126,13 +150,14 @@ sub {
 	if(! $name or $name eq 'mv_click') {
 		$action =~ s/^\s+//;
 		$action =~ s/\s+$//;
-		my $set_text = HTML::Entities::decode($text);
+		my $set_text = HTML::Entities::decode($trigger_text);
 		$::Scratch->{$set_text} = $action;
 		$name = 'mv_click' if ! $name;
 	}
 	
 	my $out = '';
 	my $confirm = '';
+	my $wait = '';
 	$opt->{extra} = $opt->{extra} ? " $opt->{extra}" : '';
 	if($opt->{confirm}) {
 		$opt->{confirm} =~ s/'/\\'/g;
@@ -157,6 +182,12 @@ sub {
 		$out =~ s/ /join "\n", '', @js, ''/e;
 	}
 
+	$opt->{extra} ||= '';
+	for(@from_html) {
+		next unless $opt->{$_};
+		$opt->{extra} .= qq{ $_="$opt->{$_}"};
+	}
+
 	# return submit button if not an image
 	if(! $image) {
 		$text =~ s/"/&quot;/g;
@@ -164,6 +195,15 @@ sub {
 		if(! $onclick and $confirm) {
 			$onclick = qq{ onclick="return $confirm"};
 		}
+		elsif(! $onclick and $opt->{wait_text}) {
+			$opt->{wait_text} = HTML::Entities::encode($trigger_text);
+			$onclick  = qq{ onClick="};
+			$onclick .= qq{var msg = 'Already submitted.';};
+			$onclick .= qq{this.value = '$opt->{wait_text}';};
+			$onclick .= qq{this.onclick = 'alert(msg)';};
+			$onclick .= qq{"};
+		}
+
 		my $out = $opt->{bold} ? "<B>" : '';
 		$out .= qq{<INPUT$opt->{extra} TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
 		$out .= "</B>" if $opt->{bold};
