@@ -379,7 +379,7 @@ EOF
 						$error_show_var = 0 if $v =~ /\S /;
 					}
 				}
-				$prof = '&calc delete $Values->{step_' . $name . "}\n" . $prof;
+				$prof = '&calc delete $Values->{step_' . $name . "}; return 1\n" . $prof;
 				$opt->{ui_profile_success} = "&set=step_$name 1";
 			}
 		}
