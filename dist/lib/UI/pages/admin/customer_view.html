@@ -1,6 +1,6 @@
-[set page_title]Customer manager: View customer[/set]
+[set page_title][L]Customer manager[/L]: [L]View customer[/L][/set]
 [set ui_class]Customers[/set]
-[set page_banner]View customer[/set]
+[set page_banner][L]View customer[/L][/set]
 [set help_name]customer.view[/set]
 [set icon_name]icon_people.gif[/set]
 @_UI_STD_HEAD_@
@@ -29,9 +29,9 @@
 <td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
 <table>
 <tr><td align=right>
-<b>Customer Username: </td><td>[loop-code]</b></td>
+<b>[L]Customer Username[/L]: </td><td>[loop-code]</b></td>
 </tr><tr>
-<td align=right><b>Customer: </td><td>
+<td align=right><b>[L]Customer[/L]: </td><td>
 <A HREF="[area
 				href=__UI_BASE__/customer_pref
 				form=|
@@ -54,47 +54,47 @@
 
 <table border=0>
 <tr><td align=right>
-<font size=2><b> Company: </b></font>
+<font size=2><b> [L]Company[/L]: </b></font>
 </td><td><font size=2>[loop-data userdb company]</font></td></tr>
 
 <tr><td align=right>
-<font size=2><b> Home phone: </b></font>
+<font size=2><b> [L]Home phone[/L]: </b></font>
 </td><td><font size=2>[loop-data userdb phone_night]</font></td></tr>
 
 <tr><td align=right>
-<font size=2><b> Work phone: </b></font>
+<font size=2><b> [L]Work phone[/L]: </b></font>
 </td><td><font size=2>[loop-data userdb phone_day]</font></td></tr>
 
 <tr><td align=right>
-<font size=2><b> Email: </b></font>
+<font size=2><b> [L]Email[/L]: </b></font>
 </td><td><font size=2> <a href="mailto:[loop-data userdb email]"><U>[loop-data userdb email]</U></a></font></td></tr>
 <tr><td align=right>
-<font size=2><b> Payment type: </b></font>
+<font size=2><b> [L]Payment type[/L]: </b></font>
 </td><td><font size=2>[display arbitrary=custview table=userdb column=fax_order key="[loop-code]"]</a></font></tr>
 
 [if-loop-data userdb project_id]
 <tr><td align=right>
-<font size=2><b>PO Number:</b></font>&nbsp;
+<font size=2><b>[L]PO Number[/L]:</b></font>&nbsp;
 </td><td><font size=2>[loop-data userdb project_id]</font></td></tr>
 [/if-loop-data]
 
 [if-loop-data userdb fax]
 <tr><td align=right>
-<font size=2><b>FAX number:</b></font>&nbsp;
+<font size=2><b>[L]FAX number[/L]:</b></font>&nbsp;
 </td><td><font size=2>[loop-data userdb fax]</font></td></tr>
 [/if-loop-data]
 
 <tr><td align=right>
-<font size=2><b>Dealer:</b></font>&nbsp;
+<font size=2><b>[L]Dealer[/L]:</b></font>&nbsp;
 </td><td><font size=2>[display arbitrary=custview table=userdb column=dealer key="[loop-code]"]</font></td></tr>
 
 
 <tr><td align=right>
-<font size=2><b>Wants email copy:</b></font>&nbsp;
+<font size=2><b>[L]Wants email copy[/L]:</b></font>&nbsp;
 </td><td><font size=2>[display arbitrary=custview table=userdb column=email_copy key="[loop-code]"]</font></td></tr>
 
 <tr><td align=right>
-<font size=2><b>Mail lists:</b></font>&nbsp;
+<font size=2><b>[L]Mail lists[/L]:</b></font>&nbsp;
 </td><td><font size=2>[loop-data userdb mail_list]</font></td></tr>
 
 </table>
@@ -127,9 +127,9 @@
 				form=|
 					customer=[loop-data userdb username]
 				|
-		]"><b><u>Bill To</u>:</b></A>
+		]"><b><u>[L]Bill To[/L]</u>:</b></A>
 [else]
-		<b>Bill To:</b>
+		<b>[L]Bill To[/L]:</b>
 [/else]
 [/if-loop-data]
 <blockquote>
@@ -146,7 +146,7 @@
 				form=|
 					customer=[cgi customer]
 				|
-		]"><b><u>Ship To</u>:</b></A>
+		]"><b><u>[L]Ship To[/L]</u>:</b></A>
 <br>
 <blockquote>
 [scratch ship_address]
@@ -163,16 +163,16 @@
 
 <tr>
 <td width="20%" bgcolor=__UI_C_INTBLOCK__>
-	<B>Order number</B>
+	<B>[L]Order number[/L]</B>
 </td>
 <td width="20%" bgcolor=__UI_C_INTBLOCK__>
-	<B>Order date</B>
+	<B>[L]Order date[/L]</B>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-	<B>Order Total</B>
+	<B>[L]Order Total[/L]</B>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-	<B>Status</B>
+	<B>[L]Status[/L]</B>
 </td>
 </tr>
 [query list=1
@@ -200,7 +200,7 @@
 			href=__UI_BASE__/order_status
 			form="
 				order=[sql-code]
-			"]"><U>[sql-pos 5]</U></A>
+			"]"><U>[msg][sql-pos 5][/msg]</U></A>
 </td>
 </tr>
 [/query]
@@ -215,34 +215,34 @@
 <input type=hidden name=customer value="[loop-data userdb username]">
 <input type=hidden name=viewnext value=1>
 
-[button text="Back"]
+[button text="[L]Back[/L]"]
 viewnext=
 viewcustomer=
 [/button]
 
-[button text="Enter order"]
+[button text="[L]Enter order[/L]"]
 mv_nextpage=__UI_BASE__/entry
 mv_todo=return
 [/button] 
 
 [if-mm advanced userdb=e]
 [if-loop-data userdb inactive]
-[button name="activate" text="Activate customer"][/button]
+[button name="activate" text="[L]Activate customer[/L]"][/button]
 [else]
-[button name="deactivate" text="Deactivate customer"
-	confirm="Are you sure you want to deactivate this customer?"][/button]
+[button name="deactivate" text="[L]Deactivate customer[/L]"
+	confirm="[L]Are you sure you want to deactivate this customer?[/L]"][/button]
 [/else]
 [/if-loop-data]
 
-[button text="Change password"]
+[button text="[L]Change password[/L]"]
 user_id=[loop-code]
 mv_nextpage=__UI_BASE__/customer_change_pass
 [/button]
 [/if-mm]
 
 [if-mm advanced userdb=d]
-<input type=submit name="deletecustomer" value="Delete customer" 
- onClick="return confirm('Are you sure you want to delete this customer?')">
+<input type=submit name="deletecustomer" value="[L]Delete customer[/L]" 
+ onClick="return confirm('[L]Are you sure you want to delete this customer?[/L]')">
 [/if-mm]
 
 </form>
