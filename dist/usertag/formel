@@ -27,11 +27,12 @@ sub {
     my ($label, $name, $type, $size, $opt) = @_;
     my ($labelhtml, $elhtml, $fmt);
     my $contrast = $::Variable->{CONTRAST} || 'red';
-    
+    my $sizestr = '';
+
     # set defaults
     $type = 'text' unless $type;
-
-    for ('format', 'order', 'reset') {
+    
+    for ('format', 'order', 'reset', 'size') {
         next if $opt->{$_};
         if ($::Values->{"mv_formel_$_"}) {
             $opt->{$_} = $::Values->{"mv_formel_$_"};
@@ -44,6 +45,10 @@ sub {
         $fmt = '%s %s';
     }
 
+    if ($opt->{'size'}) {
+        $sizestr = " size=$opt->{size}";
+    }
+
     if ($Tag->error($name)) {
         $labelhtml = "<font color=\"$contrast\">$label</font>";
     } else {      
@@ -51,9 +56,9 @@ sub {
     }
 
     if ($opt->{reset}) {
-        $elhtml = "<input type=$type name=$name>";
+        $elhtml = "<input type=$type name=${name}$sizestr>";
     } else {
-        $elhtml = "<input type=$type name=$name value=\"$::Values->{$name}\">";
+        $elhtml = "<input type=$type name=$name value=\"$::Values->{$name}\"$sizestr>";
     }
 
     if ($opt->{order}) {
@@ -88,6 +93,10 @@ The user-visible description of the form element's purpose.
 The name of the form element which appears in the C<NAME>
 attribute of the HTML tag.
 
+=item size
+
+The width of the form element.
+
 =back
 
 Other options are:
@@ -108,7 +117,7 @@ Discards the user input if set to 1.
 
 =back
 
-You can set defaults for format, order and reset with the corresponding
+You can set defaults for format, order, reset and size with the corresponding
 mv_formel_... form variable values, e.g.:
 
     [value name="mv_formel_format" set="<TR><TD>%s</TD><TD>%s</TD></TR>" hide=1]
