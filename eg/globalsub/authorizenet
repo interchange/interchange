@@ -129,7 +129,7 @@ sub authorizenet {
                     x_Address       => $actual{address}, 
                     x_City          => $actual{b_city}, 
                     x_State         => $actual{b_state}, 
-                    x_Zip			=> $actual{zip},
+                    x_Zip			=> $actual{b_zip},
 					x_Type			=> $actual{cyber_mode},
                     x_Amount    	=> $amount, 
                     x_Exp_Date  	=> $exp,
