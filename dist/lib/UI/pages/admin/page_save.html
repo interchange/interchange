@@ -54,7 +54,7 @@
 	}
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
 	if( ! $page) {
-		$Scratch->{ui_error} = "No page name given.";
+		$Scratch->{ui_error} = errmsg("No page name given.");
 		$Tag->bounce('__UI_BASE__/error');
 		return;
 	}
