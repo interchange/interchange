@@ -32,10 +32,10 @@ EOF
 	}
 
 #::logDebug("meta call: table=$table col=$column key=$key text=$text");
-	eval {
-		$text = $db->field($key,$column);
-	};
-	$text = $opt->{default} || $CGI::values{$column} if ! $text;
+	$text = $db->field($key,$column) if $db->record_exists($key);
+	if (not defined $text) {
+		$text = length($opt->{default}) ? $opt->{default} : $CGI::values{$column};
+	}
 #::logDebug("data call failed: $@") if $@;
 
 	if(! $CGI::values{ui_no_meta_display}) {
