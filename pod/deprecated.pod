@@ -1,0 +1,19 @@
+=head1 NAME
+
+Interchange Deprecated Features List
+
+=head2 Version
+
+This document describes features of Interchange 4.6 that have been deprecated.
+Any use of these features should be discontinued. In most cases we have
+provided an alternative mechanism to accomplish the same results.  These
+deprecated features may be removed at some point in the future.  You should
+change to the new mechanism to avoid breakage.
+
+=head1 DESCRIPTION
+
+=item Vend::Util::send_mail Vend::Order::send_mail send_mail
+
+The send_mail routine has been replaced by the Vend::Mail::send routine.
+
+=cut
