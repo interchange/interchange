@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.4 2001-10-17 17:41:24 mheins Exp $
+# $Id: Config.pm,v 2.2.2.5 2002-01-04 01:02:15 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.4 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.5 $, 10);
 
 my %CDname;
 
@@ -1729,8 +1729,11 @@ sub parse_locale {
 			%{$sethash} = Text::ParseWords::shellwords($settings);
 		}
 		$c = $store->{$name} || {};
-		for (keys %{$sethash}) {
-			$c->{$_} = $sethash->{$_};
+		if (delete $sethash->{MV_LOCALE_CHOMP_VALUES}) {
+			chomp ($c->{$_} = $sethash->{$_}) for keys %$sethash;
+		}
+		else {
+			$c->{$_} = $sethash->{$_} for keys %$sethash;
 		}
 		if($item eq 'Locale') {
 			$Vend::Cfg->{DefaultLocale} = $name;
