@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.76 2002-10-30 23:40:29 kwalsh Exp $
+# $Id: Config.pm,v 2.77 2002-10-31 20:07:04 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.77 $, 10);
 
 my %CDname;
 
@@ -3816,10 +3816,10 @@ sub parse_delimiter {
 sub parse_yesno {
 	my($var, $value) = @_;
 	$_ = $value;
-	if (m/^y/i || m/^t/i || m/^1/) {
+	if (m/^y/i || m/^t/i || m/^1/ || m/^on/i) {
 		return 1;
 	}
-	elsif (m/^n/i || m/^f/i || m/^0/) {
+	elsif (m/^n/i || m/^f/i || m/^0/ || m/^of/i) {
 		return 0;
 	}
 	else {
