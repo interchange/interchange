@@ -9,6 +9,9 @@ sub {
 	if($opt->{find}) {
 		require File::Find;
 		my $expire = $Vend::Cfg->{SessionExpire};
+		if( int($::Variable->{ACTIVE_SESSION_MINUTES}) ) {
+			$expire = $::Variable->{ACTIVE_SESSION_MINUTES} * 60;
+		}
 		my $now = time();
 		$expire = $now - $expire;
 		my @files;
