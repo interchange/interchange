@@ -24,15 +24,20 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 [else][bounce href="[area admin/special/key_violation]"][/else]
 [/if-mm]
 
-[perl tables="[value mv_data_table]"]
+[perl tables="[value mv_data_table] __UI_META_TABLE__"]
 my $table = $Values->{mv_data_table};
 my $db = $Db{$table};
+my $mdb = $Db{__UI_META_TABLE__};
 if(! $db) {
 	$Scratch->{ui_error} = "Bad table '$table'.";
 	$Tag->bounce( { page => '__UI_BASE__/error' } );
 }
 
 $Values->{ui_data_key_name} = $db->config('KEY');
+
+if( $mdb and ! $CGI->{ui_data_fields} and ! $CGI->{ui_data_fields_all} ) {
+	$CGI->{ui_data_fields} = $mdb->field($table, 'options');
+}
 
 $Values->{ui_data_fields} =
 	$CGI->{ui_data_fields} ||
@@ -41,7 +46,6 @@ $Values->{ui_data_fields} =
 	join " ", $db->columns();
 
 $Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
-
 
 my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
 @cols = grep /:/ || $db->column_exists($_), @cols;
