@@ -1,12 +1,0 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
-O1	O1	Abstract		00					Abstract Gallery	simple		products			category=Abstract
-O2	O1	Expressionists		00					Expressionist Gallery	simple		products			category=Expressionists
-O3	O1	Impressionists		00						simple		products			category=Impressionists
-O4	O1	Americana		00					Americana Gallery	simple		products			category=Americana
-O5	O1	Renaissance		00						simple		products			category=Renaissance
-O6	O1	Surrealists		00	name				Surrealist Gallery	complex		products		fi=productsst=dbco=1sf=categoryse=Surrealistsop=eqnu=0ml=5tf=artistto=x	category=Surrealists
-O7	O3	MOMA		-1						external	http://www.moma.org	products			
-O8	O3	Museum of Bad Art		02						external	http://glyphs.com/moba/	products			
-O9	O3	Artchive		00						external	http://www.artchive.com	products		fi=productsco=1sf=titlese=yop=rmnu=0su=1ml=50	
-O10	O2	Documentation		00					Interchange Documentation	simple		products			category=docs
-O11	O2	T-Shirts		00					Wearables	simple	http://store.steppenwolf.com	products			category=shirts

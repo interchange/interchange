@@ -1,4 +1,0 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
-O1	left	Galleries	all 	00	name					none	browse1 		browse1		1
-O2	left	Other Stuff	all 	00	name					none					2
-O3	left	Links	all 	01	name					none					3
