@@ -544,10 +544,6 @@ Card Number<BR>
 
 </TABLE><br>
 
-[set Place Order!]
-mv_todo=submit
-[/set]
-
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
 <FONT COLOR="__UI_C_TITLEBARTXT__"><B>Email preferences</B></FONT>
 </TD></TR></TABLE>
@@ -576,6 +572,8 @@ mv_todo=submit
 <CENTER>
 [set Place Order]
 mv_todo=submit
+mv_nextpage=admin/order
+[value name=mv_order_route set="log_entry main copy_user" hide=1]
 [/set]
 
 <INPUT name=mv_click TYPE=submit VALUE="Place Order">
