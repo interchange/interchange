@@ -123,6 +123,41 @@
 	return;
 [/perl]
 
+[calc]
+	delete $Scratch->{ui_location};
+	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/flex_editor';
+	if($CGI->{ui_sequence_edit}) {
+		my $doit;
+		if($CGI->{item_id_left} =~ s/^(.*?)[\0]//) {
+			$CGI->{ui_sequence_edit} = 1;
+			$CGI->{item_id} = $1;
+			$doit = 1;
+		}
+		elsif ($CGI->{item_id_left}) {
+			$CGI->{item_id} = delete $CGI->{item_id_left};
+			delete $CGI->{ui_sequence_edit};
+			$doit = 1;
+		}
+		else {
+			delete $CGI->{item_id};
+			delete $CGI->{ui_sequence_edit};
+		}
+		return unless $doit;
+		$Scratch->{ui_location}
+				= $Tag->area( {
+						href => $dest,
+						form => qq{
+							mv_data_table=$CGI->{mv_data_table}
+							item_id=$CGI->{item_id}
+							item_id_left=$CGI->{item_id_left}
+							ui_sequence_edit=$CGI->{ui_sequence_edit}
+						},
+					});
+		return;
+	}
+
+[/calc]
+
 <!-- ui_location: [scratch ui_location] -->
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
@@ -172,7 +207,7 @@
 </FORM>
 [/else]
 [/if]
-[output]
+[output name=""]
 
 [if scratch ui_failure]
 <blockquote class=cerror>
@@ -343,7 +378,6 @@ op=eq
 EOF
 	}
 	elsif ($Scratch->{tmp_large}) {
-#Debug("It is large.");
 		my $keylabel = $Tag->display({
 							table => $tab,
 							name => 'item_id',
@@ -379,7 +413,6 @@ EOF
 		my $i = 0;
 		my $show = $CGI->{ui_show_fields};
 		$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
-#Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
 		$show =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $show;
 	}
@@ -395,15 +428,9 @@ EOF
 
 	my (@limit_field) = split " ", $CGI->{ui_limit_fields};
 
-#Log("show_field: " . $Tag->uneval( { ref => \@cols } ));
-#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
-#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
 	if(@limit_field) {
-#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
 		@limit_field{@limit_field} = ();
-#Log("limit_fields: " . $Tag->uneval( { ref => \%limit_field } ));
 		@cols = grep ! exists($limit_field{$_}), @cols;
-#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
 	}
 
 	unshift(@cols, $Scratch->{keyname})
@@ -439,13 +466,14 @@ EOF
 	$Scratch->{page_title} .= $out_message;
 	return;
 [/perl]
-</FORM>
 
 [tmpn tmp_ncols][/tmpn]
 <!-- tq: [scratch sparams] -->
 <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+[output name=top_of_form]
 	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+	<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 	[if cgi ui_meta_view]
 	[return-to]
 	<!-- got a return-to -->
@@ -458,10 +486,9 @@ EOF
 	<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
 	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="mv_data_table=[cgi mv_data_table]">
-	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="ui_sequence_edit=1">
 	[/else]
 	[/if]
-	<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+[output name=""]
 	<tr class=rhead>
 	<td class=rhead>&nbsp;</td>
 	[loop list="[cgi ui_description_fields]"]
@@ -558,8 +585,6 @@ sub {
 		my $extra = '';
 		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
 
-#Log("$i filter = $filter");
-
 		$_ = $Tag->filter($filter, $_);
 		s/\[/&#91;/g;
 		$out .= "<TD$extra>$_</TD>";
@@ -621,24 +646,44 @@ sub {
 </table>
 
 [on-match]
-[if !cgi ui_meta_view]
 
 [output name=top_buttons]
 [button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
-ui_sequence_edit=1
-mv_nextpage=__UI_BASE__/flex_editor
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=admin/flex_editor
 mv_todo=return
 [/button]
 
 [output name=bottom_buttons]
 [button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
-ui_sequence_edit=1
-mv_nextpage=__UI_BASE__/flex_editor
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=admin/flex_editor
 mv_todo=return
 [/button]
 
 [output]
-[/if]
 
 [if-mm function="tables" table="[cgi mv_data_table]=d"]
 
@@ -661,16 +706,18 @@ mv_click=db_maintenance
 deleterecords=1
 mv_click=db_maintenance
 [/button]
-[output]
+[output name=""]
 
 [/if-mm]
 
 [/on-match]
-</FORM>
 [/search-region]
+
+[output name=bottom_of_form]
+</FORM>
+[output name=""]
+
 <!-- ----- END REAL STUFF ----- -->
 
-[update values]
-
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.20 2003-04-14 16:24:14 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.21 2003-06-22 14:22:35 mheins Exp $ -->
