@@ -3,7 +3,7 @@
 # Copyright (C) 1998-2000 Akopia, Inc. <info@akopia.com>
 
 # Author: Michael J. Heins <heins@akopia.com>
-# Maintainer: Stefan Hornburg <racke@linuxia.de>
+# Former maintainer: Stefan Hornburg <racke@linuxia.de>
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -44,7 +44,7 @@ $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
 =head1 NAME
 
-Primitive.pm -- Miniman Configuration Manager Primitives
+Primitive.pm -- Interchange Configuration Manager Primitives
 
 =head1 SYNOPSIS
 
