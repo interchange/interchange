@@ -137,15 +137,15 @@ __NAME__ db_maintenance
 				}
 				if($col) {
 					next unless length ($key);
-					$key = $db->quote($key, $col);
-					my $num = $db->query("delete from $t where $col = $key");
+					my $k = $db->quote($key, $col);
+					my $num = $db->query("delete from $t where $col = $k");
 					if($num > 0) {
 						push @out, errmsg(
 									"deleted %s records from %s where %s = %s",
 									$num,
 									$t,
 									$col,
-									$key,
+									$k,
 									);
 					}
 					else {
@@ -153,7 +153,7 @@ __NAME__ db_maintenance
 										"No records in %s where %s = %s",
 										$t,
 										$col,
-										$key,
+										$k,
 										);
 					}
 				}
