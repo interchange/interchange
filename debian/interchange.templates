@@ -62,3 +62,12 @@ Default: false
 Description: Whether to enable debug mode or not
  Debug mode is only useful if you modified the Interchange sources
  accordingly.
+
+Template: interchange/gpghome
+Type: string
+Default: /var/lib/interchange/.gnupg
+Description: Directory for GnuPG public keyring
+ For enhanced security, credit card information retrieved from customers
+ will be encrypted and mailed to the shop owner instead of storing it
+ on the server. Please choose the directory Interchange uses for the
+ GnuPG public keyring.

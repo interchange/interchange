@@ -35,6 +35,10 @@ MODE="--unix"
 USER=interchange
 . /etc/interchange/init.cfg
 
+if [ "$GPGDIR" ]; then
+	export GNUPGHOME=$GPGHOME
+fi
+
 case "$1" in
   start)
 	# skip start during unfinished installation

@@ -1,8 +1,9 @@
 interchange (4.9.6-1) unstable; urgency=low
 
   * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 13 Dec 2002 22:13:07 +0100
+  * new debconf option for GnuPG home directory
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 30 Dec 2002 01:39:19 +0100
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 

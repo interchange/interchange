@@ -84,6 +84,9 @@ echo GROUP=$GROUP >> $INITCFG
 db_get interchange/docroot
 echo DOCROOT=$RET >> $INITCFG
 
+db_get interchange/gpghome
+echo GPGHOME=$GPGHOME >> $INITCFG
+
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf
 

@@ -97,6 +97,11 @@ Foundation
 
 * Payment routes use now generic MV_PAYMENT_* variables.
 
+Installation
+------------
+
+* Debian packages support the selection of the GnuPG home directory 
+  during installation now.
 
 ------------------------------------------------------------------------------
 
