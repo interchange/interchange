@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.3 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -765,7 +765,13 @@ sub meta_display {
 		or return undef;
 	$meta = $meta->ref();
 	if($column eq $meta->config('KEY')) {
-		$base_entry_value = $value =~ /::/ ? $table : $value;
+		if($o->{arbitrary} and $value !~ /::.+::/) {
+			$value =~ /::(\w+)/;
+			$base_entry_value = $1;
+		}
+		else {
+			$base_entry_value = $value =~ /::/ ? $table : $value;
+		}
 	}
 #::logDebug("metadisplay: got meta ref=$meta");
 	my $tag = '';
@@ -778,26 +784,61 @@ sub meta_display {
 		# unshift @tries, "$tag${table}::${column}::$key", "$tag${table}::$key";
 		unshift @tries, "$tag${table}::${column}::$key";
 	}
+
+	my $sess = $Vend::Session->{mv_metadata} || {};
+
 	if($tag and $o->{fallback}) {
 		push @tries, "${table}::${column}::$key", "${table}::${column}";
 	}
 
-	my $sess = $Vend::Session->{mv_metadata} || {};
+	push @tries, { type => $o->{type} }
+		if $o->{type};
+
 	for $metakey (@tries) {
 #::logDebug("enter metadisplay record $metakey");
 		my $record;
 		unless ( $record = $sess->{$metakey} and ref $record ) {
-			next unless $meta->record_exists($metakey);
-			$record = $meta->row_hash($metakey);
+			if(ref $metakey) {
+				$record = $metakey;
+				undef $metakey;
+			}
+			else {
+				next unless $meta->record_exists($metakey);
+				$record = $meta->row_hash($metakey);
+			}
 		}
 		if($query) {
 			return $record->{query};
 		}
 #::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
-		for(qw/pre_filter filter height width append prepend/) {
-			$record->{$_} = $o->{$_} if defined $o->{$_};
+
+		## Here we allow override with the display tag...
+		my @override = grep defined $o->{$_},
+						qw/
+							append
+							attribute
+							db
+							field
+							filter
+							height
+							help
+							help_url
+							label
+							lookup
+							lookup_exclude
+							name
+							options
+							outboard
+							pre_filter
+							prepend
+							type
+							width
+							/;
+		for(@override) {
+			$record->{$_} = $o->{$_};
 		}
+
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
@@ -902,6 +943,7 @@ sub meta_display {
         }
 
 		for(qw/append prepend/) {
+#::logDebug("found append/prepend HTML");
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});
 			$record->{$_} =~ s/_UI_VALUE_/$value/g;
@@ -914,10 +956,6 @@ sub meta_display {
 			$record->{$_} =~ s/_UI_TABLE_/$table/g;
 			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
-		}
-		for(qw/height width/) {
-			$record->{$_} = $o->{$_}
-				if defined $o->{$_};
 		}
 		if($record->{height}) {
 			if($record->{type} =~ /multi/i) {
@@ -954,7 +992,7 @@ sub meta_display {
 			append		=> ($record->{'append'}		|| undef),
 			extra		=> ($o->{'extra'}		|| undef),
 		};
-#::logDebug("going to display for $opt->{name} type=$opt->{type}");
+#::logDebug("going to display for $opt->{name} type=$opt->{type} passed=$opt->{passed}");
 		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
 		my $filter;
