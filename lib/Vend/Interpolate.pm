@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.75 2002-07-03 18:32:08 mheins Exp $
+# $Id: Interpolate.pm,v 2.76 2002-07-03 19:01:44 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.75 $, 10);
+$VERSION = substr(q$Revision: 2.76 $, 10);
 
 @EXPORT = qw (
 
@@ -2579,7 +2579,8 @@ sub tag_counter {
 					);
 			} 
 			elsif($dsn =~ /^dbi:mysql:/i) {
-				$dbh->do("INSERT INTO $tab VALUES (0)")		or die $diemsg;
+				$seq ||= $tab;
+				$dbh->do("INSERT INTO $seq VALUES (0)")		or die $diemsg;
 				my $sth = $dbh->prepare("select LAST_INSERT_ID()")
 					or die $diemsg;
 				$sth->execute()								or die $diemsg;
