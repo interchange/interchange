@@ -1,9 +1,10 @@
 #! /bin/sh -e
 
 . /etc/interchange/init.cfg
-OPTS='--nocfg --norunning --linkprogram=/usr/lib/cgi-bin/ic/vlink'
-if [ "$USER" = "`id -un`" ]; then
+OPTS='--linkprogram=/usr/lib/cgi-bin/ic/vlink'
+if [ "$UID" -eq 0 ]; then
 	/usr/lib/interchange/bin/makecat -c /etc/interchange/makecat.cfg $OPTS $@
 else
+	OPTS="$OPTS --nocfg --norunning"
 	/usr/lib/interchange/bin/makecat -c makecat.cfg $OPTS $@
 fi
