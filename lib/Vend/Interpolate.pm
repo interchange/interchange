@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.43 2001-02-06 19:07:47 jon Exp $
+# $Id: Interpolate.pm,v 1.44 2001-02-07 10:28:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.43 $, 10);
+$VERSION = substr(q$Revision: 1.44 $, 10);
 
 @EXPORT = qw (
 
@@ -3999,7 +3999,7 @@ sub fly_page {
 
 	$Vend::Flypart = $code;
 
-	my $base = product_code_exists_ref($code);
+	my $base = product_code_exists_ref($code, $opt->{base});
 #::logDebug("fly_page: code=$code base=$base page=" . substr($page, 0, 100));
 	return undef unless $base || $opt->{onfly};
 
