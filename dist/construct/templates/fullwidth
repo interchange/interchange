@@ -6,6 +6,7 @@ ui_template_description: Page with top/bottom areas only, content in middle.
 
 break:
 	widget: break
+	nosave: 1
 
 page_title:
 	description: Page title

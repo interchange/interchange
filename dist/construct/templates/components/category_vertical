@@ -1,5 +1,4 @@
 <!-- BEGIN COMPONENT category_vertical -->
-<table width="131" border="0" cellspacing="0" cellpadding="0" bgcolor="#999999">
 [loop
 	prefix=box
 	search="
@@ -28,17 +27,18 @@
 	[/else]
 	[/if]
 "]
-                      <tr> 
-                        <td>&nbsp;</td>
-                        <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><B>[box-exec bar_link]area[/box-exec]</B></font></td>
-                      </tr>
-                      <tr> 
-                        <td> 
-                          <p>&nbsp;</p>
-                          <p>&nbsp;</p>
-                        </td>
-                        <td width="119" valign="top">
-						<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
+                 <tr> 
+                   <td>&nbsp;</td>
+                   <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>[box-exec bar_link]</b></font></td>
+                 </tr>
+                 <tr> 
+                   <td> 
+                     <p>&nbsp;</p>
+                     <p>&nbsp;</p>
+                   </td>
+                   <td width="119" valign="top">
+					 <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
+
 [set found_cat][/set]
 [loop prefix=cat
 	search="
@@ -53,12 +53,9 @@
 	]
 [cat-exec bar_link]cat[/cat-exec]<BR>
 [/loop]
-			<br>
-			</font></p>
-		</td>
-	  </tr>
+                       <br>
+                       </font></p>
+                   </td>
+                 </tr>
 [/loop]
-					  
-</table>
-
 <!-- END COMPONENT category_vertical -->
