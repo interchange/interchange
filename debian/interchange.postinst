@@ -16,6 +16,9 @@ chown -R $USER.$GROUP /var/run/interchange
 chown -R $USER.$GROUP /usr/lib/cgi-bin/ic
 chmod u+s /usr/lib/cgi-bin/ic/*
 
+# Make makecat.cfg accessible for the interchange user
+chown $USER.$GROUP /etc/interchange/makecat.cfg
+
 # Record debconf configuration in a file
 INITCFG=/etc/interchange/init.cfg
 cat > $INITCFG <<EOF

@@ -1,3 +1,8 @@
 #! /bin/sh -e
 
-/usr/lib/interchange/bin/makecat -c makecat.cfg $@
+. /etc/interchange/init.cfg
+if [ "$USER" = "`id -un`" ]; then
+	/usr/lib/interchange/bin/makecat -c /etc/interchange/makecat.cfg $@
+else
+	/usr/lib/interchange/bin/makecat -c makecat.cfg $@
+fi
