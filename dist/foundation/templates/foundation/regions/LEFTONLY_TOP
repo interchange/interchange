@@ -34,7 +34,7 @@
   <td class="categorybar" height="1" width="100%"><img src="__THEME_IMG_DIR__bg.gif" height="1"></td>
 </tr><tr>
   <td width="100%" class="menubar">
-    <a href="[area index]"><img name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
+    <a href="[area index]"><img alt="[L]Home[/L]" name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
     [if session logged_in]
       <a href="[area logout]">

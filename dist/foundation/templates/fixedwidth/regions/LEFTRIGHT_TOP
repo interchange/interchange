@@ -35,7 +35,7 @@
 </tr>
 <tr>
   <td width="100%" class="menubar">
-    <a href="[area index]"><img name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
+    <a href="[area index]"><img alt="[L]Home[/L]" name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
     <a href="[area login]">
     [if session logged_in]

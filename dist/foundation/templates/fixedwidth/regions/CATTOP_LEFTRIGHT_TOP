@@ -54,7 +54,7 @@
    <tr>
    <td>
     <br>
-    <a href="[area index]"><img name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
+    <a href="[area index]"><img alt="[L]Home[/L]" name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
     <br>
     <a href="[area login]">
     [if session logged_in]
