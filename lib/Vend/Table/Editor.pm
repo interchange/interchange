@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.6 2002-09-24 01:37:31 mheins Exp $
+# $Id: Editor.pm,v 1.7 2002-09-24 15:40:58 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -800,6 +800,8 @@ sub ttag {
 
 sub add_exclude {
 	my ($tag, $string) = @_;
+#::logDebug("calling add_exclude tag='$tag' string='$string'");
+	return unless $string =~ /\S/;
 	$exclude{$tag} ||= ' ';
 	$exclude{$tag} .= "$string ";
 }
@@ -847,14 +849,14 @@ sub chunk {
 	die "duplicate tag settor $tag" if exists $outhash{$tag};
 	$outhash{$tag} = $value;
 
-#::logDebug("$tag content length=" . length($value));
+#::logDebug("$tag exclude=$exclude, content length=" . length($value));
 
 	if(@others) {
 		$alias{$tag} ||= [];
 		push @{$alias{$tag}}, @others;
 	}
 
-	add_exclude($tag, $exclude) if $exclude;
+	add_exclude($tag, $exclude) if $exclude =~ /\S/;
 
 	return unless length($value);
 	push @out, $tag;
@@ -863,13 +865,16 @@ sub chunk {
 sub resolve_exclude {
 	my $exc = shift;
 	while(my ($k, $v) = each %exclude) {
+		my %seen;
+		my @things = grep /\S/ && ! $seen{$_}++, split /\s+/, $v;
 #::logDebug("examining $k for $v");
-		while ($v =~ m{(\S+)}g) {
-			my $thing = $1;
+		for my $thing (@things) {
 			if($thing =~ s/^[^A-Z]//) {
+#::logDebug("examining $v for $thing!=$exc->{$thing}");
 				$outhash{$k} = '' unless $exc->{$thing};
 			}
 			else {
+#::logDebug("examining $v for $thing=$exc->{$thing}");
 				$outhash{$k} = '' if $exc->{$thing};
 			}
 		}
@@ -885,6 +890,7 @@ sub editor_init {
 	@controls = ();
 	@titles = ();
 	%outhash = ();
+	%exclude = ();
 	%alias = ();
 	$tcount_all = 0;
 	$ctl_index = 0;
@@ -1071,6 +1077,15 @@ sub resolve_options {
 		label_cell_class
 		label_cell_style
 		left_width
+		link_before
+		link_table
+		link_fields
+		link_label
+		link_sort
+		link_key
+		link_view
+		link_template
+		link_extra
 		mv_blob_field
 		mv_blob_label
 		mv_blob_nick
@@ -1830,8 +1845,10 @@ EOF
 
 	no strict 'subs';
 
-	chunk 'FORM_BEGIN', 'WO', 'TOP_OF_FORM', <<EOF; # unless $wo;
+	chunk 'FORM_BEGIN', <<EOF; # unless $wo;
 $restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}$opt->{form_extra}>
+EOF
+	chunk 'HIDDEN_ALWAYS', <<EOF;
 $sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$opt->{action}">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
@@ -1868,7 +1885,7 @@ EOF
 		$val =~ s/"/&quot;/g;
 		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
 	}
-	chunk 'HIDDEN_OPT', '', 'TOP_OF_FORM', join("", @o);
+	chunk 'HIDDEN_OPT', '', join("", @o);
   }
 
   CGISET: {
@@ -1879,7 +1896,7 @@ EOF
 		$val =~ s/"/&quot;/g;
 		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
 	}
-	chunk 'HIDDEN_CGI', '', 'TOP_OF_FORM', join("", @o);
+	chunk 'HIDDEN_CGI', '', join("", @o);
   }
 
 	if($opt->{mailto}) {
@@ -1901,7 +1918,7 @@ EOF
 		elsif ($CGI::values{ui_return_to}) {
 			@$r_ary = ( $CGI::values{ui_return_to} ); 
 		}
-		chunk 'RETURN_TO', '', 'TOP_OF_FORM', $Tag->return_to(); # unless $wo;
+		chunk 'RETURN_TO', '', $Tag->return_to(); # unless $wo;
 #::logDebug("return-to stack = " . ::uneval($r_ary));
 	}
 
@@ -1911,14 +1928,10 @@ EOF
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
 			push @o, qq{<INPUT TYPE=hidden NAME="$hk" VALUE="$hv">\n};
 		}
-		chunk 'HIDDEN', 'WO', join("", @o); # unless $wo;
+		chunk 'HIDDEN_USER', join("", @o); # unless $wo;
 	}
 
-	my $tcount_all = 0;
-	
-	my $tcount_top = 0;
-	my $tcount_bot = 0;
-	chunk ttag(), 'WO', <<EOF; # unless $wo;
+	chunk ttag(), <<EOF; # unless $wo;
 <table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
 <tr>
   <td>
@@ -1943,7 +1956,7 @@ EOF
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS', 'TOP_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
+			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
@@ -1963,7 +1976,7 @@ EOF
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', 'TOP_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
+			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
@@ -1987,24 +2000,20 @@ EOF
 		  $opt->{ok_button_style} = 'font-weight: bold; width: 40px; text-align: center'
 		  	unless defined $opt->{ok_button_style};
 		  	
-		  chunk 'OK_TOP', 'NO_TOP', 'TOP_BUTTONS', <<EOF;
+		  chunk 'OK_TOP', 'NO_TOP', <<EOF;
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}" style="$opt->{ok_button_style}">
 EOF
-		  chunk ttag(), 'NOCANCEL BOTTOM_BUTTONS NO_TOP', 'TOP_BUTTONS', <<EOF;
+		  chunk 'CANCEL_TOP', 'NOCANCEL BOTTOM_BUTTONS NO_TOP', <<EOF;
 &nbsp;
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}" style="$opt->{cancel_button_style}">
 EOF
 
-		  chunk
-		  	'RESET_TOP',
-			'_SHOW_RESET BOTTOM_BUTTONS NO_TOP',
-			'TOP_BUTTONS',
-			<<EOF;
+		  chunk 'RESET_TOP', '_SHOW_RESET BOTTOM_BUTTONS NO_TOP', <<EOF;
 &nbsp;
 <INPUT TYPE=reset>
 EOF
 
-			chunk 'MLABEL', 'BOTTOM_BUTTONS', 'MESSAGES', $mlabel;
+			chunk 'MLABEL', 'BOTTOM_BUTTONS', $mlabel;
 			chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
 </TD>
 </TR>
@@ -2132,6 +2141,17 @@ EOF
 </tr>
 EOF
 	}
+
+	chunk_alias 'TOP_OF_FORM', qw/ FORM_BEGIN /;
+	chunk_alias 'TOP_BUTTONS', qw/
+								COMBINED_BUTTONS_TOP
+								WIZARD_BUTTONS_TOP
+								OK_TOP
+								CANCEL_TOP
+								RESET_TOP
+								BLOB_WIDGET
+								CLONE_TABLES
+								/;
 
 	my %break;
 	my %break_label;
@@ -2290,7 +2310,7 @@ EOF
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">help</A>{/HELP_URL?}</FONT></td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">help</A>{/HELP_URL?}</td>
        </tr>
      </table>
    </td>
@@ -2301,8 +2321,10 @@ EOF
 	$row_template =~ s/~OPT:(\w+)~/$opt->{$1}/g;
 	$row_template =~ s/~([A-Z]+)_EXTRA~/$opt->{"\L$1\E_extra"} || $opt->{"\L$1\E_cell_extra"}/g;
 
+	$opt->{row_template} = $row_template;
+
 	$opt->{combo_template} ||= <<EOF;
-<tr$opt->{combo_row_extra}><td colspan=$span>{ROW}</td></tr>
+<tr$opt->{combo_row_extra}><td> {LABEL} </td><td>{WIDGET}</td></tr>
 EOF
 
 	$opt->{break_template} ||= <<EOF;
@@ -2335,6 +2357,7 @@ EOF
 	my %link_row;
 	my %link_before;
 	if($opt->{link_table} and $key) {
+#::logDebug("In link table routines...");
 		my @ltable;
 		my @lfields;
 		my @lkey;
@@ -2368,7 +2391,7 @@ EOF
 			my $lf = shift @lfields;
 			my $lv = shift @lview;
 			my $lk = shift @lkey;
-			my $ll = shift @lkey;
+			my $ll = shift @llab;
 			my $lb = shift @lbefore;
 			my $ls = shift @lsort;
 
@@ -2463,6 +2486,7 @@ $l_pkey</td>};
 				$whash->{META_STRING} .= errmsg('meta') . '</a>';
 
 			}
+			$whash->{ROW} = 1;
 			$link_row{$lt} = $whash;
 			if($lb) {
 				$link_before{$lb} = $lt;
@@ -2470,6 +2494,7 @@ $l_pkey</td>};
 			my $mde_key = "mv_data_enable__$tcount";
 			$::Scratch->{$mde_key} = "$lt:" . join(",", $l_pkey, @cf) . ':';
 			$tcount++;
+#::logDebug("Made link_table...whash=$whash");
 		}
 	}
 
@@ -2748,8 +2773,8 @@ EOF
 			}
 		}
 		if($link_before{$col}) {
-			my $h = { ROW => delete $link_row{$link_before{$col}} };
-			col_chunk "_SPREAD_$link_before{$col}", $h;
+			col_chunk "_SPREAD_$link_before{$col}",
+						delete $link_row{$link_before{$col}};
 		}
 		if($opt->{include_before} and $opt->{include_before}{$col}) {
 			my $h = { ROW => $opt->{include_before}{$col} };
@@ -2762,11 +2787,11 @@ EOF
 		}
 #::logDebug("control index now=$ctl_index");
 		col_chunk $c, $display;
-		$titles[0] = $t if ! $titles[0];
 	}
 
 	for(sort keys %link_row) {
-		col_chunk "_SPREAD_$_", { ROW => delete $link_row{$_} };
+#::logDebug("chunking link_table to _SPREAD_$_");
+		col_chunk "_SPREAD_$_", delete $link_row{$_};
 	}
 
 	my $firstout = scalar(@out);
@@ -2825,30 +2850,34 @@ EOF
 
 	chunk ttag(), <<EOF;
 <tr class=rspacer>
-<td colspan=$span ><img src="$opt->{clear_image}" height=3 alt=x></td>
+<td colspan=$span>
+EOF
+	chunk 'HIDDEN_EXTRA', <<EOF; # unless $wo;
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden
+EOF
+	chunk ttag(), <<EOF;
+<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 EOF
 
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $wo || $opt->{nosave}; 
+#::logDebug("in SAVEWIDGETS");
 		chunk ttag(), <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
 
-		chunk 'EXTRA_HIDDEN', <<EOF; # unless $wo;
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden
-EOF
 
 	  	if($opt->{back_text}) {
 
-			chunk 'BOTTOM_BUTTONS', <<EOF;
+			chunk 'COMBINED_BUTTONS_BOTTOM', <<EOF;
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
 		elsif($opt->{wizard}) {
-			chunk 'BOTTOM_BUTTONS', <<EOF;
+			chunk 'WIZARD_BUTTONS_BOTTOM', <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -2866,7 +2895,6 @@ EOF
 
 			chunk 'RESET_BOTTOM', qq{&nbsp;<INPUT TYPE=reset>}
 				if $opt->{show_reset};
-			chunk_alias 'BOTTOM_BUTTONS', qw/OK_BOTTOM CANCEL_BOTTOM RESET_BOTTOM/;
 		}
 
 	if(! $opt->{notable} and $Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
@@ -2910,6 +2938,21 @@ HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> $delstr
 EOF
 
 	}
+	chunk_alias 'HIDDEN_FIELDS', qw/
+										HIDDEN_ALWAYS
+										HIDDEN_OPT
+										HIDDEN_CGI
+										HIDDEN_USER
+										HIDDEN_EXTRA
+										/;
+	chunk_alias 'BOTTOM_BUTTONS', qw/
+										WIZARD_BUTTONS_BOTTOM
+										COMBINED_BUTTONS_BOTTOM
+										OK_BOTTOM
+										CANCEL_BOTTOM
+										RESET_BOTTOM
+										AUTO_EXPORT
+										DELETE_BUTTON/;
 	chunk ttag(), <<EOF;
 </small>
 </td>
@@ -2918,16 +2961,6 @@ EOF
   } # end SAVEWIDGETS
 
 	my $message = '';
-
-#	if($opt->{bottom_errors}) {
-#		my $err = $Tag->error( {
-#									show_var => $error_show_var,
-#									show_error => 1,
-#									joiner => '<BR>',
-#								}
-#								);
-#		push @errors, $err if $err;
-#	}
 
 	if(@errors) {
 		$message .= '<P>Errors:';
@@ -2956,12 +2989,14 @@ EOF
 	</td>
 </tr>
 EOF
+
+#::logDebug("tcount=$tcount_all, prior to closing table");
 	chunk ttag(), <<EOF; # unless $wo;
 </table>
 </td></tr></table>
 EOF
 
-	chunk 'FORM_BOTTOM', <<EOF;
+	chunk 'FORM_END', '', 'BOTTOM_OF_FORM', <<EOF;
 </form>$restrict_end
 EOF
 
@@ -2974,7 +3009,6 @@ EOF
 		NOSAVE
 		NO_BOTTOM
 		NO_TOP
-		WO
 		SHOW_RESET
 		/)
 	{
@@ -2983,6 +3017,7 @@ EOF
 
 	$ehash{MESSAGE} = length($message) ? 1 : 0;
 
+#::logDebug("exclude is " . uneval(\%exclude));
 	resolve_exclude(\%ehash);
 
 	if($wo) {
@@ -2992,6 +3027,72 @@ EOF
 show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 
 	my @put;
+	if($overall_template) {
+		my $death = sub {
+			my $item = shift;
+			logDebug("must have chunk {$item} defined in overall template.");
+			logError("must have chunk {%s} defined in overall template.", $item);
+			return undef;
+		};
+		$overall_template =~ /{TOP_OF_FORM}/
+			or return $death->('TOP_OF_FORM');
+		$overall_template =~ /{HIDDEN_FIELDS}/
+			or return $death->('HIDDEN_FIELDS');
+		$overall_template =~ /{BOTTOM_OF_FORM}/
+			or return $death->('BOTTOM_OF_FORM');
+		while($overall_template =~ m/\{((?:_INCLUDE_|COLUMN_|_SPREAD_).*?)\}/g) {
+			my $name = $1;
+			my $orig = $name;
+			my $thing = delete $outhash{$name};
+#::logDebug("Got to column replace $name, thing=$thing");
+			if($name =~ /^_/) {
+				$overall_template =~ s/\{$name\}/$thing->{ROW}/;
+			}
+			elsif($name =~ s/__WIDGET$//) {
+				$thing = delete $outhash{$name};
+#::logDebug("Got to widget replace $name, thing=$thing");
+				$overall_template =~ s/\{$orig\}/$thing->{WIDGET}/;
+			}
+			elsif($thing) {
+				$overall_template =~ s!\{$name\}!
+										tag_attr_list($thing->{TEMPLATE}, $thing)
+										!e;
+			}
+		}
+		while($overall_template =~ m/\{([A-Z_]+)\}/g) {
+			my $name = $1;
+			my $thing = delete $outhash{$name};
+#::logDebug("Got to random replace $name, thing=$thing");
+			next if ! $thing and $alias{$name};
+			$overall_template =~ s/\{$name\}/$thing/;
+		}
+		while($overall_template =~ m/\{([A-Z_]+)\}/g) {
+			my $name = $1;
+			my $thing = delete $alias{$name};
+#::logDebug("Got to alias replace $name, thing=$thing");
+			$overall_template =~ s/\{$name\}/join "", @outhash{@$thing}/e;
+		}
+		my @put;
+		if($opt->{tabbed}) {
+			my @tabcont;
+			for(@controls) {
+				push @tabcont, create_rows($opt, $_);
+			}
+			$opt->{panel_prepend} ||= '<table>';
+			$opt->{panel_append} ||= '</table>';
+			push @put, tabbed_display(\@titles,\@tabcont,$opt);
+		}
+		else {
+			for(my $i = 0; $i < @controls; $i++) {
+				push @put, tag_attr_list($opt->{break_template}, { ROW => $titles[$i] })
+					if $titles[$i];
+				push @put, create_rows($opt, $controls[$i]);
+			}
+		}
+		$overall_template =~ s/{:REST}/join "\n", @put/e;
+		return $overall_template;
+	}
+
 	for(my $i = 0; $i < $firstout; $i++) {
 #::logDebug("$out[$i] content length=" . length($outhash{$out[$i]} ));
 		push @put, $outhash{$out[$i]};
@@ -3018,7 +3119,7 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 
 	for(my $i = $firstout; $i < @out; $i++) {
 #::logDebug("$out[$i] content length=" . length($outhash{$out[$i]} ));
-		push @put, $outhash{$out[$i]};
+		push @put, @outhash{$out[$i]};
 	}
 	return join "", @put;
 }
@@ -3055,8 +3156,10 @@ sub create_rows {
 		# If doesn't exist, was brought in before.
 		my $ref = delete $outhash{$_}
 			or next;
-		if($opt->{ROW}) {
-			push @out, tag_attr_list($opt->{combo_template}, $ref, 1);
+		if($ref->{ROW}) {
+#::logDebug("outputting ROW $_=$ref->{ROW}");
+			my $tpl = $ref->{TEMPLATE} || $opt->{row_template};
+			push @out, tag_attr_list($opt->{combo_template}, $ref);
 			$rowcount = 0;
 			next;
 		}
