@@ -1,5 +1,0 @@
-code	selector	name	banner_img	subs	sort
-A1	Categories	Categories			1
-A2	See_also	See Also:			2
-A3	Books	Books:			3
-A4	Parts	Bike Parts:			4

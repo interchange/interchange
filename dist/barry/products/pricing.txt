@@ -1,1 +1,0 @@
-sku	price_group	q2	q5	q10	q25	q100
