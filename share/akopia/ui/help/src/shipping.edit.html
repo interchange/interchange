@@ -16,6 +16,7 @@ algorithm you choose.
 <b>Calculate based on this algorithm</b></br>
 </p>
 
+<p>
 <ul>
 <li>
 <A href="shipping.price.html">Standard shipping by price:</a>
@@ -39,6 +40,7 @@ Interchange is pre-configured with UPS zones tables for ground, three day
 select, second day air, and next day air. If you require zones support
 for Fedex, DHL, or USPS, please <a href="mailto:info@akopia.com">contact Akopia</a>.
 </ul>
+</p>
 
 <p>
 <b>Minimum shipping charge</b><br>
@@ -107,13 +109,13 @@ In the "additional shipping calculation" field, I would enter the following:
 
 <p>
 x = x - (x * .1)
-<p>
+</p>
 
 <p>
 The character "x" represents the shipping charge as calculated by the
 UPS algorithm. Interchange will automatically apply the above formula
 to the shipping charge, and charge the customer the new total.
-<p>
+</p>
 
 <p>
 Here's how it would work for a real customer. Customer A enters the site
@@ -182,7 +184,6 @@ which is an invalid equation.
 
 <p>
 Valid expressions include (but are not limited to) such things as: 
-</p>
 
 <pre>
 x = x + 5
@@ -192,7 +193,6 @@ x += 2
 x -= (x * .25)
 </pre>
 
-<p>
 etc.
 </p>
 
