@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.4 2002-07-18 16:13:56 mheins Exp $
+# $Id: Payment.pm,v 2.5 2002-07-21 14:08:50 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -242,7 +242,9 @@ sub gen_order_id {
 	elsif($opt->{counter}) {
 		$opt->{order_id} = Vend::Interpolate::tag_counter(
 						$opt->{counter},
-						{ start => $opt->{counter_start} || 100000 },
+						{ start => $opt->{counter_start} || 100000,
+						  sql   => $opt->{sql_counter},
+						},
 					);
 	}
 	else {

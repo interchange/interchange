@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.27 2002-07-07 04:02:27 mheins Exp $
+# $Id: Order.pm,v 2.28 2002-07-21 14:08:50 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1542,7 +1542,11 @@ sub route_order {
 											);
 		}
 		elsif($route->{increment}) {
-			$::Values->{mv_order_number} = counter_number();
+			$::Values->{mv_order_number} = counter_number(
+												$main->{counter},
+												$main->{sql_counter},
+												$main->{first_order_number},
+											);
 		}
 		my $pagefile;
 		my $page;
