@@ -166,9 +166,9 @@ A.edittablink:active,A.edittablink:hover {
 }
 
 .footer {
-	color: #666666;;
+	color: #666666;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px
+	font-size: 11px;
 }
 
 A.footer:active,A.footer:hover {
@@ -204,6 +204,13 @@ A.headlink:active,A.headlink:hover,A.headlink:link,A.headlink:visited {
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
+	font-weight: normal;
+}
+
+.maincontentlight { 
+    color: #666666;
+    font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
 	font-weight: normal;
 }
 

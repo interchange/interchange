@@ -82,16 +82,19 @@
 
 <div class=titlebox>[L]Existing components[/L]</div>
 <br>
-
+<table>
 	[loop acclist=1 list="[content-info components=1 no-none=1]"]
+<tr><td><img src="layout.gif" border=0 align=center></td>
+<td class="maincontentlight">
+[loop-code]<br>
 	<A HREF="[area
 					href=__UI_BASE__/content_editor
 					form=auto
 					ui_type=component
 					ui_name="[loop-code]"
-				]"><img src="layout.gif" border=0 align=center>[loop-param label]</A><br>
+				]">[loop-param label]</A></td></tr>
 	[/loop]
-
+</table>
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
