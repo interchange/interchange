@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7.2.1 2000-11-07 22:41:45 zarko Exp $
+# $Id: DbSearch.pm,v 1.7.2.2 2000-12-04 17:58:21 zarko Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
 
 use Search::Dict;
 use strict;
@@ -76,7 +76,10 @@ sub init {
 	$s->{mv_numeric}            = [];
 	$s->{mv_orsearch}           = [];
 	$s->{mv_search_field}       = [];
-	$s->{mv_search_file}        = [@{$Vend::Cfg->{ProductFiles}}];
+	$s->{mv_search_file}        = [ @{
+										$::Variable->{MV_DEFAULT_SEARCH_FILE}
+										||	$Vend::Cfg->{ProductFiles}
+										} ];
 	$s->{mv_search_group}       = [];
 	$s->{mv_searchspec}         = [];
 	$s->{mv_sort_option}        = [];
@@ -152,15 +155,18 @@ sub search {
 
 	if($s->{mv_coordinate}) {
 		undef $f;
-	} elsif($s->{mv_return_all}) {
+	}
+	elsif($s->{mv_return_all}) {
 		$f = sub {1};
-	} elsif($s->{mv_orsearch}[0]) {
+	}
+	elsif($s->{mv_orsearch}[0]) {
 		eval {$f = $s->create_search_or(
 									$s->get_scalar(
 											qw/mv_case mv_substring_match mv_negate/
 											),
 										@pats					)};
-	} else {	
+	}
+	else {	
 		eval {$f = $s->create_search_and(
 									$s->get_scalar(
 											qw/mv_case mv_substring_match mv_negate/
@@ -209,21 +215,27 @@ sub search {
 
 		if(! defined $f and defined $limit_sub) {
 #::logDebug("no f, limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
 			}
-		} elsif(defined $limit_sub) {
+		}
+		elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
 			}
-		} elsif(!defined $f) {
+		}
+		elsif(!defined $f) {
 			return $s->search_error('No search definition');
-		} else {
+		}
+		else {
 #::logDebug("f and no limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
 				push @out, &$return_sub($_);
@@ -257,7 +269,8 @@ sub search {
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
 			$s->{mv_next_pointer} = 0
 				if $s->{mv_next_pointer} > $s->{matches};
-		} elsif($s->{mv_start_match}) {
+		}
+		elsif($s->{mv_start_match}) {
 			my $comp = $s->{mv_start_match};
 			my $i = -1;
 			my $found;
@@ -274,7 +287,8 @@ sub search {
 					$found = $i;
 					last;
 				}
-			} elsif(! $found) {
+			}
+			elsif(! $found) {
 				for(@out) {
 					$i++;
 					next unless $_->[0] ge $comp;
@@ -297,11 +311,13 @@ sub search {
 
 	if(! $s->{mv_return_reference}) {
 		$s->{mv_results} = \@out;
-	} elsif($s->{mv_return_reference} eq 'LIST') {
+	}
+	elsif($s->{mv_return_reference} eq 'LIST') {
 		my $col = scalar @{$s->{mv_return_fields}};
 		@out = map { join $s->{mv_return_delim}, @$_ } @out;
 		$s->{mv_results} = join $s->{mv_record_delim}, @out;
-	} else {
+	}
+	else {
 		my @names;
 		@names = @{ $s->{mv_field_names} }[ @{$s->{mv_return_fields}} ];
 		$names[0] eq '0' and $names[0] = 'code';
