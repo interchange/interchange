@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.0.2.6 2001-11-22 03:51:08 jon Exp $
+# $Id: DbSearch.pm,v 2.0.2.7 2001-11-26 14:33:26 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
 
 use Search::Dict;
 use strict;
@@ -256,7 +256,6 @@ sub search {
 #::logDebug("no f, limit, dbref=$dbref");
 			local($_);
 			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
 						$dbref->each_nokey($qual || undef)
 					) {
 				next unless &$limit_sub($_);
@@ -267,7 +266,6 @@ sub search {
 #::logDebug("f and limit, dbref=$dbref");
 			local($_);
 			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
 						$dbref->each_nokey($qual || undef)
 					) {
 				next unless &$f();
@@ -282,7 +280,6 @@ sub search {
 #::logDebug("f and no limit, dbref=$dbref");
 			local($_);
 			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
 						$dbref->each_nokey($qual || undef)
 					) {
 				next unless &$f();
