@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.1 2000-05-26 18:50:40 heins Exp $
+# $Id: Search.pm,v 1.2 2000-06-26 08:53:57 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -632,10 +632,10 @@ EOF
 				 push @{$code[$grp]}, "$join$frag";
 			 }
 		}
-#::logDebug("coderef=" . ::uneval(\@code));
+#::logDebug("coderef=" . ::uneval_it(\@code));
 
 		DOLIMIT: {
-#::logDebug(::uneval({%$s}));
+#::logDebug(::uneval_it({%$s}));
 			last DOLIMIT if $f;
 			last DOLIMIT if $s->{mv_small_data};
 			last DOLIMIT if defined $s->{mv_search_relate}

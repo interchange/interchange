@@ -87,7 +87,7 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="22">
 
-<a href="[area admin/orderstats]">
+<a href="[area admin/genstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">

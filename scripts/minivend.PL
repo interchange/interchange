@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.8 2000-06-25 00:47:03 heins Exp $
+# $Id: minivend.PL,v 1.9 2000-06-26 08:53:57 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -1642,6 +1642,10 @@ EOF
 			$sub->();
 		}
 	}
+
+# TRACK
+	$Vend::Track->filetrack();
+# END TRACK
 
 	put_session() if $Vend::HaveSession;
 	close_database();

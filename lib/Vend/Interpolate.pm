@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.8 2000-06-25 00:47:03 heins Exp $
+# $Id: Interpolate.pm,v 1.9 2000-06-26 08:53:57 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 @EXPORT = qw (
 
@@ -4777,15 +4777,8 @@ sub shipping {
 				$row->[CRIT] !~ /\S/;
 		}
 
-		$o = get_option_hash($row->[OPT]) 
-			or do {
-				$error_message   = errmsg(
-								"Shipping mode '%s': bad option string.",
-								$mode,
-							);
-				logError($error_message);
-				$o = {};
-			};
+		$o = get_option_hash($row->[OPT], $o)
+			if $row->[OPT];
 		# unless field begins with 'x' or 'f', straight cost is returned
 		# - otherwise the quantity is multiplied by the cost or a formula
 		# is applied

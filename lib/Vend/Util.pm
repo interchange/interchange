@@ -1,6 +1,6 @@
 # Util.pm - Minivend utility functions
 #
-# $Id: Util.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Util.pm,v 1.2 2000-06-26 08:53:57 heins Exp $
 # 
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -74,7 +74,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 BEGIN {
 	eval {
@@ -664,9 +664,16 @@ sub check_gate {
 }
 
 sub get_option_hash {
-	return $_[0] if ref $_[0];
+	if (ref $_[0]) {
+		return $_[0] unless ref $_[1];
+		for(keys %{$_[1]}) {
+			$_[0]->{$_} = $_[1]->{$_}
+				unless defined $_[0]->{$_};
+		}
+	}
 	return {} unless $_[0] =~ /\S/;
 	my $string = shift;
+	my $merge = shift;
 	$string =~ s/^\s+//;
 	$string =~ s/\s+$//;
 	if($string =~ /^{/ and $string =~ /}/) {
@@ -677,6 +684,13 @@ sub get_option_hash {
 	for(@opts) {
 		my ($k, $v) = split /[\s=]+/, $_, 2;
 		$hash{$k} = $v;
+	}
+	if($merge) {
+		return \%hash unless ref $merge;
+		for(keys %$merge) {
+			$hash{$_} = $merge->{$_}
+				unless defined $hash{$_};
+		}
 	}
 	return \%hash;
 }

@@ -1,0 +1,87 @@
+[if !advanced report]
+[bounce page="__UI_BASE__/error"]
+[value name=saved_report set=""]
+[/if]
+[set page_title]Traffic Statistics[/set]
+[set icon_name]admin/icon_stats.gif[/set]
+[set help_name]stats.order[/set]
+@@UI_STD_HEAD@@
+
+<table cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+
+<A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate]">Overall by month</A><BR>
+<A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate
+				form="
+						ui_by_day=1
+						ui_begin_date=[tag time]%Y%m[/tag]
+				"]">By day for this month</A><BR>
+
+<HR>
+<FORM ACTION="[process]">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/traffic/ByAffiliate">
+<TABLE>
+<TR>
+<TD ALIGN=CENTER>
+<SMALL>
+Beginning:<BR>
+	[widget type=date name=ui_begin_date]
+</SMALL>
+</TD>
+<TD ALIGN=CENTER>
+<SMALL>
+Ending:<BR>
+	[widget type=date name=ui_end_date]
+</SMALL>
+</TD>
+[if-mm super]
+<TD ALIGN=CENTER>
+<SMALL>
+For affiliate:<BR>
+	<SELECT NAME=affiliate>
+		<OPTION VALUE=""> --all--
+		[loop search="
+			fi=affiliate
+			st=db
+			ra=yes
+			ml=1000
+			tf=name
+			rf=affiliate,name
+		"]<OPTION VALUE="[loop-code]">[loop-pos 1]
+		[/loop]
+	</SELECT>
+</SMALL>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=3>
+[else]
+</TR>
+<TR>
+<TD COLSPAN=2 ALIGN=CENTER>
+[/else]
+[/if-mm]
+	[set By day]
+	ui_by_day=1
+	[/set]
+	<BLOCKQUOTE>
+	<INPUT TYPE=submit VALUE="By month">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="By day">
+	</BLOCKQUOTE>
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
+</table>
+
+@@UI_STD_FOOTER@@

@@ -69,6 +69,8 @@
 			for (@look) {
 				push @string, qq!$xlt{$_}=$CGI->{"$_$one"}!
 					if $found{$_};
+				next unless $_ eq 'search_op';
+				push @string, ( $CGI->{"search_op$one"} =~ /[=<>]/ ? 'nu=1' : 'nu=0');
 			}
 			push @string, "";
 		}
@@ -88,6 +90,8 @@
 		}
 	}
 
+	unshift @string, "ac=0"
+		if $CGI->{allow_regex};
 	unshift @string, "sp=$CGI->{search_template}"
 		if $CGI->{search_template};
 	unshift @string, "st=$CGI->{search_type}"
@@ -106,14 +110,28 @@
 			push @string, "to=" . $vals->{sort_option}[$i];
 		}
 	}
+	my $sstring = join "\n\t\t", @string;
+	for( '|', '"', "'") {
+		next if index($sstring, $_) != -1;
+		$qchar = $_;
+		last;
+	}
 	$page = '[' . "area\thref=scan\n";
-	$page .= "\tsearch=|\n\t\t";
+	$page .= "\tsearch=$qchar\n\t\t";
 	$page .= join "\n\t\t", @string;
-	$page .= "\n\t|\n]";
+	$page .= "\n\t$qchar\n]";
 	$Scratch->{search_page} = $page;
 	$Scratch->{rows} = scalar(@string) + 5;
 	return;
 [/perl]
+
+[if !cgi generate_page]
+[tag op=header]
+Window-Target: test
+[/tag]
+[bounce href='[scratch name=search_page interpolate=1]']
+[/if]
+
 <A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
 
 <FORM>

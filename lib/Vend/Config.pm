@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.6 2000-06-23 07:40:30 heins Exp $
+# $Id: Config.pm,v 1.7 2000-06-26 08:53:57 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 my %CDname;
 
@@ -398,6 +398,7 @@ sub catalog_directives {
     ['FormIgnore',	     'boolean',    	     ''],
     ['EncryptProgram',	 undef,     	     ''],
     ['AsciiTrack',	 	 undef,     	     ''],
+    ['TrackFile',	 	 undef,     	     ''],
     ['SalesTax',		 undef,     	     ''],
     ['SalesTaxFunction', undef,     	     ''],
     ['StaticDBM',  	 	 undef,     	     ''],
