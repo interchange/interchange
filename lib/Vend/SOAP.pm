@@ -1,6 +1,6 @@
 # SOAP.pm:  handle SOAP connections
 #
-# $Id: SOAP.pm,v 1.1.2.7 2001-04-09 06:25:50 heins Exp $
+# $Id: SOAP.pm,v 1.1.2.8 2001-05-22 14:21:18 jason Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 1.1.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.8 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -254,6 +254,7 @@ sub Scratch {
 }
 
 sub Database {
+	shift;
 	my $name = shift;
 	my $ref = $Vend::Cfg->{Database};
 	return $ref->{$name} if $name;
