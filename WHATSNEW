@@ -383,6 +383,8 @@ Payment
 * Pass credit card security code through to Verisign if provided in
   CGI parameter mv_credit_card_cvv2.
 
+* Added the EFSNet payment module, contributed by Chris Wenham of Synesmedia.
+
 i18n
 ----
 
