@@ -19,11 +19,12 @@
 	$Scratch->{CREDIT_CARDS_ACCEPTED} = join " ", @cc;
 	$Scratch->{PO_ACCEPTED} = $CGI->{po};
 	$Scratch->{COD_ACCEPTED} = $CGI->{cod};
+	$Scratch->{POSTAL_ACCEPTED} = $CGI->{postal};
 	$Scratch->{CHECK_ACCEPTED} = $CGI->{check};
 	return;
 [/perl]
 [if scratch change_payment]
-[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED"]
+[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED"]
 	<!-- [loop-code]: [data table=variable
 						col=Variable
 						key=[loop-code]
@@ -33,7 +34,7 @@
 [calc]
 		@cc = grep /\S/, split /\s+/,
 						tag_data(qw/variable Variable CREDIT_CARDS_ACCEPTED/);
-		for (qw/PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED/) {
+		for (qw/PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED/) {
 			$Scratch->{$_} = tag_data(qw/variable Variable/, $_);
 		}
 		for (@cc) {
@@ -82,7 +83,7 @@ EOF
 <tr>
 
 <td bgcolor=__UI_C_INTBLOCK__>
-Check
+Online Check
 </td>
 
 <td bgcolor=__UI_C_INTBLOCK__>
@@ -113,6 +114,24 @@ COD
 
 </tr>
 
+
+<tr>
+
+<td bgcolor=__UI_C_INTBLOCK__>
+Postal billing
+</td>
+
+<td bgcolor=__UI_C_INTBLOCK__>
+
+<select name="postal">
+<option value="0"> Not Accepted
+<option value="1" [if scratch POSTAL_ACCEPTED]SELECTED[/if]> Accepted
+</select>
+
+</td>
+
+</tr>
+
 <tr>
 
 <td bgcolor=__UI_C_INTBLOCK__>
@@ -134,7 +153,7 @@ Purchase Order
 </tr>
 
 </table>
-[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED"]
+[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED"]
 	[set [loop-code]][/set]
 [/loop]
 
