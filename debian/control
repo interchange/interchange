@@ -5,11 +5,6 @@ Maintainer: Stefan Hornburg (Racke) <racke@linuxia.de>
 Standards-Version: 3.1.1.1
 Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-perl, libsql-statement-perl, libstorable-perl, liburi-perl, apache-dev, libdb2-dev
 
-Package: interchange-doc
-Architecture: all
-Description: Interchange documentation
- Additional Interchange documentation
-
 Package: interchange-cat-foundation
 Architecture: all
 Depends: interchange

@@ -1,4 +1,4 @@
-interchange (4.7.2-0.5) unstable; urgency=low
+interchange (4.7.2-1) unstable; urgency=low
 
   * new upstream release
   * foundation is now the demo catalog instead of construct
@@ -7,8 +7,9 @@ interchange (4.7.2-0.5) unstable; urgency=low
   * UI needs now a std.js file
   * put poweredby.gif in place again
   * UI_SECURE added to interchange.cfg
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 26 Apr 2001 15:21:36 +0200
+  * interchange-doc package removed (PDF's no longer part of distribution)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 10 May 2001 20:14:16 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
