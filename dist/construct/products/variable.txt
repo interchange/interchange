@@ -10,7 +10,7 @@ CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
 DOCROOT	__MVC_DOCROOT__	Directories and Paths
 ENCRYPTOR	none	Payment
 FAX	__MVC_FAX__	Company
-IMAGE_DIR	/~construct/images	Directories and Paths
+IMAGE_DIR	__MVC_IMAGEDIR__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO		Template
 MULTIORDER		Order
