@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.13 2000-12-03 05:31:40 jon Exp $
+# $Id: MakeCat.pm,v 1.14 2000-12-05 17:32:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -672,15 +672,6 @@ sub conf_parse_http {
 	close(HTTPDCONF);
 
 	
-	$data =~ s!
-				<virtualhost
-				\s+
-					([^>\n]+)
-				\s*>\s+
-					([\000-\377]*?)
-				</virtualhost>!
-				$virtual->{$1} = $2; ''!xieg;
-
 	if($data =~ s/^\s*resourceconfig\s+(.*)//) {
 		$newfile = $1;
 	}
@@ -699,6 +690,15 @@ sub conf_parse_http {
 			close(HTTPDCONF);
 		}
 	}
+
+	$data =~ s!
+				<virtualhost
+				\s+
+					([^>\n]+)
+				\s*>\s+
+					([\000-\377]*?)
+				</virtualhost>!
+				$virtual->{$1} = $2; ''!xieg;
 
 	$virtual->{' '} = $data;
 
