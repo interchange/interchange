@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.49 2002-02-01 00:18:07 racke Exp $
+# $Id: Interpolate.pm,v 2.50 2002-02-01 04:21:46 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 
 @EXPORT = qw (
 
@@ -222,9 +222,6 @@ sub init_calc {
 	$Vend::Calc_initialized = 1;
 	
 	return;
-}
-
-sub uninit_calc {
 }
 
 # Regular expression pre-compilation
@@ -452,12 +449,6 @@ sub get_joiner {
 	return length($joiner) ? $joiner : $default;
 }
 
-sub comment_out {
-	my ($bit) = @_;
-	$bit =~ s/([[<_])/$Comment_out{$1}/ge;
-	return '<!--' . $bit . '-->';
-}
-
 sub substitute_image {
 	my ($text) = @_;
 
@@ -547,16 +538,6 @@ sub cache_html {
 	}
 	return (\$parse->{OUT}, $complete || undef) if defined $wantref;
 	return ($parse->{OUT});
-}
-
-## 
-## 
-##
-sub var_ui_sub {
-	my ($key, $type) = @_;
-	
-	if(! $type) {
-	}
 }
 
 sub dynamic_var {
@@ -1494,276 +1475,6 @@ sub tag_if {
 	return $out;
 }
 
-sub show_current_accessory_label {
-	my($val, $choices) = @_;
-	my $default = '';
-	my @choices;
-	@choices = split /\s*,\s*/, $choices;
-	for(@choices) {
-		my ($setting, $label) = split /=/, $_, 2;
-		$default = $label if $label =~ s/\*$//;
-		return ($label || $setting) if $val eq $setting;
-	}
-	return $default;
-}
-
-sub build_accessory_links {
-	my($name, $type, $default, $opt, @opts) = @_;
-
-	$opt->{joiner} = get_joiner($opt->{joiner}, "<BR>");
-
-	my $template = $opt->{template} || <<EOF;
-<A HREF="{URL}"{EXTRA}>{SELECTED <B>}{LABEL}{SELECTED </B>}</A>
-EOF
-
-	my $href = $opt->{href} || $Global::Variable->{MV_PAGE};
-	$opt->{form} = "mv_action=return" unless $opt->{form};
-
-	my @out;
-	for(@opts) {
-		my $attr = { EXTRA => $opt->{extra}};
-		
-		s/\*$// and $attr->{SELECTED} = 1;
-
-		($attr->{VALUE},$attr->{LABEL}) = split /=/, $_, 2;
-
-		next if ! $attr->{VALUE} and ! $opt->{empty};
-		if( ! length($attr->{LABEL}) ) {
-			$attr->{LABEL} = $attr->{VALUE} or next;
-		}
-
-		if ($default) {
-			$attr->{SELECTED} = $default eq $attr->{VALUE} ? 1 : '';
-		}
-
-		my $form = $opt->{form};
-
-		$attr->{URL} = tag_area(
-						$href,
-						'',
-						{
-							form => "$opt->{form}\n$name=$attr->{VALUE}",
-							secure => $opt->{secure},
-						},
-						);
-		push @out, tag_attr_list($template, $attr);
-	}
-	return join $opt->{joiner}, @out;
-}
-
-sub build_accessory_textarea {
-	my($name, $type, $default, $opt) = @_;
-
-	my $select;
-	my $run = qq|<TEXTAREA NAME="$name"|;
-
-	if($opt->{rows}) {
-		$run .= qq{ ROWS=$opt->{rows}}
-			if $opt->{rows};
-		$run .= qq{ COLS=$opt->{cols}}
-			if $opt->{cols};
-	}
-	else {
-		while($type =~ m/\b(row|col)(?:umn)s?[=\s'"]*(\d+)/gi) {
-			$run .= " \U$1\ES=$2";
-		}
-	}
-
-	if ($type =~ m/\bwrap[=\s'"]*(\w+)/i) {
-		$run .= qq{ WRAP="$1"};
-	}
-	$run .= " $opt->{extra}" if $opt->{extra};
-	$run .= '>';
-	$run .= $default;
-	$run .= '</TEXTAREA>';
-}
-
-
-sub build_accessory_select {
-	my($name, $type, $default, $opt, @opts) = @_;
-
-	my $price = $opt->{price} || {};
-
-	my $select;
-	my $run = qq|<SELECT NAME="$name"|;
-	$run .= qq{ SIZE="$opt->{rows}"} if $opt->{rows};
-	$run .= " $opt->{js}" if $opt->{js};
-	$run .= " $opt->{extra}" if $opt->{extra};
-	my ($multi, $re_b, $re_e, $regex);
-	
-	if($type =~ /multiple/i) {
-		$run .= " $type ";
-		$multi = 1;
-		$re_b = '(?:[\0,\s]|^)';
-		$re_e = '(?:[\0,\s]|$)';
-	}
-	elsif ($type  =~ /^multi/i ) {
-		$run .= ' MULTIPLE';
-		$multi = 1;
-		$re_b = '(?:\0|^)';
-		$re_e = '(?:\0|$)';
-	}
-	else {
-		$re_b = '(?:\0|^)';
-		$re_e = '(?:\0|$)';
-	}
-
-	my $limit;
-	if($opt->{cols}) {
-		my $cols = $opt->{cols};
-		$limit = sub {
-			return $_[0] if length($_[0]) <= $cols;
-			return substr($_[0], 0, $cols - 2) . '..';
-		};
-	}
-	else {
-		$limit = sub { return $_[0] };
-	}
-
-	$run .= '>';
-	my $optgroup_one;
-	
-	for(@opts) {
-		if(/^\s*\~\~(.*)\~\~\s*$/) {
-			my $label = $1;
-			$label =~ s/"/&quot;/g;
-			if($optgroup_one++) {
-				$run .= "</optgroup>";
-			}
-			$run .= qq{<optgroup label="$label">};
-			next;
-		}
-		$run .= '<OPTION';
-		$select = '';
-		s/\*$// and $select = 1;
-		if ($default) {
-			$select = '';
-		}
-		my ($value,$label) = split /=/, $_, 2;
-
-		my $extra;
-		if($price->{$value}) {
-			$extra = currency($price->{$value}, undef, 1);
-			$extra = " ($extra)";
-		}
-
-		my $vvalue = $value;
-		$vvalue =~ s/"/&quot;/;
-		HTML::Entities::decode($value);
-		$run .= qq| VALUE="$vvalue"|;
-		if ($default) {
-			$regex	= qr/$re_b\Q$value\E$re_e/;
-			$default =~ $regex and $select = 1;
-		}
-		$run .= ' SELECTED' if $select;
-		$run .= '>';
-		if($label) {
-			$run .= $limit->($label);
-		}
-		else {
-			$run .= $limit->($value);
-		}
-		$run .= $extra if $extra;
-	}
-	$run .= '</SELECT>';
-}
-
-sub build_accessory_box {
-	my($name, $type, $default, $opt, @opts) = @_;
-
-	my ($inc, $select, $xlt, $template, $header, $footer, $row_hdr, $row_ftr);
-
-	$header = $template = $footer = $row_hdr = $row_ftr = '';
-
-	my $font;
-	my $variant;
-	if ($type =~ /check/i) {
-		$variant = 'checkbox';
-		$default = '' if ! length($default) and $opt->{item};
-	}
-	else {
-		$variant = 'radio';
-	}
-	if ($type  =~ /font(?:size)?[\s_]*(-?\d)/i ) {
-		$font = qq{<FONT SIZE="$1">};
-	}
-
-	if($type =~ /nbsp/i) {
-		$xlt = 1;
-		$template = qq{<INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__>&nbsp;__LABEL__&nbsp;&nbsp;};
-	}
-	elsif ($type  =~ /left[\s_]*(\d?)/i ) {
-		$inc = $1 || undef;
-		$header = '<TABLE>';
-		$footer = '</TABLE>';
-		$template = '<TR>' unless $inc;
-		$template .= <<EOF;
-<TD>$font<INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__></TD><TD>__LABEL__</TD>
-EOF
-		$template .= '</TR>' unless $inc;
-	}
-	elsif ($type  =~ /right[\s_]*(\d?)/i ) {
-		$inc = $1 || undef;
-		$header = '<TABLE>';
-		$footer = '</TABLE>';
-		$template = '<TR>' unless $inc;
-		$template .= <<EOF;
-<TD>${font}__LABEL__</TD><TD><INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__></TD>
-EOF
-		$template .= '</TR>' unless $inc;
-	}
-	else {
-		$template = <<EOF;
-<INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__>&nbsp;__LABEL__
-EOF
-		$template =~ s/\s+$/<BR>/ if $type =~ /break/i;
-	}
-	
-	my $run = $header;
-
-	my $price = $opt->{price} || {};
-
-	my $i = 0;
-	for(@opts) {
-		$run .= '<TR>' if $inc && ! ($i % $inc);
-		$i++;
-		$run .= $template;
-		$select = '';
-		s/\*$// and $select = "CHECKED";
-
-#::logDebug("select=$select, default is '" . (defined $default ? $default : 'undef') . "'");
-		$select = '' if defined $default;
-
-		my ($value,$label) = split /=/, $_, 2;
-		$label = $value unless $label;
-
-		my $extra;
-		if($price->{$value}) {
-			$label .= "&nbsp;(" . currency($price->{$value}, undef, 1) . ")";
-		}
-
-		$value =~ s/"/&quot;/g;
-
-		$value eq '' and defined $default and $default eq '' and $select = "CHECKED";
-
-		if(length $value) {
-			my $regex	= $opt->{contains}
-						? qr/\Q$value\E/ 
-						: qr/\b\Q$value\E\b/;
-			$default =~ $regex and $select = "CHECKED";
-		}
-
-		$label =~ s/ /&nbsp;/g if $xlt;
-
-		$run =~ s/__SEL__/ $select/;
-		$run =~ s/__VALUE__/$value/;
-		$run =~ s/__LABEL__/$label/;
-		$run .= '</TR>' if $inc && ! ($i % $inc);
-		
-	}
-	$run .= $footer;
-}
-
 # This generates a *session-based* Autoload routine based
 # on the contents of a preset Profile (see the Profile directive).
 #
@@ -2202,210 +1913,33 @@ sub tag_accessories {
 		$extra =~ s/\s+$//;
 		@{$opt}{qw/attribute type column table name outboard passed/} =
 			split /\s*,\s*/, $extra;
-		if($code) {
-			$opt->{type} ||= 'select';
-			if(! $opt->{table}) {
-				my $col =  $opt->{column} || $opt->{attribute};
-				$opt->{passed} ||= product_field($col, $code)
-					if $col;
-			}
-		}
 	}
 	($attribute, $type, $field, $db, $name, $outboard, $passed) = 
 		@{$opt}{qw/attribute type column table name outboard passed/};
 
-	return Vend::Form::display($opt, $item)
-		if $::Variable->{MV_DANGEROUS_NEW_FORM}
-		or $Global::Variable->{MV_DANGEROUS_NEW_FORM};
-	$item ||= {};
-	my $p = $opt->{prepend} || '';
-	my $a = $opt->{append} || '';
-	my $delimiter = $opt->{delimiter} || ',';
-
-	$type = 'select' unless $type;
-	$field = $attribute unless $field;
-	$code = $outboard if $outboard;
-#::logDebug("accessory type=$type db=$db field=$field code=$code attr=$attribute name=$name passed=$passed attr_value=$item->{$attribute}");
-
-	return "$p$item->{$attribute}$a" if $type eq 'value';
-
-	my $data;
-	if($passed) {
-		$data = $passed;
-	}
-	else {
-		$data = $db ? tag_data($db, $field, $code) : product_field($field,$code);
-	}
-
-	unless ($data || $type =~ /^text|^hidden|^password|^combo/i) {
-		return '' if $item;
-	}
-
-	return show_current_accessory_label($item->{$attribute},$data)
-			if "\L$type" eq 'display' and $item;
-
-	return $data if "\L$type" eq 'show';
-
-	my $attrib_value = $item ? HTML::Entities::encode($item->{$attribute}) : '';
-
-	if($ishash) {
-#::logDebug("tag_accessories: name=$name item=$item=" . ::uneval_it($item) . " opt_item=$opt->{item} attr=$attribute");
-		my $adder;
-		$adder = $item->{mv_ip} if	defined $item->{mv_ip}
-								and $opt->{item} || ! $name;
-#::logDebug("tag_accessories: adder=$adder");
-		$name = $attribute unless $name;
-		$name .= $adder if defined $adder;
-#::logDebug("tag_accessories: name=$name");
-	}
-	else {
-		$name = "mv_order_$attribute" unless $name;
-	}
-
-	return qq|$p<INPUT TYPE="hidden" NAME="$name" VALUE="$attrib_value">$a|
-		if "\L$type" eq 'hidden';
-	return qq|$p<INPUT TYPE="hidden" NAME="$name" VALUE="$attrib_value">$attrib_value$a|
-		if $type =~ /hidden/;
-
-	if($type =~ /^text/i) {
-		$opt->{extra} = " $opt->{extra}" if $opt->{extra} ||= $opt->{js};
-		my $cols;
-		if ($type =~ /^textarea(?:_(\d+)_(\d+))?/i) {
-			my $rows = $1 || $opt->{rows} || 4;
-			$cols = $2 || $opt->{cols} || 40;
-			$type =~ s/^textarea[_\d]+/textarea/;
-			$opt->{rows} = $rows;
-			$opt->{cols} = $cols;
-			return build_accessory_textarea(
-					$name,
-					$type,
-					$attrib_value,
-					$opt,
-			);
-		}
-		elsif("\L$type" =~ /^text_(\d+)$/) {
-			$cols = $1;
-		}
-		$cols = ($opt->{cols} || $opt->{width} || 60)
-			if ! $cols;
-		return qq|$p<INPUT TYPE=text NAME="$name" SIZE="$cols" VALUE="$attrib_value"$opt->{extra}>$a|;
-	}
-	elsif($type =~ /^password/i) {
-#::logDebug("hit password");
-		$opt->{extra} = " $opt->{extra}" if $opt->{extra};
-		return qq|$p<INPUT TYPE=password NAME="$name" SIZE=$1 VALUE="$attrib_value"$opt->{extra}>$a|
-			if "\L$type" =~ /_(\d+)/;
-		my $cols = $opt->{cols} || $opt->{width} || 12;
-		return qq|$p<INPUT TYPE=password NAME="$name" SIZE="$cols" VALUE="$attrib_value"$opt->{extra}>$a|;
-	}
-
-	my ($default, $label, $select, $value, $run);
-
-	my @opts = split /\s*$delimiter\s*/, $data;
-
-	if($type =~ s/\branges\b//i || $opt->{ranges} ) {
-		produce_range(\@opts);
-	}
-
-#::logDebug("item in tag_accessories: " . ::uneval_it($item));
-	if(exists $item->{$attribute}) {
-#::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
-		$default = $item->{$attribute};
-	}
-	elsif (exists $opt->{default}) {
-#::logDebug("default from opt");
-		$default = $opt->{default};
-	}
-	elsif ($name) {
-#::logDebug("default from values");
-		$default = $::Values->{$name};
-	}
-
-	# returns just list of options, no labels
-	if($type eq 'options') {
-		return join "\n", (map { s/\s*=.*//; $_ } @opts);
-	}
-	# returns just list of labels, no options
-	elsif ($type eq 'labels') {
-		return join "\n", (map { s/.*?=//; $_ } @opts);
-	}
-
-	$opt->{price} = get_option_hash($opt->{price_data}) if $opt->{price};
-
-	# Ranging type, for price breaks based on quantity
-	if ($type =~ s/^range:?(.*)//) {
-		$select = $1 || 'quantity';
-		$default = ($item && defined $item->{$select}) ? $item->{$select} : undef;
-		my $min;
-		my $max;
-		for(@opts) {
-			/^ (-?[\d.]+) - (-?[\d.]*)  \s*=\s*  (.+) /x
-				or next;
-			$min = $1;
-			$max = $2;
-			$label = $3;
-			if($label =~ s/\*$// and ! $default) {
-				$default = $min;
+	## Code only passed when we are a product
+	if($code) {
+		GETACC: {
+			my $col =  $opt->{column} || $opt->{attribute};
+			my $key = $opt->{outboard} || $code;
+			last GETACC if ! $col;
+			if($opt->{table}) {
+				$opt->{passed} ||= tag_data($opt->{table}, $col, $key);
 			}
-			next unless $default >= $min;
-			next unless $default <= $max;
-			last;
+			else {
+				$opt->{passed} ||= product_field($col, $key);
+			}
 		}
-		($item->{$attribute} = $label, return '') if $item;
-		return qq|<INPUT TYPE="hidden" NAME="$name" VALUE="$label">|;
+
+		return unless $opt->{passed} || $opt->{type};
+		$opt->{type} ||= 'select';
+		return unless
+			$opt->{passed}
+				or
+			$opt->{type} =~ /^(text|password|hidden)/i;
 	}
 
-	# Building select, textarea, or radio/check box if got here
-
-	if ($type =~ /^(radio|check)/i) {
-		return $p . build_accessory_box($name, $type, $default, $opt, @opts) . $a;
-	}
-	elsif($type eq 'links') {
-		return $p . build_accessory_links($name, $type, $default, $opt, @opts) . $a;
-	}
-	elsif($type =~ /^combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
-		unless($opts[0] =~ /^=/) {
-			unshift @opts, ($opt->{new} || "=&lt;-- " . errmsg('New'));
-		}
-		my $out = qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="">|;
-		$out .= build_accessory_select($name, $type, $default, $opt, @opts);
-		return "$p$out$a";
-	}
-	elsif($type =~ /^reverse_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
-		unless($opts[0] =~ /^=/) {
-			unshift @opts, ($opt->{new} || "=Current --&gt;");
-		}
-		my $out = build_accessory_select($name, $type, $default, $opt, @opts);
-		$out .= qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="$default">|;
-		return "$p$out$a";
-	}
-	elsif($type =~ /^move_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
-		my $ejs = ",1" if $opt->{rows} > 1;
-		$opt->{js} = qq{onChange="addItem(this.form['X$name'],this.form['$name']$ejs)"}
-			unless $opt->{js};
-		my $out = build_accessory_select("X$name", $type, '', $opt, @opts);
-		if($opt->{rows} > 1) {
-			$out .= qq|<TEXTAREA ROWS="$opt->{rows}" WRAP=virtual COLS="$opt->{cols}" NAME="$name">$default</TEXTAREA>|;
-		}
-		else {
-			$out .= qq|<INPUT SIZE="$opt->{cols}" NAME="$name" VALUE="$default">|;
-		}
-		return "$p$out$a";
-	}
-	else {
-#::logDebug("build_accessory_select is run");
-		#return $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
-		my $s = $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
-#::logDebug("build_accessory_select returns $s");
-		return $s;
-	}
-
+	return Vend::Form::display($opt, $item);
 }
 
 # MVASP
@@ -2991,31 +2525,6 @@ sub tag_counter {
 }
 
 # Returns the text of a user entered field named VAR.
-sub tag_cgi {
-    my($var, $opt) = @_;
-    my($value);
-
-	local($^W) = 0;
-	$CGI::values{$var} = $opt->{set} if defined $opt->{set};
-	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
-    if ($value) {
-		# Eliminate any Interchange tags
-		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
-		$value =~ s/\[/&#91;/g;
-    }
-	if($opt->{filter}) {
-		$value = filter_value($opt->{filter}, $value, $var);
-		$CGI::values{$var} = $value unless $opt->{keep};
-	}
-
-    return '' if $opt->{hide};
-
-	$value =~ s/</&lt;/g
-		unless $opt->{enable_html};
-    return $value;
-}
-
-# Returns the text of a user entered field named VAR.
 sub tag_value_extended {
     my($var, $opt) = @_;
 
@@ -3121,47 +2630,6 @@ sub tag_value_extended {
 		}
 	}
 	return join $joiner, @ary;
-}
-
-sub initialize_banner_directory {
-	my ($dir, $category, $opt) = @_;
-	mkdir $dir, 0777 if ! -d $dir;
-	my $t = $opt->{table} || 'banner';
-	my $c_field;
-	my $append = '';
-	if($category) {
-		$append = ' AND ';
-		$append .= ($opt->{c_field} || 'category');
-		$category =~ s/'/''/g;
-		$append .= " = '$category'";
-	}
-	my $db = database_exists_ref($t);
-	if(! $db) {
-		my $weight_file = "$dir/total_weight";
-		return undef if -f $weight_file;
-		$t = "no banners db $t\n";
-		Vend::Util::writefile( $weight_file, $t, $opt);
-		::logError($t);
-		return undef;
-	}
-	my $w_field = $opt->{w_field} || 'weight';
-	my $b_field = $opt->{b_field} || 'banner';
-	my $q = "select $w_field, $b_field from $t where $w_field >= 1$append";
-#::logDebug("banner query: $q");
-	my $banners = $db->query({
-							query => $q,
-							st => 'db',
-						});
-	my $i = 0;
-#::logDebug("banner query result: " . ::uneval($banners));
-	for(@$banners) {
-		my ($weight, $text) = @$_;
-		for(1 .. $weight) {
-			Vend::Util::writefile(">$dir/$i", $text, $opt);
-			$i++;
-		}
-	}
-	Vend::Util::writefile(">$dir/total_weight", $i, $opt);
 }
 
 sub format_auto_transmission {
@@ -3959,22 +3427,6 @@ sub find_sort {
 				if defined $options;
 	$options = interpolate_html($options) if index($options, '[') != -1;
 	return $options || '';
-}
-
-sub tag_search_list {
-    my($opt, $text) = @_;
-	$opt->{prefix} = 'item';
-	my $obj;
-
-	$obj = $opt->{object}
-			|| $::Instance->{SearchObject}{$opt->{label}}
-			|| perform_search()
-			|| return;
-	$text =~ s:\[if-(field\s+|data\s+):[if-item-$1:gi
-		and $text =~ s:\[/if${D}(field|data)\]:[/if-item-$1]:gi;
-	$text =~ s:\[on${D}change\b:[item-change:gi
-		and $text =~ s:\[/on${D}change\b:[/item-change:gi;
-   	return labeled_list($opt, $text, $obj);
 }
 
 # Artificial for better variable passing
@@ -5910,12 +5362,6 @@ sub set_tmp {
 	push @Vend::TmpScratch, $var;
     $::Scratch->{$var} = $val;
 	return '';
-}
-
-sub tag_lookup {
-	my($selector,$field,$key,$rest) = @_;
-	return $rest if (defined $rest and $rest);
-	return tag_data($selector,$field,$key);
 }
 
 sub timed_build {

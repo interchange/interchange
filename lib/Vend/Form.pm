@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.3 2002-01-31 16:03:41 mheins Exp $
+# $Id: Form.pm,v 2.4 2002-02-01 04:21:46 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 @EXPORT = qw (
 	display
@@ -249,6 +249,30 @@ sub attr_list {
 	$body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
 	$body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 	return $body;
+}
+
+sub show_data {
+	my $opt = shift;
+	my $ary = shift;
+	return undef if ! $ary;
+	my @out;
+	for(@$ary) {
+		push @out, join "=", @$_;
+	}
+	my $delim = Vend::Interpolate::get_joiner($opt->{delimiter}, ',');
+	return join $delim, @out;
+}
+
+sub show_options {
+	my $opt = shift;
+	my $ary = shift;
+	return undef if ! $ary;
+	my @out;
+	eval {
+		@out = map {$_->[0]} @$ary;
+	};
+	my $delim = Vend::Interpolate::get_joiner($opt->{delimiter}, ',');
+	return join $delim, @out;
 }
 
 sub template_sub {
@@ -743,7 +767,9 @@ sub display {
 	my %daction = (
 		value       => \&processed_value,
 		display     => \&current_label,
-		show        => sub { return $data },
+		value       => sub { my $opt = shift; return $opt->{value} },
+		show        => \&show_data,
+		options     => \&show_options,
 		select      => \&dropdown,
 		default     => \&template_sub,
 		radio       => \&box,
@@ -802,8 +828,8 @@ sub parse_type {
 		return $opt;
 	}
 
-	return if $opt->{type} =~ /^[a-z]+$/;
-	$opt->{type} = lc $opt->{type} || 'text';
+	$opt->{type} = lc($opt->{type}) || 'text';
+	return if $opt->{type} =~ /^[a-z][a-z0-9]*$/;
 
 	my $type = $opt->{type};
 	return if $type =~ /^[a-z]+$/;
