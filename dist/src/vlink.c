@@ -1,6 +1,6 @@
 /* vlink.c:  runs as a cgi program and passes request to Vend server
 
-   $Id: vlink.c,v 1.2.2.1 2000-12-08 15:48:22 zarko Exp $
+   $Id: vlink.c,v 1.2.2.1.2.1 2000-12-17 01:59:10 jon Exp $
 
    Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 
@@ -480,7 +480,7 @@ int main(argc, argv)
   buf_left = buf_size;
   open_socket();		       /* open our connection */
   if(argc > 1) {
-    fprint(stderr, "Command line arguments deprecated.  Ignoring!\n");
+    fprintf(stderr, "Command line arguments deprecated. Ignoring!\n");
   }
   send_environment();
   send_entity();
