@@ -72,6 +72,7 @@ sub {
 #Debug("running check $check, pname=$pname profile=$profile");
 	$profile .= "\n&fatal=1\n";
 	$profile = "&noerror=1\n$profile" if $opt->{no_error};
+	$profile = "&overwrite=1\n$profile" if $opt->{overwrite_error};
 	$::Scratch->{$pname} = $profile;
 
 	my ($status) = ::check_order($pname, $ref);
