@@ -3094,9 +3094,6 @@ PriceDivide=0 upsca  UPS/CA   weight            0   150    C upsca
 [default zip A7G] 5.00 upsca  UPS/CA   weight            150 99999  e
 @@TOTAL@@ lb too heavy for UPS
 
-fedex  FedEx    quantity          1   9999   s fedex_cost ;[value
-country]
-
 =over 4
 
 =item global
@@ -3226,119 +3223,6 @@ following:
 
 The only difference is that the beginning code to call the lookup is
 upper-case C<U> instead of lower-case C<u>.
-
-=item fedex
-
-The last entry, C<fedex>, uses a named subroutine. The example is
-designed to work with this subroutine defined in C<catalog.cfg>:
-
-    Sub    sub fedex_cost {
-        my($country) = @_;
-        my $cost;
-        if($country =~ /^usa?$/i) {
-            $cost = 20;
-        }
-        else {
-            $cost = 50;
-        }
-        return $cost;
-    }
-    EOF
-
-<<EOF
-
-=back
-
-B<Note: >The text above appears indented, but in the C<catalog.cfg>
-file it must begin at the beginning of the line. Also, make sure to
-upload in ASCII mode. Carriage returns are not tolerated.
-
-=over 4
-
-=item
-
-It will simply return a cost of 20 if the country the user has entered
-is US or USA. Otherwise, it will return a cost of 50. Obviously, much
-more complicated routines can be defined. Read the following only if
-familiar with Perl.
-
-Named subroutines can be called with any of the methods defined with
-C<[set name] your_perl_code_here [/set]>, Sub, or GlobalSub.
-
-If parameters are specified, separated by commas, they will be taken
-as either fixed values or as database fields to be sent to the
-subroutine in an anonymous hash keyed on the item code (for each item
-in the *current* shopping cart).
-
-If a database other than the products database is to be used, the
-database name should be prepended with a colon (C<:>) separator. If a
-key other than the item code is to be used, it should be appended with
-a semi-colon separator.
-
-To send fixed value to the subroutine (appended to the call reference
-as an array of fixed scalar parameters), begin the parameter with a
-semicolon. They will be appended globally after the hash reference.
-
-\Examples:
-
-  # Sends the weight of each item from the products da
-  weight
-
-  # Sends the value of the handling field from the
-  # special database for each item
-
-  special:handling
-
-  # Sends the value of the 'adder' field from the special
-  # database, for the value the user has entered for 'country'
-  # The spaces around the separators are OK
-
-  special : adder ; [value country]
-
-  # Sends a fixed parameter of 20 to the subroutine
-
-  ;20
-
-abase
-
-The parameters are interpreted for Interchange tags before being
-parsed. Here is a complete example:
-
-   s item_cost weight,modes:[value mv_shipmode];[value country], ;2
-  items in the shopping cart:  00-0011 19=202
-
-  ------- product database  ----
-
-  code    weight   description      price
-  00-0011   8      The Mona Lisa    1000
-  19-202    12     American Gothic  800
-
-    ------- modes database  ----
-
-  code    upsg  upsb  upsr  postal_air postal_surface
-  UK        0    0     0       1            1
-
-, ;25
-
-This will call the subroutine C<item_cost> and will send the weight of
-each item, along with the value of the modes database column
-corresponding to the shipping mode the user has selected, keyed with
-the value of C<country> on their order form. If the user has selected
-C<mode postal_air> and is in the country coded as C<UK>, the
-subroutine will be called as if it was:
-
-      item_c                    '00-0011' => {postal_air => '1', weight => '8'},
-                    '19-202' => {postal_air => '1', weight => '12'},
-                 }, 20, 25 )
-
-st( {
-
-If the undefined value is returned by the routine, the next shipping
-mode will be tried. If a non-numeric string value is returned, its
-value will be placed as an error message in the session variable
-ship_message (available as C<[data session ship_message]>) and a zero
-cost will be returned. If any number or the empty string is returned,
-it will be used as the shipping cost (even 0).
 
 =back
 
