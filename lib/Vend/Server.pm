@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.56 2004-07-12 05:02:50 mheins Exp $
+# $Id: Server.pm,v 2.57 2004-07-28 00:48:35 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.56 $, 10);
+$VERSION = substr(q$Revision: 2.57 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -319,7 +319,7 @@ sub parse_post {
 #::logDebug("found session stuff: $CGI::values{mv_session_id} --> $CGI::values{mv_arg}  --> $CGI::values{mv_pc} ");
 		shift @pairs;
 	}
-	elsif ($#pairs == 1 and $pairs[0] !~ /=/) {	# Must be an isindex
+	elsif (scalar(@pairs) == 1 and $pairs[0] !~ /=/) {	# Must be an isindex
 		$CGI::values{ISINDEX} = $pairs[0];
 		$CGI::values_array{ISINDEX} =  [ split /\+/, $pairs[0] ];
 		@pairs = ();
