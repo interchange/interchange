@@ -1,6 +1,6 @@
 interchange (5.0.1-1) unstable; urgency=low
 
-  * new upstream release
+  * new upstream release (Closes: #240800, upstream fix for security hole)
   * switch to gettext-based debconf templates (Closes: #235494, thanks to
     Martin Quinson <Martin.Quinson@tuxfamily.org> for the patch)
   
