@@ -43,6 +43,14 @@ Core
 
 	A B d e f g l M r s T u w x
 
+* Fix bug in Glimpse search that caused mv_substring_match never to work. 
+  Glimpse only allows setting substring or full word matches per search, 
+  not per word, so if any word is flagged as a substring match, the whole 
+  search is. Otherwise, it's a full word match.
+
+* Fix bug that prevented multiple-field searches from working, e.g.
+  sf=15:16:17:18.
+
 UI
 --
 
