@@ -8,13 +8,13 @@
 
 Interchange 4.9.1 not yet released
 
+
 Core
 ----
 
 * The great tag breakout!
 
-	- Almost all tags are now UserTag definitions. The exceptions
-	  are:
+	- Almost all tags are now UserTag definitions. The exceptions are:
 
 		and bounce goto if label or unless
 
@@ -56,9 +56,8 @@ Core
 		## to TagInclude !bar baz !buz
 		TagInclude !:foo
 
-	- New CodeDef directive allows the setting of filters,
-	  order checks, FormAction, ActionMap, ItemAction,
-	  and LocaleChange.
+	- New CodeDef directive allows the setting of filters, order checks,
+      FormAction, ActionMap, ItemAction, and LocaleChange.
 
 			## filters
 			CodeDef  mixedcase Filter
@@ -107,37 +106,10 @@ Core
 
 * Remove Vend::ECML, move to extensions/ directory.
 
-Build
------
-
-* Keep test from giving warning about not being able to stat
-  "code" directory.
-
-* Big changes to RPM specfile:
-
-	- Allow non-root RPM builds (requires some changes to makecat as
-	  well, which will probably only be in 4.9 and later).
-	- Don't add interch user on build machine.
-	- Allow easy en/disabling of daemon autostart with defined
-	  parameter and default to off to prevent any surprises.
-	- Start using Red Hat standard /sbin/service instead of directly
-	  running /etc/rc.d/init.d/interchange.
-	- Remove unneeded .empty files used in CVS to avoid pruning
-	  important but empty directories.
-	- Make admin UI images owned by root.
-	- Don't include /usr/share/man/man[18] system directories in
-	  RPMs.
-	- Start using RPM dependencies for Perl CPAN modules. Users who
-	  install directly from CPAN will have to use --nodeps.
-	- Make main interchange package architecture-dependent, because
-	  it includes precompiled vlink and tlink CGIs, and we shouldn't
-	  require a C compiler on the install machine if users run
-	  makecat later.
-	- Stop checking for /home/httpd, but use a define for webdir
-	  that can easily be changed if needed.
 
 UI
 --
+
 * Major changes to the content editing scheme.
 
 	- Requires a CSS/Javascript 1.3 compliant browser. Tested on
@@ -153,18 +125,16 @@ UI
 	  with the page editor, but work fairly well.
 
 	- Added new lib/UI/ContentEditor.pm module which implements
-	  this stuff in conjunction with
-	  lib/UI/pages/include/*_editor. A bit of a JavaScript
-	  dependency nightmare on the generated attribute editors, but
-	  I make get this more canned as time goes on.
+	  this stuff in conjunction with lib/UI/pages/include/*_editor.
+	  A bit of a JavaScript dependency nightmare on the generated
+	  attribute editors, but I may get this more canned as time goes on.
 
-	- Lets get this on record -- this content editiing WILL NOT
+	- Let's get this on record -- this content editiing WILL NOT
 	  UNDER ANY CIRCUMSTANCES EVER WORK ON NETSCAPE 4. Do not ask,
 	  though I know the people who monitor this stuff won't.
 
-* Added new "auto_wizard" which builds a wizard from a file
-  like in the example. I think this is pretty cool, if I do
-  say so myself. It will be the method to provide scripted
+* Added Mike's cool new "auto_wizard" which builds a wizard from a
+  file like in the example. It will be the method to provide scripted
   content addition.
 
 * More table-editor updates -- added notable option, and
@@ -187,10 +157,8 @@ UI
 
 * [import-fields replace=1] -- added option to replace items in the database
 
-* Add su facility for catalog superuser to switch users to
-  another user id.
-
-  New UI_Tag su with following:
+* Add su facility for catalog superuser to switch users to another
+  user id, using new UI_Tag su as follows:
 
 	[su username=miltonbear]
 
@@ -207,7 +175,12 @@ UI
 	3. Safe evals session string
 	4. Retrieves session username/admin info
 
-  MMsu profile is called on admin/customer.html to run the switch
+  MMsu profile is called on admin/customer.html to run the switch.
+
+  When you "log out", you are reverting to the previous user, and you
+  can go no further back. So if you go from superuser->adminuser, then
+  adminuser->regular user, there is no way back to superuser without
+  logging in again.
 
 * Continuing work on meta_display and Vend::Form.
 
@@ -218,33 +191,25 @@ UI
 	- Fix widget.coretag to not call UI::Primitive routine
 	- Redo option_format filtering
 
-* Remove [set-alias] tag, never used.
-
-	* Add capability to su.coretag to:
-
-		Switch  superuser->adminuser
-		Switch  adminuser->regularuser
-
-	  When you "log out", you are reverting to the previous user,
-	  and you can go no further back. So if you go from superuser->adminuser,
-	  then adminuser->regular user, there is no way back to superuser without
-	  logging in again.
 * Display server hostname on the information page (genconfig).
 
 * Unused usertags component, set-alias and set-click removed.
+
 
 Payment
 -------
 
 * Support for Wells Fargo added
 
+
 Accounting
 ----------
+
 * Vend::Accounting module added, along with example module for SQL_Ledger.
   This is the basis for a start of a defined accounting system interface.
 
   Some intended functions:
-	 NOTE: AS = Accounting Software, i.e. SQL-Ledger, IC = Interchange
+    NOTE: AS = Accounting Software, i.e. SQL-Ledger, IC = Interchange
 
 	1. Assign customer number
 	2. Change customer information based on input, limit to fields customer
@@ -268,7 +233,7 @@ PROPOSED:
 	Vend::Account::Compiere (proposed)
 	Vend::Account::[fill-in-the-blank]
 
-* Use a usertag [account] (ala [charge]) to interface functions.
+* Use a usertag [account] (a la [charge]) to interface functions.
 
 * Use a profile primitive, "&account=label function" ala "&charge="
   to do some accounting functions in profiles, notably getting an
@@ -287,12 +252,12 @@ PROPOSED:
 
     accountstatus -- record of payments and orders for account statement
 
+
 Foundation demo
 ---------------
 
 * use [if variable MV_DEMO_MODE] instead of the more cumbersome
-  [if type=explicit compare="__MV_DEMO_MODE__"] (which I think was my
-  doing in the first place :)
+  [if type=explicit compare="__MV_DEMO_MODE__"].
 
 * add global INTERCHANGE_URL and INTERCHANGE_EMAIL variables to be used
   for the Interchange developer website & email contact points, instead
@@ -311,7 +276,7 @@ Foundation demo
   standard foundation setup, it caused lots of failures when people
   tried to customize their order routing.
 
-* (oracle) Add missing Database xxx UPPERCASE 1 settings. Thanks to
+* (Oracle) Add missing Database xxx UPPERCASE 1 settings. Thanks to
   Jonathan Lee <jonalee740304@yahoo.com> for reporting.
 
 * Get rid of weird tax rate popup notice when updating account
@@ -320,17 +285,19 @@ Foundation demo
 
 * Change catalog.cfg to highlight etc/after.cfg.
 
-UserTag stuff
-----------------
-*  [fedex-query] -- Stop dying if there's a problem with FedExexpress
-   lookups, which kept even ground rate lookups from being done during
-   the first request when the Business::Fedex object is first created.
-   
-   Instead, just log the error but continue on with possible ground lookup.
-   
-   (This situation resulted in the oddity of the shipping rate displaying
-   as $0.00 on the checkout page, but still getting added into the total cost
-   and displaying in the shipping rate pulldown select box just fine.)
+
+UserTags
+--------
+
+* [fedex-query] -- Stop dying if there's a problem with FedEx express
+  lookups, which kept even ground rate lookups from being done during
+  the first request when the Business::Fedex object is first created.
+
+  Instead, just log the error but continue on with possible ground lookup.
+
+  (This situation resulted in the oddity of the shipping rate displaying
+  as $0.00 on the checkout page, but still getting added into the total cost
+  and displaying in the shipping rate pulldown select box just fine.)
 
 * [formel] -- cause option added (from stable branch)
 
@@ -342,16 +309,37 @@ UserTag stuff
 * [email] -- Add enhancement made by Jurgen Botz to use send_mail program
   so that Net::SMTP can send the email tag. Thanks Jurgen!
 
-Support scripts
----------------
-* Add standard 'reload' function as alias for restart.
-* Start daemon in UNIX mode only by default (for RPM only).
-* Build foundation-demo RPM with MV_DEMO_MODE set.
-* Quell /sbin/service stop errors
-* Re-add main filelist omitted by oversight
-* On uninstall, remove autogenerated /usr/lib/interchange/etc/varnames
-* Don't start daemon after install.
-* Let user see if we turn off old IC server before install/upgrade.
+
+Build
+-----
+
+* Keep test from giving warning about not being able to stat
+  "code" directory.
+
+* Big changes to RPM specfile:
+
+  - Allow non-root RPM builds.
+  - Don't add interch user on build machine.
+  - Don't automatically start Interchange after installing RPM.
+  - Remove unneeded .empty files used in CVS to avoid pruning
+    important but empty directories.
+  - Make admin UI images owned by root.
+  - Don't allow Interchange RPMs to own /usr/share/man/man[18] system
+    directories.
+  - Start using RPM dependencies for Perl CPAN modules. Users who
+    install directly from CPAN will have to use --nodeps.
+  - Start daemon in UNIX mode only by default.
+  - Build foundation-demo RPM with MV_DEMO_MODE set.
+  - On uninstall, remove autogenerated /usr/lib/interchange/etc/varnames
+  - Start using Red Hat standard /sbin/service instead of directly
+    running /etc/rc.d/init.d/interchange.
+  - Add standard 'reload' function as alias for restart.
+  - Quell /sbin/service stop errors.
+  - Let user see if we turn off old IC server before install/upgrade.
+  - Make packages architecture-dependent, to save lots of hassles.
+  - Stop checking for /home/httpd, but use a define for webdir
+    that can easily be changed if needed.
+
 
 ------------------------------------------------------------------------------
 
