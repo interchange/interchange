@@ -5,33 +5,60 @@ UserTag read-ui-page Documentation <<EOD
 
 Returns the structure of a page.
 
-Returns the content in the ui_content key of the hash, which is the
-section between <!-- BEGIN CONTENT --> and <!-- END CONTENT -->.
 
+ui_component
 
-Returns the component settings as an array with the elements
-as major keys, i.e:
+	Returns the component settings as an array with the elements
+	as major keys, i.e:
 
-	[control-set]
-		[size]1[/size]
-		[color]red[/color]
-	[/control-set]
+		[control-set]
+			[size]1[/size]
+			[color]red[/color]
+		[/control-set]
 
-	[control-set]
-		[size]5[/size]
-		[color]green[/color]
-		[banner]Very Green[/banner]
-	[/control-set]
+		[control-set]
+			[size]5[/size]
+			[color]green[/color]
+			[banner]Very Green[/banner]
+		[/control-set]
 
-becomes:
+	becomes:
 
-	[
-		{ size => 1, color => 'red' },
-		{ size => 5, color => 'green', banner => 'Very Green' },
-	]
+		[
+			{ size => 1, color => 'red' },
+			{ size => 5, color => 'green', banner => 'Very Green' },
+		]
+
+ui_component_text
+
+	The component settings as text, in the event component settings are
+	not to be edited.
+
+ui_page_setting
+
+	Returns the page global settings as a hash. Reads [set|tmp|seti ..][/set]
+	in the area above the first template region (i.e. @_LEFTONLY_TOP_@), but outside
+	of the [control] region.
+
+		[set page_title]Some title[/set]
+		[set members_only][/set]
+
+	becomes:
+
+		{ page_title => 'Some title', members_only => 1 }
+
+ui_page_setting_text
+
+	The text of the page setting area, used if the page settings are not to
+	be edited.
 
 If the textref=1 is passed in the tag call, a stringified version is
 returned.
+
+ui_content
+
+    Returns the content, which is the section between
+	<!-- BEGIN CONTENT --> and <!-- END CONTENT -->.
 
 EOD
 
@@ -60,24 +87,37 @@ sub {
 	return undef unless length($data);
 
 	my $ref = {
-			ui_page_file => $pn,
-			ui_page_name => $name,
+			ui_page_file	=> $pn,
+			ui_page_name	=> $name,
+			ui_component	=> [],
+			ui_page_setting	=> {},
+			ui_pre_region	=> [],
+			ui_post_region	=> [],
 		};
+
+	my $preamble;
+	my $postamble;
 			
 	if ( 
 		$data =~ m{
+			(.*)
 			<!--\s+begin\s+content\s+-->
 			\n?
 			(.*?)
 			\n?
 			<!--\s+end\s+content\s+-->
+			(.*)
 			}xsi
 		)
 	{
-		$ref->{ui_content} = $1;
+		$preamble = $1;
+		$ref->{ui_content} = $2;
+		$postamble = $3;
 	}
 	else {
 		$ref->{ui_content} = $data;
+		return uneval($ref) if $opt->{textref};
+		return $ref;
 	}
 
 	my @comps;
@@ -90,39 +130,83 @@ Log("_setref key=$key val=$val");
 		$ref->{$key} = $val;
 	}
 
-	if($data =~ m/
+	if ( 
+		$preamble =~ s{
+			<!--\s+begin\s+preamble\s+-->
+			\n?
+			(.*?)
+			\n?
+			<!--\s+end\s+preamble\s+-->\n?
+			}{}xsi
+		)
+	{
+		$ref->{ui_page_preamble} = $1;
+	}
+
+	if ( 
+		$postamble =~ s{
+			<!--\s+begin\s+postamble\s+-->
+			\n?
+			(.*?)
+			\n?
+			<!--\s+end\s+postamble\s+-->
+			}{}xsi
+		)
+	{
+		$ref->{ui_page_postamble} = $1;
+	}
+
+	while ($preamble =~ s/^[ \t]*((?:\@_|__|\@\@)[A-Z][A-Z_]+[A-Z](?:_\@|__|\@\@))[ \t]*$//m ) {
+		push @{$ref->{ui_pre_region}}, $1;
+	}
+
+	while($postamble =~ s/^[ \t]*((?:\@_|__|\@\@)[A-Z][A-Z_]+[A-Z](?:_\@|__|\@\@))//m ) {
+		push @{$ref->{ui_post_region}}, $1;
+	}
+
+	$postamble =~ s/^\s+//;
+	$postamble =~ s/\s+$//;
+	$ref->{ui_page_end} = $postamble;
+
+	if($preamble =~ s/
 						(\[control \s+ reset .*? \]
 						*?
 						\[control \s+ reset .*? \])
-					/six)
+					//six)
 	{
 		# New style
 		my $stuff = $1;
 		$ref->{ui_component_text} = $stuff;
-		while($stuff =~ m{\[control-set\](.*?)\[/control-set\]}isg ) {
+		while($stuff =~ s{\[control-set\](.*?)\[/control-set\]}{}is ) {
 			my $sets = $1;
 			my $r = {};
 			$sets =~ s{\[([-\w]+)\](.*?)\[/\1\]}{ _setref($r, $1, $2) }eisg;
 			push @comps, $r;
 		}
+
+		$stuff =~ s/^\s+//;
+		$stuff =~ s/\s+$//;
+		$ref->{ui_component} = \@comps;
 	}
 
-
-	$ref->{ui_component} = \@comps;
 	my $tref = {};
 
 	# Global controls
-	my $comp_text = $data;
 	$ref->{ui_page_setting_text} = '';
-	while($comp_text =~ m{(\[(set|tmp|seti)\s+([^\]]+)\](.*?)\[/\2\])}isg ) {
+	while($preamble =~ s{(\[(set|tmp|seti)\s+([^\]]+)\](.*?)\[/\2\])}{}is ) {
 		$tref->{$3} = $4;
-		$ref->{ui_page_setting_text} .= $1;
+		$ref->{ui_page_setting_text} .= "$1\n";
 	}
+
+	$preamble =~ s/^\s+//;
+	$preamble =~ s/\s+$//;
+	$ref->{ui_page_begin} = $preamble;
 
 	$ref->{ui_page_setting} = $tref;
 
 Log("page reference: " . uneval($ref) );
-	return $opt->{textref} ? uneval_it($ref) : $ref;
+	return uneval_it($ref) if $opt->{textref};
+	return $ref;
 
 }
 EOR
