@@ -38,3 +38,14 @@ __NAME__ Login
 [/if]
 
 __END__
+
+__NAME__ Change_password
+
+[if type=explicit compare="[userdb change_pass]"]
+	mv_nextpage=[either][cgi mv_successpage][or][cgi mv_nextpage][/either]
+[else]
+	mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
+[/else]
+[/if]
+
+__END__

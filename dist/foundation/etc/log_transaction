@@ -1,10 +1,23 @@
 #### begin [value mv_order_number] #####
-[seti transaction_record]
-[tag flag write]transactions orderline userdb inventory[/tag]
-[if !session logged_in]
-[or session login_table ne 'userdb']
-	[if session logged_in] [userdb logout] [/if]
-	[set auto_create]1[/set]
+[tmp transaction_record]
+
+	[loop list="transactions orderline userdb"]
+	Place table [loop-code] in transaction mode.
+	[flag type=transaction table="[loop-code]"]
+	[/loop]
+[if variable DECREMENT_INVENTORY]
+	Will decrement inventory, place table inventory in transaction mode.
+	[flag type=transaction table="inventory"]
+[/if]
+
+[if type=explicit compare=`
+		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
+		return 0;
+		`]
+	[if session logged_in]
+		[userdb function=logout clear=0 clear_cart=0]
+	[/if]
+	[tmp auto_create]1[/tmp]
 	[if type=explicit compare=|
 		[userdb
 			function=new_account
@@ -13,24 +26,21 @@
 						verify='[value zip]'
 		]
 		|]
-	[comment][perl] Log("User create succeeded."); [/perl][/comment]
+	Auto-created user [data session username].
 	[else]
-	[comment][perl] Log("Failed user create."); [/perl][/comment]
+	Auto-create of user failed.
+	[perl] die errmsg("Auto-create of user failed."); [/perl]
 	[/else]
 	[/if]
 [/if]
+
 [comment][perl] Log("Starting report."); [/perl][/comment]
 
 [try]
-[comment][perl] Log("Past ACL create log."); [/perl][/comment]
+
 [seti total_cost][total-cost noformat=1][/seti]
-Add main order[data
-	table=userdb
-	column=order_numbers
-	key="[data session username]"
-	value=" [value mv_order_number]"
-	append="1"
-	] to transactions: [import table=transactions type=LINE continue=NOTES]
+Add main order [value mv_order_number] to transactions:
+[import table=transactions type=LINE continue=NOTES]
 code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
@@ -66,6 +76,8 @@ b_zip: [value filter=strip name=b_zip]
 b_country: [value filter=strip name=b_country]
 b_phone: [value filter=strip name=b_phone]
 payment_method: [value mv_payment]
+payment_mode: [data session payment_mode]
+order_id: [data session payment_id]
 order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
 order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
 order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
@@ -79,6 +91,8 @@ campaign: [value campaign]
 parent: __PARENT__
 po_number: [value filter=strip po_number] 
 [/import]
+
+[if value mv_payment_mode eq purchase_order]
 set credit_limit: [seti credit_limit][data
 		table=userdb
 		col=credit_limit
@@ -86,7 +100,11 @@ set credit_limit: [seti credit_limit][data
 		value="-[scratch total_cost]"
 		increment=1
 	][/seti]
-[comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
+
+[comment]Past transactions entry.[/comment]
+
+[item-list]Added [item-code] to orderline:
+[import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
@@ -106,20 +124,40 @@ campaign: [value campaign]
 status: pending
 description: [filter mac][item-description][/filter]
 [/import]
-Inventory now: [data table=inventory col=quantity key="[item-code]" increment=1 value="-[item-quantity]"]
-[/item-list][/try]
-[catch] There was an error adding to the transaction log. [/catch]
-[if scratch auto_create]
-	Logout auto-created user: [userdb logout]
-	[value name=mv_username set=""]
-[/if]
-[comment][perl] Log("Past add data entry."); [/perl][/comment]
 
-[comment][perl] Log("Past all transaction log."); [/perl][/comment]
-[/seti][perl]
+[if variable DECREMENT_INVENTORY]
+Inventory of [item-code] now:
+	[data
+		table=inventory
+		col=quantity
+		key="[item-code]"
+		increment=1
+		value="-[item-quantity]"
+	]
+[/if]
+[/item-list]
+[/try]
+
+[catch]
+[set mv_route_failed]1[/set]
+There was an error adding to the transaction log.
+[/catch]
+
+[userdb save]
+
+[if scratch auto_create]
+	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]
+[/if]
+
+[comment]Past add data entry.[/comment]
+
+[comment]Past all transaction log.[/comment]
+[/tmp][perl]
 	my $out = $Scratch->{transaction_record};
-	$out =~ s/^\s+//;
-	$out =~ s/\s+$//;
+	$out =~ s/^\s+//mg;
+	$out =~ s/\s+$//mg;
+	$out =~ s/[\r\n]+/\n/;
+	$out =~ s/:\n(1|yes|succe\w+|fail\w+)\n/: $1\n/g;
 	return $out;
 [/perl]
 #### end [value mv_order_number] #####
