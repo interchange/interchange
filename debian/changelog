@@ -15,8 +15,9 @@ interchange (4.6.2-0.3) unstable; urgency=low
     imagehelper stuff
   * infinite build loop fixed (in case of a missing user interchange)
   * hack to get another start page for the UI
+  * improvement for database downloads from UI page gentable
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 10 Jan 2001 23:43:18 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 11 Jan 2001 02:31:25 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
