@@ -4,8 +4,146 @@
 
 ------------------------------------------------------------------------------
 
+Interchange 4.8.1 released 2001-08-06.
+
+Foundation
+----------
+* Fix flypage typo preventing display of options.
+
+* Fix stock-alert thumbnail display (based on image availability).
+
+* Changed from and reply-to email address to __EMAIL_SERVICE__
+  This brings it line with the name in the variable table.
+
+Admin UI
+--------
+* Allow setting UI_SECURE with environment variable MV_UISECURE.
+
+* Set UI_HELP_URL to interchange.redhat.com by default, to enable access to
+  most up-to-date online help in the UI.
+
+* Add MV_DEMO_MODE variable and MVC_DEMOMODE makecat setting.
+
+* Swedish UI locale (sv_SE) added.
+
+* Many more i18n improvements from Stefan Hornburg.
+
+* Do something reasonable if transactions or userdb is defined LARGE.
+
+  - If LARGE and no search input comes to order page, bounce to
+    flex_select with proper table selected and page title set to something
+    reasonable.
+
+  - If a query by example is put in, use order.html (transactions)
+    or customer.html (userdb) to actually display the item.
+
+* Fix longstanding admin/admin/error bug when you hit a non-existent
+  transactions or userdb table.
+
+* Allow manual setting of order number from UI.
+
+* Make new dbconfig stuff show up if UI_DBCONFIG is set.
+
+* Carry destination forward on failed login attempt at login.html.
+
+* Disable useless meta link in the wizard.
+
+* Define new action-click parameter to put an mv_click in
+  where it will only be executed on Next --> {next_text}.
+
+* Make Cancel really work on order number setting, using above strategy.
+
+* Fix page footer include on wizard/do_launch.html.
+
+* Add link to documentation after initial preview build....
+
+* Update wizard_profiles to use did_products=required instead
+  of old products=defined
+
+* In the wizard, the admin user was being created in both the Admin
+  database, and the Customer database. This left the admin user password
+  in plaintext in the customer database. Now the admin is created in the
+  admin db, and the customer in the customer db.
+
+* Modify all pages to use ui_wizard_fields instead of the
+  table=variable and fake keys.
+
+* Slightly refine default tax location so it is only presented for US.
+
+* Make "Detect Settings" dependent on MV_DEMO_MODE.
+
+* In display tag, add option for cases where we don't want a translation
+  (e.g. mv_metadata may be written in another language).
+
+* In image-collate tag:
+
+  - Always push sku/image/thumb data onto stack. Before, image files
+    didn't get copied from the upload directory if an 'image' field was
+    already properly set up and the 'Generate thumbnails' option was
+    not chosen.
+
+  - Add support for plain tar archives.
+
+  - Copy correct thumb filename (rarely caused trouble since we usually
+    use the same filename for both).
+
+* Don't die if ImageMagick not there. Give error saying bad thumbs.
+
+* return-to tag: When mv_data_table was in ui_return_to, would get
+  transformed to the name of the table variable set to a blank value.
+  This tromped on any field named the same as the table. Resolves bug #288.
+
+* In table-editor, allow disabling meta on a per-form basis with no-meta=1
+  parameter.
+
+Core
+----
+* Fix problem where refresh or add of items would set cart back to "main".
+  Now, once you set the cart to something besides main it should stick.
+
+* Fix bug where -u or -i did not work because the Config.pm setting
+  ignored the fact that the other option was defined. Resolves bug #286.
+
+* Always set PriceDivide in operation if any Locale is set.
+
+* Make PriceDivide work properly for shipping.
+
+* Make documented "o PriceDivide = 1" work properly.
+
+* Fix bug where if table was not imported prior to tag_perl tables call, it
+  would be imported but the $Db{table} object would never be set. Resolves
+  Bugzilla #289.
+
+* Changes to support linkmode configuration in makecat.
+
+* In Order.pm, put the real profile name into error log ('Unknown order
+  check ...').
+
+* In Util.pm: Fix bug where a merge hash would not properly set options
+  if the base hash was a ref.
+
+* Fix problems with AuthorizeNet module found by Pann McCuaig
+  <pann@ourmanpann.com>.
+
+  - changed zip reference to b_zip
+  - Removed requirement for secret
+  - added country and email to variables sent
+
+Miscellaneous
+-------------
+* Added script for use in cronjobs, reset_order_number. Provides
+  date-based order numbers for Interchange. From an idea posted to the
+  interchange-users@ic.redhat.com mail list by Leon Harris <leon@quoll.com>.
+
+* Added new component 'news' to eg directory. Enables the shop owner to
+  easily add news items to the foundation catalog. By Ton Verhagen.
+
+
+------------------------------------------------------------------------------
 
 Interchange 4.8.0 released 2001-07-27.
+
+* Minor bugfixes.
 
 
 ------------------------------------------------------------------------------
