@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.5 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -767,8 +767,9 @@ sub meta_display {
 	if($column eq $meta->config('KEY')) {
 		if($o->{arbitrary} and $value !~ /::.+::/) {
 #::logDebug("metadisplay: base_entry_value is arbitrary value=$value");
-			$value =~ s/^[^:]+:://;
-			$base_entry_value = $value;
+			$base_entry_value = ($value =~ /^[^:]+::(\w+)$/)
+								? $1
+								: $value;
 		}
 		else {
 #::logDebug("metadisplay: base_entry_value is standard value=$value");
