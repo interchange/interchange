@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9.4.2 2000-11-06 07:42:07 racke Exp $
+# $Id: Parse.pm,v 1.9.4.3 2000-11-27 02:26:17 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9.4.2 2000-11-06 07:42:07 racke Exp $
+# $Id: Parse.pm,v 1.9.4.3 2000-11-27 02:26:17 racke Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.4.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.4.3 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.9.4.3 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -87,7 +87,7 @@ my %PosNumber =	( qw!
                 html_table       0
                 if               1
                 import           2
-                include          1
+                include          2
                 input_filter     1
                 index            1
                 label            1
@@ -169,7 +169,7 @@ my %Order =	(
 				'index'			=> [qw( table )],
 				import 			=> [qw( table type )],
 				input_filter 	=> [qw( name )],
-				include			=> [qw( file )],
+				include			=> [qw( file locale )],
 				item_list		=> [qw( name )],
 				label			=> [qw( name )],
 				log				=> [qw( file )],
@@ -453,7 +453,7 @@ my %Routine = (
 				include			=> sub {
 									&Vend::Interpolate::interpolate_html(
 										&Vend::Util::readfile
-											($_[0], $Global::NoAbsolute)
+											($_[0], $Global::NoAbsolute, $_[1])
 										  );
 									},
 				input_filter	=> \&Vend::Interpolate::input_filter,
