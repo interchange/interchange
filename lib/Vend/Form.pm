@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.43 2004-02-22 19:28:37 mheins Exp $
+# $Id: Form.pm,v 2.44 2004-06-07 03:18:19 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 @EXPORT = qw (
 	display
@@ -162,7 +162,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq(>{ENCODED}{APPEND})
+		qq(>{FILTERED?}{FILTERED}{/FILTERED?}{FILTERED:}{ENCODED}{/FILTERED:}{APPEND})
 		,
 	boxstd =>
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
@@ -1212,6 +1212,13 @@ if($opt->{debug}) {
 	}
 
     $opt->{encoded} = encode($opt->{value}, $ESCAPE_CHARS::std);
+	if($opt->{display_filter}) {
+		my $newv = Vend::Interpolate::filter_value(
+								$opt->{display_filter},
+								$opt->{value},
+							);
+		$opt->{filtered} = encode($newv, $ESCAPE_CHARS::std);
+	}
     $opt->{value} =~ s/&#91;/\[/g if $opt->{enable_itl};
 
 	if($opt->{class}) {
