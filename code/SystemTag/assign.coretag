@@ -5,7 +5,8 @@ my %_assignable = (qw/
 				salestax	1
 				shipping	1
 				handling	1
-				subtotal    1
+				subtotal	1
+				credit		1	
 				/);
 sub {
 	my ($opt) = @_;

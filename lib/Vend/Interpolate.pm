@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.195 2003-10-31 23:53:41 racke Exp $
+# $Id: Interpolate.pm,v 2.196 2003-11-14 22:51:38 edl Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.195 $, 10);
+$VERSION = substr(q$Revision: 2.196 $, 10);
 
 @EXPORT = qw (
 
@@ -5771,6 +5771,26 @@ sub subtotal {
     return $subtotal;
 }
 
+# figures any credits the customer may have
+# that can be applied to this order
+
+sub credit {
+    my $credit = 0;
+    if (defined $Vend::Session->{assigned}{credit}
+	&& $Vend::Session->{assigned}{credit} > 0) {
+	$credit = $Vend::Session->{assigned}{credit};
+    }
+    elsif ($Vend::Cfg->{CreditField}) {
+	# credit field from userdb should always be put in scratch space
+	# using 'Userdb default scratch' to avoid hacking by nefarious customers
+	if ($Scratch->{$Vend::Cfg->{CreditField}} > 0) {
+	    $credit = $Scratch->{$Vend::Cfg->{CreditField}};
+	}
+    }
+    return $credit;
+}
+
+
 
 # Returns the total cost of items ordered.
 
@@ -5798,6 +5818,7 @@ sub total_cost {
 		$total += subtotal();
 		$total += $shipping;
 		$total += salestax();
+		$total -= credit();
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
