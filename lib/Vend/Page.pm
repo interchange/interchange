@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.2.1 2000-10-06 19:49:24 zarko Exp $
+# $Id: Page.pm,v 1.5.2.2 2000-11-07 22:41:46 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,21 +48,21 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5.2.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5.2.2 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
 sub display_special_page {
-    my($name, $subject) = @_;
-    my($page);
+	my($name, $subject) = @_;
+	my($page);
 	
 	$subject = $subject || 'unspecified error';
 	
-    $page = readin($name);
-    die ::get_locale_message(412, "Missing special page: %s\n", $name)
+	$page = readin($name);
+	die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
-    $page =~ s#\[subject\]#$subject#ig;
-    return Vend::Server::response(::interpolate_html($page, 1));
+	$page =~ s#\[subject\]#$subject#ig;
+	return Vend::Server::response(::interpolate_html($page, 1));
 }
 
 # Displays the catalog page NAME.  If the file is not found, displays
@@ -70,8 +70,8 @@ sub display_special_page {
 # 
 
 sub display_page {
-    my($name) = @_;
-    my($page);
+	my($name) = @_;
+	my($page);
 
 	$name = $CGI::values{mv_nextpage} unless $name;
 #::logDebug("display_page: $name");
@@ -81,9 +81,9 @@ sub display_page {
 		$name = find_special_page('violation');
 	}
 
-    $page = readin($name);
+	$page = readin($name);
 # TRACK
-	if (defined $page) {
+	if(defined $page) {
 		$Vend::Track->view_page($name);
 	}
 # END TRACK	
@@ -93,14 +93,13 @@ sub display_page {
 		$page = Vend::Interpolate::fly_page($name);
 	}
 
-    if (defined $page) {
+	if(defined $page) {
 		Vend::Server::response(::interpolate_html($page, 1));
 		return 1;
-    }
-	else {
+	} else {
 		display_special_page(find_special_page('missing'), $name);
 		return 0;
-    }
+	}
 }
 
 
@@ -117,12 +116,11 @@ sub do_search {
 	::update_user();
 	::put_session();
 #::logDebug($more);
-	if ($c->{mv_more_matches}) {
+	if($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
 		$c->{mv_more_matches} =~ m/([a-zA-Z0-9])+/;
 		$c->{mv_cache_key} = $1;
-	}
-	else {
+	} else {
 		create_last_search($c);
 	}
 
@@ -147,7 +145,7 @@ sub do_scan {
 	$Vend::ScanPassed = "scan/$path";
 	find_search_params($c,$path);
 
-	if ($c->{mv_more_matches}) {
+	if($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
 		$Vend::More_in_progress = 1;
 		$c->{mv_more_matches} =~ m/([a-zA-Z0-9])+/;
@@ -155,8 +153,7 @@ sub do_scan {
 		$c->{mv_cache_key} = $1;
 		$CGI::values{mv_nextpage} = $c->{mv_nextpage}
 			if ! defined $CGI::values{mv_nextpage};
-	}
-	else {
+	} else {
 		$c->{mv_cache_key} = generate_key(create_last_search($c));
 	}
 
