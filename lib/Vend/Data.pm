@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.21 2002-12-16 11:05:33 racke Exp $
+# $Id: Data.pm,v 2.22 2003-01-23 05:00:16 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1596,8 +1596,8 @@ CHAIN:
 				$price = $item->{mv_price} || $mod;
 				redo CHAIN;
 			}
-			elsif($mod =~ /^(\w*):([^:]*)(:(\S*))?$/) {
-				my ($table,$field,$key) = ($1, $2, $4);
+			elsif($mod =~ /^(\w*):([^:]*)(?::(\S*))?$/) {
+				my ($table, $field, $key) = ($1, $2, $3);
 #::logDebug("field begins as '$field'");
 				$field = $Vend::Cfg->{PriceDefault} if ! $field;
 				if($passed_key) {
@@ -1608,12 +1608,17 @@ CHAIN:
 					(! $table and $table = $passed_key);
 					undef $passed_key;
 				}
+				$table = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]
+					if ! $table;
+				if($key and defined $item->{$key}) {
+					$key = $item->{$key};
+				}
 				my @breaks;
 				if($field =~ /,/ || $field =~ /\.\./) {
 					my (@tmp) = split /,/, $field;
 					for(@tmp) {
-						if (/(.+)\.\.+(.+)/) {
-							push @breaks, $1 .. $2;
+						if (/(.+?)(\d+)\.\.+.+?(\d+)/) {
+							push @breaks, map { "$1$_" } $2 .. $3;
 						}
 						else {
 							push @breaks, $_;
@@ -1621,6 +1626,7 @@ CHAIN:
 					}
 				}
 				if(@breaks) {
+#::logDebug("price breaks: " . join(',', @breaks));
 					my $quantity;
 					my $attribute;
 					$attribute = shift @breaks  if $breaks[0] !~ /\d/;
@@ -1644,24 +1650,33 @@ CHAIN:
 					my $test = $field;
 					$test =~ s/\D+//;
 					redo CHAIN if $quantity < $test;
-					for(@breaks) {
+
+					my $row = database_row(
+						($table || $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]),
+						($key || $item->{code}),
+					);
+#::logDebug("database reference to price breaks found table=$table key=$key|$item->{$key}|$item->{code} row=" . ::uneval($row));
+
+					my $keep;
+					$keep = $row->{$field} if $row->{$field} != 0;
+					for (@breaks) {
+						next unless exists $row->{$_};
 						$test = $_;
 						$test =~ s/\D+//;
 						last if $test > $quantity;
 						$field = $_;
+						$keep = $row->{$field} if $row->{$field} != 0;
 					}
-				}
-				$table = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]
-					if ! $table;
-				if($key and defined $item->{$key}) {
-					$key = $item->{$key};
+#::logDebug("price=$keep") if $keep;
+					$price = $keep if $keep;
+					redo CHAIN;
 				}
 				$price = database_field(
 						($table || $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]),
 						($key || $item->{code}),
 						$field
 						);
-#::logDebug("database referenc found table=$table field=$field key=$key|$item->{$key}|$item->{code} price=$price");
+#::logDebug("database reference found table=$table field=$field key=$key|$item->{$key}|$item->{code} price=$price");
 				redo CHAIN;
 			}
 			elsif ($mod =~ s/(\w+)=(.*)//) {
