@@ -34,8 +34,8 @@ debian/interchange.docs
 debian/interchange.files
 debian/interchange.init
 debian/interchange.logrotate
-debian/interchange.preinst
 debian/interchange.postinst
+debian/interchange.preinst
 debian/interchange.templates
 debian/interchange.wrapper
 debian/interchangeconfig
@@ -441,6 +441,7 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
+dist/lib/UI/locales/README
 dist/lib/UI/locales/da_DK.cfg
 dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
@@ -508,6 +509,7 @@ dist/lib/UI/pages/admin/layout_auto.html
 dist/lib/UI/pages/admin/login.html
 dist/lib/UI/pages/admin/merchandising.html
 dist/lib/UI/pages/admin/meta_editor.html
+dist/lib/UI/pages/admin/misc_order_number.html
 dist/lib/UI/pages/admin/order.html
 dist/lib/UI/pages/admin/order_status.html
 dist/lib/UI/pages/admin/order_view.html
@@ -729,6 +731,14 @@ eg/globalsub/signio
 eg/globalsub/test_card
 eg/grant.sql
 eg/ifdef
+eg/news_feature/dbconfig/default_db/news.dbm
+eg/news_feature/dbconfig/mysql/news.mysql
+eg/news_feature/dbconfig/oracle/news.ora
+eg/news_feature/dbconfig/pgsql/news.pgsql
+eg/news_feature/pages/news.html
+eg/news_feature/products/news.txt
+eg/news_feature/templates/components/news
+eg/reset_order_number
 eg/te
 eg/usertag/benchmark
 eg/usertag/sleep
