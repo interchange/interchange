@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.17 2002-01-31 18:04:35 mheins Exp $
+# $Id: Util.pm,v 2.18 2002-02-01 17:03:38 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 BEGIN {
 	eval {
@@ -1151,11 +1151,11 @@ sub readfile {
 }
 
 sub is_yes {
-    return( defined($_[$[]) && ($_[$[] =~ /^[yYtT1]/));
+    return( defined($_[0]) && ($_[0] =~ /^[yYtT1]/));
 }
 
 sub is_no {
-	return( !defined($_[$[]) || ($_[$[] =~ /^[nNfF0]/));
+	return( !defined($_[0]) || ($_[0] =~ /^[nNfF0]/));
 }
 
 # Returns a URL which will run the ordering system again.  Each URL
