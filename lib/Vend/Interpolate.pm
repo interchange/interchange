@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.59 2001-05-01 10:14:18 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.60 2001-05-18 17:29:39 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.59 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.60 $, 10);
 
 @EXPORT = qw (
 
@@ -2653,6 +2653,7 @@ sub mvtime {
 	}
     my $out = $opt->{gmt} ? ( POSIX::strftime($fmt, gmtime($now)    ))
                           : ( POSIX::strftime($fmt, localtime($now) ));
+	$out =~ s/\b0(\d)\b/$1/g if $opt->{zerofix};
 	POSIX::setlocale(&POSIX::LC_TIME, $current) if defined $current;
 	return $out;
 }
