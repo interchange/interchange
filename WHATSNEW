@@ -1,7 +1,258 @@
-Interchange 4.7.2.
+#####################################
+Interchange 4.7.2 released 2001-??-??
 
+Server
+--------
+* There is a pre-forked server mode enabled in interchange.cfg with:
 
+	PreFork       Yes
+	StartServers  5
 
+  The number 5 can be set as high as 50 if you have enough
+  memory. A number less than 2 makes little sense.
+
+  THIS IS AN ALPHA FEATURE, and is not fully tested.
+  But it gives big, big, performance gains.
+
+* Server should now run safely in the Foreground -- when
+  in foreground writes to $Vend::Cfg ($Config) are gated via
+  Tie::ShadowHash, which is now required. (A copy comes with IC.)
+
+* Server should now be nearly thread-safe when run in 5.6 NEW_THREADS
+  mode, can probably be ported to Windows if anyone cares.
+
+Database
+-------------
+* Transactions now fully supported. Can open a transaction-capable
+  database in transactions mode [flag type=transactions table="table"]
+  and it will commit all changes not done in transaction mode and reopen
+  under transaction constraints. [flag type=commit table=table] commits,
+  [flag type=rollback table=table] rolls back.
+
+* Can reference foreign keys with:
+
+    [data table=foo column=bar key=baz foreign=buz]
+
+  That does the roughly equivalent to:
+
+	 SELECT bar from foo where baz = 'buz' LIMIT 1
+
+* Improve autonumbering support to automatically use sequences or
+  autonumber field types. So now you can do:
+
+  Database addr addr.txt dbi:Pg
+  Database addr AUTO_SEQUENCE 1
+  Database addr COLUMN_DEF    "code=int SERIAL PRIMARY KEY"
+  Database addr COLUMN_DEF    "val=varchar(128)"
+
+  and it will pick up the sequence at an insert. It makes calls to
+  the known_capability, and does the last_value or last_sequence_id()
+  call as appropriate to return the key value.
+
+  Tested with Postgres and Mysql. Should work for Oracle when the
+  template is set -- we should provide some examples for selecting
+  from the "dual" table.
+
+* Add $db->set_slice($key, \@fields, \@values) function that will
+  update a slice of a row. Works for all DB types.
+
+* All base-table database updates done by UserDB and UI are now done in
+  one query via set_slice. Extra-table values still use set_field.
+
+* All databases should now handle cached DBI handles properly, even
+  when they can't be shared among processes. Will work toward a single
+  handle for all processes on DBs that support that.
+
+* Change all chained cost levels limit check to use new Limit directive
+
+Orders/Pricing/Shipping
+------------------------
+* Significant changes to Order.pm in the area of order routing,
+  while still maintaining backward compatibility. (Able to submit
+  and monitor order on old construct, simple, and basic with no
+  changes.)
+
+* Added "cascade" route capability, that allows you to specify
+  one master order route that calls the rest of the routes.
+  Perhaps an interface in payment mode to add some logging....??
+
+* Routes can be dynamically read from database if master order
+  route is set dynamic_routes=1.
+
+* Routes always interpret __VARIABLE__ from database.
+
+* Routes can interpret ITL from the database if master order
+  route is set expandable=1.
+
+* Keep value of current route name in Values->{mv_current_route}.
+
+* If no order route is given from checkout form (always a
+  security pitfall anyway) then the default route is read. If you
+  want to run more routes from that master route, place in the
+  cascade parameter. Can still be set in mv_order_route, but
+  the demo now has "FormIgnore mv_order_route".
+
+* Extended field allows you to stringify a hash and set many, many
+  parameters. We were running out of column space, and payment
+  routes add many settings. This concept will soon be used in
+  mv_metadata.
+
+* Add new tag "assign". It allows you to assign to four things,
+
+	subtotal    preempts the cart subtotal derived from prices. NOT
+				ROUNDED.
+	shipping    if any  non-zero mv_shipmode is present at all,
+				sets the total value of shipping. Rounded
+				to fractional digits.
+	handling    if any non-zero mv_handling is present at all, sets the
+				total value of shipping. Rounded to fractional
+				digits.
+	salestax    preempts the salestax normally derived from the
+				salestax. NOT ROUNDED.
+
+  You cannot assign to total_cost -- it will always be the sum of the
+  four above.
+
+  If there is no assignment to one of the four, it will use the
+  normal method. To make salestax zero, you must use [assign salestax=0].
+
+  Called with [assign salestax=N.NN], etc. If the value has a length
+  of zero, will delete the assigned value from the assignment hash
+  and the normal method of calculation will kick back in.
+
+  If you call [assign clear=1] it will clear all, and the normal method
+  of calculation will kick back in.
+
+  If a non-real-number value is passed, it logs an error and clears
+  the assignment.
+
+  It is persistent in the user's session and effects only that user,
+  and should be used only when you know exactly what you are doing. Ha.
+
+Parser
+-------------
+* Solve the great [if ] [othertag][else][/else][/othertag] [else]
+  [/else] [/if] problem. The behavior should be much improved in [if ...]
+  tags. Will not now snarf the [else] from another tag that uses
+  that.
+
+* Make the default a secure submit if we are on a secure page and
+  have the user set secure=0 to disable.
+
+* Eureka!!! All usertags can be used in embedded perl without
+  "tables" or other Safe stuff. Boy was I stupid. As long as they
+  don't do a "require" at runtime, you should be OK.
+
+* Fix the long-untouched tag_column routine to handle preformatted
+  text with align=none.
+
+* Add "yesno" display filter so that you can [filter
+  yesno]1[/filter] and get "Yes" back -- also translates for
+  Locale.
+
+Payment
+---------
+* Extensively rework Payment routines. Decided to keep something like current
+  framework, but you now can do:
+
+  &charge=route
+
+	  or
+
+  $Tag->charge($route, $opt); # If no runtime "require"
+
+	  or
+
+  [charge route=THE_ROUTE gateway=ccvs id=milton secret=pass]
+
+* Add Payment.pm module to contain the base routines, and be a
+  target for the routines added via the different Payment
+  modules.
+
+* A pretty convenient mechanism to bring in modules:
+
+	  Require module Vend::Payment::Authorize
+
+  Prevents errors and memory bloat(er) when Net::SSLeay or other
+  needed companion modules are present/not present, and should
+  give reasonable errors when the module is not working.
+
+* Initial support for CyberCash, AuthorizeNet, Skipjack, iTransact,
+  CCVS, and Signio/Verispam. All documented with in-module POD.
+
+* There will be a Vend::Payment::Skeleton to show adding your own
+  payment module.
+
+* All modules needing Net::SSLeay or Crypt::SSLeay updated to 
+  support either with common calls.
+
+* GlobalSub method still supported, current GlobalSub things
+  should work fine (tested with Authorize.net and "custom
+  authorizenet" mode).
+
+* Beginnings of PayPal support will be there shortly, but thinking
+  of how to generalize that send-offsite-then-return-post paradigm.
+
+* Should be completely backward compatible.
+
+* All payment stuff taken out of Vend::Order except _charge
+  profile interface routine, a couple of stubs left for backward
+  compatiblity.
+
+* Parameters can be completely Route resident, no MV_PAYMENT_*
+  variables needed.
+
+* Changed mv_credit_card_info to delete all but
+  mv_credit_card_reference digits when not encrypted. This is
+  overdue....
+
+* All options are pulled from the option call first, the Route
+  matching the name second, then finally the global MV_PAYMENT_*
+  variables.
+
+* All routes should be transparent if the mode exists. For instance,
+  you can define a route called "purchase_order" which will handle
+  POs, "internet_check" which handles checks, etc.
+
+* Add CCVS support via globalsub. Will do auth, sale at this
+  point. Will soon add AVS support. Has extended information
+  support.
+
+Miscellaneous
+--------------
+* Message directive now accepts -n (no trailing newline or whitespace) and
+  -i (screen info only, not logged) options before message.
+
+* Add set="Message" option to error tag, allowing you to set an error via tag.
+
+	[if value lname =~ /^mccoy$/i]
+	<!-- [error  show_error
+			set="No stinking McCoys' allowed at hatfield.com!"
+			name=lname ] -->
+	[/if]
+
+  Implies keep=1.
+
+* Allow set-cookie tag to set domain and path.
+
+Bug fixes
+----------
+* Fix bug in IMPORT_ONCE reported by vasile_abo@wexim.com.
+* Fix no-zero-display bug in [cgi ...] tag, found by Mark Johnson.
+* Fix a couple of bugs with AlwaysSecure not working in an order link.
+* Fix rounding problem with Shipping.
+* Fix failure to test record_exists in tag_data($table,undef,$key,{hash=>1})
+* Quite a few unreachable code sections removed, largely thanks to Bill Dawkins.
+* Fix textarea build to call routine, remove unused call to
+  build_accessory_textarea, add proper call in /^text/ branch.
+* Make sure tax is rounded to the proper number of frac_digits in
+  variant salestax() routines.
+* Delete $CGI::mv_order_item when ordering, don't want to order
+  twice (could happen if update values called)
+* Remove for good unsightly extra attributes qw/true false undef/ in every
+  tag option hash.
+
+#####################################
 Interchange 4.7.1 released 2001-03-28.
 
 * Added ability to cascade mv_click statements, e.g.:
