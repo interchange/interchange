@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.43 2004-06-07 03:05:31 mheins Exp $
+# $Id: Data.pm,v 2.44 2004-10-07 00:10:01 jon Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1401,6 +1401,19 @@ sub export_database {
 	}
 	else {
 		$db->touch() unless defined $notouch;
+	}
+	if (my $subs = $db->config('POSTEXPORT')) {
+		# Make a copy of the options once to hand off to each sub.
+		my $options = { %$opt, delim => $delim, record_delim => $record_delim };
+		for my $name (@$subs) {
+			my $sub = $Vend::Cfg->{Sub}{$name} || $Global::GlobalSub->{$name}
+				or do {
+					logError("Unknown POSTEXPORT sub '%s' on database '%s'.", $name, $db->name);
+					next;
+				};
+			$sub->($db->name, $file, $options)
+				or logError("Failed call to POSTEXPORT sub '%s' on database '%s'!", $name, $db->name);
+		}
 	}
 	1;
 }

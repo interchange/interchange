@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.144 2004-07-21 05:46:55 mheins Exp $
+# $Id: Config.pm,v 2.145 2004-10-07 00:10:01 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.144 $, 10);
+$VERSION = substr(q$Revision: 2.145 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3075,6 +3075,7 @@ my %Ary_ref = (   qw!
 						ALTERNATE_LDAP_HOST ALTERNATE_LDAP_HOST
 						ALTERNATE_BIND_DN   ALTERNATE_BIND_DN
 						ALTERNATE_BIND_PW   ALTERNATE_BIND_PW
+						POSTEXPORT          POSTEXPORT
 					! );
 
 sub parse_config_db {
