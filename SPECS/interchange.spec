@@ -13,7 +13,7 @@ Name: %ic_package_basename
 Version: %ic_version
 Release: %ic_rpm_release
 Vendor: Red Hat, Inc.
-Copyright: GPL
+License: GPL
 URL: http://interchange.redhat.com/
 Packager: Interchange Development Team <interchange@redhat.com>
 Source: http://interchange.redhat.com/interchange/interchange-%{ic_version}.tar.gz
@@ -24,7 +24,7 @@ Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
 BuildArch: noarch i386
 
-BuildRoot: %{_tmppath}/%{name}-%{version}
+BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 Interchange is the most powerful free ecommerce system available today.
@@ -74,7 +74,7 @@ it easy to try out a number of Interchange's features.
 %prep
 
 
-%setup
+%setup -q
 
 
 %build
