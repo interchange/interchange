@@ -191,11 +191,11 @@ PGP/GPG key id to use for encryption (if any)
 
 !LOGO
 Your logo image
-logo.gif
+
 
 !SMLOGO
 Your small logo image
-logo.gif
+
 
 !SECURESERVERNAME
 Secure server URL
