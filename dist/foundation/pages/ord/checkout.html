@@ -31,7 +31,6 @@ ui_template_name: noleft
 
     ! $hardgoods and $Scratch->{only_download} = 1;
 
-
     return unless @modes;
     my %modes;
     @modes{@modes} = @modes;
@@ -43,68 +42,73 @@ ui_template_name: noleft
 [/perl]
 
 <!-- BEGIN CONTENT -->
-[if !session logged_in]
 
-	<p>If you have an account with us, please login using the fields below. It
-	is not required, but you can also <a href="[area new_account]">create an
-	account</a> with us.</p>
+<table width="95%">
+<tr>
+  <td align="left">
+
+[if !session logged_in]
+    <br>
+    <p>If you have an account with us, please login using the fields below. It
+    is not required, but you can also <a href="[area new_account]">create an
+    account</a> with us.</p>
 				  
 [if session failure]
-	<P align=center>
-	<b><font color="__CONTRAST__">[calc]delete $Session->{failure}[/calc]</font></b>
-	<P>
+    <P>
+    <b>[calc]delete $Session->{failure}[/calc]</b>
+    <P>
 [/if]
 
-<FORM ACTION="[process secure=1]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
-<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/checkout">
+    <FORM ACTION="[process secure=1]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/checkout">
 
 [set Log In]
 mv_nextpage=@@MV_PAGE@@
 [/set]
 
-<table width=300 border=1 cellspacing=0 cellpadding=0 bordercolordark="#000000" bordercolorlight="#000000">
-  <tr>
-	<td>
-	  <table width="300" border="0" cellspacing="0" cellpadding="2">
-		<tr class=cheader>
-		  <td width="81" align="right" class=cheader>
-		  	Username
-		  </td>
-		  <td width="204" class=xheader align="left">
-			<INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
-		  </td>
-		</tr>
-		<tr class=cheader>
-		  <td width="81" align="right" class=cheader>
-			Password
-		  </td>
-		  <td width="204" class=xheader align="left">
-			<INPUT TYPE=password NAME=mv_password VALUE="">
-			<input type="hidden" NAME="mv_check" value="Log In">
-		  </td>
-		</tr>
-		<tr class=yheader>
-		  <td width="81">&nbsp;</td>
-		  <td width="204">
-			<input class=xheader type="submit" value="Log In">
-		  </td>
-		</tr>
-		<tr class=yheader>
-		  <td width="81" align="right">
-		   <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
-		  </td>
-		  <td width="204">Log me in automatically<br>(sets cookie)</td>
-		</tr>
-	  </table>
-	</td>
-  </tr>
-</table>
+    <table align="center">
+    <tr>
+      <td class="contentbar2">
+        <table>
+        <tr>
+          <td align="right" class="contentbar1">
+            Username:
+          </td>
+          <td align="left" class="contentbar1">
+	    <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+          </td>
+        </tr>
+        <tr>
+          <td align="right" class="contentbar1">
+	    Password:
+          </td>
+          <td class="contentbar1" align="left">
+	    <INPUT TYPE=password NAME=mv_password VALUE="">
+	    <input type="hidden" NAME="mv_check" value="Log In">
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>
+	    <input type="submit" value="Log In">
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+          </td>
+          <td width="204">Log me in automatically (sets cookie)</td>
+        </tr>
+        </table>
+      </td>
+    </tr>
+    </table>
                        
+    </form>
 
-</form>
-<p>&nbsp;</p>
+    <p>&nbsp;</p>
 					  
 [/if]
 
@@ -124,96 +128,79 @@ mv_nextpage=@@MV_PAGE@@
     }
 </SCRIPT>
 
-<FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+    <FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
+    <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
-<P>
-<b>There were errors in your last submission.</b>
-<br>
-They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.
-<P>
+    <P>
+    <b>There were errors in your last submission.</b>
+    <br>
+    They are shown in <FONT class="menubar">this color</FONT> below.
+    <P>
 [/if]
 
-<INPUT TYPE=hidden NAME=mv_doit          VALUE=refresh>
-<INPUT TYPE=hidden NAME=mv_nextpage      VALUE="ord/checkout">
+    <INPUT TYPE=hidden NAME=mv_doit VALUE=refresh>
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/checkout">
+
 [comment]
 <!-- Order routes in catalog.cfg -->
 <!-- Checkout profile in etc/order.profiles -->
 [/comment]
-<INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
-<INPUT TYPE=hidden NAME=mv_order_route   VALUE="[either]__ORDER_ROUTES__[or]log main copy_user[/either]">
-<INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
+
+    <INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
+    <INPUT TYPE=hidden NAME=mv_order_route   VALUE="[either]__ORDER_ROUTES__[or]log main copy_user[/either]">
+    <INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
 
 [set Save_database]
 [userdb save]
 [/set]
+	
+    Please verify the information below and click the "Place
+    Order" button to process your order.
 
-	<p>Please verify the information below and click the "Place
-	Order" button to process your order.</p>
-
-<table cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
- <br>
-  <table width="400" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+    <table>
     <tr>
       <td>
-
-  <table width="400" border="0" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
-		<TR class=cheader>
-                        <td width="9%" class=cheader>
-						  Remove
-						</td>
-                        <td width="13%" align=center class=cheader>
-                          SKU
-                        </td>
-                        <td align=center width="27%" class=cheader>
-                          Description
-                        </td>
-                        <td width="13%" align="center" class=cheader>
-                          Quantity
-                        </td>
-                        <td width="19%" align="right" class=cheader>
-                          Price
-                        </td>
-                        <td align="right" width="19%" class=cheader>
-                          Extension
-                        </td>
-		</TR>
-	<TBODY>
+        <br>
+        <table>
+        <tr>
+          <td class="contentbar2">
+            <table cellspacing="0">
+            <TR>
+              <td align="center">Remove</td>
+              <td align="center">SKU</td>
+              <td align="center">Description</td>
+              <td align="center">Quantity</td>
+              <td align="center">Price</td>
+              <td align="center">Extension</td>
+            </TR>
+            <TBODY>
 [if items]
 [then]
 [item-list modular=1]
-
-<TR class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]">
-	<TD align=center valign=top>
-	<INPUT TYPE=checkbox NAME="[quantity-name]"
-			   onClick="this.form.action='[process-target]',
-			   			this.form.submit()"
-			   VALUE=0></TD>
-	<TD WIDTH="2">[item-code]</TD>
-	<TD>[page [item-code]][item-description]</a>
+	    <TR class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
+	      <TD align=center valign=top>
+	        <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+ 	      </TD>
+	      <TD>[item-code]</TD>
+	      <TD>[page [item-code]][item-description]</a>
 	[if scratch dealer]
 	[if-item-data pricing sku]
-		<BR>[page quantity [item-code]]
-			<span style="color: __CONTRAST__">QUANTITY PRICING</span>
-			</A>
+	        <BR>[page quantity [item-code]]
+	        QUANTITY PRICING</A>
 	[/if-item-data]
 	[/if]
 	[if-item-field weight]
 	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
 	[/if-item-field]
-	</TD>
-	<TD ALIGN=CENTER valign=top><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3 class=cdata></TD>
-	<TD ALIGN=RIGHT>[discount-price][if discount [item-code]]<BR><span style="color: __CONTRAST__">Item is discounted [item-discount]</span>[/if]</TD>
-	<TD ALIGN=RIGHT>[item-subtotal]</TD>
-</TR>
-<TR class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="bg.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
-
+	      </TD>
+	      <TD ALIGN=CENTER valign=top><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
+	      <TD ALIGN=RIGHT>[discount-price][if discount [item-code]]<BR>Item is discounted [item-discount][/if]</TD>
+	      <TD ALIGN=RIGHT>[item-subtotal]</TD>
+            </TR>
 [if session logged_in]
-<TR class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]">
-<TD ALIGN=CENTER COLSPAN=2 VALIGN=TOP>
+            <TR class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
+              <TD ALIGN=CENTER COLSPAN=2 VALIGN=TOP>
 		[if value separate_addresses]
 		[page href="@@MV_PAGE@@" form="
 			separate_addresses=0
@@ -228,72 +215,80 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.
 		"]Separate shipping</A>
 		[/else]
 		[/if]
-</td>
-<TD COLSPAN=4 VALIGN=TOP>
+              </td>
+              <TD COLSPAN=4 VALIGN=TOP>
 		[if value separate_addresses]
 		<PRE>[item-modifier mv_ad]</pre>
 		[/if]&nbsp;
-</td>
-</TR>
+              </td>
+            </TR>
 [/if]
 
 [/item-list]
 [/then]
 [else]
-	<TR><TD ALIGN=CENTER COLSPAN=6>
-		<H3><font __FFACE__>No items at the moment.</font></H3>
-	</TD></TR>
+            <TR>
+	      <TD ALIGN=CENTER COLSPAN=6>
+                <big>No items at the moment.</big>
+              </TD>
+            </TR>
 [/else]
 [/if]
-</table>
-</td></tr>
-</table>
+            </table>
+          </td>
+        </tr>
+        </table>
 
-<p>
+        <p>
 
-<table width="400" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
-<TR>
-	<TD width=100 rowspan=4 valign=center align=center><INPUT TYPE=SUBMIT VALUE="Refresh" class=cdata></TD>
-	<TD ALIGN=RIGHT width="250">Subtotal: </TD>
-	<TD ALIGN=RIGHT>[subtotal]</TD>
-</TR>
-<TR>
-	<TD ALIGN=RIGHT width="250">Sales Tax:</TD>
-	<TD ALIGN=RIGHT>[salestax]</TD>
-</TR>
-<TR>
-	<TD ALIGN=RIGHT width="250">Shipping:</TD>
-	<TD ALIGN=RIGHT>[shipping]</TD>
-</TR>
-<TR>
-	<TD ALIGN=RIGHT width="250">&nbsp;&nbsp;&nbsp;&nbsp;TOTAL:</TD>
-	<TD ALIGN=RIGHT>[total-cost]</TD>
-</TR>
+        <table border="0" cellspacing="0" cellpadding="0" width="60%">
+        <TR>
+          <td align="left">
+            <INPUT TYPE=SUBMIT VALUE="Refresh">
+          </td>
+          <td align="right">
+            <table align="right" cellspacing="0">
+            <tr>
+              <TD ALIGN=RIGHT>Subtotal: </TD>
+              <TD ALIGN=RIGHT>[subtotal]</TD>
+            </TR>
+            <TR>
+              <TD ALIGN=RIGHT>Sales Tax:</TD>
+              <TD ALIGN=RIGHT>[salestax]</TD>
+            </TR>
+            <TR>
+              <TD ALIGN=RIGHT>Shipping:</TD>
+              <TD ALIGN=RIGHT>[shipping]</TD>
+            </TR>
+            <TR>
+              <TD ALIGN=RIGHT class="contentbar1">TOTAL:</TD>
+              <TD ALIGN=RIGHT class="contentbar1">[total-cost]</TD>
+            </tr>
+            </table>
+          </td>
+        </tr>
+        </table>
 
-</table>
+      </td>
+    </tr>
 
-</td></tr>
-
-
-
-<tr><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td></tr>
-<tr><td>
-
-  <table width="550" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#000000" bordercolordark="#000000">
+    <tr>
+      <td>
+	<br>
+        <table cellspacing="0" cellpadding="0">
 	<tr>
 	  <td>
-		<table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
-		  <tr class=cheader>
-			<td class=cheader>
-			Shipping Address
-			</td>
-			<td class=cheader><i>(primary)</i></td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-		  </tr>
-		  <tr>
-			<td align=right class=cdata>
+	    <table border="0" cellspacing="0" cellpadding="0" align="center">
+	    <tr>
+	      <td class="contentbar1">
+	        Shipping Address
+	      </td>
+	      <td class="contentbar1"><i>(primary)</i></td>
+	      <td>&nbsp;</td>
+	      <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	      <td align=right class=cdata>
 			  [error name=fname std_label="First Name" required=1]
 			</td>
 			<td align=left class=cdata>
@@ -844,8 +839,9 @@ tf=name
 mv_todo=submit
 [/set]
 						
-
-
+  </td>
+</tr>
+</table>
 
 <!-- END CONTENT -->
 
