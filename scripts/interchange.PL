@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.6
 #
-# $Id: interchange.PL,v 2.1 2001-07-19 16:51:40 heins Exp $
+# $Id: interchange.PL,v 2.2 2001-07-23 19:05:57 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2434,10 +2434,10 @@ both UNIX- and internet-domain sockets. This will not work on Windows.
 
 Display program version.
 
-=item -D, --DEBUG
+=item --DEBUG=1
 
-Run foreground in debug mode. It is normal to receive warnings about
-various things.
+Set to true value to run foreground in debug mode. It is normal to
+receive warnings about various things if you run with perl -w.
 
 =cut
 
@@ -2495,7 +2495,7 @@ Command line options (first letter will usually work):
      -t, --test            report problems with config files
      -u, --unix            run with UNIX-domain socket
      -v, --version         display program version
-     -D, --DEBUG           run foreground in debug mode
+     --DEBUG=1             run foreground in debug mode
 END
 }
 
@@ -2647,7 +2647,7 @@ sub parse_options {
 	);
 
 	my @options = ( qw/
-		DEBUG|D:i
+		DEBUG:i
 		Ignore
 		add|a=s
 		confdir=s
