@@ -246,6 +246,46 @@ File
 
 	FileControl  include/junk  Vend::SomeModule::file_control
 
+* Intrinsic FileControl checks.
+
+	# Is a catalog superuser
+    FileControl foo/bar ic_super
+
+	# Is a catalog admin
+	FileControl foo/bar ic_admin
+
+	# Is logged in at all
+	FileControl foo/bar ic_logged
+
+	# Is logged in at userdb table of "userdb"
+	FileControl foo/bar ic_logged:userdb
+
+	# Is logged in at userdb table of "affiliate"
+	FileControl foo/bar ic_logged:affiliate
+
+	# Run check on userdb file_acl
+	FileControl foo/bar ic_userdb
+
+	# Run check on userdb file_acl
+	FileControl foo/bar ic_userdb:file_acl
+
+	# Run check on userdb db_acl
+	FileControl foo/bar ic_userdb:db_acl
+
+	# Check for $Scratch->{dealer} set
+    FileControl foo/bar ic_scratch:dealer
+
+	# Check for $Scratch->{dealer} NOT set
+    FileControl foo/bar ic_scratch_deny:dealer
+
+	# Check for $Session->{secure} set
+    FileControl foo/bar ic_session:secure
+
+	# Check for $Session->{secure} NOT set
+    FileControl foo/bar ic_session_deny:secure
+
+  These don't override the NoAbsolute checks.
+
 * If no FileControl is not set, the checks are not done for performance
   reasons.
 
@@ -502,6 +542,20 @@ UI
 
 * Fixed typo in file_navigator tag.
 
+* Display size, color and options on "Order view" page again.
+
+* Fix Query-By-Example forms for LARGE tables.
+
+* Remove hard-coded "Pending" status and put real info on "Order view" page.
+
+* More metadata tools. New tag [meta-info table=foo col=bar key=label] returns
+  "label" metadata item. Can access any key in meta record including extended.
+  Has localize=1 flag to localize returned labels.
+
+  Small example of how to use this in pages/admin/customer.html -- allows
+  you to change "Company" to "Affilation" or "Organization" and have a hope
+  of having it show up everywhere.
+
 Payment
 -------
 
@@ -594,6 +648,14 @@ Foundation
 
 * Added ALT attribute to Home links.
 
+* All of the order profiles had common information. Made a
+  Variable called COMMON_ORDER_PROFILE to hold that info
+  to remove duplication.
+
+* Add proper autonumber initialization to affiliate database so
+  it will generate affiliate codes that are valid. Thanks to
+  Kevin Old for reporting.
+
 Debian
 ------
 
@@ -605,6 +667,17 @@ Debian
 
 * Check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are 
   executable in interchange-ui maintainer scripts.
+
+* UPGRADE and README.cvs added to interchange.docs
+  
+* avoid installation error by checking installation state before
+  invoking interchange --add/--remove from interchange-cat-foundation
+  postinst script (thanks to Doug Alcorn <doug@lathi.net> for reporting
+  the problem)
+
+* remove configuration files handled by interchangeconfig on purge
+
+* protect against scripts ending up in /usr/lib/interchange
 
 UserTags
 --------
