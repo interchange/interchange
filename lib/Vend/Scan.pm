@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.0.2.1 2001-11-17 02:22:55 mheins Exp $
+# $Id: Scan.pm,v 2.0.2.2 2001-11-21 18:24:00 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 use strict;
 use Vend::Util;
@@ -896,8 +896,10 @@ sub _file_security {
 			$_ = $Vend::Cfg->{Database}{$_}{'file'}
 				if defined $Vend::Cfg->{Database}{$_};
 		}
-		$ok &&= $_ !~ /$Vend::Cfg->{NoSearch}/
-			if $Vend::Cfg->{NoSearch};
+		if ($ok and $Vend::Cfg->{NoSearch} and /$Vend::Cfg->{NoSearch}/) {
+			::logError("Search of '%s' denied by NoSearch directive", $_);
+			$ok = 0;
+		}
 		push @$passed, $_ if $ok;
 	}
 	return $passed if @$passed;
