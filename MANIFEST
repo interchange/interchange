@@ -129,7 +129,6 @@ code/UI_Tag/diffmerge.coretag
 code/UI_Tag/directive_value.coretag
 code/UI_Tag/display.coretag
 code/UI_Tag/dump_session.coretag
-code/UI_Tag/e.coretag
 code/UI_Tag/export_database.coretag
 code/UI_Tag/file_info.coretag
 code/UI_Tag/file_navigator.coretag

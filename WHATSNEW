@@ -68,6 +68,11 @@ Content Management
   to be expanded in the image preview path. Should probably look at this
   concept on a per-field basis, and set the default to "".
 
+UI
+--
+
+* Unused and obsolete [e] UserTag removed.
+
 Payment
 -------
 
