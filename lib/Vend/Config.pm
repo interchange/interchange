@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.14 2001-11-09 22:08:02 mheins Exp $
+# $Id: Config.pm,v 2.15 2001-11-18 11:04:13 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 my %CDname;
 
@@ -1813,10 +1813,6 @@ sub parse_hash {
 		return $HashDefaultBlank{$item} ? '' : {} if ! $settings;
 	}
 
-	$settings =~ s/^\s+//;
-	$settings =~ s/\s+$//;
-	my(@setting) = Text::ParseWords::shellwords($settings);
-
 	my $c;
 
 	if(defined $C) {
@@ -1827,12 +1823,7 @@ sub parse_hash {
 		$c = ${"Global::$item"} || {};
 	}
 
-	my $i;
-	for ($i = 0; $i < @setting; $i += 2) {
-		$c->{$setting[$i]} = $setting[$i + 1];
-#::logDebug("$item hash $setting[$i]=$setting[$i+1]");
-	}
-	$c;
+	return Vend::Util::hash_string($settings,$c);
 }
 
 # Set up illegal values for certain directives
