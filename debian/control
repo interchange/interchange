@@ -7,7 +7,7 @@ Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-
 
 Package: interchange-cat-foundation
 Architecture: all
-Depends: interchange (>=4.8.1)
+Depends: interchange (>=4.8.1), interchange-ui (>=4.8.1)
 Description: Sample Interchange catalog
  Sample Interchange catalog
 
