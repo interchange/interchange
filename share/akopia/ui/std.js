@@ -3,6 +3,33 @@ function MM_swapImgRestore() { //v3.0
   var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
 }
 
+function checkAll(form,what,uncheck) {
+  var i, n, check;
+  n = form.elements[what].length;
+  if (!n) {
+	if(uncheck == 1) {
+		form.elements[what].checked=false;
+	}
+	else {
+		form.elements[what].checked=true;
+	}
+  } else {
+    if (what != "deleteid" || sure()) {
+		var checkval;
+		if(uncheck == 1) {
+			checkval=false;
+		}
+		else {
+			checkval=true;
+		}
+      for (i=0; i < n; i++) {
+        check = form.elements[what][i];
+        check.checked = checkval;
+      }
+    }
+  }
+}
+
 function addItem(selector, receptor, joiner) {
 	if(joiner == null) {
 		joiner = " ";
