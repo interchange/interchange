@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.19 2001-03-18 00:17:55 heins Exp $
+# $Id: interchange.PL,v 1.15.2.20 2001-03-22 08:54:40 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1125,8 +1125,8 @@ my %form_action = (
 							if ! $CGI::values{mv_nextpage};
 					}
 					else {
-						$CGI::values{mv_nextpage} = $::Values->{mv_failpage}
-							if $::Values->{mv_failpage};
+						$CGI::values{mv_nextpage} = $CGI::values{mv_failpage}
+							if $CGI::values{mv_failpage};
 						$CGI::values{mv_nextpage} = find_special_page('needfield')
 							if ! $CGI::values{mv_nextpage};
 						undef $final;
