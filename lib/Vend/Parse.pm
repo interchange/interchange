@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.24 2003-01-14 02:25:53 mheins Exp $
+# $Id: Parse.pm,v 2.25 2003-03-18 11:32:24 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -624,15 +624,23 @@ sub start {
 	}
 
     # $attr is reference to a HASH, $attrseq is reference to an ARRAY
+	my $aliasname = '';
 	unless (defined $Routine{$tag}) {
 		if(defined $Alias{$tag}) {
+			$aliasname = $tag;
 			my $alias = $Alias{$tag};
 			$tag =~ s/_/[-_]/g;
 #::logDebug("origtext: $origtext tag=$tag alias=$alias");
 			$origtext =~ s/$tag/$alias/i
 				or return 0;
-			$$buf = $origtext . $$buf;
-			return 1;
+			if ($alias =~ /\s/) {
+				# keep old behaviour for aliases like
+				# process_search => 'area href=search'
+				# otherwise we process it like any other tag
+				$$buf = $origtext . $$buf;
+				return 1;
+			}
+			$tag = $alias;
 		}
 		else {
 #::logDebug("no alias. origtext: $origtext");
@@ -755,7 +763,7 @@ EOF
 		# Handle embedded tags, but only if interpolate is 
 		# defined (always if using old tags)
 #::logDebug("look end for $tag, buf=" . length($$buf) );
-		$tmpbuf = $empty_container ? '' : find_matching_end($tag, $buf);
+		$tmpbuf = $empty_container ? '' : find_matching_end($aliasname || $tag, $buf);
 #::logDebug("FOUND end for $tag\nBuf " . length($$buf) . ":\n" . $$buf . "\nTmpbuf:\n$tmpbuf\n");
 		if ($attr->{interpolate} and !$empty_container) {
 			my $p = new Vend::Parse;
