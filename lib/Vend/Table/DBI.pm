@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.2 2001-10-18 05:27:41 mheins Exp $
+# $Id: DBI.pm,v 2.3 2001-10-29 20:47:39 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 use strict;
 
@@ -586,7 +586,8 @@ sub close_table {
 sub columns {
 	my ($s) = shift;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-    return @{$s->[$NAME]};
+	return unless ref $s->[$NAME] eq 'ARRAY';
+	return @{$s->[$NAME]};
 }
 
 sub test_column {
