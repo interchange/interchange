@@ -76,7 +76,7 @@ if [ "$GOAHEAD" = "true" ]; then
     LOCALES=`echo "$RET" | sed -e 's/, /,/'`
 	db_get interchange-cat-foundation/defaultlocale
 	DEFAULTLOCALE=$RET
-	SERVERNAME=`hostname --fqdn`
+	SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
 	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" /usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
