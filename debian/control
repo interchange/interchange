@@ -7,13 +7,14 @@ Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-
 
 Package: interchange-cat-foundation
 Architecture: all
-Depends: interchange (>=4.8.0)
+Depends: interchange (>=4.8.1)
 Description: Sample Interchange catalog
  Sample Interchange catalog
 
 Package: interchange-ui
 Architecture: all
-Depends: ${perl:Depends}, interchange (>=4.8.0)
+Depends: ${perl:Depends}, interchange (>=4.8.1)
+Suggests: libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
 Description: Interchange administration interface
  Interchange administration interface
 
@@ -30,7 +31,7 @@ Description: e-commerce and general HTTP database display system
 
 Package: libapache-mod-interchange
 Architecture: any
-Depends: ${shlibs:Depends}, apache-common (>= ${THISDEV}), apache-common (<< ${NEXTDEV}), interchange (>=4.8.0)
+Depends: ${shlibs:Depends}, apache-common (>= ${THISDEV}), apache-common (<< ${NEXTDEV}), interchange (>=4.8.1)
 Description: Integration of the Interchange link protocol with Apache
  mod_interchange is designed to replace the vlink and tlink programs that
  come with Interchange. The Interchange link protocol is implemented via
