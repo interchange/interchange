@@ -57,7 +57,7 @@ UI_HELP_WIDTH	650	Admin layout
 UI_IMAGE_DIR	__MVC_SHAREURL__/interchange/	Admin control
 UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange/	Admin control
 UI_META_LINK	1	Admin control
-UI_SECURE	0	Admin control
+UI_SECURE	__MVC_UISECURE__	Admin control
 UI_TRAFFIC_STATS	__MVC_TRAFFICSTATS__	Directories and Paths
 UPS_COUNTRY_FIELD	country	Shipping
 UPS_ORIGIN	__MVC_UPSORIGIN__	Shipping
