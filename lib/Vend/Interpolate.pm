@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.30 2001-11-16 00:51:49 mheins Exp $
+# $Id: Interpolate.pm,v 2.31 2001-11-16 13:39:22 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 @EXPORT = qw (
 
@@ -4991,7 +4991,9 @@ sub iterate_hash_list {
 	my $r = '';
 
 	# Optimize for no-match, on-match, etc
-	if($text !~ /\[(?:if-)?$Prefix-/) {
+	# Ugly second regex is for quantity-name/modifier-name, wish they would
+	# go away
+	if($text !~ /\[(?:if-)?$Prefix-/ and $text !~ /\[[qm][uo]/i) {
 		for(; $i <= $end; $i++) {
 			$r .= $text;
 		}
