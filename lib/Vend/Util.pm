@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.19 2001-03-31 17:28:35 heins Exp $
+# $Id: Util.pm,v 1.14.2.20 2001-04-01 03:58:10 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.20 $, 10);
 
 BEGIN {
 	eval {
@@ -1612,7 +1612,7 @@ sub logError {
 
 # Here for convenience in calls
 sub set_cookie {
-    my ($name, $value, $expire) = @_;
+    my ($name, $value, $expire, $domain, $path) = @_;
 	if (! $::Instance->{Cookies}) {
 		$::Instance->{Cookies} = []
 	}
@@ -1620,7 +1620,7 @@ sub set_cookie {
 		@{$::Instance->{Cookies}} =
 			grep $_->[0] ne $name, @{$::Instance->{Cookies}};
 	}
-    push @{$::Instance->{Cookies}}, [$name, $value, $expire];
+    push @{$::Instance->{Cookies}}, [$name, $value, $expire, $domain, $path];
     return;
 }
 

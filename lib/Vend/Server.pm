@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.28 2001-03-31 17:06:31 heins Exp $
+# $Id: Server.pm,v 1.8.2.29 2001-04-01 03:58:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.29 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -349,7 +349,7 @@ sub parse_multipart {
 
 sub create_cookie {
 	my($domain,$path) = @_;
-	my ($name, $value, $out, $expire, $cookie);
+	my  $out;
 	my @jar;
 	@jar = [	($::Instance->{CookieName} || 'MV_SESSION_ID'),
 				defined $::Instance->{ClearCookie} ? '' : $Vend::SessionName,
@@ -359,14 +359,16 @@ sub create_cookie {
 	push @jar, @{$::Instance->{Cookies}}
 		if defined $::Instance->{Cookies};
 	$out = '';
-	foreach $cookie (@jar) {
-		($name, $value, $expire) = @$cookie;
+	foreach my $cookie (@jar) {
+		my ($name, $value, $expire, $d, $p) = @$cookie;
+		$d = $domain if ! $d;
+		$p = $path   if ! $p;
 #::logDebug("create_cookie: name=$name value=$value expire=$expire");
 		$value = Vend::Interpolate::esc($value) 
 			if $value !~ /^[-\w:.]+$/;
 		$out .= "Set-Cookie: $name=$value;";
-		$out .= " path=$path;";
-		$out .= " domain=" . $domain . ";" if $domain;
+		$out .= " path=$p;";
+		$out .= " domain=" . $d . ";" if $d;
 		if (defined $expire or $Vend::Expire) {
 			my $expstring;
 			if(! $expire) {

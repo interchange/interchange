@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.13 2001-03-24 21:06:28 heins Exp $
+# $Id: Parse.pm,v 1.12.2.14 2001-04-01 03:58:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.14 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -199,7 +199,7 @@ my %Order =	(
 				control			=> [qw( name default )],
 				control_set		=> [qw( index )],
 				selected		=> [qw( name value )],
-				set_cookie		=> [qw( name value expire )],
+				set_cookie		=> [qw( name value expire domain path )],
 				setlocale		=> [qw( locale currency )],
 				set				=> [qw( name )],
 				seti			=> [qw( name )],
