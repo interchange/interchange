@@ -167,7 +167,7 @@ function visible (index, base) {
 <td valign=top>
 <form name=overall action="[area @@MV_PAGE@@]" method=POST>
 
-<h3 id="silent_display">Template Attributes</h3>
+<h3 id="silent_display">[L]Template Attributes[/L]</h3>
 <div align=right>
 	Description: <input name=ui_label size=30 value="[tem-param ui_label]"><BR>
 	<input type=submit
@@ -175,11 +175,11 @@ function visible (index, base) {
 		   onClick="check_change()">
 </div>
 <hr>
-<h3>Template Controls</h3>
+<h3>[L]Template Controls[/L]</h3>
 [controls]
 <div id=clicker[cont-increment] style="border: 1; border-style: thin">
 [if-cont-param code]
-Name: <A
+[L]Name[/L]: <A
 		HREF="javascript:void(0)"
 		NAME=clicker[cont-increment]
 		onClick="visible([cont-increment])"
@@ -187,9 +187,9 @@ Name: <A
 		><span
 			style="font-size: larger; font-weight: bolder"
 			>[cont-param code]</span></A><BR>
-Label: [cont-param label]<br>
-Widget: [cont-param type]<br>
-Action: 
+[L]Label[/L]: [cont-param label]<br>
+[L]Widget[/L]: [cont-param type]<br>
+[L]Action[/L]: 
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -197,7 +197,7 @@ Action:
 		ui_content_op=delete
 		ui_name="[cont-parent ui_name]"
 		ui_type=template
-]" onClick="return check_change()">delete</A>&nbsp;&nbsp;
+]" onClick="return check_change()">[L]delete[/L]</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -206,7 +206,7 @@ Action:
 		ui_content_op=motion
 		ui_name="[cont-parent ui_name]"
 		ui_type=template
-]" onClick="return check_change()">up</A>&nbsp;&nbsp;
+]" onClick="return check_change()">[L]up[/L]</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
 		form=auto
@@ -215,14 +215,14 @@ Action:
 		ui_content_op=motion
 		ui_name="[cont-parent ui_name]"
 		ui_type=template
-]" onClick="return check_change()">down</A><BR>
+]" onClick="return check_change()">[L]down[/L]</A><BR>
 [else]
 	<A HREF="javascript:void(0)"
 		NAME=clicker[cont-increment]
-		onClick="visible([cont-increment])">Add a new control</A><BR>
+		onClick="visible([cont-increment])">[L]Add a new control[/L]</A><BR>
 [/else]
 [/if-cont-param]
-<INPUT TYPE=checkbox VALUE=1 NAME="changed_[cont-param code]" id="changed_[cont-param code]"> changed
+<INPUT TYPE=checkbox VALUE=1 NAME="changed_[cont-param code]" id="changed_[cont-param code]"> [L]changed[/L]
 </div>
 <p>
 [/controls]
@@ -230,14 +230,14 @@ Action:
 <table border=1 borderstyle=thin>
 <tr>
 	<td>
-	<b>Page layout</b>
+	<b>[L]Page layout[/L]</b>
 	</td>
 </tr>
 [regions]
 [if-reg-param where]
 <tr>
 <td id="comp_clicker[reg-increment]">
-	Template area
+	[L]Template area[/L]
 	<A	HREF="javascript:void(0)"
 		onClick="visible([reg-increment],'comp')"
 		title="edit [reg-param where]"
@@ -248,11 +248,11 @@ Action:
 			VALUE=1
 			NAME="changed_[reg-param where]"
 			id="changed_[reg-param where]"
-	>&nbsp;changed<br>
+	>&nbsp;[L]changed[/L]<br>
  [if-reg-param contents]
  	[reg-param contents]
  [else]
- 	No components
+ 	[L]No components[/L]
  [/else]
  [/if-reg-param]
 [else]
@@ -283,7 +283,7 @@ mv_nextpage=__UI_BASE__/content
 <input type=hidden name=ui_content_op value=modify_top>
 <input style="font-weight: bold" type=submit onClick="return check_change()" name=mv_click value="[L]Publish[/L]"> &nbsp;
 <input type=submit onClick="return check_change()" name=mv_click value="[L]Cancel[/L]"><br>
-New name: <input type=text name=ui_destination size=22 value="">
+[L]New name[/L]: <input type=text name=ui_destination size=22 value="">
 </form>
 </td>
 <td>
@@ -303,8 +303,8 @@ New name: <input type=text name=ui_destination size=22 value="">
 				z-index:2;
 		">
 		<blockquote>
-		<h2>Edit area</H2>
-		When you select an element to the left, it will be edited here.
+		<h2>[L]Edit area[/L]</H2>
+		[L]When you select an element to the left, it will be edited here.[/L]
 		</blockquote>
 	</div>
 	<div 
@@ -316,8 +316,8 @@ New name: <input type=text name=ui_destination size=22 value="">
 				z-index:0;
 		">
 		<blockquote>
-		<h2>Edit area</H2>
-		When you select an element to the left, it will be edited here.
+		<h2>[L]Edit area[/L]</H2>
+		[L]When you select an element to the left, it will be edited here.[/L]
 		</blockquote>
 	</div>
 [regions]
