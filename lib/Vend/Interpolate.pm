@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.28 2000-10-02 11:03:43 heins Exp $
+# $Id: Interpolate.pm,v 1.29 2000-10-04 19:05:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.28 $, 10);
+$VERSION = substr(q$Revision: 1.29 $, 10);
 
 @EXPORT = qw (
 
@@ -2949,7 +2949,7 @@ sub tag_more_list {
 	if($first) {
 		$first = 0 if $first < 0;
 		unless ($prev_anchor) {
-			if($r =~ s:\[prev[-_]anchor\]($All)\[/prev-anchor\]::i) {
+			if($r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i) {
 				$prev_anchor = $1;
 			}
 			else {
