@@ -21,6 +21,19 @@ Variable UI_STD_INIT <<EOV
 		$Config->{VendURL} = $Config->{SecureURL};
 	}
 
+	# allow CGI setting to override locale for this page
+	my $c = delete $CGI->{mv_charset};
+	if ($c) {
+		$Scratch->{mv_charset_save} = $Scratch->{mv_charset}
+			if $Scratch->{mv_charset};
+		$Scratch->{mv_charset} = $c;
+	}
+	else {
+		# default charset encoding should normally match current locale
+		$Scratch->{mv_charset} = $Config->{Locale}{MV_CHARSET} || 'iso-8859-1'
+			unless $Scratch->{mv_charset_keep};
+	}
+
 	''
 [/perl]
 EOV
@@ -91,6 +104,9 @@ EOF
 [/if]
 <html[scratch ui_language_direction]>
 <head>
+[if scratch mv_charset]
+	<meta http-equiv="content-type" content="text/html; charset=[scratch mv_charset]">
+[/if]
 <title>[scratch page_title]</title>
 <script language="JavaScript">
 <!--

@@ -57,5 +57,10 @@ Variable UI_STD_FOOTER  <<EOV
 
 </body>
 </html>
-[set ui_checklist][/set]
+[calc]
+	# restore character set if it was overridden by CGI
+	$Scratch->{mv_charset} = delete $Scratch->{mv_charset_save}
+		if $Scratch->{mv_charset_save};
+	delete $Scratch->{ui_checklist};
+[/calc]
 EOV
