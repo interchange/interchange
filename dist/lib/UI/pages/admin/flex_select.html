@@ -101,6 +101,9 @@
 	}
 
 	my $tab = $CGI->{mv_data_table} or return;
+	if($tab =~ s/\.(txt|asc)$/_$1/) {
+		$tab =~ s:.*/::;
+	}
 	my $db = $Db{$tab};
 	if(! $db) {
 		$Scratch->{ui_error} = errmsg('no %s database', $tab);
@@ -212,6 +215,11 @@
 	}
 	elsif (! $meta) {
 		$Scratch->{keypos} = 0;
+	}
+
+	if( $tab ne $ref->config('name')) {
+		## Probably transient database
+		$CGI->{mv_data_table_real} = $tab = $ref->config('name');
 	}
 
 	$meta ||= {};
@@ -399,9 +407,10 @@ EOF
 				if $ref->numeric($CGI->{ui_sort_field}); 
 	} 
 
+	my $fi = $CGI->{mv_data_table_real} || $CGI->{mv_data_table};
 	$Scratch->{sparams} = $Scratch->{tmp_like_spec} ? '' : <<EOF;
 
-	fi=$CGI->{mv_data_table}
+	fi=$fi
 	st=db
 	$CGI->{ui_text_qualification}
 	su=1
