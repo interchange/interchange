@@ -17,17 +17,11 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-if [ "$1" = "purge" ]; then
-	# Automatically generated configuration files
-	rm -f /etc/interchange/features.cfg
-	rm -f /etc/interchange/settings.cfg
-	# CGI link programs
-	rm -r /usr/lib/cgi-bin/ic
-	# Log files
-	rm -f /var/log/interchange/debug.log
-	rm -f /var/log/interchange/error.log*
-	rm -f /var/log/interchange/makecat.log
-fi
+# Stop the server first
+
+/etc/init.d/interchange stop
+
+echo interchange >> /var/run/interchange-install
 
 #DEBHELPER#
 
