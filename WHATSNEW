@@ -69,11 +69,22 @@ Core
 * Compile warnings in catalog usertags now show up in the logs instead
   of "UserTag 'ugly_hack' code is not a subroutine reference".
 
+* Add new database configuration option PREFER_NULL. It accepts a list of
+  field names which should be set to NULL instead of an empty string
+  whenever possible:
+
+  Database  people  PREFER_NULL  age height
+
+  Probably most useful with numeric or date fields that are nullable, to
+  prevent import errors when trying to store '' into a numeric field. Also
+  for character fields that you'd rather have contain a NULL than '' to
+  comply with a CHECK or foreign key constraint.
+
 UserTags
 --------
 
-* Obsolete usertags dbinfo, if-key-exists, if_sql, reconfig_wait, 
-  rotate_file, with and write_page removed
+* Obsolete usertags dbinfo, e, if-key-exists, if_sql, reconfig_wait, 
+  rotate_file, with and write_page removed.
 
 Filters
 -------
@@ -87,11 +98,6 @@ Content Management
 * Get restrict_allow settings right -- the default was not allowing the "var"
   to be expanded in the image preview path. Should probably look at this
   concept on a per-field basis, and set the default to "".
-
-UI
---
-
-* Unused and obsolete [e] UserTag removed.
 
 Payment
 -------
