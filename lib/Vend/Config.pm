@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.114 2003-05-13 19:05:18 mheins Exp $
+# $Id: Config.pm,v 2.115 2003-05-13 20:11:58 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.114 $, 10);
+$VERSION = substr(q$Revision: 2.115 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2393,7 +2393,7 @@ my %Default = (
 			@base{@base} = @base;
 
 			my %seen;
-			my @types = grep !$seen{$_}, keys %$o, @base;
+			my @types = grep !$seen{$_}++, keys %$o, @base;
 
 			for(@types) {
 				my $loc = $o->{$_} ||= {};
@@ -2435,7 +2435,7 @@ my %Default = (
 			@base{@base} = @base;
 
 			my %seen;
-			my @types = grep !$seen{$_}, keys %$o, @base;
+			my @types = grep !$seen{$_}++, keys %$o, @base;
 
 			for(@types) {
 				my $loc = $o->{$_} ||= {};
