@@ -50,10 +50,17 @@
 			if(! $key) {
 				$name = $CGI->{"opt_group_"}
 					or next;
+				if($name =~ /\W/) {
+					$Tag->error({
+						name => 'Set option groups',
+						set => errmsg(qq{Group name "%s" contains non-word characters, will not set}, $name),
+					});
+					next;
+				}
 				if($existing{$name}) {
 					$Tag->error({
 						name => 'Set option groups',
-						set => errmsg("o_group %s already exists, will not set", $name),
+						set => errmsg("Group %s already exists, will not set", $name),
 					});
 					next;
 				}
