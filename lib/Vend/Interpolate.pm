@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.4 2000-10-27 19:05:23 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.5 2000-11-01 10:10:45 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.5 $, 10);
 
 @EXPORT = qw (
 
@@ -5052,7 +5052,7 @@ sub shipping {
 				$row->[CRIT] !~ /\S/;
 		}
 
-		$o = get_option_hash($row->[OPT], $o)
+		$o = get_option_hash($o, $row->[OPT])
 			if $row->[OPT];
 		# unless field begins with 'x' or 'f', straight cost is returned
 		# - otherwise the quantity is multiplied by the cost or a formula
