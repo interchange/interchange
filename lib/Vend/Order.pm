@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.7 2001-01-31 12:02:41 heins Exp $
+# $Id: Order.pm,v 1.18.2.8 2001-02-02 00:01:52 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1637,7 +1637,11 @@ sub route_order {
 							);
 			}
 		}
-		elsif($route->{credit_card} and ! $pre_encrypted) {
+		elsif(  $route->{credit_card}
+				and ! $pre_encrypted
+			    and $::Values->{mv_credit_card_info}
+				)
+		{
 			$::Values->{mv_credit_card_info} = pgp_encrypt(
 								$::Values->{mv_credit_card_info},
 								($route->{pgp_cc_key} || $route->{pgp_key}),
