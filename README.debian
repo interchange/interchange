@@ -30,3 +30,12 @@ Debian Specific Changes
 
 * any global usertags used locally should go into /etc/interchange/usertag
   and they'll be included if they have the extension .tag
+
+Other Notes
+===========
+
+* if the selected Interchange user (default: interchange, may be changed
+  through debconf) doesn't exists at installation time, it will created.
+  Due to security reasons the shell for this user will be set to
+  /bin/false and the password for this user will be disabled. Use 
+  su -s /bin/sh if you need to become the Interchange user.
