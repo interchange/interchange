@@ -718,7 +718,7 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	<td valign=top>
 	<b>Bottom of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>
