@@ -20,16 +20,16 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-                      <div align="left">
 
-[if session failure]
-<P>
-<B><font color="__CONTRAST__">[calc] delete $Session->{failure}[/calc]</font></b>
-<P>
-[else]
-                        <p>&nbsp;</p>
-[/else]
-[/if]
+<table width="95%">
+<tr>
+  <td>
+
+    [if session failure]
+      <br><br>
+      <B>[calc] delete $Session->{failure}[/calc]</b>
+      <br>
+    [/if]
 
 [set mv_no_cache]1[/set]
 [set New Account]
@@ -38,106 +38,107 @@ mv_nextpage=new_account
 [/set]
 
 [if !session logged_in]
-<FORM ACTION="[process secure=1]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
-<INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
-<INPUT TYPE=hidden NAME=mv_successpage VALUE="account">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
-<table width=300 border=1 cellspacing=0 cellpadding=0 bordercolordark=#000000 bordercolorlight=#000000>
-	  <tr>
-		<td> 
-		  <table width=300 border=0 cellspacing=0 cellpadding=2>
-			<tr class=cheader> 
-			  <td width=81 align=right class=cheader>
-			  	Username
-			  </td>
-			  <td width=204 class=xheader>
-				<INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
-			  </td>
-			</tr>
-			<tr class=cheader>
-			  <td width=81 align=right class=cheader>
-				Password
-			  </td>
-			  <td width=204 class=xheader>
-				<INPUT TYPE=password NAME=mv_password VALUE="">
-			  </td>
-			</tr>
-			<tr class=yheader>
-			  <td>&nbsp;</td>
-			  <td class=yheader>
-				<input type=submit value="Log In">
-				<input type="submit" NAME="mv_click" value="New Account">
-			  </td>
-			</tr>
-			<tr class=yheader>
-			  <td width=81 align=right class=yheader> 
-			   <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
-			   <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
-			  </td>
-			  <td class=yheader>
-			  Log me in automatically<br>(sets cookie)
-			  </td>
-			</tr>
-		  </table>
-		</td>
-	  </tr>
-	</table>
-	<p>&nbsp;</p>
-	
-  </div>
-</form>
-[else]
-<table width=300 border=1 cellspacing=0 cellpadding=0 bordercolordark=#000000 bordercolorlight=#000000>
-<FORM ACTION="[process]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-<INPUT TYPE=hidden NAME=mv_click VALUE=Logout>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
 
-	  <tr>
-		<td> 
-		  <table width=300 border=0 cellspacing=0 cellpadding=2>
-			<tr class=cheader> 
-			  <td width=81 align=right class=cheader>
-			  	You are already logged in.
-			  </td>
-			  <td width=204 class=xheader>
-			  	You are already logged in.
-			  </td>
-			</tr>
-			<tr class=yheader>
-			  <td>&nbsp;</td>
-			  <td class=yheader>
-				<INPUT TYPE=submit VALUE="Log out">
-				<input type="submit" NAME="mv_click" value="New Account">
-			  </td>
-			</tr>
-		  </table>
-		</td>
-	  </tr>
-	</table>
-	<p>&nbsp;</p>
+    <FORM ACTION="[process secure=1]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+    <INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
+    <INPUT TYPE=hidden NAME=mv_successpage VALUE="account">
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
+
+    <table border="0">
+    <tr>
+      <td class="contentbar1"> 
+	<table>
+	<tr> 
+	  <td align=right class="contentbar2">
+	    Username
+	  </td>
+	  <td class="contentbar2">
+	    <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+	  </td>
+	</tr>
+	<tr>
+	  <td align=right class="contentbar2">
+	    Password
+	  </td>
+	  <td class="contentbar2">
+	    <INPUT TYPE=password NAME=mv_password VALUE="">
+	  </td>
+	</tr>
+	<tr>
+	  <td>&nbsp;</td>
+	  <td class="contentbar1">
+	    <input type=submit value="Log In">
+	    <input type="submit" NAME="mv_click" value="New Account">
+	  </td>
+	</tr>
+	<tr>
+	  <td align=right class="contentbar1"> 
+	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
+	    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+	  </td>
+	  <td class="contentbar1">
+	    Log me in automatically (sets cookie)
+	  </td>
+	</tr>
+        </table>
+      </td>
+    </tr>
+    </table>
 	
-  </div>
-</form>
+    </form>
+
+[else]
+
+    <FORM ACTION="[process]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Logout>
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
+
+    <table>
+    <tr>
+      <td class="contentbar1"> 
+	<table>
+	<tr> 
+	  <td align=right class="contentbar2">&nbsp;</td>
+	  <td class="contentbar2">
+	    <b>You are already logged in.</b>
+	  </td>
+	</tr>
+	<tr>
+	  <td>&nbsp;</td>
+	  <td class="contentbar1">
+	    <INPUT TYPE=submit VALUE="Log out">
+	    <input type="submit" NAME="mv_click" value="New Account">
+	  </td>
+	</tr>
+	</table>
+		
+      </td>
+    </tr>
+    </table>
+	
+    </form>
+
 [/else]
 [/if]
-<p>&nbsp;</p>
-<div align="center"> </div>
 
-<p>
-Log in to complete a transaction in the Construct Something demo. Choose one of 
-three ways to log in:<br>
-<ol>
-<li>Log in as a new user. Click on the "New Account" button above and enter the 
-requested information.</li>
-<li>Log in as a dealer by entering username "jdoe" and password "test" above. As 
-a dealer you may be offered different pricing structures.</li>
-<li>Log in as an affiliate. Enter Construct Something from our affilate site: 
-<a href="http://demo.akopia.com/~hardhat">http://demo.akopia.com/~hardhat</a></li>
-</ol>
-</p>
+    Log in to complete a transaction in the Construct Something demo. 
+    Choose one of three ways to log in:
+    <ol>
+    <li>Log in as a new user. Click on the "New Account" button above and 
+        enter the requested information.
+    <li>Log in as a dealer by entering username "jdoe" and password "test" 
+        above. As a dealer you may be offered different pricing structures.
+    <li>Log in as an affiliate. Enter Construct Something from our affilate site: 
+        <a href="http://demo.akopia.com/~hardhat">http://demo.akopia.com/~hardhat</a>
+    </ol>
+
+  </td>
+</tr>
+</table>
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@
