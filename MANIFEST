@@ -560,6 +560,11 @@ dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure
 dist/src/cpan_local_install
+dist/src/mod_interchange/Makefile
+dist/src/mod_interchange/README
+dist/src/mod_interchange/mod_interchange.c
+dist/src/mod_interchange/mod_interchange.html
+dist/src/mod_interchange/mod_interchange.spec
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
 dist/src/syscfg.in
