@@ -1,10 +1,9 @@
+#define	MODULE_VERSION	"mod_interchange/1.29"
 /*
- *	$Id: mod_interchange.c,v 2.7 2003-01-09 04:54:26 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.8 2003-01-13 17:42:51 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
- *
- *	Version: 1.28
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -41,8 +40,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-
-#define	MODULE_VERSION	"mod_interchange/1.28"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -491,6 +488,7 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	redirect_url[0] = '\0';
 	for (e = env; *e != NULL; e++){
 		int len;
+
 		if (strncmp(*e,"PATH_INFO=",10) == 0)
 			continue;
 		if (strncmp(*e,"REDIRECT_URL=",13) == 0){
@@ -505,11 +503,10 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 			if (*(*e + 12 + conf_rec->loclen) == '/')
 				*(*e + 12 + conf_rec->loclen) = '\0';
 		}
-		if (len = strlen(*e)){
-			if (ap_bprintf(ic_buff,"%d %s\n",len,*e) < 0){
-				ap_log_reason("error writing to Interchange",r->uri,r);
-				return HTTP_INTERNAL_SERVER_ERROR;
-			}
+		len = strlen(*e);
+		if (len && ap_bprintf(ic_buff,"%d %s\n",len,*e) < 0){
+			ap_log_reason("error writing to Interchange",r->uri,r);
+			return HTTP_INTERNAL_SERVER_ERROR;
 		}
 		ap_reset_timeout(r);
 	}
@@ -519,7 +516,7 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		rp++;
 
 	if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0)
-		rp += conf_rec->loclen;
+		rp += (conf_rec->loclen - 1);
 
 	strcpy(request_uri,rp);
 	for (rp = request_uri; *rp != '\0'; rp++){
@@ -552,9 +549,8 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		while (*rp == '/')
 			rp++;
 
-		if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0){
-			rp += conf_rec->loclen;
-		}
+		if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0)
+			rp += (conf_rec->loclen - 1);
 
 		strcpy(redirect_url,rp);
 		for (rp = redirect_url; *rp != '\0'; rp++){
