@@ -144,6 +144,12 @@ Core
   ScratchDefault and ValuesDefault values instead of simply
   deleting the scratches and values under its control.
 
+* Added check for no_increment so that mv_order_number can be set in
+  a route.
+
+* Fix bug where bad [nitems compare=...] could cause server error. Now
+  just silently causes bad compare.
+
 Installation
 ------------
 
@@ -205,6 +211,13 @@ Filters
   This allows a next-sequential numbering for things that need it.
   Developed to support general-purpose survey UI for Ton's excellent
   product rating system.
+
+* Fix bugs in option_format filter. It would turn commas into new options;
+  and alternate delimiters had no hope of working.
+
+* Add options2line and line2options filters, allowing you to specify
+  options in a textarea without comma separators and instead with one
+  option per line.
 
 Profiles
 --------
