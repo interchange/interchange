@@ -1,10 +1,10 @@
 /*
- *	$Id: mod_interchange.c,v 2.4 2002-10-21 19:20:43 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.5 2002-11-03 14:08:20 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.24
+ *	Version: 1.26
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -42,7 +42,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define	MODULE_VERSION	"mod_interchange/1.24"
+#define	MODULE_VERSION	"mod_interchange/1.26"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -444,10 +444,10 @@ static int ic_select(int sock_rd,int sock_wr,int secs,int usecs)
  */
 static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 {
-	char **env,**e;
+	char **env,**e,*rp;
 	int env_count,rc,level;
-	char request_uri[HUGE_STRING_LEN],*rurip = request_uri;
-	request_uri[0] = '\0';
+	char request_uri[HUGE_STRING_LEN];
+	char redirect_url[HUGE_STRING_LEN];
 
 	/*
 	 *	send the Interchange-link arg parameter
@@ -469,19 +469,14 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 
 	/*
 	 *	count the number of environment variables present
-	 *	(ignore the PATH_INFO and REDIRECT_* variables)
 	 */
 	for (e = env,env_count = 0; *e != NULL; e++,env_count++){
 		if (strncmp(*e,"PATH_INFO=",10) == 0)
-			env_count--;
-		else if (strncmp(*e,"REDIRECT_",9) == 0)
 			env_count--;
 	}
 	env_count++;
 
 	/*
-	 *	send the actual environment variables to Interchange
-	 *
 	 *	send the environment variable count to Interchange
 	 */
 	if (ap_bprintf(ic_buff,"env %d\n",env_count) < 0){
@@ -491,13 +486,18 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	ap_reset_timeout(r);
 
 	/*
-	 *	ignore the PATH_INFO and REDIRECT_* variables
-	 *	and fix the SCRIPT_NAME and REQUEST_URI variable content
+	 *	ignore the PATH_INFO variable and fix the SCRIPT_NAME,
+	 *	REQUEST_URI and REDIRECT_URL variable content
 	 */
-	level = conf_rec->levels;
-	for (e = env; *e != NULL; ++e){
-		if (strncmp(*e,"REDIRECT_",9) == 0)
+	request_uri[0] = '\0';
+	redirect_url[0] = '\0';
+	for (e = env; *e != NULL; e++){
+		if (strncmp(*e,"PATH_INFO=",10) == 0)
 			continue;
+		if (strncmp(*e,"REDIRECT_URL=",13) == 0){
+			strcpy(redirect_url,(*e) + 13);
+			continue;
+		}
 		if (strncmp(*e,"REQUEST_URI=",12) == 0)
 			strcpy(request_uri,(*e) + 12);
 		else if (strncmp(*e,"SCRIPT_NAME=",12) == 0){
@@ -508,6 +508,7 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 				p++;
 				st++;
 			}
+			level = conf_rec->levels;
 			while (*p != '\0'){
 				if (*p == '/' && --level == 0){
 					*p = '\0';
@@ -518,8 +519,6 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 			*(*e + 12) = '/';
 			strcpy(*e + 13,st);
 		}
-		else if (strncmp(*e,"PATH_INFO=",10) == 0)
-			continue;
 
 		if (ap_bprintf(ic_buff,"%d %s\n",strlen(*e),*e) < 0){
 			ap_log_reason("error writing to Interchange",r->uri,r);
@@ -527,17 +526,19 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		}
 		ap_reset_timeout(r);
 	}
-	while (*rurip == '/')
-		rurip++;
+
+	rp = request_uri;
+	while (*rp == '/')
+		rp++;
 
 	level = conf_rec->levels;
-	while (*rurip != '\0' && (*rurip != '/' || --level))
-		rurip++;
+	while (*rp != '\0' && (*rp != '/' || --level))
+		rp++;
 
-	strcpy(request_uri,rurip);
-	for (rurip = request_uri; *rurip != '\0'; rurip++){
-		if (*rurip == '?'){
-			*rurip = '\0';
+	strcpy(request_uri,rp);
+	for (rp = request_uri; *rp != '\0'; rp++){
+		if (*rp == '?'){
+			*rp = '\0';
 			break;
 		}
 	}
@@ -554,6 +555,39 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	if (ap_bprintf(ic_buff,"%d PATH_INFO=%s\n",strlen(request_uri) + 10,request_uri) < 0){
 		ap_log_reason("error writing to Interchange",r->uri,r);
 		return HTTP_INTERNAL_SERVER_ERROR;
+	}
+
+	/*
+	 *	check if we have a REDIRECT_URL
+	 *	if so then give it the same "fixes" as PATH_INFO (REQUEST_URI)
+	 */
+	if (redirect_url[0] != '\0'){
+		rp = redirect_url;
+		while (*rp == '/')
+			rp++;
+
+		level = conf_rec->levels;
+		while (*rp != '\0' && (*rp != '/' || --level))
+			rp++;
+
+		strcpy(redirect_url,rp);
+		for (rp = redirect_url; *rp != '\0'; rp++){
+			if (*rp == '?'){
+				*rp = '\0';
+				break;
+			}
+		}
+		switch (ap_unescape_url(redirect_url)){
+		case BAD_REQUEST:
+		case NOT_FOUND:
+			ap_log_reason("Bad URI entities found",r->uri,r);
+			return HTTP_INTERNAL_SERVER_ERROR;
+		}
+
+		if (ap_bprintf(ic_buff,"%d REDIRECT_URL=%s\n",strlen(redirect_url) + 13,redirect_url) < 0){
+			ap_log_reason("error writing to Interchange",r->uri,r);
+			return HTTP_INTERNAL_SERVER_ERROR;
+		}
 	}
 	ap_reset_timeout(r);
 
@@ -657,8 +691,6 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 
 		/*
 		 *	check if we need to do an external redirect
-		 *	(this is usually the case if an Interchange
-		 *	[bounce] tag has been used)
 		 */
 		if (*location != '/')
 			return REDIRECT;
@@ -690,7 +722,7 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 		r->method = ap_pstrdup(r->pool,"GET");
 		r->method_number = M_GET;
 		ap_table_unset(r->headers_in,"Content-Length");
-		ap_internal_redirect_handler(location,r);
+		ap_internal_redirect(location,r);
 		return OK;
 	}
 
@@ -722,11 +754,6 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 		}
 	}
 	ap_kill_timeout(r);
-
-	/*
-	 *	close the Interchange socket and return
-	 */
-	ap_bclose(ic_buff);
 	return OK;
 }
 
@@ -739,16 +766,17 @@ static int ic_handler(request_rec *r)
 {
 	ic_conf_rec *conf_rec;
 	BUFF *ic_buff;
-	int i,result;
+	int i,rc;
 
 	if (r->method_number == M_OPTIONS){
 		r->allowed |= (1 << M_GET);
+		r->allowed |= (1 << M_PUT);
 		r->allowed |= (1 << M_POST);
 		return DECLINED;
 	}
 
-	if ((result = ap_setup_client_block(r,REQUEST_CHUNKED_ERROR)) != OK)
-		return result;
+	if ((rc = ap_setup_client_block(r,REQUEST_CHUNKED_ERROR)) != OK)
+		return rc;
 
 	/*
 	 *	get our configuration
@@ -781,15 +809,20 @@ static int ic_handler(request_rec *r)
 	/*
 	 *	send the client's request to Interchange
 	 */
-	result = ic_send_request(r,conf_rec,ic_buff);
-	if (result != OK)
-		return result;
+	rc = ic_send_request(r,conf_rec,ic_buff);
 
 	/*
 	 *	receive the response from the Interchange server
 	 *	and relay that response to the client
 	 */
-	return ic_transfer_response(r,ic_buff);
+	if (rc == OK)
+		rc = ic_transfer_response(r,ic_buff);
+
+	/*
+	 *	close the Interchange socket and return
+	 */
+	ap_bclose(ic_buff);
+	return rc;
 }
 
 /*

@@ -1,11 +1,11 @@
-<!-- $Id: mod_interchange.html,v 2.4 2002-10-21 19:20:44 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.5 2002-11-03 14:08:20 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.24)</title>
+   <title>Apache module: mod_interchange (version 1.26)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.24)</h1>
+    <h1>Apache module: mod_interchange (version 1.26)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
@@ -223,6 +223,32 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.26
+	    (Sun 03 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added proper support for internal redirects which will
+		    help with the security of "soft product" delivery.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.25
+	    (Sat 02 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by Jeff Dafoe.&nbsp;
+		    There are some instances where the socket to Interchange
+		    may not be closed upon error.&nbsp;
+		    While I'm reasonably certain that Apache will handle
+		    this for us, it doesn't hurt to ensure that the socket
+		    is closed.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.24
 	    (Mon 31 Oct 2002)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
