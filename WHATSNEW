@@ -10,6 +10,9 @@ Interchange 4.8.4 released 2002-04-30.
 Core
 ----
 
+* Avoid potential security problems if unsafe email address is passed
+  to Vend::Util::send_mail function.
+
 * Fixed cgi and value filters which were completely broken (Bug #380).
   Thanks to Jonathan Clark <jonc@webmaint.net> for reporting.
 
@@ -22,6 +25,9 @@ Core
 * Prevent converting exchange rates twice for shipping -- bug found
   and patch supplied by Frederic Steinfels <fredo@dvdupgrades.ch>.
 
+* Reset &fail and &success before any profile check, otherwise stale
+  values may appear even across catalogs.
+
 * Fixed searches with op=em as single specification.
 
 * row_hash returns undef now for memory databases too instead of 
@@ -33,12 +39,26 @@ Core
   should go. Thanks to Jeff Murphy (jcmurphy+rhic@jeffmurphy.org) 
   for reporting.
 
+* Don't drop the session on the first time we switch over to the
+  secure server.
+
+* Reworked escaping while generating URLs, so now you can safely use:
+  [area href="Catalog/Food/Hot Dogs"]
+
+* Vend::Util::errmsg don't call sprintf anymore if only one parameter
+  is passed which protects against unwanted expansion.
+
+* Use the usage function in interchange.PL in a more sensible way
+  (it doesn't return anything).
+
 Usertags
 --------
 
 * Changed ups_query to only pass on 5-digit base ZIP code in U.S., 
   since UPS rejects ZIP+4. Thanks to Bill Carr <bill@worldwideimpact.com> 
   for pointing out this requirement in Business::UPS docs.
+
+* Added extra and js parameters to options tag.
 
 * Added cause option to formel tag.
 
@@ -57,14 +77,20 @@ Admin UI
 * Edit button which appears on flex_select page if database attribute
   LARGE is set works now as expected.
 
+* Fixed display tag so it doesn't try to display empty labels.
+
 * Fixed funny bug in date widget which occurred only on the 29th through
   31st days of the month.
 
 * Personal CSS removed from preferences. Neither worked nor maked much
   sense.
 
+* Make both icmenu searches of type db.
+
 Payment
 -------
+
+* Updated Bank of America module from Mark Johnson.
 
 * Improved documentation and added default URL in the Skipjack module.
   Thanks to Ron Phipps <rphipps@reliant-solutions.com> for this patch.
@@ -96,6 +122,14 @@ Foundation
 * Avoid Oracle constraint errors where empty string looks like NULL
   in country database.
 
+* Changed way password is retrieved from userdb to preserve [
+  (without danger of tag output).
+
+* Made dynamic_variable_file_only standard so that UI works.
+
+* Fixed typo in checkout page (thanks to Seth Stone for detecting
+  this problem).
+
 Packaging
 ---------
 
@@ -124,9 +158,15 @@ I18N
 * New usertag [parse_locale] to allow on-the-fly parsing of
   [L]...[/L] and alike in usertags and variables.
 
-* improved Dutch translation (UI)
+* Allow here documents in locale configuration (depending on
+  the value of MV_LOCALE_CHOMP_VALUES, see ja_JP.cfg for
+  an example).
+
+* New MV_CHARSET locale setting.
 
 * Prepared more template pages for translation.
+
+* Improved UI translations.
 
 Quickbooks Extension
 --------------------
