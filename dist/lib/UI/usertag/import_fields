@@ -44,12 +44,17 @@ EOF
 			}
 		}
 		elsif ($opt->{convert} eq 'xls') {
+#::logDebug("doing XLS for file=$file");
 			eval {
 				require Spreadsheet::ParseExcel;
 				import Spreadsheet::ParseExcel;
 				my $oExcel = new Spreadsheet::ParseExcel;
 
 				my $oBook = $oExcel->Parse($file);
+#::logDebug("oBook is $oBook");
+				if(! $oBook) {
+					die errmsg("Failed to parse XLS file %s: %s\n", $file, $!);
+				}
 				my($iR, $iC, $oWkS, $oWkC);
 
 				my $sheets = {};
@@ -62,7 +67,8 @@ EOF
 						   die "No $_!"           if ! defined $oWkS->{$_};
 					   }
 
-					   my $sname =  $oWkS->{Name};
+					   my $sname =  $oWkS->{Name} or die "no sheet name.";
+#::logDebug("doing sheet $sname");
 					   $sheets->{$sname} =  "$sname\n";
 					   my $maxcol;
 					   my $mincol;
