@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.9.2.2 2000-12-13 15:47:50 zarko Exp $
+# $Id: Tagref.pm,v 1.9.2.3 2001-01-01 18:53:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@ use lib '../lib';
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.3 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -367,6 +367,25 @@ The action to be taken. One of:
 
   text_XX         A text box with XX size in characters
 
+  combo           Special type, used with nullselect filter,
+                  for selecting from a list or inputting a
+                  new value
+
+  reverse_combo   Special type, used with last_non_null filter,
+                  for selecting from a list or inputting a
+                  new value -- differs from combo in order of
+                  presentation
+
+  move_combo      Special type, used with null_to_space or
+                  null_to_comma filter, for selecting multiple non-ordered
+                  values from a list or inputting into a textarea
+
+  links           Produces a series of links based on the option
+                  values. The base form value is passed via the
+				  form parameter, just like in an [area ...] or
+				  [page ...] tag, and the value is named with
+				  the passed NAME attribute.
+
 The default is 'select', which builds an HTML select form entry for
 the attribute.  Also recognized is 'multiple', which generates a
 multiple-selection drop down list, 'show', which shows the list of
@@ -396,6 +415,60 @@ user session, the widget will "remember" its previous setting.
 If calling the item-accessories tag, and you wish to select from an
 outboard database table with a different key from the item code, you
 can pass the key to use to find the accessory data.
+
+=item passed
+
+Options for the widget if set explicitly, i.e. overrides a databae
+fetch of the attribute input string.
+
+For example, to generate a select box with a blank option (perhaps
+forcing a select), the value of C<blue> with a label of B<Blue>, and the
+value of C<green> with a label of B<Sea Green>, do:
+
+	[accessories
+	    type=select
+		name=color
+		passed="=--select--, blue=Blue, green=Sea Green"
+	]
+
+This will generate:
+
+	<SELECT NAME="color">
+	<OPTION VALUE="">--select--
+	<OPTION VALUE="blue">Blue
+	<OPTION VALUE="green">Sea Green
+	</SELECT>
+
+=item href
+
+Base HREF for the link in a C<links> type. Default is the current
+page.
+
+=item form
+
+Base value for the form in a C<links> type. Default is C<mv_action=return>,
+which will simply set the variable value in the link.
+
+For example, to generate a series of links that set the variable "color"
+to the same as the options described in the C<passed> attribute (blank, blue, or green),
+do
+
+	[accessories
+	    type=links
+		name=color
+		passed="=--select--, blue=Blue, green=Sea Green"
+	]
+
+This will generate:
+
+    <A HREF="VENDURL/MV_PAGE?mv_action=return&color=blue">Blue</A><BR>
+    <A HREF="VENDURL/MV_PAGE?mv_action=return&color=green">Sea Green</A>
+ 
+    where VENDURL is your Interchange URL for the catalog
+          MV_PAGE is the current page
+
+If you want the empty "--select--" option to show up, pass an
+empty=1 parameter.
 
 =back
 
@@ -549,6 +622,61 @@ included values can have newlines or trailing whitespace. If you want
 to do something like that you will have to write a UserTag.
 
 %%%
+attr_list
+%%
+Tags an attribute list with values from a hash. Designed for use in
+embedded Perl.
+
+Example:
+
+	[perl tables=products]
+		my %opt = (
+			hashref => 1,
+			sql => 'select * from  products',
+		);
+		my $ary_of_hash = $Db{products}->query(\%opt);
+		my $template = <<EOF;
+{sku} - {description} - {price|Call for price}
+	{image?}<IMG SRC="{image}">{/image?}
+	{image:}No image available{/image:}
+EOF
+		foreach my $ref (@$ary_of_hash) {
+			$out .= $Tag->attr_list($template, $ref);
+		}
+		return $out;
+	[/perl]
+
+Tags according to the following rules:
+
+=over 4
+
+=item {key}
+
+Inserts the value of the key for the reference. In a database query, this
+is the column name.
+
+=item {key|fallback string}
+
+Displays the value of {key} or if it is zero or blank, the fallback string.
+
+=item {key true string}
+
+Displays C<true string> if the value of {key} is non-blank, non-zero,
+or displays nothing if the key is false.
+
+=item {key?} true text {/key?}
+
+Displays C<true text> if the value of {key} is non-blank, non-zero, and nothing
+otherwise.
+
+=item {key:} false text {/key:}
+
+Displays C<false text> if the value of {key} is blank or zero, and nothing
+otherwise.
+
+=back
+
+%%%
 banner
 %%
 The [banner ...] tag is designed to implement random or rotating
@@ -622,6 +750,21 @@ cart
 
 Sets the name of the current shopping cart for display of shipping, price,
 total, subtotal, shipping, and nitems tags. 
+
+%%%
+cgi
+%%
+Displays the value of a CGI variable B<submitted to the current page>. This
+is similar to C<[value ...]>, except it displays the transitory values that
+are submitted with every request.
+
+For instance, if you access the following URL:
+
+	http://VENDURL/pagename?foo=bar
+
+C<bar> will be substituted for C<[cgi foo]>.
+
+This is the same as $CGI->{foo} in embedded Perl.
 
 %%%
 checked
@@ -860,6 +1003,9 @@ dump
 Prints a dump of the current user session as expanded by Data::Dumper.
 Includes any CGI environment passed from the server.
 
+For an example, create a page containing <XMP>[dump]</XMP> and see what
+it displays.
+
 %%
 either
 %%
@@ -871,6 +1017,8 @@ then subsequent pieces will be discarded without interpolation.
 Example:
 
   [either][value must_be_here][or][bounce href="[area incomplete]"][/either]
+
+Always strips leading and trailing whitespace.
 
 %%%
 error
@@ -1845,32 +1993,16 @@ as the [item-list] tag, except for order-item-specific values. Intended
 to pull multiple attributes from an item modifier -- but can be useful
 for other things, like building a pre-ordained product list on a page.
 
-Loop lists can be nested reliably in Interchange 3.06 by using the 
-with="tag" parameter. New syntax:
+Loop lists can be nested reliably in Interchange by using the
+prefix="tag" parameter. New syntax:
 
     [loop arg="A B C"]
-        [loop with="-a" arg="[loop-code]1 [loop-code]2 [loop-code]3"]
-            [loop with="-b" arg="X Y Z"]
-                [loop-code-a]-[loop-code-b]
+        [loop prefix=mid arg="[loop-code]1 [loop-code]2 [loop-code]3"]
+            [loop prefix=inner arg="X Y Z"]
+                [mid-code]-[inner-code]
             [/loop]
         [/loop]
     [/loop]
-
-An example in the old syntax:
-
-    [compat]
-    [loop 1 2 3]   
-        [loop-a 1 2 3 ]
-        [loop-b 1 2 3]
-            [loop-code].[loop-code-a].[loop-code-b]
-        [/loop-b]
-        [/loop-a]
-    [/loop]
-    [/compat]
-
-All loop items in the inner loop-a loop need to have the C<with> value
-appended, i.e. C<[loop-field-a name]>, C<[loop-price-a]>, etc. Nesting
-is arbitrarily large, though it will be slow for many levels.
 
 You can do an arbitrary search with the search="args" parameter, just
 as in a one-click search:
@@ -1884,48 +2016,90 @@ The above will show all items with a category containing the whole world
 
 =over 4
 
-=item [if-loop-data table field] IF [else] ELSE [/else][/if-loop-field]
+=item [if-loop-data table column] IF [else] ELSE [/else][/if-loop-field]
 
-Outputs the IF if the C<field> in C<table> is non-empty, and the ELSE (if any)
+Outputs the IF if the C<column> in C<table> is non-empty, and the ELSE (if any)
 otherwise.
 
-=item [if-loop-field field] IF [else] ELSE [/else][/if-loop-field]
+See [if-PREFIX-data].
 
-Outputs the B<IF> if the C<field> in the C<products> table is non-empty,
-and the B<ELSE> (if any) otherwise.
+=item [if-loop-field column] IF [else] ELSE [/else][/if-loop-field]
+
+Outputs the B<IF> if the C<column> in the C<products> table is non-empty,
+and the B<ELSE> (if any) otherwise. Will fall through to the first
+non-empty field if there are multiple C<ProductFiles>.
+
+See [if-PREFIX-field].
+
+=item [if-loop-param param] IF [else] ELSE [/else][/if-loop-param]
+
+Only works if you have named return fields from a search (or from a
+passed list with the lr=1 parameter).
+
+Outputs the B<IF> if the returned C<param> is non-empty, and the
+B<ELSE> (if any) otherwise.
+
+See [if-PREFIX-param].
+
+=item [if-loop-pos N] IF [else] ELSE [/else][/if-loop-param]
+
+Only works if you have multiple return fields from a search (or from a
+passed list with the lr=1 parameter).
+
+Parameters are numbered from ordinal 0, with [loop-pos 0] being the
+equivalent of [loop-code].
+
+Outputs the B<IF> if the returned positional parmeter C<N> is
+non-empty, and the B<ELSE> (if any) otherwise.
+
+See [if-PREFIX-pos].
 
 =item [loop-accessories]
 
-Evaluates to the value of the Accessories database entry for
-the item.
+Outputs an [accessories ...] item.
+
+See [PREFIX-accessories].
 
 =item [loop-change marker]
 
-Same as I<[on_change]> but within loop lists.
+See [PREFIX-change].
 
 =item [loop-code]
 
-Evaluates to the product code for the current item.
+Evaluates to the code for the current item.
+
+See [PREFIX-code].
 
 =item [loop-data database fieldname]
 
 Evaluates to the field name I<fieldname> in the arbitrary database
 table I<database>, for the current item.
 
+See [PREFIX-data].
+
 =item [loop-description]
 
-Evaluates to the product description (from the products file)
+Evaluates to the product description (from the products file, passed
+description in on-fly item, or description attribute in cart)
 for the current item.
+
+See [PREFIX-description].
 
 =item [loop-field fieldname]
 
 Evaluates to the field name I<fieldname> in the database,  for
 the current item.
 
+See [PREFIX-field].
+
 =item [loop-increment]
 
 Evaluates to the number of the item in the list. Used
 for numbering items in the list.
+
+Starts from integer 1.
+
+See [PREFIX-increment].
 
 =item [loop-last]tags[/loop-last]
 
@@ -1991,6 +2165,8 @@ defined as products files will be searched in sequence for the item.
 Example: 
 
   Order a [order TK112]Toaster[/order] today.
+
+Note: [/order] simply expands to </A>.
 
 %%%
 page
@@ -2661,11 +2837,405 @@ on the page.
 =back
 
 %%%
+time
+%%
+Formats the current time according to POSIX strftime arguments.
+The following is the string for Monday, January 1, 2001.
+
+    [time]%A, %B %d, %Y[/tag]
+
+See the C<strftime> man page for information on the arguments (which are
+the same as modern UNIX date commands).
+
+Accepts the following options:
+
+=over 4
+
+=item adjust
+
+If you wish to temporarily adjust the time for display purposes, you can
+pass an C<adjust> parameter with the number of hours (plus or minus) from
+the local time or from GMT:
+
+	[time]%c[/time]
+	[time adjust="-3"]%c[/time]
+
+Will display:
+
+ Mon 01 Jan 2001 11:29:03 AM EST
+ Mon 01 Jan 2001 08:29:03 AM EST
+
+Note that the time zone does not change -- you should either pick a format
+which doesn't display zone, use the C<tz> parameter, or manage it yourself.
+
+NOTE: You can adjust time globally for an Interchange installation by
+setting the $ENV{TZ} variable on many systems. Set TZ in your environment
+and then restart interchange:
+
+	## bash/ksh/sh
+	TZ=PST7PDT; export TZ
+	interchange -restart
+ 
+	## csh/tcsh
+	setenv TZ PST7PDT
+	interchange -restart
+
+On most modern UNIX systems, all times will now be in the PST zone.
+
+=item gmt
+
+If you want to display time as GMT, use the C<gmt> parameter:
+
+	[time]%c[/time]
+	[time gmt=1]%c[/time]
+
+will display:
+
+	Mon 01 Jan 2001 11:33:26 AM EST
+	Mon 01 Jan 2001 04:33:26 PM EST
+
+Once again, the zone will not be set to GMT, so you should pick a format
+string which doesn't use zone, use the C<tz> parameter, or manage it yourself.
+
+=item locale
+
+Format the time according to the named C<locale>, assuming that locale is
+available on your operating system. For example, the following:
+
+	[time locale=en_US]%B %d, %Y[/time]
+	[time locale=fr_FR]%B %d, %Y[/time]
+
+should display:
+
+	January 01, 2001
+	janvier 01, 2001
+
+=item tz
+
+Use the passed C<tz> to display the time. Will adjust for hours difference.
+
+Example:
+
+	[time tz=GMT0]
+	[time tz=CST6CDT]
+	[time tz=PST8PDT]
+
+will display:
+
+	Mon 01 Jan 2001 04:43:02 PM GMT
+	Mon 01 Jan 2001 10:43:02 AM CST
+	Mon 01 Jan 2001 08:43:02 AM PST
+
+Note that the first alphabetical string is the zone name when not under daylight
+savings time, the digit is the number of hours displacement from GMT, and
+the second alphabetical string is the zone name when in daylight savings
+time. NOTE: This may not work on all operating systems.
+
+=back
+
+%%%
+timed_build
+%%
+
+Allows you to build CPU-intensive regions of ITL tags on a timed basis.
+
+In the simplest case, surround a region of ITL with C<[timed-build]>
+and C<[/timed-build]>:
+
+	[timed-build]
+		Built at [time]%c[/time].
+	[/timed-build]
+
+If a C<file> parameter is not passed, saves to the directory I<timed> in
+catalog root, with the file name of the current page. If the C<minutes>
+parameter is not passed specifying how often the page should be rebuilt,
+then it will not be rebuilt until the output file is removed.
+
+Accepts the following parameters:
+
+=over 4
+
+=item file
+
+Name of the file to save the results in. Relative to catalog root.
+The directory must exist.
+
+=item if
+
+Allows you to to only display the cached region when the C<if> paremeter
+is true. For example, you can do:
+
+	[timed-build if="[value timed]"]
+	ITL tags....
+	[/timed-build]
+
+The cached region will only be displayed if the variable C<timed> is set
+to a non-zero, non-blank value. Otherwise, the ITL tags will be re-interpreted
+every time.
+
+=item minutes
+
+The number of minutes after which the timed build should be repeated.
+If set to 0, it will be built once and then not rebuilt until the output
+file is removed.
+
+=item period
+
+Alternative way of expressing time. You can pass a string describing
+the rebuild time period:
+
+	[timed-build period="4 hours"] 
+	ITL tags....
+	[/timed-build]
+
+This is really the same as C<minutes=240>. Useful for passing seconds:
+
+	[timed-build period="5 seconds"] 
+	ITL tags....
+	[/timed-build]
+
+The region will be rebuilt every 5 seconds. PERFORMANCE TIP: use minutes
+of .08 instead; avoids having to parse the period string.
+
+=back
+
+If you have the StaticDir catalog.cfg parameter set to a writable path,
+you can build a cached static version of your catalog over time. Simply
+place a [timed-build] tag at the top of pages you wish to build statically.
+Assuming the catalog is not busy and write lock can be obtained, the
+StaticDBM database will be updated to mark the page as static and the
+next time a link is made for that page the static version will be presented.
+
+%%%
 total_cost
 %%
 
 Expands into the total cost of all the items in the current shopping cart,
 including sales tax (if any).
+
+%%%
+tree
+%%
+Provides iterative list capability for binary trees.  It produces
+hash-based rows use the same tags as C<[item-list]>; sets some additional
+hash key entries to describe the tree and provide display control.
+
+Works on a data set with the structure:
+
+    parent  child
+    99      a
+    a       b
+    a       c
+    a       d
+    a       x
+    x       y
+    x       z
+    99      m
+    99      n
+    99      o
+    o       e
+    o       f
+    o       g
+
+Sets several keys which assist in walking and displaying the
+tree.
+
+=over 4
+
+=item mv_level
+
+Level of the item. If it is in the first level, it is 0.  Sublevels are
+infinite (except for performance).
+
+=item mv_increment
+
+Increment label for the item. Normally goes from 1...n, but can be changed to
+A...Z or a...z in outline mode.
+
+=item mv_children
+
+If in autodetect mode, set to the number of children this branch has. If a
+leaf, set to 0.
+
+=item mv_spacing
+
+A multiple of level times the spacing option. Useful for setting width of
+spacer images.
+
+The above sample data would produce:
+
+    a           mv_level=0, mv_increment=1, mv_children=4
+        b       mv_level=1, mv_increment=1, mv_children=0
+        c       mv_level=1, mv_increment=2, mv_children=0
+        d       mv_level=1, mv_increment=3, mv_children=0
+        x       mv_level=1, mv_increment=4, mv_children=2
+            y   mv_level=2, mv_increment=1, mv_children=0
+            z   mv_level=2, mv_increment=2, mv_children=0
+    m           mv_level=0, mv_increment=1, mv_children=0
+    n           mv_level=0, mv_increment=2, mv_children=0
+    o           mv_level=0, mv_increment=3, mv_children=3
+        e       mv_level=1, mv_increment=1, mv_children=0
+        f       mv_level=1, mv_increment=2, mv_children=0
+        g       mv_level=1, mv_increment=3, mv_children=0
+
+from the tag call:
+
+	<table>
+    [tree   start=99
+            parent=parent_fld
+            child=child_fld
+            autodetect=1
+			spacing=4
+            full=1]
+	<tr>
+	<td>
+	[if-item-param mv_level]
+		[item-calc]
+			return '&nbsp' x [item-param mv_spacing];
+		[/item-calc]
+	[/if-item-param]
+	[item-param child_fld]
+	</td>
+	<td>
+		mv_level=[item-param mv_level],
+		mv_increment=[item-param mv_increment],
+		mv_children=[item-param mv_children]
+	</td>
+	</tr>
+	[/tree]
+	</table>
+
+Accepts the following paremeters:
+
+=over 4
+
+=item table
+
+Database table which contains the tree. Must be a valid Interchange
+table identifier.
+
+=item parent
+
+The column which is used to determine the parent of the item.
+
+=item subordinate
+
+The child column, which determines which items are sub-items of
+the current one. Used to re-query for items with its value in
+C<parent>.
+
+=item start_item
+
+The first item to be followed, i.e. the C<parent> value of all the top-level
+items.
+
+=item autodetect
+
+Specifies that the next level should be followed to detect the number
+of child items contained. Not recursive; only follows far enough to
+determine the children of the current item.
+
+=item full
+
+Specifies that all items should be followed. Essentially the same as
+specifying C<memo> and passing the C<explode> variable, but not dependent
+on them. Useful for building lists for inclusion in embedded Perl, among
+other things.
+
+=item stop
+
+An optional C<stop> field which, when the value is true, can stop the
+following of the branch.
+
+=item continue
+
+An optional C<continue> field which, when the value is true, can force
+the branch to be followed.
+
+=item sort
+
+The column which should be used for ordering the items -- determines the
+order in which they will be displayed under the current parent.
+
+=item outline
+
+Sets outline mode, where C<mv_increment> will be displayed with
+letter values or numeral values. If set to specifically C<1>, will
+produced outline increments like:
+
+    1
+        A
+        B
+            1
+            2
+        C
+            1 
+            2
+                a
+                b
+                    1
+                    2
+                        a
+                        b
+    2
+
+=item memo
+
+Indicates that the collapse/explode/toggle features are to be used, and
+names a C<Scratch> variable where the values should be stored.
+
+=item collapse
+
+The name of a variable in the user's session which will determine that the
+tree should be "collapsed". When collapsed, the child items will not be 
+followed unless they are set to be followed with C<toggle>. Zeros all
+toggles.
+
+Requires C<memo> to be set if values are to be retained.
+
+=item toggle
+
+The name of a variable in the user's session which will determine that the
+current item should be either followed or not followed. The first time the
+C<toggle> variable corresponding to its primary key is passed, the item will
+be expanded. The next call will "collapse" the item.
+
+Requires C<memo> to be set if values are to be retained.
+
+=item explode
+
+The name of a variable in the user's session which will determine that the
+tree should be "exploded". When exploded, all child items are followed and 
+the full tree can be displayed.
+
+Requires C<memo> to be set if values are to be retained.
+
+=item pedantic
+
+When set to a true value, and an endless tree is detected (i.e. the
+child branch contains a parent) then the error will be logged to the
+catalog error log and the tree call will return with an error.
+
+If C<pedantic> is not set (the default), the current leaf will be shown
+but never followed. This allows partial display of the tree.
+
+=item log_error
+
+When set to a true value, and an endless tree is detected (i.e. the
+child branch contains a parent) then the error will be logged to the
+catalog error log. No logging done by default.
+
+=item show_error
+
+When set to a true value, and an endless tree is detected (i.e. the
+child branch contains a parent) then the error will be returned in the
+page.  Errors are NOT shown by default.
+
+=back
+
+In addition to the above values, all valid options for a list tag are
+in force. For example, you can set a "SELECTED" value on an option list
+with C<option=1>, set the tag prefix with C<prefix>, etc.
 
 %%%
 userdb
@@ -3108,10 +3678,10 @@ C<subcategory> associated with each item:
          [else]
                  &nbsp;
          [/else]
-         [/item-change]
+         [/item-change cat]
     </TD>
     <TD>
-         [item-change]
+         [item-change sub]
  
          [condition][item-field subcategory][/condition]
  
@@ -3119,7 +3689,7 @@ C<subcategory> associated with each item:
          [else]
                  &nbsp;
          [/else]
-         [/on-change]
+         [/item-change sub]
     </TD>
     <TD> [item-field name] </TD>
  [/search-list]
