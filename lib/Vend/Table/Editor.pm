@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.45 2003-12-10 21:26:09 mheins Exp $
+# $Id: Editor.pm,v 1.45.2.1 2003-12-15 22:19:47 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.45 $, 10);
+$VERSION = substr(q$Revision: 1.45.2.1 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -712,8 +712,8 @@ function ${vpf}selectTab(n) {
 		var loc = ${vpf}divLocation[i]
 		// If in the selected row
 		if(loc >= firstTab && loc < (firstTab + ${vpf}tabsPerRow)) ${vpf}newLocation[i] = (loc - firstTab)
-		else if(loc < tabsPerRow) newLocation[i] = firstTab+(loc % tabsPerRow)
-		else newLocation[i] = loc
+		else if(loc < ${vpf}tabsPerRow) ${vpf}newLocation[i] = firstTab+(loc % ${vpf}tabsPerRow)
+		else ${vpf}newLocation[i] = loc
 	}
 	// Set tab positions & zIndex
 	// Update location
