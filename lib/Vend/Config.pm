@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.90 2003-01-02 22:47:38 mheins Exp $
+# $Id: Config.pm,v 2.91 2003-01-03 22:55:54 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.90 $, 10);
+$VERSION = substr(q$Revision: 2.91 $, 10);
 
 my %CDname;
 
@@ -960,7 +960,7 @@ CONFIGLOOP:
 				my $msg = errmsg(
 					"Please specify the %s directive in the configuration file '%s'",
 					$CDname{$var},
-					$configfile,
+					($passed_file || $C->{ConfigFile}),
 				);
 
 				die "$msg\n";
