@@ -64,6 +64,7 @@ __UI_META_TABLE__
 	var is_form_unpublished = 0;
 </script>
 
+[set qmenu_relocate][/set]
 [perl tables="[scratch medit_tables]"]
 	my $menupath = $Variable->{MV_MENU_DIRECTORY} || 'include/menus';
 	@menufields = qw/
@@ -172,6 +173,7 @@ __UI_META_TABLE__
 									$menuname,
 									$menufile,
 								));
+				$Scratch->{qmenu_relocate} = 1;
 			}
 			else {
 				$Tag->error({ name => 'Save menu',
@@ -422,6 +424,12 @@ __UI_META_TABLE__
 		class=s3>
 </form>
 [output name=""]
+
+[if scratch qmenu_relocate]
+	[if cgi return_page]
+	[deliver location="[area href='[cgi return_page]']" type="text/html"]
+	[/if]
+[/if]
 
 <span class=cmessage>[warnings auto=1]</span>
 [error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
@@ -1772,6 +1780,7 @@ function motion (idx, motion, fromchecked) {
 		<input name=mv_session_id type=hidden value="[data session id]">
 		<input name=mv_action type=hidden value="back">
 		<input name=cancelsubmit type=hidden value="">
+		<input name=return_page type=hidden value="[cgi return_page]">
 		<input name=qmenu_name type=hidden value="[scratch qmenu_name]">
 		<input name=qmenu_text type=hidden value="">
 [output name=top_buttons]
@@ -1794,6 +1803,9 @@ function motion (idx, motion, fromchecked) {
 					this.form.qmenu_text.value='';
 					this.form.qmenu_new.value='';
 					this.form.qmenu_name.value='';
+					[if cgi return_page]
+					this.form.action='[area href='[cgi return_page]']';
+					[/if]
 					"
 				value="[L]Cancel[/L]" class=s3>
 </span>
