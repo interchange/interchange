@@ -99,6 +99,7 @@ sub {
 	
 	my $out = '';
 	my $confirm = '';
+	$opt->{extra} = $opt->{extra} ? " $opt->{extra}" : '';
 	if($opt->{confirm}) {
 		$confirm = "confirm('$opt->{confirm}')";
 	}
@@ -116,7 +117,7 @@ sub {
 			$onclick = qq{ onclick="return $confirm"};
 		}
 		my $out = $opt->{bold} ? "<B>" : '';
-		$out .= qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+		$out .= qq{<INPUT$opt->{extra} TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
 		$out .= "</B>" if $opt->{bold};
 		if(@js) {
 			$out =~ s/ /join "\n", '', @js, ''/e;
@@ -171,7 +172,7 @@ sub {
 	}
 
 	$out .= <<EOF;
-<A HREF="javascript:void 0" onMouseOver="window.status='$wstatus'"
+<A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
 	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position></A>$anchor
 EOF
