@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.14 2003-04-15 22:15:07 racke Exp $
+# $Id: Dispatch.pm,v 1.15 2003-04-27 15:52:30 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -843,7 +843,7 @@ sub url_history {
 	else {
 		my $save_number = delete $CGI::values{mv_credit_card_number};
 		my $save_cvv2   = delete $CGI::values{mv_credit_card_cvv2};
-		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
+		push (@{$Vend::Session->{History}},  [ $CGI::path_info, { %CGI::values } ]);
 		$CGI::values{mv_credit_card_number} = $save_number if length($save_number);
 		$CGI::values{mv_credit_card_cvv2}   = $save_cvv2   if length($save_cvv2);
 	}
