@@ -1,3 +1,28 @@
+Interchange 4.6.5
+
+* Fix two admin security holes, in do_view and page_save. Thanks to
+  Merlyn J. Pease <peasemj@bellatlantic.net> for reporting in bug #167.
+
+* Several minor database field definition improvements.
+
+* Clean up cruft in sample pricing table.
+
+* Prevent admin/genconfig.html error.log entry about not being able to
+  display status file with NoAbsolute set.
+
+* Backport from 4.7 the error report if page couldn't be saved by
+  admin/page_save.
+
+* Fix a couple of bugs with AlwaysSecure not working in an order link.
+
+* Fix rounding problem with Shipping.
+
+* Fix problem with FullURL.
+
+* Add stub for test_column in Table/InMemory.pm.
+  Problem found by vasile_abo@wexim.com.
+
+
 Interchange 4.6.4
 
 * Added mod_interchange to the standard Interchange distribution.
