@@ -9,6 +9,9 @@ Interchange 4.8.4 not yet released.
 Core
 ----
 
+* Fixed cgi and value filters which were completely broken (Bug #380).
+  Thanks to Jonathan Clark <jonc@webmaint.net> for reporting.
+
 * Fixed bug in [if-item-param field eq string] which would now work due
   to improper field pointer type.
 
@@ -23,6 +26,13 @@ Core
   empty string or catalog_after.cfg (etc.) as example of where directive 
   should go. Thanks to Jeff Murphy (jcmurphy+rhic@jeffmurphy.org) 
   for reporting.
+
+Usertags
+--------
+
+* Changed ups_query to only pass on 5-digit base ZIP code in U.S., 
+  since UPS rejects ZIP+4. Thanks to Bill Carr <bill@worldwideimpact.com> 
+  for pointing out this requirement in Business::UPS docs.
 
 Admin UI
 --------
