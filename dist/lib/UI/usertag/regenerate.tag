@@ -213,14 +213,15 @@ EOF
 	::response("\n\n        Generating....\n");
 	# we need to restore some settings from the original configuration
 	# for static page building first
-	my @confsafe = ('ImageDir', 'ImageDirSecure');
+	my @confsafe = ('ImageDir', 'ImageDirSecure', 'VendURL');
 	my %safehash;
 	for (@confsafe) {$safehash{$_} = $Vend::Cfg->{$_}}
 	$Vend::Cfg->{ImageDir} = $Vend::Cfg->{ImageDirOriginal}; 
 	$Vend::Cfg->{ImageDirSecure} = $Vend::Cfg->{ImageDirSecureOriginal}; 
+	$Vend::Cfg->{VendURL} = $Vend::Cfg->{VendURLOriginal}; 
 
 	my $umask = umask(022);
-	my $statpath = $Vend::Cfg->{StaticPath};
+	my $statpath = 'http://' . $::Variable->{SERVER_NAME} . $Vend::Cfg->{StaticPath};
 	my @bad;
 	my $base = $Vend::Cfg->{StaticDir};
 	eval {
