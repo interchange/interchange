@@ -5,11 +5,23 @@ UserTag row-edit Interpolate 1
 UserTag row-edit Routine <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;
+	use vars qw/$CGI %Db $Values $Variable/;
 #::logDebug("row_edit options=" . ::uneval($opt));
 	$table = $table || $CGI::values{mv_data_table} || return "BLANK DB";
-	my $db = Vend::Data::database_exists_ref($table);
+	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
+	my $mtab = $Variable->{UI_META_TABLE} || 'mvmetadata';
+	my $mdb = $Db{$mtab} || Vend::Data::database_exists_ref($mtab);
+	my $view;
+	if($mdb and $mdb->record_exists("$CGI->{ui_meta_view}::$table")) {
+		$view = $mdb->row_hash("$CGI->{ui_meta_view}::$table");
+	}
+	elsif($mdb and $mdb->record_exists($table)) {
+		$view = $mdb->row_hash($table);
+	}
+	$view = {} if ! ref $view;
+	
 	return "NON-EXISTENT DATABASE '$table' for row-edit" unless defined $db;
-	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	#$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $acl = UI::Primitive::get_ui_table_acl();
 
 	my $bad;
@@ -26,7 +38,8 @@ sub {
 	}
 
 	my @cols;
-	if($columns) {
+
+	if($columns ||= $view->{attribute}) {
 		@cols = split /[\s,\0]+/, $columns;
 		my %col;
 		for(@cols) {
@@ -53,10 +66,10 @@ sub {
 
 	my $out = '';
 
-	my $meta = $::Values->{ui_meta_display};
+	my $meta = $CGI->{ui_no_meta_display} ? '' : $view->{type};
 	my $tmp;
 
-	$size = $size || 12;
+	$size = $size || $view->{width} || 12;
 	if($bad) {
 		for(@cols) {
 			$out .= "<TD>$bad</TD>";
@@ -71,23 +84,16 @@ sub {
 			$text = 'DELETED' if $@;
 			my $msg = '';
 			if($meta) {
-				my $tmp;
-				my $type = UI::Primitive::meta_display(
-													$table,
-													$_,
-													$key,
-													undef,
-													undef,
-													'type',
-							);
-				if	( $type =~ /combo|checkbox|multi|date|imagedir/) {
+				if	( $view->{type} =~ /combo|checkbox|multi|date|image|option_format/) {
 					$msg = '<br><small><small>unable to display with field info</small></small>';
 				}
-				elsif ( $tmp = UI::Primitive::meta_display($table,$_,$key,$text) ) {
+				else {
+					my $tmp = UI::Primitive::meta_display($table,$_,$key,$text);
 					$out .= "<TD>$tmp</TD>";
 					next;
 				}
 			}
+			
 			if($ta{$_} || $text =~ /\n/) {
 				my $rows = $opt->{height} || 4;
 				$text =~ s/</&lt;/g;
