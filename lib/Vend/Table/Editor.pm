@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.32 2003-05-18 15:54:15 racke Exp $
+# $Id: Editor.pm,v 1.33 2003-05-18 18:22:57 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.32 $, 10);
+$VERSION = substr(q$Revision: 1.33 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2949,7 +2949,6 @@ $l_pkey</td>};
 						pointer => $start_ptr,
 						stacker => $tcount,
 						columns => $lf,
-						extra => $opt->{link_extra},
 					);
 					push @lout, qq{<tr><td$lextra>};
 					push @lout, qq{<input size=8 name="${start_ptr}_${l_pkey}__$tcount" value="">};
