@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Payment.pm,v 1.1.2.5 2001-04-11 08:09:15 heins Exp $
+# $Id: Payment.pm,v 1.1.2.6 2001-04-12 03:25:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -60,19 +60,26 @@ my %cyber_remap = (
 );
 
 sub charge_param {
-	my $name = shift;
-	my $value = shift;
+	my ($name, $value, $mode) = @_;
+	my $opt;
+
+	if($mode) {
+		$opt = $Vend::Cfg->{Route_repository}{$mode} ||= {};
+	}
+	else {
+		$opt = $pay_opt ||= {};
+	}
 
 	if($name =~ s/^mv_payment_//i) {
 		$name = lc $name;
 	}
 
 	if(defined $value) {
-		$pay_opt = {} unless $pay_opt;
-		return $pay_opt->{$name} = $value;
+		$opt = {} unless $opt;
+		return $opt->{$name} = $value;
 	}
 
-	return $pay_opt->{$name}		if defined $pay_opt->{$name};
+	return $opt->{$name}		if defined $opt->{$name};
 
 	my $uname = "MV_PAYMENT_\U$name";
 
@@ -88,35 +95,64 @@ sub map_actual {
 	my ($vref, $cref) = (@_);
 	$vref = $::Values		unless $vref;
 	$cref = \%CGI::values	unless $cref;
-	my %map = qw(
-		mv_credit_card_number       mv_credit_card_number
-		name                        name
-		fname                       fname
-		lname                       lname
-		b_name                      b_name
-		b_fname                     b_fname
-		b_lname                     b_lname
-		address                     address
-		address1                    address1
-		address2                    address2
-		b_address                   b_address
-		b_address1                  b_address1
-		b_address2                  b_address2
-		city                        city
-		b_city                      b_city
-		state                       state
-		b_state                     b_state
-		zip                         zip
-		b_zip                       b_zip
-		country                     country
-		b_country                   b_country
-		mv_credit_card_exp_month    mv_credit_card_exp_month
-		mv_credit_card_exp_year     mv_credit_card_exp_year
-		cyber_mode                  mv_cyber_mode
-		phone_day					phone_day
-		email						email
-		amount                      amount
+	my @map = qw(
+
+		address
+		address1
+		address2
+		amount
+		b_address
+		b_address1
+		b_address2
+		b_city
+		b_country
+		b_fname
+		b_lname
+		b_name
+		b_state
+		b_zip
+		check_account
+		check_accttype
+		check_checktype
+		check_dl
+		check_magstripe
+		check_number
+		check_routing
+		check_transit
+		city
+		comment1
+		comment2
+		corpcard_type
+		country
+		cvv2
+		email
+		fname
+		item_code
+		item_desc
+		lname
+		mv_credit_card_exp_month
+		mv_credit_card_exp_year
+		mv_credit_card_number
+		name
+		origin_zip
+		phone_day
+		phone_night
+		pin
+		po_number
+		salestax
+		shipping
+		state
+		tax_duty
+		tax_exempt
+		tender
+		zip
 	);
+
+	my %map = qw(
+		cyber_mode                  mv_cyber_mode
+		comment                  giftnote
+	);
+	@map{@map} = @map;
 
 	# Allow remapping of the variable names
 	my $remap;
