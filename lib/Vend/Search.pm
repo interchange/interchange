@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.3 2000-07-12 03:08:11 heins Exp $
+# $Id: Search.pm,v 1.4 2000-08-06 19:51:16 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -334,10 +334,10 @@ sub more_matches {
 	my($s) = @_;
 	$s->{more_in_progress} = 1;
 
-	my $id = $s->{mv_session_id};
+	my $id = $s->{mv_more_id} || $s->{mv_session_id};
 	$id .= ".$s->{mv_cache_key}";
 	
-	my $file = Vend::Util::get_filename($id);
+	my $file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch});
 #::logDebug("more_matches: $id from $file");
 
 	my $obj;
@@ -479,7 +479,8 @@ sub get_limit {
 	my($s, $f) = @_;
 	my $limit_sub;
 	my $range_code = '';
-	my $code       = "sub {\nmy \$line = shift; chomp \$line;\n";
+	my $rd = $s->{mv_record_delim} || '\n';
+	my $code       = "sub {\nmy \$line = shift; chomp \$line; \$line =~ tr/$rd//d; ::logDebug(\$line);\n";
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';
@@ -555,9 +556,10 @@ EOF
 		 if($range_code) {
 		 	::logError("Range look not compatible with mv_coordinate. Disabling.");
 		 }
+		 my $callchar = $fields =~ /,/ ? '@' : '$';
 		 $code .= <<EOF;
 	my \@fields = split /\\Q$s->{mv_index_delim}/, \$line;
-	\@fields = \@fields[$fields];
+	\@fields = ${callchar}fields[$fields];
 #::logDebug("fields=" . join "|", \@fields);
 EOF
 		my @specs;
@@ -889,15 +891,14 @@ sub save_more {
 	return if $MVSAFE::Safe;
 	my $file;
 	delete $s->{dbref} if defined $s->{dbref};
-	my $id = $s->{mv_save_general}
-			? "more.$s->{mv_cache_key}"
-			: "$Vend::SessionID.$s->{mv_cache_key}";
+	my $id = $s->{mv_more_id} || $Vend::SessionID;
+	$id .= ".$s->{mv_cache_key}";
 	if ($s->{matches} > $s->{mv_matchlimit}) {
 		$s->{overflow} = 1;
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
 	}
 	
-	$file = Vend::Util::get_filename($id); 
+	$file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch}); 
 #::logDebug("save_more: $id to $file.");
 	my $new = { %$s };
 	$new->{mv_results} = $out;
