@@ -6,6 +6,7 @@ UserTag email Routine <<EOR
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
     my $ok = 0;
+    my @extra;
 
     $subject = '<no subject>' unless defined $subject && $subject;
 
@@ -15,21 +16,12 @@ sub {
 		$from = $Vend::Cfg->{MailOrderTo};
 		$from =~ s/,.*//;
 	}
-
 	$extra =~ s/\s*$/\n/ if $extra;
+        $extra .= "From: $from\n" if $from;
+	@extra = split('\n', $extra);
 
     SEND: {
-        open(Vend::MAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;
-        print Vend::MAIL
-			"To: $to\n",
-			"From: $from\n",
-			$reply,
-			$extra || '',
-			"Subject: $subject\n\n",
-			$body
-            or last SEND;
-        close Vend::MAIL or last SEND;
-        $ok = ($? == 0);
+            $ok = send_mail($to, $subject, $body, $reply, 0, @extra);
     }
 
     if (!$ok) {
