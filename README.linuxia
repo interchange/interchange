@@ -25,7 +25,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (meta_editor.html: 1.1.2.2, Primitive.pm: 1.21.4.4)
 - support for sorting item keys numerically (item.html: 1.18.4.5)
 - support for affiliate commissions introduced 
-  (reports/order/ByAffiliate.html: 1.10.4.3)
+  (reports/order/ByAffiliate.html: 1.10.4.3-4)
 - imagehelper widget added (Primitive.pm: 1.21.4.5, interchange.PL: 1.8.4.7, 
   UI_STD_EDIT_TABLE: 1.18.4.5)
 - safeguards for missing track files 
@@ -42,13 +42,16 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - extinguish absolute font settings (affiliates.html: 1.10.4.9,
   genconfig.html: 1.15.4.4)
 - profile check de_postcode added (Order.pm: 1.14.4.3)
-- UI_IMG fixes (order.html: 1.19.4.4)
-- protect currency against leaking locale (Util.pm: 1.10.4.1)
+
+f
+- UI_IMG fixes (order.html: 1.19.4.4, UI_STD_DBEDIT_TABLE: 1.18.4.6)
 
 Changes that made into the main branch:
 
 - patch to makecat.PL to make -f working (CVS 1.26.4.2, modified, 2000-10-18)
 - fix for dump_structure in Config.pm (CVS 1.23.4.1, modified, 2000-10-19)
+- protect currency against leaking locale 
+  (Util.pm: 1.10.4.2, modified, 2000-11-5)
 
 Candidates for 4.7:
 
