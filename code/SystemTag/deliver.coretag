@@ -1,7 +1,7 @@
 UserTag deliver Order type
 UserTag deliver HasEndTag
 UserTag deliver addAttr
-UserTag deliver Version $Revision: 1.4 $
+UserTag deliver Version $Revision: 1.5 $
 UserTag deliver Routine <<EOR
 sub {
 	my ($type, $opt, $body) = @_;
@@ -17,7 +17,7 @@ sub {
 	elsif(ref $body) {
 		$out = $body;
 	}
-	elsif($body) {
+	elsif(length $body) {
 		$out = \$body;
 	}
 
@@ -46,6 +46,9 @@ sub {
 	}
 
 	$type ||= 'application/octet-stream';
+
+	$Tag->tag( { op => 'header', name => 'Status', content => $opt->{status} } )
+		if $opt->{status};
 	$Tag->tag( { op => 'header', name => 'Content-Type', content => $type } );
 
 	if($opt->{get_encrypted}) {
@@ -57,9 +60,6 @@ sub {
 		$$out =~ s/(---+END PGP MESSAGE---+).*/$1\n/s;
 	}
 
-	$Vend::StatusLine = $Vend::StatusLine ? "$Vend::StatusLine\n" : '';
-	$Vend::StatusLine .=  "Content-Type: $type";
-	
 	if($opt->{extra_headers}) {
 		my @lines = grep /\S/, split /[\r\n]+/, $opt->{extra_headers};
 		for(@lines) {
