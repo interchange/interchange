@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.5 2000-12-11 01:30:41 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.6 2000-12-13 13:50:58 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.6 $, 10);
 
 @EXPORT = qw (
 
@@ -974,8 +974,10 @@ sub tag_data {
 				},
 	'text2html' => sub {
 					my $val = shift;
-					$val =~ s|\r?\n\r?\n|<P>|g;
-					$val =~ s|\r?\n|<BR>|g;
+					$val =~ s!\r?\n\r?\n!<P>!g;
+					$val =~ s!\r\r!<P>!g;
+					$val =~ s!\r?\n!<BR>!g;
+					$val =~ s!\r!<BR>!g;
 					return $val;
 				},
 	'urlencode' => sub {
@@ -1888,10 +1890,8 @@ sub tag_accessories {
 		$data = $db ? tag_data($db, $field, $code) : product_field($field,$code);
 	}
 
-	unless ($data || $type =~ /^text|^hidden|^password/i) {
+	unless ($data || $type =~ /^text|^hidden|^password|^combo/i) {
 		return '' if $item;
-		return '' if $name;
-		return qq|<INPUT TYPE="hidden" NAME="mv_order_$attribute" VALUE="">|;
 	}
 
 	return show_current_accessory_label($item->{$attribute},$data)
@@ -2668,6 +2668,161 @@ sub initialize_banner_directory {
 		}
 	}
 	Vend::Util::writefile(">$dir/total_weight", $i, $opt);
+}
+
+sub format_auto_transmission {
+	my $ref = shift;
+
+	## Auto-transmission from ::update_data
+	## Looking for structure like:
+	##
+	##	[ '### BEGIN submission from', 'ckirk' ],
+	##	[ 'username', 'ckirk' ],
+	##	[ 'field2', 'value2' ],
+	##	[ 'field1', 'value1' ],
+	##	[ '### END submission from', 'ckirk' ],
+	##	[ 'mv_data_fields', [ username, field1, field2 ]],
+	##
+
+	return $ref unless ref($ref);
+
+	my $body = '';
+	my %message;
+	my $header  = shift @$ref;
+	my $fields  = pop   @$ref;
+	my $trailer = pop   @$ref;
+
+	$body .= "$header->[0]: $header->[1]\n";
+
+	for my $line (@$ref) {
+		$message{$line->[0]} = $line->[1];
+	}
+
+	my @order;
+	if(ref $fields->[1]) {
+		@order = @{$fields->[1]};
+	}
+	else {
+		@order = sort keys %message;
+	}
+
+	for (@order) {
+		$body .= "$_: ";
+		if($message{$_} =~ s/\r?\n/\n/g) {
+			$body .= "\n$message{$_}\n";
+		}
+		else {
+			$body .= $message{$_};
+		}
+		$body .= "\n";
+	}
+
+	$body .= "$trailer->[0]: $trailer->[1]\n";
+	return $body;
+}
+
+sub tag_mail {
+    my($to, $opt, $body) = @_;
+    my($ok);
+
+	my @todo = (
+					qw/
+						From      
+						To		   
+						Subject   
+						Reply-To  
+						Errors-To 
+					/
+	);
+
+	my $abort;
+	my $check;
+
+	my $setsub = sub {
+		my $k = shift;
+		return if ! defined $CGI::values{"mv_email_$k"};
+		$abort = 1 if ! $::Scratch->{mv_email_enable};
+		$check = 1 if $::Scratch->{mv_email_enable};
+		return $CGI::values{"mv_email_$k"};
+	};
+
+	my @headers;
+	my %found;
+
+	unless($opt->{raw}) {
+		for my $header (@todo) {
+			::logError("invalid email header: %s", $header)
+				if $header =~ /[^-\w]/;
+			my $key = lc $header;
+			$key =~ tr/-/_/;
+			my $val = $opt->{$key} || $setsub->($key); 
+			if($key eq 'subject' and ! length($val) ) {
+				$val = ::errmsg('<no subject>');
+			}
+			next unless length $val;
+			$found{$key} = $val;
+			$val =~ s/^\s+//;
+			$val =~ s/\s+$//;
+			$val =~ s/[\r\n]+\s*(\S)/\n\t$1/g;
+			push @headers, "$header: $val";
+		}
+		unless($found{to} or $::Scratch->{mv_email_enable} =~ /\@/) {
+			return
+				error_opt($opt, "Refuse to send email message with no recipient.");
+		}
+		elsif (! $found{to}) {
+			$::Scratch->{mv_email_enable} =~ s/\s+/ /g;
+			$found{to} = $::Scratch->{mv_email_enable};
+			push @headers, "To: $::Scratch->{mv_email_enable}";
+		}
+	}
+
+	if($opt->{extra}) {
+		$opt->{extra} =~ s/^\s+//mg;
+		$opt->{extra} =~ s/\s+$//mg;
+		push @headers, grep /^\w[-\w]*:/, split /\n/, $opt->{extra};
+	}
+
+	$body ||= $setsub->{body};
+	unless($body) {
+		return error_opt($opt, "Refuse to send email message with no body.");
+	}
+
+	$body = format_auto_transmission($body) if ref $body;
+
+	push(@headers, '') if @headers;
+
+	return error_opt("mv_email_enable not set, required.") if $abort;
+	if($check and $found{to} ne $Scratch->{mv_email_enable}) {
+		return error_opt(
+				"mv_email_enable to address (%s) doesn't match enable (%s)",
+				$found{to},
+				$Scratch->{mv_email_enable},
+			);
+	}
+
+    SEND: {
+        open(MAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;
+        print MAIL join("\n", @headers, $body)
+            or last SEND;
+        close MAIL or last SEND;
+        $ok = ($? == 0);
+    }
+
+    if (!$ok) {
+		close MAIL;
+		$body = substr($body, 0, 2000) if length($body) > 2000;
+        return error_opt(
+					"Unable to send mail using %s\n%s",
+					$Vend::Cfg->{SendMailProgram},
+					join("\n", @headers, $body),
+				);
+	}
+
+	delete $Scratch->{mv_email_enable} if $check;
+	return if $opt->{hide};
+	return join("\n", @headers, $body) if $opt->{show};
+    return ($opt->{success} || $ok);
 }
 
 sub tag_weighted_banner {
@@ -4326,6 +4481,7 @@ sub error_opt {
 	my ($opt, @args) = @_;
 	return undef unless ref $opt;
 	my $msg = errmsg(@args);
+	$msg = "$opt->{error_id}: $msg" if $opt->{error_id};
 	if($opt->{log_error}) {
 		::logError($msg);
 	}
@@ -4339,11 +4495,11 @@ sub tag_tree {
 #::logDebug("tree-list: received parent=$parent sub=$sub start=$start_item");
 
 	my $db = ::database_exists_ref($table)
-		or return error_opt("Database %s doesn't exist", $table);
+		or return error_opt($opt, "Database %s doesn't exist", $table);
 	$db->column_exists($parent)
-		or return error_opt("Parent column %s doesn't exist", $parent);
+		or return error_opt($opt, "Parent column %s doesn't exist", $parent);
 	$db->column_exists($sub)
-		or return error_opt("Subordinate column %s doesn't exist", $sub);
+		or return error_opt($opt, "Subordinate column %s doesn't exist", $sub);
 
 	my $qkey = $db->quote($start_item, $parent);
 
@@ -4433,10 +4589,6 @@ sub tag_tree {
 			my $next = $row->{$sub}
 				or next ROW;
 
-			if($above->{$next}++) {
-				return error_opt($opt, "Endless tree detected at key %s", $code);
-			}
-
 			my $stop;
 			$row->{mv_children} = 1
 				if ($opt->{stop}		and ! $row->{ $opt->{stop} }	)
@@ -4445,6 +4597,22 @@ sub tag_tree {
 
 			$stop = 1  if ! $explode and ! $memo->{$code};
 #::logDebug("next row sub=$sub=$next stop=$stop explode=$explode memo=$memo->{$code}");
+
+			if($above->{$next} and ($opt->{autodetect} or ! $stop) ) {
+				my $fmt = <<EOF;
+Endless tree detected at key %s in table %s.
+Parent %s, would traverse to %s.
+EOF
+				my $msg = ::errmsg($fmt, $code, $table, $row->{$parent}, $next);
+				if(! $opt->{pedantic}) {
+					error_opt($opt, $msg);
+					next ROW;
+				}
+				else {
+					$opt->{log_error} = 1 unless $opt->{show_error};
+					return error_opt($opt, $msg);
+				}
+			}
 
 			my $a;
 			if ($opt->{autodetect} or ! $stop) {
@@ -4457,13 +4625,14 @@ sub tag_tree {
 										sql => $q,
 									}
 						);
+				$above->{$next} = 1 if $a and scalar @{$a};
 			}
 
 			if($opt->{autodetect}) {
 				$row->{mv_children} = $a ? scalar(@$a) : 0; 
 			}
 
-			unless ($stop) {
+			if (! $stop) {
 				push(@ary_stack, $ary);
 				push(@above_stack, $above);
 				push(@inc_stack, $increment);

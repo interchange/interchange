@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.2 2000-12-11 01:30:42 heins Exp $
+# $Id: Parse.pm,v 1.12.2.3 2000-12-13 13:50:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.12.2.2 2000-12-11 01:30:42 heins Exp $
+# $Id: Parse.pm,v 1.12.2.3 2000-12-13 13:50:59 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.3 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.3 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -94,6 +94,7 @@ my %PosNumber =	( qw!
                 label            1
                 loop             1
                 log              1
+                mail             1
                 mvasp            1
                 nitems           1
                 onfly            2
@@ -183,6 +184,7 @@ my %Order =	(
 				order			=> [qw( code quantity )],
 				page			=> [qw( href arg )],
 				perl			=> [qw( tables )],
+				mail			=> [qw( to )],
 				mvasp			=> [qw( tables )],
 				options			=> [qw( code )],
 				price			=> [qw( code )],
@@ -246,6 +248,7 @@ my %addAttr = (
 					loop			1
 					onfly			1
 					page            1
+					mail            1
 					mvasp           1
 				    nitems			1
 				    options			1
@@ -293,6 +296,7 @@ my %hasEndTag = (
                         input_filter    1
                         item_list       1
                         loop            1
+                        mail            1
                         mvasp           1
                         perl            1
                         query           1
@@ -332,6 +336,7 @@ my %InvalidateCache = (
 				index		1
 				input_filter		1
 				if          1
+				mail		1
 				mvasp		1
 				nitems		1
 				perl		1
@@ -485,6 +490,7 @@ my %Routine = (
 				order			=> \&Vend::Interpolate::tag_order,
 				page			=> \&Vend::Interpolate::tag_page,
 				perl			=> \&Vend::Interpolate::tag_perl,
+				mail			=> \&Vend::Interpolate::tag_mail,
 # MVASP
 				mvasp			=> \&Vend::Interpolate::mvasp,
 # END MVASP
@@ -1526,6 +1532,7 @@ sub _find_tag {
 	while ($$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)||) {
 		$eaten .= $1;
 		my $attr = lc $2;
+		$attr =~ tr/-/_/;
 		my $val;
 		$old = 0;
 		# The attribute might take an optional value (first we
