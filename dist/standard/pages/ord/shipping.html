@@ -128,6 +128,7 @@ ui_template_name: noleft
 		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
 		</td>
 	  </tr>
+	  [if type=!data term="country::no_state::[value country]"]
 	  <tr>
 		<td align=right>
 			[error name=state std_label="[L]State/Province[/L]" required=1]
@@ -155,6 +156,7 @@ ui_template_name: noleft
 		  [/loop]
 		</td>
 	  </tr>
+	  [/if]
 	  <tr>
 		<td align="right">
 		  [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1] 
@@ -289,5 +291,6 @@ ui_template_name: noleft
 
 
 <!-- END CONTENT -->
+<!-- Version: $Id: shipping.html,v 1.4 2005-01-25 04:13:13 mheins Exp $ -->
 
 @_NOLEFT_BOTTOM_@

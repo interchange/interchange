@@ -1,4 +1,4 @@
-code	sorder	region	selector	shipmodes	name	iso	isonum	tax
+code	sorder	region	selector	shipmodes	name	iso	isonum	tax	no_state
 AF	9	Other	AF	surf_pp air_pp	Afghanistan	AFG	004	
 AL	9	Other	AL	surf_pp air_pp	Albania	ALB	008	
 DZ	9	Other	DZ	surf_pp air_pp	Algeria	DZA	012	

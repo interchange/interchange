@@ -181,6 +181,7 @@ function do_address (form, clear) {
 			<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=40 maxlength="64">
 		  </td>
 		</tr>
+	  [if type=!data term="country::no_state::[value country]"]
 		<tr>
 		  <td align=right>
 			[error name=b_city std_label="[L]City[/L]" required=1]
@@ -195,6 +196,17 @@ function do_address (form, clear) {
 			<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
 		  </td>
 		</tr>
+      [else]
+		<tr>
+		  <td align=right>
+			[error name=b_city std_label="[L]City[/L]" required=1]
+		  </td>
+		  <td colspan=3>
+			<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size="20">
+		  </td>
+		</tr>
+      [/else]
+      [/if]
 		<tr>
 		  <td align=right>
 			[error name=b_zip std_label="[L]Zip/Postal Code[/L]" required=1]
@@ -211,7 +223,7 @@ function do_address (form, clear) {
 		  [display
 		  		name=b_country
 		  		type=select
-				default=__SHIP_DEFAULT_COUNTRY__
+				value="[either][value b_country][or]__SHIP_DEFAULT_COUNTRY__[/either]"
 				lookup_query="select code,name from country where shipmodes != '' order by name"
 		  ]
 		  </td>
