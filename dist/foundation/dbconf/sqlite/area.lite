@@ -1,0 +1,6 @@
+Database  area  area.txt     __SQLDSN__
+Database  area  DEFAULT_TYPE text
+Database  area  COLUMN_DEF   "code=char(8) NOT NULL PRIMARY KEY"
+Database  area  COLUMN_DEF   "name=char(128) DEFAULT '' NOT NULL"
+Database  area  COLUMN_DEF   "sort=char(3) DEFAULT '00' NOT NULL"
+Database  area  INDEX		  name sort
