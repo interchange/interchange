@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.6.3
+# Interchange version 4.6
 #
-# $Id: interchange.PL,v 1.8.4.21 2001-02-10 01:39:06 racke Exp $
+# $Id: interchange.PL,v 1.8.4.22 2001-03-23 08:58:56 racke Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -140,7 +140,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.6.3';
+	$VERSION = '4.6.4';
 }
 
 use Fcntl;
@@ -1282,6 +1282,11 @@ sub adjust_cgi {
 	#
 	# end AOL fix
 
+	# Fix Cobalt/CGIwrap problem
+    if($Global::Variable->{CGIWRAP_WORKAROUND}) {
+        $CGI::path_info =~ s!^$CGI::script_name!!;
+    }
+
     $CGI::host = $host || $CGI::ip;
 
     $CGI::user = $CGI::remote_user if $CGI::remote_user;
@@ -1918,7 +1923,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.6.3
+4.6.4
 
 =head1 DESCRIPTION
 
