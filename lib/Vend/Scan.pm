@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for MiniVend
 #
-# $Id: Scan.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Scan.pm,v 1.2 2000-06-28 07:18:55 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use strict;
 use Vend::Util;
@@ -80,6 +80,7 @@ my @Order = ( qw(
 					mv_return_file_name
 					mv_return_reference
 					mv_substring_match
+					mv_start_match
 					mv_return_spec
 					mv_spelling_errors
 					mv_search_field
@@ -152,6 +153,7 @@ my %Scan = ( qw(
                     sf  mv_search_field
                     sg  mv_search_group
                     si  mv_search_immediate
+                    sm  mv_start_match
                     sp  mv_search_page
                     sq  mv_sql_query
                     sr  mv_search_relate

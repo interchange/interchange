@@ -1,6 +1,6 @@
 # Vend/TextSearch.pm:  Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: TextSearch.pm,v 1.2 2000-06-28 07:18:55 heins Exp $
 #
 # ADAPTED FOR USE WITH MINIVEND from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use Search::Dict;
 use strict;
@@ -341,6 +341,40 @@ sub search {
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
 			$s->{mv_next_pointer} = 0
 				if $s->{mv_next_pointer} > $s->{matches};
+		}
+		elsif ($s->{mv_start_match}) {
+			my $comp = $s->{mv_start_match};
+			my $i = -1;
+			my $found;
+			for(@out) {
+				$i++;
+				next unless $_->[0] eq $comp;
+				$found = $i;
+				last;
+			}
+			if(! $found and $s->{mv_numeric}[0]) {
+				for(@out) {
+					$i++;
+					next unless $_->[0] >= $comp;
+					$found = $i;
+					last;
+				}
+			}
+			elsif (! $found) {
+				for(@out) {
+					$i++;
+					next unless $_->[0] ge $comp;
+					$found = $i;
+					last;
+				}
+			}
+			if($found) {
+				splice(@out,0,$found);
+				$s->{mv_first_match} = $found;
+				$s->{mv_next_pointer} = $found + $s->{mv_matchlimit};
+				$s->{mv_next_pointer} = 0
+					if $s->{mv_next_pointer} > $s->{matches};
+			}
 		}
         $#out = $s->{mv_matchlimit} - 1;
     }

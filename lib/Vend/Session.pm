@@ -1,6 +1,6 @@
 # Session.pm - Minivend Sessions
 #
-# $Id: Session.pm,v 1.1 2000-05-26 18:50:40 heins Exp $
+# $Id: Session.pm,v 1.2 2000-06-28 07:18:55 heins Exp $
 # 
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -247,6 +247,8 @@ sub write_session {
     my $save = $Vend::Session->{'user'};
     undef $Vend::Session->{'user'};
     #undef $Vend::Session->{'arg'};
+	$Vend::Session->{username} = $Vend::username;
+	$Vend::Session->{admin} = $Vend::admin;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
@@ -338,6 +340,9 @@ sub read_session {
     die "Could not eval '$s' from session dbm: $@\n" if $@;
 
 	$Vend::Session->{host} = $CGI::host;
+
+	$Vend::username = $Vend::Session->{username};
+	$Vend::admin    = $Vend::Session->{admin};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
 
