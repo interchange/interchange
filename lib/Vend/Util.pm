@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.13 2003-01-24 06:51:52 jon Exp $
+# $Id: Util.pm,v 2.1.2.14 2003-12-15 22:25:30 mheins Exp $
 # 
 # Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -75,7 +75,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.13 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.14 $, 10);
 
 BEGIN {
 	eval {
@@ -892,6 +892,12 @@ sub readin {
     my($file, $only) = @_;
     my($fn, $contents, $gate, $pathdir, $dir, $level);
     local($/);
+
+	if($file =~ m{[\[<]}) {
+		::logGlobal("Possible code/SQL injection attempt with file name '%s'", $file);
+		$file = escape_chars($file);
+		::logGlobal("Suspect file changed to '%s'", $file);
+	}
 
 	$Global::Variable->{MV_PREV_PAGE} = $Global::Variable->{MV_PAGE}
 		if defined $Global::Variable->{MV_PAGE};
