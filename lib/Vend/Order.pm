@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 1.18.2.31 2001-07-11 14:45:10 heins Exp $
+# $Id: Order.pm,v 1.18.2.32 2001-07-19 18:17:50 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.31 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.32 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1310,6 +1310,7 @@ sub route_order {
 	
 	my @route_complete;
 	my @route_failed;
+	my @route_done;
 	my $route_checked;
 
 	### This used to be the check_only
@@ -1417,12 +1418,14 @@ sub route_order {
 		Vend::Interpolate::flag( 'transactions', {}, $route->{transactions})
 			if $route->{transactions};
 
+	eval {
+
 		if(! $check_only and $route->{inline_profile}) {
 			my $status;
-			eval {
-				($status, undef, $errors) = check_order($route->{inline_profile});
-				die "$errors\n" unless $status;
-			};
+			my $err;
+			($status, undef, $err) = check_order($route->{inline_profile});
+#::logDebug("inline profile returned status=$status errors=$err");
+			die "$err\n" unless $status;
 		}
 
 		if ($CGI::values{mv_credit_card_number}) {
@@ -1439,7 +1442,6 @@ sub route_order {
 		}
 
 		$Vend::Items = $shelf->{$c};
-	eval {
 
 		if ($check_only and $route->{profile}) {
 			$route_checked = 1;
@@ -1457,9 +1459,7 @@ sub route_order {
 
 		if($route->{payment_mode}) {
 			my $ok;
-			eval {
-				$ok = Vend::Payment::charge($route->{payment_mode});
-			};
+			$ok = Vend::Payment::charge($route->{payment_mode});
 			unless ($ok) {
 				die errmsg("Failed online charge for routing %s: %s",
 								$c,
@@ -1585,20 +1585,24 @@ sub route_order {
 	  } # end PROCESS
 	};
 		if($@) {
+#::logDebug("route failed: $c");
 			my $err = $@;
 			$errors .=  errmsg(
 							"Error during creation of order routing %s:\n%s",
 							$c,
 							$err,
 						);
-			unless ($route->{error_ok}) {
-				push @route_failed, @route_complete;
-				push @route_failed, $c;
+			if ($route->{error_ok}) {
+				push @route_complete, $c;
 				next BUILD;
 			}
+#::logDebug("routes failed: @route_failed continue=$route->{continue}");
 			next BUILD if $route->{continue};
+			push @route_failed, $c;
+			@out = ();
+			@route_done = @route_complete;
 			@route_complete = ();
-			last BUILD;
+			last ROUTES;
 		}
 
 		push @route_complete, $c;
@@ -1607,6 +1611,7 @@ sub route_order {
 
 	if(@main and ! @route_failed) {
 		@routes = splice @main;
+#::logDebug("spliced routes: @routes");
 		redo ROUTES;
 	}
 
@@ -1618,12 +1623,15 @@ sub route_order {
 		$Vend::Interpolate::Values = $::Values = $value_save;
 		$Vend::Items = $save_cart;
 		if(@route_failed) {
+#::logDebug("failed routes: $errors");
 			return (0, 0, $errors);
 		}
 		elsif($route_checked) {
+#::logDebug("checked routes OK");
 			return (1, 1, '');	
 		}
 		else {
+#::logDebug("routes check_only OK");
 			return (1, undef, '');	
 		}
 	}
@@ -1700,6 +1708,7 @@ sub route_order {
 			=~ s/^(\s*\w+\s+)(\d\d)[\d ]+(\d\d\d\d)/$1$2 NEED ENCRYPTION $3/;
 	# If we give a defined value, the regular mail_order routine will not
 	# be called
+#::logDebug("route errors=$errors supplant=$main->{supplant}");
 	if($main->{supplant}) {
 		return ($status, $::Values->{mv_order_number}, $main);
 	}
