@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.1 2000-11-25 00:26:28 heins Exp $
+# $Id: DBI.pm,v 1.25.2.2 2000-11-30 02:51:14 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.2 $, 10);
 
 use strict;
 
@@ -305,6 +305,12 @@ sub open_table {
     my @call = find_dsn($config);
     my $dattr = pop @call;
     my $db;
+
+    if (! $config->{Read_only} and ! defined $config->{AutoNumberCounter}) {
+		$config->{AutoNumberCounter} = new File::CounterFile
+									"$config->{DIR}/$config->{name}.autonumber",
+									$config->{AUTO_NUMBER} || '00001';
+    }
 
 	unless($config->{dsn_id}) {
 		$config->{dsn_id} = join "_", @call;
@@ -593,38 +599,74 @@ sub alter_column {
 	return $rc;
 }
 
+sub clone_row {
+	my ($s, $old, $new, $change) = @_;
+#::logDebug("called clone_row old=$old new=$new change=$change");
+	$s = $s->ref();
+	return undef unless $s->record_exists($old);
+	my @ary = $s->row($old);
+#::logDebug("called clone_row ary=" . join "|", @ary);
+	if($change and ref $change) {
+		for (keys %$change) {
+			my $pos = $s->column_index($_) 
+				or next;
+			$ary[$pos] = $change->{$_};
+		}
+	}
+	$ary[$s->[$CONFIG]{KEY_INDEX}] = $new;
+#::logDebug("called clone_row now=" . join "|", @ary);
+	my $k = $s->set_row(@ary);
+#::logDebug("cloned, key=$k");
+	return $k;
+}
+
+sub clone_set {
+	my ($s, $col, $old, $new) = @_;
+#::logDebug("called clone_set col=$col old=$old new=$new");
+	return unless $s->column_exists($col);
+	my $sel = $s->quote($old, $col);
+	my $name = $s->[$CONFIG]{name};
+	my ($ary, $nh, $na) = $s->query("select * from $name where $col = $sel");
+	my $fpos = $nh->{$col} || return undef;
+	$s->config('AUTO_NUMBER', '000001') unless $s->config('AUTO_NUMBER');
+	for(@$ary) {
+		my $line = $_;
+		$line->[$s->[$CONFIG]{KEY_INDEX}] = '';
+		$line->[$fpos] = $new;
+		my $k = $s->set_row(@$line);
+#::logDebug("cloned, key=$k");
+	}
+	return $new;
+}
+
 sub set_row {
     my ($s, @fields) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $cfg = $s->[$CONFIG];
+
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
-		if $s->[$CONFIG]{FILTER_TO};
-	my $val;
+		if $cfg->{FILTER_TO};
+	my ($val);
+
 	if(scalar @fields == 1) {
-		if(! $fields[0] and $s->[$CONFIG]{AUTO_NUMBER}) {
-			$fields[0] = $s->autonumber();
-		}
+		$fields[0] = $s->autonumber()
+			if ! length($fields[0]);
 		eval {
 			$val = $s->quote($fields[0], $s->[$KEY]);
-			if($s->[$CONFIG]{AUTO_NUMBER}) {
-				my $ctr
-			}
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($s->[$KEY]) VALUES ($val)");
 		};
 		die "$DBI::errstr\n" if $@;
-		return $val;
+		return $fields[0];
 	}
+
 	if(! $cfg->{_Insert_h}) {
 		my (@ins_mark);
 		my $i = 0;
 		for(@{$s->[$NAME]}) {
 			push @ins_mark, '?';
-			$cfg->{_Key_column} = $i if $s->[$KEY] eq $_;
 			$i++;
 		}
-		die "set_row init for $s->[$TABLE]: No key column found."
-			unless defined $cfg->{_Key_column};
 		my $ins_string = join ", ",  @ins_mark;
 		my $query = "INSERT INTO $s->[$TABLE] VALUES ($ins_string)";
 #::logDebug("set_row query=$query");
@@ -632,18 +674,37 @@ sub set_row {
 		die "$DBI::errstr\n" if ! defined $cfg->{_Insert_h};
 	}
 
+	if(! length($fields[$cfg->{KEY_INDEX}]) and $cfg->{AUTO_NUMBER}) {
+		$fields[$cfg->{KEY_INDEX}] = $s->autonumber();
+	}
+
 	unless ($s->[$CONFIG]{Clean_start}) {
 		eval {
-			$val = $s->quote($fields[$cfg->{_Key_column}], $s->[$KEY]);
+			$val = $s->quote($fields[$cfg->{KEY_INDEX}], $s->[$KEY]);
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
 				unless $s->[$CONFIG]{Clean_start};
 		};
 	}
+
     $s->bind_entire_row($cfg->{_Insert_h}, undef, @fields);
-	$val = $fields[$cfg->{_Key_column}];
-	$cfg->{_Insert_h}->execute()
+	$val = $fields[$cfg->{KEY_INDEX}];
+	my $rc = $cfg->{_Insert_h}->execute()
 		or die "$DBI::errstr\n";
+##::logDebug("set_row rc=$rc key=$val");
 	return $val;
+}
+
+sub row {
+    my ($s, $key) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+	$key = $s->[$DBI]->quote($key)
+		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
+    my $sth = $s->[$DBI]->prepare(
+		"select * from $s->[$TABLE] where $s->[$KEY] = $key");
+    $sth->execute()
+		or die("execute error: $DBI::errstr");
+
+	return @{$sth->fetchrow_arrayref()};
 }
 
 sub row_hash {
@@ -1128,6 +1189,8 @@ eval {
 		if $opt->{textref};
 	return wantarray ? ($ref, \%nh, \@na) : $ref;
 }
+
+*autonumber = \&Vend::Table::Common::autonumber;
 
 1;
 

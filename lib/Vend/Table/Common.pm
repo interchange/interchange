@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16 2000-11-03 04:41:10 heins Exp $
+# $Id: Common.pm,v 1.16.4.1 2000-11-30 02:51:14 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,12 +25,13 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.1 $, 10);
 use strict;
 
 package Vend::Table::Common;
 require Vend::DbSearch;
 require Vend::TextSearch;
+require File::CounterFile;
 use Vend::Util;
 
 use Exporter;
@@ -317,6 +318,32 @@ sub field_settor {
     };
 }
 
+sub clone_row {
+	my ($s, $old, $new) = @_;
+	return undef unless $s->record_exists($old);
+	my @ary = $s->row($old);
+	$ary[$s->[$KEY_INDEX]] = $new;
+	$s->set_row(@ary);
+	return $new;
+}
+
+sub clone_set {
+	my ($s, $col, $old, $new) = @_;
+	return unless $s->column_exists($col);
+	my $sel = $s->quote($old, $col);
+	my $name = $s->[$CONFIG]{name};
+	my ($ary, $nh, $na) = $s->query("select * from $name where $col = $sel");
+	my $fpos = $nh->{$col} || return undef;
+	$s->config('AUTO_NUMBER', '000001') unless $s->config('AUTO_NUMBER');
+	for(@$ary) {
+		my $line = $_;
+		$line->[$s->[$KEY_INDEX]] = '';
+		$line->[$fpos] = $new;
+		$s->set_row(@$line);
+	}
+	return $new;
+}
+
 sub stuff_row {
     my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
@@ -333,7 +360,7 @@ sub freeze_row {
 	my $key = $fields[$s->[$KEY_INDEX]];
 #::logDebug("freeze key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
-		if ! $key;
+		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->[$TIE_HASH]{"k$key"} = Storable::freeze(\@fields);
@@ -464,6 +491,7 @@ sub each_nokey {
 		$restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)
 		)
 	{
+#::logDebug("restricted?");
 		$sup =  ! defined $Global::SuperUserFunction
 					||
 				$Global::SuperUserFunction->();
@@ -526,7 +554,7 @@ sub query {
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
 
-#::logDebug("receieved query. object=" . ::uneval($opt));
+#::logDebug("receieved query. object=" . ::uneval_it($opt));
 
 	if(defined $opt->{values}) {
 		# do nothing
@@ -616,11 +644,11 @@ eval {
 			s/\..*//;
 		}
         $search = new Vend::DbSearch;
-#::logDebug("created DbSearch object: " . ::uneval($search));
+#::logDebug("created DbSearch object: " . ::uneval_it($search));
 	}
 	else {
         $search = new Vend::TextSearch;
-#::logDebug("created TextSearch object: " . ::uneval($search));
+#::logDebug("created TextSearch object: " . ::uneval_it($search));
     }
 
 	my %fh;
@@ -629,7 +657,7 @@ eval {
 	$i = 0;
 	%fh = map { ($_, $i++) } @{$spec->{fn}};
 
-#::logDebug("field hash: " . Vend::Util::uneval(\%fh)); 
+#::logDebug("field hash: " . Vend::Util::uneval_it(\%fh)); 
 	for ( qw/rf sf/ ) {
 		next unless defined $spec->{$_};
 		map { $_ = $fh{$_} } @{$spec->{$_}};

@@ -1,6 +1,6 @@
 # Table/GDBM.pm: access a table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3 2000-09-23 21:09:09 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.1 2000-11-30 02:51:14 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.1 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -86,10 +86,15 @@ sub open_table {
 #::logDebug("opening table class=$class filename=$filename config=" . ::uneval($config) . " caller=@caller");
     my $tie = {};
 
-    my $flags = GDBM_WRITER;
+    my $flags = GDBM_READER;
 
-    if ($config->{Read_only}) {
-        $flags = GDBM_READER;
+    if (! $config->{Read_only}) {
+		$flags = GDBM_WRITER;
+		if(! defined $config->{AutoNumberCounter}) {
+			$config->{AutoNumberCounter} = new File::CounterFile
+										"$config->{DIR}/$config->{name}.autonumber",
+										$config->{AUTO_NUMBER} || '00001';
+		}
     }
 
 	my $dbm;
