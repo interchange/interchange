@@ -12,6 +12,7 @@ interchange (4.7.3-0.4) unstable; urgency=low
   * use new -rundir command line option
   * Variable DEBUG now configurable by debconf
   * changed makecat.wrapper to run as interchange user instead of root
+  * added a link for makecat.cfg
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Jun 2001 12:03:18 +0200
   
