@@ -1,3 +1,5 @@
+[seti done][userdb function=logout clear=1][/seti]
+
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
@@ -18,9 +20,7 @@ ui_template_name: leftonly
 [/control-set]
 
 [control reset=1]
-[set name=done int][userdb function=logout clear=1][/set]
-[set page_title]__COMPANY__ -- Help[/set]
-[set page_banner]Log out[/set]
+[tmp page_title]__COMPANY__ -- Help[/tmp]
 
 @_LEFTONLY_TOP_@
 

@@ -3,9 +3,8 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[set page_title]__COMPANY__ -- Welcome[/set]
-[set page_banner]Welcome[/set]
-[set bgcolor]#FFFFFF[/set]
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- Shipping Addresses[/tmp]
 
 [control reset=1]
 
@@ -21,11 +20,6 @@ ui_template_name: leftonly
 [component]category_vertical[/component]
 [/control-set]
 
-[control reset=1]
-
-[set members_only]1[/set]
-[set page_banner]Shipping Addresses[/set]
-[set page_title]__COMPANY__ -- Shipping Addresses[/set]
 [set meta_header]
 
 <STYLE TYPE=text/css>
@@ -129,6 +123,8 @@ A:visited.ctitle {
 
 </STYLE>
 [/set]
+
+[control reset=1]
 
 @_LEFTONLY_TOP_@
 
