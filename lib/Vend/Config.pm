@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.88 2003-01-01 14:13:05 racke Exp $
+# $Id: Config.pm,v 2.89 2003-01-02 21:35:07 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.88 $, 10);
+$VERSION = substr(q$Revision: 2.89 $, 10);
 
 my %CDname;
 
@@ -3648,6 +3648,7 @@ sub parse_tag {
 			eval {
 				package Vend::Interpolate;
 				$sub = eval $val;
+				warn $@ if $@;
 			};
 		}
 		if($@) {
