@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.0.2.1 2002-01-24 05:07:04 jon Exp $
+# $Id: expire.PL,v 2.0.2.2 2002-04-01 11:51:34 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -228,12 +228,15 @@ if(defined $catalog) {
 	global_config();
 	$g = $Global::Catalog{$catalog};
 	chdir $g->{dir} or die "chdir to $g->{dir}: $!\n";
-	$Vend::Cfg = Vend::Config::config(
+	eval {$Vend::Cfg = Vend::Config::config(
 					$g->{name},
 					$g->{dir},
 					"$g->{dir}/etc",
 					$g->{base} || undef,
-					);
+					)};
+    if ($@) {
+        die "$0: Configuration for catalog $catalog failed: $@\n";
+    }
 }
 else {
 	$Vend::Cfg->{ScratchDir} = '/tmp';
@@ -294,7 +297,7 @@ expire -- expire Interchange session files and databases
 
 =head1 VERSION
 
-1.0
+1.1
 
 =head1 SYNOPSIS
 
