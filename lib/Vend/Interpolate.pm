@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.19 2001-02-13 14:30:42 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.20 2001-02-18 17:41:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.20 $, 10);
 
 @EXPORT = qw (
 
@@ -2140,18 +2140,12 @@ sub tag_perl {
 	if($tables) {
 		my (@tab) = grep /\S/, split /\s+/, $tables;
 		for(@tab) {
-#::logDebug("tag_perl: priming table $_, current=$Db{$_}");
 			next if $Db{$_};
-#::logDebug("tag_perl: getting ref $_");
 			my $db = Vend::Data::database_exists_ref($_);
-#::logDebug("tag_perl: ref returned $db");
 			next unless $db;
-#::logDebug("tag_perl: need to init table $_, ref=$db");
 			$db = $db->ref();
 			if($hole) {
-#::logDebug("tag_perl: wrapped table $_ db=$db");
 			$db = $db->ref();
-#::logDebug("recall db: db=$db");
 				$Sql{$_} = $hole->wrap($db->[$Vend::Table::DBI::DBI])
 					if $db =~ /::DBI/;
 				$Sql{$_} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
@@ -2168,6 +2162,15 @@ sub tag_perl {
 
 	init_calc() if ! $Calc_initialized;
 	$ready_safe->share(@share) if @share;
+
+	if($Vend::Cfg->{Tie_Watch}) {
+		eval {
+			for(@{$Vend::Cfg->{Tie_Watch}}) {
+				::logGlobal("touching $_");
+				my $junk = $Config->{$_};
+			}
+		};
+	}
 
 	$MVSAFE::Safe = 1;
 	if (

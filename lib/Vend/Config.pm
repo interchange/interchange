@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.18 2001-02-13 14:15:22 heins Exp $
+# $Id: Config.pm,v 1.25.2.19 2001-02-18 17:41:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -87,7 +87,7 @@ my $OldDirectives = q{
 
 use strict;
 use vars qw(
-			$VERSION $C $CanTie
+			$VERSION $C
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code
 			@Locale_directives_currency @Locale_keys_currency
@@ -97,14 +97,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-BEGIN {
-	eval {
-		require Tie::Watch or die;
-		$CanTie = 1;
-	};
-}
-
-$VERSION = substr(q$Revision: 1.25.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.19 $, 10);
 
 my %CDname;
 
@@ -812,7 +805,10 @@ CONFIGLOOP:
 				config_error (sprintf('%d: %s', $startline,
 					qq#no end marker ("$mark") found#));
 			}
-			if ($CanTie) {
+			eval {
+				require Tie::Watch;
+			};
+			unless ($@) {
 				$tie = 1;
 			}
 			else {
@@ -1210,6 +1206,9 @@ GLOBLOOP:
 # Use Tie::Watch to attach subroutines to config variables
 sub watch {
 	my($name, $value) = @_;
+	$C->{Tie_Watch} = [] unless $C->{Tie_Watch};
+	push @{$C->{Tie_Watch}}, $name;
+
 	my ($ref, $orig);
 #::logDebug("Contents of $name: " . ::uneval_it($C->{$name}));
 	if(ref($C->{$name}) =~ /ARRAY/) {
