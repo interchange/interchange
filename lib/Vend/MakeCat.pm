@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12.6.4 2001-04-18 05:19:50 jon Exp $
+# $Id: MakeCat.pm,v 1.12.6.5 2001-06-09 06:26:37 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.12.6.5 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -211,7 +211,7 @@ EOF
 # This is a URL fragment, not an entire URL. If you set ShareDir to be
 # the same as DocumentRoot, this would just be a '/'.
 #
-#         <IMG SRC="/akopia/ui/bg.gif">
+#         <IMG SRC="/interchange/en_US/bg.gif">
 #                   ^
 #
 EOF
