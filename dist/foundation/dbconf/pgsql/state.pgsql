@@ -6,12 +6,12 @@ ifdef SQLPASS
 Database  state  PASS         __SQLPASS__
 endif
 Database  state  AUTO_NUMBER  00001
-Database  state  COLUMN_DEF   "code=CHAR(8) NOT NULL PRIMARY KEY"
-Database  state  COLUMN_DEF   "country=CHAR(20) DEFAULT '' NOT NULL"
-Database  state  COLUMN_DEF   "sorder=CHAR(8) NOT NULL"
-Database  state  COLUMN_DEF   "state=CHAR(20) DEFAULT '' NOT NULL"
-Database  state  COLUMN_DEF   "postcode=CHAR(20) DEFAULT '' NOT NULL"
+Database  state  COLUMN_DEF   "code=VARCHAR(8) NOT NULL PRIMARY KEY"
+Database  state  COLUMN_DEF   "country=VARCHAR(20) DEFAULT '' NOT NULL"
+Database  state  COLUMN_DEF   "sorder=VARCHAR(8) NOT NULL"
+Database  state  COLUMN_DEF   "state=VARCHAR(20) DEFAULT '' NOT NULL"
+Database  state  COLUMN_DEF   "postcode=VARCHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "tax=text"
-Database  state  COLUMN_DEF   "name=CHAR(64) DEFAULT '' NOT NULL"
+Database  state  COLUMN_DEF   "name=VARCHAR(64) DEFAULT '' NOT NULL"
 Database  state  POSTCREATE   "create index state_country on state (country)"
 Database  state  POSTCREATE   "create index state_sorder on state (sorder)"

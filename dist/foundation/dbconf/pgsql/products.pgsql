@@ -21,4 +21,3 @@ Database  products  COLUMN_DEF   "size=VARCHAR(96)"
 Database  products  COLUMN_DEF   "color=VARCHAR(96)"
 Database  products  COLUMN_DEF   "related=text"
 Database  products  COLUMN_DEF   "featured=VARCHAR(32)"
-Database  products  ChopBlanks   1

@@ -8,7 +8,7 @@ endif
 Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"
-Database  userdb  COLUMN_DEF   "mod_time=char(20)"
+Database  userdb  COLUMN_DEF   "mod_time=varchar(20)"
 Database  userdb  COLUMN_DEF   "s_nickname=text"
 Database  userdb  COLUMN_DEF   "company=VARCHAR(30)"
 Database  userdb  COLUMN_DEF   "fname=VARCHAR(20)"
@@ -54,7 +54,6 @@ Database  userdb  COLUMN_DEF   "mail_list=varchar(64)"
 Database  userdb  COLUMN_DEF   "project_id=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "account_id=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "order_dest=VARCHAR(32)"
-Database  userdb  ChopBlanks   1
 
 # Prevent problems with abstime representation
 UserDB    default    time_field    none

@@ -5,5 +5,5 @@ endif
 ifdef SQLPASS
 Database  affiliate  PASS         __SQLPASS__
 endif
-Database  affiliate  COLUMN_DEF   "code=char(12) NOT NULL PRIMARY KEY"
+Database  affiliate  COLUMN_DEF   "code=varchar(12) NOT NULL PRIMARY KEY"
 Database  affiliate  DEFAULT_TYPE text

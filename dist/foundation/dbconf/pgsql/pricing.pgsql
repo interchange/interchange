@@ -6,7 +6,6 @@ ifdef SQLPASS
 Database  pricing  PASS         __SQLPASS__
 endif
 Database  pricing  KEY          sku
-Database  pricing  ChopBlanks   1
 
 Database  pricing  COLUMN_DEF   "sku=VARCHAR(64) NOT NULL PRIMARY KEY"
 Database  pricing  COLUMN_DEF   "price_group=VARCHAR(12) DEFAULT '' NOT NULL"

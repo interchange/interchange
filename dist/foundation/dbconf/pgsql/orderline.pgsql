@@ -24,4 +24,3 @@ Database  orderline  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
 Database  orderline  COLUMN_DEF   "update_date=timestamp"
 Database  orderline  COLUMN_DEF   "status=VARCHAR(32)"
 Database  orderline  COLUMN_DEF   "parent=VARCHAR(9)"
-Database  orderline  ChopBlanks   1
