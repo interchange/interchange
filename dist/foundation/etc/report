@@ -50,7 +50,6 @@ Quan  Item No.    Description                            Price       Extension
 [column width=12            gutter=1]  [item-sku] [/column]
 [column width=32 align=left gutter=1 wrap=1]
 [item-data products description]
-[if-modifier size__MVC_FIELDMUNGE__]SIZE-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
 [/column]
 
 [column width=14 align=right gutter=1][item-price][/column]   
@@ -59,7 +58,7 @@ Quan  Item No.    Description                            Price       Extension
 [if-item-data options o_enable][if-item-data !options o_modular][row 82]
     [column width=5 gutter=1 align=right][/column]
     [column width=12 gutter=1] [item-code] [/column]
-    [column width=32 wrap=1 gutter=1][filter op="tabbed decode_entities compress_space strip"][item-options type=display][/filter][/column]
+    [column width=32 wrap=1 gutter=1][filter op="tabbed decode_entities compress_space strip"][item-options report=1][/filter][/column]
 [/row][/if-item-data][/if-item-data]
 [if-item-modifier mv_ad]
 [row 82]
