@@ -62,7 +62,10 @@ ui_template_name: leftright
 </table>
 
 [/item-change 1]
-					
+	
+
+<FORM ACTION="[process-target]" METHOD=POST>
+				
 <table width="65%" border="0" cellspacing="0" cellpadding="5">
 <tr valign="middle"> 
   <td align=center> 
@@ -75,7 +78,6 @@ ui_template_name: leftright
       </td>
       <td valign="center"align="center"> 
         <table border="0" cellpadding="3" cellspacing="0">
-	<FORM ACTION="[process-target]" METHOD=POST>
 	<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
  	<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
         <tr> 
@@ -89,7 +91,6 @@ ui_template_name: leftright
 	    <input type="text" name="mv_order_quantity" size="8" value="25.00">
           </td>
         </tr>
-	</FORM>
         </table>
       </td>
     </tr>
@@ -107,6 +108,7 @@ ui_template_name: leftright
     </td>
   </tr>
 </table>
+</FORM>
 
 <br>
 					
