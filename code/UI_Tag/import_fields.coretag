@@ -177,13 +177,13 @@ EOF
   TABLE: {
 	if(! $table) {
 		$table = <UPDATE>;
-		$table =~ s/\r?\n$//;
+		$table =~ s/(\015\012|\015|\012)$//;
 		$change_sub->($table);
 	}
 #::logDebug("db now=$db");
 	if(! $opt->{fields}) {
 		$fields = <UPDATE>;
-		$fields =~ s/\r?\n$//;
+		$fields =~ s/(\015\012|\015|\012)$//;
 		$fields =~ s/$delimiter/ /g;
 		$out .= "${tmsg}Using fields from file: '$fields'\n";
 	}
@@ -211,7 +211,7 @@ EOF
 	my $delcount = 0;
 	my $addcount = 0;
 	while(<UPDATE>) {
-		s/\r?\n$//;
+		s/(\015\012|\015|\012)$//;
 		$totcount++;
 		($k, @f) = split /$delimiter/o, $_;
 		if(/^\f(\w+)$/) {
