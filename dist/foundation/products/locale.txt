@@ -8,7 +8,7 @@ June		Juni	Juin
 July		Juli	Juillet
 August		August	Aout
 September		September	Septembre
-October		October	Octobre
+October		Oktober	Octobre
 November		November	Novembre
 December		Dezember	D&eacute;cembre
 PriceDivide	1	0.5409	0.1632
