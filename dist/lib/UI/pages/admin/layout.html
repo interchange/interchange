@@ -3,15 +3,7 @@
 [set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]admin/icon_pages.gif[/set]
-[seti ui_body_extra]
-	[if cgi from_section]
-		onLoad="window.open('[area __UI_BASE__/layout_area_properties]', 'ui_prop', 
-			'resizable=1,scrollbars=1,width=750')"
-	[elsif cgi from_category]
-		onLoad="window.open('[area __UI_BASE__/layout_cat_properties]', 'ui_prop', 
-			'resizable=1,scrollbars=1,width=750')"
-	[/elsif]
-	[/if][/seti]
+[seti ui_body_extra][/seti]
 
 @_UI_STD_HEAD_@
 [if scratch ui_message]
@@ -19,27 +11,24 @@
 <FONT COLOR="__CONTRAST__" SIZE=+1><B>[scratch ui_message][set ui_message][/set]</B></FONT>
 </BLOCKQUOTE>
 [/if]
-<!-- ----- BEGIN REAL STUFF ----- -->
-<FORM	METHOD=GET
-		ACTION="[process]"
-		name="layoutform"
-		onSubmit="document.layoutform.ui_window_name.value=window.name;" >
-<input type=hidden name=ui_window_name value="mainwindow[scratch window_name]">
-<input type=hidden name=mv_todo        value=return>
-<input type=hidden name=mv_nextpage    value="@@MV_PAGE@@">
 
+[if scratch ui_failure]
+	<FONT COLOR=RED>Failed:
+	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
+[/if]
+
+<!-- ----- BEGIN REAL STUFF ----- -->
 <table __UI_T_PROPERTIES__>
 
 [if cgi newarea]
 <!-- Creating area: 
 [value name=area set="[fcounter etc/area.recordnumber]" hide=1]
 [data table=area column=name key="[value area]" value="[cgi newarea]"] -->
-[data table=area column=selector key="[value area]" value="[value area]"] -->
 [elsif cgi newcat]
 <!-- Creating category: 
 [value name=cat set="[fcounter etc/cat.recordnumber]" hide=1]
 [data table=cat column=name key="[value cat]" value="[cgi newcat]"]
-[data table=cat column=area key="[value cat]" value="[data table=area col=selector key='[value area]']"] -->
+[data table=cat column=sel key="[value cat]" value="[value area]"] -->
 [/elsif]
 [elsif cgi setarea]
 <!-- Setting area: [value name=area set="[value code]" hide=1] -->
@@ -50,30 +39,6 @@
 [/if]
 
 [set Delete section]
-[tag flag write]area[/tag]
-mv_nextpage=__UI_BASE__/layout
-[if-mm advanced sitedesign=d]
-	[perl tables="area"]
-		my ($item) = $CGI->{area};
-		my $out;
-	    unless ($Db{area}) {
-			Log("no site design table 'area'");
-			return undef;
-		}
-		my $name = $Db{area}->field($item, 'name');
-		if ($Db{area}->delete_record($item)) {
-			$out .= "Deleted $name from area table<BR>";
-		}
-		else {
-			$out .= "Item $item not in $_ table (or delete failed)<BR>";
-		}
-		$Scratch->{ui_message} = $out;
-		return;
-	[/perl]
-[else]
-	[set ui_message]Not authorized to delete items.[/set]
-[/else]
-[/if-mm]
 [/set]
 
 <tr>
@@ -83,50 +48,95 @@ mv_nextpage=__UI_BASE__/layout
 <tr>
 <td valign=top bgcolor="__UI_C_INTBLOCK__">
 
+<FORM METHOD=GET ACTION="[process]" name="areaform">
+<input type=hidden name=ui_window_name value="mainwindow[scratch window_name]">
+<input type=hidden name=mv_todo        value=return>
+<input type=hidden name=mv_nextpage    value="@@MV_PAGE@@">
+
+
 <B>Area -- section:</B><br>
 
-<select name="area" size=10 onchange="this.form.target='_self';document.layoutform.submit()">
+<select name="area" size=10 onchange="this.form.submit()">
 [loop   search="
 			fi=area
-			tf=bar
+			tf=sel
 			tf=sort
 			tf=name
 			st=db
 			ra=yes
-			rf=code,name,bar
+			rf=code,name,sel
 		"
 		option=area ]
-<option value="[loop-code]">[loop-param bar] -- [loop-param name]
+<option value="[loop-code]">[loop-param sel] -- [loop-param name]
 [/loop]
 </select>
 <br>
 
-[set Section Properties]
-mv_todo=return
-mv_nextpage=__UI_BASE__/layout_area_properties
-[/set]
+<small>
+[button text="Section properties" hspace=2 vspace=5 src="admin/icon_pages.gif" hidetext=1]
+[/button]
 
-<input onclick="window.open('', 'ui_prop', 
-			'resizable=1,scrollbars=1,width=750'); this.form.target='ui_prop'" 
-type=submit name=mv_click value="Section Properties">
+[button text="Sort section higher" src="admin/up.gif" hidetext=1]
+	[flag type=write table=area]
+	[perl tables=area]
+		my $db = $Db{area} || return;
+		my $curr = $db->field($CGI->{area}, 'sort');
+		$curr =~ s/^0+//;
+		$curr = 0 if ! $curr || $curr < 0;
+		$curr--;
+		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		return;
+	[/perl]
+[/button]
 
-<br>
 
-[set Create section]
-mv_todo=back
-mv_nextpage=__UI_BASE__/layout_create
-ui_varname=newarea
-ui_title=New section name
-[/set]
+[button text="Sort section lower" src="admin/down.gif" hidetext=1]
+	[flag type=write table=area]
+	[perl tables=area]
+		my $db = $Db{area} || return;
+		my $curr = $db->field($CGI->{area}, 'sort');
+		$curr =~ s/^0+//;
+		$curr = 0 if ! $curr || $curr < 0;
+		$curr++;
+		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		return;
+	[/perl]
+[/button]
 
-<input onclick="window.open('', 'create_window', 
-			'resizable=1,width=240,height=120'); this.form.target='create_window'" 
-	type=submit name=mv_click value="Create section">
+[button text="Create section" src="admin/plus.gif" hidetext=1]
+	mv_todo=back
+	newarea=NEW
+[/button]
 
-<br>
-
-<input type=submit name=mv_click value="Delete section"
-	 onClick="this.form.target='_self'; return confirm('Are you sure you want to delete this section?')">
+[button
+	text="Delete section" src="admin/delete.gif" 
+	confirm="Are you sure you want to delete this section?"
+ hidetext=1]
+	[tag flag write]area[/tag]
+	[if-mm advanced sitedesign=d]
+		[perl tables="area"]
+			my ($item) = $CGI->{area};
+			my $out;
+			unless ($Db{area}) {
+				Log("no site design table 'area'");
+				return undef;
+			}
+			my $name = $Db{area}->field($item, 'name');
+			if ($Db{area}->delete_record($item)) {
+				$out .= "Deleted $name from area table<BR>";
+			}
+			else {
+				$out .= "Item $item not in $_ table (or delete failed)<BR>";
+			}
+			$Scratch->{ui_message} = $out;
+			return;
+		[/perl]
+	[else]
+		[set ui_message]Not authorized to delete layout items.[/set]
+	[/else]
+	[/if-mm]
+[/button]
+</small>
 
 
 </td>
@@ -138,7 +148,7 @@ ui_title=New section name
 
 <B>Contains:</B><BR>
 
-<select name="cat" size=10>
+<select name="cat" size=10 [if !value cat]onChange="this.form.submit()"[/if]>
 [loop   search="
 			fi=cat
 			st=db
@@ -149,70 +159,79 @@ ui_title=New section name
 
 			co=yes
 
-			sf=area
+			sf=sel
 			op=rm
-			se=[data table=area col=selector key='[value area]']
+			se=[value area]
 
 			rf=code,name,sort
 			" option=cat]
-<OPTION VALUE="[loop-code]">[loop-param name] ([loop-param sort])
+<OPTION VALUE="[loop-code]">[loop-param name]
 [/loop]
 </select>
 <br>
+<small>
+[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="admin/icon_pages.gif"][/button]
 
-[set Category Properties]
-mv_todo=return
-mv_nextpage=__UI_BASE__/layout_cat_properties
-[/set]
-
-<input onclick="window.open('', 'ui_prop', 
-			'resizable=1,scrollbars=1,width=750'); this.form.target='ui_prop'" 
- type=submit name=mv_click value="Category Properties">
-<br>
-[set Create category]
-mv_todo=back
-mv_nextpage=__UI_BASE__/layout_create
-ui_varname=newcat
-ui_title=New category name
-[/set]
-
-<input onclick="window.open('', 'create_window', 
-			'resizable=1,width=240,height=120'); this.form.target='create_window'" 
-	type=submit name=mv_click value="Create category">
-
-[set Delete category]
-[tag flag write]cat[/tag]
-mv_nextpage=__UI_BASE__/layout
-[if-mm advanced sitedesign=d]
-	[perl tables="cat"]
-		my ($item) = $CGI->{cat};
-		my $out;
-	    unless ($Db{area}) {
-			Log("no site design table 'cat'");
-			return undef;
-		}
-		my $name = $Db{cat}->field($item, 'name');
-		if ($Db{cat}->delete_record($item)) {
-			$out .= "Deleted $name from cat table<BR>";
-		}
-		else {
-			$out .= "Item $item not in $_ table (or delete failed)<BR>";
-		}
-		$Scratch->{ui_message} = $out;
+[button text="Sort category higher" hidetext=1 src="admin/up.gif"]
+	[flag type=write table=cat]
+	[perl tables=cat]
+		my $db = $Db{cat} || return;
+		my $curr = $db->field($CGI->{cat}, 'sort');
+		$curr =~ s/^0+//;
+		$curr = 0 if ! $curr || $curr < 0;
+		$curr--;
+		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
 		return;
 	[/perl]
-[else]
-	[set ui_message]Not authorized to delete items.[/set]
-[/else]
-[/if-mm]
-[/set]
+[/button]
 
+[button text="Sort category lower" hidetext=1 src="admin/down.gif"]
+	[flag type=write table=cat]
+	[perl tables=cat]
+		my $db = $Db{cat} || return;
+		my $curr = $db->field($CGI->{cat}, 'sort');
+		$curr =~ s/^0+//;
+		$curr = 0 if ! $curr || $curr < 0;
+		$curr++;
+		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
+		return;
+	[/perl]
+[/button]
 
-<br>
-<input type=submit name=mv_click value="Delete category"
-	 onClick="this.form.target='_self'; return confirm('Are you sure you want to delete this category?')">
-<br><br>
-<small><small><i>Values in (parentheses) are the sort precedence. Ties are sorted by title.</I></small></small>
+[button text="Create category" hidetext=1 src="admin/plus.gif"]
+	mv_todo=back
+	newcat=NEW
+[/button]
+
+[button text="Delete category" hidetext=1 src="admin/delete.gif"
+	 confirm="Are you sure you want to delete this category?"
+]
+	[tag flag write]cat[/tag]
+	mv_nextpage=@@MV_PAGE@@
+	[if-mm advanced sitedesign=d]
+		[perl tables="cat"]
+			my ($item) = $CGI->{cat};
+			my $out;
+			unless ($Db{cat}) {
+				Log("no site design table 'cat'");
+				return undef;
+			}
+			my $name = $Db{cat}->field($item, 'name');
+			if ($Db{cat}->delete_record($item)) {
+				$out .= "Deleted $name from cat table<BR>";
+			}
+			else {
+				$out .= "Item $item not in $_ table (or delete failed)<BR>";
+			}
+			$Scratch->{ui_message} = $out;
+			return;
+		[/perl]
+	[else]
+		[set ui_message]Not authorized to delete items.[/set]
+	[/else]
+	[/if-mm]
+[/button]
+</small>
 
 </td>
 
@@ -224,6 +243,9 @@ mv_nextpage=__UI_BASE__/layout
 
 <td>
 [set name="<--"]
+[/set]
+
+[button text="Move category left" hidetext=1 src="admin/left.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -235,7 +257,7 @@ mv_nextpage=__UI_BASE__/layout
 	my $area = $CGI->{area};
 	@codes = split /\0/, $CGI->{add_cat};
 	for(@codes) {
-		my $curr = $db->field($_, 'area');
+		my $curr = $db->field($_, 'sel');
 		if($curr) {
 			$curr =~ s/\s+$//;
 			$curr .= " $area";
@@ -243,14 +265,14 @@ mv_nextpage=__UI_BASE__/layout
 		else {
 			$curr = $area;
 		}
-		$db->set_field($_, 'area', $curr);
+		$db->set_field($_, 'sel', $curr);
 	}
 	return;
 [/perl]
 [/if-mm]
-[perl tables=cat]
-[/set]
-[set name="-->"]
+[/button]
+
+[button text="Move category right" hidetext=1 src="admin/right.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -264,19 +286,19 @@ mv_nextpage=__UI_BASE__/layout
 	my @there;
 	foreach my $one (@codes) {
 		my %seen;
-		my $curr = $db->field($one, 'area');
+		my $curr = $db->field($one, 'sel');
 		Log("current = $curr");
-		@there = grep $_ ne $area, split /\s+/, $curr;
+		@there = grep $_ ne $area, split /[\0\s]+/, $curr;
 		Log("now = @there");
 		@there = grep !$seen{$_}++, @there;
-		$db->set_field($one, 'area', join " ", @there);
+		$curr = join " ", @there;
+		Log("now current = $curr");
+		$db->set_field($one, 'sel', join " ", @there);
 	}
 	return;
 [/perl]
 [/if-mm]
-[/set]
-<INPUT TYPE=submit onClick="this.form.target='_self'"  NAME=mv_click VALUE="&lt;--">
-<INPUT TYPE=submit onClick="this.form.target='_self'" NAME=mv_click VALUE="--&gt;">
+[/button]
 </td>
 
 <td VALIGN=top><B>Available categories:</B><br>
@@ -286,26 +308,536 @@ mv_nextpage=__UI_BASE__/layout
 			st=db
 			ml=1000
 
-			tf=sort
 			tf=name
 
 			co=yes
 
-			sf=area
+			sf=sel
 			op=rn
 			se=[data table=area col=selector key='[value area]']
 
 			rf=code,name,sort
 			"]
-<OPTION VALUE="[loop-code]">[loop-param name] ([loop-param sort])
+<OPTION VALUE="[loop-code]">[loop-param name]
 [/loop]
 </select>
 
 </td>
 </tr>
 </table>
+</form>
 </td>
+</tr>
+</table>
 
+<table __UI_T_PROPERTIES__>
+<tr>
+<td valign=top bgcolor="__UI_C_INTBLOCK__">
+<!--- BEGIN SECTION PROPERTIES -->
+
+[value name=mv_data_table set="area" hide=1]
+
+[perl tables="[value mv_data_table]"]
+my $table = $Values->{mv_data_table};
+$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
+if ($table ne $Values->{mv_data_table}) {
+	$Values->{mv_data_table} = $table;
+}
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || '' ;
+$Values->{ui_data_fields} =~ s/\0+/ /g;
+return;
+[/perl]
+
+[set process_ui_area]
+setarea=[cgi selector]
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	return unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	return;
+[/perl]
+[/set]
+
+
+[loop list="[value area]" prefix=table]
+<FORM METHOD=POST name=layout_area_properties ACTION="[area ui]">
+<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<INPUT TYPE=hidden NAME=from_section VALUE=1>
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_area">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
+<INPUT TYPE=hidden name=mv_data_fields value="code sel which_page link_type name">
+<INPUT TYPE=hidden NAME=code VALUE="[table-code]">
+
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="admin/icon_pages.gif">&nbsp;Section Properties</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Name</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT SIZE=20 NAME=name Value="[table-data area name]">
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Page&nbsp;class</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<input type=hidden name="ui_filter:which_page" value="null_to_space">
+	<table> <tr> <td>
+		<small>
+		<select size=3 name="which_page" MULTIPLE>
+		[calc]
+			my (%current);
+			my (%seen);
+			my (@current) = split /\s+/, q{[table-data area which_page]};
+			@current{@current} = @current;
+			my @passed = grep !$seen{$_}, split /[\s,\0]+/,
+							q{[loop search='
+										fi=area
+										st=db
+										ra=yes
+										un=yes
+										rf=which_page
+									'][loop-code] [/loop]};
+			my $out = '';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if defined $current{$_};
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</select>
+	</td>
+	<td>
+	<input size=16 name="which_page" value="">
+	</td></tr></table>
+	</small>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Page area</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<input type=hidden name="ui_filter:sel" value="nullselect">
+	<table><tr><td>
+	<small>
+	<INPUT SIZE=8 NAME=sel value="">
+	</td>
+	<td>
+	<small>
+	<select name=sel>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $curr = q{[table-data area sel]};
+		my @passed = grep /\S/, split /\s+/, q{[loop search="ra=yes/fi=area/st=db/tf=sel/rf=sel/un=yes"][loop-code] [/loop]};
+		my $out = '<option value=""> &lt;--New';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $curr eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	</td></tr></table>
+	</td>
+	[set ui_area_type][table-data area link_type][/set]
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Link type</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<select name=link_type onChange="this.form.submit()">
+		[loop lr=1 option=link_type
+		list="
+none	No link
+external	External link (http://....)
+internal	Interchange page
+search	Interchange search
+"]<OPTION VALUE="[loop-code]">[loop-pos 1]
+		[/loop]
+	</SELECT>
+	</td>
+	[set ui_area_type][table-data area link_type][/set]
+</tr>
+[if scratch ui_area_type eq external]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<INPUT TYPE=hidden name=mv_data_fields value="page">
+	<small><B>URL for link</B>
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<small>
+	<input type=hidden name="ui_filter:page" value="nullselect">
+	<INPUT SIZE=50 NAME=page>
+	</td>
+</tr>
+
+[elsif scratch ui_area_type eq internal]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Internal</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT TYPE=hidden name=mv_data_fields value="page">
+	<input type=hidden name="ui_filter:page" value="null_to_space">
+	<select name=page>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $page;
+		($page, $ui_arg) = split /\s+/, q{[table-data area page]}, 2;
+		my @passed = split /\s+/, $Tag->list_pages();
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $page eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT><INPUT NAME=page SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+
+[/elsif]
+[/if]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<SMALL><B>Banner&nbsp;image/icon</B></SMALL>
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<small>
+	<INPUT SIZE=50 NAME=banner_img value="[table-data area banner_image]">
+	</td>
+</tr>
+
+</table>
+
+<p>
+
+[button text="Change area"][/button]
+
+</form>
+[/loop]
+
+</td>
+<!--- END SECTION PROPERTIES -->
+
+<!--- BEGIN CATEGORY PROPERTIES -->
+<td valign=top bgcolor="__UI_C_INTBLOCK__" width=50%">
+
+[value name=mv_data_table set="cat" hide=1]
+
+[perl tables="[value mv_data_table]"]
+my $table = $Values->{mv_data_table};
+$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
+if ($table ne $Values->{mv_data_table}) {
+	$Values->{mv_data_table} = $table;
+}
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || '' ;
+$Values->{ui_data_fields} =~ s/\0+/ /g;
+return;
+[/perl]
+
+[set process_ui_cat]
+setcat=[cgi selector]
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	return unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	return;
+[/perl]
+[/set]
+
+[loop list="[either][value cat][or]NEW[/either]" prefix=table]
+<FORM METHOD=POST ACTION="[area ui]">
+<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<INPUT TYPE=hidden NAME=from_category VALUE=1>
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code link_type name image icon banner_text banner_image">
+<INPUT TYPE=hidden NAME=code VALUE="[table-code]">
+
+<table __UI_T_PROPERTIES__>
+
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="admin/icon_pages.gif">&nbsp;Category properties</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Name</B></small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT SIZE=20 NAME=name Value="[table-data cat name]">
+	</td>
+</tr>
+
+[set ui_cat_type][table-data cat link_type][/set]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Link type</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		[display table=cat column=link_type key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_cat_type eq external]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>External</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT SIZE=30 NAME=url value="[table-data cat url]">
+	</td>
+</tr>
+[elsif scratch ui_cat_type eq internal]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Interchange page</B></small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<input type=hidden name="ui_filter:url" value="null_to_space">
+	<select name=url>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $url;
+		($url, $ui_arg) = split /\s+/, q{[table-data cat url]}, 2;
+		my @passed = split /\s+/, $Tag->list_pages();
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $url eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Parameters</B></small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT NAME=url SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_cat_type eq explode]
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Explode file</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<select name=explode>
+	[calc]
+		my (%current);
+		my (%seen);
+		my ($exp, $exp_parm) = q{[table-data cat explode]}, 2;
+		my @passed = $Tag->list_glob("$Config->{ProductDir}/*.txt");
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $exp eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=explode SIZE=16 VALUE="[calc]$exp_parm[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_cat_type eq simple]
+<INPUT TYPE=hidden NAME=mv_data_fields value="tab selector page">
+[calc]
+	$Values->{tab} = q{[table-data cat tab]} || $Config->{ProductFiles}[0];
+	return;
+[/calc]
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>Table
+	</td>
+	<td>
+		<small>
+			<SELECT NAME=tab>
+			[loop list="[list-databases]" option=tab]<OPTION>[loop-code][/loop]
+			</SELECT>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>field=column pairs
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data cat selector]</TEXTAREA>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>Results page
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<select name=page>
+		[calc]
+			my (%current);
+			my (%seen);
+			my $page = q{[table-data cat page]};
+			my @passed = split /\s+/, $Tag->list_pages();
+			my $out = '<OPTION VALUE="">--default--';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if $page eq $_;
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</SELECT>
+	</td>
+</tr>
+
+[/elsif]
+[elsif scratch ui_cat_type eq complex]
+
+<INPUT TYPE=hidden NAME=mv_data_fields value="search">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
+<INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="cat=[table-code]">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	[set Create]
+	mv_todo=back
+	mv_nextpage=__UI_BASE__/search_wizard
+	[/set]
+	<B>Complex search link</B><br><small><INPUT TYPE=submit
+						name=mv_click
+						value="Create"
+						onClick="
+							this.form.ui_target.value=window.name;
+							this.form.ui_searchblob.value=this.form.search.value;
+							this.form.target='search_prop';
+						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		[calc]
+		my $n = 4;
+		if($Scratch->{search_page}) {
+			$stuff = delete $Scratch->{search_page};
+			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^\s+//mg;
+			$stuff =~ s/\s+$//mg;
+		}
+		else {
+			$stuff = q{[table-data cat search]};
+		}
+		if($stuff =~ /\S/) {
+			$n = 2 + ($stuff =~ s/[\r\n]+/\n/g);
+		}
+		else { $stuff = '' };
+		return "<TEXTAREA name=search COLS=30 ROWS=$n>$stuff</TEXTAREA>";
+		[/calc]
+	</td>
+</tr>
+
+[/elsif]
+[/if]
+
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><b>Banner Text
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT SIZE=30 NAME=banner_text value="[table-data cat banner_text]">
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><b>Banner Image
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
+	</td>
+</tr>
+
+</table>
+
+<INPUT TYPE=hidden NAME=mv_auto_export VALUE="[value mv_data_table]">
+
+[button text="Change category"]
+[/button]
+
+</form>
+[/loop]
+
+</body>
+</html>
+</td>
+<!--- END CATEGORY PROPERTIES -->
 </tr>
 
 <tr>
@@ -328,8 +860,6 @@ mv_nextpage=__UI_BASE__/layout
 [/if]
 
 </table>
-
-</form>
 
 <BR>
 @_UI_STD_FOOTER_@
