@@ -38,27 +38,21 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-Please confirm your request to stop shopping by click the button below. All
-items will be cleared from your shopping cart.
+Please confirm your request to stop shopping by clicking the button below. All
+items will be cleared from your shopping cart, your name and address information
+will be expunged, and all saved settings from your visit will disappear.
 
 <br><br>
 
-Thank you for visiting.
+Thank you for visiting!
 
 <br><br>
 					
-<FORM ACTION="[process]" METHOD="POST">
+<form action="[process]" method="POST">
 <input type=hidden name=mv_session_id value="[data session id]">
-<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
-<INPUT TYPE=hidden NAME=mv_orderpage VALUE=index>
-<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=ord/basket>
-
-[item-list]
-  <input type=hidden name="[quantity-name]" value=0>
-[/item-list]
-
-<INPUT TYPE=submit VALUE="Remove Shopping Cart Items">
-
+<input type=hidden name=mv_todo      value=cancel>
+<input type=hidden name=mv_nextpage  value=index>
+<input type=submit value="Stop Shopping">
 </form>
 
 <!-- END CONTENT -->
