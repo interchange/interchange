@@ -142,22 +142,22 @@
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
-[if value showarchive]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__">
+[if value showarchive]
 <input type=submit name="showpending" value="Show pending orders">
 [set archive_sense]=[/set]
-</td>
-</tr>
 [else]
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
 <input type=submit name="showarchive" value="Show archived orders">
 [set archive_sense]!=[/set]
-</td>
-</tr>
 [/else]
 [/if]
+</td>
+
+<td bgcolor="__UI_C_INTBLOCK__">
+<a href="[area __UI_BASE_/orderstats]">View Order Stats</a>
+</td>
+</tr>
 
 <tr>
 <td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
