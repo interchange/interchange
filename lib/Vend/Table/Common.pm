@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.8 2000-08-06 19:58:24 heins Exp $
+# $Id: Common.pm,v 1.9 2000-09-05 20:36:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -756,6 +756,12 @@ my %Sort = (
     rn  => sub { $b <=> $a              },
 );
 
+my $fafh;
+sub file_access {
+	my $function = shift;
+	return <$fafh> 
+}
+
 sub import_ascii_delimited {
     my ($infile, $options, $table_name) = @_;
 	my ($format);
@@ -845,6 +851,17 @@ sub import_ascii_delimited {
 	}
 	else {
 		$out = $options->{Object};
+	}
+
+	if(! $out) {
+		die errmsg(q{No database object for table: %s
+
+Probable mismatch of Database directive to database type,
+for example calling DBI without proper modules or database
+access.
+},
+					$table_name,
+					);
 	}
 	my $fields;
     my (@fields, $key);
