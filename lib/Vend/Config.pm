@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25 2000-11-03 23:38:30 heins Exp $
+# $Id: Config.pm,v 1.25.2.1 2000-11-25 00:15:26 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.1 $, 10);
 
 my %CDname;
 
@@ -290,6 +290,7 @@ sub global_directives {
 	['Profiles',	  	 'profile',     	 ''],
     ['Catalog',			 'catalog',     	 ''],
     ['SubCatalog',		 'catalog',     	 ''],
+    ['AutoVariable',	 'autovar',     	 ''],
 
     ];
 	return $directives;
@@ -436,6 +437,7 @@ sub catalog_directives {
     ['IPC',		 		 'array',     	 	 ''],
     ['IPCmode',		 	 'integer',    	 	 '0777'],
     ['IPCdir',		 	 undef,    	 	     ''],
+    ['AutoVariable',	 'autovar',     	 ''],
 
     ];
 
@@ -547,85 +549,98 @@ sub substitute_variable {
 # Directives which have no defined default value ("undef") must be specified
 # in the config file.
 
-sub config {
-	my($catalog, $dir, $confdir, $subconfig) = @_;
-    my($directives, $d, %parse, $var, $value, $lvar, $parse);
-    my($directive);
-	%CDname = ();
-	$C = {};
-	$C->{CatalogName} = $catalog;
-	$C->{VendRoot} = $dir;
-	$C->{ConfDir} = $confdir;
+my($directives, $directive, %parse);
 
-	unless (defined $subconfig) {
-		$C->{ErrorFile} = 'error.log';
-		$C->{ConfigFile} = 'catalog.cfg';
+sub config {
+	my($catalog, $dir, $confdir, $subconfig, $existing, $passed_file) = @_;
+    my($d, $parse, $var, $value, $lvar);
+
+	if(ref $existing) {
+::logDebug("existing=$existing");
+		$C = $existing;
 	}
 	else {
-        $C->{ConfigFile} = "$catalog.cfg";
-		$C->{BaseCatalog} = $subconfig;
+		undef $existing;
+		$C = {};
+		$C->{CatalogName} = $catalog;
+		$C->{VendRoot} = $dir;
+		$C->{ConfDir} = $confdir;
+
+		unless (defined $subconfig) {
+			$C->{ErrorFile} = 'error.log';
+			$C->{ConfigFile} = 'catalog.cfg';
+		}
+		else {
+			$C->{ConfigFile} = "$catalog.cfg";
+			$C->{BaseCatalog} = $subconfig;
+		}
+	}
+
+	unless($directives) {
+		$directives = catalog_directives();
+		foreach $d (@$directives) {
+			my $ucdir = $d->[0];
+			$directive = lc $d->[0];
+			$CDname{$directive} = $ucdir;
+			$parse{$directive} = 'parse_' . $d->[1] if defined $d->[1];
+		}
 	}
 
     no strict 'refs';
 
-    $directives = catalog_directives();
+	if(! $subconfig and ! $existing ) {
+		foreach $d (@$directives) {
+			my $ucdir = $d->[0];
+			$directive = lc $d->[0];
+			$parse = $parse{$directive} || undef;
 
-	foreach $d (@$directives) {
-		($directive = $d->[0]) =~ tr/A-Z/a-z/;
-		$CDname{$directive} = $d->[0];
-		if (defined $d->[1]) {
-			$parse = 'parse_' . $d->[1];
-		} else {
-			$parse = undef;
+			$value = ( 
+						! defined $MV::Default{$catalog} or
+						! defined $MV::Default{$catalog}{$ucdir}
+					 )
+					 ? $d->[2]
+					 : $MV::Default{$catalog}{$ucdir};
+
+			if (defined $parse and defined $value) {
+#::logDebug("parsing default directive=$directive ucdir=$ucdir parse=$parse value=$value CDname=$CDname{$directive}");
+				$value = &$parse($ucdir, $value);
+			}
+			$C->{$CDname{$directive}} = $value;
 		}
-		$parse{$directive} = $parse;
-
-		# We don't set up defaults if it is a subconfiguration
-		next if defined $subconfig;
-
-		$value = ( 
-					! defined $MV::Default{$catalog} or
-					! defined $MV::Default{$catalog}{$d->[0]}
-				 )
-				 ? $d->[2]
-				 : $MV::Default{$catalog}{$d->[0]};
-
-		if (defined $parse and defined $value and ! defined $subconfig) {
-			$value = &$parse($d->[0], $value);
-		}
-		$C->{$CDname{$directive}} = $value;
 	}
 
-	my(@include) = ($C->{ConfigFile});
+	my(@include) = ($passed_file || $C->{ConfigFile});
 	my $done_one;
 	my ($db, $dname, $nm);
 	my ($before, $after);
 	my $recno = 'C0001';
 
 	my @hidden_config;
-	@hidden_config = grep -f $_, 
-							 "$C->{CatalogName}.site",
-							 "$Global::ConfDir/$C->{CatalogName}.before",
-							 @{$Global::ConfigAllBefore},
-						 ;
+	if(! $existing and ! $subconfig) {
+		@hidden_config = grep -f $_, 
+								 "$C->{CatalogName}.site",
+								 "$Global::ConfDir/$C->{CatalogName}.before",
+								 @{$Global::ConfigAllBefore},
+							 ;
 
-	# Backwards because of unshift;
-	for (@hidden_config) {
-		unshift @include, $_;
-	}
+		# Backwards because of unshift;
+		for (@hidden_config) {
+			unshift @include, $_;
+		}
 
-	@hidden_config = grep -f $_, 
-							 "$Global::ConfDir/$C->{CatalogName}.after",
-							 @{$Global::ConfigAllAfter},
-						 ;
+		@hidden_config = grep -f $_, 
+								 "$Global::ConfDir/$C->{CatalogName}.after",
+								 @{$Global::ConfigAllAfter},
+							 ;
 
-	for (@hidden_config) {
-		push @include, $_;
+		for (@hidden_config) {
+			push @include, $_;
+		}
 	}
 
 	# %MV::Default holds command-line mods to config, which we write
 	# to a file for easier processing 
-	if(defined $MV::Default{$catalog}) {
+	if(! $existing and defined $MV::Default{$catalog}) {
 		my $fn = "$Global::ConfDir/$catalog.cmdline";
 		open(CMDLINE, ">$fn")
 			or die "Can't create cmdline configfile $fn: $!\n";
@@ -727,7 +742,8 @@ CONFIGLOOP:
 		m/^(\w+)\s+(.*)/ or config_error("Syntax error");
 		$var = $1;
 		$value = $2;
-		($lvar = $var) =~ tr/A-Z/a-z/;
+		$lvar = lc $var;
+#::logDebug("parsing directive=$var lvar=$lvar CDname=$CDname{$lvar} parse=$parse{$lvar}");
 		my($codere) = '[-\w_#/.:]+';
 
 		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
@@ -800,7 +816,7 @@ EOF
 			$tmpval =~ /([\000-\377]*)/;
 			$value .= $1;
 		}
-			
+
 		# Now we can give an unknown error
 		config_error("Unknown directive '$var'"), next unless defined $CDname{$lvar};
 
@@ -871,7 +887,7 @@ EOF
 	}
 
 	# We need to make this directory if it isn't already there....
-	if($C->{ScratchDir} and ! -e $C->{ScratchDir}) {
+	if(! $existing and $C->{ScratchDir} and ! -e $C->{ScratchDir}) {
 		mkdir $C->{ScratchDir}, 0700
 			or die "Can't make temporary directory $C->{ScratchDir}: $!\n";
 	}
@@ -881,6 +897,8 @@ EOF
 	}
 
 } # end CONFIGLOOP
+
+	return $C if $existing;
 
     # check for unspecified directives that don't have default values
 
@@ -904,7 +922,6 @@ EOF
 	}
 	# Ugly legacy stuff so API won't break
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
-	%CDname = ();
 	return $C;
 }
 
@@ -1225,6 +1242,62 @@ EOF
 	return $c;
 	
 }
+
+sub get_directive {
+	my $name = shift;
+	$name = $CDname{lc $name} || $name;
+	no strict 'refs';
+	if($C) {
+		return $C->{$name};
+	}
+	else {
+		return ${"Global::$name"};
+	}
+}
+
+# Changes configuration directives into Variable settings, i.e.
+# DescriptionField becomes __DescriptionField__, ProductFiles becomes
+# __ProductFiles_0__, ProductFiles_1__, etc. Doesn't handle hash keys
+# that have non-word chars.
+
+sub parse_autovar {
+	my($var, $val) = @_;
+
+	return '' if ! $val;
+
+	my @dirs = grep /\w/, split /[\s,\0]+/, $val;
+
+	my $name;
+	foreach $name (@dirs) {
+		next unless $name =~ /^\w+$/;
+		my $val = get_directive($name);
+		if(! ref $val) {
+#::logDebug("Found scalar = $name");
+			parse_variable('Variable', "$name $val");
+		}
+		elsif ($val =~ /ARRAY/) {
+#::logDebug("Found array = $name");
+			for(my $i = 0; $i < @$val; $i++) {
+				my $an = "${name}_$i";
+#::logDebug("an=$an");
+				parse_variable('Variable', "$an $val->[$i]");
+			}
+		}
+		elsif ($val =~ /HASH/) {
+#::logDebug("Found hash = $name");
+			my ($k, $v);
+			while ( ($k, $v) = each %$val) {
+				next unless $k =~ /^\w+$/;
+				parse_variable('Variable', "$k $v");
+			}
+		}
+		else {
+			config_warn(::errmsg('%s directive not parsable by AutoVariable', $name));
+#::logDebug("Found something else = $name=$val");
+		}
+	}
+}
+
 
 # Checks to see if a globalsub, sub, or usertag is present
 
