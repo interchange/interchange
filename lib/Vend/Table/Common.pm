@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.19 2002-08-07 08:03:02 mheins Exp $
+# $Id: Common.pm,v 2.20 2002-09-10 17:29:09 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -245,6 +245,12 @@ sub record_exists {
     # in 5.002.
     my $r = $s->[$DBM]->EXISTS("k$key");
     return $r;
+}
+
+sub name {
+	my ($s) = shift;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	return $s->[$CONFIG]{name};
 }
 
 sub row_hash {

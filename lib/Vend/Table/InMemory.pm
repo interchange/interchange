@@ -1,6 +1,6 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.8 2002-08-07 08:03:02 mheins Exp $
+# $Id: InMemory.pm,v 2.9 2002-09-10 17:29:09 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common qw(!config !columns);
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 use strict;
 
 # 0: column names
@@ -226,6 +226,7 @@ sub ref {
 *test_column	= \&Vend::Table::Common::test_column;
 *column_index	= \&Vend::Table::Common::column_index;
 *field			= \&Vend::Table::Common::field;
+*name			= \&Vend::Table::Common::name;
 *numeric		= \&Vend::Table::Common::numeric;
 *set_field		= \&Vend::Table::Common::set_field;
 *suicide		= \&Vend::Table::Common::suicide;

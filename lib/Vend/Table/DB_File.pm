@@ -1,6 +1,6 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 2.3 2002-06-27 22:24:10 jon Exp $
+# $Id: DB_File.pm,v 2.4 2002-09-10 17:29:09 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -30,7 +30,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -132,6 +132,7 @@ sub open_table {
 *field_settor	= \&Vend::Table::Common::field_settor;
 *inc_field		= \&Vend::Table::Common::inc_field;
 *isopen			= \&Vend::Table::Common::isopen;
+*name			= \&Vend::Table::Common::name;
 *numeric		= \&Vend::Table::Common::numeric;
 *quote			= \&Vend::Table::Common::quote;
 *record_exists	= \&Vend::Table::Common::record_exists;
