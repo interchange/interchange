@@ -1,6 +1,6 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2.6.5 2001-02-25 15:31:27 heins Exp $
+# $Id: Parser.pm,v 1.2.6.6 2001-05-16 15:59:44 heins Exp $
 #
 # Vend::Parser - Interchange parser class
 # Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
@@ -67,7 +67,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.6 $, 10);
 
 
 sub new
@@ -159,6 +159,7 @@ sub parse
 				{
 					$eaten .= $1;
 					my $attr = lc $2;
+					$attr =~ tr/-/_/;
 #::logDebug("in parse, eaten=$eaten");
 					$attr =~ s/\.(.*)//
 						and $element = $1;
