@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.79 2001-06-21 15:15:00 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.80 2001-06-25 13:46:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.79 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.80 $, 10);
 
 @EXPORT = qw (
 
@@ -701,7 +701,7 @@ sub catch {
 
 	$body = pull_if($body);
 
-	unless ( $opt->{exact} ) {
+	if ( $opt->{exact} ) {
 		#----------------------------------------------------------------
 		# Convert multiple errors to 'or' list and compile it.
 		# Note also the " at (eval ...)" kludge to strip the line numbers
@@ -712,16 +712,36 @@ sub catch {
 		#----------------------------------------------------------------
 	}
 
-	#--------------------------------------------------------------------
-	# Note: If more than one error in $patt, this will return only the
-	# first one listed in the catch tag $body.
-	if( $body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s ) {
-		$body = $2;
+	if($opt->{exact}) {
+		#--------------------------------------------------------------------
+		# Note: If more than one error in $patt, this will return only the
+		# first one listed in the catch tag $body.
+		if( $body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s ) {
+			$body = $2;
+		}
+		else {
+			$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
+		}
+		#--------------------------------------------------------------------
 	}
 	else {
-		$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
+		my $found;
+		while ($body =~ s{\[(.+?)\](.*?)\[/\1\]}{}s ) {
+			my $re;
+			my $error = $2;
+			eval {
+				$re = qr{$1}
+			};
+			next if $@;
+			next unless $patt =~ $re;
+			$found = $error;
+			last;
+		}
+		$body = $found if $found;
 	}
-	#--------------------------------------------------------------------
+
+	$body =~ s/\s+$//;
+	$body =~ s/^\s+//;
 	return $body;
 }
 
