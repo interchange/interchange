@@ -123,6 +123,7 @@ EOF
 [loop
 	prefix=sm
 	search="[scratch ui_menu_sparams]"
+	safe_data=1
 ][sm-calc]
 	my $pre  = '';
 	my $post = '';
