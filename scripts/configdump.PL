@@ -20,12 +20,16 @@ sub doit {
 DOIT: {
 	local ($/);
 	local($_) = <<'_EoP_';
-#!/usr/bin/perl 
-##!~_~perlpath~_~    
+#!/usr/bin/perl
+##!~_~perlpath~_~
 #
-# Interchange configuration dumper (version see POD documentation)
+# Interchange configuration dumper
+#
+# $Id: configdump.PL,v 1.8 2000-09-25 16:35:28 zarko Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
+#
+# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,13 +51,16 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-BEGIN {
+use strict;
+use Vend::Config;
+use Vend::Util;
 
+BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 	$Global::ErrorFile = "$Global::VendRoot/error.log";
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
@@ -68,22 +75,14 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
-
 }
 
-### END CONFIGURABLE VARIABLES
+### END CONFIGURATION VARIABLES
 
 # dummy function used by Config.pm
 sub debug { return undef }
 
 $Vend::ExternalProgram = 1;
-
-use lib $Global::VendRoot;
-use lib "$Global::VendRoot/lib";
-
-use strict;
-use Vend::Config;
-use Vend::Util;
 
 my $USAGE = <<EOF;
 usage: configdump catalog
@@ -95,9 +94,11 @@ unless ($#ARGV == 0) {
     exit 1;
 }
     
+my ($catalog, $name);
+
 $Vend::Cfg = {};
 
-my $catalog = shift;
+$catalog = shift;
 
 my($name,$dir,$param,$subcat,$subconfig,$junk);
 chdir $Global::VendRoot;
