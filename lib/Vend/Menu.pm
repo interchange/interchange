@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.6 2002-08-12 16:16:18 mheins Exp $
+# $Id: Menu.pm,v 2.7 2002-08-12 17:10:13 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use Vend::Util;
 use strict;
@@ -76,6 +76,7 @@ my %transform = (
 		return 1 if ref($fields) ne 'ARRAY';
 		my $status = 1;
 		for(@$fields) {
+			next if ! length($row->{$_});
 			$status = $status && Vend::Tags->if_mm('advanced', $row->{$_});
 		}
 		return $status;
