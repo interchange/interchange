@@ -3,13 +3,13 @@
                 U P G R A D I N G     I N T E R C H A N G E
 
 Interchange is designed to be compatible between major versions, and
-for the most part a catalog designed under Interchange 4.6 should
-be compatible with 4.7.
+for the most part a catalog designed under Interchange 4.8 should
+be compatible with 4.9 and 5.0.
 
-Full information on upgrades is available in the document icupgrade(8)
-(in the distribution in pod/icupgrade.pod).
+More information on upgrades is available in the document icupgrade, part
+of the Interchange documentation package.
 
-BACKUP EVERYTHING BEFORE YOU START!
+BACK UP EVERYTHING BEFORE YOU START!
 
 
 TO UPGRADE FROM 4.8.x
