@@ -1,7 +1,7 @@
 <!-- page_edit new ----- -->
 
-<form action="[base-url]/__MV_PAGE__" method=POST ENCTYPE="multipart/form-data">
-<input type=hidden name=mv_action value=back>
+<form action="[area ui]" method=POST ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_todo value=back>
 <input type=hidden name=ui_template_version value="[version]">
 
 <table __UI_T_PROPERTIES__>
@@ -363,7 +363,7 @@ Log("Found component $compname, group $comptype");
 	[button text="Upload new template portion from file"]
 		mv_todo=return
 		[js]onclick="this.form.target='_self'"[/js]
-		mv_nextpage=__MV_PAGE__
+		mv_nextpage=@@MV_PAGE@@
 	[/button]</small></b>
 	</td>
 </tr>
@@ -718,7 +718,7 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	<td valign=top>
 	<b>Bottom of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>
@@ -728,7 +728,7 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	[button text="Upload new template portion from file"]
 		mv_todo=return
 		[js]onclick="this.form.target='_self'"[/js]
-		mv_nextpage=__MV_PAGE__
+		mv_nextpage=@@MV_PAGE@@
 	[/button]</small></b>
 	</td>
 </tr>
@@ -741,7 +741,7 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 EOF
 	my $hidden = '';
 	for(keys %hidden) {
-		$hidden .= q{<input type=hidden name="$_" value="};
+		$hidden .= qq{<input type=hidden name="$_" value="};
 		$hidden .= $Tag->filter('entities', $hidden{$_});
 		$hidden .= qq{">\n};
 	}
@@ -756,8 +756,9 @@ EOF
 <tr class=ralt>
 <td colspan=2>
 [set Preview]
-mv_nextpage=__UI_BASE__/page_preview
-mv_action=back
+ui_page_preview=1
+mv_todo=back
+mv_nextpage=__UI_BASE__/page_save
 [/set]
 
 [set Save]

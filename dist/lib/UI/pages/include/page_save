@@ -20,10 +20,18 @@ Log("elements: $CGI->{ui_template_layout}");
 
 	my @keys = keys %$CGI;
 
+	my $found_set;
 	for(@keys) {
 		next unless /^ui_control_(.*)/;
 		my $k = $1;
+		$found_set = 1;
 		push @layout, "[tmp $k]" . $CGI->{$_} . '[/tmp]';
+	}
+
+	if(! $found_set) {
+		$CGI->{ui_page_setting_text} =~ s/\r\n/\n/g;
+		$CGI->{ui_page_setting_text} =~ tr/\r/\n/;
+		push @layout, $CGI->{ui_page_setting_text};
 	}
 
 	@insert = split /\0/, ($CGI->{ui_content} || 'Page content.'); 
@@ -35,26 +43,34 @@ Log("elements: $CGI->{ui_template_layout}");
 	push @layout, '[control reset=1]' if @components;
 
 Log("components: " . join ",", @components);
-	for(@components) {
-		my $digit = $_;
-		my $comp = $CGI->{"$digit.ui_component"};
 
-		my $out = "\n[control-set]\n";
-		$out .= "[component]";
-		$out .= $comp;
-		$out .= "[/component]\n";
+	if(! @components) {
+		$CGI->{ui_component_text} =~ s/\r\n/\n/g;
+		$CGI->{ui_component_text} =~ tr/\r/\n/;
+		push @layout, $CGI->{ui_component_text};
+	}
+	else {
+		for(@components) {
+			my $digit = $_;
+			my $comp = $CGI->{"$digit.ui_component"};
 
-		my @els = grep /^$digit\.ui_control_/, keys %$CGI;
-		for (@els) {
-			my $val = $CGI->{$_};
-			my $name = $_;
-			$name =~ s/^\d+\.ui_control_//;
-			$out .= "[$name]";
-			$out .= $val;
-			$out .= "[/$name]\n";
+			my $out = "\n[control-set]\n";
+			$out .= "[component]";
+			$out .= $comp;
+			$out .= "[/component]\n";
+
+			my @els = grep /^$digit\.ui_control_/, keys %$CGI;
+			for (@els) {
+				my $val = $CGI->{$_};
+				my $name = $_;
+				$name =~ s/^\d+\.ui_control_//;
+				$out .= "[$name]";
+				$out .= $val;
+				$out .= "[/$name]\n";
+			}
+			$out .= "[/control-set]\n";
+			push @layout, $out;
 		}
-		$out .= "[/control-set]\n";
-		push @layout, $out;
 	}
 
 	push @layout, '[control reset=1]' if @components;
@@ -98,15 +114,22 @@ Log("components: " . join ",", @components);
 		}
 	}
 
+	delete $Scratch->{ui_output_page};
+
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
-	if( ! $page) {
+	if( $CGI->{ui_page_preview} ) {
+		$page = "preview.html" unless $page;
+		$page =~ s:.*/::;
+		$page = "tmp/$Session->{id}.$page";
+	}
+	elsif( ! $page) {
 		$Scratch->{ui_error} = errmsg("No page name given.");
 		$Tag->bounce('__UI_BASE__/error');
 		return;
 	}
-	$page = "pages/$page" if $page !~ m{^pages/};
 	$page .= $Config->{HTMLsuffix}
 		unless $page =~ /$Config->{HTMLsuffix}$/;
+	$page = "pages/$page" if $page !~ m{^pages/|^tmp/};
 Log("final page=$page");
 	push @out, '';
 	unless ($Tag->write_relative_file($page, (join "\n", @out))) {
