@@ -23,16 +23,6 @@ in <b>Bold</b>.
 		ml=1000
 	'][loop-change 1][condition][loop-pos 1][/condition],~~[loop-pos 1]~~[/loop-change 1]
 	,[loop-code]=[loop-pos 2][/loop][/tmp]
-
-[tmp country_options]
-=--select--[loop search='
-		fi=country.txt
-		rf=0,name
-		tf=name
-		ra=yes
-		ml=1000
-	'],
-[loop-code]=[loop-pos 1][/loop][/tmp]
 [else]
 [tmp state_options]
 [loop search='
@@ -42,6 +32,8 @@ in <b>Bold</b>.
 		ra=yes
 		ml=1000
 	'][loop-code]=[loop-pos 2],[/loop][/tmp]
+[/else]
+[/if]
 
 [tmp country_options]
 =--select--[loop search='
@@ -50,9 +42,7 @@ in <b>Bold</b>.
 		tf=name
 		ra=yes
 		ml=1000
-	'],[loop-code]=[loop-pos 1][/loop][/tmp]
-[/else]
-[/if]
+	'],[loop-code]=[loop-pos 1][loop-calc] return '*' if "[loop-code]" eq 'US'; [/loop-calc][/loop][/tmp]
 
 [table-editor 
 
