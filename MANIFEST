@@ -658,7 +658,7 @@ scripts/expire.PL
 scripts/expireall.PL
 scripts/localize.PL
 scripts/makecat.PL
-scripts/minivend.PL
+scripts/interchange.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
