@@ -193,6 +193,7 @@ NOTE: Not active unless complex search selected above.<br>
 		display_type => 'name',
 	);
 	my %catmap;
+	my $narrow;
 	my $lt;
 	my $search_code;
 	if($CGI->{cat_type} eq 'simple') {
@@ -201,6 +202,7 @@ NOTE: Not active unless complex search selected above.<br>
 		$search_code = '';
 	}
 	elsif($CGI->{cat_type} eq 'narrow') {
+		$narrow = 1;
 		$lt = 'simple';
 		$selector = <<EOF;
 category=~CATEGORY~
@@ -255,7 +257,8 @@ EOF
 		foreach my $row (@$ary) {
 			my $area = $row->[$fh->{$acol}];
 			my $cat  = $row->[$fh->{$ccol}];
-			next if $catdone{$cat}++;
+			my $donetag = $narrow ? "$area:$cat" : $cat;
+			next if $catdone{$donetag}++;
 			my $key = $cdb->set_row('');
 			return "no cat autonumbering available" if ! $key;
 
