@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6.2.1.2.4 2001-05-23 03:47:38 jon Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.5 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 1.6.2.1.2.4 2001-05-23 03:47:38 jon Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.5 2001-06-29 00:08:32 jon Exp $
 
 =head1 DESCRIPTION
 

@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.6 2001-05-23 03:47:38 jon Exp $
+# $Id: localize.PL,v 1.7.2.1.2.7 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -370,7 +370,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.6 2001-05-23 03:47:38 jon Exp $
+# $Id: localize.PL,v 1.7.2.1.2.7 2001-06-29 00:08:32 jon Exp $
 
 =head1 SYNOPSIS
 
@@ -440,12 +440,13 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-http://developer.akopia.com/
+http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Valuable contributions made by Stefan Hornburg,
-<racke@linuxia.de>.
+Mike Heins, <mheins@redhat.com>.
+
+Valuable contributions made by Stefan Hornburg, <racke@linuxia.de>.
 
 =cut
 

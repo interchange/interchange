@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.8.2.1.2.2 2001-05-23 03:47:38 jon Exp $
+# $Id: dump.PL,v 1.8.2.1.2.3 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -243,12 +243,11 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-# $Id: dump.PL,v 1.8.2.1.2.2 2001-05-23 03:47:38 jon Exp $
+# $Id: dump.PL,v 1.8.2.1.2.3 2001-06-29 00:08:32 jon Exp $
 
 =head1 SEE ALSO
 
 configdump(1), makecat(1), interchange(1)
-
 
 =head1 DESCRIPTION
 

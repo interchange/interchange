@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.17 2001-06-24 14:45:31 heins Exp $
+# $Id: makecat.PL,v 1.32.4.18 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2181,7 +2181,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.17 2001-06-24 14:45:31 heins Exp $
+# $Id: makecat.PL,v 1.32.4.18 2001-06-29 00:08:32 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2409,7 +2409,7 @@ Don't set umask to the value implied by mode.
 C<makecat> needs a template catalog to operate on. The I<Foundation
 Store> demo template is distributed with Interchange. You can
 also look for additional demo catalogs (mostly for ideas) at
-http://developer.akopia.com/.
+http://interchange.redhat.com/.
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
@@ -2536,7 +2536,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://developer.akopia.com/
+        http://interchange.redhat.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2563,13 +2563,14 @@ license.
 =head1 AUTHOR
 
 Mike Heins, <mheins@redhat.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail lists:
+direct help with the system. Use the Interchange mail list:
 
-    interchange-users	(English, subscribe at http://developer.akopia.com/)
+    interchange-users
 
-General information and documentation for Interchange is at:
+Information on subscribing to the list, and general information and
+documentation for Interchange is at:
 
-    http://developer.akopia.com/
+    http://interchange.redhat.com/
 
 =cut
 

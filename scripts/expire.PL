@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8.2.1.2.3 2001-05-23 03:47:38 jon Exp $
+# $Id: expire.PL,v 1.8.2.1.2.4 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -308,7 +308,7 @@ temporary files.
 
 =head1 SEE ALSO
 
-expireall(1), http://developer.akopia.com/
+expireall(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 

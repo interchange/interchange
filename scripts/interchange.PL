@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange version 4.7.5
 #
-# $Id: interchange.PL,v 1.15.2.51 2001-06-27 21:32:28 heins Exp $
+# $Id: interchange.PL,v 1.15.2.52 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -2876,20 +2876,21 @@ Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
 Solutions Group. Please do not contact the author for direct help with
 the system. Use the Interchange mail list:
 
-    interchange-users  (English, subscribe at http://interchange.redhat.com/)
+    interchange-users
 
-General information and documentation for Interchange is at:
+Information on subscribing to the list, as well as general information and
+documentation for Interchange is at:
 
     http://interchange.redhat.com/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 
-Original author of the Vend was Andrew Wilcox. Interchange could never
+The original author of Vend was Andrew Wilcox. Interchange could never
 have come into being without him.
 
 Stefan Hornburg has had his hand in many parts of Interchange, and is by
 far the most prolific bug-finder. He also was primarily responsible for
-bringing MiniMate, precursor to the Interchange UI database editor,
+bringing MiniMate, precursor to the Interchange store administration UI,
 to being as a supported facility. He continues to make valuable
 contributions.
 

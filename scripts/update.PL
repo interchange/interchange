@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 1.7.2.1.2.1 2001-05-23 03:47:38 jon Exp $
+# $Id: update.PL,v 1.7.2.1.2.2 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -331,11 +331,11 @@ C<update> program will terminate with an error.
 
 =head1 SEE ALSO
 
-http://developer.akopia.com/
+http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

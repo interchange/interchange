@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.8.2.1.2.2 2001-05-23 03:47:38 jon Exp $
+# $Id: restart.PL,v 1.8.2.1.2.3 2001-06-29 00:08:32 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -173,11 +173,11 @@ a system startup script.
 
 =head1 SEE ALSO
 
-interchange(1), http://developer.akopia.com/
+interchange(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
 
 _EoP_
