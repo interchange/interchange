@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.17 2001-02-05 13:19:28 heins Exp $
+# $Id: Config.pm,v 1.25.2.18 2001-02-13 14:15:22 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.18 $, 10);
 
 my %CDname;
 
@@ -340,6 +340,7 @@ sub catalog_directives {
 	['Suggest',			 'suggest',			 ''],
 	['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
+	['VarName',          'varname',           ''],
 	['ScratchDefault',	 'hash',     	 	 ''],
 	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],
@@ -1737,6 +1738,7 @@ my %IllegalValue = (
 								mv_ib 1
 								group 1
 								code  1
+								sku   1
 								quantity 1
 								item  1     /
 						},
@@ -1745,6 +1747,7 @@ my %IllegalValue = (
 								mv_ib 1
 								group 1
 								code  1
+								sku   1
 								quantity 1
 								item  1     /
 						}
