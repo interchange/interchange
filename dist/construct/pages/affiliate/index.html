@@ -9,6 +9,7 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
 [if !session logged_in]
 [or session login_table ne 'affiliate']
 	[bounce page="affiliate/login"]
@@ -63,15 +64,49 @@ ui_template_name: leftonly
 
 
 <TR>
-	<TH ALIGN=RIGHT>
+	<TD COLSPAN=2><HR>
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT VALIGN=top>
 	URL to enter catalog
 	</TH>
 	<TD>
-		<A HREF="[area href='index' form='mv_pc=[loop-code]']">[area href="index" form="mv_pc=[loop-code]"]</A>
+		<A HREF="[area href='index' form='mv_pc=[loop-code]']">[calc]$Config->{VendURL}[/calc]?mv_pc=[loop-code]</A>
+	</TD>
+</TR>
+
+<TR>
+	<TD COLSPAN=2><HR>
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT VALIGN=top>
+	URL to order a product
+	</TH>
+	<TD>
+		[if cgi SKU]
+		<B>To <B><A HREF="[area href=order
+						form="
+							mv_order_item=[cgi SKU]
+							mv_pc=[loop-code]
+						"]">order SKU [cgi SKU]</A>, "[description code="[cgi SKU]"]", use:
+			<FORM>
+			<TEXTAREA COLS=70 ROWS=1>[calc] $Config->{VendURL} [/calc]/order?mv_pc=[loop-code]&mv_order_item=[cgi SKU]</TEXTAREA>
+			</FORM><BR>
+		<P>
+		[/if]
+		[loop search="ra=yes" prefix=prod]
+			[page href="@@MV_PAGE@@" form="SKU=[prod-code]"][prod-code]: [prod-description]</A><BR>
+		[/loop]
 	</TD>
 </TR>
 
 </TABLE>
+
+[/loop]
 
 <!-- END CONTENT -->
 

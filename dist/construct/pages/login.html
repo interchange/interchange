@@ -4,35 +4,45 @@ ui_template_name: leftonly
 [/comment]
 
 [set component_after][/set]
-[set members_only][/set]
-[set page_banner]Affiliate headquarters[/set]
-[set component_hsize]3[/set]
-[set hbanner]Specials[/set]
+[set members_only]0[/set]
+[set page_banner]Log In[/set]
+[set component_hsize]2[/set]
+[set hbanner][/set]
 [set component_before][/set]
 [set hpromo_type]specials[/set]
-[set page_title]__COMPANY__ -- About Us[/set]
+[set page_title]__COMPANY__ -- Log In[/set]
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-
-[set AFLogin]
-[if session logged_in]
-[userdb logout]
-[/if]
-[userdb function=login profile=affiliate]
-[/set]
+                      <div align="left">
 
 [if session failure]
 <P>
-<font size="2" __FFACE__><b><font color="#FF0000">[data session failure][data base=session field=failure value=""]</font></b></font>
+<font size="2" __FFACE__><b><font color="#FF0000">[data session failure]</font></b></font>
 <P>
-
-<table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
+[else]
+                        <p>&nbsp;</p>
+[/else]
+[/if]
+                        <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
 <FORM ACTION="[process secure=1]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_click VALUE=AFLogin>
+<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
 <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="affiliate/index">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="account">
 
+[set Log In]
+[if session logged_in]
+mv_nextpage=index
+[else]
+mv_nextpage=login
+[/else]
+[/if]
+[/set]
+
+[set New Account]
+mv_nextpage=new_account
+[set new]1[/set]
+[/set]
 
 
                           <tr>
@@ -51,11 +61,32 @@ ui_template_name: leftonly
                                     <INPUT TYPE=password NAME=mv_password VALUE="">
                                   </td>
                                 </tr>
+								[comment]
+                                <tr bgcolor="#669999"> 
+                                  <td width="81" align="right" bgcolor="#669999"> 
+                                    <p><font __FFACE__ size="2"><b><font color="#FFFFFF" size="1">Merchant 
+                                      Number</font></b> </font></p>
+                                  </td>
+                                  <td width="204" align="left"> 
+                                    <input type="text" name="merchantnumber2" size="10" maxlength="10">
+                                    <font size="1" __FFACE__> 
+                                    <font color="#FFFFFF">(Optional)</font></font> 
+                                  </td>
+                                </tr>
+								[/comment]
                                 <tr bgcolor="#999999"> 
                                   <td width="81">&nbsp;</td>
                                   <td width="204"> 
-                                    <input type="submit" value="Log In">
+                                    <input type="submit" NAME="mv_check" value="Log In">
+                                    <input type="submit" NAME="mv_check" value="New Account">
                                   </td>
+                                </tr>
+                                <tr bgcolor="#999999"> 
+                                  <td width="81" align="right"> 
+                                   <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+                                  </td>
+                                  <td width="204"><font __FFACE__ size="1" color="#FFFFFF">Log 
+                                    me in automatically<br>(sets cookie)</font></td>
                                 </tr>
                               </table>
                             </td>
@@ -69,9 +100,6 @@ ui_template_name: leftonly
                     <div align="center"> </div>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-
 <!-- END CONTENT -->
-
-@_LEFTONLY_BOTTOM_@
 
 @_LEFTONLY_BOTTOM_@
