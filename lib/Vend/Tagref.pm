@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.9.2.1 2000-11-30 02:41:36 heins Exp $
+# $Id: Tagref.pm,v 1.9.2.2 2000-12-13 15:47:50 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,37 +23,35 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.9.2.1 2000-11-30 02:41:36 heins Exp $
-
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.2 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
 BEGIN {
-    my @Vars = qw/
-     %Alias          
-     %addAttr        
-     %attrAlias      
-     %canNest        
-     %endHTML        
-     %Documentation  
-     %hasEndTag      
-     %Implicit       
-     %insertHTML        
-     %insideHTML        
-     %Interpolate    
-     %InvalidateCache
-     %isEndAnchor    
-     %lookaheadHTML  
-     %Order          
-     %PosNumber      
-     %PosRoutine     
-     %replaceAttr    
-     %replaceHTML    
-     %Routine    
-     /;
+	my @Vars = qw/
+		%Alias          
+		%addAttr        
+		%attrAlias      
+		%canNest        
+		%endHTML        
+		%Documentation  
+		%hasEndTag      
+		%Implicit       
+		%insertHTML        
+		%insideHTML        
+		%Interpolate    
+		%InvalidateCache
+		%isEndAnchor    
+		%lookaheadHTML  
+		%Order          
+		%PosNumber      
+		%PosRoutine     
+		%replaceAttr    
+		%replaceHTML    
+		%Routine    
+	/;
 
 }
 
@@ -62,13 +60,12 @@ use vars @Vars;
 no strict;
 
 for ( keys %Vend::Parse::myRefs ) {
-    %{"$_"} = %{$Vend::Parse::myRefs{$_}};
+	%{"$_"} = %{$Vend::Parse::myRefs{$_}};
 }
 
 sub tag_reference {
-
 	my $passed = shift;
-    my $out = '';
+	my $out = '';
 
 	if($passed) {
 		@todo = grep /\S/, split /[\s,\0]+/, $passed;
@@ -83,15 +80,15 @@ ITL tags $tags
 
 EOF
 	}
-	
+
 	if(! @todo) {
 		@todo = sort keys %Routine;
 		$out .= $Documentation{HEADER};
 		$out .= $Documentation{BEGIN};
 	}
 
-    for(@todo) {
-        my $tag = lc $_;
+	for(@todo) {
+		my $tag = lc $_;
 		$tag =~ tr/-/_/;
 #::logDebug("docs for $tag");
 		if(! defined $Routine{$tag}) {
@@ -99,135 +96,132 @@ EOF
 			next;
 		}
 
-        $out .= "\n\n=head2 $tag\n\n=over 4\n\n";
-        $out .= "=item CALL INFORMATION\n\n";
-        my $val;
-        my @alias = %Alias;
-        my @val = ();
-        for (my $i = 1; $i < @alias; $i += 2) {
-            push @val, $alias[$i - 1] if $alias[$i] eq $tag;
-        }
+		$out .= "\n\n=head2 $tag\n\n=over 4\n\n";
+		$out .= "=item CALL INFORMATION\n\n";
+		my $val;
+		my @alias = %Alias;
+		my @val = ();
+		for (my $i = 1; $i < @alias; $i += 2) {
+			push @val, $alias[$i - 1] if $alias[$i] eq $tag;
+		}
 
+		if(@val) {
+			$out .= "Aliases for tag\n\n";
+			$out .= join "\n", @val;
+			$out .= "\n\n";
+		}
+		@val = ();
 
-        if(@val) {
-            $out .= "Aliases for tag\n\n";
-            $out .= join "\n", @val;
-            $out .= "\n\n";
-        }
-        @val = ();
+		my @parms = ();
+		if(defined $Order{$tag} and @{$Order{$tag}}) {
+			@parms = @{$Order{$tag}};
+			$out .= "Parameters: B<";
+			$out .= join " ", @parms;
+			$out .= ">\n\n";
+			if($PosNumber{$tag} >= @parms) {
+				$out .= "Positional parameters in same order.\n";
+			}
+			elsif ($tag eq 'loop' || $PosRoutine{$tag}) {
+				$out .= "THIS TAG HAS SPECIAL POSITIONAL PARAMETER HANDLING.\n\n";
+			}
+			else {
+				$out .= "ONLY THE B<";
+				$out .= join " ", @parms[0 .. $PosNumber{$tag} - 1];
+				$out .= "> PARAMETERS ARE POSITIONAL.\n";
+			}
+			$out .= "\n\n";
+		}
+		else {
+			$out .= "No parameters.\n\n";
+		}
 
-        my @parms = ();
-        if(defined $Order{$tag} and @{$Order{$tag}}) {
-            @parms = @{$Order{$tag}};
-            $out .= "Parameters: B<";
-            $out .= join " ", @parms;
-            $out .= ">\n\n";
-            if($PosNumber{$tag} >= @parms) {
-                $out .= "Positional parameters in same order.\n";
-            }
-            elsif ($tag eq 'loop' || $PosRoutine{$tag}) {
-                $out .= "THIS TAG HAS SPECIAL POSITIONAL PARAMETER HANDLING.\n\n";
-            }
-            else {
-                $out .= "ONLY THE B<";
-                $out .= join " ", @parms[0 .. $PosNumber{$tag} - 1];
-                $out .= "> PARAMETERS ARE POSITIONAL.\n";
-            }
-            $out .= "\n\n";
-        }
-        else {
-            $out .= "No parameters.\n\n";
-        }
-
-        if(defined $addAttr{$tag}) {
-            $out .= <<EOF if defined $hasEndTag{$tag};
+		if(defined $addAttr{$tag}) {
+			$out .= <<EOF if defined $hasEndTag{$tag};
 B<The attribute hash reference is passed> after the parameters but before
 the container text argument.
 B<This may mean that there are parameters not shown here.>
 
 EOF
-            $out .= <<EOF if ! defined $hasEndTag{$tag};
+			$out .= <<EOF if ! defined $hasEndTag{$tag};
 B<The attribute hash reference is passed> to the subroutine after
 the parameters as the last argument.
 B<This may mean that there are parameters not shown here.>
 
 EOF
-        }
-        else {
-            $out .= "Pass attribute hash as last to subroutine: B<no>\n\n";
-        }
+		}
+		else {
+			$out .= "Pass attribute hash as last to subroutine: B<no>\n\n";
+		}
 
-        if(! defined $Interpolate{$tag}) {
-            $out .= "Must pass named parameter interpolate=1 to cause interpolation.";
-        }
-        elsif($hasEndTag{$tag}) {
-            $out .= "Interpolates B<container text> by default>.";
-        }
-        elsif(!$Gobble{$tag}) {
-            $out .= "Interpolates B<its own output> by default.";
-        }
+		if(! defined $Interpolate{$tag}) {
+			$out .= "Must pass named parameter interpolate=1 to cause interpolation.";
+		}
+		elsif($hasEndTag{$tag}) {
+			$out .= "Interpolates B<container text> by default>.";
+		}
+		elsif(!$Gobble{$tag}) {
+			$out .= "Interpolates B<its own output> by default.";
+		}
 
-        $out .= "\n\n";
+		$out .= "\n\n";
 
-        if (defined $hasEndTag{$tag}) {
-            my $nest = defined $canNest{$tag} ? 'YES' : 'NO';
-            $out .= "This is a container tag, i.e. [$tag] FOO [/$tag].\nNesting: $nest\n\n";
-        }
+		if (defined $hasEndTag{$tag}) {
+			my $nest = defined $canNest{$tag} ? 'YES' : 'NO';
+			$out .= "This is a container tag, i.e. [$tag] FOO [/$tag].\nNesting: $nest\n\n";
+		}
 
-        $out .= "Invalidates cache: B<"                         .
-                (defined $InvalidateCache{$tag} ? 'YES' : 'no') .
-                ">\n\n";
-        $out .= "This tag B<gobbles> all remaining page text if no end tag is passed.\n\n"
-            if $Gobble{$tag};
-               
+		$out .= "Invalidates cache: B<"                         .
+				(defined $InvalidateCache{$tag} ? 'YES' : 'no') .
+				">\n\n";
+		$out .= "This tag B<gobbles> all remaining page text if no end tag is passed.\n\n"
+			if $Gobble{$tag};
 
-        $out .= "Called Routine: $RoutineName{$tag}\n\n";
-        $out .= "Called Routine for positonal: $PosRoutineName{$tag}\n\n" if $PosRoutine{$tag};
+		$out .= "Called Routine: $RoutineName{$tag}\n\n";
+		$out .= "Called Routine for positonal: $PosRoutineName{$tag}\n\n" if $PosRoutine{$tag};
 
-        $out .= "ASP/perl tag calls:\n\n";
-        $out .= '    $Tag->' . $tag . '(' ."\n        {\n";
-        for (@parms) {
-            $out .= "         $_ => VALUE,\n";
-        }
-        $out .= "        }";
-        $out .= ",\n        BODY" if defined $hasEndTag{$tag};
-        $out .= "\n    )\n  \n OR\n \n";
-        push @parms, 'ATTRHASH'     if defined $addAttr{$tag};
-        push @parms, 'BODY'         if defined $hasEndTag{$tag};
-        $out .= '    $Tag->' . $tag . '($' . join(', $', @parms) . ');' . "\n\n";
+		$out .= "ASP/perl tag calls:\n\n";
+		$out .= '    $Tag->' . $tag . '(' ."\n        {\n";
+		for (@parms) {
+			$out .= "         $_ => VALUE,\n";
+		}
+		$out .= "        }";
+		$out .= ",\n        BODY" if defined $hasEndTag{$tag};
+		$out .= "\n    )\n  \n OR\n \n";
+		push @parms, 'ATTRHASH'     if defined $addAttr{$tag};
+		push @parms, 'BODY'         if defined $hasEndTag{$tag};
+		$out .= '    $Tag->' . $tag . '($' . join(', $', @parms) . ');' . "\n\n";
 
-        if (defined $attrAlias{$tag}) {
-            $out .= "Attribute aliases\n\n";
-            for( sort keys %{$attrAlias{$tag}}) {
-                $out .= "            $_ ==> $attrAlias{$tag}{$_}\n";
-            }
-            $out .= "\n\n";
-        }
-        $out .= " \n\n";
-        $out .= "=item DESCRIPTION\n\n";
-        $out .= $Documentation{$tag} if defined $Documentation{$tag};
-        $out .= "B<NO DESCRIPTION>" if ! defined $Documentation{$tag};
-        $out .= "\n\n";
-        $out .= "=back\n\n";
+		if (defined $attrAlias{$tag}) {
+			$out .= "Attribute aliases\n\n";
+			for( sort keys %{$attrAlias{$tag}}) {
+				$out .= "            $_ ==> $attrAlias{$tag}{$_}\n";
+			}
+			$out .= "\n\n";
+		}
+		$out .= " \n\n";
+		$out .= "=item DESCRIPTION\n\n";
+		$out .= $Documentation{$tag} if defined $Documentation{$tag};
+		$out .= "B<NO DESCRIPTION>" if ! defined $Documentation{$tag};
+		$out .= "\n\n";
+		$out .= "=back\n\n";
+	}
 
-    }
-
-    $out .= $Documentation{END} unless $passed;
+	$out .= $Documentation{END} unless $passed;
 	return $out;
 }
 
 LOCAL: {
-    local($/);
-    my $text = <DATA>;
-    my (@items) = grep /\S/, split /\n%%%\n/, $text;
-    for(@items) {
-        my ($k, $v) = split /\n%%\n/, $_, 2;
-        $Documentation{$k} = $v;
-    }
+	local($/);
+	my $text = <DATA>;
+	my (@items) = grep /\S/, split /\n%%%\n/, $text;
+	for(@items) {
+		my ($k, $v) = split /\n%%\n/, $_, 2;
+		$Documentation{$k} = $v;
+	}
 }
 
 if ($ARGV[0] eq 'print' || ! $Global::VendRoot) {
-    print tag_reference();
+	print tag_reference();
 }
 
 1;
