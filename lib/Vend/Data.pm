@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.2.3 2000-11-08 20:19:25 zarko Exp $
+# $Id: Data.pm,v 1.13.2.4 2000-12-14 17:31:15 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -186,7 +186,7 @@ sub database_field {
 sub database_row {
 	my ($db, $key, $field_name) = @_;
 	$db = database_exists_ref($db) or return undef;
-return undef unless defined $db;
+	return undef unless defined $db;
 	return '' unless $db->test_record($key);
 	return $db->row_hash($key);
 }
@@ -238,7 +238,8 @@ sub import_text {
 		$add .= join '","', @columns;
 		$add .= '"';
 		$text = "$add\n$text";
-	} else {
+	}
+	else {
 		$options->{field_names} = \@columns;
 		$options->{'delimiter'} = $delimiter;
 	}
@@ -249,7 +250,8 @@ sub import_text {
 			die "No absolute file names like '$fn' allowed.\n"
 				if Vend::Util::file_name_is_absolute($fn);
 		}
-	} else {
+	}
+	else {
 		Vend::Util::writefile($fn, $text)
 			or die ("Cannot write temporary import file $fn: $!\n");
 	}
@@ -276,7 +278,8 @@ sub set_field {
 	# Create it if it doesn't exist
 	unless ($db->record_exists($key)) {
 		$db->set_row($key);
-	} elsif($append) {
+	}
+	elsif ($append) {
 		$value = $db->field($key, $field_name) . $value;
 	}
 	return $db->set_field($key, $field_name, $value);
@@ -330,7 +333,7 @@ sub sql_query {
 
 	$type = lc $type;
 
-	if($list and $type ne 'list') {
+	if ($list and $type ne 'list') {
 		$query = '' if ! defined $query;
 		$query .= $list;
 	}
@@ -347,10 +350,12 @@ sub sql_query {
 		if($key =~ /PERL/i) {
 			$perlquery = 1;
 			$opt->{textref} = 0;
-		} elsif($key =~ /BOTH/i){
+		}
+		elsif ($key =~ /BOTH/i){
 			$perlquery = 1;
 			$opt->{textref} = 1;
-		} else {
+		}
+		else {
 			$opt->{"\L$key"} = $val;
 		}
 	}
@@ -359,16 +364,20 @@ sub sql_query {
 		$opt->{list} = 1;
 		push(@arg, $1) while $query =~ s:\[arg\](.*?)\[/arg\]::o;
 		$list =~ s:\[query\]([\000-\377]+)\[/query\]::i and $query = $1;
-	} elsif($type eq 'hash') {
+	}
+	elsif ($type eq 'hash') {
 		$opt->{textref} = 1;
 		$opt->{hashref} = 1;
-	} elsif($type eq 'array') {
+	}
+	elsif ($type eq 'array') {
 		$opt->{textref} = 1;
-	} elsif($type eq 'param') {
+	}
+	elsif ($type eq 'param') {
 		warn "sql query type=param deprecated";
 		$opt->{list} = 1;
 		$list = '"[sql-code]" ';
-	} elsif($type eq 'html') {
+	}
+	elsif ($type eq 'html') {
 		$opt->{html} = 1;
 	}
 	$opt->{query} = $query if $query;
@@ -397,7 +406,7 @@ sub close_database {
 	my($db, $name);
 	undef $Products;
 	while( ($name)	= each %Vend::Database ) {
-	$Vend::Database{$name}->close_table()
+		$Vend::Database{$name}->close_table()
 			unless defined $Vend::Cfg->{SaveDatabase}{$name};
 		delete $Vend::Database{$name};
 	}
@@ -429,8 +438,8 @@ sub read_accessories {
 	while(<Vend::ACCESSORIES>) {
 		chomp;
 		tr/\r//d;
-		if(s/\\\s*$//) { # handle continues
-	        $_ .= <Vend::ACCESSORIES>;
+		if (s/\\\s*$//) { # handle continues
+			$_ .= <Vend::ACCESSORIES>;
 			redo;
 		}
 		($code, $accessories) = split(/\t/, $_, 2);
@@ -625,7 +634,8 @@ sub tie_database {
 		if( $data->{type} > 6 or $data->{HOT} ) {
 #::logDebug("Importing $data->{name}...");
 			$Vend::Database{$name} = import_database($data);
-		} else {
+		}
+		else {
 			if($data->{GUESS_NUMERIC}) {
 				my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
@@ -646,7 +656,7 @@ sub tie_database {
 sub dummy_database {
 	my ($name, $data);
 	while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
-		if(defined $Vend::Cfg->{SaveDatabase}{$name}) {
+		if (defined $Vend::Cfg->{SaveDatabase}{$name}) {
 			$Vend::Database{$name} = $Vend::Cfg->{SaveDatabase}{$name};
 			next;
 		}
@@ -694,7 +704,7 @@ sub import_database {
 
 	my $no_import = defined $Vend::Cfg->{NoImport}->{$name};
 
-	if(defined $Vend::ForceImport{$name}) {
+	if (defined $Vend::ForceImport{$name}) {
 		undef $no_import;
 		delete $Vend::ForceImport{$name};
 	}
@@ -704,7 +714,7 @@ sub import_database {
 
 	$class_config = $db_config{$obj->{Class} || $Global::Default_database};
 
-::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
+#::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
 	$table_name     = $name;
 	my $export;
 
@@ -718,15 +728,16 @@ sub import_database {
 		($base,$path,$tail) = fileparse $database_txt, '\.[^/.]+$';
 
 		if(Vend::Util::file_name_is_absolute($database_txt)) {
-			if($Global::NoAbsolute) {
+			if ($Global::NoAbsolute) {
 				my $msg = errmsg(
-							"Security violation for NoAbsolute, trying to import %s",
-							$database_txt);
+						"Security violation for NoAbsolute, trying to import %s",
+						$database_txt);
 				logError( $msg );
 				die "Security violation.\n";
 			}
 			$dir = $path;
-		} else {
+		}
+		else {
 			$dir = $obj->{DIR} || $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
 			$database_txt = Vend::Util::catfile($dir,$database_txt);
 		}
@@ -751,22 +762,24 @@ sub import_database {
 		if($class_config->{TableExtension}) {
 			$table_name     = $database_dbm;
 			$new_table_name = $new_database_dbm;
-		} else {
+		}
+		else {
 			$table_name = $new_table_name = $base;
 		}
 
 		$cacheable = $class_config->{Cacheable} || undef;
 
-		if($class_config->{RestrictedImport}) {
+		if ($class_config->{RestrictedImport}) {
 			$obj->{db_file_extended} = $database_dbm;
-			if(
+			if (
 				$Vend::Cfg->{NoImportExternal}
 				or -f $database_dbm
 				or ! -f $database_txt
 				)
 			{
 				$no_import = 1;
-			} else {
+			}
+			else {
 				open(Vend::Data::TMP, ">$new_database_dbm");
 				print Vend::Data::TMP "\n";
 				close(Vend::Data::TMP);
@@ -780,17 +793,17 @@ sub import_database {
 
 		my $txt_time;
 		my $dbm_time;
-		if(
+		if (
 			! defined $database_dbm
 			or ! -e $database_dbm
-	        or ($txt_time = file_modification_time($database_txt))
+			or ($txt_time = file_modification_time($database_txt))
 					>
-	           ($dbm_time = file_modification_time($database_dbm))
+				($dbm_time = file_modification_time($database_dbm))
 			)
 		{
 
 			warn "Importing $obj->{'name'} table from $database_txt\n"
-					unless $Vend::Quiet;
+				unless $Vend::Quiet;
 
 			$type = 1 unless $type;
 			($delimiter, $record_delim) = find_delimiter($change_delimiter || $type);
@@ -818,7 +831,8 @@ sub import_database {
 	        	rename($new_database_dbm, $database_dbm)
 				or die "Couldn't move '$new_database_dbm' to '$database_dbm': $!\n";
 			}
-		} elsif($obj->{AUTO_EXPORT} and $dbm_time > $txt_time) {
+		}
+		elsif ($obj->{AUTO_EXPORT} and $dbm_time > $txt_time) {
 			$obj->{export_now} = 1;
 		}
 	}
@@ -828,16 +842,20 @@ sub import_database {
 	if($obj->{WRITE_CONTROL}) {
 		if($obj->{READ_ONLY}) {
 			$obj->{Read_only} = 1;
-		} elsif($obj->{WRITE_ALWAYS}) {
+		}
+		elsif($obj->{WRITE_ALWAYS}) {
 			$obj->{Read_only} = 0;
-		} elsif($obj->{WRITE_CATALOG}) {
+		}
+		elsif($obj->{WRITE_CATALOG}) {
 			$obj->{Read_only} = $obj->{WRITE_CATALOG}{$Vend::Cfg->{CatalogName}}
 					? (! defined $Vend::WriteDatabase{$name}) 
 					: 1;
-		} elsif($obj->{WRITE_TAGGED}) {
+		}
+		elsif($obj->{WRITE_TAGGED}) {
 			$obj->{Read_only} = ! defined $Vend::WriteDatabase{$name};
 		}
-	} else {
+	}
+	else {
 		$obj->{Read_only} = ! defined $Vend::WriteDatabase{$name}
 			if $class_config->{Tagged_write};
 	}
@@ -851,7 +869,8 @@ sub import_database {
 			if($MVSAFE::Safe) {
 #::logDebug("Opening under Safe: $obj->{name}: table=$table_name") if $type == 9;
 				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
-			} else {
+			}
+			else {
 #::logDebug("Opening $obj->{name}: table=$table_name") if $type == 9;
 				$db = $class_config->{Class}->open_table( $obj, $table_name );
 #::logDebug("Opened $obj->{name}") if $type == 9;
@@ -1030,7 +1049,7 @@ sub export_database {
 	my @cols = $db->columns();
 
 	my ($notouch, $nuke);
-	if($field and ! $delete) {
+	if ($field and ! $delete) {
 #::logDebug("Trying for delete field=$field delete=$delete");
 		if($db->column_exists($field)) {
 			logError(
@@ -1043,7 +1062,8 @@ sub export_database {
 		logError("Adding column %s to table %s" , $field, $table_name);
 		push @cols, $field;
 		$notouch = 1;
-	} elsif($field) {
+	}
+	elsif ($field) {
 #::logDebug("Trying for add field=$field delete=$delete");
 		if(! $db->column_exists($field)) {
 			logError(
@@ -1060,7 +1080,8 @@ sub export_database {
 		for(@new) {
 			unless ($_ eq $field) {
 				push @cols, $_;
-			} else {
+			}
+			else {
 				$nuke = $i;
 				$notouch = 1;
 				logError("Deleting field %s" , $_ );
@@ -1099,7 +1120,8 @@ sub export_database {
 			print EXPORT $tempdata;
 			print EXPORT qq%"\n%;
 		}
-	} elsif($delim eq "\n" and $notes || $db->config('CONTINUE') eq 'NOTES') {
+	}
+	elsif ($delim eq "\n" and $notes || $db->config('CONTINUE') eq 'NOTES') {
 		my $sep;
 		my $nf_col;
 		my $nf;
@@ -1107,7 +1129,8 @@ sub export_database {
 			$sep	= $db->config('NOTES_SEPARATOR');
 			$nf_col	= $#cols;
 			$nf		= pop @cols;
-		} else {
+		}
+		else {
 			$sep = $opt->{notes_separator} || "\f";
 			$nf = $opt->{notes_field} || 'notes_field';
 			for( my $i = 0; $i < @cols; $i++ ) {
@@ -1133,7 +1156,8 @@ sub export_database {
 			}
 			print EXPORT "\n$nd\n$sep\n";
 		}
-	} elsif($record_delim eq "\n") {
+	}
+	elsif($record_delim eq "\n") {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
 		if(defined $nuke) {
@@ -1143,14 +1167,16 @@ sub export_database {
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
 			}
-		} else {
+		}
+		else {
 			while( (undef, @data) = $db->each_record() ) {
 				$tempdata = join $delim, @data;
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
 			}
 		}
-	} else {
+	}
+	else {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
 		while( (undef, @data) = $db->each_record() ) {
@@ -1166,7 +1192,8 @@ sub export_database {
 	if(defined $notouch) {
 		my $f = $db->config('db_file_extended');
 		unlink $f if $f;
-	} else {
+	}
+	else {
 		$db->touch() unless defined $notouch;
 	}
 	1;
@@ -1184,7 +1211,8 @@ sub chain_cost {
 	if($raw =~ /^\[\B/ and $raw =~ /\]$/) {
 		my $ref = Vend::Interpolate::tag_calc($raw);
 		@p = @{$ref} if ref $ref;
-	} else {
+	}
+	else {
 		@p = Text::ParseWords::shellwords($raw);
 	}
 	if(scalar @p > 16) {
@@ -1204,25 +1232,26 @@ CHAIN:
 		}
 		$price =~ s/^\s+//;
 		$price =~ s/\s+$//;
-		if($want_key) {
+		if ($want_key) {
 			$passed_key = $price;
 			undef $want_key;
 			next CHAIN;
 		}
-		if($price =~ s/^;//) {
+		if ($price =~ s/^;//) {
 			next if $final;
 		}
 		$chain = $price =~ s/,$// ? 1 : 0 unless $chain;
-		if($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
+		if ($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
 			$price = $1;
 			$want_key = 1;
 		}
-		if($price =~ s/^([^-+\d.].*)//s) {
+		if ($price =~ s/^([^-+\d.].*)//s) {
 			my $mod = $1;
 			if($mod =~ s/^\$(\d|$)/$1/) {
 				$price = $item->{mv_price} || $mod;
 				redo CHAIN;
-			} elsif($mod =~ /^(\w*):([^:]*)(:(\S*))?$/) {
+			}
+			elsif($mod =~ /^(\w*):([^:]*)(:(\S*))?$/) {
 				my ($table,$field,$key) = ($1, $2, $4);
 				$field = $Vend::Cfg->{PriceDefault} if ! $field;
 				if($passed_key) {
@@ -1237,9 +1266,10 @@ CHAIN:
 				if($field =~ /,/ || $field =~ /\.\./) {
 					my (@tmp) = split /,/, $field;
 					for(@tmp) {
-						if(/(.+)\.\.+(.+)/) {
+						if (/(.+)\.\.+(.+)/) {
 							push @breaks, $1 .. $2;
-						} else {
+						}
+						else {
 							push @breaks, $_;
 						}
 					}
@@ -1248,9 +1278,10 @@ CHAIN:
 					my $quantity;
 					my $attribute;
 					$attribute = shift @breaks  if $breaks[0] !~ /\d/;
-					if(! $attribute || ! $item->{$attribute}) {
+					if (! $attribute || ! $item->{$attribute}) {
 						$quantity = $item->{quantity};
-					} else {
+					}
+					else {
 						my $regex;
 						$regex = $item->{$attribute}
 							unless $item->{$attribute} =~ /^[\d.]+$/;
@@ -1280,14 +1311,16 @@ CHAIN:
 											$field
 										);
 				redo CHAIN;
-			} elsif($mod =~ s/^[&]//) {
+			}
+			elsif ($mod =~ s/^[&]//) {
 				$Vend::Interpolate::item = $item;
 				$Vend::Interpolate::s = $final;
 				$Vend::Interpolate::q = $item->{quantity};
 				$price = Vend::Interpolate::tag_calc($mod);
 				undef $Vend::Interpolate::item;
 				redo CHAIN;
-			} elsif($mod =~ s/^=([\d.]*)=([^=]+)//) {
+			}
+			elsif ($mod =~ s/^=([\d.]*)=([^=]+)//) {
 				$final += $1 if $1;
 				my ($attribute, $table, $field, $key) = split /:/, $2;
 				$item->{$attribute} and
@@ -1301,7 +1334,8 @@ CHAIN:
 										);
 						redo CHAIN;
 					};
-			} elsif($mod =~ /^\s*[[_]+/) {
+			}
+			elsif($mod =~ /^\s*[[_]+/) {
 				$::Scratch->{mv_item_object} = $Vend::Interpolate::item = $item;
 				$Vend::Interpolate::s = $final;
 				$Vend::Interpolate::q = $item->{quantity};
@@ -1309,23 +1343,27 @@ CHAIN:
 				undef $::Scratch->{mv_item_object};
 				undef $Vend::Interpolate::item;
 				redo CHAIN;
-			} elsif($mod =~ s/^>>+//) {
+			}
+			elsif($mod =~ s/^>>+//) {
 				# This can point to a new mode for shipping
 				# or taxing
 				$final = $mod;
 				last CHAIN;
-			} else {
+			}
+			else {
 				$passed_key = $mod;
 				next CHAIN;
 			}
-		} elsif($price =~ s/%$//) {
+		}
+		elsif($price =~ s/%$//) {
 			$price = $final * ($price / 100); 
-		} elsif($price =~ s/\s*\*$//) {
+		}
+		elsif($price =~ s/\s*\*$//) {
 			$final *= $price;
 			undef $price;
 		}
 		$final += $price if $price;
-		last if($final and !$chain);
+		last if ($final and !$chain);
 		undef $chain;
 		undef $passed_key;
 #::logDebug("chain_cost intermediate '$final'");
