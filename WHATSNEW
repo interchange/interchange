@@ -14,6 +14,13 @@ Core
 * Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
   variables.
 
+Debian
+------
+
+* Add libhtml-parser-perl to Build-Depends to keep HTML::Entities
+  module out of the package (Closes: #224435, thanks to Henrik Holmboe
+  <elements@hack.se> for the bug report)
+
 
 ------------------------------------------------------------------------------
 
