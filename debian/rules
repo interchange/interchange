@@ -114,7 +114,7 @@ binary-arch: build install
 	dh_fixperms
 	# You may want to make some executables suid here.
 	dh_installdeb
-	dh_perl
+	dh_perl usr/lib/interchange
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
