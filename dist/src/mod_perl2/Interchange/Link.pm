@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-# tlink.pl: runs as a cgi program and passes request to Interchange server
+# Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.3 2004-06-29 13:15:03 racke Exp $
+# $Id: Link.pm,v 1.4 2005-01-25 04:03:35 jon Exp $
 #
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
-# Copyright (C) 2002-2004 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.3 $
+$Revision: 1.4 $
 
 =head1 SYNOPSIS
 
@@ -317,8 +317,8 @@ Send bug reports and suggestions to the Interchange users list,
 
 =head1 COPYRIGHT AND LICENSE
 
+ Copyright (C) 2002-2005 Interchange Development Group
  Copyright (C) 1996-2002 Red Hat, Inc.
- Copyright (C) 2002-2004 Interchange Development Group
 
 This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
