@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.83 2002-11-20 15:24:56 racke Exp $
+# $Id: Config.pm,v 2.84 2002-12-10 20:08:56 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.83 $, 10);
+$VERSION = substr(q$Revision: 2.84 $, 10);
 
 my %CDname;
 
@@ -3433,7 +3433,7 @@ my %tagBool = ( qw!
                 isOperator  1
                 ItemAction  1
 				noRearrange	1
-		NoReparse   1
+				NoReparse   1
                 OrderCheck  1
                 UserTag     1
 				! );
@@ -3464,12 +3464,8 @@ sub finalize_mapped_code {
 		}
 	}
 
-	if(! $C and $ref = $c->{OrderCheck} and $ref->{Routine}) {
-		$Vend::Order::OrderCheck = $ref->{Routine};
-	}
-
 	no strict 'refs';
-	for my $type (qw/ ActionMap FormAction ItemAction /) {
+	for my $type (qw/ ActionMap FormAction ItemAction OrderCheck /) {
 		my $ref;
 		my $r;
 		next unless $r = $c->{$type};

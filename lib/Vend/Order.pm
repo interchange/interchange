@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.41 2002-11-28 17:12:22 kwalsh Exp $
+# $Id: Order.pm,v 2.42 2002-12-10 20:08:56 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -59,18 +59,48 @@ use strict;
 
 use autouse 'Vend::Error' => qw/do_lockout/;
 
-my @Errors = ();
-my $Update = 0;
-my $Fatal = 0;
-my $And;
-my $Final = 0;
-my $Success;
-my $Profile;
-my $Tables;
-my $Fail_page;
-my $Success_page;
-my $No_error;
-use vars qw/$OrderCheck/;
+# Instance variables
+my (
+	@Errors,
+	$Update,
+	$Fatal,
+	$And,
+	$Final,
+	$Success,
+	$Profile,
+	$Tables,
+	$Fail_page,
+	$Success_page,
+	$No_error,
+	$OrderCheck,
+);
+
+sub reset_order_vars {
+	@Errors = ();
+	$Update = 0;
+	$Fatal = 0;
+	undef $And;
+	$Final = 0;
+	undef $Success;
+	undef $Profile;
+	undef $Tables;
+	undef $Fail_page;
+	undef $Success_page;
+	undef $No_error;
+
+	# copy global order check routines
+	$OrderCheck = { %$Global::OrderCheck };
+
+	# overlay any catalog order check routines
+	my $r;
+	if ($r = $Vend::Cfg->{CodeDef}{OrderCheck} and $r = $r->{Routine}) {
+		for (keys %$r) {
+			$OrderCheck->{$_} = $r->{$_};
+		}
+	}
+
+	return;
+}
 
 my %Parse = (
 
@@ -925,8 +955,8 @@ sub do_check {
 
 sub check_order {
 	my ($profiles, $vref) = @_;
+	reset_order_vars();
 	my $status;
-	@Errors = ();
 	$Vend::Session->{errors} = {}
 		unless ref $Vend::Session->{errors} eq 'HASH';
 
@@ -987,13 +1017,6 @@ sub check_order_each {
 
 	$And = 1;
 	$Fatal = $Final = 0;
-
-	my $r;
-	if( $r = $Vend::Cfg->{CodeDef}{OrderCheck} and $r = $r->{Routine}) {
-		for(keys %$r) {
-			$OrderCheck->{$_} = $r->{$_};
-		}
-	}
 
 	my($var,$val,$message);
 	my $status = 1;
