@@ -1926,7 +1926,7 @@ The databases are specified in I<Database> directives, as:
 
 That specifies a type 4 database, the ASCII version of which is located in the
 file arbitrary.csv, and the identifier it will be accessed under in Interchange is
-"Arbitrary".  The DBM file, if any, will be created in the B<same directory> if
+"arbitrary".  The DBM file, if any, will be created in the B<same directory> if
 the ASCII file is newer, or if the DBM file does not exist.  The files will be
 created as arbitrary.db or arbitrary.gdbm, depending on DBM type.
 
@@ -7519,7 +7519,7 @@ Must be a US state, including DC and Puerto Rico.
 
 Must be a Canadian province or pre-1997 territory.
 
-=item state_or_province
+=item state_province
 
 Must be a US state or Canadian province.
 
@@ -9320,7 +9320,7 @@ is the same.
 
 You can define up to 27 different lookup zones in the same fashion. If one
 of the cost lines (the last field) in the C<shipping.asc> file begins with a
-"c", it configures another lookup zone, which must be lettered from C<A> to C<Z>.
+"c", it configures another lookup zone, which must be lettered from C<A to Z>.
 It takes the format:
 
     c X name file* length* multiplier*
@@ -14443,6 +14443,7 @@ testing and feature content. They include:
     Gunnar Hellekson   
     Heinz Wittenbecher
     Jason Holt
+	Jeff Carnahan
     Jochen Wiedmann
     Jon Jensen
     Keiko
