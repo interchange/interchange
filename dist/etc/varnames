@@ -121,7 +121,6 @@ mv_search_immediate      mv_search_immediate
 mv_search_line_return    mv_search_line_return
 mv_search_map            mv_search_map
 mv_search_match_count    mv_search_match_count
-mv_search_over_msg       mv_search_over_msg
 mv_search_page           mv_search_page
 mv_searchspec            mv_searchspec
 mv_searchtype            mv_searchtype
