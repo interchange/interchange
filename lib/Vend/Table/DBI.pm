@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.33 2001-05-28 13:51:51 heins Exp $
+# $Id: DBI.pm,v 1.25.2.34 2001-06-05 15:18:32 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.33 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.34 $, 10);
 
 use strict;
 
@@ -993,11 +993,19 @@ sub last_sequence_value {
 		or return undef; 
 	$q =~ s/_TABLE_/$s->[$TABLE]/g;
 	$q =~ s/_COLUMN_/$s->[$KEY]/g;
-	my $val;
-	eval {
-	 $val = $s->[$DBI]->prepare($q)->fetchrow_arrayref()->[0];
-	};
-	return $val;
+	my $sth = $s->[$DBI]->prepare($q)
+		or die ::errmsg("prepare %s: %s", $q, $DBI::errstr);
+	my $rc = $sth->execute()
+		or die ::errmsg("execute %s: %s", $q, $DBI::errstr);
+	my $aref = $sth->fetchrow_arrayref();
+	if ($aref) {
+		if ($aref->[0] !~ /^\d+$/) {
+			die ::errmsg("bogus return value from %s: %s", $q, $aref->[0]);
+		}
+		$aref->[0];
+	} else {
+		die ::errmsg("missing return value from %s: %s", $q, $sth->err());
+	}
 }
 
 sub row {
