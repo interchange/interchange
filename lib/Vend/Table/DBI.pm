@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.15 2000-09-15 09:49:31 heins Exp $
+# $Id: DBI.pm,v 1.16 2000-09-20 07:50:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 use strict;
 
@@ -368,8 +368,7 @@ sub inc_field {
     die "inc_field: $DBI::errstr\n" unless defined $sth;
     $sth->execute();
     $value += ($sth->fetchrow_array)[0];
-	$value = $s->[$DBI]->quote($value)
-		unless exists $s->[$CONFIG]{NUMERIC}{$column};
+	#$value = $s->[$DBI]->quote($value, $column);
     $sth = $s->[$DBI]->do("update $s->[$TABLE] SET $column=$value where $s->[$KEY] = $key");
     $value;
 }
