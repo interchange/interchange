@@ -9,7 +9,7 @@ Summary: Interchange web application platform
 Name: interchange
 Version: 4.8.7
 Release: 1
-Vendor: Red Hat, Inc.
+Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 URL: http://www.icdevgroup.org/
@@ -369,6 +369,9 @@ fi
 
 
 %changelog
+* Fri Jan 24 2003 Jon Jensen <jon@icdevgroup.org> 4.8.7-1
+- Update for latest release.
+
 * Mon Jun 17 2002 Jon Jensen <jon@redhat.com> 4.8.6-1
 - Quell /sbin/service stop errors
 - Re-add main filelist omitted by oversight
