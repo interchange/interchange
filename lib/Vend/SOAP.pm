@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.10 2003-05-07 17:23:21 racke Exp $
+# $Id: SOAP.pm,v 2.11 2003-06-12 11:40:51 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -166,6 +166,16 @@ sub tag_soap {
 	$::Scratch->{$opt->{result}} = $result if $opt->{result};
 	return '' if $opt->{init};
 	return $result;
+}
+
+sub tag_soap_entity {
+	my ($opt) = @_;
+	my ($obj);
+        
+	if ($opt->{tree}) {
+		$opt->{value} = map {$Tag->soap_data_entity($_)} @{$opt->{value}};
+	}
+	$obj = new SOAP::Data (%$opt);
 }
 
 my %intrinsic = (local => sub {$CGI::remote_addr eq '127.0.0.1'},
