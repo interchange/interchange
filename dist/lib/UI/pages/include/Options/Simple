@@ -41,11 +41,8 @@
 
 			$key =~ s/_/-/g; # javascript won't handle form names with '-'
 
-            $odb->set_field($key,'sku',$CGI->{sku});
-            $odb->set_field($key,'o_group',$name);
-            $odb->set_field($key,'o_value',$value);
-            $odb->set_field($key,'o_widget','select');
-			$odb->set_field($key,'o_label',$label);
+            $odb->set_slice($key,[qw(sku o_group o_value o_widget o_label)],
+				[$CGI->{sku},$name,$value,'select',$label]);
         }
 
         return;
@@ -135,8 +132,8 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 			item_id=[sql-code]
 			ui_data_fields=code sku o_widget o_width o_height
 			ui_te_widget:sku=hidden
-		"]edit</A>
-Widget: [sql-param o_widget]
+		"][L]edit[/L]</A>
+[L]Widget[/L]: [sql-param o_widget]
 <br>
 [page href="admin/flex_editor"
 		form="
@@ -154,8 +151,8 @@ Widget: [sql-param o_widget]
 			ui_te_pre_filter:price=options2line
 			ui_te_help:price=Standard VALUE=N.NN, VALUE2=N.NN format
 			ui_te_help:o_value=Values in this option
-		"]edit</A>
-Price differential: [sql-param price]
+		"][L]edit[/L]</A>
+[L]Price differential:[/L] [sql-param price]
 </span>
 <br>
 </TD></TR>
