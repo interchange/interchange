@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.138 2002-12-08 06:21:40 mheins Exp $
+# $Id: Interpolate.pm,v 2.139 2002-12-24 16:43:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.138 $, 10);
+$VERSION = substr(q$Revision: 2.139 $, 10);
 
 @EXPORT = qw (
 
@@ -674,7 +674,7 @@ sub filter_value {
 	for (@filters) {
 		next unless length($_);
 		@args = @passed_args;
-		if(/%/) {
+		if(/^[^.]*%/) {
 			$value = sprintf($_, $value);
 			next;
 		}
@@ -1167,7 +1167,18 @@ sub tag_data {
 					return $_[0];
 				},
 	'strftime' => sub {
-					return scalar localtime(shift);
+					my $time = shift(@_);
+					shift(@_);
+					my $fmt = shift(@_);
+					while(my $add = shift(@_)) {
+						$fmt .= " $add";
+					}
+					if($fmt) {
+						return POSIX::strftime($fmt, localtime($time));
+					}
+					else {
+						return scalar localtime($time);
+					}
 				},
 	'encode_entities' => sub {
 					return HTML::Entities::encode(shift, $ESCAPE_CHARS::std);
