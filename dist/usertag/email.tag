@@ -1,10 +1,11 @@
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
+UserTag email addAttr
 UserTag email Interpolate
 UserTag email Routine <<EOR
 sub {
-    my($to, $subject, $reply, $from, $extra, $body) = @_;
-    my($ok);
+    my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
+    my $ok = 0;
 
     $subject = '<no subject>' unless defined $subject && $subject;
 
@@ -16,7 +17,7 @@ sub {
 	}
 
 	$extra =~ s/\s*$/\n/ if $extra;
-    $ok = 0;
+
     SEND: {
         open(Vend::MAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;
         print Vend::MAIL
@@ -40,6 +41,7 @@ sub {
             "With subject '$subject'\n" .
             "And body:\n$body");
     }
-    $ok;
+
+	return $opt->{hide} ? '' : $ok;
 }
 EOR
