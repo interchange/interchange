@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.1 2000-12-13 16:11:52 zarko Exp $
+# $Id: LDAP.pm,v 1.6.6.2 2001-01-18 19:42:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.1 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.2 $, 10);
 use strict;
 
 use vars qw(
@@ -79,11 +79,25 @@ sub open_table {
 	my ($class, $config, $tablename) = @_;
 #::logDebug("LDAP open_table $tablename" . ::uneval($config));
 	$tablename = $config->{name} || $tablename;
+	my $ldap;
+	my $column_index;
+	my $columns;
+  DOCONNECT: {
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
 	my $port = 389;
+	my $alt_index = 0;
 	($host, $port) = split /:/, $host if ($host =~ /:/);
-	my $ldap = Net::LDAP->new($host, port => $port) or die "Unable to connect to LDAP server $host:$port\n";
+	unless( $ldap = Net::LDAP->new($host, port => $port) ) {
+		if($config->{ALTERNATE_LDAP_HOST}[$alt_index]) {
+			for(qw/LDAP_HOST BASE_DN BIND_DN BIND_PW/) {
+				$config->{$_} = $config->{"ALTERNATE_$_"}[$alt_index];
+			}
+			$alt_index++;
+			redo DOCONNECT;
+		}
+		die "Unable to connect to LDAP server $host:$port\n";
+	}
 	$ldap->bind(
 		dn => $config->{BIND_DN},
 		password => $config->{BIND_PW},
@@ -99,12 +113,13 @@ sub open_table {
 #	die "Unable to find database $tablename count=$c code=$co)" unless ($m->count > 0);
 	my $e = $m->entry(0);
 #::logDebug('after entry e=' . ::uneval($e));
-	my $columns = $e->get('columns');
+	$columns = $e->get('columns');
 	my $ki = $e->get('key');
 	unshift @$columns, pop @$ki;
 	@$columns = map { lc $_ } @$columns;
 #::logDebug('columns=' . ::uneval($columns));
-	my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	$column_index = Vend::Table::Common::create_columns($columns, $config);
+  }
 	my $s = [
 				$config,
 				$config->{name},

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.9 2000-12-31 14:49:39 heins Exp $
+# $Id: Config.pm,v 1.25.2.10 2001-01-18 19:42:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.10 $, 10);
 
 my %CDname;
 
@@ -259,6 +259,8 @@ sub global_directives {
 	['VarName',          'varname',           ''],
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
+	['Inet_Mode',         'yesno',            defined $Global::Inet_Mode ? ($Global::Inet_Mode) : 'Yes'],
+	['Unix_Mode',         'yesno',            defined $Global::Unix_Mode ? ($Global::Unix_Mode) : 'Yes'],
 	['TcpPort',          'warn',             ''],
 	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
@@ -377,6 +379,7 @@ sub catalog_directives {
 	['RequiredFields',   undef,              ''],
 	['NoSearch',         'wildcard',         'userdb'],
 	['OrderCounter',	 undef,     	     ''],
+	['MimeType',         'hash',             ''],
 	['ImageAlias',	 	 'hash',     	     ''],
 	['TableRestrict',	 'hash',     	     ''],
 	['Filter',		 	 'hash',     	     ''],
@@ -2192,9 +2195,17 @@ my %Hash_ref = (  qw!
 					! );
 
 my %Ary_ref = (   qw!
-							NAME         NAME
-							BINARY       BINARY 
-							POSTCREATE   POSTCREATE 
+						NAME                NAME
+						BINARY              BINARY 
+						POSTCREATE          POSTCREATE 
+						ALTERNATE_DSN       ALTERNATE_DSN
+						ALTERNATE_USER      ALTERNATE_USER
+						ALTERNATE_PASS      ALTERNATE_PASS
+						ALTERNATE_BASE_DN   ALTERNATE_BASE_DN
+						ALTERNATE_LDAP_PORT ALTERNATE_LDAP_PORT
+						ALTERNATE_LDAP_HOST ALTERNATE_LDAP_HOST
+						ALTERNATE_BIND_DN   ALTERNATE_BIND_DN
+						ALTERNATE_BIND_PW   ALTERNATE_BIND_PW
 					! );
 
 sub parse_config_db {

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.7 2000-12-21 11:32:39 heins Exp $
+# $Id: DBI.pm,v 1.25.2.8 2001-01-18 19:42:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.8 $, 10);
 
 use strict;
 
@@ -324,9 +324,12 @@ sub open_table {
 	
 	$config->{PRINTERROR} = 0 if ! defined $config->{PRINTERROR};
 	$config->{RAISEERROR} = 1 if ! defined $config->{RAISEERROR};
-    my @call = find_dsn($config);
-    my $dattr = pop @call;
+    my @call;
+    my $dattr;
     my $db;
+  DOCONNECT: {
+    @call = find_dsn($config);
+    $dattr = pop @call;
 
     if (! $config->{Read_only} and ! defined $config->{AutoNumberCounter}) {
 		$config->{AutoNumberCounter} = new File::CounterFile
@@ -335,12 +338,14 @@ sub open_table {
     }
 
 	unless($config->{dsn_id}) {
-		$config->{dsn_id} = join "_", @call;
+		$config->{dsn_id} = join "_", grep ! ref($_), @call;
     	if($Global::HotDBI->{$Vend::Cfg->{CatalogName}}) {
 			$config->{hot_dbi} = 1;
 			$DBI_connect_count{$config->{dsn_id}}++;
 		}
 	}
+
+	my $alt_index = 0;
 	unless ($db = $DBI_connect_cache{ $config->{dsn_id} }) {
 #::logDebug("connecting to " . ::uneval(\@call));
 		eval {
@@ -348,20 +353,34 @@ sub open_table {
 		};
 #::logDebug("DBI didn't die");
 		if(! $db) {
-			my $msg = $@ || $DBI::errstr;
-			if(! $msg) {
-				my($dname);
-				(undef, $dname) = split /:+/, $config->{DSN};
-				eval {
-					DBI->install_driver($dname);
-				};
-				$msg = $@ || $DBI::errstr || "unknown error. Driver '$dname' installed?";
+			if($config->{ALTERNATE_DSN}[$alt_index]) {
+				for(qw/DSN USER PASS/) {
+					$config->{$_} = $config->{"ALTERNATE_$_"}[$alt_index];
+				}
+				$alt_index++;
+				undef $config->{dsn_id};
+				redo DOCONNECT;
 			}
-			die "connect failed -- $msg\n";
+			else {
+				my $msg = $@ || $DBI::errstr;
+				if(! $msg) {
+					my($dname);
+					(undef, $dname) = split /:+/, $config->{DSN};
+					eval {
+						DBI->install_driver($dname);
+					};
+					$msg = $@ || $DBI::errstr || "unknown error. Driver '$dname' installed?";
+				}
+				die "connect failed -- $msg\n";
+			}
 		}
 		$DBI_connect_cache{$config->{dsn_id}} = $db;
-#::logDebug("connected to $config->{dsn_id}");
+::logDebug("$config->{name} connected to $config->{dsn_id}");
 	}
+	else {
+::logDebug("$config->{name} using cached connection $config->{dsn_id}");
+	}
+  }
 
 	# Allow multiple tables in different DBs to have same local name
 	$tablename = $config->{REAL_NAME}
