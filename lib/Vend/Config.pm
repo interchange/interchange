@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.109 2003-04-07 12:13:43 mheins Exp $
+# $Id: Config.pm,v 2.110 2003-04-10 17:35:51 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.109 $, 10);
+$VERSION = substr(q$Revision: 2.110 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3304,11 +3304,13 @@ sub get_configdb {
 		config_warn("Bad $var '%s': %s", $table, $err);
 		return '';
 	}
-	$db = Vend::Data::import_database($db);
-	if(! $db) {
-		my $err = $@;
-		config_warn("Bad $var '%s': %s", $table, $err);
-		return '';
+	eval {
+		$db = Vend::Data::import_database($db);
+	};
+	if($@ or ! $db) {
+		my $err = $@ || errmsg("Unable to import table '%s' for config.", $table);
+		delete $C->{Database}{$table};
+		die $err;
 	}
 	return ($db, $table);
 }
