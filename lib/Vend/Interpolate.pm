@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40 2000-11-11 19:41:39 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.1 2000-11-25 00:20:24 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.1 $, 10);
 
 @EXPORT = qw (
 
@@ -256,6 +256,7 @@ my @th = (qw!
 		_match
 		_modifier
 		_next
+		_options
 		_param
 		_pos
 		_price
@@ -348,6 +349,7 @@ my @th = (qw!
 	'_modifier'		=> qr($T{_modifier}$Spacef(\w+)\]),
 	'_modifier_if'	=> qr($T{_modifier}$Spacef(!?)$Spaceo($Codere)$Optr\]($Some)),
 	'_next'			=> qr($T{_next}\]\s*($Some)\s*),
+	'_options'		=> qr($T{_options}($Spacef[^\]]+)?\]),
 	'_param'		=> qr($T{_param}$Mandf\]),
 	'_param_if'		=> qr($T{_param}$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_pos' 			=> qr($T{_pos}$Spacef(\d+)\]),
@@ -682,17 +684,37 @@ sub tag_data {
 		}
 	}
 	elsif($opt->{increment}) {
-		$CacheInvalid = 1;
-#::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
+::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
 		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	}
 	elsif (defined $opt->{value}) {
-#::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
+#::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
+		my $db = $Vend::Database{$selector};
 		$CacheInvalid = 1;
-		if($opt->{filter}) {
-			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
+		if ($opt->{alter}) {
+			$opt->{alter} =~ s/\W+//g;
+			$opt->{alter} = lc($opt->{alter});
+			if ($opt->{alter} eq 'change') {
+				return $db->change_column($field, $opt->{value});
+			}
+			elsif($opt->{alter} eq 'add') {
+				return $db->add_column($field, $opt->{value});
+			}
+			elsif ($opt->{alter} eq 'delete') {
+				return $db->delete_column($field, $opt->{value});
+			}
+			else {
+				::logError("alter function '%s' not found", $opt->{alter});
+				return undef;
+			}
 		}
-		return set_field($selector,$key,$field,$opt->{value},$opt->{append});
+		else {
+::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
+			if($opt->{filter}) {
+				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
+			}
+			return set_field($selector,$key,$field,$opt->{value},$opt->{append});
+		}
 	}
 	elsif ($opt->{hash}) {
 		my $db = ::database_exists_ref($selector);
@@ -1441,6 +1463,97 @@ sub tag_price {
 	$amount = discount_price($ref,$amount, $ref->{quantity})
 			if $ref->{discount};
 	return currency( $amount, $ref->{noformat} );
+}
+
+sub tag_options {
+	my ($item, $opt) = @_;
+	$item = { code => $item } if ! ref $item;
+::logDebug('entering tag_options');
+	my $sku = $item->{code};
+	$opt = get_option_hash($opt);
+	my $table = $opt->{table} || $::Variable->{MV_OPTION_TABLE} || 'options';
+
+	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
+	$db->record_exists($sku)
+		or return;
+	my $record = $db->row_hash($sku)
+		or return;
+::logDebug("found record for $sku in tag_options");
+
+	my $remap;
+	my %map;
+
+	if($::Variable->{MV_OPTION_TABLE_MAP}) {
+		$remap = $::Variable->{MV_OPTION_TABLE_MAP};
+		$remap =~ s/^\s+//;
+		$remap =~ s/\s+$//;
+		%map = split /[,\s]+/, $remap;
+		my %rec;
+		my @del;
+		my ($k, $v);
+		while (($k, $v) = each %map) {
+			next unless defined $record->{$v};
+			$rec{$k} = $record->{$v};
+			push @del, $v;
+		}
+		delete @{$record}{@del};
+		@{$record}{keys %rec} = (values %rec);
+	}
+
+	return if ! $record->{o_enable};
+
+	my $out = '';
+	my @out;
+
+	my @rf;
+	if($record->{o_matrix}) {
+::logDebug("matrix options");
+	}
+	elsif($record->{o_modular}) {
+::logDebug("modular options");
+	}
+	else {
+::logDebug("simple options");
+		for(qw/code o_enable o_group o_value o_label o_widget/) {
+			push @rf, ($map{$_} || $_);
+		}
+		my $fsel = $map{sku} || 'sku';
+		my $rsel = $db->quote($sku, $fsel);
+		
+		my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
+		my $ary = $db->query($q); 
+		my $ref;
+		foreach $ref (@$ary) {
+			# skip unless o_value
+			next unless $ref->[3];
+			if ($opt->{label}) {
+				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
+				push @out, $ref->[4];
+			}
+			push @out, qq{<input type=hidden name=mv_item_option value="$ref->[2]">}
+						. tag_accessories(
+							'',
+							'',
+							{ 
+								passed => $ref->[3],
+								type => $ref->[5],
+								attribute => $ref->[2],
+								default => $item->{$ref->[2]},
+							},
+							$item
+						);
+		}
+		if($opt->{td}) {
+			for(@out) {
+				$out .= "<td>$_</td>";
+			}
+		}
+		else {
+			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+			$out .= join $opt->{joiner}, @out;
+		}
+	}
+	return $out;
 }
 
 sub tag_accessories {
@@ -3483,6 +3596,8 @@ my $once = 0;
 	    $run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{}):ige;
+		$run =~ s:$B$QR{_options}:
+						tag_options($code,$1):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
 		$run =~ s:$B$QR{_description}:product_description($code):ige;
 		$run =~ s:$B$QR{_field}:product_field($1, $code):ige;
@@ -3521,7 +3636,7 @@ sub iterate_hash_list {
 	my($i, $end, $count, $text, $hash, $opt_select) = @_;
 
 	my $r = '';
-	my ($run, $item, $code, $return);
+	my ($run, $code, $return);
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . ::uneval($hash));
 
@@ -3552,6 +3667,9 @@ sub iterate_hash_list {
 		$run =~ s:$B$QR{_increment}:$i + 1:ge;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{},$item):ge;
+		$run =~ s:$B$QR{_options}:
+						tag_options($item,$1):ige;
+		$run =~ s:$B$QR{_code}:$code:ig;
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
 		$run =~ s:$B$QR{_modifier}:$item->{$1}:g;
 		$run =~ s:$B$QR{_param}:$item->{$1}:g;
