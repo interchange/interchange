@@ -4,7 +4,7 @@
 
 Interchange 4.9.7
 
-Copyright (C) 1996-2002 Red Hat, Inc., and others.
+Copyright (C) 1996-2003 Red Hat, Inc., and Interchange Development Group.
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
@@ -21,8 +21,8 @@ dynamic content presentation; content management; internationalization
 and localization support; real-time tax and shipping hooks; reporting;
 and web-based administration.
 
-Interchange absolutely REQUIRES Perl 5.005 or Perl 5.6 or later on a
-Unix-like operating system.
+Interchange absolutely REQUIRES Perl 5.6.0 or later on a Unix-like operating
+system.
 
 -----------------------------------------------------------------------------
 

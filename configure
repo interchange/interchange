@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: configure,v 2.12 2003-01-14 02:25:49 mheins Exp $
+# $Id: configure,v 2.13 2003-01-23 05:00:49 jon Exp $
 
 ICVERSION='4.9.7'
 
@@ -8,7 +8,7 @@ cat <<EOF
 
  Interchange Version $ICVERSION Configuration
 
- Copyright 1996-2002 Red Hat, Inc. and Interchange Development Group
+ Copyright 1996-2003 Red Hat, Inc. and Interchange Development Group
 
  Interchange was originally based on Vend 0.2 and 0.3
  Copyright 1995, 1996 Andrew M. Wilcox <amw@wilcoxsolutions.com>
