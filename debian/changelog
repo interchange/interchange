@@ -1,3 +1,10 @@
+interchange (4.9.8-2) unstable; urgency=low
+
+  * drop Build-Depends on libdb2-dev to allow builds on woody and sid,
+    apache-dev already has the proper dependency (Closes: #198136)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 20 Jun 2003 12:00:35 +0200
+
 interchange (4.9.8-1) unstable; urgency=low
 
   * new upstream release

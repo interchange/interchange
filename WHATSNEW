@@ -28,6 +28,12 @@ Table Editor
 
 * Fix sequential edit.
 
+Debian
+------
+
+* Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
+  apache-dev already has the proper dependency (Closes: #198136)
+
 
 ------------------------------------------------------------------------------
 
