@@ -1,0 +1,119 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[set page_title]__COMPANY__ -- Advanced Search[/set]
+[set page_banner]Advanced Search[/set]
+[set bgcolor]#FFFFFF[/set]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]cross_horizontal[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[banner]See also...[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="95%" border="0">
+<tr> 
+  <td>
+    <br>
+
+	<big><b>Advanced Search</b></big>
+	<br><br>
+
+	<form action="[area search]">
+	[set asearch]su=yes/fi=products[/set]
+        <input type=hidden name=mv_profile value=asearch>
+
+		[comment] *****
+
+		The following block of code will display a list of 
+		all the categories.  I just couldn't get the search to
+		work with it.
+
+                <select name=category>
+                  [loop option=category search="
+                        ra=yes
+                        fi=cat
+                        rf=code,name
+                        ml=1000
+                        tf=name
+                  "]
+                  <option value="[loop-code]"> [loop-data cat name]</option>
+                  [/loop]
+                </select>
+		
+		****** [/comment]
+
+	<table>
+        <tr>
+          <td>Search field:</td>
+          <td>
+              <select name=mv_search_field>
+                  [perl tables="products"]
+                    my $return = '';
+                    my @columns = $Db{products}->columns();
+                    foreach(@columns) {
+                        $return .= "<OPTION value=$_>$_\n";
+                    }
+                    return $return;
+                  [/perl]
+                </select>
+          </td>
+        </tr>
+	<tr>
+	  <td>Search string:</td>
+	  <td>
+		<input type="text" name=mv_searchspec><br>
+	  </td>
+	</tr>
+	<tr>
+	  <td>&nbsp;</td>
+	  <td>		
+		<br>
+		<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+	  </td>
+	</tr>
+	</table>
+	</form>
+
+    <br><br>
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@

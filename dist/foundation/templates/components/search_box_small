@@ -32,6 +32,7 @@ matches:
 	</td>
 	<td align="right" valign="middle" width="45">
 	  <input type="image" alt="Search Go" width="45" border="0" src="__THEME_IMG_DIR__go.gif">
+	  <a href="[area advancedsearch]"><font size=-2 class="categorybar">Advanced</a>
 	</td>
       </tr>
       </table>
