@@ -30,7 +30,9 @@ sub {
 
 	my $sort = '';
 	if($opt->{sort}) {
-		$sort .= ' ORDER BY ';
+		$sort .= ' ';
+		$sort .= 'ORDER BY '
+			unless $opt->{sort} =~ /^\s*order\s+by\s+/i;
 		my @sort;
 		@sort = ref $opt->{sort}
 				?  @{$opt->{sort}}	
@@ -43,7 +45,17 @@ sub {
 		undef $opt->{sort};
 	}
 
-	my $qb = "select * from $table where $parent = $qkey$sort";
+	my $where = '';
+	if( my $f = $db->config('HIDE_FIELD')) {
+		$where .= " AND $f != 1";
+	}
+
+	if($opt->{where}) {
+		$where .= " AND ($opt->{where})";
+	}
+
+	my $qb = "select * from $table where $parent = $qkey$where$sort";
+
 	my $ary = $db->query( {
 							hashref => 1,
 							sql => $qb,
@@ -135,7 +147,7 @@ EOF
 			my $a;
 			if ($opt->{autodetect} or ! $stop) {
 				my $key = $db->quote($next, $parent);
-				my $q = "SELECT * FROM $table WHERE $parent = $key$sort";
+				my $q = "SELECT * FROM $table WHERE $parent = $key$where$sort";
 #::logDebug("next row query=$q");
 				$a = $db->query(
 									{ 
