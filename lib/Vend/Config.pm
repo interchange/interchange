@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.43 2002-05-31 01:08:24 kwalsh Exp $
+# $Id: Config.pm,v 2.44 2002-06-03 17:43:01 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 my %CDname;
 
@@ -3532,6 +3532,7 @@ $StdTags = <<'EOF';
 					attr_list
 					banner
 					calc
+					calcn
 					cart
 					catch
 					cgi
@@ -3602,6 +3603,7 @@ $StdTags = <<'EOF';
 					time
 					timed_build
 					tmp
+					tmpn
 					total_cost
 					tree
 					try
@@ -3627,7 +3629,7 @@ $StdTags = <<'EOF';
 						seti
 						tag
 						tmp
-						tmp_no
+						tmpn
 						value
 				"
 				:commerce "
@@ -3738,7 +3740,7 @@ $StdTags = <<'EOF';
 				:perl "
 					perl
 					calc
-					calc_no
+					calcn
 					mvasp
 				"
 				:time "
