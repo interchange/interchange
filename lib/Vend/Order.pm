@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.53 2003-04-20 13:51:15 mheins Exp $
+# $Id: Order.pm,v 2.54 2003-04-20 16:26:16 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -351,7 +351,7 @@ sub chain_checks {
 	$mess = "$checks $err";
 	while($mess =~ s/(\S+=\w+)[\s,]*//) {
 		my $check = $1;
-		($val, $var, $message) = do_check($check, $ref);
+		($val, $var, $message) = do_check($check);
 		return undef if ! defined $var;
 		if($val and $or) {
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
