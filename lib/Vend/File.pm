@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.11 2003-06-25 16:38:17 mheins Exp $
+# $Id: File.pm,v 2.12 2003-11-13 15:12:49 racke Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -72,7 +72,10 @@ sub writefile {
 				$dir =~ s:[\r\n]::g;   # Just in case
 				$dir =~ s:(.*)/.*:$1: or $dir = '';
 				if($dir and ! -d $dir) {
-					File::Path::mkpath($dir);
+					eval{
+						File::Path::mkpath($dir);
+					};
+					die "mkpath\n" unless -d $dir;
 				}
 			}
 			# We have checked for beginning > or | previously
