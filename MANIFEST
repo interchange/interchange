@@ -869,6 +869,7 @@ eg/usertag/benchmark
 eg/usertag/sleep
 extensions/ECML/Vend/ECML.pm
 extensions/ECML/ecml.coretag
+extensions/Interchange.pm
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
@@ -958,7 +959,6 @@ lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
-perl/Interchange.pm
 relocate.pl
 scripts/compile_link.PL
 scripts/config_prog.PL
