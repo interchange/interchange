@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.62 2002-03-11 17:25:46 jon Exp $
+# $Id: Interpolate.pm,v 2.63 2002-04-29 14:47:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 @EXPORT = qw (
 
@@ -749,16 +749,6 @@ sub tag_data {
 #::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
 		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	}
-	elsif ($opt->{serial}) {
-		$field =~ s/\.(.*)//;
-		my $hk = $1;
-		return ed(
-					dotted_hash(
-						database_field($selector,$key,$field,$opt->{foreign}),
-						$hk,
-					)
-				);
-	}
 	elsif (defined $opt->{value}) {
 #::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
 		my $db = $Vend::Database{$selector};
@@ -802,6 +792,16 @@ sub tag_data {
 			return $orig if $opt->{serial};
 			return $result
 		}
+	}
+	elsif ($opt->{serial}) {
+		$field =~ s/\.(.*)//;
+		my $hk = $1;
+		return ed(
+					dotted_hash(
+						database_field($selector,$key,$field,$opt->{foreign}),
+						$hk,
+					)
+				);
 	}
 	elsif ($opt->{hash}) {
 		my $db = ::database_exists_ref($selector);
