@@ -25,6 +25,7 @@ debian/interchange-cat-foundation.templates
 debian/interchange-ui.config
 debian/interchange-ui.files
 debian/interchange-ui.postinst
+debian/interchange-ui.postrm
 debian/interchange-ui.preinst
 debian/interchange-ui.prerm
 debian/interchange-ui.templates
