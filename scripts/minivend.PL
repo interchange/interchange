@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.16 2000-09-05 21:22:08 heins Exp $
+# $Id: minivend.PL,v 1.17 2000-09-14 08:26:35 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -380,6 +380,17 @@ sub update_quantity {
 
 }
 
+sub set_db {
+	my ($base, $thing) = @_;
+	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
+	my $t = $1;
+	my $c = $2;
+	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ /\b$t\b/;
+	my $db = ::database_exists_ref($t);
+	return undef unless $db;
+	return ($db->ref(), $c);
+}
+
 ## Update the user-entered fields.
 sub update_data {
 	my($key,$value);
@@ -426,9 +437,9 @@ sub update_data {
 	}
 	$Vend::WriteDatabase{$table} = 1;
 
-    $db = database_exists_ref($table)
+    my $base_db = database_exists_ref($table)
         or die "Not a defined database '$table': $!\n";
-    $db = $db->ref();
+    $base_db = $base_db->ref();
 
 	my @fields		= grep $_ && $_ ne $prikey,
 						split /[\s\0,]+/, $CGI::values{mv_data_fields};
@@ -465,7 +476,7 @@ sub update_data {
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
 		@k = (); @v = ();
 		for(keys %data) {
-			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty});
+			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
 			HTML::Entities::decode($value) if $decode;
@@ -482,16 +493,17 @@ sub update_data {
 		}
 
 		if($function eq 'delete') {
-			$db->delete_record($select_key);
+			$base_db->delete_record($select_key);
 		}
 		else {
 			my $field;
 			$key = $data{$prikey}->[$i];
 			while($field = shift @k) {
 				$value = shift @v;
-#::logDebug("update_data:db=$db key=$key field=$field value=$value");
 				next if $field eq $prikey;
-				$db->set_field($key, $field, $value);
+				my ($d, $f) = set_db($base_db, $field);
+#::logDebug("update_data:db=$d key=$key field=$f value=$value");
+				$d->set_field($key, $f, $value);
 			}
 		}
 	}
@@ -1847,6 +1859,7 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
+		Vend::Interpolate::init_calc();
 		$Vend::FinalPath = join "", @path;
 	}
 
