@@ -7130,7 +7130,7 @@ to order a product (or group of products) via a form button. In its
 simplest form, it is:
 
     <FORM ACTION="[process-target]" METHOD=POST>
-    <INPUT TYPE=hidden NAME=mv_todo ACTION=refresh>
+    <INPUT TYPE=hidden NAME=mv_todo VALUE=refresh>
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011">
     <INPUT TYPE=submit VALUE="Order the Mona Lisa">
     </FORM>
@@ -7143,7 +7143,7 @@ by adding an mv_order_quantity variable:
 You can order multiple items by stacking the variables:
 
     <FORM ACTION="[process-target]" METHOD=POST>
-    <INPUT TYPE=hidden NAME=mv_todo ACTION=refresh>
+    <INPUT TYPE=hidden NAME=mv_todo VALUE=refresh>
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011">
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011a">
     <INPUT TYPE=submit VALUE="Order the Mona Lisa with frame">
@@ -7267,7 +7267,7 @@ the master item is deleted. In its simplest form, you order just one
 master item and all subsequent items are sub-items.
 
     <FORM ACTION="[process-target]" METHOD=POST>
-    <INPUT TYPE=hidden NAME=mv_todo ACTION=refresh>
+    <INPUT TYPE=hidden NAME=mv_todo VALUE=refresh>
     <INPUT TYPE=hidden NAME=mv_order_group VALUE="1">
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011">
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011a">
@@ -7280,7 +7280,7 @@ mv_order_group for B<all> items, with either a 1 value (master) or 0 value
 is defined.
 
     <FORM ACTION="[process-target]" METHOD=POST>
-    <INPUT TYPE=hidden NAME=mv_todo ACTION=refresh>
+    <INPUT TYPE=hidden NAME=mv_todo VALUE=refresh>
     <INPUT TYPE=hidden NAME=mv_order_group VALUE="1">
     <INPUT TYPE=hidden NAME=mv_order_item VALUE="00-0011">
     <INPUT TYPE=hidden NAME=mv_order_group VALUE="0">
