@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.40 2001-04-05 13:04:06 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.41 2001-04-06 21:42:35 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.40 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.41 $, 10);
 
 @EXPORT = qw (
 
@@ -1964,7 +1964,7 @@ sub tag_accessories {
 		HTML::Entities::encode($attrib_value);
 		$opt->{extra} = " $opt->{extra}" if $opt->{extra} ||= $opt->{js};
 		my $cols;
-		if ($type =~ /^textarea(?:_(\d+)_(\d+))/i) {
+		if ($type =~ /^textarea(?:_(\d+)_(\d+))?/i) {
 			my $rows = $1 || $opt->{rows} || 4;
 			$cols = $2 || $opt->{cols} || 40;
 			$type =~ s/^textarea[_\d]+/textarea/;
