@@ -616,8 +616,10 @@ dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
 dist/lib/UI/pages/admin/tablereport.html
 dist/lib/UI/pages/admin/tax.html
-dist/lib/UI/pages/admin/template_create.html
+dist/lib/UI/pages/admin/template.html
+dist/lib/UI/pages/admin/template_edit.html
 dist/lib/UI/pages/admin/template_new.html
+dist/lib/UI/pages/admin/template_save.html
 dist/lib/UI/pages/admin/trafficstats.html
 dist/lib/UI/pages/admin/upload_config.html
 dist/lib/UI/pages/admin/upload_file.html
