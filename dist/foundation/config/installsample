@@ -31,7 +31,8 @@ then
 		tar cf - . | (cd __MVC_RELOCATE____MVC_IMAGEDIR__ && tar xf -)
 		cd .. || exit 1
 	fi
-	tar cf - `find . -mindepth 1 | grep -v '^\./images'` | (cd $catroot && tar xf -)
+	find . -print | grep -v '^\.\(/images\|$\)' | xargs tar cf - \
+		| (cd $catroot && tar xf -)
 	cd $returndir
 else 
 	echo "Sample data directory does not exist:"
