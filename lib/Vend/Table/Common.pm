@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.3 2001-10-18 09:35:46 mheins Exp $
+# $Id: Common.pm,v 2.4 2001-11-02 13:23:14 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -615,11 +615,19 @@ sub sprintf_substitute {
 	return sprintf $query, @$fields;
 }
 
+sub hash_query {
+	my ($s, $query, $opt) = @_;
+	$opt ||= {};
+	$opt->{query} = $query;
+	$opt->{hashref} = 1;
+	return scalar $s->query($opt);
+}
+
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
     if(! CORE::ref($opt)) {
-        unshift @arg, $text;
+        unshift @arg, $text if defined $text;
         $text = $opt;
         $opt = {};
     }
