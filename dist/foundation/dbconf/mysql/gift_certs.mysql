@@ -1,10 +1,4 @@
 Database  gift_certs  gift_certs.txt __SQLDSN__
-ifdef SQLUSER
-Database  gift_certs  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  gift_certs  PASS         __SQLPASS__
-endif
 Database  gift_certs  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
 Database  gift_certs  COLUMN_DEF   "username=CHAR(20) default '' NOT NULL"
 Database  gift_certs  COLUMN_DEF   "order_date=varchar(32) NOT NULL"

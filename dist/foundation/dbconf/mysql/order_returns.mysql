@@ -1,10 +1,4 @@
 Database  order_returns  order_returns.txt __SQLDSN__
-ifdef SQLUSER
-Database  order_returns  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  order_returns  PASS         __SQLPASS__
-endif
 Database  order_returns  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
 Database  order_returns  COLUMN_DEF   "order_number=CHAR(14) NOT NULL"
 Database  order_returns  COLUMN_DEF   "session=CHAR(32) NOT NULL"

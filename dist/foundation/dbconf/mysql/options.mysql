@@ -1,11 +1,4 @@
-Database options options.txt  SQL
-Database options DSN          __SQLDSN__
-ifdef SQLUSER
-Database options USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database options PASS         __SQLPASS__
-endif
+Database options options.txt  __SQLDSN__
 Database options DEFAULT_TYPE text
 #Database options NUMERIC      price wholesale
 Database options AUTO_NUMBER  100001

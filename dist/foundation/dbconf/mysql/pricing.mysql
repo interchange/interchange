@@ -1,10 +1,4 @@
 Database  pricing  pricing.txt  __SQLDSN__
-ifdef SQLUSER
-Database  pricing  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  pricing  PASS         __SQLPASS__
-endif
 Database  pricing  KEY          sku
 Database  pricing  COLUMN_DEF   "price_group=CHAR(12) DEFAULT '' NOT NULL"
 Database  pricing  INDEX         price_group

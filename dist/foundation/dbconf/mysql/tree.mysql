@@ -1,10 +1,4 @@
 Database  tree  tree.txt  __SQLDSN__
-ifdef SQLUSER
-Database  tree  USER      __SQLUSER__
-endif
-ifdef SQLPASS
-Database  tree  PASS      __SQLPASS__
-endif
 
 Database  tree  DEFAULT_TYPE varchar(255)
 Database  tree  AUTO_SEQUENCE tree_seq

@@ -1,10 +1,4 @@
 Database  transactions  transactions.txt __SQLDSN__
-ifdef SQLUSER
-Database  transactions  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  transactions  PASS         __SQLPASS__
-endif
 Database  transactions  DEFAULT_TYPE varchar(128)
 Database  transactions  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=varchar(9) DEFAULT '' NOT NULL"

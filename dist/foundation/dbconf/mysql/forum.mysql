@@ -1,10 +1,4 @@
 Database  forum  forum.txt __SQLDSN__
-ifdef SQLUSER
-Database  forum  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  forum  PASS         __SQLPASS__
-endif
 
 Database forum AUTO_NUMBER  100000
 

@@ -1,10 +1,4 @@
 Database  area  area.txt     __SQLDSN__
-ifdef SQLUSER
-Database  area  USER         __SQLUSER__
-endif
-ifdef SQLPASS
-Database  area  PASS         __SQLPASS__
-endif
 Database  area  DEFAULT_TYPE text
 Database  area  COLUMN_DEF   "code=char(8) NOT NULL PRIMARY KEY"
 Database  area  COLUMN_DEF   "name=char(128) DEFAULT '' NOT NULL"
