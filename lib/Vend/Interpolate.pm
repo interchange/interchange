@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.16 2000-08-19 04:14:42 heins Exp $
+# $Id: Interpolate.pm,v 1.17 2000-08-26 17:19:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 @EXPORT = qw (
 
@@ -450,6 +450,16 @@ sub cache_html {
 	return ($parse->{OUT});
 }
 
+## 
+## 
+##
+sub var_ui_sub {
+	my ($key, $type) = @_;
+	
+	if(! $type) {
+	}
+}
+
 #
 # Substitutes in Variable values.
 # Makes [comment] [/comment] strips.
@@ -462,37 +472,22 @@ sub vars_and_comments {
 	local($^W) = 0;
 	$$html =~ s/\[new\]//g;
 
-	if(shift || $UI::Editing) {
-		$$html =~ s#
-				^\s*
-					\@\@
-						([A-Za-z0-9]\w+[A-Za-z0-9])
-					\@\@
-				\s*$
-				#	"<!-- BEGIN GLOBAL template substitution: $1 -->\n"	.
-					$Global::Variable->{$1}								.
-					"\n<!-- END GLOBAL template substitution: $1 -->"
-					#gemx; 
+	if($UI::Editing) {
 		$$html =~ s#
 				^\s*
 					@_
 						([A-Za-z0-9]\w*?[A-Za-z0-9])
 					_@
 				\s*$
-				#	"<!-- BEGIN FALLBACK template substitution: $1 -->\n"	.
-					($Global::Variable->{$1} || $::Variable->{$1})  .
-					"\n<!-- END template substitution: $1 -->"
-					#gemx; 
+					
+				#	$UI::Editing->($1, $Global::Variable) #gemx; 
 		$$html =~ s#
 				^\s*
 					__
 						([A-Za-z0-9]\w*?[A-Za-z0-9])
 					__
 				\s*$
-				#	"<!-- BEGIN template substitution: $1 -->\n"	.
-					$::Variable->{$1}							.
-					"\n<!-- END template substitution: $1 -->"
-					#gemx; 
+				#	$UI::Editing->($1) #gemx; 
 
 	}
 
@@ -522,7 +517,7 @@ sub interpolate_html {
 
 #::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval(\%Vend::Cfg->{Pragma}));
 
-	vars_and_comments(\$html, $Vend::Cfg->{Pragma}{edit});
+	vars_and_comments(\$html);
 
 	$html =~ s/<!--+\[/[/g
 		and $html =~ s/\]--+>/]/g;
