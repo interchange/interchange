@@ -33,7 +33,7 @@ Variable UI_STD_HEAD <<EOV
 		return;
 	[/calc]
 	[if-mm function="!tables" table="[scratch table_perm]"]
-	[seti ui_error]Sorry, no permission [scratch table_perm] for table [cgi mv_data_table][/seti]
+	[seti ui_error]Sorry, no permission [scratch table_perm] for table [cgi mv_data_table] in [var MV_PAGE 1].[/seti]
 	[set table_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
