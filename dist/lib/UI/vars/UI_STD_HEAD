@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.38 2003-04-04 16:00:25 racke Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.39 2003-04-23 11:14:15 racke Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -131,7 +131,7 @@ Variable UI_STD_HEAD <<EOV
 			<td nowrap>
 				&nbsp;&nbsp;<a
 					href="[area href='admin/menu_editor' form='qmenu_name=Fixed']"
-					style="font-size: 7pt" class=edittablink {CHECK_PUBLISH} title="[msg]Edit this menu[/msg]">edit</A>
+					style="font-size: 7pt" class=edittablink {CHECK_PUBLISH} title="[L]Edit this menu[/L]">[L]edit[/L]</A>
 			&nbsp;&nbsp;</td>
 	[/if]
 [/if-mm]
@@ -183,9 +183,9 @@ Variable UI_STD_HEAD <<EOV
                <td height=15 class=tabdown>
                   <table width="100%" border=0 cellspacing=0 cellpadding=0>
                      <tr>
-                        <td class=tabdownleft><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]"><img src="bg.gif" width=24 height=15 border=0></td>
-                        <td nowrap class=tabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch top_menu][or]Top[/either]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</A></td>
-                        <td class=tabdownright><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]"><img src="bg.gif" width=24 height=15 border=0></td>
+                        <td class=tabdownleft><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[L]Edit these menu tabs[/L]"><img src="bg.gif" width=24 height=15 border=0></td>
+                        <td nowrap class=tabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch top_menu][or]Top[/either]']" {CHECK_PUBLISH} title="[L]Edit these menu tabs[/L]" class=edittablink>[L]edit[/L]</A></td>
+                        <td class=tabdownright><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[L]Edit these menu tabs[/L]"><img src="bg.gif" width=24 height=15 border=0></td>
                      </tr>
 							<tr><td colspan=3 class=darkshade><img src="bg.gif" height=1></td></tr>
 							<tr><td colspan=3 class=lightshade><img src="bg.gif" height=1></td></tr>
@@ -251,7 +251,7 @@ Variable UI_STD_HEAD <<EOV
    <table width="100%" border=0 cellspacing=0 cellpadding=0>
 	  <tr> 
 		 <td class=subtabdownleft><img src="bg.gif" width=16 height=16></td>
-		 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch second_menu][or][scratch ui_class][/either]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</a></td>
+		 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch second_menu][or][scratch ui_class][/either]']" {CHECK_PUBLISH} title="[L]Edit these menu tabs[/L]" class=edittablink>[L]edit[/L]</a></td>
 		 <td class=subtabdownright><img src="bg.gif" width=16 height=16></td>
 	  </tr>
 	  <tr> 
@@ -319,7 +319,7 @@ Variable UI_STD_HEAD <<EOV
 	   <table width="100%" border=0 cellspacing=0 cellpadding=0>
 		  <tr> 
 			 <td class=subtabdownleft><img src="bg.gif" width=16 height=16></td>
-			 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[scratch third_menu]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</a></td>
+			 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[scratch third_menu]']" {CHECK_PUBLISH} title="[L]Edit these menu tabs[/L]" class=edittablink>[L]edit[/L]</a></td>
 			 <td class=subtabdownright><img src="bg.gif" width=16 height=16></td>
 		  </tr>
 		  <tr> 
