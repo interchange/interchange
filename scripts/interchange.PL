@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.14 2001-02-26 01:24:37 heins Exp $
+# $Id: interchange.PL,v 1.15.2.15 2001-02-28 21:28:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1542,6 +1542,11 @@ sub adjust_cgi {
 	#
 	# end AOL fix
 
+	# Fix Cobalt/CGIwrap problem
+    if($Global::Variable->{CGIWRAP_WORKAROUND}) {
+        $CGI::path_info =~ s!^$CGI::script_name::;
+    }
+
     $CGI::host = $host || $CGI::ip;
 
     $CGI::user = $CGI::remote_user if $CGI::remote_user;
@@ -1630,7 +1635,16 @@ EOF
 		logGlobal($msg);
 		return;
 	}
-	$Vend::Cfg = $Global::Selector{$CGI::script_name};
+	
+	use Tie::ShadowHash;
+	if($Global::NoFork) {
+		my %hash;
+		tie %hash, 'Tie::ShadowHash', $Global::Selector{$CGI::script_name} ;
+		$Vend::Cfg = \%hash;
+	}
+	else {
+		$Vend::Cfg = $Global::Selector{$CGI::script_name};
+	}
 
 ## Uncomment this to get global directive setting on a per-catalog basis
 ## Probably only useful for:
