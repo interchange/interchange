@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Util.pm,v 2.1 2001-08-06 16:16:57 heins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 BEGIN {
 	eval {
@@ -770,6 +770,7 @@ sub get_option_hash {
 			$_[0]->{$_} = $_[1]->{$_}
 				unless defined $_[0]->{$_};
 		}
+		return $_[0];
 	}
 	return {} unless $_[0] =~ /\S/;
 	my $string = shift;
