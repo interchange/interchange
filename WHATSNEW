@@ -38,6 +38,17 @@ Interchange 4.7.0
   * Price looks at variant code first, then the base SKU if
     that is zero; or it can be made to do so with CommonAdjust.
 
+  * Fully modular options with cascade.
+
+    A UI module allows editing and definition of the modular
+	options, including "phantom" options that act to group
+	additional items.
+
+	When an item is defined as modular upon order, it can have
+	accompanying it a series of other items in the same order
+	group. The price of the options is not shown, but is added to
+	the price of the master item.
+
   * New [profile ...] tag allows you to set directives normally
     set in catalog.cfg with a tag in the session Autoload. This
     is really the same as the current Autoload, except it is
@@ -95,7 +106,46 @@ Interchange 4.7.0
     unneeded modules (takes more memory).
 
   * Added [table-editor ...] tag which easily produces 
-    editable tables. Ready for a form widget? 8-)
+    editable tables. Capabilities:
+
+		* Can edit the hash address books in userdb
+		* Safe to place in user page with auto_secure=1. Generates
+		  a [scratch mv_data_enable] matching the table:col1,col2,col3:key
+		  you passed it.
+		* Reads from CGI array or from parameters
+		* Automatically reads table info from mv_metadata if
+		  available
+		* The following can be overridden compared to 
+		  mv_metadata:
+		  	
+				widget
+				width
+				height
+				help
+				extra (javascript)
+				filter
+				pre_filter
+
+		* Can auto-check with order_profile definitions.
+		* Can append or prepend your additional form 
+		  information.
+		* Can generate an email copy of the data submission
+		  for review. (TBA)
+	
+	Ready for a form widget? 8-)
+
+  * Added new mv_form_profile variable that sets profiles with any
+    action. Designed for easy checking of variables in submits.
+
+  * Speeded import of DBI databases by placing numeric pointers
+    in an array at initial config time.
+
+  * Added ability to set defaults for empty fields at import and
+    record creation time, regardless of the underlying DB, with
+
+		Database  userdb  DEFAULT  password=please_change
+
+	Operates exactly like COLUMN_DEF.
 
 Interchange 4.6.1
 
