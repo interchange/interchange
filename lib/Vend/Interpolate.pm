@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.7 2001-08-06 15:08:27 heins Exp $
+# $Id: Interpolate.pm,v 2.8 2001-08-06 16:12:13 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 @EXPORT = qw (
 
@@ -1140,7 +1140,7 @@ sub tag_data {
 					my $val = shift;
 					return ::errmsg($val);
 				},
-	
+
 	);
 
 $Filter{upper} = $Filter{uc};
@@ -2547,6 +2547,7 @@ sub tag_perl {
 #::logDebug("tag_perl succeeded result=$result\nEND");
 	return $result;
 }
+
 sub ed {
 	return $_[0] if $Safe_data or $Vend::Cfg->{Pragma}{safe_data};
 	$_[0] =~ s/\[/&#91;/g;
@@ -5899,12 +5900,21 @@ sub read_shipping {
 
 	my $row;
 	my %zones;
+	my %def_opts;
 	foreach $row (@shipping) {
 		my $cost = $row->[COST];
 		my $o = get_option_hash($row->[OPT]);
+		for(keys %def_opts) {
+			$o->{$_} = $def_opts{$_}
+				unless defined $o->{$_};
+		}
 		$row->[OPT] = $o;
 		my $zone;
-		if ($zone = $o->{zone} or $cost =~ s/^\s*c\s+(\w+)\s*//) {
+		if ($cost =~ s/^\s*o\s+//) {
+			$o = get_option_hash($cost);
+			%def_opts = %$o;
+		}
+		elsif ($zone = $o->{zone} or $cost =~ s/^\s*c\s+(\w+)\s*//) {
 			$zone = $1 if ! $zone;
 			next if defined $zones{$zone};
 			my $ref;
@@ -7025,6 +7035,9 @@ sub shipping {
 		$Vend::Items = $save;
 #::logDebug("Check FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
 		last SHIPFORMAT unless defined $final;
+#::logDebug("ship options: " . ::uneval($o) );
+		$final /= $Vend::Cfg->{PriceDivide}
+			if $o->{PriceDivide} and $Vend::Cfg->{PriceDivide} != 0;
 		unless ($o->{free}) {
 			return '' if $final == 0;
 			$o->{adder} =~ s/\bx\b/$final/g;
@@ -7047,16 +7060,15 @@ sub shipping {
 		}
 		return $final unless $opt->{label};
 		my $number;
-		if($o->{free}) {
-			$number = $opt->{free}
-				if $final == 0;
+		if($o->{free} and $final == 0) {
+			$number = $opt->{free};
 		}
 		else {
 			return $final unless $opt->{label};
+#::logDebug("actual options: " . ::uneval($o));
 			$number = Vend::Util::currency( 
 											$final,
 											$opt->{noformat},
-											$row->[OPT]->{PriceDivide},
 									);
 		}
 		my $label = $opt->{format} || '<OPTION VALUE="%M"%S>%D (%F)';
