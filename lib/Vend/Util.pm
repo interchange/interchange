@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.1 2000-11-26 08:17:33 heins Exp $
+# $Id: Util.pm,v 1.14.2.2 2000-11-30 02:42:50 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.2 $, 10);
 
 BEGIN {
 	eval {
@@ -891,22 +891,41 @@ EOF
 # Careful, needs the full path, or will be read relative to
 # VendRoot..and will return binary. Should be tested by
 # the user.
+
+# Will also look in the *global* TemplateDir. (No need for the
+# extra overhead of local TemplateDir, probably also insecure.)
 #
 # To ensure security in multiple catalog setups, leading
 # / is not allowed unless $Global::NoAbsolute is set.
 #
 sub readfile {
-    my($file, $no, $loc) = @_;
+    my($ifile, $no, $loc) = @_;
     my($contents);
     local($/);
 
-	if($no and (::file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
-		::logError("Can't read file '%s' with NoAbsolute set" , $file);
-		::logGlobal({}, "Can't read file '%s' with NoAbsolute set" , $file );
+	if($no and (::file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
+		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
+		::logGlobal({}, "Can't read file '%s' with NoAbsolute set" , $ifile );
 		return undef;
 	}
 
-    return undef if ! -f $file;
+	my $file;
+
+#::logDebug("readfile ifile=$ifile");
+	if (::file_name_is_absolute($ifile) and -f $ifile) {
+		$file = $ifile;
+	}
+	else {
+		for( ".", @{$Global::TemplateDir} ) {
+#::logDebug("trying ifile=$_/$ifile");
+			next if ! -f "$_/$ifile";
+			$file = "$_/$ifile";
+#::logDebug("readfile file=$file FOUND");
+			last;
+		}
+	}
+
+    return undef if ! $file;
     return undef if ! open(READIN, "< $file");
 
 	$Global::Variable->{MV_FILE} = $file;
