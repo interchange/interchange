@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -501,7 +501,7 @@ sub rotate {
 
 	my $motion = $options->{Motion} || 'save';
 
-::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
+#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	$dir =~ s:/+$::;
 
@@ -534,7 +534,7 @@ sub rotate {
 
 	$base = "$dir/$base";
 
-::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
+#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	my $base_exists = -f $base;
 	push @forward, $base if $base_exists;
@@ -620,7 +620,7 @@ sub date_widget {
 }
 
 sub meta_display {
-	my ($table,$column,$key,$value,$meta_db) = @_;
+	my ($table,$column,$key,$value,$meta_db,$query) = @_;
 
 #::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
@@ -638,6 +638,9 @@ sub meta_display {
 		next unless $meta->record_exists($metakey);
 		$meta = $meta->ref();
 		my $record = $meta->row_hash($metakey);
+		if($query) {
+			return $record->{query};
+		}
 #::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
@@ -663,19 +666,16 @@ sub meta_display {
 		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
-#::logDebug("metadisplay lookup");
 			LOOK: {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
 				my $query = "select DISTINCT $fld FROM $dbname ORDER BY $fld";
-#::logDebug("metadisplay lookup, query=$query");
 				my $ary = $db->query($query);
 				last LOOK unless ref($ary);
 				if(! scalar @$ary) {
 					push @$ary, ["=--no current values--"];
 				}
-#::logDebug("metadisplay lookup, query succeeded, " . ::uneval_it($ary));
 				undef $record->{type} unless $record->{type} =~ /multi|combo/;
 				my $sub;
 				if($record->{lookup_exclude}) {
@@ -698,7 +698,6 @@ sub meta_display {
 									@$ary;
 				$record->{passed} = "=--no current values--"
 					if ! $record->{passed};
-#::logDebug("metadisplay lookup, passed=$record->{passed}");
 			}
 		}
 		elsif ($record->{type} eq 'date') {
@@ -712,6 +711,19 @@ sub meta_display {
 			$record->{type} = 'combo';
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
+			$record->{append} = Vend::Util::resolve_links($record->{append})
+				and $record->{append} =~ s/_UI_VALUE_/$value/g
+				and $record->{append} =~ s/_UI_TABLE_/$table/g
+				and $record->{append} =~ s/_UI_COLUMN_/$column/g
+				and $record->{append} =~ s/_UI_KEY_/$key/g
+				if $record->{append};
+			
+			$record->{prepend} = Vend::Util::resolve_links($record->{prepend})
+				and $record->{append} =~ s/_UI_VALUE_/$value/g
+				and $record->{append} =~ s/_UI_TABLE_/$table/g
+				and $record->{append} =~ s/_UI_COLUMN_/$column/g
+				and $record->{append} =~ s/_UI_KEY_/$key/g
+				if $record->{prepend};
 		}
 
 		if($record->{height}) {
@@ -743,6 +755,8 @@ sub meta_display {
 			outboard	=> ($record->{'outboard'}	|| $metakey),
 			passed		=> ($record->{'passed'}		|| undef),
 			type		=> ($record->{'type'}		|| undef),
+			prepend		=> ($record->{'prepend'}	|| undef),
+			append		=> ($record->{'append'}		|| undef),
 		};
 		my $o = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
