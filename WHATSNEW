@@ -60,6 +60,84 @@ Core
 
 * Compile errors on ActionMap/FormAction are passed through now.
 
+* Use fix base directory for global jobs.
+
+* Let Vend::Util::unhexify mangle only representations of hex chars instead
+  of any three-letter-string starting with the percent sign.
+
+Options
+-------
+
+* Major update to product options.
+
+* Options are now modular in much the same way as Vend::Payment is.
+  You can add an unlimited number of option types simply by dropping
+  a module into Vend::Options.
+
+* By default, the old 4.8 style options are in force, implemented
+  with Vend::Options::Old48.
+
+  If you add this to catalog.cfg (in etc/after.cfg in foundation):
+
+  	OptionsEnable   option_type
+
+  The "option_type" names a field in the products file which controls
+  the option type. This enables new-style options.
+
+  It can also be in a specific table and field, ala AutoModifier:
+
+  	OptionsEnable   table:field
+
+  Indeed, this is added to AutoModifer after catalog.cfg.
+
+* There are two new-style options included:
+
+	Vend::Options::Matrix
+	Vend::Options::Simple
+
+  These are equivalent to the current matrix and simple options.
+
+* Options behavior is controlled in catalog.cfg by a locale-style
+  multiple hash (ala UserDb or Route):
+
+  	Options   Matrix   sort            o_sort,o_group
+  	Options   Matrix   variant_table   my_variants
+
+* To find and add a new option type, simply set something in
+  catalog.cfg:
+
+  	Options  MyOptions  table  my_options
+
+  That will cause a require of Vend::Options::MyOptions.
+
+* The matrix products have been moved to the "variants" table.
+
+* The options table contains options for both Matrix and Simple types,
+  but only fields for building those simple-type options (which are
+  used to generate variants for Matrix). The followign fields
+  have been removed from options:
+
+	differential
+	mv_shipmode
+	o_enable
+	o_exclude
+	o_footer
+	o_header
+	o_include
+	o_master
+	o_matrix
+	o_modular
+	phantom
+	volume
+	weight
+
+* The variants table is a subset of the fields in products.
+
+* The admin page for each option style is defined in its
+  admin_page routine, usually an include from inclued/Options/OptionType.
+
+* Size and color fields removed from products table, option_type added.
+
 Menu
 ----
 
