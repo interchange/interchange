@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.33 2003-04-14 23:50:51 racke Exp $
+# $Id: Shadow.pm,v 1.34 2003-04-17 16:19:12 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.33 $, 10);
+$VERSION = substr(q$Revision: 1.34 $, 10);
 
 # TODO
 #
@@ -563,5 +563,7 @@ sub _shared_databases {
 		return split(/[\s,]+/, $tables);
 	}
 }
+
+*autonumber = \&Vend::Table::Common::autonumber;
 
 1;
