@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.219 2004-07-28 18:21:41 mheins Exp $
+# $Id: Interpolate.pm,v 2.220 2004-08-21 23:02:48 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.219 $, 10);
+$VERSION = substr(q$Revision: 2.220 $, 10);
 
 @EXPORT = qw (
 
@@ -1323,7 +1323,11 @@ sub input_filter {
 sub conditional {
 	my($base,$term,$operator,$comp, @addl) = @_;
 	my $reverse;
+
+	# Only lowercase the first word-characters part of the conditional so that
+	# file-T doesn't turn into file-t (which is something different).
 	$base =~ s/(\w+)/\L$1/;
+
 	$base =~ s/^!// and $reverse = 1;
 	my ($op, $status);
 	my $noop;
