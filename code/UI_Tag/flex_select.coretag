@@ -677,6 +677,7 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="$table">
 <INPUT TYPE=hidden NAME=mv_action        VALUE="$opt->{mv_action}">
 <INPUT TYPE=hidden NAME=mv_click         VALUE="warn_me_main_form">
+<INPUT TYPE=hidden NAME=mv_session_id    VALUE="$Vend::SessionID">
 EOF
 
 	### What the heck is going on here?

@@ -53,9 +53,10 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [output name=search_box]
-<FORM ACTION="[area @@MV_PAGE@@]">
-<INPUT NAME=ui_text_qualification type=text class=s3>
-<INPUT TYPE=submit VALUE="[L]Limit with search[/L]" class=s3>
+<form action="[area @@MV_PAGE@@]">
+<input name=ui_text_qualification type=text class=s3>
+<input type=hidden name="mv_session_id" type=hidden>
+<input type=submit value="[L]Limit with search[/L]" class=s3>
 </FORM>
 
 [output name=""]
@@ -545,4 +546,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.23 2004-03-11 23:14:12 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.24 2004-06-27 16:30:29 mheins Exp $ -->
