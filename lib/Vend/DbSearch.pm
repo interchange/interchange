@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.0.2.2 2001-10-18 02:12:32 mheins Exp $
+# $Id: DbSearch.pm,v 2.0.2.3 2001-11-21 18:29:04 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
 
 use Search::Dict;
 use strict;
@@ -352,7 +352,6 @@ sub search {
 		$s->{mv_results} = \@out;
 	}
 	elsif($s->{mv_return_reference} eq 'LIST') {
-		my $col = scalar @{$s->{mv_return_fields}};
 		@out = map { join $s->{mv_return_delim}, @$_ } @out;
 		$s->{mv_results} = join $s->{mv_record_delim}, @out;
 	}
