@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.26 2004-02-25 19:18:54 mheins Exp $
+# $Id: UserDB.pm,v 2.27 2004-03-01 05:59:07 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 use vars qw!
 	$VERSION
@@ -401,7 +401,7 @@ sub log {
 	logData( ($self->{OPTIONS}{logfile} || $Vend::Cfg->{LogFile}),
 						$time,
 						$self->{USERNAME},
-						$CGI::remote_host,
+						$CGI::remote_host || $CGI::remote_addr,
 						$msg,
 						);
 	return;
