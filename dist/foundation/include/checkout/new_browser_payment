@@ -24,7 +24,7 @@
           <tr>
             <td colspan="2" class="contentbar2" width="30%">
               <b>
-              [error std_label="Credit Card Information" name=mv_credit_card_valid]
+              [error std_label="[L]Credit Card Information[/L]" name=mv_credit_card_valid]
               </b>
             </td>
             <td class="contentbar2">
@@ -46,7 +46,7 @@
           </tr>
           <tr>
             <td align=right class="contentbar1" width="30%">
-              <b>Card Number: </b>
+              <b>[L]Card Number[/L]: </b>
             </td>
             <td colspan=2 class="contentbar1">
               <b><INPUT TYPE=text NAME=mv_credit_card_number SIZE=22></b>
@@ -57,13 +57,13 @@
 		  	<td class=contentbar1>
 			</td>
 		  	<td colspan=2 class=contentbar1>
-              (test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)
+              ([L]test number[/L] <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)
 			</td>
 		  </tr>
 		  [/if]
           <tr>
             <td align=right class="contentbar1">
-              <b>Expiration: </b>
+              <b>[L]Expiration[/L]: </b>
             </td>
             <td colspan=2 class="contentbar1">
 
@@ -72,18 +72,18 @@
                         option=mv_credit_card_exp_month
 						acclist=1
                         list=|
-1=01 - January,
-2=02 - February,
-3=03 - March,
-4=04 - April,
-5=05 - May,
-6=06 - June,
-7=07 - July,
-8=08 - August,
-9=09 - September,
-10=10 - October,
-11=11 - November,
-12=12 - December|]
+1=01 - [L]January[/L],
+2=02 - [L]February[/L],
+3=03 - [L]March[/L],
+4=04 - [L]April[/L],
+5=05 - [L]May[/L],
+6=06 - [L]June[/L],
+7=07 - [L]July[/L],
+8=08 - [L]August[/L],
+9=09 - [L]September[/L],
+10=10 - [L]October[/L],
+11=11 - [L]November[/L],
+12=12 - [L]December[/L]|]
                 <OPTION VALUE="[loop-code]"> [loop-param label]
                 [/loop]
                 </SELECT>
@@ -123,7 +123,7 @@
 				Visibility:Hidden;
 				z-index:0;
 		">
-		We will wait for a check sent to us referencing the order number you receive on your receipt.
+		[L NEW_BROWSER_PAYMENT_MSG1]We will wait for a check sent to us referencing the order number you receive on your receipt.[/L]
         </div>
 	<div 
 		id=cod
@@ -133,7 +133,7 @@
 				Visibility:Hidden;
 				z-index:0;
 		">
-		There will be a [handling cod] charge added for COD.
+		[msg arg.0="[handling cod]"]There will be a %s charge added for COD.[/msg]
         </div>
         
 	<div 
@@ -150,14 +150,14 @@
             <table border="0" cellspacing="0" cellpadding="0"  width="100%">
             <tr>
               <td class="contentbar2" colspan="2" width="30%">
-                <b>&nbsp;&nbsp;Check Information</b>
+                <b>&nbsp;&nbsp;[L]Check Information[/L]</b>
               </td>
               <td class="contentbar2">&nbsp;</td>
               <td class="contentbar2">&nbsp;</td>
             </tr>
             <tr>
               <td align="right" class="contentbar1">
-                [error name=check_acct std_label="Account Number" required=1]
+                [error name=check_acct std_label="[L]Account Number[/L]" required=1]
               </td>
               <td colspan="3 align="left" class="contentbar1">
                 <b>
@@ -167,7 +167,7 @@
             </tr>
             <tr>
               <td align="right" class="contentbar1">
-                [error name=check_route std_label="Routing Number" required=1]
+                [error name=check_route std_label="[L]Routing Number[/L]" required=1]
                 
               </td>
               <td align="left" colspan="3" class="contentbar1">
@@ -176,7 +176,7 @@
             </tr>
             <tr>
               <td align="right" class="contentbar1">
-                [error name=check_num std_label="Check Number" required=1]
+                [error name=check_num std_label="[L]Check Number[/L]" required=1]
               </td>
               <td align="left" colspan="3" class="contentbar1">
                 <b>
@@ -186,7 +186,7 @@
                 </tr>
             <tr>
               <td align="right" class="contentbar1">
-                [error name=check_bank_phone std_label="Bank Phone" required=1]
+                [error name=check_bank_phone std_label="[L]Bank Phone[/L]" required=1]
                 
               </td>
               <td align="left" colspan="3" class="contentbar1">
@@ -218,13 +218,13 @@
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr class="contentbar2">
               <td class="contentbar2" colspan="2">
-                <b> P.O. Information </b>
+                <b> [L]P.O. Information[/L] </b>
               </td>
               <td colspan=2 class="contentbar2">&nbsp;</td>
             </tr>
             <tr>
               <td align=right class="contentbar1" width="30%">
-                [error name=credit_limit_ok std_label="PO Number" required=1] &nbsp; &nbsp;
+                [error name=credit_limit_ok std_label="[L]PO Number[/L]" required=1] &nbsp; &nbsp;
               </td>
               <td align=left colspan=3 class="contentbar1">
                 <b>
@@ -256,7 +256,7 @@
                         compare="[total-cost noformat=1]"
                 ]
                 <BR>
-                Order total [total-cost] exceeds credit limit, please call.
+                [msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/L]
                 [/if]
                 <BR>
               </td>

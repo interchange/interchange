@@ -7,7 +7,7 @@
 		</tr>
 		<tr class="contentbar2">
 		  <td class="contentbar2" colspan=4>
-			<b>&nbsp;Shipping Address<b> <i>(primary)</i>
+			<b>&nbsp;[L]Shipping Address[/L]<b> <i>([L]primary[/L])</i>
 		  </td>
 		</tr>
 		<tr>
@@ -15,24 +15,24 @@
 		</tr>
 		<tr>
 		  <td align=right class="contentbar1">
-			[error name=fname std_label="First Name" required=1]
+			[error name=fname std_label="[L]First Name[/L]" required=1]
 		  </td>
 		  <td align=left class="contentbar1">
 			<INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
 		  </td>
-		  <td align="right" class="contentbar1">[error name=lname std_label="Last Name" required=1]</td>
+		  <td align="right" class="contentbar1">[error name=lname std_label="[L]Last Name[/L]" required=1]</td>
 		  <td align="left" class="contentbar1"><INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
 		</tr>
 		<tr>
 		  <td align="right" class="contentbar1">
-			[error name=company std_label=Company required="[scratch dealer]"]
+			[error name=company std_label="[L]Company[/L]" required="[scratch dealer]"]
 		  </td>
 		  <td align="left" class="contentbar1" colspan=3>
 			<INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
 		  </td>
 		</tr>
 		<tr>
-		  <td align="right" class="contentbar1">[error name=address1 std_label=Address required=1]
+		  <td align="right" class="contentbar1">[error name=address1 std_label="[L]Address[/L]" required=1]
 		</td>
 		<td align="left" colspan=3 class="contentbar1">
 		  <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="40" maxlength="64">
@@ -46,7 +46,7 @@
 	  </tr>
 	  <tr class="contentbar1">
 		<td align="right" class="contentbar1">
-		  [error name=city std_label="City" required=1]
+		  [error name=city std_label="[L]City[/L]" required=1]
 		</td>
 		<td class="contentbar1" colspan=3>
 		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
@@ -54,7 +54,7 @@
 	  </tr>
 	  <tr>
 		<td class="contentbar1" align=right>
-			[error name=state std_label="State/Province" required=1]
+			[error name=state std_label="[L]State/Province[/L]" required=1]
 		</td>
 		<td align="left" class="contentbar1" colspan=3>
 		  [loop search="
@@ -81,7 +81,7 @@
 	  </tr>
 	  <tr>
 		<td align="right" class="contentbar1">
-		  [error name=zip std_label="Zip/Postal Code" required=1] 
+		  [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1] 
 		</td>
 		<td class="contentbar1" colspan=3>
 		  <INPUT TYPE=text NAME=zip VALUE="[value zip]" size="10" maxlength="10">
@@ -89,7 +89,7 @@
 	  </tr>
 	  <tr>
 		<td align="right" class="contentbar1">
-		  [error name=email std_label="Email Address" required=1]
+		  [error name=email std_label="[L]Email Address[/L]" required=1]
 		</td>
 		<td class="contentbar1" colspan=3>
 		  <INPUT TYPE=text NAME=email VALUE="[value email]" size="30">
@@ -97,14 +97,14 @@
 	  </tr>
 	  <tr>
 		<td align="right" class="contentbar1">
-		  Country
+		  [L]Country[/L]
 		</td>
 		<td colspan="3" class="contentbar1">
 		  <SELECT NAME=country onChange="this.form.submit()">
 		  [if value country =~ /(^$|US|CA)/]
-		  <OPTION VALUE="US"> United States
-		  <OPTION [selected country CA] VALUE="CA"> Canada
-		  <OPTION VALUE="JP"> Other
+		  <OPTION VALUE="US"> [L]United States[/L]
+		  <OPTION [selected country CA] VALUE="CA"> [L]Canada[/L]
+		  <OPTION VALUE="JP"> [L]Other[/L]
 		  [else]
 		  [loop option=country search="
 			ra=yes
@@ -119,18 +119,18 @@
 		  [/else]
 		  [/if]
 		  </SELECT>
-		  <small>(will update display)</small>
+		  <small>([L]will update display[/L])</small>
 		</td>
 	  </tr>
 	  <tr>
 		<td align="right" class="contentbar1">
-		  [error name=phone_day std_label="Daytime Phone" required=1]
+		  [error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]
 		</td>
 		<td class="contentbar1">
 		  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
 		</td>
 		<td align="right" class="contentbar1">
-		  [error name=phone_night std_label="Evening Phone"]
+		  [error name=phone_night std_label="[L]Evening Phone[/L]"]
 		</td>
 		<td align="left" class="contentbar1">
 		  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
@@ -140,13 +140,13 @@
 	  <tr>
 		<td class="contentbar1">&nbsp;</td>
 		<td colspan="3" class="contentbar1">
-		  <B>Note:</B> [data session ship_message]
+		  <B>[L]Note[/L]:</B> [data session ship_message]
 		</td>
 	  </tr>
 	  [/if]                                                   
 	  <tr>
 		<td align="right" class="contentbar1">
-		  <b>Shipping method</b>
+		  <b>[L]Shipping method[/L]</b>
 		</td>
 		<td colspan="3" class="contentbar1">
 		  <SELECT NAME=mv_shipmode>
@@ -160,7 +160,7 @@
 	  <tr>
 		<td class="contentbar1">&nbsp;</td>
 		<td colspan="3" class="contentbar1">
-		  <i>We need the <b>bold fields</b> to process your order</i>
+		  <i>[L]We need the <b>bold fields</b> to process your order[/L]</i>
 		</td>
 	  </tr>
 	  <tr>

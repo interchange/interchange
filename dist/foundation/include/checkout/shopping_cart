@@ -1,11 +1,11 @@
         <table cellspacing="0" cellpadding="5" border="0" width="100%">
         <TR class="contentbar2">
-          <td class="contentbar2">&nbsp;<b>Remove</b></td>
-          <td class="contentbar2" align="center"><b>SKU</b></td>
-          <td class="contentbar2"><b>Description</b></td>
-          <td class="contentbar2"><b>Quantity</b></td>
-          <td class="contentbar2" align="center"><b>Price</b></td>
-          <td class="contentbar2"><b>Extension&nbsp;</b></td>
+          <td class="contentbar2">&nbsp;<b>[L]Remove[/L]</b></td>
+          <td class="contentbar2" align="center"><b>[L]SKU[/L]</b></td>
+          <td class="contentbar2"><b>[L]Description[/L]</b></td>
+          <td class="contentbar2"><b>[L]Quantity[/L]</b></td>
+          <td class="contentbar2" align="center"><b>[L]Price[/L]</b></td>
+          <td class="contentbar2"><b>[L]Extension[/L]&nbsp;</b></td>
         </TR>
         <TBODY>
 
@@ -23,7 +23,7 @@
             [if scratch dealer]
             [if-item-data pricing sku]
               <BR>[page quantity [item-code]]
-              QUANTITY PRICING</A>
+              [L]QUANTITY PRICING[/L]</A>
             [/if-item-data]
             [/if]
 
@@ -44,7 +44,7 @@
           </TD>
           <TD ALIGN=RIGHT>
             [item-discount-price]
-            [if discount [item-code]]<BR>Item is discounted [item-discount][/if]
+            [if discount [item-code]]<BR>[msg arg.0="[item-discount]"]Item is discounted %s[/msg][/if]
           </TD>
           <TD ALIGN=RIGHT>[item-subtotal]</TD>
         </TR>
@@ -56,14 +56,14 @@
             [page href="@@MV_PAGE@@" form="
                 separate_addresses=0
                 mv_action=return
-            "]Same shipping address</A><br>
-            [page href="ord/basket" form="edit_addresses=1"]Edit address</A><br>
-            [page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]Add address</A>
+            "][L]Same shipping address[/L]</A><br>
+            [page href="ord/basket" form="edit_addresses=1"][L]Edit address[/L]</A><br>
+            [page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"][L]Add address[/L]</A>
             [else]
             [page href="@@MV_PAGE@@" form="
                 separate_addresses=1
                 mv_action=return
-            "]Separate shipping</A>
+            "][L]Separate shipping[/L]</A>
             [/else]
             [/if]
           </td>
@@ -80,7 +80,7 @@
         [else]
         <TR>
           <TD ALIGN=CENTER COLSPAN=6 class="contentbar2">
-            No items at the moment.
+            [L]No items at the moment.[/L]
           </TD>
         </TR>
 
@@ -100,7 +100,7 @@
           <td align="right">
             <table align="center" cellspacing="0" border="0">
             <tr>
-              <TD ALIGN=left class="contentbar1">Subtotal: </TD>
+              <TD ALIGN=left class="contentbar1">[L]Subtotal[/L]: </TD>
               <TD ALIGN=RIGHT class="contentbar1">[subtotal]</TD>
             </TR>
 		[if config Levies]
@@ -113,23 +113,23 @@
                         [/levy-list]
 		[else]
             <TR>
-              <TD ALIGN=left class="contentbar1">Sales Tax:</TD>
+              <TD ALIGN=left class="contentbar1">[L]Sales Tax[/L]:</TD>
               <TD ALIGN=RIGHT class="contentbar1">[salestax]</TD>
             </TR>
             <TR>
-              <TD ALIGN=left class="contentbar1">Shipping:</TD>
+              <TD ALIGN=left class="contentbar1">[L]Shipping[/L]:</TD>
               <TD ALIGN=RIGHT class="contentbar1">[shipping]</TD>
             </TR>
 			[if value mv_handling]
             <TR>
-              <TD ALIGN=left class="contentbar1">Handling:</TD>
+              <TD ALIGN=left class="contentbar1">[L]Handling[/L]:</TD>
               <TD ALIGN=RIGHT class="contentbar1">[handling]</TD>
             </TR>
 			[/if]
 		[/else]
 		[/if]
             <TR>
-              <TD ALIGN=left class="contentbar2">TOTAL:</TD>
+              <TD ALIGN=left class="contentbar2">[L]TOTAL[/L]:</TD>
               <TD ALIGN=RIGHT class="contentbar2">[total-cost]</TD>
             </tr>
             </table>

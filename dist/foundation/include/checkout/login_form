@@ -1,8 +1,6 @@
     <br>
-    <p>If you have an account with us, please login using the fields below. It
-    is not required, but you can also <a href="[area new_account]">create an
-    account</a> with us.</p>
-                                  
+    <p>[msg arg.0="<a href='[area new_account]'>" arg.1="</a>"]If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.[/msg]</p>
+
     [if session failure]
       <P>
       <b>[calc]delete $Session->{failure}[/calc]</b>
@@ -24,7 +22,7 @@
         <table>
         <tr>
           <td align="right" class="contentbar1">
-            Username:
+            [L]Username[/L]:
           </td>
           <td align="left" class="contentbar1">
             <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
@@ -32,7 +30,7 @@
         </tr>
         <tr>
           <td align="right" class="contentbar1">
-            Password:
+            [L]Password[/L]:
           </td>
           <td class="contentbar1" align="left">
             <INPUT TYPE=password NAME=mv_password VALUE="">
@@ -42,7 +40,7 @@
         <tr>
           <td>&nbsp;</td>
           <td>
-            <input type="submit" value="Log In">
+            <input type="submit" value="[L]Log In[/L]">
           </td>
         </tr>
                 [if config CookieLogin]
@@ -50,7 +48,7 @@
           <td align="right">
             <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
           </td>
-          <td>Log me in automatically (sets cookie)</td>
+          <td>[L]Log me in automatically (sets cookie)[/L]</td>
         </tr>
                 [/if]
         </table>

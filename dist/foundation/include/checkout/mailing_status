@@ -4,16 +4,16 @@
 	<td>
 	  <table border="0" align="center" cellspacing="0" width="100%">
 		<tr class="contentbar2">
-		  <td class="contentbar2" colspan=4><b>Mailing Status</b></td>
+		  <td class="contentbar2" colspan=4><b>[L]Mailing Status[/L]</b></td>
 		</tr>
 		<tr>
 		  <td align="center" valign="middle" class="contentbar1">
 			<SELECT NAME=email_copy>
-			<OPTION VALUE="1">Yes
-			<OPTION [selected name=email_copy value=0] VALUE="0">No
+			<OPTION VALUE="1">[L]Yes[/L]
+			<OPTION [selected name=email_copy value=0] VALUE="0">[L]No[/L]
 			</SELECT>
 		  </td>
-		  <td class="contentbar1"><B>Send an email copy of my receipt</B></td>
+		  <td class="contentbar1"><B>[L]Send an email copy of my receipt[/L]</B></td>
 		  <td class="contentbar1">&nbsp;</td>
 		  <td class="contentbar1">&nbsp;</td>
 		</tr>
@@ -27,7 +27,7 @@
 			[input-filter name=mail_list op=null_to_space][/input-filter]
 			[display table=userdb type=multiple column=mail_list key="[data session username]"]
 		  </td>
-		  <td class="contentbar1"><B>Mail lists (if any)</B></td>
+		  <td class="contentbar1"><B>[L]Mail lists (if any)[/L]</B></td>
 		  <td class="contentbar1">&nbsp;</td>
 		  <td class="contentbar1">&nbsp;</td>
 		</tr>

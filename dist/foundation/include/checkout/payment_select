@@ -3,7 +3,7 @@
     <td>
        <table border="0" cellspacing="0" cellpadding="0" width="100%">
           <tr class="contentbar2">
-            <td colspan=4 class="contentbar2"><b>Payment Method</b></td>
+            <td colspan=4 class="contentbar2"><b>[L]Payment Method[/L]</b></td>
           </tr>
           <tr>
             <td colspan=4 class="contentbar1">&nbsp;</td>
@@ -59,25 +59,25 @@ function visible (selnam) {
 							[/else]
 							[/if]">
               [if variable CREDIT_CARDS_ACCEPTED]
-              <option [selected mv_order_profile credit_card] value="credit_card">Credit Card
+              <option [selected mv_order_profile credit_card] value="credit_card">[L]Credit Card[/L]
               [/if]
               [if variable CHECK_ACCEPTED]
-              <option [selected mv_order_profile online_check] value="online_check">Online Check
+              <option [selected mv_order_profile online_check] value="online_check">[L]Online Check[/L]
               [/if]
               [if variable PO_ACCEPTED]
-              <option [selected mv_order_profile purchase_order] value="purchase_order">Company P.O.
+              <option [selected mv_order_profile purchase_order] value="purchase_order">[L]Company P.O.[/L]
               [/if]
               [if variable POSTAL_ACCEPTED]
-              <option [selected mv_order_profile postal] value="postal">Postal Billing
+              <option [selected mv_order_profile postal] value="postal">[L]Postal Billing[/L]
               [/if]
               [if variable COD_ACCEPTED]
-              <option [selected mv_order_profile cod] value="cod">C.O.D.
+              <option [selected mv_order_profile cod] value="cod">[L]C.O.D.[/L]
               [/if]
               </SELECT>
             </td>
             <td colspan="2" class="contentbar1"> 
 			  [if scratch old_browser]
-              (will update display)
+              ([L]will update display[/L])
 			  [/if]
             </td>                              
           </tr>
