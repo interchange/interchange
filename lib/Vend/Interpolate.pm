@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.20 2001-10-13 13:48:47 mheins Exp $
+# $Id: Interpolate.pm,v 2.21 2001-10-18 09:40:44 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 @EXPORT = qw (
 
@@ -35,6 +35,10 @@ cache_html
 interpolate_html
 subtotal
 tag_data
+$Tag
+$CGI
+$Session
+$Values
 
 );
 
@@ -161,6 +165,7 @@ use vars @Share_vars, @Share_routines,
 use vars qw/%Filter %Ship_handler $Safe_data/;
 
 $ready_safe = new Safe;
+$ready_safe->trap(qw/:base_io/);
 $ready_safe->untrap(qw/sort ftfile/);
 
 sub reset_calc {
@@ -175,6 +180,7 @@ sub reset_calc {
 		$ready_safe = new Safe $pkg;
 		$ready_safe->share_from('MVSAFE', ['$safe']);
 #::logDebug("new safe made=$ready_safe->{Root}");
+		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
 		$Document   = new Vend::Document;
@@ -1417,6 +1423,7 @@ sub conditional {
 	RUNSAFE: {
 		last RUNSAFE if defined $status;
 		last RUNSAFE if $status = ($noop && $op);
+		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		$status = $ready_safe->reval($op)
 			unless ($@ or $status);
@@ -3008,8 +3015,12 @@ sub tag_cgi {
 		$value = filter_value($opt->{filter}, $value, $var);
 		$CGI::values{$var} = $value unless $opt->{keep};
 	}
-    return $value unless $opt->{hide};
-    return '';
+
+    return '' if $opt->{hide};
+
+	$value =~ s/</&lt;/g
+		unless $opt->{enable_html};
+    return $value;
 }
 
 # Returns the text of a user entered field named VAR.
@@ -3032,6 +3043,8 @@ sub tag_value_extended {
 	}
 
 	my $val = $CGI::values{$var} || $::Values->{$var} || return undef;
+	$val =~ s/</&lt;/g unless $opt->{enable_html};
+	$val =~ s/\[/&#91;/g unless $opt->{enable_itl};
 	
 	if($opt->{file_contents}) {
 		return '' if ! defined $CGI::file{$var};
@@ -3387,6 +3400,7 @@ sub tag_banner {
 # Returns the text of a user entered field named VAR.
 sub tag_value {
     my($var,$opt) = @_;
+#::logDebug("called value args=" . ::uneval(\@_));
     my($value);
 
 	local($^W) = 0;
@@ -3404,6 +3418,8 @@ sub tag_value {
 	$::Scratch->{$var} = $value if $opt->{scratch};
 	return '' if $opt->{hide};
     return $opt->{default} if ! $value and defined $opt->{default};
+	$value =~ s/</&lt;/g
+		unless $opt->{enable_html};
     return $value;
 }
 
@@ -4701,8 +4717,26 @@ EOF
 	return pull_if($body);
 }
 
+sub tag_object {
+	my ($count, $item, $hash, $opt, $body) = @_;
+	my $param = delete $hash->{param}
+		or return undef;
+	my $method;
+	my $out = '';
+	eval {
+		if(not $method = delete $hash->{method}) {
+			$out = $item->{$param}->();
+		}
+		else {
+			$out = $item->{$param}->$method();
+		}
+	};
+	return $out;
+}
+
 my %Dispatch_hash = (
 	address => \&tag_address,
+	address => \&tag_object,
 );
 
 sub find_matching_else {
@@ -4748,7 +4782,7 @@ sub tag_dispatch {
 	$tag =~ tr/-/_/;
 	my $full = lc "$Orig_prefix-tag-$tag";
 	$full =~ tr/-/_/;
-
+#::logDebug("tag_dispatch: tag=$tag count=$count chunk=$chunk");
 	my $attrseq = [];
 	my $attrhash = {};
 	my $eaten;
@@ -4764,6 +4798,12 @@ sub tag_dispatch {
 	my $out;
 	if(defined $Dispatch_hash{$tag}) {
 		$out = $Dispatch_hash{$tag}->($count, $item, $hash, $attrhash, $this_tag);
+	}
+	else {
+		$attrhash->{body} = $this_tag unless defined $attrhash->{body};
+#::logDebug("calling do_tag tag=$tag this_tag=$this_tag attrhash=" . ::uneval($attrhash));
+		$Tag ||= new Vend::Tags;
+		$out = $Tag->$tag($attrhash);
 	}
 	return $out . $chunk;
 }
@@ -4870,6 +4910,8 @@ my $once = 0;
 							check_change($1,$3,undef,$2)
 											?	pull_if($4)
 											:	pull_else($4)!ige;
+		$run =~ s#$B$QR{_tag}($Some$E[-_]tag[-_]\1\])#
+						tag_dispatch($1,$count, $row, $ary, $2)#ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
