@@ -261,18 +261,18 @@ mv_nextpage=@@MV_PAGE@@
 
 
 [table-editor
-	table=options
-	key=""
-	form_name=variant
-	ui_data_fields="code sku products:description:sku description price wholesale inventory:quantity weight o_matrix"
 	default.o_matrix=1
 	default.quantity=1
-	widget.o_matrix=hidden
-	ui_meta_view="variant"
-	widget.sku="hidden_text"
-	ui_display_only=products:description:sku
 	default.sku=`$CGI->{item_id}`
 	extra.description="wrap=auto"
-	width.description="20"
+	form_name=variant
+	key=""
+	table=options
+	ui_data_fields="code sku products:description:sku description price wholesale inventory:quantity weight o_matrix"
+	ui_display_only=products:description:sku
+	ui_meta_view="variant"
 	ui_new_item=1
+	widget.o_matrix=hidden
+	widget.sku="hidden_text"
+	widget_width.description="20"
 ]
