@@ -1,8 +1,13 @@
 UserTag scratchd            Order        name
 UserTag scratchd            PosNumber    1
+UserTag scratchd            addAttr
 UserTag scratchd            Routine <<EOR
 sub {
-	my $var = shift;
-	return delete $::Scratch->{$var};
+	my ($var, $opt) = @_;
+	my $value = delete $::Scratch->{$var};
+	if ($opt->{filter}) {
+		$value = filter_value($opt->{filter}, $value, $var);
+	}
+	return $value;
 }
 EOR
