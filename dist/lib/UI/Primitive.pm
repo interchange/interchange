@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -307,12 +307,13 @@ sub ui_acl_global {
 		$::Scratch->{mv_data_enable} = $record;
 		return;
 	}
+	my $enable = delete $::Scratch->{mv_data_enable} || 1;
 	my $CGI = \%CGI::values;
 	my $Tag = new Vend::Tags;
 	$CGI->{mv_todo} = $CGI->{mv_doit}
 		if ! $CGI->{mv_todo};
 	if( $Tag->if_mm('super')) {
-		$::Scratch->{mv_data_enable} = 1;
+		$::Scratch->{mv_data_enable} = $enable;
 		return;
 	}
 
@@ -365,7 +366,7 @@ sub ui_acl_global {
  			return;
   		}
 
- 		$::Scratch->{mv_data_enable} = 1;
+ 		$::Scratch->{mv_data_enable} = $enable;
 	}
 	elsif ($CGI->{mv_todo} eq 'deliver') {
 		if($Tag->if_mm('files', $CGI->{mv_data_file}, {}, 1 ) ) {
@@ -692,25 +693,45 @@ sub date_widget {
 	$out .= qq{</SELECT>};
 }
 
+my $base_entry_value;
+
 sub meta_display {
-	my ($table,$column,$key,$value,$meta_db,$query) = @_;
+	my ($table,$column,$key,$value,$meta_db,$query,$o) = @_;
 
 #::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
+	$o = {} if ! $o;
+#::logDebug("metadisplay: t=$table c=$column k=$key v=$value opt=" . ::uneval_it($o));
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
-#::logDebug("metadisplay: got meta ref=$meta");
-	my (@tries) = "${table}::$column";
-	if($key) {
-		unshift @tries, "${table}::${column}::$key", "${table}::$key";
+	$meta = $meta->ref();
+	if($column eq $meta->config('KEY')) {
+		$base_entry_value = $value;
 	}
+#::logDebug("metadisplay: got meta ref=$meta");
+	my $tag = '';
+	if($o->{arbitrary}) {
+		$tag = "$o->{arbitrary}::";
+	}
+	my (@tries) = "$tag${table}::$column";
+	if($key) {
+		# Don't think we need table::key combo anymore....
+		# unshift @tries, "$tag${table}::${column}::$key", "$tag${table}::$key";
+		unshift @tries, "$tag${table}::${column}::$key";
+	}
+	if($tag and $o->{fallback}) {
+		push @tries, "${table}::${column}::$key", "${table}::${column}";
+	}
+
+	my $sess = $Vend::Session->{mv_metadata} || {};
 	for $metakey (@tries) {
 #::logDebug("enter metadisplay record $metakey");
-		next unless $meta->record_exists($metakey);
-		$meta = $meta->ref();
-		my $record = $meta->row_hash($metakey);
+		my $record;
+		unless ( $record = $sess->{$metakey} and ref $record ) {
+			next unless $meta->record_exists($metakey);
+			$record = $meta->row_hash($metakey);
+		}
 		if($query) {
 			return $record->{query};
 		}
@@ -719,11 +740,16 @@ sub meta_display {
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
+::logDebug("passed = '$passed'");
+
 				if($passed eq 'tables') {
 					$record->{passed} = list_tables({ joiner => ',' });
 				}
-				elsif($passed =~ /^columns(::(\w+))?$/) {
+				elsif($passed =~ /^columns(::(\w*))?$/) {
+					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
+					$tname = $base_entry_value if $total eq '::';
+::logDebug("tname=$tname total=$total");
 					my $db = $Vend::Database{$tname};
 					$record->{passed} = join (',', $db->columns())
 						if $db;
@@ -739,11 +765,12 @@ sub meta_display {
 		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
+			my $key = $record->{lookup};
 			LOOK: {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
-				my $query = "select DISTINCT $fld FROM $dbname ORDER BY $fld";
+				my $query = "select DISTINCT $key, $fld FROM $dbname ORDER BY $fld";
 				my $ary = $db->query($query);
 				last LOOK unless ref($ary);
 				if(! scalar @$ary) {
@@ -767,16 +794,17 @@ sub meta_display {
 				$sub = sub { length(@_) } if ! $sub;
 				$record->{passed} = join ",", grep $sub->($_),
 									map
-										{ $_->[0] =~ s/,/&#44;/g; $_->[0]}
+										{ $_->[1] =~ s/,/&#44;/g; $_->[0] . "=" . $_->[1]}
 									@$ary;
 				$record->{passed} = "=--no current values--"
 					if ! $record->{passed};
 			}
 		}
 		elsif ($record->{type} eq 'date') {
-			my $o = date_widget($column, $value);
-			$o .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
-			return $o;
+			my $w = date_widget($column, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
 		elsif ($record->{type} eq 'imagedir') {
 			my $dir = $record->{'outboard'} || $column;
@@ -824,21 +852,25 @@ sub meta_display {
 			attribute	=> ($record->{'attribute'}	|| $column),
 			table		=> ($record->{'db'}			|| $meta_db),
 			column		=> ($record->{'field'}		|| 'options'),
-			name		=> ($record->{'name'}		|| $column),
+			name		=> ($o->{'name'} || $record->{'name'} || $column),
 			outboard	=> ($record->{'outboard'}	|| $metakey),
 			passed		=> ($record->{'passed'}		|| undef),
 			type		=> ($record->{'type'}		|| undef),
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
 		};
-		my $o = Vend::Interpolate::tag_accessories(
+#::logDebug("going to display");
+		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
 		if($record->{filter}) {
-			$o .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="};
-			$o .= $record->{filter};
-			$o .= '">';
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="};
+			$w .= $record->{filter};
+			$w .= '">';
 		}
-		return $o;
+#::logDebug("template=$o->{template}");
+		return $w unless $o->{template};
+#::logDebug("supposed to return template: " . ::uneval_it($record));
+		return ($w, $record->{label}, $record->{help}, $record->{help_url});
 	}
 	return undef;
 }
