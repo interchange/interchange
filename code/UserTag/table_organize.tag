@@ -243,27 +243,31 @@ sub {
 		$opt->{table} = ' ' if ! $opt->{table};
 	}
 
-	my $joiner = $pretty ? "\n\t\t" : "";
+	my $joiner = $opt->{joiner} || ($pretty ? "\n\t\t" : "");
 	while(@cells) {
-		while (scalar(@cells) % $cols) {
-			push @cells, "<td>$opt->{filler}</td>";
+		if ($opt->{columnize}) {
+			my $cell_count = scalar @cells;
+			my $row_count_ceil = POSIX::ceil($cell_count / $cols);
+			my $row_count_floor = int($cell_count / $cols);
+			my $remainder = $cell_count % $cols;
+			my @tmp = splice(@cells, 0);
+			my $index;
+			for (my $r = 0; $r < $row_count_ceil; $r++) {
+				for (my $c = 0; $c < $cols; $c++) {
+					if ($c >= $remainder + 1) {
+						$index = $r + $row_count_floor * $c + $remainder;
+					}
+					else {
+						$index = $r + $row_count_ceil * $c;
+					}
+					push @cells, $tmp[$index];
+					last if $r + 1 == $row_count_ceil and $c + 1 == $remainder;
+				}
+			}
 		}
 
-		if( $opt->{columnize}) {
-			my $nr_of_rows = scalar(@cells) / $cols;
-			my @tmp = splice(@cells,0);
-		    my $index;
-		    my $r = 0;
-
-		    while ($r < $nr_of_rows) {
-				my $c = 0;
-				while ($c < $cols) {
-				    $index = $r + $nr_of_rows * $c;
-			    	    push @cells, $tmp[$index];
-				    $c++;
-				}
-				$r++;
-		    }
+		while (scalar(@cells) % $cols) {
+			push @cells, "<td>$opt->{filler}</td>";
 		}
 
 		#$out .= "<!-- starting table tmod=$tmod -->";
