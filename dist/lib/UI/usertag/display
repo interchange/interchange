@@ -5,10 +5,12 @@ UserTag display posNumber 3
 UserTag display Routine <<EOR
 sub {
 	my ($table,$column,$key,$opt) = @_;
-	$table = $::Values->{mv_data_table} unless $table;
-	my $db = Vend::Data::database_exists_ref($table);
-	return "NON-EXISTENT DATABASE '$table' for display" unless defined $db;
-	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	my $db;
+	if($table) {
+		$db = Vend::Data::database_exists_ref($table);
+		return "NON-EXISTENT DATABASE '$table' for display" unless defined $db;
+		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	}
 	my $text;
 	my $size;
 	my $widget;
@@ -32,7 +34,7 @@ EOF
 	}
 
 #::logDebug("meta call: table=$table col=$column key=$key text=$text");
-	$text = $db->field($key,$column) if $db->record_exists($key);
+	$text = $db->field($key,$column) if $db and $db->record_exists($key);
 	if($opt->{override}) {
 		$text = $opt->{default};
 	}
