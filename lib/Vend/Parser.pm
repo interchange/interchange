@@ -1,6 +1,6 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2.6.1 2000-12-13 13:51:51 heins Exp $
+# $Id: Parser.pm,v 1.2.6.2 2000-12-14 16:59:14 zarko Exp $
 #
 #
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -113,7 +113,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2.6.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2.6.2 $ =~ /(\d+)\.(\d+)/);
 
 
 sub new
@@ -182,7 +182,8 @@ sub parse
 			$self->text($1);
 			return $self unless length $$buf;
 		# Find the most common tags
-		} elsif ($$buf =~ s|^(\[([-a-z0-9A-Z_]+)[^"'=\]>]*\])||) {
+		}
+		elsif ($$buf =~ s|^(\[([-a-z0-9A-Z_]+)[^"'=\]>]*\])||) {
 #my $tag=$2; my $eat = $1;
 #undef $self->{HTML};
 #::logDebug("tag='$tag' eat='$eat'");
@@ -190,7 +191,8 @@ sub parse
 				undef $self->{HTML};
 				$self->start($2, {}, [], $1);
 		# Then, finally we look for a start tag
-		} elsif ($$buf =~ s|^\[||) {
+		}
+		elsif ($$buf =~ s|^\[||) {
 			# start tag
 			$eaten = '[';
 			$self->{HTML} = 0 if ! defined $self->{HTML};
@@ -239,15 +241,19 @@ sub parse
 						next unless defined $attr;
 						$val = $2;
 					# or quoted by " or ' or # or $ or |
-					} elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
+					}
+					elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
 						next unless defined $attr;
 						$val = $3;
 						HTML::Entities::decode($val) if $attr{entities};
 					# or quoted by `` to send to [calc]
-					} elsif ($$buf =~ s~(^=\s*([\`\|])(.*?)\2\s*)~~s) {
+					}
+					elsif ($$buf =~ s~(^=\s*([\`\|])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val = Vend::Interpolate::tag_calc($3); }
+						if    ($2 eq '`') {
+							$val = Vend::Interpolate::tag_calc($3);
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
@@ -257,11 +263,13 @@ sub parse
 							die "parse error!";
 						}
 					# truncated just after the '=' or inside the attribute
-					} elsif ($$buf =~ m|^(=\s*)$|s or
+					}
+					elsif ($$buf =~ m|^(=\s*)$|s or
 							 $$buf =~ m|^(=\s*[\"\'].*)|s) {
 						$$buf = "$eaten$1";
 						return $self;
-					} elsif (!$old) {
+					}
+					elsif (!$old) {
 						# assume attribute with implicit value, but
 						# if not,no value is set and the
 						# eaten value is grown
@@ -308,26 +316,32 @@ sub parse
 				# At the end there should be a closing "\] or >"
 				if ($$buf =~ s|^\]|| ) {
 					$self->start($tag, \%attr, \@attrseq, "$eaten]");
-				} elsif ($$buf =~ s|^([^\]\n]+\])||) {
+				}
+				elsif ($$buf =~ s|^([^\]\n]+\])||) {
 					$eaten .= $1;
 					$self->start($tag, {}, [], $eaten);
-				} elsif (length $$buf) {
+				}
+				elsif (length $$buf) {
 #::logDebug("eaten $eaten");
 					# Not a conforming start tag, regard it as normal text
 					$self->text($eaten);
-				} else {
+				}
+				else {
 					$$buf = $eaten;  # need more data to know
 					return $self;
 				}
 
-			} elsif (length $$buf) {
+			}
+			elsif (length $$buf) {
 #::logDebug("eaten $eaten");
 				$self->text($eaten);
-			} else {
+			}
+			else {
 				$$buf = $eaten;  # need more data to parse
 				return $self;
 			}
-		} elsif ($$buf =~ s|^<||) {
+		}
+		elsif ($$buf =~ s|^<||) {
 			# start tag
 			$eaten = '<';
 #::logDebug("do < tag") if ! $Vend::DoneDebug++;
@@ -387,15 +401,19 @@ sub parse
 						next unless defined $attr;
 						$val = $2;
 					# or quoted by " or ' or # or $ or |
-					} elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
+					}
+					elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
 						next unless defined $attr;
 						$val = $3;
 						HTML::Entities::decode($val) if $attr{entities};
 					# or quoted by `` to send to [calc]
-					} elsif ($$buf =~ s~(^=\s*([\`\|]?)(.*?)\2\s*)~~s) {
+					}
+					elsif ($$buf =~ s~(^=\s*([\`\|]?)(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val =Vend::Interpolate::tag_calc($4); }
+						if    ($2 eq '`') {
+							$val =Vend::Interpolate::tag_calc($4);
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
@@ -405,7 +423,8 @@ sub parse
 							die "parse error!";
 						}
 					# truncated just after the '=' or inside the attribute
-					} elsif ($$buf =~ m|^(=\s*)$|s or
+					}
+					elsif ($$buf =~ m|^(=\s*)$|s or
 							 $$buf =~ m|^(=\s*[\"\'].*)|s) {
 #::logDebug("Truncated? eaten=$eateni buf=$$buf");
 						$$buf = "$eaten$1";
@@ -445,27 +464,33 @@ sub parse
 				# At the end there should be a closing "\] or >"
 				if ($$buf =~ s|^>|| ) {
 					$self->start($tag, \%attr, \@attrseq, "$eaten>", $end_tag);
-				} elsif (length $$buf) {
+				}
+				elsif (length $$buf) {
 #::logDebug("not conforming, eaten $eaten");
 					# Not a conforming start tag, regard it as normal text
 					$self->text($eaten);
-				} else {
+				}
+				else {
 					$$buf = $eaten;  # need more data to know
 					return $self;
 				}
 
-			} elsif (length $$buf) {
+			}
+			elsif (length $$buf) {
 #::logDebug("eaten $eaten");
 				$self->text($eaten);
-			} else {
+			}
+			else {
 				#$$buf = $eaten;  # need more data to parse
 				return $self;
 			}
 
-		} elsif (length $$buf) {
+		}
+		elsif (length $$buf) {
 			::logDebug("remaining: $$buf");
 			die $$buf; # This should never happen
-		} else {
+		}
+		else {
 			# The buffer is empty now
 			return $self;
 		}
