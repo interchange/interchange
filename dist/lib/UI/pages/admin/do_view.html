@@ -1,5 +1,4 @@
-@_UI_STD_INIT_@
-[tmp total_junk][set violation]Failed to run security checks.[/set][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
+@_UI_STD_INIT_@[tmp total_junk][set violation]Failed to run security checks.[/set][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
 	delete $Scratch->{violation};
 	$_ = delete $Session->{arg};
 	$Scratch->{violation} = errmsg('Must be logged in.')
