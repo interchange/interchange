@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.10 2003-08-04 22:01:08 racke Exp $
+# $Id: AuthorizeNet.pm,v 2.11 2003-09-10 15:58:52 mheins Exp $
 #
 # Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -269,10 +269,14 @@ BEGIN {
 }
 
 package Vend::Payment;
+use strict;
+
 sub authorizenet {
 	my ($user, $amount) = @_;
 
 	my $opt;
+	my $secret;
+	
 	if(ref $user) {
 		$opt = $user;
 		$user = $opt->{id} || undef;
@@ -371,7 +375,7 @@ sub authorizenet {
         $amount = Vend::Util::round_to_frac_digits($amount,$precision);
     }
 
-	$order_id = gen_order_id($opt);
+	my $order_id = gen_order_id($opt);
 
 #::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
     my %query = (
