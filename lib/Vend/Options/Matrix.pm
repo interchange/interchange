@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.5 2003-08-05 21:46:19 racke Exp $
+# $Id: Matrix.pm,v 1.6 2003-12-04 03:52:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 =head1 NAME
 
@@ -133,7 +133,30 @@ sub display_options {
 	# Will be different based on whether separate or not....
 	my $rsort;
 
-	my $inv_func;
+    my $inv_func;
+    if($opt->{inventory}) {
+        my ($tab, $col) = split /:+/, $opt->{inventory};
+        MAKEFUNC: {
+            my $idb = dbref($tab)
+                or do {
+                    logError("Bad table %s for inventory function.", $tab);
+                    last MAKEFUNC;
+                };
+            $idb->test_column($col)
+                or do {
+                    logError(
+                        "Bad column %s in table %s for inventory function.",
+                        $col,
+                        $tab,
+                    );
+                    last MAKEFUNC;
+                };
+            $inv_func = sub {
+                my $key = shift;
+                return $idb->field($key, $col);
+            };
+        }
+    }
 
 	use constant SEP_CODE		=> 0;
 	use constant SEP_GROUP		=> 1;

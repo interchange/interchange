@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.3 2003-09-08 12:25:18 jon Exp $
+# $Id: Old48.pm,v 1.4 2003-12-04 03:52:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 =head1 NAME
 
@@ -130,6 +130,31 @@ sub display_options_matrix {
 	my @out;
 	my $out;
 	
+    my $inv_func;
+    if($opt->{inventory}) {
+        my ($tab, $col) = split /:+/, $opt->{inventory};
+        MAKEFUNC: {
+            my $idb = dbref($tab)
+                or do {
+                    logError("Bad table %s for inventory function.", $tab);
+                    last MAKEFUNC;
+                };
+            $idb->test_column($col)
+                or do {
+                    logError(
+                        "Bad column %s in table %s for inventory function.",
+                        $col,
+                        $tab,
+                    );
+                    last MAKEFUNC;
+                };
+            $inv_func = sub {
+                my $key = shift;
+                return $idb->field($key, $col);
+            };
+        }
+    }
+
 	my $rsort = find_sort($opt, $db, $loc);
 
 	if($opt->{display_type} eq 'separate') {
