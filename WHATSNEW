@@ -10,6 +10,9 @@ Core and usertags
 -----------------
 * Make mv_more_alpha working in query tags.
 
+* Allow [dump] of portion of session, for example [dump scratch].
+  !!UNDOCUMENTED!!
+
 I18N
 --------
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
