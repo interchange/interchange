@@ -166,6 +166,27 @@ Core
   something besides the default -- in particular allows InnoDB type
   setting for userdb/transactions/orderline.
 
+* Patch slight security hole where user password can be saved in session.
+
+* Allow redirection of shipping modes.
+
+  Basically, you can do:
+
+  upsg_or_free	UPS Ground	[subtotal noformat=1]	0	99.99	>>upsg
+  upsg_or_free	UPS Ground	price	100	99999	0		{ free => 'Free!' }
+
+  upsg	UPS Ground	weight	0	150	u Ground
+
+  The first mode redirects to the second one if the order total is
+  less that $100; if it is more, it gives free shipping.
+
+  Add [shipping widget="Vend::Form widget" mode="mode1 mode2"] to
+  automatically build widget with Vend::Form. Works just like
+  [shipping label=1 ...] but produces a complete widget.
+
+* Keep copy of CGI values at time of history save, not reference to them
+  (which can be changed in subsequent code).
+
 File
 ----
 
@@ -431,6 +452,9 @@ Menu
   The tree will allow search and find of these items in more than
   one category.
 
+* Add "items" check to menu to allow showing an entry only if items are
+  in the cart. Works for current cart ($Vend::Items) only.
+
 Form
 ----
 
@@ -570,6 +594,9 @@ UI
   of having it show up everywhere.
 
 * Continued preparation for translation.
+
+* Fix HTML problem in order entry page found by 
+  Nicholas Cook <ncook@foxmillpets.com>.
 
 Payment
 -------
@@ -715,6 +742,12 @@ UserTags
 
 * find - New usertag in spirit of the Unix command with the same name.
 
+* Add [button wait-text="-- Please Wait --" text="Place Order" ...] so
+  button has indication of press beyond normal browser indication.
+
+  Allow direct setting of id, class, and style HTML characteristics without
+  having to shoehorn them in extra=" style='...'" etc.
+
 Filters
 -------
 
@@ -750,6 +783,9 @@ SOAP
 
 * Error handling revised.
 
+* Add SOAP_Control configuration directive and soap_gate access
+  check routine to control requests to the SOAP server.
+
 Shadow Database
 ---------------
 
@@ -765,6 +801,9 @@ Shadow Database
 * Add name method.
 
 * Map autonumber method to Vend::Table::Common.
+
+* Introduce mv_shadowpass scratch variable which instructs
+  the Shadow database code to return the original database record.
 
 Miscellaneous
 -------------
