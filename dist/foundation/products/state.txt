@@ -125,58 +125,48 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 	04	NL	UT	Utrecht
 	04	NL	ZH	Zuid Holland
 	04	NL	ZL	Zeeland
+	05	UK	AVON	Avon
 	05	UK	BEDS	Bedfordshire
 	05	UK	BERKS	Berkshire
-	05	UK	BORDER	Borders
 	05	UK	BUCKS	Buckinghamshire
 	05	UK	CAMBS	Cambridgeshire
-	05	UK	CENT	Central
-	05	UK	CI	Channel Islands
 	05	UK	CHESH	Cheshire
 	05	UK	CLEVE	Cleveland
 	05	UK	CORN	Cornwall
 	05	UK	CUMB	Cumbria
 	05	UK	DERBY	Derbyshire
-	05	UK	DEVON	Devonshire
-	05	UK	DORSET	Dorsetshire
-	05	UK	DUMGAL	Dumfries & Galloway
+	05	UK	DEVON	Devon
+	05	UK	DORSET	Dorset
 	05	UK	DURHAM	Durham
-	05	UK	GLAM	Glamorganshire
+	05	UK	ESSEX	Essex
 	05	UK	GLOUS	Gloucestershire
-	05	UK	GRAMP	Grampian
-	05	UK	GWYNED	Gwynedd
+	05	UK	GLONDON	Greater London
+	05	UK	GMANCH	Greater Manchester
 	05	UK	HANTS	Hampshire 
-	05	UK	HERWOR	Herefordshire & Worcestershire
+	05	UK	HERWOR	Hereford & Worcester
 	05	UK	HERTS	Hertfordshire
-	05	UK	HIGHL	Highland
 	05	UK	HUMBER	Humberside
-	05	UK	HUNTS	Huntingdonshire
 	05	UK	IOM	Isle of Man
 	05	UK	IOW	Isle of White
-	05	UK	LANARKS	Lanarkshire
+	05	UK	KENT	Kent
 	05	UK	LANCS	Lancashire
 	05	UK	LEICS	Leicestershire
-	05	UK	LINCS	Licolnshire
-	05	UK	LOTH	Lothian
-	05	UK	MIDDX	Middlesex
+	05	UK	LINCOLN	Lincolnshire
+	05	UK	MERSEY	Merseyside
 	05	UK	NORF	Norfolk
 	05	UK	NHANTS	Northamptonshire
 	05	UK	NTHUMB	Northumberland
 	05	UK	NOTTS	Nottinghamshire
 	05	UK	OXON	Oxfordshire
-	05	UK	PEMBS	Pembrokeshire
-	05	UK	RUTLAND	Rutlandshire
 	05	UK	SHROPS	Shropshire
-	05	UK	SOM	Somersetshire
+	05	UK	SOM	Somerset
 	05	UK	STAFFS	Staffordshire
-	05	UK	STRATH	Strathclyde
 	05	UK	SUFF	Suffolk
+	05	UK	SURREY	Surrey
 	05	UK	SUSS	Sussex
-	05	UK	TAYS	Tayside
-	05	UK	TYNE	Tyne & Wear
 	05	UK	WARKS	Warwickshire
+	05	UK	WMID	West Midlands
 	05	UK	WILTS	Wiltshire
-	05	UK	WORCS	Worcestershire
 	05	UK	YORK	Yorkshire
 	06	EI	CO ANTRIM	County Antrim
 	06	EI	CO ARMAGH	County Armagh
