@@ -328,6 +328,41 @@ UI
 
 * Many, many, minor bug fixes and improvements.
 
+Forum
+-----
+
+* Add "forum" feature to foundation. Allows commenting on products and
+  also as a byproduct arbitrary blog-style forums.
+
+  This is a complete forum display:
+
+  	[forum top=THREAD_ID /]
+
+  You can get more complex than that. There is an illustration of the
+  templated version in the pages/forum/display.html page.
+
+  Disabled by default for DBM and Oracle. No database def is
+  supplied for Oracle.
+
+  With Postgres and MySQL, the forum is displayed in the flypage
+  automatically by default. The thread doesn't exist until the
+  first comment is made, at which time we create a top-level thread
+  named for the SKU.
+
+  An email notification goes out with new comments if that is
+  enabled.
+
+  There is some scoring logic for display, but no way to assign
+  scores yet (except by editing the database directly).
+
+  The reply and submit pages use include files from include/forum.
+
+  Arbitrary forums need to be enabled by setting the artid equal
+  to the code. If the artid is 0, as is the default on a random
+  submit, no display will be done. (The enabling is done automatically
+  for products by passing the product=1 parameter in the URL and
+  finding the product in the database.)
+
 ------------------------------------------------------------------------------
 
 
