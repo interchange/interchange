@@ -1,6 +1,6 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.3 2002-11-18 16:55:15 mheins Exp $
+# $Id: WellsFargo.pm,v 1.4 2003-02-19 04:23:03 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::WellsFargo;
 
 =head1 Interchange WellsFargo Support
 
-Vend::Payment::WellsFargo $Revision: 1.3 $
+Vend::Payment::WellsFargo $Revision: 1.4 $
 
 =head1 SYNOPSIS
 
@@ -382,11 +382,12 @@ sub wellsfargo {
 		auth		 		=> 'authorize',
 		authorize		 	=> 'authorize',
 		mauthonly			=> 'authorize',
-		mauthcapture 			=> 'sale',
+		mauthcapture 		=> 'sale',
 		sale		 		=> 'sale',
 		return				=> 'return',
 		mauthreturn			=> 'return',
-		settle      			=> 'settle'
+		settle      		=> 'settle'
+		settle_prior      	=> 'settle'
 	);
 
     my $transtype = $opt->{transaction} ||

@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.4 2002-03-28 15:54:20 jon Exp $
+# $Id: BoA.pm,v 1.5 2003-02-19 04:23:03 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.4 $
+Vend::Payment::BoA $Revision: 1.5 $
 
 =head1 SYNOPSIS
 
@@ -347,7 +347,8 @@ sub boa {
 		sale		 		=> 'sale',
 		return				=> 'return',
 		mauthreturn			=> 'return',
-		settle      			=> 'settle'
+		settle      		=> 'settle'
+		settle_prior      	=> 'settle'
 	);
 
     my $transtype = $opt->{transaction} ||

@@ -1,6 +1,6 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.1 2002-07-24 15:36:05 kwalsh Exp $
+# $Id: TCLink.pm,v 1.2 2003-02-19 04:23:03 mheins Exp $
 #
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
@@ -30,7 +30,7 @@ package Vend::Payment::TCLink;
 
 =head1 Interchange TrustCommerce Support
 
-Vend::Payment::TCLink $Revision: 1.1 $
+Vend::Payment::TCLink $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -290,6 +290,7 @@ sub trustcommerce {
 		return			=>	'credit',
 		sale	 		=>	'sale',
 		settle 			=>	'postauth',
+		settle_prior 	=>	'postauth',
 	);
 	
 	if (defined $type_map{$transtype}) {
