@@ -40,19 +40,19 @@
       <img src="__THEME_IMG_DIR__sep.gif">
     <a href="[area login]">
     [if session logged_in]
-      <img alt="[L]Log Out[/L]" border="0" src="__THEME_IMG_DIR__logout.gif"></a>
+      <img alt="[msg]Log Out[/msg]" border="0" src="__THEME_IMG_DIR__logout.gif"></a>
     [else]
-      <img alt="[L]Log In[/L]" border="0" src="__THEME_IMG_DIR__login.gif"></a>
+      <img alt="[msg]Log In[/msg]" border="0" src="__THEME_IMG_DIR__login.gif"></a>
     [/else]
     [/if]
       <img src="__THEME_IMG_DIR__sep.gif">
-    <a href="[area ord/basket]"><img alt="[L]Your Cart[/L]" border="0" src="__THEME_IMG_DIR__cart.gif"></a>
+    <a href="[area ord/basket]"><img alt="[msg]Your Cart[/msg]" border="0" src="__THEME_IMG_DIR__cart.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
-    <a href="[area ord/checkout]"><img alt="[L]Check Out[/L]" border="0" src="__THEME_IMG_DIR__checkout.gif"></a>
+    <a href="[area ord/checkout]"><img alt="[msg]Check Out[/msg]" border="0" src="__THEME_IMG_DIR__checkout.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
-    <a href="[area customerservice]"><img alt="[L]Customer Service[/L]" border="0" src="__THEME_IMG_DIR__service.gif"></a>
+    <a href="[area customerservice]"><img alt="[msg]Customer Service[/msg]" border="0" src="__THEME_IMG_DIR__service.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
-    <a href="[area aboutus]"><img alt="[L]About Us[/L]" border="0" src="__THEME_IMG_DIR__about.gif"></a>
+    <a href="[area aboutus]"><img alt="[msg]About Us[/msg]" border="0" src="__THEME_IMG_DIR__about.gif"></a>
   </td>
 </tr>
 <tr class="categorybar">
