@@ -54,7 +54,7 @@
 [seti table_perm][cgi mv_data_table]=v[/seti]
 [seti help_name][either][cgi help_name][or]flex.meta[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
-[if !scratch ui_class][seti ui_class][either cgi ui_class][or]Admin[/either][/seti][/if]
+[if !scratch ui_class][seti ui_class][either][cgi ui_class][or]Admin[/either][/seti][/if]
 [flag type=write table="[cgi mv_data_table]"]
 
 [if cgi ui_new_item]
