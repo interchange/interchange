@@ -2,7 +2,7 @@ interchange (4.8.7-1) unstable; urgency=low
 
   * new upstream release
   * separate package creation process into architecture dependent
-	and architecture independent run (Closes: #172940)
+    and architecture independent run (Closes: #172940)
 
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 22 Jan 2003 01:24:52 +0100
 
