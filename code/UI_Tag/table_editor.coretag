@@ -1020,6 +1020,11 @@ EOF
 			s/:.*//;
 		}
 
+		my %tab_checked;
+		for(@tables, @sets) {
+			$tab_checked{$_} = 1 if s/\*$//;
+		}
+
 		@tables = grep ! $seen{$_}++ && defined $Config->{Database}{$_}, @tables;
 
 		my $tab = '';
@@ -1087,14 +1092,16 @@ EOF
 			my $db = Vend::Data::database_exists_ref($_)
 				or next;
 			next unless $db->record_exists($opt->{ui_clone_id});
+			my $checked = $tab_checked{$_} ? ' CHECKED' : '';
 			$tabform .= <<EOF;
-<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"> clone to <b>$_</B><BR>
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"$checked> clone to <b>$_</B><BR>
 EOF
 		}
 		for(@sets) {
 			my ($t, $col) = split /:/, $_;
+			my $checked = $tab_checked{$_} ? ' CHECKED' : '';
 			$tabform .= <<EOF;
-<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"> clone entries of <b>$t</B> matching on <B>$col</B><BR>
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"$checked> clone entries of <b>$t</B> matching on <B>$col</B><BR>
 EOF
 		}
 
