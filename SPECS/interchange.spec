@@ -8,8 +8,8 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.8.4
-Release: 9
+Version: 4.8.5
+Release: 1
 Vendor: Red Hat, Inc.
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
