@@ -11,7 +11,7 @@ Core
 ----
 
 * Global configuration directive LockType works now as advertised in the
-  documentation.
+  documentation (problem reported by Bill Carr <bill@worldwideimpact.com>).
 
 * SOAP server returns proper headers now, which not only makes it compliant 
   with the SOAP standard, but also makes it work with the more recent versions
