@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.153 2005-01-30 16:36:29 mheins Exp $
+# $Id: Config.pm,v 2.154 2005-02-01 02:07:14 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.153 $, 10);
+$VERSION = substr(q$Revision: 2.154 $, 10);
 
 my %CDname;
 my %CPname;
@@ -553,7 +553,7 @@ sub catalog_directives {
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
 	['DiscountSpaces',	 'yesno',            'no'],
-	['DiscountSpaceVar', 'word',             'mv_discount_space'],
+	['DiscountSpaceVar', 'array',            'mv_discount_space'],
 	['Jobs',		 	 'hash',     	 	 ''],
 	['Shipping',         'locale',           ''],
 	['Accounting',	 	 'locale',     	 	 ''],
@@ -2359,10 +2359,12 @@ my @Dispatches;
 );
 
 %Dispatch_code = (
+
 	Autoload => sub {
 #::logDebug("Doing Autoload dispatch...");
 		Vend::Dispatch::run_macro($Vend::Cfg->{Autoload});
 	},
+
 	CookieLogin => sub {
 #::logDebug("Doing CookieLogin dispatch....");
 		if(! $Vend::Session->{logged_in}) {
@@ -2390,6 +2392,7 @@ my @Dispatches;
 			}
 		}
 	},
+
 	Locale => sub {
 #::logDebug("Doing Locale dispatch...");
 		my $locale = $::Scratch->{mv_locale}
@@ -2409,18 +2412,24 @@ my @Dispatches;
 								{ persist => 1 }
 							);
 	},
+
 	DiscountSpaces => sub {
 #::logDebug("Doing DiscountSpaces dispatch...");
-	   if ($CGI::values{$Vend::Cfg->{DiscountSpaceVar}}) {
-#::logDebug("$Vend::Cfg->{DiscountSpaceVar} is set=...");
-           $Vend::DiscountSpace = $CGI::values{$Vend::Cfg->{DiscountSpaceVar}};
-#::logDebug("$Vend::Cfg->{DiscountSpaceVar} is set=$Vend::DiscountSpace...");
-		   $::Discounts
+		my $dspace;
+		for (@{$Vend::Cfg->{DiscountSpaceVar}}) {
+			next unless $dspace = $CGI::values{$_};
+#::logDebug("$_ is set=...");
+			last;
+		}
+		return unless $dspace;
+		$Vend::DiscountSpace = $dspace;
+#::logDebug("Discount space is set=$Vend::DiscountSpace...");
+		$::Discounts
 				= $Vend::Session->{discount}
 				= $Vend::Session->{discount_space}{$Vend::DiscountSpace}
 				||= {};
-        }
     },
+
 );
 
 # Set up defaults for certain directives

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.231 2005-01-25 04:17:58 mheins Exp $
+# $Id: Interpolate.pm,v 2.232 2005-02-01 02:07:15 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.231 $, 10);
+$VERSION = substr(q$Revision: 2.232 $, 10);
 
 @EXPORT = qw (
 
@@ -2662,7 +2662,9 @@ sub switch_discount_space {
 #::logDebug('switch_discount_space: initialized discount space hash.');
 	}
 	if ($dspace ne ($oldspace = $Vend::DiscountSpace)) {
-		$::Discounts = $Vend::Session->{discount_space}{$Vend::DiscountSpace = $dspace};
+		$::Discounts = $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{$Vend::DiscountSpace = $dspace}
+			||= {};
 #::logDebug("switch_discount_space: changed discount space from '$oldspace' to $Vend::DiscountSpace");
 	}
 	return $oldspace;
@@ -4912,8 +4914,9 @@ sub discount_price {
 
 	if ($extra and ! $::Discounts) {
 		my $dspace = $Vend::DiscountSpace ||= 'main';
-		$Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {};
-		$::Discounts = $Vend::Session->{discount_space}{$dspace} ||= {};
+		$Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {}
+			unless $Vend::Session->{discount_space}{main};
+		$::Discounts = $Vend::Session->{discount} = $Vend::Session->{discount_space}{$dspace} ||= {};
 	}
 
 	return $price unless $::Discounts;
