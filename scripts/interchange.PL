@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.2
 #
-# $Id: interchange.PL,v 1.8.4.15 2000-12-07 20:15:22 racke Exp $
+# $Id: interchange.PL,v 1.8.4.16 2000-12-14 08:33:02 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -475,36 +475,96 @@ sub update_data {
 		@{$data{$key}} = split /\0/, $value;
 	}
 
-    my $outfile;
-    my $Tag = new Vend::Tags;
+    if(@file_fields) {
+	    my $Tag = new Vend::Tags;
+		my $acl_func;
+        my $outfile;
+
+		if($Vend::Session->{logged_in} and $Vend::admin) {
+			$acl_func = sub {
+				return $Tag->if_mm('files', shift);
+			};
+		}
+		elsif($Vend::Session->{logged_in} and ! $Vend::admin) {
+			$acl_func = sub {
+				my $file = shift;
+				return 1 if $::Scratch->{$file} == 1;
+				return $Tag->userdb(
+								function => 'check_file_acl',
+								location => $file,
+								mode => 'w'
+								);
+			};
+		}
+		else {
+			$acl_func = sub { return $::Scratch->{shift(@_)} == 1 }
+		}
  
-    for (my $i = 0; $i < @file_fields; $i++) {
-        unless (length($data{$file_fields[$i]}->[0])) {
-            # no need for a file update
-            $data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
-            next;
-        }
+	    for (my $i = 0; $i < @file_fields; $i++) {
+    	    unless (length($data{$file_fields[$i]}->[0])) {
+        	    # no need for a file update
+            	$data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
+	            next;
+    	    }
 
-        # remove path components
-        $data{$file_fields[$i]}->[0] =~ s/.*\\//; 
+        	# remove path components
+	        $data{$file_fields[$i]}->[0] =~ s/.*\\//; 
 
-        if (length ($file_paths[$i])) {
-            # real file upload
-            $outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
-
-            if ($Tag->if_mm ('!files', $outfile)) {
-                ::logError ("Not allowed to upload \"$outfile\"");
-                next;
-            }   
-            Vend::Interpolate::tag_value_extended ($file_fields[$i],
-                {outfile => $outfile, umask => '022'});
-        } else {
-            # preparing to dump file contents into database column
-            $data{$file_fields[$i]}->[0]
-                = Vend::Interpolate::tag_value_extended ($file_fields[$i],
-                    {file_contents => 1});
-        }
-    }
+    	    if (length ($file_paths[$i])) {
+        	    # real file upload
+            	$outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
+#::logDebug("file upload: field=$file_fields[$i] path=$file_paths[$i] outfile=$outfile");
+				my $ok;
+				if (-f $outfile) {
+					eval {
+						$ok = $acl_func->($outfile);
+					};
+				} else {
+					eval {
+						$ok = $acl_func->($file_paths[$i]);
+					};
+				}
+				if (! $ok) {
+					if($@) {
+						::logError ("ACL function failed on '%s': %s", $outfile, $@);
+					}
+					else {
+						::logError ("Not allowed to upload \"%s\"", $outfile);
+					}
+					next;
+				} 
+				my $err;
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											test => 'isfile'
+										}
+										)
+					or do {
+						 ::logError("%s is not a file.", $data{$file_fields[$i]}->[0]);
+						 next;
+					};
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											outfile => $outfile,
+											umask => '022',
+											yes => '1',
+										}
+										)
+					or do {
+						 ::logError("failed to write %s: %s", $outfile, $!);
+						 next;
+					};
+        	}
+			else {
+            	# preparing to dump file contents into database column
+	            $data{$file_fields[$i]}->[0]
+    	            = Vend::Interpolate::tag_value_extended ($file_fields[$i],
+        	            {file_contents => 1});
+	        }
+    	}
+	}
 
     if ($function eq 'insert' && $base_db->config('AUTO_INCREMENT')) {
         # special insertion case => key not needed
