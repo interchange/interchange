@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.22 2004-04-08 15:05:09 mheins Exp $
+# $Id: Search.pm,v 2.23 2004-06-07 03:09:36 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -521,6 +521,9 @@ sub create_text_query {
 			? $s->{mv_substring_match}[$i]
 			: $s->{mv_substring_match};
 
+	$string =~ s/(\w)'(s)\b/$1$2/g;
+	$string =~ s/(\w)'(\w+)/$1 and $2/g;
+	$string =~ s/'//g;
 #::logDebug("query creation called, op=$op cs=$cs ac=$ac");
 	if($op eq 'aq') {
 		$q = new Text::Query($string,
