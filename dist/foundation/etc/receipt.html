@@ -230,7 +230,7 @@ __NOLEFT_TOP__
 		my $save = delete $Scratch->{mv_add_dot_html};
 		my $url = $Tag->area( { href => "deliver/$loc", arg => $sku } ); 
 		$Scratch->{mv_add_dot_html} = $save if $save;
-		return qq{<BR><A HREF="$url"><IMG SRC="download.png"></A>};
+		return qq{<BR><A HREF="$url"><IMG border=0 SRC="download.png"></A>};
 	}
 	return;
 [/perl]
