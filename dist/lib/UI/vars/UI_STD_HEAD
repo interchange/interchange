@@ -44,12 +44,12 @@ Variable UI_STD_HEAD <<EOV
 	for(@parms) {
 		delete $Scratch->{$_};
 		$last = $_;
-		$last =~ s/ui_class_//;
 	} 
+	$last =~ s/ui_class_//;
 	$ui_tag = (delete $Scratch->{ui_class} || $last || 'None');
 	my $sparams = <<EOF;
 		fi=@_UI_MENU_TABLE_@
-		st=text
+		st=db
 		rf=*
 		co=yes
 		tf=msort
