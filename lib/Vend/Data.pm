@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.1 2001-09-26 14:16:28 racke Exp $
+# $Id: Data.pm,v 2.2 2001-10-06 06:14:23 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -570,7 +570,9 @@ sub auto_delimiter {
 
 =cut
 
-my %db_config = (
+use vars '%db_config';
+
+%db_config = (
 # SQL
 		'DBI' => {
 				qw/
