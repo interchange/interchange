@@ -1,23 +1,26 @@
+	[calc]
+		return unless $CGI->{mv_more_ip};
+		$CGI->{mv_data_table} = $Values->{mv_data_table};
+		return;
+	[/calc]
 [seti page_title]
 	[either]
 		[cgi page_title]
 	[or]
-		Table Edit: [cgi mv_data_table]
+		Spreadsheet Edit: [cgi mv_data_table]
 	[/either]
 [/seti]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
-
-<HTML>
-<HEAD><TITLE>[L]Database Spreadsheet[/L]</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF">
-
-[if session arg]
-[seti arg][data session arg][/seti]
-[else]
-[set arg]1[/set]
-[/else]
-[/if]
+[set meta_header]
+<STYLE TYPE="text/css">
+	td: { 
+		backround-color: #94a0e0
+	}
+</STYLE>
+[/set]
+[calc] $CGI->{ui_no_meta_display} = '' [/calc]
+@@UI_STD_HEAD@@
 
 [perl tables="[cgi mv_data_table]"]
 my $table = $CGI->{mv_data_table};
@@ -28,16 +31,23 @@ $Values->{ui_data_fields} =
 	$Values->{"$table:ui_data_fields"} || '' ;
 return;
 [/perl]
-
+[if scratch ui_failure]
+<BLOCKQUOTE>
+<FONT COLOR=__CONTRAST__>Error: [scratch ui_failure]</FONT>
+[set ui_failure][/set]
+</BLOCKQUOTE>
+[/if]
 <FORM METHOD=POST ACTION="[base-url]/ui">
-<INPUT TYPE=hidden NAME="mv_doit" VALUE="return">
-<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MM_BASE@@/spread">
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME="mv_data_key" VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME="mv_data_decode" VALUE="yes">
 <INPUT TYPE=hidden NAME="mv_update_empty" VALUE="1">
 <INPUT TYPE=hidden NAME="mv_data_fields"
-	VALUE="[db-columns columns='[value ui_data_fields]' ]">
+	VALUE="[value name=mv_data_fields set=|
+				[db-columns columns='[value ui_data_fields]' ]
+			|]">
 
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
 
@@ -47,27 +57,41 @@ return;
 [comment]
 [rotate-table rotate="0"]
 [/comment]
-[search-region arg="
+[search-region more=1 arg="
 				ra=yes
 				ml=[value ui_spreadsheet_rows]
 				rf=[value ui_data_key_name]
 				tf=[value ui_data_key_name]
 				st=db
-				sp=@@MM_BASE@@/spread_results
+				sp=@@MV_PAGE@@
 				fi=[value mv_data_table]
 			"]
 [rotate-table reparse=0 rotate="[value ui_rotate_spread]" interpolate=1]
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=1>
-[with param=table value="[value ui_data_table]"]
-<TR>
+<table cellpadding=0 cellspacing=0>
+[with param=table value="[value mv_data_table]"]
+<TR BGCOLOR="#94a0e0" CELLPADDING=2>
 	<TH ALIGN=CENTER>&nbsp;</TH>
 	[row-edit columns="[value ui_data_fields]"]
 </TR>
+
+<tr>
+<td colspan="[calc]
+	@areas = grep /\S/, split /[\s,\0]+/, $Values->{mv_data_fields};
+	return scalar(@areas) + 1;
+[/calc]"
+	bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=3></td>
+</tr>
+
 	[search-list]
 	[if-mm keys [item-code]]
-<TR>
+<TR BGCOLOR="#94a0e0">
 	<TD ALIGN=RIGHT><B>
-	[page href="@@MM_BASE@@/edit_record" arg="[item-code]"]Edit</A></B>
+	[page href="__UI_BASE__/flex_editor"
+	form=|
+		page_title=Edit [value mv_data_table]: [item-code]
+		mv_data_table=[value mv_data_table]
+		item_id=[item-code]
+	|]Edit</A></B>
 	</TD>
 	[row-edit key="[item-code]" size="[value ui_spread_size]" columns="[value ui_data_fields]"]
 </TR>
@@ -83,10 +107,6 @@ return;
 	[/more-list]
 [/search-region]
 <BR CLEAR=LEFT>
-[set Submit]
-mv_todo=set
-mv_nextpage=@@MM_BASE@@/spread
-[/set]
 <INPUT TYPE=submit NAME=mv_click VALUE=[L]Submit[/L]>&nbsp;&nbsp;&nbsp;
 [if !value ui_too_large]
 <INPUT TYPE=checkbox
@@ -94,19 +114,19 @@ mv_nextpage=@@MM_BASE@@/spread
 	[L]Auto-export[/L]
 [/if]
 </FORM>
-<FORM METHOD=POST ACTION="[process-target]">
-<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MM_BASE@@/edit_record">
+<FORM METHOD=POST ACTION="[process]">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="__UI_BASE__/flex_editor">
 [L]Edit/Insert row[/L]:
-<INPUT TYPE=hidden NAME="mv_todo" VALUE="return">
-<INPUT TYPE=TEXT SIZE=16 NAME="code" VALUE="">
+<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
+<INPUT TYPE=TEXT SIZE=16 NAME="item_id" VALUE="new">
 <INPUT TYPE=submit VALUE="[L]Edit[/L]">
 </FORM>
 <P>
 [title-bar 400 2][L]Limit fields to display (changes above will not be made)[/L][/title-bar]
 [set name=ui_data_fields_name int][value mv_data_table]:ui_data_fields[/set]
-<FORM METHOD=POST ACTION="[process-target]">
-<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE=@@MV_PAGE@@>
+<FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
+<INPUT TYPE=hidden NAME=mv_action VALUE=return>
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <TABLE BORDER=1>
 <TR>
 <TD VALIGN=TOP ALIGN=RIGHT>[L]Column width[/L]</TD>

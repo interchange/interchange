@@ -4,7 +4,7 @@ UserTag row-edit Interpolate 1
 UserTag row-edit Routine <<EOR
 sub {
 	my ($key,$table,$size, @columns) = @_;
-	$table = $table || $::Scratch->{ui_data_table} || return "BLANK DB";
+	$table = $table || $CGI::values{mv_data_table} || return "BLANK DB";
 	my $db = Vend::Data::database_exists_ref($table);
 	return "NON-EXISTENT DATABASE '$table' for row-edit" unless defined $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
