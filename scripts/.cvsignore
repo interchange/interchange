@@ -5,6 +5,7 @@ config_prog
 dump
 expire
 expireall
+findtags
 ic_mod_perl
 initp.pl
 interchange
