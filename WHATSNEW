@@ -11,6 +11,8 @@ Interchange 5.0.0 not yet released.
 Core
 ----
 
+* Make grouping of items work again.
+
 * Fixed Vend::Table::Common bug which prevented Database property HIDE_FIELD
   from working properly.
 
@@ -96,6 +98,9 @@ Usertags
 * Allow customization of [warnings auto=1] with class, style, extra as in many
   IC tags.
 
+* Let [image] handle maddening new ImageMagick behavior that won't operate on
+  the file named.
+
 Foundation
 ----------
 
@@ -168,6 +173,11 @@ Debian
 
 * Revive USE_FOUNDATION handling in interchange-ui postinst to
   keep 4.8.x interchange-cat-foundation catalogs running
+
+Miscellaneous
+-------------
+
+* Add filter to strip trailing slash on the CGI directory to makecat.
 
 
 ------------------------------------------------------------------------------
