@@ -1,0 +1,68 @@
+                    <table width="131" border="0" cellspacing="0" cellpadding="0" bgcolor="#999999">
+                      <tr valign="middle"> 
+                        <td>&nbsp;</td>
+                        <td width="119"> 
+                          <table width="126" border="0" cellspacing="0" cellpadding="0" bgcolor="#999999">
+                            <tr valign="middle"> 
+                              <td width="119">
+			<FORM ACTION="[area search]">
+			<INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
+			<INPUT TYPE=hidden NAME=mv_search_field VALUE=category>
+			<INPUT TYPE=hidden NAME=mv_search_field VALUE=":artist,title,comment,display">
+			<INPUT TYPE=hidden NAME=mv_searchspec VALUE="">
+
+                                  <INPUT MAXLENGTH=30 NAME=mv_searchspec type="text" size="10">
+
+                              </td>
+                              <td width="119" valign="top"><INPUT TYPE=image alt="Search Go" border="0" src="http://demo.minivend.com/~construct/images/navigation/go.gif" width="23" height="17"></a></td>
+                            </tr>
+                                </form>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td><img src="navigation/whitey.gif" width="5" height="4"></td>
+                        <td width="119"><img src="navigation/whitey.gif" width="126" height="4"></td>
+                      </tr>
+					  
+[loop search="
+	fi=area.txt
+	tf=sort
+	ra=yes
+	rf=selector,name
+	un=yes
+" prefix=box]
+                      <tr> 
+                        <td>&nbsp;</td>
+                        <td width="119" bgcolor="#999999" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><B>[box-param name]</B></font></td>
+                      </tr>
+                      <tr> 
+                        <td> 
+                          <p>&nbsp;</p>
+                          <p>&nbsp;</p>
+                        </td>
+                        <td width="119" valign="top">
+						<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
+[loop prefix=cat
+	search="
+		fi=cat.txt
+		un=yes
+		tf=name
+		sf=area
+		se=[box-code]
+	"
+	]
+<A HREF="[if-cat-data cat url][cat-data cat url][else][area href=scan
+		arg=|
+		se=[cat-data cat selector]
+		sf=category
+		ml=3
+		|][/else][/if-cat-data]" ALT="[cat-data cat name]"><font color="#FFFFFF">[cat-data cat name]</font></A><BR>
+[/loop]
+                            <br>
+                            </font></p>
+                        </td>
+                      </tr>
+[/loop]
+					  
+                    </table>

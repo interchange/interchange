@@ -1,0 +1,135 @@
+[if session logged_in][bounce href="[area account]"][/if]
+<html>
+<head>
+<title>Construct Something -- New Account</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><img src="navigation/d.gif" width="600" height="2" align="top"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">New 
+                      Account</font><font color="#0099FF" size="1"> </font></font></b></i></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td width="457" bgcolor="#FFFFFF" valign="top"> 
+
+[if !scratch new]
+				  
+[if session failure]
+<P>
+<font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FF0000">[data session failure]</font></b></font>
+[data base=session field=failure value=""]
+<P>
+[/if]
+
+[else]
+[set new][/set]
+[/else]
+[/if]
+
+                      <div align="left">
+                        <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#0099FF" bordercolorlight="#0099FF">
+[set NewAccount]
+[if type=explicit compare="[userdb new_account]"]
+mv_nextpage=account
+[else]
+mv_nextpage=new_account
+[/else]
+[/if]
+[/set]
+	<FORM ACTION="[process-target]" METHOD=POST>
+	<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
+	<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+	<INPUT TYPE=hidden NAME=function  VALUE=new_account>
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__ORDER_STYLE__/basket>
+
+                          <tr> 
+                            <td> 
+                              <table width="300" border="0" cellspacing="0" cellpadding="2">
+                                <tr bgcolor="#0099FF"> 
+                                  <td width="81" align="right" bgcolor="#0099FF"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FFFFFF">Username</font></b></font></td>
+                                  <td width="204" bgcolor="#FF9900" align="left"> 
+                                    <input type="text" NAME=mv_username VALUE="">
+                                  </td>
+                                </tr>
+                                <tr bgcolor="#0099FF"> 
+                                  <td width="81" align="right" bgcolor="#0099FF"> 
+                                    <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
+                                  <td width="204" bgcolor="#FF9900" align="left"> 
+                                    <INPUT TYPE=password NAME=mv_password VALUE="">
+                                  </td>
+                                </tr>
+                                <tr bgcolor="#669999"> 
+                                  <td width="81" align="right" bgcolor="#669999"> 
+                                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF" size="1">Verify 
+                                      Password </font></b> </font></p>
+                                  </td>
+                                  <td width="204" align="left"> 
+                                    <INPUT TYPE=password NAME=mv_verify VALUE="">
+                                    <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+                                    </font> </td>
+                                </tr>
+                                <tr bgcolor="#999999"> 
+                                  <td width="81">&nbsp;</td>
+                                  <td width="204"> 
+                                    <INPUT TYPE=submit VALUE="Create Account">
+                                  </td>
+                                </tr>
+                                <tr bgcolor="#999999"> 
+                                  <td width="81" align="right"> 
+                                    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+                                  </td>
+                                  <td width="204"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">Log 
+                                    me in automatically<br>(sets cookie)</font></td>
+                                </tr>
+                                <tr bgcolor="#999999"> 
+                                  <td width="81" align="right" colspan="2">&nbsp;</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+						  </form>
+                        </table>
+                      </div>
+                      <p>&nbsp;</p>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457"><a href="customerservice.html"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif">BACK</font></b></font></a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

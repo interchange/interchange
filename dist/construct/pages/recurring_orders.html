@@ -1,0 +1,301 @@
+<html>
+<head>
+<title>Construct Something -- Recurring Orders</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><img src="navigation/d.gif" width="600" height="2" align="top"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">
+					Recurring Orders
+					</font><font color="#0099FF" size="1"> </font></font></b></i></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td width="457" bgcolor="#FFFFFF" valign="top">
+
+<table cellpadding="0" cellspacing="0" border="0">
+
+[query
+	list=1
+	st=db
+	sql=|
+		select count(*) from recurring_orders
+		where user = '[data session username]'
+	|
+]
+			[seti orders][sql-code][/seti]
+[/query]
+
+		<tr><td>&nbsp;</td></tr>
+
+[if scratch orders]
+
+<tr>
+<td>
+				  
+<TABLE WIDTH="100%" BORDER=0 CELLPADDING=0 CELLSPACING=0 ALIGN=RIGHT>
+
+		<FORM ACTION="[process-target]" METHOD=POST>
+		<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="recurring_orders_removed">
+
+		<TR bgcolor="#0099FF" VALIGN=TOP>
+                        <td><div align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Remove</b></font></div></td>
+                        <td><div align="center"><font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>Items</b></font></div></td>
+                        <td><div align="center"><font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>Payment Method</b></font></div></td>
+                        <td><div align="center"><font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>Frequency</b></font></div></td>						
+                        <td><div align="center"><font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>Subtotal</b></font></div></td>
+                        <td><div align="center"><font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>Shipping</b></font></div></td>
+		</TR>
+		<tr><td colspan="6" bgcolor="#FEEDD2">&nbsp;</td></tr>
+[search-region more=1 search="
+		ra=yes
+        st=sql
+        sq=select * from recurring_orders where user = '[data session username]'
+		ml=999999
+		tf=code
+		"]
+[search-list]
+		<TR VALIGN=TOP bgcolor="#FEEDD2">
+                        <td align="center" valign="middle">
+						<input type="checkbox" value="[item-data recurring_orders code]" name="remove_ro">
+						</td>
+                        <td align="center">
+						<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+						[item-data recurring_orders nitems]
+						</font>
+						</td>
+                        <td align="center">
+						<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+						[item-data recurring_orders pay_method]
+						</font>
+						</td>
+                        <td align="center">
+						<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+						[item-data recurring_orders frequency]
+						</font>
+						</td>						
+                        <td align="right">
+						<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+						[item-data recurring_orders subtotal]
+						</font>
+						</td>
+                        <td align="right">
+						<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+						[item-data recurring_orders shipping]
+						</font>
+						</td>
+		</TR>
+		<tr><td colspan="6" bgcolor="#FEEDD2">&nbsp;</td></tr>		
+[/search-list]
+[/search-region]
+		
+</table>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<p>
+&nbsp;
+<br>
+<input type="submit" value="Remove Selected Orders">
+
+</td>
+</tr>
+</form>
+
+[else]
+
+<tr>
+<td>
+
+<p>
+&nbsp;
+<br>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>No recurring orders have been defined.</b>
+<br><br>
+Please use the form below to add a recurring order.
+<P>
+
+</td>
+</tr>
+
+[/else]
+[/if]
+
+<tr><td>&nbsp;</td></tr>
+
+<tr>
+<td>
+		<FORM ACTION="[process-target]" METHOD=POST>
+		<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="recurring_orders_added">
+                      <table width="350" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
+                        <tr> 
+                          <td> 
+                            <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
+                              <tr> 
+                                <td bgcolor="#0099FF" colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1" color="#FFFFFF">
+								Recurring Orders
+								</font></b></font></td>
+                                <td bgcolor="#0099FF">&nbsp;</td>
+                                <td bgcolor="#0099FF">&nbsp;</td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+								Payment Method	
+									</font></b></div>
+                                </td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+[if !value ro_payment_method][value name=ro_payment_method set="credit" hide=1][/if]
+
+	<SELECT NAME="ro_payment_method">
+	<option [selected payment_method credit] value="credit">Credit Card
+    <option [selected payment_method check] value="check">Online Check
+	<option [selected payment_method po] value="po">Company P.O.
+	<option [selected payment_method postal] value="postal">Postal Billing
+	</SELECT>
+
+                                    </font></b></div>
+                                </td>
+<td colspan="2"> <font face="Verdana, Arial, Helvetica, sans-serif" size="1">(will 
+                                  update display)</font></td>                              </tr>
+								
+								</tr>
+								<tr><td>&nbsp;</td></tr>
+								<tr>
+                                <td> <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+								<div align="right">Company Name</div>
+								</font></b> </td>
+                                <td align="left"> 
+                                  <INPUT TYPE=text NAME=sa_company VALUE="[value sa_company]" size="20">
+                                </td>
+                              </tr>							  
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">First 
+                                    Name</font></b></div>
+                                </td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=sa_fname VALUE="[value sa_fname]" size="20" maxlength="20">
+                                    </font></b></div>
+                                </td>
+                                <td> <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Last 
+                                  Name</font></b></div> </td>
+                                <td align="left"> 
+                                  <INPUT TYPE=text NAME=sa_lname VALUE="[value sa_lname]" size="20">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Address</font></b></div>
+                                </td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=sa_address1 VALUE="[value sa_address1]" size="20" maxlength="20">
+                                    </font></b></div>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr> 
+                                <td>&nbsp;</td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=sa_address2 VALUE="[value sa_address2]" size="20">
+                                    </font></b></div>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">City</font></b></div>
+                                </td>
+                                <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=sa_city VALUE="[value sa_city]" size="20">
+                                  </font></b></td>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">State/Province</font></b></td>
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=sa_state VALUE="[value sa_state]" size="5" maxlength="5">
+                                  </font></b></td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Zip/Postal 
+                                    Code </font></b></div>
+                                </td>
+                                <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=sa_zip VALUE="[value sa_zip]" size="10" maxlength="10">
+                                  </font></b></td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Country</font></b></div>
+                                </td>
+                                <td> 
+<INPUT TYPE=text NAME=sa_country VALUE="[value sa_country]" size="10" maxlength="10">
+                                </td>
+                                <td>&nbsp; </td>
+                                <td>&nbsp;</td>
+                              </tr>
+                            </table>
+							</td></tr></table>
+							<p>
+<INPUT TYPE=SUBMIT VALUE="Add Items To Order">
+                      <div align="left"></div>
+                      <p>&nbsp;</p>
+                      </form>
+
+</td>
+</tr>
+</table>
+					
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

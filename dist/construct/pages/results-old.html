@@ -1,0 +1,197 @@
+<html>
+<head>
+<title>Construct Something -- Search Results</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="images/navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="images/navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Search 
+                      Results</font><font color="#0099FF" size="1"></font></font></b></i></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457" align="center">
+				  
+				  
+<div align="center">
+  <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
+    <tr bgcolor="ffffff" valign="middle"> 
+      <td align=center height="5"> 
+        <div align="left"> 
+          <div align="center"> 
+            <table border="0" cellspacing="0" cellpadding="3" align="center">
+              <tr> 
+                <td valign="top" align="center"> 
+                  <table width="25%" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
+                    <tr> 
+                      <td><img src="images/os28073.gif" width="120" height="150"></td>
+                    </tr>
+                  </table>
+                </td>
+                <td valign="top" align="center"> 
+                  <table border="0" cellpadding="3" cellspacing="0">
+                    <tr> 
+                      <td valign="top"> 
+                        <p align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i>Mini-Sledge</i></b></font></p>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">$24.99</font></td>
+                    </tr>
+                    <tr> 
+                      <td align="center"> <font face="Verdana, Arial, Helvetica, sans-serif" size="1">Quantity:</font> 
+                        <input type="text" name="textfield2" size="4" value="1">
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td align="center"> 
+                        <input type="submit" name="Submit2" value="Buy it Now!">
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr> 
+                <td colspan="2"> 
+                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Our 
+                    mini-sledge hammer is superior for smaller jobs that require 
+                    a little more power. Give this one a try on landscaping stakes 
+                    and concrete frames.</font></p>
+                </td>
+              </tr>
+            </table>
+            <b><i></i></b></div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+				  
+				  
+
+[search-region]
+
+<TABLE WIDTH="450" __TABLEFG__ VALIGN="TOP" ALIGN="left" CELLSPACING="0" BORDER="0" CELLPADDING="0">
+[search-list]
+
+
+[item-change 1][condition][item-field category][/condition]
+<TR VALIGN="top" ALIGN="left">
+<TD WIDTH="10" BGCOLOR="__BARTEXT__" HEIGHT="13" VALIGN="top" ALIGN="left"></TD>
+<TD WIDTH="440" COLSPAN="3" bgcolor="#0099FF" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="#FFFFFF"><B>[data
+		table=cat
+		col=banner_text
+		key=`
+			$tmp = q{[item-field category]};
+			$tmp =~ s/[ ,].*//;
+			$tmp
+		`]</B></FONT></TD>
+</TR>
+[/item-change 1]
+<TR>
+<TD WIDTH=10 BGCOLOR=__BARTEXT__ HEIGHT="*" VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>
+<TD WIDTH="1" BGCOLOR="__TITLEBG__" HEIGHT="*" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
+<TD WIDTH="428" __TABLEFG__ HEIGHT="*" VALIGN="top" ALIGN="left">
+<TABLE WIDTH="428" VALIGN="TOP" ALIGN="left" CELLSPACING="0" BORDER="0" CELLPADDING="0">
+<TR>
+<TD WIDTH=428 COLSPAN=5 HEIGHT=5 VALIGN=top ALIGN=left></TD>
+</TR>
+<TR VALIGN="top" ALIGN="left">
+<TD WIDTH=10 HEIGHT=166 VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>
+<TD WIDTH=126 HEIGHT=166 VALIGN=top ALIGN=center>[if-item-field image]<A HREF="[area [item-code]]"><IMG SRC="[item-field image]" ALT="[item-field title]" BORDER="0"></A>[/if-item-field]</TD>
+<TD WIDTH="8" HEIGHT="166" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
+<TD WIDTH="310" HEIGHT="166" VALIGN="top" ALIGN="left"><FONT FACE="Arial" COLOR="__HEADERTEXT__"><B><A HREF="[area [item-code]]">[item-field title]</A></B></FONT><BR>
+<BR><BR>
+<FONT SIZE="-1" FACE="Arial" COLOR="__CONTRAST__"><B>Price: [item-price]</B></FONT>&nbsp;&nbsp;&nbsp;<FONT SIZE="-1" FACE="Arial" COLOR="__TITLEBG__"><B><A HREF="[area order [item-code]]">buy now <IMG SRC="cart.png" BORDER=0></A></B></FONT><BR><BR>
+<FONT SIZE="1" FACE="Arial" COLOR="black">[item-field comments]</FONT><BR><BR>
+<FONT SIZE="1" FACE="Arial" COLOR="black">
+[loop prefix=cat list="[item-field category]"]
+<B>More <A HREF="[area 
+	href=scan
+	arg=|
+		sf=category
+		se=[cat-code]
+		ml=2
+	|
+]">[filter lc][cat-code][/filter]</A>...</B><BR>[/loop]</FONT></TD>
+<TD WIDTH="4" HEIGHT="166" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
+</TR>
+<TR>
+	<TD WIDTH="458" COLSPAN="5" HEIGHT="8" VALIGN="top" ALIGN="middle"></TD>
+</TR>
+<TR VALIGN="TOP" ALIGN="LEFT">
+<TD WIDTH="14" HEIGHT="1" VALIGN="TOP" ALIGN="middle"></TD>
+<TD WIDTH="430" COLSPAN="3" BGCOLOR="__TITLEBG__" HEIGHT="1" VALIGN="TOP" ALIGN="middle"></TD>
+<TD WIDTH="14" HEIGHT="1" VALIGN="TOP" ALIGN="middle"></TD>
+</TR>
+<TR VALIGN="TOP" ALIGN="LEFT">
+<TD WIDTH="458" COLSPAN="5" HEIGHT="8" VALIGN="top" ALIGN="middle"></TD>
+</TR>
+
+</TABLE>
+</TD>
+<TD WIDTH="1" BGCOLOR="__TITLEBG__" HEIGHT="*" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
+</TR>
+<TR VALIGN="top" ALIGN="left">
+<TD WIDTH="10" BGCOLOR="__BARTEXT__" HEIGHT="1" VALIGN="top" ALIGN="left"></TD>
+<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" HEIGHT="1" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
+</TR>
+[/search-list]
+</TABLE>
+
+[no-match]
+<BR><BR><BLOCKQUOTE>
+Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
+[if value mv_search_error]
+<P><B>Errors:
+<BR> [value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+<BR><BR></BLOCKQUOTE>
+[/no-match]
+<BR CLEAR=LEFT>
+[more-list]
+<BLOCKQUOTE>
+<FONT SIZE="-1" FACE="arial,helvetica">Matches [matches] of
+[if value mv_search_match_count > 1]
+    [value mv_search_match_count] found.
+[/if]
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="images/navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

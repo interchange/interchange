@@ -1,0 +1,229 @@
+[if session arg]
+	[seti arg][data session arg][/seti]
+[else]
+	[bounce href="[area special/violation arg_missing]"]
+[/else]
+
+[/if]
+
+[value name=test_user
+	   set="[data
+	   			table=transactions
+				col=username
+				key='[scratch arg]'
+	   		]"
+	   hide=1]
+
+[if value test_user]
+[else]
+	[bounce href="[area special/violation user_missing]&user=[value test_user]&arg=[scratch arg]"]
+[/else]
+[/if]
+[if type=explicit compare=`
+					return 1 if ! $Session->{username};
+					return 0 if $Session->{username} eq $Values->{test_user};
+					return 1;
+					`]
+[bounce href="[area special/user_violation username_no_match]&s=[data session username]&v=[value test_user]"]
+[/if]
+
+<html>
+<head>
+<title>Construct Something -- Returns</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><img src="navigation/d.gif" width="600" height="2" align="top"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Returns
+					</font><font color="#0099FF" size="1"> </font></font></b></i></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457"> 
+
+
+                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">Please verify the information below and
+					select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.</font></p>
+
+
+
+[loop list="[scratch arg]"]
+<TABLE WIDTH=450 BORDER=1>
+[html-table fr='bgcolor="#FEEDD2"']
+<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">ORDER NUMBER</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[scratch arg]</font>
+<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Order Date</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions order_date]</font>
+[/html-table]
+</TABLE>
+
+<p>
+
+
+
+<TABLE WIDTH=450 BORDER=1 __TABLEBG__>
+
+[perl products userdb]
+	sub get_download {
+		my $sku = shift;
+		return '' unless tag_data('products', 'download', $sku);
+		my $loc =  tag_data('products', 'dl_location', $sku);
+		my $save = delete $Scratch->{mv_add_dot_html};
+		my $url = $Tag->area( { href => "deliver/$loc", arg => $sku } ); 
+		$Scratch->{mv_add_dot_html} = $save if $save;
+		return qq{<BR><A HREF="$url"><IMG SRC="download.png"></A>};
+	}
+	return;
+[/perl]
+<FORM ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="process_return">
+[html-table interpolate=1 td="VALIGN=TOP"]
+<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Return</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Qty</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1">SKU</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Description</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Price</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Extension</font>
+[query
+	list=1
+	st=db
+	sql=|
+		SELECT * FROM orderline
+		WHERE order_number = '[scratch arg]'
+		ORDER BY code
+	|
+]<input type="checkbox" name="return" value="[sql-param code]">	<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><input type="text" name="quantity" size="3" value="[sql-param quantity]"></font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">[sql-param sku]</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
+return unless
+	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
+	return get_download(q{[sql-param sku]});
+[/calc]	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[currency][sql-param price][/currency]</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[currency][sql-param subtotal][/currency]</font>
+[/query]
+
+[/html-table]
+</TABLE>
+<p>
+
+
+<table width="100%" cellpadding="2" cellspacing="2" border="0" align="center">
+<tr>
+<td valign="top">
+
+                      <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#000000" bordercolordark="#000000">
+                        <tr> 
+                          <td> 
+                            <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
+                              <tr> 
+                                <td bgcolor="#0099FF"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1" color="#FFFFFF">
+								Contact Information</font></b></font></td>
+                                <td bgcolor="#0099FF"><font size="1">&nbsp;</font></td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=fname std_label="Company" required=1]</font></div>
+                                </td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=company VALUE="[loop-data transactions company]" size="20" maxlength="20">
+                                    </font></b></div>
+                                </td>
+                              </tr>							  
+                              <tr> 
+                                <td> 
+                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=fname std_label="First Name" required=1]</font></div>
+                                </td>
+                                <td> 
+                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=fname VALUE="[loop-data transactions fname]" size="20" maxlength="20">
+                                    </font></b></div>
+                                </td>
+							</tr><tr>
+                                <td><div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=lname std_label=Last required=1]</font></div></td>
+                                <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[loop-data transactions lname]" size="20"></td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=email std_label="Email Address" required=1]</font></div>
+                                </td>
+                                <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=email VALUE="[data table=userdb column=email key='[loop-data transactions username]']" size="20">
+                                  </font></b></td>
+                              </tr>
+                              <tr> 
+                                <td> 
+                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font></div>
+                                </td>
+                                <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=phone_day VALUE="[loop-data transactions phone_day]" size="10" maxlength="20">
+                                  </font></b></td>
+								</tr><tr>
+                                <td> 
+                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Evening 
+                                    Phone</b></font></div>
+                                </td>
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <INPUT TYPE=text NAME=phone_night VALUE="[loop-data transactions phone_night]" size="10" maxlength="20">
+                                  </font></b></td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+<p>
+
+<input type="submit" value="Return Selected Items">
+</form>
+</td><td valign="top">
+
+<table align="right" cellpadding="0" cellspacing="0" border="0"> 
+[html-table interpolate=1 td="VALIGN=TOP"]
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Subtotal:</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]</font>	 	
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Sales Tax:</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]</font>	 	
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Shipping:</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]</font>	 	
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>Order Total:</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]</font>	 	
+[/html-table]
+</table>
+
+</td>
+</tr>
+</table>
+
+[/loop]
+
+<BR CLEAR=ALL>
+
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

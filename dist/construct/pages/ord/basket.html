@@ -1,0 +1,297 @@
+<html>
+<head>
+<title>Construct Something -- Shopping Cart</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><img src="navigation/d.gif" width="600" height="2" align="top"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Shopping 
+                      Cart Contents</font></font></b></i><font size="1"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"> 
+                      </font></font></b></i></font></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">
+
+<p>
+[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
+[elsif scratch tried]
+You must have cookies set to leave the basket. Check out now or forever
+lose your shopping cart.
+[/elsif]
+[else]
+[set tried]1[/set]
+[bounce href="[area ord/basket]"]
+[/else]
+[/if]
+<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
+<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
+<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
+ <br>
+[table-font FACE="verdana,arial, helvetica" size="2"]
+  <table width="455" border="1" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
+    <tr>
+      <td>
+
+  <table width="455" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
+		<TR bgcolor="#669999" VALIGN=TOP>
+                        <td width="9%"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="0"><b>Remove</b></font></td>
+                        <td width="13%"> 
+                          <div align="center"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1">SKU</font></b></font></div>
+                        </td>
+                        <td width="27%"> 
+                          <div align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Description</b></font></div>
+                        </td>
+                        <td width="13%"> 
+                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Quantity</b></font></div>
+                        </td>
+                        <td width="19%"> 
+                          <div align="center"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Price</font></b></div>
+                        </td>
+                        <td width="19%"> 
+                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Extension</b></font></div>
+                        </td>
+		</TR>
+	<TBODY>
+[if items]
+[then]
+[item-list]
+[seti eo][perl interpolate=1]
+my $item = '[item-increment]';
+if ($item % 2 == 1) {
+$Scratch->{color} = "#CCCCCC";
+}
+else {
+$Scratch->{color} = "#CCCC99";
+}
+return;
+[/perl]
+[/seti]
+
+<TR bgcolor="[scratch color]">
+	<TD align=center>
+	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
+			   onClick="this.form.action='[process-target]',
+			   			this.form.submit()"
+			   VALUE=0></FONT></TD>
+	<TD WIDTH="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-code]</font></TD>
+	<TD><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[page [item-code]][item-description]</A></font>
+	[if scratch dealer]
+	[if-item-data pricing sku]
+		<BR>[page quantity [item-code]]
+			<font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>QUANTITY PRICING</FONT>
+			</A>
+	[/if-item-data]
+	[/if]
+	[if-item-field weight]
+	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+	[/if-item-field]
+	[if-item-field related]
+	[if !ordered [item-field related]]
+	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+	[loop arg="[item-field related]"]
+		[loop-change 1][condition]1[/condition]
+		<TR><TD COLSPAN=2><FONT SIZE="1">Other items you may like:</TD>
+		</TR>
+		[/loop-change 1]
+		[if !ordered [loop-code]]
+		<TR>
+		<TD><FONT SIZE="1"><INPUT TYPE=checkbox NAME="mv_order_item"
+			onClick="this.form.action='[process-target]',
+					this.form.submit()"
+			VALUE="[loop-code]"></TD>
+		<TD><FONT SIZE="1">[loop-field title]</TD>
+		</TR>	
+		[/if]
+	[/loop]
+	</TABLE>
+	[/if]
+	[/if-item-field]
+	[if-item-modifier gift_cert]
+	GIFT CERT
+	<br>
+	[/if]
+	
+<br>
+[seti count][data table=inventory column=quantity key='[item-code]'][/seti]
+[if scratch count eq 0]
+	<a href="http://demo.minivend.com/~construct/construct.cgi/stock-alert.html?mv_arg=[item-code]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
+[else]
+	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
+[/else]
+[/if]
+	</TD>
+	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
+	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
+	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
+</TR>
+<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
+<TR bgcolor="[scratch color]">
+<TD COLSPAN=2 align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" ><b>Ship To:</b></font></td>
+<TD COLSPAN=4 align="left">&nbsp;
+[if !value shipto_[item-increment]][value name=shipto_[item-increment] set="primary" hide=1][/if]
+		<SELECT NAME=shipto_[item-increment]>
+			<OPTION VALUE="primary" [selected shipto_[item-increment] primary]> Primary
+[loop search="
+ ra=yes
+ st=db
+ sq=select * from ship_addresses where user = '[data session username]'
+ ml=1000
+ tf=entry
+"]
+			<OPTION VALUE="[loop-data ship_addresses code]" [selected shipto_[item-increment] [loop-data ship_addresses code]]> [loop-data ship_addresses addr_nick] 
+			[/loop]
+		</SELECT>
+
+<a href="[area ship_addresses]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" >Add Address</font></a>
+</td>
+</TR>
+<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
+[/item-list]
+[/then]
+[else]
+	<TR><TD ALIGN=CENTER COLSPAN=6>
+		<H3><font face="Verdana, Arial, Helvetica, sans-serif">No items at the moment.</font></H3>
+	</TD></TR>
+[/else]
+[/if]
+</TBODY>
+</table>
+					  
+</td></tr></table>
+
+<table width="100%" cellpadding="1" cellpadding="1" align="center" border="0">  
+<tr>
+<td>
+					 <table width="100%" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+					  <td>
+                          <div align="center">
+						  <INPUT type="image" src="http://demo.minivend.com/~construct/images/navigation/recalculate_button.gif" BORDER=0>
+                          </div>
+					  </td>
+                        <td width="34%">
+
+                          <div align="center">
+						  
+    [button
+	text="Continue_shopping"
+     	src="/~construct/images/navigation/continue_shopping.gif"
+	hidetext=1
+	form=basket
+	]
+     [bounce href='[history-scan exclude="^/ord|^/multi/|^/process" default=browse]']
+     mv_nextpage=nothing
+    [/button]
+
+                          </div>
+
+                        </td>
+						</tr>
+						<tr>
+						<td colspan="4" align="right">
+
+    [button
+	text="Check_out"
+     	src="/~construct/images/navigation/checkout_button.gif"
+	hidetext=1
+	form=basket
+	]
+	mv_todo=return
+	mv_nextpage=ord/checkout
+	[/button]
+
+					
+						</td>				
+
+						
+                      </tr>
+                    </table>
+
+			</td><td align="right">
+                    <table width="100%" border="0" cellspacing="2" cellpadding="2" align="right">
+[if scratch order_discounted eq 1]
+                      <tr>
+                        <td align="right">
+						[comment]
+                          <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#ff0000">Discount:</font></b></div>
+						[/comment]
+						<img src="navigation/coupon_item.gif" border="0">
+                        </td>
+                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">-[currency][scratch coupon_amount][/currency]</font></td>
+                      </tr>
+[/if]
+                      <tr> 
+                        <td nowrap>
+                          <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Shipping 
+                            Weight:</b></font></div>
+                        </td>
+                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[summary format="%s" total=1]</font></td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Subtotal:</font></b></div>
+                        </td>
+                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[subtotal]</font></td>
+                      </tr>
+					  </table>
+
+</td>
+</tr>
+
+
+
+</TABLE>
+
+
+
+</FORM>
+
+                    <p>&nbsp;</p>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>
+
+

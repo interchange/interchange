@@ -1,0 +1,104 @@
+[if session arg]
+	[seti code][data session arg][/seti]
+[/if]
+
+
+<html>
+<head>
+<title>Construct Something -- Stock Alerting</title>
+
+__TOP__
+
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td><img src="navigation/d.gif" width="600" height="2" align="top"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
+                  <td width="12" valign="top"> 
+                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  </td>
+                  <td width="457"> 
+                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Stock
+					 Notification</font><font color="#0099FF" size="1"> </font></font></b></i></div>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" valign="top" width="131"> 
+				  
+__LEFT__
+				  
+                  </td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457"> 
+      <TABLE cellPadding=8 border="0">
+        <TBODY>
+        <TR>
+          <TD align=left vAlign=top><FONT face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		  <b>Your request has been sent sucessfully.</b></font>
+		  <br><br>
+		  <FONT face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		  We will contact you once your selected item becomes available.<br><br>
+		  Thank you for your interest in our products.
+		  </FONT></TD>
+		</TR>
+		</TBODY>
+	  </TABLE>
+	<p>
+	
+
+					
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" width="457">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>
+
+[set name=alert_added interpolate=1]
+
+[comment] SEND REPORT OF NEW ALERT ENTRY [/comment]
+
+[email
+					to="[value email]"
+                    subject="Construct Something - Stock Alert Request"
+                    from="Construct Something <info@ConstructSomething.com>"
+                    reply="Construct Something <info@ConstructSomething.com>"]
+
+Hello and thank you for your interest in Construct Something products.
+
+We have received your in-stock alert notification and we will contact you
+once the selected item becomes available.
+
+This a confirmation of your request submission.
+
+         Name: [value fname] [value lname]
+        Email: [value email]
+
+      Product: [data table=products column=description key='[scratch code]']
+Current Price: [data table=products column=price key='[scratch code]']
+					
+[/email]
+
+[/set]
