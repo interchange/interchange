@@ -11,7 +11,7 @@
 [/comment]
 
 [set ui_class]Merchandising[/set]
-[set page_title]Affiliates manager[/set]
+[set page_title][L]Affiliates manager[/L][/set]
 [set table_perm]1[/set]
 [set help_name]affiliate.manager[/set]
 [set icon_name]icon_people.gif[/set]
@@ -34,7 +34,7 @@
 
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
-<INPUT TYPE=submit VALUE="Limit with search">
+<INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
 </FORM>
 [if cgi ui_text_qualification]
 <H3>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H3>
@@ -81,14 +81,14 @@
 					`]Code</td>
 <td>[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=name\n" . sortrev('name');
-	` extra=rmarq]Name</td>
-<td class=rmarq>Linkback and entry URLs</td>
-<td align=center class=rmarq>Reports</td>
+	` extra=rmarq][L]Name[/L]</td>
+<td class=rmarq>[L]Linkback and entry URLs[/L]</td>
+<td align=center class=rmarq>[L]Reports[/L]</td>
 	<td align=center class=rmarq>
 	[page href=@@MV_PAGE@@ extra=rmarq
 		form=`
 			return "ui_sort_field=active\n" . sortrev('active');
-		`]Active</a>
+		`][L]Active[/L]</a>
 	</td>
 </tr>
 <tr class=rspacer><td colspan=5></td></tr>
@@ -118,13 +118,13 @@ entry:&nbsp;[calc]
 				form="
 					start_date=[tag time]%Y%m[/tag]
 					affiliate=[item-code]
-					 "]Orders</A><br>
+					 "][L]Orders[/L]</A><br>
 				[page href="__UI_BASE__/reports/traffic/ByAffiliate"
 				form="
 				start_date=[tag time]%Y%m[/tag]
 				affiliate=[item-code]
-				"]Traffic</A></td>
-<TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active]Yes[else]No[/else][/if-item-data]
+				"][L]Traffic[/L]</A></td>
+<TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active][L]Yes[/L][else][L]No[/L][/else][/if-item-data]
 </TD>
 </tr>
 [/search-list]
@@ -132,7 +132,7 @@ entry:&nbsp;[calc]
 <tr>
 <td colspan=5 align=left>
 <br>
-<B>Nothing matched.</B>
+<B>[L]Nothing matched.[/L]</B>
 <br><br>
 </td>
 </tr>
@@ -141,7 +141,7 @@ entry:&nbsp;[calc]
 [more-list]
 <tr>
 <td colspan=5 align=center>
-More affiliates: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[L]More affiliates[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
