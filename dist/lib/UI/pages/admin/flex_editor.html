@@ -28,6 +28,7 @@
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
+				 ui_return_stack=1
 				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
 		 '][cgi ui_meta_view]</b> view</A>)
 		 [/if]
@@ -39,6 +40,7 @@
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
+				 ui_return_stack=1
 				 item_id=[cgi mv_data_table]
 		 ']standard view</A>)
 		[/if-mm]
@@ -71,6 +73,7 @@
 					mv_data_table=[value mv_data_table]
 					page_title=Edit [value mv_data_table]: [cgi item_id]
 					help_name=genedit
+					ui_return_stack=1
 					ui_data_fields_all=1
 					ui_no_meta_display=1
 					ui_hide_key=1

@@ -45,6 +45,7 @@
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [loop-code]
 				 ui_return_to=__UI_BASE__/gentable
+				 ui_return_stack=1
 				 item_id=[loop-code]
 		 '][loop-code]</A>
 		[/loop]
@@ -399,8 +400,6 @@ EOF
 		[return-to formlink]
 	[else]
 		ui_return_to=@@MV_PAGE@@
-		ui_return_to=mv_data_table=[cgi mv_data_table]
-		ui_return_to=ui_limit_fields=[cgi ui_limit_fields]
 	[/else]
 	[/if][/tmp]
 [search-region more=1 arg="[scratch sparams]"]
