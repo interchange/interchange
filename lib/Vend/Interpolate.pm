@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.208 2004-04-13 01:10:14 jon Exp $
+# $Id: Interpolate.pm,v 2.209 2004-04-19 21:59:07 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.208 $, 10);
+$VERSION = substr(q$Revision: 2.209 $, 10);
 
 @EXPORT = qw (
 
@@ -605,9 +605,20 @@ sub filter_value {
 			$value = sprintf($_, $value);
 			next;
 		}
-		if (/^(\d+)(\.?)$/) {
-			substr($value, $1) = $2 ? '...' : ''
-				if length($value) > $1;
+		if (/^(\d+)([\.\$]?)$/) {
+			my $len;
+			return $value unless ($len = length($value)) > $1;
+			my ($limit, $mod) = ($1, $2);
+			unless($mod) {
+				substr($value, $limit) = '';
+			}
+			elsif($mod eq '.') {
+				substr($value, $1) = '...';
+			}
+			elsif($mod eq '$') {
+				substr($value, 0, $len - $limit) = '...';
+			}
+			return $value;
 			next;
 		}
 		while( s/\.([^.]+)$//) {
