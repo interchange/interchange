@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.183 2003-07-22 01:24:36 jon Exp $
+# $Id: Interpolate.pm,v 2.184 2003-07-24 12:34:23 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.183 $, 10);
+$VERSION = substr(q$Revision: 2.184 $, 10);
 
 @EXPORT = qw (
 
@@ -96,7 +96,7 @@ use Vend::Data;
 use Vend::Form;
 require Vend::Cart;
 
-
+use HTML::Entities;
 use Vend::Server;
 use Vend::Scan;
 use Vend::Tags;
@@ -147,6 +147,7 @@ BEGIN {
 							&uneval
 							&get_option_hash
 							&dotted_hash
+							&encode_entities
 							&HTML
 							&interpolate_html
 						/;
