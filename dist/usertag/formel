@@ -29,10 +29,10 @@ sub {
     my $contrast = $::Variable->{CONTRAST} || 'red';
 	my $checkfor = $opt->{'checkfor'} || $name;
     my $sizestr = '';
+	my $labelproc;
 
-	sub label {
+	$labelproc = sub {
 		my ($label, $keep) = @_;
-
 	    if ($Tag->error($checkfor, {keep => $keep})) {
 			if ($opt->{signal}) {
 				sprintf($opt->{signal}, $label);
@@ -42,7 +42,7 @@ sub {
 	    } else {      
     	    $label;
 		}
-	}
+	};
 
     # set defaults
     $type = 'text' unless $type;
@@ -78,15 +78,15 @@ sub {
 			} else {
 				$rvalue = $rlabel = $button;
 			}
-			$rlabel = label($rlabel, 1);
+			$rlabel = &$labelproc($rlabel, 1);
 			$elhtml .= qq{<input type=radio name=$name value=$rvalue> $rlabel};
 		}
 		# delete error implicitly
-		label();
+		&$labelproc();
 		return sprintf ($fmt, $labelhtml, $elhtml);
 	}
 
-	$labelhtml = label ($label);
+	$labelhtml = &$labelproc($label);
 
     if ($opt->{reset}) {
 		if ($type eq 'textarea') {
