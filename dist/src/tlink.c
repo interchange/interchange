@@ -1,7 +1,7 @@
 /* tlink.c:  runs as a cgi program and passes request to Vend server
 			 via TCP/IP 
 
-   $Id: tlink.c,v 1.2 2000-07-12 03:08:10 heins Exp $
+   $Id: tlink.c,v 1.2.2.1 2000-12-08 15:48:22 zarko Exp $
 
    Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 
@@ -325,23 +325,6 @@ static void outv(str)
   out(1, "\n");
 }
 
-/* Send the program arguments (but not the program name argv[0])
- * to the server.
- */
-static void send_arguments(argc, argv)
-     int argc;
-     char** argv;
-{
-  int i;
-
-  outs("arg ");
-  outs(itoa(argc - 1));		       /* number of arguments */
-  outs("\n");
-  for (i = 1;  i < argc;  ++i) {
-    outv(argv[i]);
-  }
-}
-
 /* Send the environment to the server.
  */
 static void send_environment()
@@ -560,7 +543,9 @@ int main(argc, argv)
   bufp = buf;			       /* init output buf */
   buf_left = buf_size;
   open_socket();		       /* open our connection */
-  send_arguments(argc, argv);
+  if(argc > 1) {
+    fprint(stderr, "Command line arguments deprecated.  Ignoring!\n");
+  }
   send_environment();
   send_entity();
   outs("end\n");
