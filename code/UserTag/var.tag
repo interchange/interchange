@@ -9,8 +9,7 @@
 # [var VARIABLE 2] is equivalent to @_VARIABLE_@
 #
 UserTag var Interpolate 1
-UserTag var PosNumber 2
-UserTag var Order name global
+UserTag var Order name global include
 UserTag var Routine <<EOR
 sub {
     my ($key, $global) = @_;
