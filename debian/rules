@@ -62,7 +62,7 @@ install: build
 	rm $(TMP)/usr/lib/interchange/interchange.cfg.dist
 # Create symbolic link for the configuration file. Makes
 # more sense than script hacking.
-	ln -s $(TMP)/etc/interchange/interchange.cfg $(TMP)/usr/lib/interchange
+	ln -s /etc/interchange/interchange.cfg $(TMP)/usr/lib/interchange
 # Setup wrapper
 	mkdir -p $(TMP)/usr/sbin
 	cp debian/interchange.wrapper $(TMP)/usr/sbin/interchange
@@ -98,6 +98,7 @@ install: build
 	rm -r $(TMP)/usr/lib/interchange/share/akopia/
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
+	rm $(TMP)/usr/lib/interchange/hints.pl
 	rm $(TMP)/usr/lib/interchange/_session_storable
 	rm $(TMP)/usr/lib/interchange/_uid
 # install logrotate configuration file
