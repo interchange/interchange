@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: Server.pm,v 2.0.2.2 2002-05-07 16:45:35 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1838,7 +1838,18 @@ my $pretty_vector = unpack('b*', $s_vector);
 					->handle;
 			}
 
+			unless ($Vend::StatusLine =~ m{^HTTP/}) {
+				my $status = $Vend::StatusLine =~ /(?:^|\n)Status:\s+(.*)/i
+					? "$1" : "200 OK";
+				$Vend::StatusLine = "HTTP/1.0 $status\r\n" . $Vend::StatusLine;
+			}
+			$Vend::StatusLine .= "\r\nContent-Type: text/xml\r\n"
+				unless $Vend::StatusLine =~ /^Content-Type:/im;
+
+			print MESSAGE canon_status($Vend::StatusLine);
 			print MESSAGE $result;
+			undef $Vend::StatusLine;
+			$Vend::ResponseMade = 1;
 			close MESSAGE;
 #::logDebug("SOAP port=$p n=$n unix=$unix_socket{$p} pid=$$ c=$c time=" . join '|', times);
 		}
