@@ -35,7 +35,7 @@
 [/if-mm]
 
 [set ui_class]Orders[/set]
-[tmp page_perm]order[/tmp]
+[tmp page_perm]order=l[/tmp]
 
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -285,7 +285,7 @@
 	form="
 		[scratch archive_nm]order=1
 		order=[item-code]
-	"]<IMG SRC="@_UI_IMG_@[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
+	"]<IMG SRC="[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
 <A HREF="[area
 	href='@@MV_PAGE@@'
 	form='
