@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.21 2003-10-13 11:39:14 racke Exp $
+# $Id: Search.pm,v 2.22 2004-04-08 15:05:09 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -1138,6 +1138,7 @@ sub save_more {
 #::logDebug("save_more: $id to $file.");
 	my $new = { %$s };
 	$new->{mv_results} = $out;
+	delete $new->{search_routines};
 #::logDebug("save_more:object:" . ::uneval($new));
 	eval {
 		Vend::Util::uneval_file($new, $file);
