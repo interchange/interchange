@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14.4.7 2001-02-06 18:07:57 racke Exp $
+# $Id: Order.pm,v 1.14.4.8 2001-04-15 13:54:56 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14.4.7 $, 10);
+$VERSION = substr(q$Revision: 1.14.4.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1499,7 +1499,7 @@ sub route_order {
 			}
 			for(@vars) {
 				next unless exists $glob->{$_};
-				$::Variable->{$_} = $glob->{_};
+				$::Variable->{$_} = $glob->{$_};
 			}
 			$CGI::values{mv_cyber_mode} = $save;
 			unless ($ok) {
