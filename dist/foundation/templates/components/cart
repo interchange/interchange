@@ -37,7 +37,7 @@ upsell_in_cart:
 	[/else]
 	[/if]
 
-	<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
+	<FORM ACTION="[process secure=1]" METHOD=POST name="basket">
     	<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
     	<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
     	<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
@@ -101,7 +101,7 @@ upsell_in_cart:
 
 	<TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
 		<TD align=center>
-	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
 	  	</TD>
 	  	<TD><b>[item-sku]</b></TD>
 	  	<td>[page [item-sku]]<b>[item-data products description]</b></A>
@@ -413,7 +413,7 @@ EOF
 
 [if session logged_in][then]
   [if value save_cart eq 'recurring']
-    	    <FORM ACTION="[process-target]" METHOD=POST>
+    	    <FORM ACTION="[process]" METHOD=POST>
     	    To save this recurring order, give it a nickname, then press 'Save Cart'.<br>
     	    Nickname:
     	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
@@ -425,7 +425,7 @@ EOF
     	    <INPUT TYPE=SUBMIT VALUE="Save Cart">
     	    </FORM>
   [elsif value save_cart eq 'cart']
-    	    <FORM ACTION="[process-target]" METHOD=POST>
+    	    <FORM ACTION="[process]" METHOD=POST>
     	    To save this cart, give it a nickname, then press 'Save Cart'.<br>
     	    Nickname:
     	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">

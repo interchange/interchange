@@ -17,7 +17,7 @@ mv_nextpage=@@MV_PREV_PAGE@@
 
     <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
     <TR><TD ALIGN=CENTER>
-    <FORM ACTION="[process-target]" METHOD=POST>
+    <FORM ACTION="[process]" METHOD=POST>
     [L]Hi[/L] [value name]! [L]You are logged in as user[/L] <B>[value mv_username]</B>.
 	&nbsp;&nbsp;<INPUT TYPE=submit NAME="mv_click" VALUE="[L]Log out[/L]">
 	</FORM>
@@ -25,7 +25,7 @@ mv_nextpage=@@MV_PREV_PAGE@@
 
     <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
     <TR><TD ALIGN=CENTER>
-    <FORM ACTION="[process-target]" METHOD=POST>
+    <FORM ACTION="[process]" METHOD=POST>
 	</FORM>
 	</TD></TR></TABLE>
 
@@ -43,7 +43,7 @@ mv_nextpage=@@MV_PREV_PAGE@@
 [data session failure]
 [/if]
 <P>
-    <FORM ACTION="[process-target]" METHOD=POST>
+    <FORM ACTION="[process]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
     <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
 
