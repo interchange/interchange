@@ -246,6 +246,17 @@ Miscellaneous
 * Added catalog configuration wizard, to move non-essential config from
   makecat and simplify it a bit.
 
+* Added more links based on the leading letters of the results 
+  so the selection of the more link is much easier for the customer,
+  especially with huge number of results. Short example:
+
+  <input type=hidden name=mv_search_field value=description>
+  <input type=hidden name=mv_sort_field value=description>
+  <input type=hidden name=mv_more_alpha value=yes>
+  <input type=hidden name=mv_return_fields value=code,description>
+
+  (supplied by Stefan Hornburg <racke@linuxia.de>).
+
 Bug fixes
 ---------
 * Fix bug in IMPORT_ONCE reported by vasile_abo@wexim.com.
