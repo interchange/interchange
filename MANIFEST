@@ -141,6 +141,7 @@ code/UI_Tag/export_database.coretag
 code/UI_Tag/file_info.coretag
 code/UI_Tag/file_navigator.coretag
 code/UI_Tag/filters.coretag
+code/UI_Tag/flex_select.coretag
 code/UI_Tag/get_gpg_keys.coretag
 code/UI_Tag/global_value.coretag
 code/UI_Tag/grep_mm.coretag
