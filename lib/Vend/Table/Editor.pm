@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.61 2004-07-21 05:46:55 mheins Exp $
+# $Id: Editor.pm,v 1.62 2004-07-21 21:18:52 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.61 $, 10);
+$VERSION = substr(q$Revision: 1.62 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -289,15 +289,15 @@ sub display {
 		my $view = $opt->{view} || $opt->{arbitrary};
 
 		## This is intended to trigger on the first access
-		if($column eq $meta->config('KEY')) {
+		if($table eq $mtab and $column eq $meta->config('KEY')) {
 			if($view and $opt->{value} !~ /::.+::/) {
 				$base_entry_value = ($opt->{value} =~ /^([^:]+)::(\w+)$/)
 									? $1
 									: $opt->{value};
 			}
 			else {
-				$base_entry_value = $opt->{value} =~ /::/
-									? $table
+				$base_entry_value = $opt->{value} =~ /(\w+)::/
+									? $1
 									: $opt->{value};
 			}
 		}
