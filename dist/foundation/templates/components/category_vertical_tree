@@ -46,6 +46,7 @@ timed:
   <br>
   <table width="90%" align="center">
     <tr><td align="left" valign="top">
+[timed-build auto=1 if="[control timed 0]" minutes="[control timed 0]"]
     [tree
         table=tree
         sort=code
@@ -80,6 +81,7 @@ name][/else][/if-item-param]<BR>
         </table>
         [/if-item-param]
     [/tree]
+[/timed-build]
     </td></tr>
   </table>
   <br>
