@@ -664,7 +664,6 @@ dist/lib/UI/usertag/backup_database.tag
 dist/lib/UI/usertag/backup_file.tag
 dist/lib/UI/usertag/base_url.tag
 dist/lib/UI/usertag/check_upload.tag
-dist/lib/UI/usertag/component.tag
 dist/lib/UI/usertag/cp.tag
 dist/lib/UI/usertag/crypt.tag
 dist/lib/UI/usertag/db_columns.tag
