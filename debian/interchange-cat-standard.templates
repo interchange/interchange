@@ -63,3 +63,10 @@ Choices: ${LOCALES}
 Default: en_US
 _Description: Default locale for the storefront:
  Please select the default locale for the Interchange demo catalog.
+
+Template: interchange-cat-standard/dbtype
+Type: select
+__Choices: PostgreSQL, MySQL
+Default: MySQL
+_Description: What database should be used for the demo catalog ?
+ Please select the database type.
