@@ -803,6 +803,8 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 									filter => $r->{filter},
 									pre_filter => $r->{prefilter},
 									template => $control_template,
+									table => $r->{table},
+									column => $r->{column},
 								});
 					push @messages, "widget='$widget'";
 					# No meta for now

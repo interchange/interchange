@@ -63,8 +63,9 @@ component_hsize:
 	help: Only applies to list items...
 
 hpromo_type:
-	options: specials=Specials, new=New items
 	widget: select
+	column: featured
+	table: merchandising
 	description: Special tag
 	help: Only active if a Promotion component.
 

@@ -89,6 +89,10 @@ Admin UI
 
 * Added mv_session_id to the forms in the layout page.
 
+* Modifying Promotions using the Page Editor now references the correct
+  Promotions list (from "Merchandising" or "Item Editor" meta data) instead
+  a static list specified in each component.
+
 Payment
 -------
 

@@ -6,8 +6,9 @@ ui_component_label: Promotion
 
 promo_type:
 	label: Promotion type
-	options: specials=Specials, new=New items
 	widget: select
+	column: featured
+	table: merchandising
 
 matches:
 	label: Number to show
