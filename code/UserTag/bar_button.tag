@@ -1,10 +1,11 @@
 # Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: bar_button.tag,v 1.2 2004-10-01 20:38:33 docelic Exp $
+# $Id: bar_button.tag,v 1.3 2005-02-10 14:38:39 docelic Exp $
 
-UserTag bar-button Order page current
+UserTag bar-button Order     page current
 UserTag bar-button PosNumber 2
 UserTag bar-button HasEndTag 1
+UserTag bar-button Version   $Revision: 1.3 $
 UserTag bar-button Routine   <<EOR
 sub {
 	use strict;
@@ -17,4 +18,3 @@ sub {
 	return $alt;
 }
 EOR
-

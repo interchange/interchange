@@ -1,12 +1,13 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.4 2004-10-14 20:07:36 docelic Exp $
+# $Id: email.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
 
-UserTag email Order to subject reply from extra
+UserTag email Order       to subject reply from extra
 UserTag email hasEndTag
 UserTag email addAttr
 UserTag email Interpolate
-UserTag email Routine <<EOR
+UserTag email Version     $Revision: 1.5 $
+UserTag email Routine     <<EOR
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
     my $ok = 0;
@@ -41,4 +42,3 @@ sub {
 	return $opt->{hide} ? '' : $ok;
 }
 EOR
-

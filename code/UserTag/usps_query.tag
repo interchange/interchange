@@ -1,6 +1,10 @@
-#!/usr/bin/perl
-UserTag  usps-query  Order service weight
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: usps_query.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+
+UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
+UserTag  usps-query  Version $Revision: 1.4 $
 UserTag  usps-query  Routine <<EOR
 
 sub {

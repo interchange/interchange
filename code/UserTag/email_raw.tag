@@ -1,11 +1,12 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email_raw.tag,v 1.4 2004-10-02 18:15:16 docelic Exp $
+# $Id: email_raw.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
 
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
 UserTag email-raw Interpolate
-UserTag email-raw Routine <<EOR
+UserTag email-raw Version     $Revision: 1.5 $
+UserTag email-raw Routine     <<EOR
 sub {
     my($opt, $body) = @_;
     my($ok);
@@ -28,4 +29,3 @@ sub {
     return $opt->{hide} ? '' : $ok;
 }
 EOR
-

@@ -1,13 +1,18 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: loc.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+
 # [loc locale*] message [/loc]
 #
 # This tag is the equivalent of [L] ... [/L] localization, except
 # it works with contained tags
 #
-UserTag l Alias	loc
+UserTag loc Order       locale
+UserTag l   Alias       loc
 UserTag loc hasEndTag   1
 UserTag loc Interpolate 1
-UserTag loc Order locale
-UserTag loc Routine <<EOF
+UserTag loc Version     $Revision: 1.5 $
+UserTag loc Routine     <<EOF
 sub {
     my ($locale, $message) = @_;
     if($::Pragma->{no_locale_parse}) {
@@ -31,4 +36,3 @@ sub {
     return defined $ref->{$message} ? $ref->{$message} : $message;
 }
 EOF
-

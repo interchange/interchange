@@ -1,10 +1,11 @@
 # Copyright 2002-2003 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2000-2003 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.10 2004-10-02 19:13:13 docelic Exp $
+# $Id: formel.tag,v 1.11 2005-02-10 14:38:39 docelic Exp $
 
-UserTag formel Order label name type size
+UserTag formel Order   label name type size
 UserTag formel addAttr
+UserTag formel Version $Revision: 1.11 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -168,4 +169,3 @@ sub {
 	}
 }
 EOF
-

@@ -1,11 +1,16 @@
-UserTag convert-date Order adjust
-UserTag convert-date PosNumber 1
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: convert_date.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+
+UserTag convert-date Order       adjust
+UserTag convert-date PosNumber   1
 UserTag convert-date addAttr
-UserTag convert-date AttrAlias fmt format
-UserTag convert-date AttrAlias days adjust
+UserTag convert-date AttrAlias   fmt format
+UserTag convert-date AttrAlias   days adjust
 UserTag convert-date HasEndTag
 UserTag convert-date Interpolate
-UserTag convert-date Routine <<EOR
+UserTag convert-date Version     $Revision: 1.5 $
+UserTag convert-date Routine     <<EOR
 sub {
     my ($adjust, $opt, $text) = @_;
     my @t;
@@ -76,4 +81,3 @@ sub {
 	return $out;
 }
 EOR
-

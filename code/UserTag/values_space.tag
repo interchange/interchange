@@ -1,10 +1,10 @@
 # Copyright 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: values_space.tag,v 1.2 2004-09-25 12:30:07 docelic Exp $
+# $Id: values_space.tag,v 1.3 2005-02-10 14:38:39 docelic Exp $
 
-UserTag values-space Order name
+UserTag values-space Order   name
 UserTag values-space addAttr
-UserTag values-space Version $Revision: 1.2 $
+UserTag values-space Version $Revision: 1.3 $
 UserTag values-space Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
@@ -42,4 +42,3 @@ sub {
 	return $opt->{show} ? $old_name : '';
 }
 EOR
-

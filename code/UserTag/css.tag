@@ -1,9 +1,10 @@
 # Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: css.tag,v 1.5 2004-10-02 16:38:55 docelic Exp $
+# $Id: css.tag,v 1.6 2005-02-10 14:38:39 docelic Exp $
 
-UserTag css Order name
+UserTag css Order   name
 UserTag css addAttr
+UserTag css Version $Revision: 1.6 $
 UserTag css Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
@@ -122,4 +123,3 @@ sub {
 	return qq{<style type="text/css">\n$css</style>};
 }
 EOR
-

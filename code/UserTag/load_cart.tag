@@ -1,10 +1,11 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: load_cart.tag,v 1.2 2004-10-16 21:50:43 docelic Exp $
+# $Id: load_cart.tag,v 1.3 2005-02-10 14:38:39 docelic Exp $
 
-UserTag load_cart Order nickname
+UserTag load_cart Order     nickname
 UserTag load_cart AttrAlias name nickname
-UserTag load_cart Routine <<EOR
+UserTag load_cart Version   $Revision: 1.3 $
+UserTag load_cart Routine   <<EOR
 sub {
 	my($nickname) = @_;
 

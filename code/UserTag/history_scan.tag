@@ -1,9 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: history_scan.tag,v 1.15 2004-10-03 15:41:19 docelic Exp $
+# $Id: history_scan.tag,v 1.16 2005-02-10 14:38:39 docelic Exp $
 
-UserTag history-scan Order find exclude default
+UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
+UserTag history-scan Version $Revision: 1.16 $
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1
@@ -64,4 +65,3 @@ sub {
 	return $Tag->area( { href => $href, form => $form} );
 }
 EOR
-

@@ -1,6 +1,11 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: forum.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+
 UserTag forum-userlink PosNumber 0
 UserTag forum-userlink addAttr 
-UserTag forum-userlink Routine <<EOR
+UserTag forum-userlink Version   $Revision: 1.4 $
+UserTag forum-userlink Routine   <<EOR
 sub {
 	my ($row) = @_;
 	return $row->{name} || $Variable->{FORUM_ANON_NAME} || 'Anonymous Coward'
@@ -11,10 +16,11 @@ sub {
 }
 EOR
 
-UserTag forum Order top
+UserTag forum Order     top
 UserTag forum addAttr 
 UserTag forum hasEndTag 
-UserTag forum Routine <<EOR
+UserTag forum Version   $Revision: 1.4 $
+UserTag forum Routine   <<EOR
 my @uls;
 my $lastlevel;
 

@@ -1,12 +1,13 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.14 2004-09-24 15:30:23 docelic Exp $
+# $Id: button.tag,v 1.15 2005-02-10 14:38:39 docelic Exp $
 
-UserTag button Order name src text
+UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Routine <<EOR
+UserTag button Version   $Revision: 1.15 $
+UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
 
@@ -225,4 +226,3 @@ EOV
 }
 
 EOR
-

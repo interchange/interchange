@@ -1,5 +1,10 @@
-UserTag weight Order attribute
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: weight.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+
+UserTag weight Order   attribute
 UserTag weight addAttr
+UserTag weight Version $Revision: 1.4 $
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;

@@ -1,8 +1,12 @@
-UserTag  fedex-query  Order  mode weight
-UserTag  fedex-query  attrAlias origin_zip origin
-UserTag  fedex-query  addAttr
-UserTag  fedex-query  Documentation <<EOD
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: fedex_query.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
 
+UserTag  fedex-query  Order         mode weight
+UserTag  fedex-query  attrAlias     origin_zip origin
+UserTag  fedex-query  addAttr
+UserTag  fedex-query  Version       $Revision: 1.4 $
+UserTag  fedex-query  Documentation <<EOD
 
 Required Variables
 Construct a Rate request using the URL, variables, and values shown
@@ -370,4 +374,3 @@ sub {
 	return $result{TotalCharges};
 }
 EOR
-

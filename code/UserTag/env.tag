@@ -1,12 +1,13 @@
 # Copyright 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2001 Ed LaFrance <edl@newmediaems.com>
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: env.tag,v 1.8 2004-09-24 15:30:23 docelic Exp $
+# $Id: env.tag,v 1.9 2005-02-10 14:38:39 docelic Exp $
 
-Usertag env Order arg
-Usertag env PosNumber 1
-UserTag env attrAlias name arg
-Usertag env Routine <<EOR
+Usertag env Order      arg
+Usertag env PosNumber  1
+UserTag env attrAlias  name arg
+UserTag env Version    $Revision: 1.9 $
+Usertag env Routine    <<EOR
 sub {
 	my $arg = shift;
 	my $env = ::http()->{env};
@@ -25,4 +26,3 @@ sub {
 	return $out;
 }
 EOR
-

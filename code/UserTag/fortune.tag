@@ -1,9 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: fortune.tag,v 1.4 2004-10-03 15:41:19 docelic Exp $
+# $Id: fortune.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
 
-UserTag fortune Order short
+UserTag fortune Order   short
 UserTag fortune addAttr
+UserTag fortune Version $Revision: 1.5 $
 UserTag fortune Routine <<EOR
 sub {
 	my ($short, $opt) = @_;
@@ -49,4 +50,3 @@ sub {
 	return $out;
 }
 EOR
-
