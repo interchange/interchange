@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.15 2002-10-30 23:40:29 kwalsh Exp $
+# $Id: Server.pm,v 2.16 2002-10-31 18:09:22 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -156,7 +156,7 @@ sub log_http_data {
 }
 
 sub map_misc_cgi {
-	if (!$CGI::remote_host && $CGI::remote_addr){
+	if ($Global::RobotHost && !$CGI::remote_host && $CGI::remote_addr) {
 		$CGI::remote_host = gethostbyaddr(Socket::inet_aton($CGI::remote_addr),Socket::AF_INET);
 	}
 	$CGI::host = $CGI::remote_host || $CGI::remote_addr;
