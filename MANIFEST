@@ -245,6 +245,7 @@ code/UserTag/convert_date.tag
 code/UserTag/css.tag
 code/UserTag/db_date.tag
 code/UserTag/delete_cart.tag
+code/UserTag/discount_space.tag
 code/UserTag/email.tag
 code/UserTag/email_raw.tag
 code/UserTag/env.tag
@@ -1012,6 +1013,7 @@ lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
+lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
