@@ -113,7 +113,6 @@ install: build
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
 	rm $(TMP)/usr/lib/interchange/hints.pl
-	rm $(TMP)/usr/lib/interchange/perllocal.pod
 	rm $(TMP)/usr/lib/interchange/_session_storable
 	rm $(TMP)/usr/lib/interchange/_uid
 	rm -r $(TMP)/usr/lib/interchange/auto/Interchange
