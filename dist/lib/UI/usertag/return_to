@@ -1,8 +1,8 @@
-UserTag return_to Order type
+UserTag return_to Order type table_hack
 UserTag return_to addAttr 
 UserTag return_to Routine <<EOR
 sub {
-    my ($type, $opt) = @_;
+    my ($type, $tablehack, $opt) = @_;
 	my ($page, @args) = split /\0/, $CGI::values{ui_return_to};
 	if($CGI->{ui_target}) {
 		push @args, "ui_target=$CGI->{ui_target}";
@@ -12,6 +12,20 @@ sub {
 		$page = $opt->{page};
 	}
 
+	my $extra;
+	if($tablehack) {
+		my $found;
+		for (@args) {
+			if(s/^mv_data_table=//) {
+				$extra = "mv_return_table=$_\n";
+			}
+			elsif (s/^(ui|mv)_return_table=//) {
+				$found = "mv_return_table=$_\n";
+			}
+		}
+		$extra = $found if $found;
+	}
+
 	if($type eq 'click') {
 		$out .= qq{mv_nextpage=$page\n} if $page;
 		for(@args) {
@@ -19,8 +33,17 @@ sub {
 			my ($k, $v) = split /\s*=\s*/, $_, 2;
 #::logDebug("return-to click k='$k' v='$v'");
 			next if $k =~ /$opt->{exclude}/;
+			
 			$out .= qq{$k=$v\n};
 #::logDebug("return-to out now '$out'");
+		}
+	}
+	elsif($type eq 'formlink') {
+		$page = $Global::Variable->{MV_PAGE} if ! $page;
+		$out .= qq{ui_return_to=$page\n};
+		for(@args) {
+			tr/\n/\r/;
+			$out .= qq{ui_return_to=$_">\n}
 		}
 	}
 	elsif($type eq 'url') {
@@ -38,6 +61,10 @@ sub {
 			$out .= qq{<INPUT TYPE=hidden NAME=ui_return_to VALUE="$_">\n}
 		}
 	}
+
+	$out .= $extra if $extra;
+	$out .= "ui_return_to=
+
     $::Scratch->{ui_location} = $Tag->area({
                                     href => $page,
                                     form => join "\n", @args,
