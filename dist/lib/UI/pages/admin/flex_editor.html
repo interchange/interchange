@@ -8,31 +8,34 @@
 	[either]
 		[cgi page_title]
 	[or]
-		Table Edit: [cgi mv_data_table]
+		[L]Table Edit[/L]: [cgi mv_data_table]
 	[/either]
 [/tmp]
+[tmp page_secure][either]@@UI_SECURE@@[or]__UI_SECURE__[/either][/tmp]
 [tmp page_banner]
 	[either]
 		[cgi page_banner]
 	[or]
 		[if cgi mv_data_table ne __UI_META_TABLE__]
 		[if-mm super]
-		Select for table edit:
+		[L]Select for table edit[/L]:
 		 [cgi mv_data_table]
 		[if cgi ui_meta_view]
 		 (<b>[page href="__UI_BASE__/flex_editor"
+			     secure="[scratch page_secure]"
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
 				 ui_data_fields=code name height field options attribute width type display_filter help help_url
 				 ui_break_before=height display_filter
-				 page_title=Change display information: [cgi mv_data_table]
+				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
 				 ui_return_stack=1
 				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
-		 '][cgi ui_meta_view]</b> view</A>)
+		 '][cgi ui_meta_view]</b> [L]view[/L]</A>)
 		 [/if]
 		([page href="__UI_BASE__/flex_editor"
+			     secure="[scratch page_secure]"
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
@@ -42,13 +45,13 @@
 				 ui_return_to=__UI_BASE__/gentable
 				 ui_return_stack=1
 				 item_id=[cgi mv_data_table]
-		 ']standard view</A>)
+		 '][L]standard view[/L]</A>)
 		[/if-mm]
 		 [/if]
 	[or]
 		[cgi page_title]
 	[or]
-		Select for table edit: [cgi mv_data_table]
+		[L]Select for table edit[/L]: [cgi mv_data_table]
 	[/either]
 [/tmp]
 [seti table_perm][cgi mv_data_table]=v[/seti]
@@ -95,7 +98,7 @@
 					ui_no_meta_display=1
 					ui_hide_key=1
 					icon_name=icon_config.gif
-					']">No meta display</A>
+					']">[L]No meta display[/L]</A>
 <!--
 <XMP>
 click:

@@ -29,6 +29,7 @@
 		[L]Select for table edit[/L]: [cgi mv_data_table]
 	[/either]
 [/tmp]
+[tmp page_secure][either]@@UI_SECURE@@[or]__UI_SECURE__[/either][/tmp]
 [tmp page_banner]
 	[either]
 		[cgi page_banner]
@@ -89,6 +90,7 @@
 		$Scratch->{ui_location}
 				= $Tag->area( {
 						href => '__UI_BASE__/flex_editor',
+						secure => $Scratch->{page_secure},
 						form => qq{
 							mv_data_table=$CGI->{mv_data_table}
 							item_id=$CGI->{item_id}
@@ -108,7 +110,7 @@
 	if(! $db) {
 		$Scratch->{ui_error} = errmsg('no %s database', $tab);
 		$Scratch->{ui_location} = $Tag->area({href=>"__UI_BASE__/error",
-            secure=>'@@UI_SECURE@@'||'__UI_SECURE__'});
+            secure=>$Scratch->{page_secure}});
 		return;
 	}
 
@@ -287,15 +289,13 @@ EOF
 			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
 		}
 
-		$out_message =  <<EOF;
-<H3>Entries matching "$ui_text_qualification"</H3>
-EOF
+		$out_message = '<H3>' . errmsg('Entries matching "%s"', 
+			$ui_text_qualification) . '</H3>';
 	}
 	elsif ($ui_text_qualification) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
-		$out_message =  <<EOF;
-<H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
-EOF
+		$out_message = '<H3>' . errmsg('Entries matching "%s"', 
+			$ui_text_qualification) . '</H3>';
 		if($Scratch->{ui_owner}) {
 			$CGI->{ui_text_qualification} = <<EOF;
 co=1
@@ -553,7 +553,7 @@ sub {
 [more-list]
 <tr>
 <td colspan=6 align=center>
-More rows: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[L]More rows[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
