@@ -1,56 +1,9 @@
-my $base = $ARGV[0] || '/work/interchange';
-$self = {
-	INSTALLARCHLIB => $base,
-	INSTALLBIN     => "$base/bin",
-	INSTALLDIRS    => 'perl',
-	INSTALLMAN1DIR => "$base/doc",
-	INSTALLMAN3DIR => "$base/doc",
-	INSTALLPRIVLIB => "$base/lib",
-	INSTALLSCRIPT  => "$base/bin",
-};
-
-my %Special;
-
-use Config;
-
-eval {
-	require 'scripts/initp.pl';
-};
-
-if(! $MV::Self ) {
-	$MV::Self = $self;
-	$Special{perlpath} = $Config{perlpath};
-	$Special{perlpath} .= <<EOF;
-
-
-eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
-    if 0; # not running under some shell
-EOF
-	$Special{perlpath} =~ s/\s+$//;
-}
-
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Special{$key} if defined $Special{$key};
-	$Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.1 2002-06-17 22:24:12 jon Exp $
+# $Id: update.PL,v 2.2 2002-06-27 18:55:50 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -362,11 +315,3 @@ http://interchange.redhat.com/
 
 Mike Heins, <mheins@redhat.com>
 
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}
