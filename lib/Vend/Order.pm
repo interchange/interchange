@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.17 2000-11-08 21:47:27 heins Exp $
+# $Id: Order.pm,v 1.18 2000-11-23 04:59:43 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1054,7 +1054,7 @@ sub check_order {
 	if($Final and ! scalar @{$Vend::Items}) {
 		$status = 0;
 		$::Values->{"mv_error_items"}       =
-			$Vend::Session->{error}{items}  =
+			$Vend::Session->{errors}{items}  =
 				errmsg(
 					"You might want to order something! No items in cart.",
 				);
