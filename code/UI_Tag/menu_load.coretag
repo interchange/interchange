@@ -212,6 +212,126 @@ sub {
 			}
 		}
 	}
+	elsif ($type eq 'category_file') {
+		$opt->{table} ||= 'category';
+		$opt->{first_field} ||= 'prod_group';
+		$opt->{second_field} ||= 'category';
+#::logDebug("menu_load options=" . uneval($opt));
+		CATBUILD: {
+			my $tab = $opt->{table};
+			my $db = database_exists_ref($tab)
+				or do {
+					Vend::Tags->error({ set => errmsg(
+										"Failed to open %s table %s.",
+										'products',
+										$tab,
+										),
+									});
+					last CATBUILD;
+				};
+			my $tname = $db->name();
+#::logDebug("LARGE=" . $db->config('LARGE'));
+			$opt->{key_field} ||= $db->config('KEY');
+			$opt->{sku_field} ||= 'sku';
+
+			unless ( $db->column_exists($opt->{sku_field}) ) {
+				Vend::Tags->error({ set => errmsg(
+										"%s database %s for tree write: %s",
+										'check',
+										$tab,
+										"sku field $opt->{key_field} does not exist",
+									),
+								});
+				last CATBUILD;
+
+			}
+
+			my @somefields = qw/mgroup page name description/;
+			my @fields = (
+							$opt->{key_field},
+							$opt->{first_field},
+							$opt->{second_field},
+							);
+			push @fields, $opt->{desc_field} if $opt->{desc_field};
+
+			my $sfields = join ",", @fields;
+			my $tfields = $opt->{sort_fields};
+			if(! $tfields) {
+				$tfields = "$opt->{first_field},$opt->{second_field}";
+				$tfields .= ",$opt->{desc_field}" if $opt->{desc_field};
+			}
+
+			my $q = qq{SELECT $sfields FROM $tname ORDER BY $tfields};
+#::logDebug("category_file menu_load query=$q");
+			my $ary = $db->query($q)
+							or do {
+								Vend::Tags->error({
+										set => errmsg(
+											"No results from %s table %s.",
+											'products',
+											$tname,
+										),
+									});
+					last CATBUILD;
+				};
+			my $prev_area = '';
+			my $prev_cat = '';
+			@out = join "\t", @menufields;
+			my @rows;
+			my $base_search = "scan/co=yes/fi=$tab/rf=$opt->{sku_field}";
+			$base_search .= "/tf=$opt->{desc_field}" if $opt->{desc_field};
+
+			for(@$ary) {
+				my($sku, $area, $cat, $desc) = @$_;
+				for(\$area, \$cat) {
+					$$_ =~ s/\s+$//;
+				}
+				if($area ne $prev_area) {
+					$prev_area = $area;
+					$prev_cat = '';
+					my $url = join '/',
+								$base_search,
+								"sf=$opt->{first_field}",
+								"se=$area",
+								"op=eq",
+								"tf=$opt->{second_field}",
+								;
+					push @rows, {
+							%menuinit,
+							msort => 0,
+							page	=> $url,
+							inactive => 0,
+							name => $area,
+							};
+				}
+				if($cat ne $prev_cat) {
+					$prev_cat = $cat;
+					my $url = join '/',
+								$base_search,
+								"sf=$opt->{first_field}",
+								"se=$area",
+								"op=eq",
+								"sf=$opt->{second_field}",
+								"se=$cat",
+								"op=eq",
+								;
+
+					push @rows, {
+							%menuinit,
+							msort => 1,
+							page	=> $url,
+							inactive => 0,
+							name => $cat,
+							};
+				}
+			}
+
+			for(@rows) {
+#::logDebug("pushing out --> " . $_->{name});
+				push @out, join "\t", @{$_}{@menufields};
+			}
+		}
+	}
 	elsif ($type eq 'comb_category') {
 		$opt->{table} ||= 'products';
 		$opt->{comb_field} ||= 'comb_category';
