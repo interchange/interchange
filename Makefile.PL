@@ -304,6 +304,7 @@ sub initialize {
 #warn "Got to initialize\n";
     $X{INSTALLDIRS}     = "perl";
 	$X{EXE_FILES}  = [qw(
+							scripts/chkcat
 							scripts/compile_link
 							scripts/config_prog
 							scripts/configdump
@@ -318,6 +319,7 @@ sub initialize {
 							scripts/update
 						)];
 	$X{PL_FILES}  = {qw(
+							scripts/chkcat.PL		scripts/chkcat
 							scripts/compile_link.PL	scripts/compile_link
 							scripts/config_prog.PL	scripts/config_prog
 							scripts/configdump.PL	scripts/configdump
@@ -802,7 +804,7 @@ WriteMakefile(
 					},
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update",
+				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/chkcat scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {

@@ -829,6 +829,7 @@ pod/icfoundation.pod
 pod/ictags.pod
 pod/ictemplates.pod
 pod/icupgrade.pod
+scripts/chkcat.PL
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL

@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.3 2001-08-29 15:14:45 mheins Exp $
+# $Id: Util.pm,v 2.4 2001-09-07 04:38:27 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -77,7 +77,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 BEGIN {
 	eval {
@@ -2062,6 +2062,24 @@ sub send_mail {
 
 	$ok;
 }
+
+
+sub Vend::Util::get_cfg_header {
+	my ($file) = @_;
+	my $cfg = {};
+	local ($_, *IN);
+	unless (open IN, "<$file") {
+		my @msg = ("Can't open config file '%s': %s\n", $file, $!);
+		logError(@msg);
+		return { error => errmsg(@msg) };
+	}
+	while (<IN>) {
+		($cfg->{position} = $1, last) if /^\s*#\s*position\s*:\s*(\d+)/i;
+	}
+	close IN;
+	return $cfg;
+}
+
 
 1;
 __END__
