@@ -124,12 +124,6 @@
 			[/if]
 		[/else]
 		[/if]
-		[if type=explicit compare="[credit noformat=1]"]
-            <TR>
-              <TD ALIGN=left class="contentbar1" nowrap>[L]Payment/Credit Applied[/L]:&nbsp;</TD>
-              <TD ALIGN=RIGHT class="contentbar1">[credit]</TD>
-            </TR>
-		[/if]
             <TR>
               <TD ALIGN=left class="contentbar2">[L]TOTAL[/L]:</TD>
               <TD ALIGN=RIGHT class="contentbar2">[total-cost]</TD>

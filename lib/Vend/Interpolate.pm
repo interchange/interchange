@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.196 2003-11-14 22:51:38 edl Exp $
+# $Id: Interpolate.pm,v 2.197 2003-11-17 20:38:42 edl Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.196 $, 10);
+$VERSION = substr(q$Revision: 2.197 $, 10);
 
 @EXPORT = qw (
 
@@ -5773,6 +5773,7 @@ sub subtotal {
 
 # figures any credits the customer may have
 # that can be applied to this order
+# for future developements, not currently used!!
 
 sub credit {
     my $credit = 0;
@@ -5818,7 +5819,6 @@ sub total_cost {
 		$total += subtotal();
 		$total += $shipping;
 		$total += salestax();
-		$total -= credit();
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
