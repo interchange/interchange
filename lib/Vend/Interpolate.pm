@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.2 2000-11-30 02:57:00 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.3 2000-11-30 06:06:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.3 $, 10);
 
 @EXPORT = qw (
 
@@ -1513,13 +1513,10 @@ EOF
 
 # This generates a *session-based* Autoload routine based
 # on the contents of a preset Profile (see the Profile directive).
-# Generates [calc] code which modifies a user's configuration.
 #
 # Normally used for setting pricing profiles with CommonAdjust,
 # ProductFiles, etc.
 # 
-my $Prof_defaults_saved;
-
 sub restore_profile {
 	my $save;
 	return unless $save = $Vend::Session->{Profile_save};
@@ -1530,12 +1527,32 @@ sub restore_profile {
 }
 
 sub tag_profile {
-	my($profile, $set, $opt) = @_;
-	
+	my($profile, $opt) = @_;
+#::logDebug("in tag_profile=$profile opt=" . ::uneval_it($opt));
+
 	$opt = {} if ! $opt;
+	my $tag = $opt->{tag} || 'default';
+
+	if(! $profile) {
+		if($opt->{restore}) {
+			restore_profile();
+			if(ref $Vend::Session->{Autoload}) {
+				 @{$Vend::Session->{Autoload}} = 
+					 grep $_ !~ /^$tag-/, @{$Vend::Session->{Autoload}};
+			}
+		}
+		return if ! ref $Vend::Session->{Autoload};
+		$opt->{joiner} = ' ' unless defined $opt->{joiner};
+		return join $opt->{joiner},
+			grep /^\w+-\w+$/, @{ $Vend::Session->{Autoload} };
+	}
+
 	if($profile =~ s/(\w+)-//) {
 		$opt->{tag} = $1;
 		$opt->{run} = 1;
+	}
+	elsif (! $opt->{set} and ! $opt->{run}) {
+		$opt->{set} = $opt->{run} = 1;
 	}
 
 	my $tag = $opt->{tag} || 'default';
@@ -1549,18 +1566,20 @@ sub tag_profile {
 		return $opt->{failure};
 	}
 
-	my $restore;
-
 	if($opt->{run}) {
+#::logDebug("running profile=$profile tag=$tag");
 		my $prof = $Vend::Cfg->{Profile_repository}{$profile};
 	    if (not $prof) {
 			::logError( "profile %s (%s) non-existant.", $profile, $tag );
 			return $opt->{failure};
 		} 
+#::logDebug("found profile=$profile");
 		$Vend::Cfg->{Profile} = $prof;
 		restore_profile();
+#::logDebug("restored profile");
 		PROFSET: 
 		for my $one (keys %$prof) {
+#::logDebug("doing profile $one");
 			next unless defined $Vend::Cfg->{$one};
 			my $string;
 			my $val;
@@ -1568,10 +1587,14 @@ sub tag_profile {
 				$val = $prof->{$one};
 			}
 			elsif( ref($Vend::Cfg->{$one}) =~ /HASH/ ) {
-				$string = '{' .  $prof->{$one}	. '}';
+				$string = '{' .  $prof->{$one}	. '}'
+					unless	$prof->{$one} =~ /^{/
+					and		$prof->{$one} =~ /}\s*$/;
 			}
 			elsif( ref($Vend::Cfg->{$one}) =~ /ARRAY/ ) {
-				$string = '[' .  $prof->{$one}	. ']';
+				$string = '[' .  $prof->{$one}	. ']'
+					unless	$prof->{$one} =~ /^\[/
+					and		$prof->{$one} =~ /]\s*$/;
 			}
 			else {
 				::logError( "profile: cannot handle object of type %s.",
@@ -1581,6 +1604,7 @@ sub tag_profile {
 				next;
 			}
 
+#::logDebug("profile value=$val, string=$string");
 			$val = $ready_safe->reval($string) if $string;
 
 			if($@) {
@@ -1588,27 +1612,34 @@ sub tag_profile {
 				next;
 			}
 			$Vend::Session->{Profile_save}{$one} = $Vend::Cfg->{$one}
-				unless defined $Vend::Session->{Profile_save}{$_};
+				unless defined $Vend::Session->{Profile_save}{$one};
 
-			$Vend::Cfg->{$_} = $val;
+#::logDebug("set $one to value=$val, string=$string");
+			$Vend::Cfg->{$one} = $val;
 		}
+		return $opt->{success}
+			unless $opt->{set};
 	}
 
-	if($opt->{set}) {
-		my $al;
-		if(! ref $Vend::Session->{Autoload}) {
-			$al = [ $Vend::Session->{Autoload} ];
-		}
-		elsif($Vend::Session->{Autoload}) {
-			$al = $Vend::Session->{Autoload};
-		}
-
-		if($al) {
-			@$al = grep $_ !~ m{^$tag-\w+$}, @$al;
-		}
-		$al = [] if ! $al;
-		push @$al, "$tag-$profile";
+#::logDebug("setting profile=$profile tag=$tag");
+	my $al;
+	if(! $Vend::Session->{Autoload}) {
+		# Do nothing....
 	}
+	elsif(ref $Vend::Session->{Autoload}) {
+		$al = $Vend::Session->{Autoload};
+	}
+	else {
+		$al = [ $Vend::Session->{Autoload} ];
+	}
+
+	if($al) {
+		@$al = grep $_ !~ m{^$tag-\w+$}, @$al;
+	}
+	$al = [] if ! $al;
+	push @$al, "$tag-$profile";
+#::logDebug("profile=$profile Autoload=" . ::uneval_it($al));
+	$Vend::Session->{Autoload} = $al;
 
 	return $opt->{success};
 }
