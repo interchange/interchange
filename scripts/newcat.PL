@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.1 2001-08-20 21:02:21 heins Exp $
+# $Id: newcat.PL,v 2.2 2001-09-01 14:26:50 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -117,44 +117,58 @@ BEGIN {
 	$Global::Win32 = 1 if $Config{osname} =~ /win32|cygwin/i;
 }
 
+BEGIN: {
+	eval {
+		use Newt qw/:keys :exits
+					NEWT_ANCHOR_LEFT
+					NEWT_ANCHOR_RIGHT
+					NEWT_FLAG_SCROLL
+					NEWT_FLAG_RETURNEXIT
+					NEWT_FLAG_WRAP
+				/;
+		$Vend::Newt = 1;
+	};
+}
+
 ### END CONFIGURATION VARIABLES
 
 $| = 1; select STDERR; 
 $| = 1; select STDOUT; 
 
-BEGIN {
-	eval {
-		require Newt;
-		$Vend::Newt = 1;
-		import Newt qw/:keys :exits
-				NEWT_ANCHOR_LEFT
-				NEWT_ANCHOR_RIGHT
-				NEWT_FLAG_SCROLL
-				NEWT_FLAG_RETURNEXIT
-				NEWT_FLAG_WRAP
-			/;
-	};
-}
 
 # Package lexicals for state
 my $Beginner;
+my $BgColor = '#990000';				# Background color for Gtk
 my $CgiDefault;
 my $CgiUrlDefault;
 my $Configfile;
 my $Debug = $ENV{INTERCHANGE_DEBUG};
 my $DistDemo = 'foundation';
+my $Displaymode;
 my $DocrootDefault;
 my $Expert;
+my $Gtk_result;
 my $Help;
 my $Logfile = 'makecat.log';
+my $Logo;
+my $Water;
+my $WaterFile = "$Global::VendRoot/share/pixmaps/shadowman-48.xpm";
+my $LogoFile = "$Global::VendRoot/share/pixmaps/shadowman-64.xpm";
 my $No_curses;
 my $Reconfigure;
 my $Removeconfig;
 my $Servers = {};
 my $Tilde;
 
-# Additional windows, usually from catalog template additional_fields
+# The initial windows
+my @Windows;
+
+# Additional windows, usually from install template additional_fields
 my @Additional;
+
+# Final windows, before install
+my @Final;
+
 # Messages that we want to display in a window...
 my @Messages;
 
@@ -233,6 +247,7 @@ my %optctl = (
 	'documentroot'      => \$Conf{documentroot},
 	'c'                 => \$Configfile,
 	'help'              => \$Help,
+	'displaymode'       => \$Displaymode,
 	'expert'			=> \$Expert,
 	'homedir'           => \$Conf{homedir},
 	'imagedir'          => \$Conf{imagedir},
@@ -290,6 +305,7 @@ my @options = ( qw/
 	debug
 	documentroot=s
 	c=s
+	displaymode|dm=s
 	expert
 	help|h
 	homedir=s
@@ -337,11 +353,34 @@ if($Help) {
 	exit 2;
 }
 
+$Vend::Gtk = undef;
+
+if(! $Displaymode or $Displaymode =~ /^\s*g/i) {
+	undef $Displaymode;
+	eval {
+		eval "use Gtk";
+		die if $@;
+		eval "use Gnome";
+		die if $@;
+		$Vend::Gtk = 1;
+		$Displaymode = 'gtk';
+	};
+}
+
+if(! $Displaymode or $Displaymode =~ /^\s*n/i) {
+	undef $Displaymode;
+	$Displaymode = 'newt' if $Vend::Newt;
+	$Vend::Newt = 1;
+}
+
+$Displaymode = 'tty' unless $Displaymode =~ /^(gtk|newt)$/;
+
 $Vend::ExternalProgram = 1;
 
 if(! -f $Global::ConfigFile) {
 	for( "$Global::VendRoot/interchange.cfg", "/etc/interchange.cfg") {
-		$Global::ConfigFile = $_ if -f $_;
+		next unless -f $_ and -r _;
+		$Global::ConfigFile = $_;
 	}
 }
 
@@ -351,6 +390,7 @@ eval {
 
 ## If it fails, probably because never configured.
 if($@) {
+print "Config parse failed. $@\n";
 	$Global::ConfigFile = "$Global::VendRoot/interchange.cfg";
 }
 
@@ -417,15 +457,7 @@ sub set_display_routines {
 	}
 }
 
-if($No_curses or ! $Vend::Newt) {
-	undef $Vend::Newt;
-	readline::rl_set('EditingMode', 'emacs')
-		unless $Conf{vi_edit_mode};
-	set_display_routines('tty');
-}
-else {
-	set_display_routines('newt');
-}
+set_display_routines($Displaymode);
 
 $Configfile = "$Global::VendRoot/etc/makecat.cfg" unless $Configfile;
 
@@ -510,14 +542,16 @@ if ($> == 0) {
 	interchangeuser =>  sub {  return 'everybody' if $Global::Win32; get_id(); },
 	interchangegroup=>  '',
     linkhost     =>  sub {
-							return 'n/a' if ! $Conf{linkmode};
-							return 'n/a' if $Conf{linkmode} !~ /^i/i;
+							my $lm = $Conf{linkmode} || $Commandline{linkmode};
+							return 'n/a' if ! $lm;
+							return 'n/a' if $lm !~ /^i/i;
 							return $Commandline{linkhost} || inet_host();
 							},
     linkmode     =>  'UNIX',
     linkport     =>  sub {
-							return 'n/a' if ! $Conf{linkmode};
-							return 'n/a' if $Conf{linkmode} !~ /^i/i;
+							my $lm = $Conf{linkmode} || $Commandline{linkmode};
+							return 'n/a' if ! $lm;
+							return 'n/a' if $lm !~ /^i/i;
 							return $Commandline{linkport} || inet_port();
 						},
     mailorderto  => sub {  return 'webmaster' if $Global::Win32;
@@ -809,7 +843,10 @@ if ($> == 0) {
 							delete $Content{$k} if $v->{_additional};
 						}
 						while(my ($k, $v) = each %Window) {
-							delete $Window{$k} if $v->{_additional};
+							next unless $v->{_additional};
+							$v->{gtk_page}->destroy()
+								if $v->{gtk_page};
+							delete $Window{$k};
 						}
 						@Additional = read_additional();
 					},
@@ -995,7 +1032,7 @@ if ($> == 0) {
 	},
 
 	linkmode => {
-		widget => 'select',
+		widget => 'radio',
 		orientation => 'v',
 		callback => [ 'linkhost', 'linkport' ],
 		height => 3,
@@ -1196,60 +1233,133 @@ unless($Conf{asroot}) {
 	$Prefix{basedir} = "$ENV{HOME}/catalogs";
 }
 
-sub tty_cancel_question {
-	my $q = shift;
-	print "\n##### " . errmsg("Cancel") . "! #####\n\n";
-	print "$q\n\n";
-	my $yes = errmsg('Yes');
-	my $no  = errmsg('No'); 
-	my $yes_regex = substr($yes, 0, 1);
-	$yes_regex = qr/$yes_regex/i;
-	sethistory($yes, $no);
-	my $ans = prompt(
-				errmsg("Cancel") . "? ",
-				errmsg("Yes"),
-				);
-	if($ans =~ $yes_regex) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+my $gtk_win;
+my $gtk_top;
+my $druid;
+my $druid_start;
+my $druid_end;
+
+sub gtk_init_display {
+	$SIG{__DIE__} = sub { Gtk::main_quit(); warn @_; exit 1; };
+	Gnome->init('newcat', 0.1);
+	$Logo = load_image Gtk::Gdk::ImlibImage($LogoFile);
+	$Water = load_image Gtk::Gdk::ImlibImage($WaterFile);
+	$gtk_win = new Gtk::Window('toplevel');
+	$gtk_win->signal_connect( "destroy", \&Gtk::main_quit );
+	$gtk_top = new Gtk::VBox( 0, 2 );
+	$gtk_win->add($gtk_top);
+    $gtk_top->show;
 }
 
-sub tty_continue_question {
-	my $q = shift;
-	print "\n\n##### " . errmsg("Warning") . "! #####\n\n";
-	print "$q\n\n";
-	my $yes = errmsg('Yes');
-	my $no  = errmsg('No'); 
-	my $yes_regex = substr($yes, 0, 1);
-	$yes_regex = qr/$yes_regex/i;
-	sethistory($yes, $no);
-	my $ans = prompt(
-				errmsg("Continue anyway") . "? ",
-				errmsg("no"),
-				);
-	if($ans =~ $yes_regex) {
-		return 1;
-	}
-	else {
-		return -1;
-	}
+my ($screen_width, $screen_height);
+sub newt_init_display {
+	$SIG{__DIE__} = sub { Newt::Cls(); Newt::Finished(); warn @_; exit 1; };
+	$SIG{TERM} = sub { Newt::Cls(); Newt::Finished(); exit 0; };
+	Newt::Init();
+	Newt::Cls();
+	($screen_width, $screen_height) = Newt::GetScreenSize();
 }
 
-sub tty_fatal_question {
-	my $q = shift;
-	print "##### " . errmsg("Error") . "! #####\n\n";
-	print "$q\n\n";
-	my $ans = prompt(
-				errmsg("Press any key to continue..."),
-				errmsg("Continue"),
-				);
-	return -1;
+sub tty_init_display {
+	readline::rl_set('EditingMode', 'emacs')
+		if $Displaymode eq 'tty' and ! $Conf{vi_edit_mode};
+	system 'clear' unless $Debug;
 }
 
 sub tty_install_scale {
+	my ($total_scale, $main_message) = @_;
+debug("called tty_install_scale with tot=$total_scale msg=$main_message");
+	print "##### $main_message #####\n\n";
+	my $message;
+	return sub {
+		my($function, $increment, $newmsg, $opt) = @_;
+		if($function eq 'start') {
+			$message = $newmsg;
+			print do_msg($message);
+			return;
+		}
+		elsif($function eq 'end') {
+			print errmsg('done') . ".\n";
+		}
+	};
+}
+
+sub gtk_install_scale {
+	my ($total_scale, $main_message, $sub, @actions) = @_;
+debug("called gtk_install_scale with tot=$total_scale msg=$main_message");
+	$main_message = errmsg("Installing %s", $Conf{catalogname})
+		if ! $main_message;
+
+	my ($dpage, $tab) = gtk_std_page($main_message, 3, '');
+	my $prev_dpage;
+
+	for(reverse @Final, reverse @Additional, reverse @Windows) {
+		next unless $Window{$_}{gtk_active};
+		last if $prev_dpage = $Window{$_}{gtk_page};
+	}
+	$druid->insert_page($prev_dpage, $dpage);
+	$druid->set_buttons_sensitive(0,0,0);
+
+	my $label = new Gtk::Label(errmsg('Starting installation' . '...'));
+	$tab->set_homogeneous(1);
+
+	my $hb1 = new Gtk::HBox;
+	$hb1->pack_start($label, "expand", "expand", 5);
+
+	
+	my $message;
+	my $i = 0;
+	$total_scale += int ($total_scale / 100 * 5);
+	# Create a Adjustment object to hold the range of the progress bar
+	my $adj = new Gtk::Adjustment( 0, $i, $total_scale, 0, 0, 0 );
+
+	my $pbar = new_with_adjustment Gtk::ProgressBar( $adj );
+	$pbar->set_format_string( "%p%%" );
+	$pbar->set_show_text(1);
+	$pbar->set_bar_style('continuous');
+	$pbar->set_value($i);
+
+	my $hb2 = new Gtk::HBox;
+	$hb2->pack_start($pbar, "expand", "expand", 5);
+
+	$tab->attach($hb1, 0,2, 1,2, "expand", "expand", 5,5 );
+	$tab->attach($hb2, 0,2, 2,3, "expand", "expand", 5,5 );
+
+	$tab->show_all;
+	$dpage->show;
+	$druid->set_page($dpage);
+	$gtk_win->show_all;
+
+	my $timer = Gtk->timeout_add(500, \&Gtk::main_quit);
+debug("ready to run Gtk main, timer=$timer");
+	Gtk->main;
+	Gtk->timeout_remove($timer);
+debug("returned from Gtk main_iteration");
+
+	return sub {
+		my($function, $increment, $newmsg, $opt) = @_;
+		if($function eq 'start') {
+			$message = $newmsg;
+			$label->set($message);
+			$pbar->set_value($i);
+			$i += $increment;
+			$gtk_win->show_all;
+			my $timer = Gtk->timeout_add(100, \&Gtk::main_quit);
+debug("ready to run Gtk main, timer=$timer");
+			Gtk->main;
+			Gtk->timeout_remove($timer);
+		}
+		elsif($function eq 'finish') {
+			$label->set($main_message . '.....' . errmsg('done'));
+			$pbar->set_value($total_scale);
+			$gtk_win->show_all;
+			my $timer = Gtk->timeout_add(500, \&Gtk::main_quit);
+debug("ready to run Gtk main, timer=$timer");
+			Gtk->main;
+			Gtk->timeout_remove($timer);
+		}
+	};
+
 }
 
 sub newt_install_scale {
@@ -1279,19 +1389,35 @@ debug("called install_scale with tot=$total_scale msg=$main_message");
 			$main->Draw();
 			Newt::Refresh();
 			$i += $increment;
+			select(undef,undef,undef,.2);
 			return;
-		}
-		elsif($function eq 'end') {
-			$label->Set($message . '.....' . errmsg('done'));
-			$main->Draw();
-			Newt::Refresh();
-			select(undef,undef,undef,.5);
 		}
 		elsif ($function eq 'finish') {
 			$main->Hide();
 			undef $main;
 		}
 	};
+}
+
+sub tty_cancel_question {
+	my $q = shift;
+	print "\n##### " . errmsg("Cancel") . "! #####\n\n";
+	print "$q\n\n";
+	my $yes = errmsg('Yes');
+	my $no  = errmsg('No'); 
+	my $yes_regex = substr($yes, 0, 1);
+	$yes_regex = qr/$yes_regex/i;
+	sethistory($yes, $no);
+	my $ans = prompt(
+				errmsg("Cancel") . "? ",
+				errmsg("Yes"),
+				);
+	if($ans =~ $yes_regex) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 sub newt_cancel_question {
@@ -1310,6 +1436,27 @@ sub newt_cancel_question {
 	}
 }
 
+sub tty_continue_question {
+	my $q = shift;
+	print "\n\n##### " . errmsg("Warning") . "! #####\n\n";
+	print "$q\n\n";
+	my $yes = errmsg('Yes');
+	my $no  = errmsg('No'); 
+	my $yes_regex = substr($yes, 0, 1);
+	$yes_regex = qr/$yes_regex/i;
+	sethistory($yes, $no);
+	my $ans = prompt(
+				errmsg("Continue anyway") . "? ",
+				errmsg("no"),
+				);
+	if($ans =~ $yes_regex) {
+		return 1;
+	}
+	else {
+		return -1;
+	}
+}
+
 sub newt_continue_question {
 	my $q = shift;
 	my $res = Newt::newtWinChoice(
@@ -1324,6 +1471,84 @@ sub newt_continue_question {
 	else {
 		return -1;
 	}
+}
+sub gtk_continue_question {
+	my $q = shift;
+	my $win = new Gtk::Window(-toplevel);
+	$win->set_modal(1);
+	my $frame = new Gtk::Frame(errmsg('Warning'));
+	my $tab = new Gtk::Table(2,2,0);
+	$frame->add($tab);
+	$win->add($frame);
+	my $lab = new Gtk::Label($q);
+	$lab->set_line_wrap(1);
+
+	$lab->show;
+	$tab->attach($lab, 0,2 , 0,1, "expand", "expand", 25, 25);
+
+	my $but1 = new Gtk::Button(errmsg('Change'));
+	$but1->border_width(5);
+	$but1->show;
+	my $but2 = new Gtk::Button(errmsg('Continue anyway'));
+	$but2->border_width(5);
+	$but2->show;
+
+	my $res;
+	$but1->signal_connect('clicked', sub { $res = 1 ; Gtk->main_quit; return });
+	$but2->signal_connect('clicked', sub { $res = 2 ; Gtk->main_quit; return });
+	$tab->attach_defaults($but1, 0,1 , 1,2);
+	$tab->attach_defaults($but2, 1,2 , 1,2);
+	$tab->show_all;
+	$frame->show_all;
+	$win->show_all;
+	main Gtk;
+	$win->destroy();
+	if($res eq '2') {
+		return 1;
+	}
+	else {
+		return -1;
+	}
+}
+
+sub gtk_fatal_question {
+	my $q = shift;
+	my $win = new Gtk::Window(-toplevel);
+	$win->set_modal(1);
+	my $frame = new Gtk::Frame(errmsg('Warning'));
+	$win->add($frame);
+	my $tab = new Gtk::Table(2,2,1);
+	$frame->add($tab);
+	my $lab = new Gtk::Label($q);
+	$lab->set_justify('left');
+
+	$tab->attach($lab, 0,2 , 0,1, "expand", "expand", 25, 25);
+
+	my $but1 = new Gtk::Button(errmsg('Close'));
+
+	my $res;
+	$but1->signal_connect('clicked', sub { $res = -1 ; &Gtk::main_quit; return });
+	$tab->attach_defaults($but1, 0,1 , 1,2);
+
+	$lab->show;
+	$but1->show;
+	$tab->show;
+	$frame->show;
+	$win->show;
+	main Gtk;
+	$win->destroy();
+	return -1;
+}
+
+sub tty_fatal_question {
+	my $q = shift;
+	print "##### " . errmsg("Error") . "! #####\n\n";
+	print "$q\n\n";
+	my $ans = prompt(
+				errmsg("Press any key to continue..."),
+				errmsg("Continue"),
+				);
+	return -1;
 }
 
 sub newt_fatal_question {
@@ -1487,17 +1712,6 @@ sub find_cgidir {
 	$CgiDefault = $CgiUrlDefault = '';
 }
 
-
-my ($screen_width, $screen_height);
-sub newt_init_display {
-	$SIG{__DIE__} = sub { Newt::Cls(); Newt::Finished(); warn @_; exit 1; };
-	Newt::Init();
-	Newt::Cls();
-	($screen_width, $screen_height) = Newt::GetScreenSize();
-}
-
-sub tty_init_display { system 'cls'; }
-
 sub tty_help_message {
 	my ($msg) = @_;
 	$msg = '' if ! defined $msg;
@@ -1535,11 +1749,8 @@ sub newt_help_message {
 	if ($msg eq 1) {
 			my @helps = (
 				'<Tab>/<Alt-Tab> between elements',
-				'<Space> selects',
-				'<F9> previous screen',
-				'<F10> next screen',
 			);
-			#@helps = map { errmsg($_) } @helps;
+			@helps = map { errmsg($_) } @helps;
 			$msg = join " | ", @helps;
 	}
 	$msg = ' ' x int(($screen_width - length($msg)) / 2) . $msg;
@@ -1589,11 +1800,11 @@ sub newt_get_field {
         }
         elsif ($wid eq 'yesno') {
                 my $idx = $entry->Get();
-                return ! $idx;
+                return $idx ? 0 : 1;
         }
         elsif ($wid eq 'noyes') {
                 my $idx = $entry->Get();
-                return $idx;
+                return $idx ? 0 : 1;
         }
         elsif ($wid eq 'select') {
                 my @items = $entry->Get();
@@ -1605,11 +1816,231 @@ sub newt_get_field {
         return $value;
 }
 
+sub gtk_add_field {
+	my ($field, $name, $default) = @_;
+	my $content = $Content{$name} || return;
+
+	my $wid = $content->{widget} || 'text';
+
+	my $opts;
+	my $yn;
+	if($wid eq 'yesno') {
+		$wid = 'radio';
+		$opts = [ errmsg('Yes'), errmsg('No')];
+		if(! length($default)) {
+			$default = errmsg('Yes');
+		}
+		elsif( $default eq errmsg('Yes') or is_yes($default) ) {
+			$default = errmsg('Yes');
+		}
+		else {
+			$default = errmsg('No');
+		}
+	}
+	elsif($wid eq 'noyes') {
+		$wid = 'radio';
+		$opts = [ errmsg('Yes'), errmsg('No')];
+		if(! length($default)) {
+			$default = errmsg('No');
+		}
+		elsif( $default eq errmsg('Yes') or is_yes($default) ) {
+			$default = errmsg('Yes');
+		}
+		else {
+			$default = errmsg('No');
+		}
+	}
+	elsif( ! $content->{options} ) {
+		# Do nothing
+	}
+	elsif( ref $content->{options} eq 'CODE') {
+		$opts = $content->{options}->();
+	}
+	elsif( ref $content->{options} eq 'ARRAY') {
+		$opts = $content->{options};
+	}
+
+	my $entry;
+	my $box;
+	if ($wid eq 'radio') {
+		my $orientation = $content->{orientation} || 'horizontal';
+		return undef unless ref $opts eq 'ARRAY';
+		if($orientation =~ /^v/i) {
+			$box = new Gtk::VButtonBox;
+		}
+		else {
+			$box = new Gtk::HButtonBox;
+		}
+		$box->set_layout_default('start');
+		my $but;
+		my $do_def = 1;
+		for(@$opts) {
+			if($but) {
+				$but = new Gtk::RadioButton($_, $but);
+			}
+			else {
+				$but = new Gtk::RadioButton($_);
+				$entry = $but;
+			}
+			$but->set_active(1), undef $do_def if $_ eq $default;
+			$box->add($but);
+		}
+		$entry->set_active(1) if $do_def;
+		$entry->signal_connect('clicked', $field->{callback})
+			if $field->{callback};
+	}
+	elsif ($wid eq 'select') {
+		$opts = [] unless ref $opts eq 'ARRAY';
+		my $height = defined $content->{height} ? $content->{height} : 0;
+		if($height < 0) {
+			$height = abs($height);
+			$height = scalar(@$opts) < $height ? undef : $height;
+		}
+
+		my $sbox;
+		$default = $opts->[0] if ! length $default;
+		$entry = new Gtk::List;
+		for(@$opts) {
+			my $item = new Gtk::ListItem();
+			my $l = new Gtk::Label($_);
+			$item->add($l);
+			$l->show;
+			$entry->add( $item );
+			$item->show;
+			$item->select if $_ eq $default;
+		}
+		$entry->signal_connect('select_child', $field->{callback})
+			if $field->{callback};
+
+		$box = new Gtk::VBox(0,2);
+		$sbox = new Gtk::ScrolledWindow(undef, undef);
+		$sbox->add_with_viewport($entry);
+		$sbox->set_policy(-automatic, -automatic);
+		if($height and $height < @$opts) {
+			$height *= 15;
+			$sbox->set_usize(250, $height);
+		}
+		else {
+			$sbox->set_usize(300, 50);
+		}
+		$box->add($sbox);
+		$sbox->show;
+	}
+	else  {
+debug("unknown widget type '$wid'") if $wid ne 'text';
+		my $width = $content->{length} || $content->{width} || 30;
+		$entry = new Gtk::Entry($content->{maxlength});
+		$box = new Gtk::HBox (0,0);
+		if($width) {
+			$entry->set_usize(6 * $width, 0);
+		}
+		$entry->set_text($default);
+		$entry->signal_connect('focus_out_event', $field->{callback})
+			if $field->{callback};
+		$box->pack_start($entry, 0,0,5);
+		$box->show;
+	}
+
+	$entry->signal_connect('focus_in_event', $field->{onenter})
+		if $field->{onenter};
+	$field->{widget_object} = $entry;
+	$field->{bounding_box} = $box;
+#debug("box=$box entry=$entry");
+	return ($entry, $box);
+}
+
+sub gtk_get_field {
+        my ($field, $name) = @_;
+        my $content = $Content{$name} || return;
+
+        my $wid = $content->{widget} || 'text';
+		my $entry = $field->{widget_object}
+			or return undef;
+
+		my $yes;
+		if($wid eq 'yesno') {
+			$wid = 'radio';
+			$yes = errmsg('Yes');
+		}
+		elsif($wid eq 'noyes') {
+			$wid = 'radio';
+			$yes = errmsg('Yes');
+		}
+
+		my $val;
+        if ($wid eq 'radio') {
+			for($entry->group()) {
+				next unless $_->get_active();
+				$val = $_->child->get();
+			}
+			if($yes) {
+				$val = $val eq $yes ? 1 : 0;
+			}
+        }
+        elsif ($wid eq 'select') {
+			my @sel = $entry->selection();
+			my $count = scalar @sel;
+debug("sel count=$count items: @sel");
+			if(! @sel) {
+				# Do nothing
+			}
+			elsif(@sel > 1) {
+				my @out;
+				for(@sel) {
+					push @out, $_->child->get();
+				}
+				$val = \@out;
+			}
+			else {
+				$val = $sel[0]->child->get();
+			}
+        }
+        else  {
+			$val = $entry->get_text();
+        }
+
+        return $val;
+}
+
+sub gtk_set_field {
+        my ($field, $name, $val) = @_;
+        my $content = $Content{$name} || return;
+
+        my $wid = $content->{widget} || 'text';
+		my $entry = $field->{widget_object}
+			or return undef;
+
+		my $yes;
+		if($wid eq 'yesno' or $wid eq 'yesno') {
+			$yes = ($val == 1 or errmsg('Yes') eq $val);
+			$yes = $yes ? errmsg('Yes') : errmsg('No');
+		}
+
+        if ($wid eq 'radio') {
+			for($entry->group()) {
+				next unless $yes eq $_->child->get();
+				$_->set_active(1);
+			}
+        }
+        elsif ($wid eq 'select') {
+			for($entry->children()) {
+				next unless $val eq $_->get();
+				$_->select(1);
+			}
+        }
+        else  {
+			$entry->set_text($val);
+        }
+
+        return $val;
+}
+
 sub newt_add_field {
         my ($panel, $row, $content, $name, $default) = @_;
         $content = $Content{$name} if ! $content;
 
         my $wid = $content->{widget} || 'text';
+debug("adding field wid=$wid");
         my $label = $content->{label} || $name;
         $label = substitute($label);
         my $entry_flags;
@@ -1631,10 +2062,25 @@ sub newt_add_field {
                 else {
                         $entry = Newt::HRadiogroup(@$opts);
                 }
+				if( ! length($default)) {
+					$entry->Select(0);
+				}
+				elsif ($default eq $opts->[1] ) {
+					$entry->Select(1);
+				}
+				elsif ($default eq $opts->[0] ) {
+					$entry->Select(0);
+				}
+				elsif (is_no($default) ) {
+					$entry->Select(1);
+				}
+				else {
+					$entry->Select(0);
+				}
         }
         elsif ($wid eq 'noyes') {
                 my $orientation = $content->{orientation} || 'horizontal';
-                my $opts        = [ errmsg('No'), errmsg('Yes')];
+                my $opts        = [ errmsg('Yes'), errmsg('No')];
                 $opts = $content->{options}->() if ref $opts eq 'CODE';
                 if($orientation =~ /^v/i) {
                         $entry = Newt::VRadiogroup(@$opts);
@@ -1642,6 +2088,26 @@ sub newt_add_field {
                 else {
                         $entry = Newt::HRadiogroup(@$opts);
                 }
+				if( ! length($default)) {
+debug("noyes select: setting 1/No by default (no length on default)");
+					$entry->Select(1);
+				}
+				elsif ($default eq $opts->[1] ) {
+debug("noyes select: default=$default opts1=$opts->[1], setting 1");
+					$entry->Select(1);
+				}
+				elsif ($default eq $opts->[0] ) {
+debug("noyes select: default=$default opts0=$opts->[0], setting 0");
+					$entry->Select(0);
+				}
+				elsif (is_yes($default) ) {
+debug("noyes select: is_yes($default), setting 0/yes");
+					$entry->Select(0);
+				}
+				else {
+debug("noyes select: setting 1/No by default=$default");
+					$entry->Select(1);
+				}
         }
         elsif ($wid eq 'radio') {
                 my $orientation = $content->{orientation} || 'horizontal';
@@ -1653,6 +2119,14 @@ sub newt_add_field {
                 else {
                         $entry = Newt::HRadiogroup(@$opts);
                 }
+debug("adding radio");
+				for(my $i = 0; $i < @$opts; $i++) {
+debug("checking i=$i entry=$opts->[$i] vs. default=$default");
+					next if $opts->[$i] ne $default;
+					$entry->Select($i);
+debug("selecting i=$i entry=$opts->[$i]");
+					last;
+				}
         }
         elsif ($wid eq 'select') {
                 my $opts        = $content->{options} || ['Yes', 'No'];
@@ -1665,8 +2139,13 @@ sub newt_add_field {
                 my $return = $content->{returnexit} ? NEWT_FLAG_RETURNEXIT : 0;
                 $entry = Newt::Listbox($height, NEWT_FLAG_SCROLL | $return);
                 $entry->Add(@$opts);
-                if($Conf{$name}) {
-					$entry->Select($Conf{$name});
+                if($default) {
+					$entry->Select($default);
+					for(my $i = 0; $i < @$opts; $i++) {
+						next if $opts->[$i] ne $default;
+						$entry->SetCurrent($i);
+						last;
+					}
                 }
         }
         else  {
@@ -1679,16 +2158,13 @@ debug("unknown widget type '$wid'") if $wid ne 'text';
 }
 
 sub run_screens {
-        my ($tref, $screen) = @_;
+        my ($tref, $screen, $pref) = @_;
 
         my @windows = @$tref;
 
         my (@screenstack, $result);
 
-        if(! $screen) {
-			$screen;
-		}
-		else {
+        if($screen) {
 			@screenstack = (0 .. $screen - 1);
 		}
 
@@ -1696,9 +2172,10 @@ sub run_screens {
 
 debug("### running screen=$screen window=$windows[$screen]");
 
-                my $skip;
-                my $prospect;
-                my $win_name = $windows[$screen];
+			my $skip;
+			my $prospect;
+			my $win_name = $windows[$screen];
+			my $prev_page = $screen == 0 ? $pref->[$#$pref] : $windows[$screen - 1];
 
           WINLOOP: {
                 my $win = $Window{$win_name} || $Content{$win_name};
@@ -1710,56 +2187,344 @@ die("no window!?!");
                 }
 
                 if ($win->{conditional} ) {
-                        my $prospect = $win->{conditional}->();
-                        if (ref $prospect eq 'CODE') {
-                                $prospect->($win_name);
-                        }
-                        elsif ($prospect and $Window{$prospect}) {
-                                $win_name = $prospect;
-                                redo WINLOOP;
-                        }
-                        $skip = 1 unless $prospect;
+debug("checking window $win_name conditional=$win->{conditional} subcode=$::Subcode{$win_name}");
+					my $prospect = $win->{conditional}->();
+debug("window $win_name conditional prospect=$prospect");
+					if (ref $prospect eq 'CODE') {
+						$prospect->($win_name);
+					}
+					elsif ($prospect and $Window{$prospect}) {
+						$win_name = $prospect;
+						redo WINLOOP;
+					}
+					$skip = 1 unless $prospect;
                 }
 
                 if($skip) {
-                        $result = $result || 'Next';
-                        next;
+debug("skipping window $win_name");
+					$result = $result || 'Next';
+					display_it($win_name, $prev_page, 'dummy');
+					next;
                 }
 
                 if(my $over = $win->{override}) {
-                        foreach my $new (keys %$over) {
+					foreach my $new (keys %$over) {
 debug("window $win_name overriding $new");
-                                $Content{$new} = $over->{$new};
-                        }
-                        if(my $addl = $win->{additional}) {
+						$Content{$new} = $over->{$new};
+					}
+					if(my $addl = $win->{additional}) {
 debug("window $win_name additional: " . join(",", @$addl));
-                                splice @windows, $screen + 1, 0, @$addl;
-                        }
+						splice @windows, $screen + 1, 0, @$addl;
+					}
                 }
 
 debug("window=$win_name");
-                $result = display_it($win_name) || '';
+                $result = display_it($win_name, $prev_page) || '';
 #debug("window=$win_name result=$result");
           }
-                last if $result eq 'Cancel';
+			last if $result eq 'Cancel';
 
-                my $nextscreen = '';
-                $nextscreen = $screen + 1
-					if $result eq 'Next'
-					or $result eq 'Skip'
-					or ! $result;
-                if ($result eq 'Back') {
-					last if $screen == 0;
-					$nextscreen = pop @screenstack;
-				}
-                push @screenstack, $screen if $result eq 'Next';
-                $screen = $nextscreen;
+			my $nextscreen = '';
+			$nextscreen = $screen + 1
+				if $result eq 'Next'
+				or $result eq 'Skip'
+				or ! $result;
+			if ($result eq 'Back') {
+				last if $screen == 0;
+				$nextscreen = pop @screenstack;
+			}
+			push @screenstack, $screen if $result eq 'Next';
+			$screen = $nextscreen;
         }
         return $result;
 }
 
+sub gtk_get_druid {
+	return $druid if $druid;
+	$druid = new Gnome::Druid;
+	$druid->signal_connect("cancel", \&Gtk::main_quit);
+	$gtk_top->pack_start($druid,1,1,0);
+	$druid_start = new Gnome::DruidPageStart();
+	$druid_start->set_title(errmsg("Makecat -- Interchange Catalog Configurator"));
+	$druid_start->set_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_start->set_logo_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_start->set_logo($Logo);
+	$druid_start->set_text(errmsg(<<EOF));
+Welcome to Interchange!
+
+We will configure and build a new Interchange catalog during this process.
+EOF
+	$druid_start->set_watermark($Water);
+	$druid_start->signal_connect('back', \&gtk_result, 'Cancel');
+	$druid_start->signal_connect('next', \&gtk_result, 'Next');
+	$druid_start->signal_connect('cancel', \&gtk_result, 'Cancel');
+	$druid_start->show;
+	$druid->append_page($druid_start);
+	$druid->append_page(gtk_end_druid());
+	return $druid;
+}
+
+sub gtk_result {
+	shift;
+	my $result = shift;
+	$Gtk_result = $result;
+debug("Gtk_result=$result");
+	Gtk::main_quit();
+	return $result;
+}
+
+sub gtk_std_page {
+	my($title, $rows, $text) = @_;
+debug("std_page=$title");
+	my $druid_std = new Gnome::DruidPageStandard();
+	$druid_std->set_title($title);
+	$druid_std->set_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_std->set_logo_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_std->set_logo($Logo);
+	$druid_std->signal_connect("cancel", \&gtk_result, 'Cancel');
+	$druid_std->signal_connect("next", \&gtk_result, 'Next');
+	$druid_std->signal_connect("back", \&gtk_result, 'Back');
+
+	my $msg;
+	$rows++;
+	$text =~ s/\n\n/~~NEWLINE~~/g;
+	$text =~ s/\n/ /g;
+	$text =~ s/~~NEWLINE~~/\n\n/g;
+	$msg = new Gtk::Label($text || '');
+	$msg->set_line_wrap(1);
+	my $tbox = $druid_std->vbox();
+	$tbox->set_border_width(15);
+	my $sframe = new Gtk::Frame($Conf{catalogname} || errmsg('(unnamed catalog)'));
+	my $sbox = new Gtk::ScrolledWindow;
+	$sbox->set_policy('automatic', 'automatic');
+	$sframe->add($sbox);
+	$tbox->pack_start($sframe, 1, 1, 0);
+	$sframe->show;
+	$tbox->show;
+	my $tab = new Gtk::Table($rows,2,0);
+	$sbox->add_with_viewport($tab);
+	$tab->attach_defaults($msg,0,2,0,1);
+	$sbox->show;
+	$tab->show;
+	return ($druid_std, $tab);
+}
+
+
+sub gtk_end_druid {
+	my ($title, $text) = @_;
+	$druid_end = new Gnome::DruidPageFinish();
+	$druid_end->set_title($title);
+	$druid_end->set_watermark($Water);
+	$druid_end->set_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_end->set_logo_bg_color(Gtk::Gdk::Color->parse_color($BgColor));
+	$druid_end->set_logo($Logo);
+	$druid_end->signal_connect("cancel", \&Gtk::main_quit);
+	$druid_end->signal_connect("finish", \&Gtk::main_quit);
+	return $druid_end;
+}
+
+
+sub gtk_field_label {
+	my $msg = shift;
+	my $lbox = new Gtk::HBox;
+	my $lab = new Gtk::Label($msg);
+	$lab->set_justify('right');
+	$lab->set_line_wrap(1);
+	$lab->show;
+	$lbox->pack_end($lab, 0,0,5);
+	$lbox->show;
+	return $lbox;
+}
+
+sub gtk_display_it {
+        my ($name, $prev_page, $dummy) = @_;
+#debug("running window=$name");
+        my $return;
+        my $indiv_mode;
+
+        my $win = $Window{$name};
+
+        my $winlab;
+        my $winmsg;
+        my $winitems;
+
+        my $msgflags = 0;
+
+        if(! $win) {
+			$indiv_mode = 1;
+			$win = $Content{$name}
+				or die "No content item for fallback in indiv_mode";
+        }
+        else {
+			$winitems = $win->{contents};
+        }
+
+        $winitems = [ $name ] if ! $winitems;
+
+        $winmsg = substitute($win->{message} || $win->{help});
+        $winlab = $win->{banner} || $win->{label} || $name;
+        $winlab = substitute($winlab);
+
+        if($win->{preamble}) {
+                $win->{preamble}->();
+        }
+
+		my $not_show = ! $druid;
+
+		gtk_get_druid() if $not_show;
+
+        my $lines = $winmsg =~ tr/\n/\n/;
+        $lines = 6 if $lines < 6;
+
+		my $current;         # Tag of current componet set by OnEnter
+		my $focused;         # If we are to focus, set this to tag.
+		my $first_field = 1; # Use to run callback for first_field always
+
+  RUNIT: {
+
+        my @things = grep $Content{$_}, @$winitems;
+
+		my $prev_dpage;
+		if ($Window{$prev_page}) {
+			$prev_dpage = $Window{$prev_page}->{gtk_page};
+		}
+		else {
+			$prev_dpage = $druid_start;
+		}
+
+        @things = grep applicable_directive($_, $Content{$_}->{conditional}), @things
+                if @things > 1;
+        my ($dpage, $tab) = gtk_std_page($winlab, scalar @things, $winmsg);
+		if($win->{gtk_page}) {
+			$win->{gtk_page}->destroy();
+		}
+		$win->{gtk_active} = 0;
+		$win->{gtk_page} = $dpage;
+		$win->{gtk_table} = $tab;
+
+		$druid->insert_page($prev_dpage, $dpage);
+
+        return 'Skip' if $dummy;
+        return 'Skip' unless @things;
+		$druid->set_buttons_sensitive(1,1,1);
+
+		$win->{gtk_active} = 1;
+
+        my $field   = {};
+
+        for( my $i = 0; $i < @things; $i++) {
+			my $one = $things[$i];
+			my $row = $i + 1;
+			my $content = $Content{$one};
+			my $default;
+			$default = prefix($one);
+			$Conf{$one} = '' unless $Ever{$one};
+			$field->{$one} = {};
+			$content->{widget} = 'text' unless $content->{widget};
+			my $cb = $content->{callback};
+			my $sub;
+			if (ref $cb eq 'ARRAY') {
+				$sub = sub {
+					my $val = gtk_get_field($field->{$one}, $one);
+					my ($status, $error) = validate($val, $one);
+					return if $status <= 0;
+					$Conf{$one} = $val;
+					$Conf{$one} = $Postprocess{$one}->($Conf{$one})
+							if defined $Postprocess{$one};
+					foreach my $item (@$cb) {
+						next unless defined $field->{$item};
+						delete $Conf{$item};
+						my $val = prefix($item);
+						gtk_set_field($field->{$item}, $item, $val);
+					}
+				};
+			}
+			elsif (ref $cb eq 'CODE') {
+				$sub = sub {
+					$cb->(gtk_get_field($field->{$one}, $one), $one);
+				};
+			}
+			elsif ($cb) {
+			}
+			$field->{$one}{content} = $content;
+			$field->{$one}{callback} = $sub if $sub;
+			$field->{$one}{onenter} = sub {
+											$current = $one;
+										};
+			my $lbox = gtk_field_label(substitute($content->{label} || $one));
+			$tab->attach_defaults($lbox, 0,1 , $row,$row + 1);
+			my ($entry, $bbox) = gtk_add_field(
+										$field->{$one},
+										$one,
+										$default,
+									);
+			$tab->attach_defaults($bbox,  1,2 , $row,$row + 1);
+
+			# Run the callback for the first field always, like Newt
+			$sub->() if $first_field and $sub;
+			undef $first_field;
+		}
+
+		$gtk_win->show_all;
+		if($not_show) {
+			my $result = main Gtk;
+			return 'Cancel' if $Gtk_result eq 'Cancel';
+		}
+        while (1) {
+			$druid->set_page($dpage);
+			my $return = main Gtk;
+			$return = $Gtk_result;
+			if ($return eq 'Cancel' or $return eq 'Back') {
+				return $return;
+			}
+			my @errors;
+			my $transparent_error;
+			foreach my $f (@things) {
+				my $val = gtk_get_field($field->{$f}, $f);
+				$val = $Postprocess{$f}->($val)
+						if defined $Postprocess{$f};
+				my ($status, $error) = validate($val, $f);
+				if(! $status) {
+					my $hlp = $Content{$f}->{help};
+					$error .= "\n\n" . substitute($hlp)	if $hlp;
+					$focused = $f unless $focused;
+					push @errors, $error;
+					$field->{$f}{value} = $val;
+					next;
+				}
+				elsif ($status < 0) {
+					$transparent_error = 1;
+				}
+debug("setting $f=$val");
+				$Conf{$f} = $val;
+			}
+			if(@errors) {
+				gtk_fatal_question(
+						join("\n\n", @errors),
+				);
+				redo;
+			}
+			redo RUNIT if $transparent_error;
+			last;
+        }
+
+        for(@things) {
+			$Ever{$_} = 1;
+        }
+
+        if($win->{postamble}) {
+			$win->{postamble}->();
+        }
+
+  }
+
+		$druid->set_buttons_sensitive(0,0,0);
+        return 'Next';
+}
+
 sub newt_display_it {
-        my $name = shift;
+        my ($name, $prev_page, $dummy) = @_;
+		return if $dummy;
 #debug("running window=$name");
         my $return;
         my $indiv_mode;
@@ -1824,9 +2589,9 @@ sub newt_display_it {
 			my $one = $things[$i];
 			my $content = $Content{$one};
 			#next unless applicable_directive($one, $content->{conditional});
-			$Conf{$one} = '' unless $Ever{$one};
 			my $default;
 			$default = prefix($one);
+			$Conf{$one} = '' unless $Ever{$one};
 			$field->{$one} = newt_add_field(
 								$subpanel,
 								$i,
@@ -2061,7 +2826,8 @@ sub newt_display_it {
 }
 
 sub tty_display_it {
-        my $name = shift;
+        my ($name, $prev_page, $dummy) = @_;
+		return if $dummy;
         my $return;
         my $indiv_mode;
 
@@ -2306,7 +3072,7 @@ root_message('Red Hat Interchange Catalog Configurator');
 debug("\n##### Start catalog_name=$Conf{catalogname} " . scalar localtime);
 #debug("conf=" . uneval(\%Conf) ."\n");
 
-my @windows = qw/
+@Windows = qw/
 	win_greeting
 	win_serverconf
 	win_servername
@@ -2317,10 +3083,10 @@ my @windows = qw/
 /;
 
 if($Beginner) {
-        @windows = grep applicable_directive($_), @beginner;
+        @Windows = grep applicable_directive($_), @beginner;
 }
 
-my @final = qw/
+@Final = qw/
 	win_addcatalog
 /;
 
@@ -2330,26 +3096,29 @@ my $result;
 my $Cancel_result = errmsg('Cancel');
 my $Back_result = errmsg('Back');
 DOALL: {
-        $result = run_screens(\@windows, $ptr);
+        $result = run_screens(\@Windows, $ptr);
         last DOALL if $result eq $Cancel_result;
 
 	DOADD: {
-        $result = run_screens(\@Additional, $ptr);
+        $result = run_screens(\@Additional, $ptr, \@Windows);
 		last DOALL if $result eq $Cancel_result;
 		if($result eq $Back_result) {
-				$ptr = $#windows;
+				$ptr = $#Windows;
 				redo DOALL;
 		}
 
-		$result = run_screens(\@final);
+		$result = run_screens(\@Final, undef, \@Additional);
 		last DOALL if $result eq $Cancel_result;
 		if($result eq $Back_result) {
 				$ptr = $#Additional;
 				redo DOADD;
 		}
 	}
+	if($result eq 'Redo') {
+		$ptr = 0;
+		redo DOALL;
+	}
 }
-
 
 BUILD: {
 	last BUILD if $result eq $Cancel_result;
@@ -2391,7 +3160,11 @@ EOF
 		}
 	}
 
-	Vend::MakeCat::build_cat(\&install_scale, \&fatal_question, \&continue_question);
+	Vend::MakeCat::build_cat(
+		\&install_scale,
+		\&fatal_question,
+		\&continue_question,
+	);
 
 	#
 	# all done

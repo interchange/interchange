@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.5 2001-08-20 21:02:21 heins Exp $
+# $Id: MakeCat.pm,v 2.6 2001-09-01 14:26:51 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -109,7 +109,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -119,6 +119,10 @@ $History = 0;
 						linux => '/etc/httpd/conf/httpd.conf',
 					},
 );
+
+my %Watch = qw/
+		cfg_extramysql 1
+		/;
 
 my %Pretty = (
 	qw/
@@ -667,6 +671,7 @@ sub {
 	return \$status;
 }
 EOF
+
 			my $sub = eval $subcode;
 			if($@) {
 				undef $sub;
@@ -678,6 +683,7 @@ EOF
 			and $noprompt = 1;
 		$var =~ s/\W+//g;
 		$var = lc $var;
+debug("conditional code: $subcode") if $Watch{$var};
 
 		$cref->{help} = description($var);
 		$cref->{group} ||= $realgrp;
@@ -902,6 +908,8 @@ debug("Problem evaluating sub: $subcode");
 		$var =~ s/\s+//g;
 		$var =~ s/\W+//g;
 		$cref->{name} = $var = lc $var;
+$::Subcode{$var} = $subcode;
+debug("conditional code: $subcode") if $Watch{$var};
 
 		$grp = $cref->{group} || $var;
 
@@ -1034,7 +1042,7 @@ debug("read_additional returning windows: " . join ",", @addl_windows);
 
 sub read_common_config {
 	my $data = shift;
-debug("read_common_config called with data=$data");
+#debug("read_common_config called with data=$data");
 	my @lines = split /\n/, $data;
 	my $prev = '';
 	my $waiting;
@@ -1152,7 +1160,7 @@ debug("popping $_->{name} from $ref->{name} content array");
 		}
 	}
 	push @out, @extra;
-debug("read_common_config: " . uneval(\@out) );
+#debug("read_common_config: " . uneval(\@out) );
 	return @out;
 }
 
@@ -1986,14 +1994,18 @@ debug("\nDeleting old configuration $configname.\n") if s/^(\s*$directive\s+$con
 
 sub server_running {
 	local ($/);
-	open(PID, "<+$Global::PIDfile")
+debug("in server_running, pid file=$Global::PIDfile");
+	open(PID, "+< $Global::PIDfile")
 		or return undef;
+debug("opened PID file");
 	if(Vend::Util::lockfile(\*PID, 1, 0)) {
+debug("PID file not locked");
 		## Daemon not running;
 		close PID;
 		return undef;
 	}
 	my $pid = <PID>;
+debug("PID=$pid");
 	$pid =~ /(\d+)/;
 	$pid = $1;
 	return $pid;
@@ -2336,7 +2348,55 @@ sub compile_link {
 	return 1;
 }
 
-use vars '%Conf';
+my @Action;
+
+sub evaluate_action {
+	my $act = shift;
+	ref($act) eq 'HASH' or die "usage: evaluate_action(\%action)";
+	my $orig_dir;
+	my $error;
+	eval {
+		if($act->{chdir}) {
+			$orig_dir = cwd();
+			my $dir = $act->{chdir};
+			$dir = substitute($dir) if $dir =~ /__MVC_/;
+			chdir $dir
+				or die errmsg("Unable to change directory to %s.", $dir) . "\n";
+		}
+		if($act->{from_dir} and $act->{to_dir}) {
+			if($Conf{relocate}) {
+				$act->{to_dir} = "$Conf{relocate}$act->{to_dir}";
+				$act->{from_dir} = "$Conf{relocate}$act->{from_dir}";
+			}
+			copy_dir($act->{from_dir}, $act->{to_dir}, undef, $act);
+			if($act->{delete_from}) {
+				File::Path::rmtree($act->{from_dir});
+			}
+		}
+		if(my $sub = $act->{sub}) {
+			my $args = $act->{args} || [];
+			$sub->(@$args);
+		}
+		if(my $cmd = $act->{command}) {
+			$cmd = substitute($cmd) if $cmd =~ /__MVC_/;
+			system $cmd;
+			if($?) {
+				my $status = $? >> 8;
+				die errmsg(
+						"Command %s returned status %s: %s",
+						$cmd,
+						$status,
+						$!,
+					) . "\n";
+			}
+		}
+	};
+	$error = $@ if $@;
+	chdir $orig_dir if $orig_dir;
+	die $error if $error;
+	return;
+}
+
 sub build_cat {
 	my ($scale, $die, $warn, $opt) = @_;
 debug("build_cat called scalesub=$scale");
@@ -2473,11 +2533,12 @@ debug("build_cat called scalesub=$scale");
 				message		=>  errmsg("Adding catalog to interchange.cfg"),
 				scale => 1,
 		} if $cref->{add_catalog};
+debug("run_catalog=$cref->{run_catalog} server_running=" . server_running());
 		push @action, {
-				sub => \&add_catalog,
+				sub => \&run_catalog,
 				message		=>  errmsg("Running catalog"),
 				scale => 1,
-		} if $cref->{run_catalog};
+		} if $cref->{run_catalog} and server_running();
 	}
 	my $total_scale = 0;
 	foreach my $act (@action) {
@@ -2489,78 +2550,61 @@ debug("total scale amount=$total_scale scalesub=$scale");
 	## there is....
 	my $msg = errmsg("Installing catalog: %s", $Conf{catalogname});
 	my $scale_call;
-	$scale_call = $scale->($total_scale, $msg)
-		if $scale;
 debug("scale_call=$scale_call");
-	foreach my $act (@action) {
+	if(! $opt->{event_driven}) {
+		$scale_call = $scale->($total_scale, $msg)
+			if $scale;
+		foreach my $act (@action) {
 debug("action: " . uneval($act));
-		$scale_call->('start', $act->{scale}, errmsg($act->{message}))
-			if $scale_call;
-		#select(undef,undef,undef, .75);
-		my $orig_dir;
-		eval {
-			if($act->{chdir}) {
-				$orig_dir = cwd();
-				my $dir = $act->{chdir};
-				$dir = substitute($dir) if $dir =~ /__MVC_/;
-				chdir $dir
-					or die errmsg("Unable to change directory to %s.", $dir) . "\n";
-			}
-			if($act->{from_dir} and $act->{to_dir}) {
-				if($Conf{relocate}) {
-					$act->{to_dir} = "$Conf{relocate}$act->{to_dir}";
-					$act->{from_dir} = "$Conf{relocate}$act->{from_dir}";
-				}
-				copy_dir($act->{from_dir}, $act->{to_dir}, undef, $act);
-				if($act->{delete_from}) {
-					File::Path::rmtree($act->{from_dir});
-				}
-			}
-			if(my $sub = $act->{sub}) {
-				my $args = $act->{args} || [];
-				$sub->(@$args);
-			}
-			if(my $cmd = $act->{command}) {
-				$cmd = substitute($cmd) if $cmd =~ /__MVC_/;
-				system $cmd;
-				if($?) {
-					my $status = $? >> 8;
-					die errmsg(
-							"Command %s returned status %s: %s",
-							$cmd,
-							$status,
-							$!,
-						) . "\n";
-				}
-			}
-		};
-		if(! $@) {
-			$scale_call->('end')
+			$scale_call->('start', $act->{scale}, errmsg($act->{message}))
 				if $scale_call;
-		}
-		elsif($act->{error_ok}) {
+			#select(undef,undef,undef, .75);
+			my $orig_dir;
+			eval {
+				evaluate_action($act);
+			};
+			if(! $@) {
+				$scale_call->('end')
+					if $scale_call;
+			}
+			elsif($act->{error_ok}) {
 debug("action error_ok: $@");
-			my $msg = errmsg($act->{message}) . "..." . errmsg('failed') . ".";
-			$scale_call->('end', undef, $msg);
-		}
-		elsif($act->{error_warn}) {
+				my $msg = errmsg($act->{message}) . "..." . errmsg('failed') . ".";
+				$scale_call->('end', undef, $msg)
+					if $scale_call;;
+			}
+			elsif($act->{error_warn}) {
 debug("action error_warn: $@");
-			my $msg = $@;
-			$warn->($msg) 
-				or do {
-					$die->($msg);
-					return undef;
-				};
+				my $msg = $@;
+				$warn->($msg) 
+					or do {
+						$die->($msg);
+						return undef;
+					};
+			}
+			else {
+debug("action fatal_error: $@");
+				$die->( errmsg("Error installing catalog %s: %s"));
+				return undef;
+			}
+			chdir $orig_dir if $orig_dir;
 		}
-		else {
+		$scale_call->('finish')
+			if $scale_call;
+	}
+	elsif($scale) {
+		eval {
+			$scale->($total_scale, $msg, \&evaluate_action, @action);
+		};
+		if($@) {
 debug("action fatal_error: $@");
 			$die->( errmsg("Error installing catalog %s: %s"));
 			return undef;
 		}
-		chdir $orig_dir if $orig_dir;
 	}
-	$scale_call->('finish')
-		if $scale_call;
+	else {
+		die "Must have scale subroutine call if event-driven\n";
+	}
 
 }
 
