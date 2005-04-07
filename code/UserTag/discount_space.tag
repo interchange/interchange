@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: discount_space.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+# $Id: discount_space.tag,v 1.3 2005-04-07 22:51:33 jon Exp $
 
 UserTag discount_space  Documentation <<EOF
 The discount-space is rather equivalent to the values-space functionality.
@@ -24,7 +24,7 @@ EOF
 UserTag discount_space  order      name
 UserTag discount_space  AttrAlias  space   name
 UserTag discount_space  AddAttr
-UserTag discount_space  Version    $Revision: 1.2 $
+UserTag discount_space  Version    $Revision: 1.3 $
 UserTag discount_space  Routine    <<EOF
 sub {
 	my ($namespace, $opt) = @_;
@@ -36,16 +36,21 @@ sub {
 		# the current discount hash to it as the 'main' entry.
 		# Furthermore, instantiate the discount hash if it doesn't already exist, otherwise
 		# the linkage between that hashref and the discount_space hashref might break...
-		$Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {};
 #::logDebug('Tag discount-space: initializing discount_space hash; first call to this tag for this session.');
-		$Vend::DiscountSpace = 'main';
-		$::Discounts = $Vend::Session->{discount};
+		$::Discounts
+			= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName = 'main'}
+			||= ($Vend::Session->{discount} || {});
+		$Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {};
 	}
 
-	return $Vend::DiscountSpace if $opt->{current};
+	logError('Discount-space tag called but discount spaces are deactivated in this catalog.'), return undef
+		unless $Vend::Cfg->{DiscountSpacesOn};
 
-	$::Discounts = $Vend::Session->{discount_space}{$namespace} ||= {};
-	$Vend::DiscountSpace = $namespace;
+	return ($Vend::DiscountSpaceName ||= 'main') if $opt->{current};
+
+	$::Discounts = $Vend::Session->{discount} = $Vend::Session->{discount_space}{$namespace} ||= {};
+	$Vend::DiscountSpaceName = $namespace;
 #::logDebug("Tag discount-space: set discount space to '$namespace'");
 
 	%$::Discounts = () if $opt->{clear};

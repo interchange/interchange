@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.157 2005-03-06 04:14:07 mheins Exp $
+# $Id: Config.pm,v 2.158 2005-04-07 22:51:33 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.157 $, 10);
+$VERSION = substr(q$Revision: 2.158 $, 10);
 
 my %CDname;
 my %CPname;
@@ -553,7 +553,7 @@ sub catalog_directives {
 	['DescriptionField', undef,              'description'],
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
-	['DiscountSpaces',	 'yesno',            'no'],
+	['DiscountSpacesOn', 'yesno',            'no'],
 	['DiscountSpaceVar', 'array',            'mv_discount_space'],
 	['Jobs',		 	 'hash',     	 	 ''],
 	['Shipping',         'locale',           ''],
@@ -2417,6 +2417,12 @@ my @Dispatches;
 
 	DiscountSpaces => sub {
 #::logDebug("Doing DiscountSpaces dispatch...");
+		$::Discounts
+			= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{
+					$Vend::DiscountSpaceName = 'main'
+				}
+			||= {};
 		my $dspace;
 		for (@{$Vend::Cfg->{DiscountSpaceVar}}) {
 			next unless $dspace = $CGI::values{$_};
@@ -2424,11 +2430,11 @@ my @Dispatches;
 			last;
 		}
 		return unless $dspace;
-		$Vend::DiscountSpace = $dspace;
-#::logDebug("Discount space is set=$Vend::DiscountSpace...");
+		$Vend::DiscountSpaceName = $dspace;
+#::logDebug("Discount space is set=$Vend::DiscountSpaceName...");
 		$::Discounts
 				= $Vend::Session->{discount}
-				= $Vend::Session->{discount_space}{$Vend::DiscountSpace}
+				= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName}
 				||= {};
     },
 
@@ -2670,8 +2676,8 @@ sub set_default_search {
 						return 1;
 					},
 
-		DiscountSpaces => sub {
-					return 1 unless $C->{DiscountSpaces};
+		DiscountSpacesOn => sub {
+					return 1 unless $C->{DiscountSpacesOn};
 					push @Dispatches, 'DiscountSpaces';
 					return 1;
 		},

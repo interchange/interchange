@@ -1,13 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: discount.coretag,v 1.5 2005-02-09 13:39:42 docelic Exp $
+# $Id: discount.coretag,v 1.6 2005-04-07 22:51:32 jon Exp $
 
 UserTag discount            Order        code
 UserTag discount            AddAttr
 UserTag discount            attrAlias    space discount_space
 UserTag discount            hasEndTag
 UserTag discount            PosNumber    1
-UserTag discount            Version      $Revision: 1.5 $
+UserTag discount            Version      $Revision: 1.6 $
 UserTag discount            Routine      <<EOR
 
 # Sets the value of a discount field
@@ -20,18 +20,18 @@ sub {
 		$opt = {};
 	}
 
-	unless (
+	if (! ($::Discounts
+			and $Vend::Session->{discount_space}
+			and $Vend::Session->{discount}
+			and $Vend::DiscountSpaceName)) {
 		$::Discounts
-		and $Vend::Session->{discount_space}
-		and $Vend::Session->{discount}
-	) {
-		$::Discounts = 
-			$Vend::Session->{discount_space}{ $Vend::DiscountSpace = 'main' } =
-			$Vend::Session->{discount} ||= {};
+		 	= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{ $Vend::DiscountSpaceName = 'main' }
+			||= ($Vend::Session->{discount} || {});
 	}
 
 	my $dspace;
-	if ($dspace = $opt->{discount_space}) {
+	if ($Vend::Cfg->{DiscountSpacesOn} and $dspace = $opt->{discount_space}) {
 		$dspace = $Vend::Session->{discount_space}{$dspace} ||= {};
 	}
 	else {

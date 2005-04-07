@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.21 2005-02-01 02:07:15 jon Exp $
+# $Id: Session.pm,v 2.22 2005-04-07 22:51:33 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -433,8 +433,7 @@ sub read_session {
     $::Values	= $Vend::Session->{values};
     $::Scratch	= $Vend::Session->{scratch};
     $::Carts	= $Vend::Session->{carts};
-	$::Discounts = $Vend::Session->{discount}
-		= $Vend::Session->{discount_space}{main} ||= {};
+    $::Discounts = $Vend::Session->{discount};
     $Vend::Interpolate::Tmp ||= {};
     $::Control	= $Vend::Interpolate::Tmp->{control} = [];
 	tie $Vend::Items, 'Vend::Cart';
@@ -489,6 +488,7 @@ sub init_session {
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
 		'levies'	=> {main => []},
+		'discount_space'	=> {main => {}},
     };
 	$Vend::Session->{shost} = $CGI::remote_addr
 		if $CGI::secure;
@@ -499,6 +499,9 @@ sub init_session {
 	tie $Vend::Items, 'Vend::Cart';
 	$::Values->{mv_shipmode} = $Vend::Cfg->{DefaultShipping}
 		if ! defined $::Values->{mv_shipmode};
+	$::Discounts
+		= $Vend::Session->{discount}
+		= $Vend::Session->{discount_space}{main};
 	if(my $macro = $Vend::Cfg->{SpecialSub}{init_session}) {
 		Vend::Dispatch::run_macro(
 				$macro,
