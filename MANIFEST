@@ -97,7 +97,7 @@ code/SystemTag/debug.coretag
 code/SystemTag/default.coretag
 code/SystemTag/deliver.coretag
 code/SystemTag/description.coretag
-code/SystemTag/discount.coretag
+code/UserTag/discount.tag
 code/SystemTag/discount_space.coretag
 code/SystemTag/dump.coretag
 code/SystemTag/either.coretag
@@ -1171,3 +1171,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
+META.yml                                 Module meta-data (added by MakeMaker)
