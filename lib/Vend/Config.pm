@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.158 2005-04-07 22:51:33 jon Exp $
+# $Id: Config.pm,v 2.159 2005-04-08 01:42:52 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.158 $, 10);
+$VERSION = substr(q$Revision: 2.159 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2371,6 +2371,13 @@ my @Dispatches;
 #::logDebug("Doing CookieLogin dispatch....");
 		if(! $Vend::Session->{logged_in}) {
 			COOKIELOGIN: {
+				# Clear password cookie and don't allow automatic login
+				# if mv_force_session is overriding the session cookie,
+				# since user may be coming from a sister site where he
+				# was logged out.
+				(Vend::Util::read_cookie('MV_PASSWORD')
+					and Vend::Util::set_cookie('MV_PASSWORD')), last COOKIELOGIN
+						if $CGI::values{mv_force_session};
 				my $username;
 				my $password;
 				last COOKIELOGIN
