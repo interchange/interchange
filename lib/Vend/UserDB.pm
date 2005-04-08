@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.34 2005-03-05 19:01:54 mheins Exp $
+# $Id: UserDB.pm,v 2.35 2005-04-08 02:46:41 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1511,13 +1511,6 @@ sub new_account {
 			die errmsg("Username already exists.") . "\n";
 		}
 
-		my $pass = $udb->set_field(
-						$self->{USERNAME},
-						$self->{LOCATION}{PASSWORD},
-						$pw,
-						);
-		die errmsg("Database access error.") . "\n" unless defined $pass;
-
 		if($foreign) {
 			 $udb->set_field(
 						$self->{USERNAME},
@@ -1526,6 +1519,13 @@ sub new_account {
 						)
 				or die errmsg("Database access error.");
 		}
+
+		my $pass = $udb->set_field(
+						$self->{USERNAME},
+						$self->{LOCATION}{PASSWORD},
+						$pw,
+						);
+		die errmsg("Database access error.") . "\n" unless defined $pass;
 
 		if($options{no_login}) {
 			$Vend::Session->{auto_created_user} = $self->{USERNAME};
