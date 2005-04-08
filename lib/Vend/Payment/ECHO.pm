@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.6 2004-10-29 05:09:27 danb Exp $
+# $Id: ECHO.pm,v 1.7 2005-04-08 02:19:18 jon Exp $
 #
 # Copyright (C) 2002 
 #      Electric Pulp. <info@electricpulp.com> 
@@ -383,6 +383,7 @@ sub echo {
 	# *	DC (Electronic Check Credit)
 	my %type_map = (
 		mauth_capture 			=>	'ES',
+		EV						=>  'EV',
 		mauthonly				=>	'AS',
 		CAPTURE_ONLY			=>  'DS',
 		CREDIT					=>	'CR',
