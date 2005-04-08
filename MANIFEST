@@ -98,7 +98,7 @@ code/SystemTag/default.coretag
 code/SystemTag/deliver.coretag
 code/SystemTag/description.coretag
 code/SystemTag/discount.coretag
-code/UserTag/discount_space.tag
+code/SystemTag/discount_space.coretag
 code/SystemTag/dump.coretag
 code/SystemTag/either.coretag
 code/SystemTag/error.coretag
