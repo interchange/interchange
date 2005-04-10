@@ -94,6 +94,7 @@
 		extended.top_buttons
 		extended.view_from
 		extended.ui_profile
+		extended.display_type
 
 		=Form Linking
 
@@ -151,6 +152,7 @@
 		'extended.no_checkbox'		    => "No checkbox for group ops",
 		'extended.check_uncheck_all'	=> 'Links to check/uncheck all',
 		'extended.number_list'		    => "Number the entries",
+		'extended.display_type'		    => "Table cell display type",
 		'extended.file_upload'			=> 'Allow file upload for this table',
 		'extended.filter_field'			=> 'Import field filtering',
 		'extended.left_width'			=> 'Width specification for label column',
@@ -237,6 +239,7 @@
 	table2:fieldname2=filter1 filter2 
 </pre>
 			</blockquote>},
+		'extended.display_type'		    => "Sets the general style of column edit areas",
 		'extended.link_rows_blank'		=> 'default 1',
 		'extended.link_row_qual'		=> 'Default is key field, needs to be different field if auto-numbering. Must not be same as Foreign Key if in auto mode.',
 		'extended.link_blank_auto'		=> 'Requires link row qualifier be separate from primary key and foreign key in linked table.',
@@ -265,6 +268,7 @@
 		'extended.number_list'			=> 'yesno',
 		'extended.check_uncheck_all'	=> 'yesno',
 		'extended.file_upload'			=> 'yesno',
+		'extended.display_type'			=> 'select',
 		'extended.filter_field'			=> 'textarea_2_40',
 		'extended.tab_style'			=> 'textarea_5_40',
 		'extended.panel_style'			=> 'textarea_5_40',
@@ -366,6 +370,18 @@
 		'extended.link_before'			=> '',
 		'extended.ui_more_decade'		=> '0=No,5,10*,15,20,25,50,100',
 		'extended.ui_sort_option'		=> q{=none,n=numeric,r=reverse,f=case-insensitive},
+		'extended.display_type'		=> $Variable->{UI_TABLE_EDITOR_DISPLAY_TYPES}
+										|| q{
+			image_meta=Standard UI,
+			default=default,
+			simple_row=Simpler,
+			text_help=Simple with text/js help,
+			simple_icon_help=Simple with icon/js help,
+			over_under=Over and under,
+			simple_help_below=Simple with help below,
+			three_column=Three column,
+			nospace=Like UI but no spacing,
+										},
 		'extended.ui_special_add'		=> q{NONE,
 Qty price;pricing:q5:rn=Qty price,
 Option;products:option_type=Options,
@@ -378,4 +394,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.19 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.20 $ -->

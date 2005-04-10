@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.63 2004-12-30 18:00:23 mheins Exp $
+# $Id: Editor.pm,v 1.64 2005-04-10 05:25:14 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.63 $, 10);
+$VERSION = substr(q$Revision: 1.64 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -127,6 +127,226 @@ my $Tag = new Vend::Tags;
 );
 
 my $F_desc = \%Vend::Interpolate::Filter_desc;
+my $Trailer;
+
+use vars qw/%Display_type %Display_options/;
+
+%Display_options = (
+	three_column => sub {
+		my $opt = shift;
+		$opt->{cell_span} = 3;
+		return;
+	},
+	nospace => sub {
+		my $opt = shift;
+		$opt->{break_cell_first_style} ||= 'border-top: 1px solid #999999';
+		return;
+	},
+);
+
+%Display_type = (
+	default => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}{META_STRING}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
+         </td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+       </tr>
+     </table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	blank => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+EOF
+		chomp $thing;
+		return $thing;
+
+	},
+	nospace => sub {
+		my $opt = shift;
+		my $span = shift;
+		$opt->{break_template} ||= <<EOF;
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
+EOF
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
+         </td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td align=right>{META_STRING}</td>
+       </tr>
+     </table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+
+	},
+	text_js_help => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	three_column => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>
+   	{WIDGET}
+   </td>
+   <td>{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	simple_row => sub {
+#::logDebug("calling simple_row display");
+		my $opt = shift;
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	over_under => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+{HELP?}
+	<td colspan=2$opt->{help_cell_extra}>
+		{HELP}
+	</td>
+</tr>
+<tr>
+{/HELP?}	<td colspan=2$opt->{label_cell_extra}>
+		{LABEL}
+	</td>
+</tr>
+<tr>
+	<td colspan=2$opt->{widget_cell_extra}>
+		{WIDGET}
+	</td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	image_meta => sub {
+		my $opt = shift;
+		my $span = shift;
+		$opt->{break_template} ||= <<EOF;
+$opt->{spacer_row}
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+EOF
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
+         </td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td align=right>{META_STRING}</td>
+       </tr>
+     </table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	simple_help_below => sub {
+		my $opt = shift;
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+				{WIDGET}
+				{HELP_EITHER?}<br$Trailer>{/HELP_EITHER?}
+				{HELP}{HELP_URL?}<br$Trailer><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}
+				{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+			</td>
+		</tr>
+	</table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+	simple_icon_help => sub {
+		my $opt = shift;
+		$opt->{help_icon} ||= '/icons/small/unknown.gif';
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+   	<table width="100%">
+		<tr>
+			<td style="padding-left: 3px">
+				{WIDGET}
+			</td>
+			<td align=right>
+				{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}"><img src="$opt->{help_icon}" border=0></a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+			</td>
+		</tr>
+	</table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
+);
+
+my %dt_map = qw/
+ simple_row            1
+ text_help             2
+ simple_icon_help      3
+ over_under            4
+ simple_help_below     5
+ image_meta            6
+ three_column          7
+ nospace               8
+/;
+
+for(keys %dt_map) {
+	$Display_type{$dt_map{$_}} = $Display_type{$_}
+		if $Display_type{$_};
+	$Display_options{$dt_map{$_}} = $Display_options{$_}
+		if $Display_options{$_};
+}
 
 my $fdesc_sort = sub {
 	return 1 if $a and ! $b;
@@ -1051,6 +1271,7 @@ my %o_default_length = (
 	label_cell_class	=> 'clabel',
 	data_cell_class	=> 'cdata',
 	help_cell_class	=> 'chelp',
+	break_cell_class_first	=> 'cbreakfirst',
 	break_cell_class	=> 'cbreak',
 	spacer_row_class => 'rspacer',
 	break_row_class => 'rbreak',
@@ -1323,6 +1544,7 @@ sub resolve_options {
         widget_cell_class
         widget_cell_style
         widget_class
+		xhtml
 	/;
 
 	if($opt->{cgi}) {
@@ -1617,6 +1839,15 @@ sub resolve_options {
 	$opt->{ui_data_fields} =~ s/[\s,\0]+$//;
 #::logDebug("fields now=$opt->{ui_data_fields}");
 
+	if(my $dt = $opt->{display_type}) {
+		my $sub = $Display_options{$dt};
+		$sub and ref($sub) eq 'CODE' and $sub->($opt);
+	}
+
+	#### This code is also in main editor routine, change there too!
+	my $cells_per_span = $opt->{cell_span} || 2;
+	#### 
+
 	## Visual field layout
 	if($opt->{ui_data_fields} =~ /[\w:.]+[ \t,]+\w+.*\n\w+/) {
 		my $cs = $opt->{colspan} ||= {};
@@ -1634,14 +1865,13 @@ sub resolve_options {
 			my $cnt = scalar(@$_);
 			if ($cnt < $max) {
 				my $name = $_->[-1];
-				$cs->{$name} = (($max - $cnt) * 2) + 1;
+				$cs->{$name} = (($max - $cnt) * $cells_per_span) + 1;
 			}
 		}
 	}
 
 	#### This code is also in main editor routine, change there too!
 	my $rowdiv         = $opt->{across}    || 1;
-	my $cells_per_span = $opt->{cell_span} || 2;
 	my $rowcount = 0;
 	my $span = $rowdiv * $cells_per_span;
 	#### 
@@ -1686,6 +1916,7 @@ sub editor {
 	my ($table, $key, $opt, $overall_template) = @_;
 show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
+#::logDebug("overall_template=$overall_template\nin=$opt->{overall_template}");
 	use vars qw/$Tag/;
 
 	editor_init($opt);
@@ -1780,10 +2011,13 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	resolve_options($opt, undef, $data);
 
+	$Trailer = $opt->{xhtml} ? '/' : '';
 	if($regin) {
 		## Must reset these in case they get set from all_opts.
 		$hidden = $opt->{hidden};
 	}
+	$overall_template = $opt->{overall_template}
+		if $opt->{overall_template};
 
 	$table = $opt->{table};
 	$key = $opt->{item_id};
@@ -1792,6 +2026,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	}
 #::logDebug("key after resolve_options: $key");
 
+#::logDebug("cell_span=$opt->{cell_span}");
 	#### This code is also in resolve_options routine, change there too!
 	my $rowdiv         = $opt->{across}    || 1;
 	my $cells_per_span = $opt->{cell_span} || 2;
@@ -2205,7 +2440,7 @@ EOF
 												mv_blob_nick=$key$extra
 											",
 										});
-					$url_data{$key} .= "$key - $lab</A><br>";
+					$url_data{$key} .= "$key - $lab</A><br$Trailer>";
 				}
 				else {
 					$wid_data{$key} = $key;
@@ -2769,7 +3004,7 @@ EOF
 
 	if($show_meta) {
 		if(! $opt->{row_template} and ! $opt->{simple_row}) {
-			$opt->{meta_prepend} = '<br><font size=1>'
+			$opt->{meta_prepend} = "<br$Trailer><font size=1>"
 				unless defined $opt->{meta_prepend};
 
 			$opt->{meta_append} = '</font>'
@@ -2801,71 +3036,20 @@ EOF
 #::logDebug("display_type='$opt->{display_type}' row_template length=" . length($row_template));
 
 	if(! $row_template) {
-		if($opt->{simple_row} || $opt->{display_type} eq 'simple_row') {
-			$row_template = <<EOF;
-   <td$opt->{label_cell_extra}> 
-     {BLABEL}{LABEL}{ELABEL}
-   </td>
-   <td$opt->{data_cell_extra}\{COLSPAN}>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
-   </td>
-EOF
-		}
-		elsif($opt->{image_meta}) {
-			$opt->{break_template} ||= <<EOF;
-$opt->{spacer_row}
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
-EOF
-			$row_template = <<EOF;
-   <td$opt->{label_cell_extra}> 
-     {BLABEL}{LABEL}{ELABEL}
-   </td>
-   <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td$opt->{widget_cell_extra}>
-           {WIDGET}
-         </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
-         <td align=right>{META_STRING}</td>
-       </tr>
-     </table>
-   </td>
-EOF
-		}
-		elsif($opt->{display_type} eq 'over_under') {
-			$row_template = <<EOF;
-{HELP?}
-	<td colspan=2$opt->{help_cell_extra}>
-		{HELP}
-	</td>
-</tr>
-<tr>
-{/HELP?}	<td colspan=2$opt->{label_cell_extra}>
-		{LABEL}
-	</td>
-</tr>
-<tr>
-	<td colspan=2$opt->{widget_cell_extra}>
-		{WIDGET}
-	</td>
-EOF
+		$opt->{display_type} = 'simple_row' if $opt->{simple_row};
+		$opt->{display_type} ||= 'image_meta' if $opt->{image_meta};
+		my $dt = $opt->{display_type} ||= 'default';
+
+		$dt =~ s/-/_/g;
+		$dt =~ s/\W+//g;
+#::logDebug("display_type=$dt");
+		my $sub = $Display_type{$dt};
+		if(ref($sub) eq 'CODE') {
+			$row_template = $sub->($opt, $span);
 		}
 		else {
-			$row_template = <<EOF;
-   <td$opt->{label_cell_extra}> 
-     {BLABEL}{LABEL}{ELABEL}{META_STRING}
-   </td>
-   <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td$opt->{widget_cell_extra}>
-           {WIDGET}
-         </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
-       </tr>
-     </table>
-   </td>
-EOF
+			::logError("table-editor: display_type '%s' sub not found", $dt);
+			$row_template = $Display_type{default}->($opt, $span);
 		}
 	}
 
@@ -2879,7 +3063,7 @@ EOF
 EOF
 
 	$opt->{break_template} ||= <<EOF;
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
 EOF
 
 	my %serialize;
@@ -3384,7 +3568,7 @@ EOF
 												}
 										});
 				$meta_specific = <<EOF;
-<br><a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor_specific}</A>
+<br$Trailer><a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor_specific}</A>
 EOF
 			}
 								
@@ -3830,6 +4014,26 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 			return undef;
 		};
 
+		if($opt->{fields_template_only}) {
+			my $tstart = '<table';
+			for my $p (qw/height width cellspacing cellmargin cellpadding class style/) {
+				my $tag = "table_$p";
+				next unless length $opt->{$tag} and $opt->{$tag} =~ /\S/;
+				my $val = HTML::Entities::encode($opt->{$tag});
+				$tstart .= qq{ $p="$val"};
+			}
+			$tstart .= ">";
+			$overall_template = qq({TOP_OF_FORM}
+{HIDDEN_FIELDS}
+$tstart
+<tr><td colspan="$span">{TOP_BUTTONS}</td></tr>
+<tr><td colspan="$span">$overall_template</td></tr>
+<tr><td colspan="$span">{BOTTOM_BUTTONS}</td></tr>
+</table>
+{BOTTOM_OF_FORM}
+);
+		}
+
 		unless($opt->{incomplete_form_ok}) {
 			$overall_template =~ /{TOP_OF_FORM}/
 				or return $death->('TOP_OF_FORM');
@@ -3849,7 +4053,11 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 			}
 			elsif($name =~ s/__WIDGET$//) {
 				$thing = delete $outhash{$name};
+				my $lab  = "${name}__LABEL";
+				my $help = "${name}__HELP";
 #::logDebug("Got to widget replace $name, thing=$thing");
+				$overall_template =~ s/\{$lab\}/$thing->{LABEL}/;
+				$overall_template =~ s/\{$help\}/$thing->{HELP}/;
 				$overall_template =~ s/\{$orig\}/$thing->{WIDGET}/;
 			}
 			elsif($thing) {
@@ -3884,13 +4092,18 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 			push @put, tabbed_display(\@titles,\@tabcont,$opt);
 		}
 		else {
+			my $first = 0;
 			for(my $i = 0; $i < @controls; $i++) {
-				push @put, tag_attr_list($opt->{break_template}, { ROW => $titles[$i] })
+				push @put, tag_attr_list(
+								$opt->{break_template},
+								{ FIRST => ! $first++, ROW => $titles[$i] },
+							)
 					if $titles[$i];
 				push @put, create_rows($opt, $controls[$i]);
 			}
 		}
 		$overall_template =~ s/{:REST}/join "\n", @put/e;
+#::logDebug("overall_template:\n$overall_template");
 		return $overall_template;
 	}
 
@@ -3913,9 +4126,13 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 	}
 	else {
 #::logDebug("titles=" . uneval(\@titles) . "\ncontrols=" . uneval(\@controls));
+		my $first = 0;
 		for(my $i = 0; $i < @controls; $i++) {
-			push @put, tag_attr_list($opt->{break_template}, { ROW => $titles[$i] })
-				if $titles[$i];
+				push @put, tag_attr_list(
+								$opt->{break_template},
+								{ FIRST => ! $first++, ROW => $titles[$i] },
+							)
+					if $titles[$i];
 			push @put, create_rows($opt, $controls[$i]);
 		}
 	}
