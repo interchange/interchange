@@ -1,0 +1,309 @@
+CodeDef state_select  Widget  1
+CodeDef state_select  Routine <<EOR
+sub {
+	my $opt = shift;
+	my $sel = $opt->{state_element};
+	if(! $sel) {
+		my $n = $opt->{name};
+		my $pre = '';
+		if($n =~ /^([a-z]_)/) {
+			$pre = $1;
+		}
+		$sel = "${pre}state_widget_container";
+	}
+	$opt->{type} = 'hidden';
+	my $wid = Vend::Form::display($opt);
+	return qq{$wid<span id="$sel"></span>};
+}
+EOR
+
+CodeDef state_select ExtraMeta <<EOM
+{
+	_order => [ qw/
+			state_element
+		/],
+	state_element => {
+		label => 'State element ID',
+		help => 'The CSS ID of the span containing the dynamic widget. The default is usually good (state_widget_container or b_state_widget_container)',
+		widget => 'text_30',
+	},
+}
+EOM
+
+CodeDef country_select  Widget  1
+CodeDef country_select  Routine <<EOR
+sub {
+    my ($opt) = @_;
+	my $name = $opt->{name} ||= 'country';
+
+	my $sel = $opt->{state_element};
+	my $pre = '';
+	if(! $sel) {
+		my $n = $opt->{name};
+		if($n =~ /^([a-z]_)/) {
+			$pre = $1;
+		}
+		$sel = "${pre}state_widget_container";
+	}
+
+	my $svar = $opt->{state_var} || $opt->{state_variable} || "${pre}state";
+	my $svar_in = $svar . '_cs_in';
+	my $size = $opt->{cols} || $opt->{width} || '16';
+	my $ctab = $opt->{country_table} || 'country';
+	$opt->{state_style} ||= 'font-style: italic; font-size: smaller';
+
+	use vars qw/$Tag/;
+
+	my $die = sub {
+		my ($msg, @arg) = @_;
+		$msg = errmsg($msg) if @arg;
+		$Tag->error({ name => 'country_select widget', set => $msg});
+		::logError($msg);
+		return undef;
+	};
+
+	my $pre = $opt->{prepend} || '';
+	my $app = $opt->{append} || '';
+	my $out = $pre;
+
+	my $stab = $opt->{state_table} || 'state';
+
+	my $csort = $opt->{country_sort} || ($opt->{no_region} ? 'name' : 'sorder,name');
+
+	my @csort = grep /\w/, split /[\s,\0]+/, $csort;
+
+	my $csort_sub = sub {
+		for(@csort) {
+			my $so = $a->{$_} cmp $b->{$_};
+			return $so if $so;
+		}
+		return '';
+	};
+
+	my $cdb = dbref($ctab) or return $die->('country table %s not found', $ctab);
+	my $sdb = dbref($stab) or return $die->('state table %s not found', $stab);
+	$ctab = $cdb->name();
+	$stab = $sdb->name();
+	my $cq = "select * from $ctab";
+	my $sq = "select * from $stab";
+	my $cary = $cdb->query({ sql => $cq, hashref => 1});
+	my $sary = $sdb->query({ sql => $sq, hashref => 1});
+
+	@csort = grep exists($cary->[0]{$_}), @csort;
+
+	@$cary = sort $csort_sub @$cary;
+
+	if($opt->{only_with_shipping}) {
+		@$cary = grep $_->{shipmodes} =~ /\w/, @$cary;
+	}
+
+	my %states;
+
+	for my $s (@$sary) {
+		my $c = $s->{country};
+		push @{$states{$c} ||= []}, [ $s->{state}, $s->{name} ];
+	}
+
+	my @copts;
+	my %no_state;
+
+	my $prev;
+	for my $c (@$cary) {
+		if($c->{no_state}) {
+			$no_state{$c->{code}} = 1;
+		}
+		if(! $opt->{no_region} and $c->{region} and $c->{region} ne $prev) {
+			push @copts, ["~~" . $c->{region} . "~~"];
+			$prev = $c->{region};
+		}
+		push @copts, [ $c->{code}, $c->{name} ];
+	}
+
+	my @pre;
+	push @pre, <<EOF;
+<script>
+	var formv;
+	var no_state = new Array;
+EOF
+
+	for(keys %no_state) {
+		push @pre, "no_state['$_'] = 1";
+	}
+
+	push @pre, <<EOF;
+	var state_vary = new Array;
+	var state_tary = new Array;
+EOF
+
+	for(keys %states) {
+		my $sa = $states{$_};
+		my @sv;
+		my @st;
+		for my $e (@$sa) {
+			push @sv, $e->[0];
+			push @st, $e->[1];
+		}
+
+		for(@sv) { s/'/\\'/g; }
+		for(@st) { s/'/\\'/g; }
+
+		my $string = "state_vary['$_'] = ['";
+		$string .= join "','", '', @sv;
+		$string .= "'];";
+		push @pre, $string;
+		$string = "state_tary['$_'] = ['";
+		$string .= join "','", errmsg('--select state--'), @st;
+		$string .= "'];";
+		push @pre, $string;
+	}
+
+	my $cvar = $opt->{name};
+	$cvar =~ s/\W+/_/g;
+	push @pre, <<EOF;
+	function ${cvar}_widget_adjust_state (cel,sval) {
+		var sbox = document.getElementById('$sel');
+		var country = cel.value;
+		if(! sval) {
+			if(formv.$svar && formv.$svar.value)
+				sval = formv.$svar.value;
+			else sval = '';
+		}
+		if(! sbox) return;
+		if(no_state[country]) {
+			sbox.innerHTML = '<span style="$opt->{state_style}">No state required</span>';
+			formv.$svar.value = '';
+			return;
+		}
+		var svary = state_vary[country];
+		if(! svary) {
+			var val = '';
+			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" value="' + sval + '" onChange="formv.$svar.value = this.value">';
+			formv.$svar.value=sval;
+
+			return;
+		}
+		var stary = state_tary[country];
+
+		var str = '<select name="$svar_in" onChange="formv.$svar.value = this.value">';
+		for(var i = 0; i < svary.length; i++) {
+			str += '<option value="' + svary[i] + '"';
+			if(svary[i] == sval)
+				str += ' SELECTED';
+			str += '>';
+			str += stary[i];
+		}
+		str += '</select>';
+		sbox.innerHTML = str;
+
+		return;
+	}
+</script>
+EOF
+
+	my $sval = $CGI->{$svar} || $Values->{$svar};
+	$sval = $Tag->jsq($sval);
+	my $fname = $opt->{form_name} || 'nevairbe';
+	$opt->{prepend} = join "\n", @pre;
+	$opt->{append} = <<EOF;
+<script>
+	var f = document.$fname;
+	var csval = $sval;
+	if(!f) {
+		var str = '';
+		for(var i = 0; i < document.forms.length; i++) {
+			f = document.forms[i];
+			str += 'checking form ' + i + ', country=' + f.$opt->{name};
+			if(f.$opt->{name}) {
+				if(f.$svar && f.$svar.value) 
+					csval = f.$svar.value;
+				${cvar}_widget_adjust_state(f.$opt->{name}, csval);
+				str += 'SELECTING FORM ' + i;
+				break;
+			}
+		}
+	}
+	formv = f;
+	if(formv.$svar) {
+		csval = formv.$svar.value;
+	}
+	${cvar}_widget_adjust_state(formv.$opt->{name}, csval);
+
+</script>
+EOF
+
+	$opt->{js} = qq{ onLoad="${cvar}_widget_adjust_state(this)" onChange="${cvar}_widget_adjust_state(this)"};
+	my @out;
+	#push @out, '<xmp>';
+	#push @out, ::uneval(\%states);
+	#push @out, '</xmp>';
+	
+	$opt->{type} = 'select';
+	push @out, Vend::Form::display($opt, {}, \@copts);
+
+	return join "\n", @out;
+}
+EOR
+
+CodeDef country_select ExtraMeta <<EOM
+{
+	_order => [ qw/
+			state_var
+			state_style
+			state_class
+			country_sort
+			no_region
+			only_with_shipping
+			form_name
+			country_table
+			state_table
+			state_element
+		/],
+	state_var => {
+		label => 'State variable',
+		help => 'default is <i>state</i>, might use <i>b_state</i> instead',
+		widget => 'text_16',
+	},
+	state_class => {
+		label => 'CSS class for state',
+		help => 'Modify look of state text',
+		widget => 'text_20',
+	},
+	state_style => {
+		label => 'CSS style for state',
+		help => 'Modify look of state text',
+		widget => 'text_60',
+	},
+	no_region => {
+		label => 'Region sort',
+		help => 'Controls country groupings',
+		options => '=Region sort, 1=No region sort',
+		widget => 'select',
+	},
+	only_with_shipping => {
+		label => 'Only with shipping',
+		help => 'Only show countries that have value in shipmodes',
+		options => '=All countries, 1=Only with shipping',
+		widget => 'select',
+	},
+	country_sort => {
+		label => 'Sort order',
+		help => 'Should be "name" if no region sort, "sorder,name" with region',
+		widget => 'text_16',
+	},
+	country_table => {
+		label => 'Country table',
+		help => 'default is usually good (country)',
+		widget => 'text_16',
+	},
+	state_table => {
+		label => 'State table',
+		help => 'default is usually good (state)',
+		widget => 'text_16',
+	},
+	state_element => {
+		label => 'State element ID',
+		help => 'The CSS ID of the span containing the dynamic widget. The default is usually good (state_widget_container or b_state_widget_container)',
+		widget => 'text_30',
+	},
+}
+EOM
