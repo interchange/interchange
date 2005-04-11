@@ -69,6 +69,7 @@ sub {
 	my $stab = $opt->{state_table} || 'state';
 
 	my $csort = $opt->{country_sort} || ($opt->{no_region} ? 'name' : 'sorder,name');
+	my $ssort = $opt->{state_sort} || 'country,name';
 
 	my @csort = grep /\w/, split /[\s,\0]+/, $csort;
 
@@ -77,7 +78,17 @@ sub {
 			my $so = $a->{$_} cmp $b->{$_};
 			return $so if $so;
 		}
-		return '';
+		return 0;
+	};
+
+	my @ssort = grep /\w/, split /[\s,\0]+/, $ssort;
+
+	my $ssort_sub = sub {
+		for(@ssort) {
+			my $so = $a->{$_} cmp $b->{$_};
+			return $so if $so;
+		}
+		return 0;
 	};
 
 	my $cdb = dbref($ctab) or return $die->('country table %s not found', $ctab);
@@ -90,8 +101,10 @@ sub {
 	my $sary = $sdb->query({ sql => $sq, hashref => 1});
 
 	@csort = grep exists($cary->[0]{$_}), @csort;
+	@ssort = grep exists($sary->[0]{$_}), @ssort;
 
 	@$cary = sort $csort_sub @$cary;
+	@$sary = sort $ssort_sub @$sary;
 
 	if($opt->{only_with_shipping}) {
 		@$cary = grep $_->{shipmodes} =~ /\w/, @$cary;
@@ -139,6 +152,8 @@ EOF
 		my $sa = $states{$_};
 		my @sv;
 		my @st;
+		my %seen;
+		@$sa = grep !$seen{$_->[0]}++, @$sa;
 		for my $e (@$sa) {
 			push @sv, $e->[0];
 			push @st, $e->[1];
@@ -286,13 +301,18 @@ CodeDef country_select ExtraMeta <<EOM
 		widget => 'select',
 	},
 	country_sort => {
-		label => 'Sort order',
+		label => 'Country sort order',
 		help => 'Should be "name" if no region sort, "sorder,name" with region',
 		widget => 'text_16',
 	},
 	country_table => {
 		label => 'Country table',
 		help => 'default is usually good (country)',
+		widget => 'text_16',
+	},
+	state_sort => {
+		label => 'State sort order',
+		help => 'Default of <i>country,name</i> is usually OK',
 		widget => 'text_16',
 	},
 	state_table => {
