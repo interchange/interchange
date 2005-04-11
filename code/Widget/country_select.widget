@@ -178,11 +178,17 @@ EOF
 	function ${cvar}_widget_adjust_state (cel,sval) {
 		var sbox = document.getElementById('$sel');
 		var country = cel.value;
+
+		if(! formv) {
+			formv=cel.form;
+		}
+
 		if(! sval) {
 			if(formv.$svar && formv.$svar.value)
 				sval = formv.$svar.value;
 			else sval = '';
 		}
+
 		if(! sbox) return;
 		if(no_state[country]) {
 			sbox.innerHTML = '<span style="$opt->{state_style}">No state required</span>';
