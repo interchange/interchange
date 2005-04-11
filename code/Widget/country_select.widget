@@ -222,7 +222,7 @@ EOF
 EOF
 
 	my $sval = $CGI->{$svar} || $Values->{$svar};
-	$sval = $Tag->jsq($sval);
+	$sval = $Tag->jsq($sval) || "''";
 	my $fname = $opt->{form_name} || 'nevairbe';
 	$opt->{prepend} = join "\n", @pre;
 	$opt->{append} = <<EOF;
