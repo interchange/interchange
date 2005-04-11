@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.64 2005-04-10 05:25:14 mheins Exp $
+# $Id: Editor.pm,v 1.65 2005-04-11 23:32:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.64 $, 10);
+$VERSION = substr(q$Revision: 1.65 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -599,6 +599,30 @@ sub display {
 				if($passed eq 'tables') {
 					my @tables = $Tag->list_databases();
 					$record->{passed} = join (',', "=--none--", @tables);
+				}
+				elsif($passed =~ /^\s*codedef:+(\w+)\s*$/) {
+					my $tag = $1;
+
+					my @keys = keys %{$Global::CodeDef};
+
+					for(@keys) {
+						if(lc($tag) eq lc($_)) {
+							$tag = $_;
+						}
+					}
+
+					my $desc = $Global::CodeDef->{$tag};
+					my @out;
+
+					if($desc = $desc->{Description}) {
+						while( my($k, $v) = each %$desc) {
+							push @out, [$k, $v];
+						}
+					}
+					else {
+						push @out, ['', errmsg('--none--') ];
+					}
+					$record->{passed} = \@out;
 				}
 				elsif($passed eq 'filters') {
 					$record->{passed} = filters(1);
@@ -3618,6 +3642,7 @@ EOF
 							help				=> $help->{$c},
 							help_url			=> $help_url->{$c},
 							href				=> $wid_href->{$c},
+							js_check			=> $js_check->{$c},
 							key					=> $key,
 							label				=> $label->{$c},
 							lookup				=> $lookup->{$c},
