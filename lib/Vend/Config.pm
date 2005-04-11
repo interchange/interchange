@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.159 2005-04-08 01:42:52 jon Exp $
+# $Id: Config.pm,v 2.160 2005-04-11 23:35:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.159 $, 10);
+$VERSION = substr(q$Revision: 2.160 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1211,6 +1211,7 @@ my %extmap = qw/
 	lc	LocaleChange
 	tag	UserTag
 	ct	CoreTag
+	jsc	JavaScriptCheck
 /;
 
 for( values %extmap ) {

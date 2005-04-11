@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.49 2005-02-14 06:37:10 mheins Exp $
+# $Id: Form.pm,v 2.50 2005-04-11 23:35:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 
 @EXPORT = qw (
 	display
@@ -79,8 +79,6 @@ my $Tag = new Vend::Tags;
 		qq({MULTIPLE?} MULTIPLE{/MULTIPLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
-		.
-		qq({JS?} {JS}{/JS?})
 		.
 		qq(>)
 		,
@@ -1097,6 +1095,18 @@ if($opt->{debug}) {
 	$opt->{cols}      ||= $opt->{width} || $opt->{size};
 	$opt->{rows}      ||= $opt->{height};
 
+	if($opt->{js_check}) {
+		my @checks = split /[\s,\0]+/, $opt->{js_check};
+		my $js = $Global::CodeDef->{JavaScriptCheck} || {};
+		my $jsl = $Vend::Cfg->{CodeDef}{JavaScriptCheck} || {};
+		$js = $js->{Routine} || {};
+		$jsl = $jsl->{Routine} || {};
+		for(@checks) {
+			my $sub = $jsl->{$_} || $js->{$_} or next;
+			$sub->($opt);
+		}
+	}
+
 	# This handles the embedded attribute information in certain types,
 	# for example: 
 	# 
@@ -1274,10 +1284,14 @@ if($opt->{debug}) {
     $opt->{value} =~ s/&#91;/\[/g if $opt->{enable_itl};
 
 	if($opt->{class}) {
-		$opt->{extra}	= $opt->{extra}
-						? qq{$opt->{extra} class="$opt->{class}"}
-						: qq{class="$opt->{class}"}
-						;
+		if($opt->{extra}) {
+			$opt->{extra} =~ s{(^|\s+)class=(["'])?[^\s'"]+\2}{$1};
+			$opt->{extra} =~ s/\s+$//;
+			$opt->{extra} .=	qq{class="$opt->{class}"} ;
+		}
+		else {
+			$opt->{extra} =	qq{class="$opt->{class}"} ;
+		}
 	}
 
 	# Action taken for various types
@@ -1333,6 +1347,12 @@ if($opt->{debug}) {
 		HTML::Entities::encode($c);
 		no warnings;
 		$opt->{append} .= qq{<input type=hidden name="mv_individual_profile" value="$c">};
+	}
+
+	if($opt->{js}) {
+		$opt->{extra} ||= '';
+		$opt->{extra} .= " $opt->{js}";
+		$opt->{extra} =~ s/^\s+//;
 	}
 	return $sub->($opt, $data);
 }
