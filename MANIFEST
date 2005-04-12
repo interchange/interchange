@@ -18,6 +18,7 @@ code/Filter/decode_entities.filter
 code/Filter/digits.filter
 code/Filter/digits_dot.filter
 code/Filter/dos.filter
+code/Filter/duration.filter
 code/Filter/encode_entities.filter
 code/Filter/encrypt.filter
 code/Filter/filesafe.filter
@@ -75,12 +76,14 @@ code/Filter/vars_and_comments.filter
 code/Filter/word.filter
 code/Filter/yesno.filter
 code/Filter/zerofix.filter
+code/JavaScriptCheck/required.jsc
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
 code/SystemTag/area.coretag
 code/SystemTag/assign.coretag
 code/SystemTag/attr_list.coretag
 code/SystemTag/banner.coretag
+code/SystemTag/br.coretag
 code/SystemTag/calc.coretag
 code/SystemTag/calcn.coretag
 code/SystemTag/cart.coretag
@@ -269,6 +272,7 @@ code/UserTag/usps_query.tag
 code/UserTag/values_space.tag
 code/UserTag/var.tag
 code/UserTag/weight.tag
+code/Widget/country_select.widget
 code/Widget/gpg_keys.widget
 code/Widget/htmlarea.widget
 code/Widget/imagedir.widget
@@ -945,6 +949,10 @@ eg/news_feature/templates/components/news
 eg/pcode
 eg/reset_order_number
 eg/survey_graph.tag
+eg/survey_wizard/email.tag
+eg/survey_wizard/pages/admin/overall.html
+eg/survey_wizard/pages/survey/standard.html
+eg/survey_wizard/survey_wizard.coretag
 eg/te
 eg/usertag/benchmark
 eg/usertag/isindex.tag
@@ -1171,4 +1179,3 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
-META.yml                                 Module meta-data (added by MakeMaker)
