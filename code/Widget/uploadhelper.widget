@@ -1,4 +1,5 @@
 CodeDef uploadhelper  Widget  1
+CodeDef uploadhelper  Description File upload
 CodeDef uploadhelper  Routine <<EOR
 sub {
 	# $column, $value, $record->{outboard}, $record->{width}

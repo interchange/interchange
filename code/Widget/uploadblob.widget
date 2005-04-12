@@ -1,4 +1,5 @@
 CodeDef uploadblob  Widget  1
+CodeDef uploadblob  Description File upload to BLOB
 CodeDef uploadblob  Routine <<EOR
 sub {
 	# $column, $value, $record->{outboard}, $record->{width}

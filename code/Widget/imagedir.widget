@@ -1,4 +1,5 @@
 CodeDef imagedir Widget 1
+CodeDef imagedir Description Image listing
 CodeDef imagedir ExtraMeta <<EOM
 {
 	_order => [ qw/ follow_symlinks / ],

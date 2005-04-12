@@ -1,4 +1,5 @@
 CodeDef gpg_keys Widget 1
+CodeDef gpg_keys Description GPG key selector
 CodeDef gpg_keys Routine <<EOR
 sub {
 	my ($opt) = @_;
