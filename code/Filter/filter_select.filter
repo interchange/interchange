@@ -1,0 +1,26 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: filter_select.filter,v 1.1 2005-04-12 20:09:01 mheins Exp $
+
+CodeDef calculated Filter
+CodeDef calculated Alias filter_select
+CodeDef filter_select Filter
+CodeDef filter_select Description Date widget
+CodeDef filter_select Version $Revision: 1.1 $
+CodeDef filter_select Routine <<EOR
+sub {
+	## This replaces the calculated filter for the survey
+	## Selects an appropriate filter based on the widget type
+	my $wid = $CGI->{type};
+	if($wid =~ /fillin/) {
+		return 'nullselect';
+	}
+	elsif($wid =~ /select.*multip/) {
+		return 'null_to_comma';
+	}
+	elsif ($wid =~ /checkbox/) {
+		return 'checkbox null_to_comma';
+	}
+	return '';
+}
+EOR
