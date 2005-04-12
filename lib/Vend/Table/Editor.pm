@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.65 2005-04-11 23:32:20 mheins Exp $
+# $Id: Editor.pm,v 1.66 2005-04-12 03:23:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.65 $, 10);
+$VERSION = substr(q$Revision: 1.66 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -600,7 +600,7 @@ sub display {
 					my @tables = $Tag->list_databases();
 					$record->{passed} = join (',', "=--none--", @tables);
 				}
-				elsif($passed =~ /^\s*codedef:+(\w+)\s*$/) {
+				elsif($passed =~ /^\s*codedef:+(\w+)\s*$/i) {
 					my $tag = $1;
 
 					my @keys = keys %{$Global::CodeDef};
@@ -618,6 +618,7 @@ sub display {
 						while( my($k, $v) = each %$desc) {
 							push @out, [$k, $v];
 						}
+						@out = sort { $a->[1] cmp $b->[1] } @out;
 					}
 					else {
 						push @out, ['', errmsg('--none--') ];

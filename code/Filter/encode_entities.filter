@@ -1,7 +1,7 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: encode_entities.filter,v 1.2 2004-10-29 13:20:18 racke Exp $
+# $Id: encode_entities.filter,v 1.3 2005-04-12 03:23:18 mheins Exp $
 
 CodeDef e Filter
 CodeDef e Alias encode_entities
@@ -10,6 +10,7 @@ CodeDef entities Filter
 CodeDef entities Alias encode_entities
 
 CodeDef encode_entities Filter
+CodeDef encode_entities Description Encode HTML entities
 CodeDef encode_entities Routine <<EOR
 sub {
 	return HTML::Entities::encode(shift, $ESCAPE_CHARS::std);
