@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.160 2005-04-11 23:35:26 mheins Exp $
+# $Id: Config.pm,v 2.161 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.160 $, 10);
+$VERSION = substr(q$Revision: 2.161 $, 10);
 
 my %CDname;
 my %CPname;
@@ -361,6 +361,7 @@ sub global_directives {
 	['Catalog',			 'catalog',     	 ''],
 	['SubCatalog',		 'catalog',     	 ''],
 	['AutoVariable',	 'autovar',     	 'UrlJoiner'],
+	['XHTML',			 'yesno',	     	 'No'],
 
 	];
 	return $directives;
@@ -561,7 +562,8 @@ sub catalog_directives {
 	['Levies',		 	 'array',     	 	 ''],
 	['Levy',		 	 'locale',     	 	 ''],
 	['AutoVariable',	 'autovar',     	 ''],
-	['ErrorDestination', 'hash',             '']
+	['ErrorDestination', 'hash',             ''],
+	['XHTML',			 'yesno',	     	 $Global::XHTML],
 
 	];
 

@@ -1,0 +1,3 @@
+UserTag br PosNumber 0
+UserTag br Description Return <br> or <br/> based on XHTML setting
+UserTag br Routine sub { return "<br$Vend::Xtrailer>" }

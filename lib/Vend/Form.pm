@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.50 2005-04-11 23:35:27 mheins Exp $
+# $Id: Form.pm,v 2.51 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 @EXPORT = qw (
 	display
@@ -133,7 +133,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq(><br><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
+		qq(><br$Vend::Xtrailer><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
 		,
 	text =>
 		qq({PREPEND}<input type="text" name="{NAME}" value="{ENCODED}")
@@ -288,7 +288,7 @@ sub links {
 	my($opt, $opts) = @_;
 #warn "called links opts=$opts\n";
 
-	$opt->{joiner} = Vend::Interpolate::get_joiner($opt->{joiner}, "<BR>");
+	$opt->{joiner} = Vend::Interpolate::get_joiner($opt->{joiner}, "<br$Vend::Xtrailer>");
 	my $name = $opt->{name};
 	my $default = defined $opt->{value} ? $opt->{value} : $opt->{default};
 
@@ -591,7 +591,7 @@ sub option_widget_box {
 	$val =~ s/"/&quot;/g;
 	$lab =~ s/"/&quot;/g;
 	$width = 10 if ! $width;
-	return qq{<TR><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$val" SIZE=$half></SMALL></TD><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$lab" SIZE=$width></SMALL></TD><TD><SMALL><SMALL><SELECT NAME="$name"><OPTION value="0">no<OPTION value="1"$sel>default*</SELECT></SMALL></SMALL></TD></TR>};
+	return qq{<tr><td><small><input type="text" name="$name" value="$val" size="$half"></small></td><td><small><input type="text" name="$name" value="$lab" size=$width></small></td><td><small><small><select name="$name"><option value="0">no<option value="1"$sel>default*</select></small></small></td></tr>};
 }
 
 sub option_widget {
@@ -603,7 +603,13 @@ sub option_widget {
 		unless length($opt->{filter});
 	$val = Vend::Interpolate::filter_value($opt->{filter}, $val);
 	my @opts = split /\s*,\s*/, $val;
-	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
+
+	my $out = qq{<table cellpadding="0" cellspacing="0"><tr><th><small>};
+	$out .= errmsg('Value');
+	$out .= qq{</small></th><th align="left" colspan="2"><small>};
+	$out .= errmsg('Label');
+	$out .= qq{</small></th></tr>};
+
 	my $done;
 	my $height = $opt->{height} || 5;
 	$height -= 2;
@@ -621,7 +627,7 @@ sub option_widget {
 	}
 	$out .= option_widget_box($name, '', '', '', $width);
 	$out .= option_widget_box($name, '', '', '', $width);
-	$out .= "</TABLE>";
+	$out .= "</table>";
 }
 
 
@@ -658,7 +664,7 @@ sub combo {
 	if($opt->{textarea}) {
 		my $template = $opt->{o_template};
 		if(! $template) {
-			$template = '<br>';
+			$template = "<br$Vend::Xtrailer>";
 			if(! $opt->{rows} or $opt->{rows} > 1) {
 				$template .= q(<textarea rows="{ROWS|2}" wrap="{WRAP|virtual}");
 				$template .= q( cols="{COLS|60}" name="{NAME}">);
@@ -877,27 +883,27 @@ sub box {
 		$template = $Template{boxnbsp};
 	}
 	elsif ($opt->{left}) {
-		$header = '<TABLE>';
-		$footer = '</TABLE>';
-		$template = '<TR>' unless $inc;
+		$header = '<table>';
+		$footer = '</table>';
+		$template = '<tr>' unless $inc;
 		$template .= $Template{boxvalue};
 		$template .= $Template{boxlabel};
-		$template .= '</TR>' unless $inc;
+		$template .= '</tr>' unless $inc;
 		$o_template = $Template{boxgroup};
 	}
 	elsif ($opt->{right}) {
-		$header = '<TABLE>';
-		$footer = '</TABLE>';
-		$template = '<TR>' unless $inc;
+		$header = '<table>';
+		$footer = '</table>';
+		$template = '<tr>' unless $inc;
 		$template .= $Template{boxlabel};
 		$template .= $Template{boxvalue};
-		$template .= '</TR>' unless $inc;
+		$template .= '</tr>' unless $inc;
 		$o_template = $Template{boxgroup};
 	}
 	else {
 		$template = $Template{boxstd};
 	}
-	$o_template ||= '<BR><b>{TVALUE}</b><BR>';
+	$o_template ||= "<br$Vend::Xtrailer><b>{TVALUE}</b><br$Vend::Xtrailer>";
 
 	my $run = $header;
 
@@ -922,7 +928,7 @@ sub box {
 		$value = ''     if ! length($value);
 		$label = $value if ! length($label);
 
-		$run .= '<TR>' if $inc && ! ($i % $inc);
+		$run .= '<tr>' if $inc && ! ($i % $inc);
 		$i++;
 
 		undef $opt->{selected};
@@ -964,7 +970,7 @@ sub box {
 		}
 
 		$run .= attr_list($template, $opt);
-		$run .= '</TR>' if $inc && ! ($i % $inc);
+		$run .= '</tr>' if $inc && ! ($i % $inc);
 	}
 	$run .= $footer;
 }

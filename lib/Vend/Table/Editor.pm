@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.66 2005-04-12 03:23:21 mheins Exp $
+# $Id: Editor.pm,v 1.67 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.66 $, 10);
+$VERSION = substr(q$Revision: 1.67 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -762,15 +762,15 @@ EOF
 	return $w unless $template || $opt->{return_hash} || $array_return;
 
 	if($template and $template !~ /\s/) {
-		$template = <<'EOF';
-<TR>
-<TD>
-	<B>$LABEL$</B>
-</TD>
-<TD VALIGN=TOP>
-	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD>$HELP${HELP_URL}<BR><A HREF="$HELP_URL$">help</A>{/HELP_URL}</TD></TR></TABLE>
-</TD>
-</TR>
+		$template = <<EOF;
+<tr>
+<td>
+	<b>\$LABEL\$</b>
+</td>
+<td valign="top">
+	<table cellspacing="0" cellmargin="0"><tr><td>\$WIDGET\$</td><td>\$HELP\${HELP_URL}<br$Vend::Xtrailer><a href="\$HELP_URL\$">help</A>{/HELP_URL}</td></tr></table>
+</td>
+</tr>
 EOF
 	}
 
@@ -2266,15 +2266,24 @@ EOF
 									all => 1,
 									show_var => $error_show_var,
 									show_error => 1,
-									joiner => '<BR>',
+									joiner => "<br$Vend::Xtrailer>",
 									keep => 1}
 									);
-		if($opt->{all_errors}) {
-			if($have_errors) {
-				$mlabel .= '<P>Errors:';
-				$mlabel .= qq{<FONT COLOR="$opt->{color_fail}">};
-				$mlabel .= "<BLOCKQUOTE>$have_errors</BLOCKQUOTE></FONT>";
-			}
+		if($opt->{all_errors} and $have_errors) {
+			my $title = $opt->{all_errors_title} || errmsg('Errors');
+			my $style = $opt->{all_errors_style} || "color: $opt->{color_fail}";
+			my %hash = (
+				title => $opt->{all_errors_title} || errmsg('Errors'),
+				style => $opt->{all_errors_style} || "color: $opt->{color_fail}",
+				errors => $have_errors,
+			);
+			my $tpl = $opt->{all_errors_template} || <<EOF;
+<p>{TITLE}:
+<blockquote style="{STYLE}">{ERRORS}</blockquote>
+</p>
+EOF
+			$mlabel .= tag_attr_list($tpl, \%hash, 'uc');
+
 		}
 	}
 	### end build of error checking

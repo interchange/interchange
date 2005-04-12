@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.8 2004-12-15 21:26:26 mheins Exp $
+# $Id: Old48.pm,v 1.9 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 =head1 NAME
 
@@ -232,7 +232,7 @@ sub display_options_matrix {
 			}
 		}
 		else {
-			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+			$opt->{joiner} = "<br$Vend::Xtrailer>" if ! $opt->{joiner};
 			$out .= $begin;
 			$out .= join $opt->{joiner}, @out;
 		}
@@ -431,7 +431,7 @@ sub display_options_simple {
 		}
 	}
 	else {
-		$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+		$opt->{joiner} = "<br$Vend::Xtrailer>" if ! $opt->{joiner};
 		$out .= join $opt->{joiner}, @out;
 	}
 	return $out;

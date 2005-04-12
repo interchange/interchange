@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.41 2005-02-14 13:06:28 racke Exp $
+# $Id: Menu.pm,v 2.42 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 use Vend::Util;
 use strict;
@@ -401,7 +401,7 @@ sub old_tree {
 
 	$opt->{header_template} ||= <<EOF;
 <P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
 <a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
 </P>
 EOF
@@ -919,7 +919,7 @@ sub file_tree {
 	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
 	$opt->{header_template} ||= <<EOF;
 <P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
 <a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
 </P>
 EOF
@@ -1341,7 +1341,7 @@ function ${vpf}tree_link (idx) {
 		out += '</div>';
 	}
 	else {
-		out += '<br>';
+		out += "<br$Vend::Xtrailer>";
 	}
 
 	return out;
@@ -1439,7 +1439,7 @@ sub dhtml_tree {
 	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
 	$opt->{header_template} ||= <<EOF;
 <P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
 <a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
 </P>
 EOF
@@ -1704,7 +1704,7 @@ function ${vpf}tree_link (idx) {
 			out = out + l[${vpf}NAME];
 		}
 	}
-	out = out + '<br>';
+	out = out + "<br$Vend::Xtrailer>";
 
 	return out;
 }
@@ -1813,7 +1813,7 @@ sub tree_link {
 	}
 
 	$template ||= qq[
-{MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{PAGE?}<A href="{HREF}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{PAGE?}<A href="{HREF}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN:}<br>
+{MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{PAGE?}<A href="{HREF}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{PAGE?}<A href="{HREF}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN:}<br$Vend::Xtrailer>
 ];
 
 	if(! $row->{page}) {
@@ -1984,12 +1984,12 @@ sub menu_link {
 	$template ||= <<EOF unless $template =~ /\S/;
 {PAGE:}
 	<b>{NAME}:</b>
-	<br>
+	<br$Vend::Xtrailer>
 {/PAGE:}
 
 {PAGE?}
 &nbsp;&nbsp;&nbsp;
-<a href="{HREF}"{DESCRIPTION?} title="{DESCRIPTION}"{/DESCRIPTION?}>{NAME}</a><br>
+<a href="{HREF}"{DESCRIPTION?} title="{DESCRIPTION}"{/DESCRIPTION?}>{NAME}</a><br$Vend::Xtrailer>
 {/PAGE?}
 EOF
 

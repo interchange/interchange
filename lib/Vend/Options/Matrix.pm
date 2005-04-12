@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.8 2004-07-19 22:24:17 jon Exp $
+# $Id: Matrix.pm,v 1.9 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 =head1 NAME
 
@@ -250,7 +250,7 @@ sub display_options {
 			}
 		}
 		else {
-			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+			$opt->{joiner} = "<br$Vend::Xtrailer>" if ! $opt->{joiner};
 			$out .= $begin;
 			$out .= join $opt->{joiner}, @out;
 		}

@@ -1,6 +1,6 @@
 # Vend::Options::Simple - Interchange Simple product options
 #
-# $Id: Simple.pm,v 1.4 2004-01-08 22:36:31 mheins Exp $
+# $Id: Simple.pm,v 1.5 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Simple;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 =head1 NAME
 
@@ -245,7 +245,7 @@ sub display_options {
 		}
 	}
 	else {
-		$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+		$opt->{joiner} = "<br$Vend::Xtrailer>" if ! $opt->{joiner};
 		$out .= join $opt->{joiner}, @out;
 	}
 #::logDebug("display_options out size=" . length($out));

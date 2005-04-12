@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.237 2005-04-07 22:51:33 jon Exp $
+# $Id: Interpolate.pm,v 2.238 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.237 $, 10);
+$VERSION = substr(q$Revision: 2.238 $, 10);
 
 @EXPORT = qw (
 
@@ -3691,7 +3691,7 @@ sub tag_address {
 	$opt->{address_book} = join ",", @nick
 		unless $opt->{address_book};
 
-	my $joiner = get_joiner($opt->{joiner}, '<BR>');
+	my $joiner = get_joiner($opt->{joiner}, "<br$Vend::Xtrailer>");
 	if(! $opt->{no_address}) {
 		my @vals = map { $addr->{$_} }
 					grep /^address_?\d*$/ && length($addr->{$_}), keys %$addr;

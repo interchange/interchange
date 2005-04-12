@@ -1,6 +1,6 @@
 # Vend::Options - Interchange item options base module
 #
-# $Id: Options.pm,v 2.3 2003-06-18 17:34:44 jon Exp $
+# $Id: Options.pm,v 2.4 2005-04-12 15:14:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Options;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -153,7 +153,7 @@ sub find_joiner {
 		$opt->{type}		||= 'display';
 	}
 	else {
-		$opt->{joiner} ||= '<BR>';
+		$opt->{joiner} ||= "<br$Vend::Xtrailer>";
 	}
 	return;
 }
