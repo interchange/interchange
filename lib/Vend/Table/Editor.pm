@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.68 2005-04-13 03:14:47 mheins Exp $
+# $Id: Editor.pm,v 1.69 2005-04-13 16:13:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.68 $, 10);
+$VERSION = substr(q$Revision: 1.69 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -593,7 +593,7 @@ sub display {
 		$record->{name} ||= $column;
 #::logDebug("record now=" . ::uneval($record));
 
-		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
+		if($record->{options} and $record->{options} =~ /^[\w:,]+$/) {
 #::logDebug("checking options");
 			PASS: {
 				my $passed = $record->{options};
@@ -602,30 +602,10 @@ sub display {
 					my @tables = $Tag->list_databases();
 					$record->{passed} = join (',', "=--none--", @tables);
 				}
-				elsif($passed =~ /^\s*codedef:+(\w+)\s*$/i) {
+				elsif($passed =~ /^\s*codedef:+(\w+)(:+(\w+))?\s*$/i) {
 					my $tag = $1;
-
-					my @keys = keys %{$Global::CodeDef};
-
-					for(@keys) {
-						if(lc($tag) eq lc($_)) {
-							$tag = $_;
-						}
-					}
-
-					my $desc = $Global::CodeDef->{$tag};
-					my @out;
-
-					if($desc = $desc->{Description}) {
-						while( my($k, $v) = each %$desc) {
-							push @out, [$k, $v];
-						}
-						@out = sort { $a->[1] cmp $b->[1] } @out;
-					}
-					else {
-						push @out, ['', errmsg('--none--') ];
-					}
-					$record->{passed} = \@out;
+					my $mod = $3;
+					$record->{passed} = Vend::Util::codedef_options($tag, $mod);
 				}
 				elsif($passed eq 'filters') {
 					$record->{passed} = filters(1);

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.51 2005-04-12 15:14:39 mheins Exp $
+# $Id: Form.pm,v 2.52 2005-04-13 16:13:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.52 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1102,14 +1102,14 @@ if($opt->{debug}) {
 	$opt->{rows}      ||= $opt->{height};
 
 	if($opt->{js_check}) {
-		my @checks = split /[\s,\0]+/, $opt->{js_check};
-		my $js = $Global::CodeDef->{JavaScriptCheck} || {};
-		my $jsl = $Vend::Cfg->{CodeDef}{JavaScriptCheck} || {};
-		$js = $js->{Routine} || {};
-		$jsl = $jsl->{Routine} || {};
+		my @checks = grep /\w/, split /[\s,\0]+/, $opt->{js_check};
 		for(@checks) {
-			my $sub = $jsl->{$_} || $js->{$_} or next;
-			$sub->($opt);
+			if(my $sub = Vend::Util::codedef_routine('JavaScriptCheck', $_)) {
+				$sub->($opt);
+			}
+			else {
+				::logError('Unknown %s: %s', 'JavaScriptCheck', $_);
+			}
 		}
 	}
 

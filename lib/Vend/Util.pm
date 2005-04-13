@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.79 2005-01-31 21:40:35 jonc Exp $
+# $Id: Util.pm,v 2.80 2005-04-13 16:13:27 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.79 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1965,6 +1965,102 @@ sub send_mail {
 	}
 
 	$ok;
+}
+
+sub codedef_routine {
+	my ($tag, $routine, $modifier) = @_;
+
+	my @tries;
+	my $tried;
+
+	RESOLVEDEF: {
+		if($Vend::Cfg->{CodeDef}{$tag}) {
+			push @tries, $Vend::Cfg->{CodeDef}{$tag}{Routine} || {};
+		}
+		if($Global::CodeDef->{$tag}) {
+			push @tries, $Global::CodeDef->{$tag}{Routine} || {};
+		}
+		if(! @tries and ! $tried++) {
+			my @keys = keys %{$Vend::Cfg->{CodeDef}};
+			push @keys, keys %{$Global::CodeDef};
+			for(@keys) {
+				if(lc($tag) eq lc($_)) {
+					$tag = $_;
+					redo RESOLVEDEF;
+				}
+			}
+		}
+	}
+
+	for(@tries) {
+		return $_->{$routine} if $_->{$routine};
+	}
+	return undef;
+}
+
+sub codedef_options {
+	my ($tag, $modifier) = @_;
+
+	my @out;
+	my $empty;
+
+	my @keys = keys %{$Vend::Cfg->{CodeDef}};
+	push @keys, keys %{$Global::CodeDef};
+
+	my %gate = ( public => 1 );
+
+	my @mod = grep /\w/, split /[\s\0,]+/, $modifier;
+	for(@mod) {
+		if($_ eq 'all') {
+			$gate{private} = 1;
+		}
+
+		if($_ eq 'empty') {
+			$empty = ['', errmsg('--select--')];
+		}
+
+		if($_ eq 'admin') {
+			$gate{admin} = 1;
+		}
+	}
+
+	for(@keys) {
+		if(lc($tag) eq lc($_)) {
+			$tag = $_;
+			last;
+		}
+	}
+
+	my %seen;
+
+	for my $repos ( $Vend::Cfg->{CodeDef}{$tag}, $Global::CodeDef->{$tag} ) {
+		if(my $desc = $repos->{Description}) {
+			my $vis = $repos->{Visibility} || {};
+			while( my($k, $v) = each %$desc) {
+				next if $seen{$k}++;
+				if(my $perm = $vis->{$k}) {
+					if($perm =~ /^with\s+([\w:]+)/) {
+						my $mod = $1;
+						no strict 'refs';
+						next unless ${$mod . "::VERSION"};
+					}
+					else {
+						next unless $gate{$perm};
+					}
+				}
+				push @out, [$k, $v];
+			}
+		}
+	}
+
+	if(@out) {
+		@out = sort { $a->[1] cmp $b->[1] } @out;
+		unshift @out, $empty if $empty;
+	}
+	else {
+		push @out, ['', errmsg('--none--') ];
+	}
+	return \@out;
 }
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File

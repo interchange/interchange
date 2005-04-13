@@ -1,10 +1,11 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: pgbooln.filter,v 1.2 2005-04-12 03:23:18 mheins Exp $
+# $Id: pgbooln.filter,v 1.3 2005-04-13 16:13:27 mheins Exp $
 
 CodeDef pgbooln Filter
-#CodeDef pgbool Description Postgres Boolean NOT
+CodeDef pgbooln Description Postgres Boolean NOT
+CodeDef pgbooln Visibility  private
 CodeDef pgbooln Routine <<EOR
 sub {
 	my $val = shift;

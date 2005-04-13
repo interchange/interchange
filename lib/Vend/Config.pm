@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.161 2005-04-12 15:14:39 mheins Exp $
+# $Id: Config.pm,v 2.162 2005-04-13 16:13:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.161 $, 10);
+$VERSION = substr(q$Revision: 2.162 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3816,6 +3816,7 @@ my %tagCanon = ( qw(
 	attrdefault		attrDefault
 	cannest			canNest
 	description  	Description
+	visibility  	Visibility
 	documentation	Documentation
 	extrameta		ExtraMeta
 	gobble			Gobble
