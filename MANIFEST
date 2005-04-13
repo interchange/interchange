@@ -1097,7 +1097,6 @@ scripts/makecat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
-share/ic_jslib.js
 share/interchange-5/en_US/az.gif
 share/interchange-5/en_US/bg.gif
 share/interchange-5/en_US/box_checked.gif
