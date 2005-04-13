@@ -3,7 +3,6 @@ code/Filter/alpha.filter
 code/Filter/alphanumeric.filter
 code/Filter/backslash.filter
 code/Filter/bold.filter
-code/Filter/calculated.filter
 code/Filter/cgi.filter
 code/Filter/checkbox.filter
 code/Filter/colons_to_null.filter
@@ -22,6 +21,7 @@ code/Filter/duration.filter
 code/Filter/encode_entities.filter
 code/Filter/encrypt.filter
 code/Filter/filesafe.filter
+code/Filter/filter_select.filter
 code/Filter/gate.filter
 code/Filter/html2text.filter
 code/Filter/integer.filter
@@ -932,6 +932,7 @@ dist/standard/variables/LINE_MENU
 dist/standard/variables/PAGE_INIT
 dist/standard/variables/THEME_CSS
 eg/compact
+eg/filter/calculated.filter
 eg/globalsub/authorizenet
 eg/globalsub/signio
 eg/globalsub/test_card
@@ -949,6 +950,7 @@ eg/news_feature/templates/components/news
 eg/pcode
 eg/reset_order_number
 eg/survey_graph.tag
+eg/survey_wizard/code/Widget/user_uploadhelper.widget
 eg/survey_wizard/email.tag
 eg/survey_wizard/pages/admin/overall.html
 eg/survey_wizard/pages/survey/standard.html
@@ -982,6 +984,8 @@ extensions/quickbooks/usertag/export_quicken_items.tag
 extensions/quickbooks/usertag/get_quicken_orders.tag
 extensions/quickbooks/usertag/import_quicken_items.tag
 extensions/quickbooks/vars/TRANS_QUICKBOOKS
+extensions/usertag/ad.tag
+extensions/usertag/ads_summary.tag
 extra/Business/Fedex.pm
 extra/Business/UPS.pm
 extra/File/Spec.pm
@@ -1095,6 +1099,7 @@ scripts/makecat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
+share/ic_jslib.js
 share/interchange-5/en_US/az.gif
 share/interchange-5/en_US/bg.gif
 share/interchange-5/en_US/box_checked.gif
