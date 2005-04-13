@@ -984,8 +984,6 @@ extensions/quickbooks/usertag/export_quicken_items.tag
 extensions/quickbooks/usertag/get_quicken_orders.tag
 extensions/quickbooks/usertag/import_quicken_items.tag
 extensions/quickbooks/vars/TRANS_QUICKBOOKS
-extensions/usertag/ad.tag
-extensions/usertag/ads_summary.tag
 extra/Business/Fedex.pm
 extra/Business/UPS.pm
 extra/File/Spec.pm
