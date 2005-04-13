@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.67 2005-04-12 15:14:39 mheins Exp $
+# $Id: Editor.pm,v 1.68 2005-04-13 03:14:47 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.67 $, 10);
+$VERSION = substr(q$Revision: 1.68 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -553,6 +553,8 @@ sub display {
 								append
 								attribute
 								db
+								callback_prescript
+								callback_postscript
 								class
 								extra
 								disabled
@@ -2617,9 +2619,6 @@ EOF
 	no strict 'subs';
 
 	chunk ttag(), $restrict_begin;
-	chunk 'FORM_BEGIN', 'OUTPUT_MAP', <<EOF; # unless $wo;
-<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
-EOF
 
     $hidden->{mv_click}      = $opt->{process_filter};
     $hidden->{mv_todo}       = $opt->{action};
@@ -3397,6 +3396,14 @@ $l_pkey</td>};
 		$reload = 1 unless $opt->{no_reload};
 	}
 
+	my @prescript;
+	my @postscript;
+	my $callback_prescript = sub {
+		push @prescript, @_;
+	};
+	my $callback_postscript = sub {
+		push @postscript, @_;
+	};
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -3636,6 +3643,8 @@ EOF
 							append				=> $append->{$c},
 							applylocale			=> 1,
 							arbitrary			=> $opt->{ui_meta_view},
+							callback_prescript  => $callback_prescript,
+							callback_postscript  => $callback_postscript,
 							class				=> $class->{$c},
 							column				=> $c,
 							db					=> $database->{$c},
@@ -3974,9 +3983,17 @@ EOF
 </script>
 EOF
 	}
-	chunk 'FORM_END', 'OUTPUT_MAP', <<EOF;
-</form>$end_script
+
+	push @prescript, <<EOF;
+<form method="$opt->{method}" ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
 EOF
+
+	chunk 'FORM_BEGIN', 'OUTPUT_MAP', join("\n", @prescript);
+
+	unshift @postscript, qq{</form>$end_script};
+
+	chunk 'FORM_END', 'OUTPUT_MAP', join("\n", @postscript);
+
 	chunk ttag(), $restrict_end;
 
 	chunk_alias 'BOTTOM_OF_FORM', qw/ FORM_END /;
