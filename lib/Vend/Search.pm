@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.27 2005-03-06 04:14:08 mheins Exp $
+# $Id: Search.pm,v 2.28 2005-04-13 16:55:20 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -653,8 +653,7 @@ sub map_ops {
 		if(! $c->[$i]) {
 			my $r;
 			$c->[$i] = [$r, $o], next
-				if  $r = $Global::CodeDef->{SearchOp}
-				and $r = $r->{Routine}{$o};
+				if  $r = Vend::Util::codedef_routine('SearchOp',$o);
 		}
 	}
 	@{$s->{mv_column_op}};
