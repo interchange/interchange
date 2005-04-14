@@ -1,0 +1,7 @@
+CodeDef checkbox Widget 1
+CodeDef checkbox Description Checkbox
+CodeDef checkbox Help Selection of single/multiple values
+CodeDef checkbox MapRoutine Vend::Form::box
+CodeDef check_nbsp Widget 1
+CodeDef check_nbsp Description Checkbox (nbsp)
+CodeDef check_nbsp Help Selection of single/multiple values, &nbsp; for spaces

@@ -1,0 +1,7 @@
+CodeDef movecombo Widget 1
+CodeDef movecombo Description Combo move
+CodeDef movecombo Help Selects any/all of many options, puts in text box
+CodeDef movecombo MapRoutine Vend::Form::movecombo
+CodeDef movecombo_replace Widget 1
+CodeDef movecombo_replace Description Combo move (one value)
+CodeDef movecombo_replace Help Selects one of many options, puts in text box

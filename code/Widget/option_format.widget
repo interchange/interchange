@@ -1,0 +1,3 @@
+CodeDef option_format Widget 1
+CodeDef option_format Description Option formatter
+CodeDef option_format MapRoutine Vend::Form::option_widget

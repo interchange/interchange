@@ -1,0 +1,3 @@
+CodeDef yesno Widget 1
+CodeDef yesno Description Yes/No (Yes=1)
+CodeDef yesno MapRoutine Vend::Form::yesno

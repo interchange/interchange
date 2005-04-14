@@ -1,0 +1,4 @@
+CodeDef realvalue Widget 1
+CodeDef realvalue Description Unencoded value
+CodeDef realvalue Help Skips HTML::Entities encode process
+CodeDef realvalue Routine sub { my $opt = shift; return $opt->{value} }

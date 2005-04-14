@@ -1,0 +1,6 @@
+CodeDef text Widget 1
+CodeDef text Description Text entry*
+CodeDef text Help Default HTML input widget
+CodeDef textarea Widget 1
+CodeDef textarea Description Text box (textarea)
+CodeDef textarea Help Size defined by height and width

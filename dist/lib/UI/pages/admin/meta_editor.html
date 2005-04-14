@@ -142,6 +142,7 @@ EOF
 		'field' => qq{columns::$m_table},
 		'extended.js_check' => qq{codedef::JavascriptCheck},
 		'filter' => 'codedef:filter:empty',
+		'type' => 'codedef:widget',
 	},
 
 	filter => {
@@ -180,6 +181,7 @@ EOF
 		'extended.restrict_allow' => 'Allow these ITL tags',
 		'display_filter' => 'Display filter',
 	},
+
 	help => {
 		'extended.fs_data_calc' => 'Current record passed as $item',
 		'extended.fs_data_tables' => 'To have open for Safe module',
@@ -190,8 +192,12 @@ EOF
 		'extended.restrict_allow' => 'in append/prepend/lookup_query',
 		'display_filter' => 'Only used for hidden_text type',
 	},
+	width => {
+		type => 30,
+	},
 	widget => {
-		extended => "textarea_5_50",
+		type => 'movecombo_replace',
+		extended => 'textarea_5_50',
 		'extended.ui_more_alpha' => 'yesno',
 		'extended.ui_sort_option' => 'select',
 		'extended.fs_no_group' => 'yesno',
@@ -269,6 +275,8 @@ EOF
 	options=`$me_opt{options}`
 	filter=`$me_opt{filter}`
 	label=`$me_opt{label}`
+	height=`$me_opt{height}`
+	width=`$me_opt{width}`
 	help=`$me_opt{help}`
 	widget=`$me_opt{widget}`
 	ui_style=1
@@ -277,4 +285,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.16 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.17 $ -->

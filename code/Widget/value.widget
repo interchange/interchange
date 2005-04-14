@@ -1,0 +1,4 @@
+CodeDef value Widget 1
+CodeDef value Description Show value
+CodeDef value Help Encoded with HTML::Entities::encode
+CodeDef value Routine sub { my $opt = shift; return $opt->{encoded} }

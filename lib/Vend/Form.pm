@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.53 2005-04-14 15:13:14 mheins Exp $
+# $Id: Form.pm,v 2.54 2005-04-14 20:30:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 @EXPORT = qw (
 	display
@@ -651,9 +651,14 @@ sub movecombo {
 	my ($opt, $opts) = @_;
 	my $name = $opt->{name};
 	$opt->{name} = "X$name";
-	my $ejs = ",1" if $opt->{rows} > 1;
-	$opt->{extra} .= qq{ onChange="addItem(this.form['X$name'],this.form['$name']$ejs)"}
+	my $usenl = $opt->{rows} > 1 ? 1 : 0;
+	my $only = $opt->{replace} ? 1 : 0;
+	$opt->{extra} .= qq{ onChange="addItem(this.form['X$name'],this.form['$name'],$usenl,$only)"}
             unless $opt->{extra} =~ m/\bonchange\s*=/i;
+
+	$opt->{rows} = $opt->{height} unless length($opt->{rows});
+	$opt->{cols} = $opt->{width} unless length($opt->{cols});
+
 	my $tbox = '';
 	my $out = dropdown($opt, $opts);
 
@@ -1321,29 +1326,6 @@ if($opt->{debug}) {
 		}
 	}
 
-	# Action taken for various types
-	my %daction = (
-		checkbox    => \&box,
-		combo		=> \&combo,
-		date		=> \&date_widget,
-		default     => \&template_sub,
-		display     => \&current_label,
-		links		=> \&links,
-		movecombo	=> \&movecombo,
-		multiple    => \&dropdown,
-		noyes		=> \&noyes,
-		option_format => \&option_widget,
-		options     => \&show_options,
-		labels      => \&show_labels,
-		radio       => \&box,
-		select      => \&dropdown,
-		show        => \&show_data,
-		value       => sub { my $opt = shift; return $opt->{encoded} },
-		realvalue   => sub { my $opt = shift; return $opt->{value} },
-		yesno		=> \&yesno,
-	);
-
-	## The user/admin widget space
 	# Optimization for large lists
 	unless($Vend::UserWidget) {
 		my $ref;
@@ -1356,17 +1338,21 @@ if($opt->{debug}) {
 				$Vend::UserWidget->{$k} = $v;
 			}
 		}
+		if(my $ref = $Global::CodeDef->{Widget}{MapRoutine}) {
+			no strict 'refs';
+			while ( my ($k, $v) = each %$ref) {
+				next if $Vend::UserWidget->{$k};
+				$Vend::UserWidget->{$k} = \&{"$v"};
+			}
+		}
 	}
 
-	my $sub =  $Vend::UserWidget->{$type}
-			|| $daction{$type}
-			|| $daction{default};
+	my $sub =  $Vend::UserWidget->{$type} || $Vend::UserWidget->{default};
 
 	if($opt->{variant}) {
 #::logDebug("variant='$opt->{variant}'");
 		$opt->{subwidget}	=  $Vend::UserWidget->{$opt->{variant}}
-							|| $daction{$opt->{variant}}
-							|| $daction{default};
+							||  $Vend::UserWidget->{default};
 	}
 
 	if(my $c = $opt->{check}) {
@@ -1497,10 +1483,11 @@ sub parse_type {
 		$opt->{type} = 'combo';
 		$opt->{reverse} = 1;
 	}
-	elsif($type =~ /^move_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
+	elsif($type =~ /^move_*combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
+		$opt->{rows} = $opt->{rows} || $opt->{height} || $1 || 1;
+		$opt->{cols} = $opt->{cols} || $opt->{width} || $2 || 16;
 		$opt->{type} = 'movecombo';
+		$opt->{replace} = 1 if $type =~ /replace/;
 	}
 	elsif($type =~ /multi/i) {
 		$opt->{type} = 'select';

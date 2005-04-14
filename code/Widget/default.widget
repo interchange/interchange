@@ -1,0 +1,4 @@
+CodeDef default Widget 1
+CodeDef default Description Default widget if none selected
+CodeDef default Visibility private
+CodeDef default MapRoutine Vend::Form::template_sub

@@ -1,0 +1,4 @@
+CodeDef noyes Widget 1
+CodeDef noyes Description No/Yes (No=1)
+CodeDef noyes Help Default is 1 for No
+CodeDef noyes MapRoutine Vend::Form::noyes
