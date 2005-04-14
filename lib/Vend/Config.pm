@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.162 2005-04-13 16:13:27 mheins Exp $
+# $Id: Config.pm,v 2.163 2005-04-14 13:36:08 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.162 $, 10);
+$VERSION = substr(q$Revision: 2.163 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3816,6 +3816,7 @@ my %tagCanon = ( qw(
 	attrdefault		attrDefault
 	cannest			canNest
 	description  	Description
+	override	  	Override
 	visibility  	Visibility
 	documentation	Documentation
 	extrameta		ExtraMeta
@@ -4008,7 +4009,12 @@ sub parse_tag {
 		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
 	}
 
-	if($p eq 'Routine' or $p eq 'PosRoutine') {
+	if($p eq 'Override') {
+		for (keys %$c) {
+			delete $c->{$_}{$tag};
+		}
+	}
+	elsif($p eq 'Routine' or $p eq 'PosRoutine') {
 		if (defined $c->{Source}->{$tag}->{$p}){
 			config_error(
 				errmsg(
