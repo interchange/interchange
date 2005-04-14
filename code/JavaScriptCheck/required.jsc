@@ -1,5 +1,6 @@
 CodeDef required  JavaScriptCheck  1
-CodeDef required  Description Javascript check for non-blank
+CodeDef required  Description Javascript non-blank check
+CodeDef required  Help Also checks for only whitespace
 CodeDef required  Routine <<EOR
 sub {
 	my $opt = shift;

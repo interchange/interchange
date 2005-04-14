@@ -1,10 +1,11 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: alpha.filter,v 1.2 2005-04-12 03:23:18 mheins Exp $
+# $Id: alpha.filter,v 1.3 2005-04-14 15:13:14 mheins Exp $
 
 CodeDef alpha Filter
 CodeDef alpha Description A-Za-z only
+CodeDef alpha Help  Returns only alpha charactors (i.e. ISO 8859-1)
 CodeDef alpha Routine <<EOR
 sub {
 	my $val = shift;

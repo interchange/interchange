@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.52 2005-04-13 16:13:27 mheins Exp $
+# $Id: Form.pm,v 2.53 2005-04-14 15:13:14 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.52 $, 10);
+$VERSION = substr(q$Revision: 2.53 $, 10);
 
 @EXPORT = qw (
 	display
@@ -98,6 +98,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
 		qq({WRAP?} wrap="{WRAP}"{/WRAP?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -120,6 +122,8 @@ my $Tag = new Vend::Tags;
 	file =>
 		qq({PREPEND}<input type="file" name="{NAME}" value="{ENCODED}")
 		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -128,6 +132,8 @@ my $Tag = new Vend::Tags;
 		,
 	filetext =>
 		qq({PREPEND}<input type="file" name="{NAME}" value="{ENCODED}")
+		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
@@ -140,9 +146,13 @@ my $Tag = new Vend::Tags;
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
 		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
+		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
@@ -167,14 +177,18 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
 		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
 		qq({SELECTED?} CHECKED{/SELECTED?})
 		.
-		qq(>&nbsp;{TLABEL})
+		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?})
 		,
 	boxnbsp =>
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
+		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
@@ -182,10 +196,10 @@ my $Tag = new Vend::Tags;
 		.
 		qq({SELECTED?} CHECKED{/SELECTED?})
 		.
-		qq(>&nbsp;{TLABEL}&nbsp;&nbsp;)
+		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?}&nbsp;&nbsp;)
 		,
 	boxlabel =>
-		qq(<td{TD_LABEL?} {TD_LABEL}{/TD_LABEL?}>)
+		qq(<td{TD_LABEL?} {TD_LABEL}{/TD_LABEL?}{TTITLE?} title="{TTITLE}"{/TTITLE?}>)
 		.
 		qq({FONT?}<font size="{FONT}">{/FONT?})
 		.
@@ -197,6 +211,8 @@ my $Tag = new Vend::Tags;
 		qq(<td{TD_VALUE?} {TD_VALUE}{/TD_VALUE?}>)
 		.
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
+		.
+		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
 		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
@@ -745,8 +761,9 @@ sub dropdown {
 	my $no_encode = $opt->{pre_filter} eq 'decode_entities' ? 1 : 0;
 	
 	for(@$opts) {
-		my ($value, $label) = @$_;
+		my ($value, $label, $help) = @$_;
 		encode($label, $ESCAPE_CHARS::std) unless $no_encode;
+		encode($help, $ESCAPE_CHARS::std) if $help;
 		if($value =~ /^\s*\~\~(.*)\~\~\s*$/) {
 			my $label = $1;
 			if($optgroup_one++) {
@@ -782,6 +799,7 @@ sub dropdown {
 		my $vvalue = $value;
 		encode($vvalue, $ESCAPE_CHARS::std);
 		$run .= qq| value="$vvalue"|;
+		$run .= qq| title="$help"| if $help;
 		if (length($default)) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
 			$default =~ $regex and $select = 1;
@@ -914,8 +932,9 @@ sub box {
 	my $no_encode = $opt->{pre_filter} eq 'decode_entities' ? 1 : 0;
 
 	for(@$opts) {
-		my($value,$label) = @$_;
+		my($value,$label,$help) = @$_;
 		encode($label, $ESCAPE_CHARS::std) unless $no_encode;
+		encode($help, $ESCAPE_CHARS::std) if $help;
 		if($value =~ /^\s*\~\~(.*)\~\~\s*$/) {
 			my $lab = $1;
 			$lab =~ s/"/&quot;/g;
@@ -968,6 +987,8 @@ sub box {
 			$label =~ s/ /&nbsp;/g if $xlt;
 			$opt->{tlabel} = $label;
 		}
+
+		$opt->{ttitle} = $help;
 
 		$run .= attr_list($template, $opt);
 		$run .= '</tr>' if $inc && ! ($i % $inc);

@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.80 2005-04-13 16:13:27 mheins Exp $
+# $Id: Util.pm,v 2.81 2005-04-14 15:13:14 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.80 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -2036,6 +2036,7 @@ sub codedef_options {
 	for my $repos ( $Vend::Cfg->{CodeDef}{$tag}, $Global::CodeDef->{$tag} ) {
 		if(my $desc = $repos->{Description}) {
 			my $vis = $repos->{Visibility} || {};
+			my $help = $repos->{Help} || {};
 			while( my($k, $v) = each %$desc) {
 				next if $seen{$k}++;
 				if(my $perm = $vis->{$k}) {
@@ -2048,7 +2049,7 @@ sub codedef_options {
 						next unless $gate{$perm};
 					}
 				}
-				push @out, [$k, $v];
+				push @out, [$k, $v, $help->{$k}];
 			}
 		}
 	}
