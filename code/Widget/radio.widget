@@ -1,3 +1,5 @@
 CodeDef radio Widget 1
 CodeDef radio Description Radio box
 CodeDef radio MapRoutine Vend::Form::box
+CodeDef radio_nbsp Widget 1
+CodeDef radio_nbsp Description Radio box (nbsp)

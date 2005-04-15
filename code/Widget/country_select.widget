@@ -1,5 +1,6 @@
 CodeDef state_select  Widget  1
-CodeDef state_select  Description State (only with country_select)
+CodeDef state_select  Description State (needs country_select)
+CodeDef state_select  Help Requires country_select widget for country to work properly
 CodeDef state_select  Routine <<EOR
 sub {
 	my $opt = shift;
@@ -32,6 +33,8 @@ CodeDef state_select ExtraMeta <<EOM
 EOM
 
 CodeDef country_select  Widget  1
+CodeDef country_select  Description Country
+CodeDef country_select  Help Requires state_select widget for state to work properly
 CodeDef country_select  Routine <<EOR
 sub {
     my ($opt) = @_;
