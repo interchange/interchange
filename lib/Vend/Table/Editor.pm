@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.69 2005-04-13 16:13:28 mheins Exp $
+# $Id: Editor.pm,v 1.70 2005-04-15 13:57:05 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.69 $, 10);
+$VERSION = substr(q$Revision: 1.70 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2600,6 +2600,12 @@ EOF
 
 	chunk ttag(), $restrict_begin;
 
+	chunk 'FORM_BEGIN', 'OUTPUT_MAP', <<EOF;
+<form method="$opt->{method}" ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
+EOF
+
+	my $prescript_marker = $#out;
+
     $hidden->{mv_click}      = $opt->{process_filter};
     $hidden->{mv_todo}       = $opt->{action};
     $hidden->{mv_nextpage}   = $opt->{mv_nextpage};
@@ -2699,8 +2705,11 @@ EOF
 	if ($opt->{intro_text}) {
 #::logDebug("intro_text=$opt->{intro_text}");
 		chunk ttag(), <<EOF;
+<tr $opt->{spacer_row_extra}> 
+	<td colspan=$span $opt->{spacer_cell_extra}>$opt->{intro_text}</td>
+</tr>
 <tr $opt->{title_row_extra}> 
-	<td colspan=$span $opt->{title_cell_extra}>$opt->{intro_text}</td>
+	<td colspan=$span $opt->{title_cell_extra}>$::Scratch->{page_title}</td>
 </tr>
 EOF
 	}
@@ -2713,6 +2722,7 @@ EOF
 	  					|| $linecount >= $opt->{top_buttons_rows}
 						|| defined $opt->{include_form}
 						|| $mlabel;
+	
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
 		  chunk ttag(), 'OUTPUT_MAP', <<EOF; # unless $wo;
@@ -2743,6 +2753,7 @@ EOF
 EOF
 			chunk 'MLABEL', 'BOTTOM_BUTTONS OUTPUT_MAP', 'MESSAGES', $mlabel;
 			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
+	&nbsp;
 	</td>
 </tr>
 $opt->{spacer_row}
@@ -3964,11 +3975,10 @@ EOF
 EOF
 	}
 
-	push @prescript, <<EOF;
-<form method="$opt->{method}" ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
-EOF
-
-	chunk 'FORM_BEGIN', 'OUTPUT_MAP', join("\n", @prescript);
+	if(@prescript) {
+		my $end = $outhash{FORM_BEGIN};
+		$outhash{FORM_BEGIN} = join "\n", $end, @prescript;
+	}
 
 	unshift @postscript, qq{</form>$end_script};
 
