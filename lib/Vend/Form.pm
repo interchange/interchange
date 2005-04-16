@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.54 2005-04-14 20:30:33 mheins Exp $
+# $Id: Form.pm,v 2.55 2005-04-16 12:40:47 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1348,6 +1348,7 @@ if($opt->{debug}) {
 	}
 
 	my $sub =  $Vend::UserWidget->{$type} || $Vend::UserWidget->{default};
+	$sub ||= \&template_sub; # Just in case "default" widget is removed
 
 	if($opt->{variant}) {
 #::logDebug("variant='$opt->{variant}'");
