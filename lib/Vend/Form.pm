@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.56 2005-04-16 13:08:18 mheins Exp $
+# $Id: Form.pm,v 2.57 2005-04-16 13:40:29 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.56 $, 10);
+$VERSION = substr(q$Revision: 2.57 $, 10);
 
 @EXPORT = qw (
 	display
@@ -351,9 +351,11 @@ EOF
 
 		my $form = $opt->{form};
 
+		$attr->{label} =~ s/\s/&nbsp;/g if $opt->{nbsp};
+
 		$attr->{url} = Vend::Interpolate::tag_area(
 						$href,
-						'',
+						undef,
 						{
 							form => "$name=$attr->{value}\n$opt->{form}",
 							secure => $opt->{secure},
@@ -1482,6 +1484,10 @@ sub parse_type {
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		$opt->{type} = 'combo';
 		$opt->{reverse} = 1;
+	}
+	elsif($type =~ /^links_*nbsp/i) {
+		$opt->{nbsp} = 1;
+		$opt->{type} = 'links';
 	}
 	elsif($type =~ /^move_*combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $opt->{height} || $1 || 1;
