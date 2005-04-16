@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.55 2005-04-16 12:40:47 mheins Exp $
+# $Id: Form.pm,v 2.56 2005-04-16 13:08:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 @EXPORT = qw (
 	display
@@ -302,7 +302,6 @@ sub current_label {
 
 sub links {
 	my($opt, $opts) = @_;
-#warn "called links opts=$opts\n";
 
 	$opt->{joiner} = Vend::Interpolate::get_joiner($opt->{joiner}, "<br$Vend::Xtrailer>");
 	my $name = $opt->{name};
