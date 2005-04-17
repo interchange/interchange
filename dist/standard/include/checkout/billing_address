@@ -105,7 +105,7 @@
 		  </td>
 		  <td align="right" class="contentbar1"><b>[L]State/Province[/L]</b></td>
 		  <td class="contentbar1">
-			<input type="text" name="b_state" value="[value b_state]" size="5" maxlength="5">
+			[display name=b_state type=state_select value="[value b_state]"]
 		  </td>
 		</tr>
 		<tr>
@@ -121,7 +121,7 @@
 			<b>[L]Country[/L]</b>
 		  </td>
 		  <td class="contentbar1" colspan="3">
-			<input type="text" name="b_country" value="[value b_country]" size="10" maxlength="10">
+			[display name=b_country type=country_select value="[value b_country]"]
 		  </td>
 		</tr>
 		<tr>

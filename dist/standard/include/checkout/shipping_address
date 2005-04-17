@@ -57,26 +57,7 @@
 			[error name=state std_label="[L]State/Province[/L]" required=1]
 		</td>
 		<td align="left" class="contentbar1" colspan=3>
-		  [loop search="
-			fi=state.txt
-			sf=country
-			se=[default country US]
-			rf=state,name,country
-			un=yes
-			tf=sorder,name
-			ml=100
-		  "
-		  option=state]
-		  [on-match]<select onChange="check_tax(this.form)" name=state>[/on-match]
-		  [list]
-		  [loop-change 1][condition][loop-param country][/condition]
-		  <optgroup label="[data table=country col=name key='[loop-param country]']">
-		  [/loop-change 1]
-		  <option value="[loop-code]">[loop-pos 1]
-		  [/list]
-		  [on-match]</select>[/on-match]
-		  [no-match]<input name=state value="[value state]" size=20>[/no-match]
-		  [/loop]
+		  [display name=state type=state_select value="[value state]"]
 		</td>
 	  </tr>
 	  <tr>
@@ -100,26 +81,7 @@
 		  [L]Country[/L]
 		</td>
 		<td colspan="3" class="contentbar1">
-		  <select name=country onChange="this.form.submit()">
-		  [if value country =~ /(^$|US|CA)/]
-		  <option value="US"> [L]United States[/L]
-		  <option [selected country CA] value="CA"> [L]Canada[/L]
-		  <option value="JP"> [L]Other[/L]
-		  [else]
-		  [loop option=country search="
-			ra=yes
-			fi=country
-			st=db
-			rf=code,name
-			ml=1000
-			tf=name
-		  "]
-		  <option value="[loop-code]"> [loop-data country name] 
-		  [/loop]
-		  [/else]
-		  [/if]
-		  </select>
-		  <small>([L]will update display[/L])</small>
+		  [display name=country type=country_select value="[value country]"]
 		</td>
 	  </tr>
 	  <tr>
