@@ -123,7 +123,7 @@ ui_template_name: leftonly
     [error name=state std_label="[L]State/Province[/L]" required=1]
   </td>
   <td>
-    <INPUT TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+  [display type=state_select name=state value="[value state]"]
   </td>
 </tr>
 <tr class="contentbar1"> 
@@ -131,7 +131,7 @@ ui_template_name: leftonly
     [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1]
   </td>
   <td>
-    <INPUT TYPE=text NAME=zip VALUE="[value zip]" size="10" maxlength="10">
+    <INPUT TYPE=text NAME=zip VALUE="[value zip]" size=10>
   </td>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
@@ -149,25 +149,7 @@ ui_template_name: leftonly
     [error name=country std_label="[L]Country[/L]" required=1]
   </td>
   <td colspan=3> 
-      <SELECT NAME=country onChange="this.form.submit()">
-    [if value country =~ /(^$|US|CA)/]
-	<OPTION VALUE="US"> [L]United States[/L]
-	<OPTION [selected country CA] VALUE="CA"> [L]Canada[/L]
-	<OPTION VALUE="JP"> [L]Other[/L]
-    [else]
-	[loop option=country search="
-	 ra=yes
-	 fi=country
-	 rf=code,name
-	 ml=1000
-	 tf=name
-	"]
-	<OPTION VALUE="[loop-code]"> [loop-data country name] 
-	[/loop]
-    [/else]
-    [/if]
-      </SELECT>
-    <small>([L]will update display[/L])</small>
+      [display type=country_select name=country value="[value country]"]
   </td>
 </tr>
 <tr class="contentbar1"> 
@@ -299,7 +281,7 @@ ui_template_name: leftonly
     [L]State/Province[/L]
   </td>
   <td>
-    <INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
+	  [display type=state_select name=b_state value="[value b_state]"]
   </td>
 </tr>
 <tr class="contentbar1"> 
@@ -317,7 +299,7 @@ ui_template_name: leftonly
     [L]Country[/L]
   </td>
   <td>
-    <INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size="10" maxlength="10">
+      [display type=country_select name=b_country value="[value b_country]"]
   </td>
   <td>&nbsp; </td>
   <td>&nbsp;</td>

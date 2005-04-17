@@ -192,7 +192,7 @@ function do_address (form, clear) {
 		  	[error name=b_state std_label="[L]State/Province[/L]" required=1]
 		  </td>
 		  <td>
-			<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
+			 [display name=b_state type=state_select value="[value b_state]"]
 		  </td>
 		</tr>
 		<tr>
@@ -208,12 +208,7 @@ function do_address (form, clear) {
 			[error name=b_country std_label="[L]Country[/L]" required=1]
 		  </td>
 		  <td colspan=3>
-		  [display
-		  		name=b_country
-		  		type=select
-				default=__SHIP_DEFAULT_COUNTRY__
-				lookup_query="select code,name from country where shipmodes != '' order by name"
-		  ]
+		  [display name=b_country type=country_select value="[value b_country]"]
 		  </td>
 		</tr>
 		<tr>

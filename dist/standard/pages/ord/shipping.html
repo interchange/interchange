@@ -128,35 +128,14 @@ ui_template_name: noleft
 		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
 		</td>
 	  </tr>
-	  [if type=!data term="country::no_state::[value country]"]
 	  <tr>
 		<td align=right>
 			[error name=state std_label="[L]State/Province[/L]" required=1]
 		</td>
 		<td align="left" colspan=3>
-		  [loop search="
-			fi=state.txt
-			sf=country
-			se=[default country US]
-			rf=state,name,country
-			un=yes
-			tf=sorder,name
-			ml=100
-		  "
-		  option=state]
-		  [on-match]<SELECT onChange="check_tax(this.form)" NAME=state>[/on-match]
-		  [list]
-		  [loop-change 1][condition][loop-param country][/condition]
-		  <OPTGROUP LABEL="[data table=country col=name key='[loop-param country]']">
-		  [/loop-change 1]
-		  <OPTION VALUE="[loop-code]">[loop-pos 1]
-		  [/list]
-		  [on-match]</SELECT>[/on-match]
-		  [no-match]<INPUT NAME=state VALUE="[value state]" SIZE=20>[/no-match]
-		  [/loop]
+			[display name=state type=state_select value="[value state]"]
 		</td>
 	  </tr>
-	  [/if]
 	  <tr>
 		<td align="right">
 		  [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1] 
@@ -178,13 +157,7 @@ ui_template_name: noleft
 		  [L]Country[/L]
 		</td>
 		<td colspan="3">
-		  [display
-		  		name=country
-		  		type=select
-				value="[value country]"
-				default=__SHIP_DEFAULT_COUNTRY__
-				lookup_query="select code,name from country where shipmodes != '' order by name"
-		  ]
+		  [display name=country type=country_select value="[value country]"]
 		</td>
 	  </tr>
 	  <tr>
