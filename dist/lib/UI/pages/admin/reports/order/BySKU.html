@@ -4,7 +4,12 @@
 			return;
 	[/calc]
 [/if-mm]
-[seti page_title][L]Orders by SKU[/L][if cgi sku]: [cgi sku][/if][/seti]
+[seti page_title][L]Orders by SKU[/L] [calc]
+				my $sku =  $CGI->{sku}
+					or return '';
+				$sku =~ s/\0/,/g;
+				return $sku;
+			[/calc][/seti]
 [set icon_name]icon_stats.gif[/set]
 [set ui_class]Reports[/set]
 [set help_name]orderstats.view[/set]
