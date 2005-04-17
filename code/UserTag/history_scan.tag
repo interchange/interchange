@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: history_scan.tag,v 1.16 2005-02-10 14:38:39 docelic Exp $
+# $Id: history_scan.tag,v 1.17 2005-04-17 19:28:02 mheins Exp $
 
 UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
-UserTag history-scan Version $Revision: 1.16 $
+UserTag history-scan Version $Revision: 1.17 $
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1
@@ -18,8 +18,12 @@ my %var_exclude = ( qw/
 
 sub {
 	my ($find, $exclude, $default, $opt) = @_;
-	$default ||= $Config->{SpecialPage}{catalog};
+	$default ||= $Vend::Cfg->{SpecialPage}{catalog};
 	my $ref = $Vend::Session->{History};
+
+	use vars qw/$CGI $Tag/;
+
+	$opt->{size_limit} ||= '1024';
 	unless ($ref) {
 		return $default if $opt->{pageonly};
 		return $Tag->area($default);
@@ -62,6 +66,22 @@ sub {
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
 	}
 	$form .= "\n$opt->{form}" if $opt->{form};
-	return $Tag->area( { href => $href, form => $form} );
+	my $string = $Tag->area( {
+								href => $href,
+								form => $form,
+								no_session => $opt->{no_session},
+							} );
+	my $len = length($string);
+	if($len > $opt->{size_limit}) {
+		$len = $Tag->filter('commify.0', $len);
+		my $m = errmsg(
+					'Huge URL (%s bytes) exceeds %s byte limit, returning blank.',
+					$len,
+					$opt->{size_limit},
+				);
+		$Tag->error({ name => 'history-scan', set => $m });
+		return undef;
+	}
+	return $string;
 }
 EOR
