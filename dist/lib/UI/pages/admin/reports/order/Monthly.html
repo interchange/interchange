@@ -6,6 +6,7 @@
 [/if-mm]
 [set page_title][L]Orders by day for a month[/L][/set]
 [set icon_name]icon_stats.gif[/set]
+[set ui_class]Reports[/set]
 [set help_name]orderstats.view[/set]
 @_UI_STD_HEAD_@
 
@@ -32,6 +33,24 @@
 	-->
 
 [calc]
+	if($CGI->{sku}) {
+		my @skus = grep /\S/, split /[\s,\0]+/, $CGI->{sku};
+		my @qsku = map { $Tag->filter('sql', $_) } @skus;
+		my $sku_query;
+
+		if(@skus > 1) {
+			$sku_query = "sku IN ('";
+			$sku_query .= join("','", @qsku);
+			$sku_query .= "')";
+		}
+		else {
+			$sku_query = "sku = '$qsku[0]'";
+		}
+
+		# Used several places below
+		$Tag->tmpn('tmp_sku_query', $sku_query);
+	}
+
 	if($Session->{arg}) {
 		$Scratch->{date_limit} = "AND order_date like '$Session->{arg}%'";
 	}
@@ -59,28 +78,83 @@ EOF
 	return;
 [/calc]
 
+[if cgi sku]
+
+[query
+	st=db
+	ml=100000
+	table=transactions
+	arrayref=qual
+	sql="
+		select distinct order_number
+			from  orderline
+			WHERE [scratch tmp_sku_query]
+			[scratch date_limit] [scratch synd_limit]
+	"][/query]
+[/if]
 [query	hashref=main
 	st=db
 	ml=100000
 	table=transactions
 	nu=0,0,0,0
 	sql="
-	select affiliate, campaign, total_cost, order_date
+	select affiliate, campaign, total_cost, order_date, order_number
 		FROM  transactions
 		WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 	"][/query]
 [tmp ALL][L]ALL[/L][/tmp]
 [tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
-[perl tables="store"]
+[perl tables="store orderline transactions"]
 	my %sales;
 	$master = {};
+	my $mary = $Tmp->{main} || [];
+
+	my $skustring = '';
+
+	my $skudisplay = '';
+
+	if(my $qary = $Tmp->{qual}) {
+
+		$skustring = '&sku=';
+		my @skus = split /[\s,\0]+/, $CGI->{sku};
+		$skustring .= join('&sku=', @skus);
+		$skudisplay = join(', ', @skus);
+
+		my %apply;
+		for(@$qary) {
+			$apply{$_->[0]} = 1;
+		}
+		@$mary = grep $apply{$_->{order_number}}, @$mary;
+		my $odb = $Db{orderline};
+		if(! $odb->config('HAS_LIMIT')) {
+			$Tag->error({
+						name => 'Totals',
+						set => 'amounts will be wrong with no SQL',
+					});
+		}
+		else {
+			for my $t (@$mary) {
+				my $q = "SELECT subtotal FROM orderline";
+				$q .= " WHERE order_number = '$t->{order_number}'";
+				$q .= " AND $Scratch->{tmp_sku_query}";
+				my $tary = $odb->query($q);
+				my $cost = 0;
+				for(@$tary) {
+					$cost += $_->[0];
+				}
+				$t->{total_cost} = $cost;
+			}
+		}
+	}
+
 	if($Scratch->{synd_limit}) {
-		$syndstring = "&affiliate=$CGI->{affiliate}";
+		$syndstring = "&affiliate=$CGI->{affiliate}$skustring";
 	}
 	else {
-		$syndstring = "";
+		$syndstring = $skustring;
 	}
-	foreach $line (@{$Tmp->{main}}) {
+
+	foreach $line (@$mary) {
 		my ($month) = substr($line->{order_date}, 0, 8);
 		my $id = $line->{affiliate};
 		$id .= "-$line->{campaign}";
@@ -122,6 +196,7 @@ EOF
 			$subtotal_quantity += $record->{orders};
 			($syn, $camp) = split /-/, $id, 2;
 			my $synlabel = $syn || errmsg('(none)');
+			$synlabel .= " (for $skudisplay)" if $skudisplay;
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Detail', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
 				if $mname;
@@ -131,7 +206,7 @@ EOF
 	$url&nbsp;
 	</TD>
 	<TD VALIGN=top>
-	<A HREF="$burl&affiliate=$syn">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
+	<A HREF="$burl&affiliate=$syn$skustring">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
 	</TD>
 	<TD ALIGN=center VALIGN=top>
 	$record->{orders}
