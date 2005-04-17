@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.49 2005-04-12 15:14:39 mheins Exp $
+# $Id: Dispatch.pm,v 1.50 2005-04-17 12:44:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.49 $, 10);
+$VERSION = substr(q$Revision: 1.50 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1542,13 +1542,7 @@ EOF
 #show_times("end page display") if $Global::ShowTimes;
 
 	if(my $macro = $Vend::Cfg->{AutoEnd}) {
-		if($macro =~ /\[\w+/) {
-			interpolate_html($macro);
-		}
-		elsif ($macro =~ /^\w+$/) {
-			$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
-			$sub->();
-		}
+		run_macro($macro);
 #show_times("end AutoEnd macro") if $Global::ShowTimes;
 	}
   }
