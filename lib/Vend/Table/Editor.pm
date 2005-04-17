@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.70 2005-04-15 13:57:05 mheins Exp $
+# $Id: Editor.pm,v 1.71 2005-04-17 12:41:24 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.70 $, 10);
+$VERSION = substr(q$Revision: 1.71 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2723,6 +2723,7 @@ EOF
 						|| defined $opt->{include_form}
 						|| $mlabel;
 	
+	$mlabel ||= '&nbsp;';
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
 		  chunk ttag(), 'OUTPUT_MAP', <<EOF; # unless $wo;
@@ -2751,9 +2752,8 @@ EOF
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
 <BR>
 EOF
-			chunk 'MLABEL', 'BOTTOM_BUTTONS OUTPUT_MAP', 'MESSAGES', $mlabel;
+			chunk 'MLABEL', 'NO_TOP OUTPUT_MAP', 'MESSAGES', $mlabel;
 			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
-	&nbsp;
 	</td>
 </tr>
 $opt->{spacer_row}
