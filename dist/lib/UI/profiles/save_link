@@ -1,0 +1,54 @@
+__NAME__ save_link
+
+[calc]
+	my $url = $Tag->filter('urldecode', $CGI->{url});
+	$url =~ s!^($Config->{VendURL}|$Config->{SecureURL})/?!!;
+
+	my ($page, $form) = split /\?/, $url, 2;
+
+	my $menufile = $Variable->{SAVED_LINKS_FILE} || 'include/menus/Saved.txt';
+	if($menufile ne $Tag->filter('filesafe', $menufile)) {
+		$Tag->error({ name => save_link, set => "Refuse to save in $menufile"});
+		return undef;
+	}
+
+	my $file_data = $Tag->file($menufile);
+
+	my $linesep = "\n";
+	$file_data =~ m{.*(\r?\n)}
+		and $linesep = $1;
+	my @lines = split /\r?\n/, $file_data;
+	my $hdr = shift @lines;
+	my @fields = split /\t/, $hdr;
+
+	my %used;
+	my %hash;
+	my $code;
+
+	for(@lines) {
+		m{^(.*?)\t}
+			and $code = $1
+			and $used{$code}++;
+	}
+
+	$code++;
+	$code++ while $used{$code}++;
+
+	my $time = $Tag->time({ body => '%b %e, %Y %H:%M'});
+	$hash{name} = $Tag->filter('urldecode', $CGI->{title}) || "$page saved at $time";
+	$hash{code} = $code;
+	$hash{page} = $page;
+	$form =~ s/\&/\r/g;
+	$hash{description} = "Saved $page at $time with $form";
+	$hash{form} = $form;
+	$hash{msort} = "x$code";
+	if(! -f $menufile) {
+		$Tag->writefile($menufile, $file_data);
+	}
+
+	my $newline = join "\t", @hash{@fields};
+	$newline .= $linesep;
+	$Tag->log( { file => $menufile, type => 'text', body => $newline } );
+
+	return;
+[/calc]

@@ -471,6 +471,7 @@ dist/lib/UI/pages/admin/report_save.html
 dist/lib/UI/pages/admin/reports/order/.access
 dist/lib/UI/pages/admin/reports/order/.autoload
 dist/lib/UI/pages/admin/reports/order/ByAffiliate.html
+dist/lib/UI/pages/admin/reports/order/BySKU.html
 dist/lib/UI/pages/admin/reports/order/Detail.html
 dist/lib/UI/pages/admin/reports/order/Monthly.html
 dist/lib/UI/pages/admin/reports/traffic/.access
@@ -529,6 +530,7 @@ dist/lib/UI/pages/include/menus/Orders.txt
 dist/lib/UI/pages/include/menus/OrderView.txt
 dist/lib/UI/pages/include/menus/Quicklinks.txt
 dist/lib/UI/pages/include/menus/Reports.txt
+dist/lib/UI/pages/include/menus/Saved.txt
 dist/lib/UI/pages/include/menus/Surveys.txt
 dist/lib/UI/pages/include/menus/Tables.txt
 dist/lib/UI/pages/include/menus/Top.txt
@@ -560,6 +562,7 @@ dist/lib/UI/profiles/miscellaneous
 dist/lib/UI/profiles/order_button_build
 dist/lib/UI/profiles/process_filter
 dist/lib/UI/profiles/recompute_transaction
+dist/lib/UI/profiles/save_link
 dist/lib/UI/ui.cfg
 dist/lib/UI/vars/UI_EDIT_LINK
 dist/lib/UI/vars/UI_JSLIB
@@ -800,6 +803,7 @@ dist/standard/include/menus/catalog/top.txt
 dist/standard/include/menus/MiscFunction.txt
 dist/standard/include/menus/OrderView.txt
 dist/standard/include/menus/Products.txt
+dist/standard/include/menus/Saved.txt
 dist/standard/include/menus/Top.txt
 dist/standard/include/menus/Untitled.txt
 dist/standard/pages/aboutus.html

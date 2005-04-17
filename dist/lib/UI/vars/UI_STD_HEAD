@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.40 2003-12-06 18:26:55 mheins Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.41 2005-04-17 19:38:07 mheins Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -121,7 +121,7 @@ Variable UI_STD_HEAD <<EOV
 	ui_security=depends_on
 	extra_value.check_publish=`$Scratch->{check_publish}`
 	superuser=super
-	full_interpolate=page
+	full_interpolate=page,form
 	localize="name,description"
 	]
 	<td nowrap>&nbsp;<a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=toplink>{NAME}</a>&nbsp;</td>{MV_LAST_ROW:}<td>-</td>{/MV_LAST_ROW:}
