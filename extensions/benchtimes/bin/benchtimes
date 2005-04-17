@@ -25,10 +25,9 @@ my %session_time;
 my %session_hits;
 my %total_time;
 my %total_hits;
-my %total_elapsed;
 my %earliest;
+my %bigpages;
 my %latest;
-my %elapsed;
 my %info;
 
 # Parses a time specification such as "1 day" and returns the
@@ -107,6 +106,7 @@ while(<>) {
 		$session_time{$sessionid} += $bench;
 		$total_hits{$ip}++;
 		$total_time{$ip} += $bench;
+		$bigpages{$id} = $bench;
 		$info{$id} = "ip=$ip path=$path pid=$pid time=$bench";
 		unless($start{$id}) {
 			warn "Couldn't find start for $_\n";
@@ -114,10 +114,7 @@ while(<>) {
 		elsif(! $time) {
 			warn "No end time for $_\n";
 		}
-		else {
-			$elapsed{$id} = $start{$id} - $time;
-		}
-		$total_elapsed{$ip} += $elapsed{$id};
+
 		$latest{$ip} = $time;
 		$latest{$sessionid} = $time;
 	}
@@ -140,6 +137,7 @@ my %fmt = (
 	session_hits  => '%6d hits',
 	total_hits    => '%6d hits',
 	total_time    => '%9.3f seconds',
+	bigpages      => '%9.3f seconds',
 );
 
 my $started;
@@ -161,9 +159,22 @@ for my $tag (sort keys %display) {
 	}
 }
 
+BIGP: {
+	my $tag = 'bigpages';
+	my $ref = \%bigpages
+		or warn "No reference found for bigpages. Skip.\n", next;
+	print "\n" if $started++;
+	my @keys = sort { $ref->{$b} <=> $ref->{$a} } keys %$ref;
+	print "Displaying top $n by $tag\n";
+	print "---------------------------------\n";
+	for(my $i = 0; $i < $n; $i++) {
+		my $id = $keys[$i] or next;
+		printf "%-20s $fmt{$tag}\n(%s)\n", $id, $ref->{$id}, $info{$id};
+	}
+}
 =head1 SEE ALSO
 
-http://cvs.icdevgroup.org/cgi-bin/cvsweb/extensions/benchtimes
+http://cvs.icdevgroup.org/cgi-bin/cvsweb/interchange/extensions/benchtimes
 
 =head1 AUTHOR
 
