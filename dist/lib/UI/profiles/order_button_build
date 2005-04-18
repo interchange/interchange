@@ -64,7 +64,7 @@ EOF
 			push @parms, "mv_order_group=$CGI->{item_group}";
 		}
 		if(length $CGI->{affiliate}) {
-			push @parms, "mv_pc=$CGI->{affiliate}";
+			push @parms, "mv_source=$CGI->{affiliate}";
 		}
 		for my $mod (@{$Config->{UseModifier}}) {
 			if($CGI->{"item_modifier_$mod"}) {
