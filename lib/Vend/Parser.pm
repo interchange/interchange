@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.9 2003-06-18 17:34:44 jon Exp $
+# $Id: Parser.pm,v 2.10 2005-04-18 12:12:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -68,7 +68,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 
 sub new
@@ -205,6 +205,9 @@ sub parse
 					}
 					if(defined $element) {
 #::logDebug("Found element: $element val=$val");
+						$val = Vend::Interpolate::interpolate_html($val)
+							if  $::Pragma->{interpolate_itl_references}
+							and $val =~ /\[\w[-\w]*\s+.*]/s;
 						if(! ref $attr{$attr}) {
 							if ($element =~ /[A-Za-z]/) {
 								$attr{$attr} = { $element => $val };
@@ -215,7 +218,7 @@ sub parse
 							}
 							push (@attrseq, $attr);
 						}
-						elsif($attr{$attr} =~ /ARRAY/) {
+						elsif(ref($attr{$attr}) eq 'ARRAY') {
 							if($element =~ /\D/) {
 								push @{$attr{$attr}}, $val;
 							}
@@ -223,7 +226,7 @@ sub parse
 								$attr{$attr}->[$element] = $val;
 							}
 						}
-						elsif ($attr{$attr} =~ /HASH/) {
+						elsif (ref($attr{$attr}) eq 'HASH') {
 							$attr{$attr}->{$element} = $val;
 						}
 						undef $element;
