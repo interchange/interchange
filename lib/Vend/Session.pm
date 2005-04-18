@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.22 2005-04-07 22:51:33 jon Exp $
+# $Id: Session.pm,v 2.23 2005-04-18 18:57:32 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -309,9 +309,9 @@ sub write_session {
     $Vend::Session->{'time'} = $time;
 	delete $Vend::Session->{values}->{mv_credit_card_number};
     my $save = delete $Vend::Session->{'user'};
-	for(@Vend::TmpScratch) {
-		delete $::Scratch->{$_};
-	}
+
+	delete @{$::Scratch}{@Vend::TmpScratch};
+
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
 	$Vend::Session->{groups} = $Vend::groups;
