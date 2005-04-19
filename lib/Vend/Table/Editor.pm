@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.71 2005-04-17 12:41:24 mheins Exp $
+# $Id: Editor.pm,v 1.72 2005-04-19 05:23:42 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.71 $, 10);
+$VERSION = substr(q$Revision: 1.72 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -129,7 +129,7 @@ my $Tag = new Vend::Tags;
 my $F_desc = \%Vend::Interpolate::Filter_desc;
 my $Trailer;
 
-use vars qw/%Display_type %Display_options/;
+use vars qw/%Display_type %Display_options %Style_sheet/;
 
 %Display_options = (
 	three_column => sub {
@@ -347,6 +347,281 @@ for(keys %dt_map) {
 	$Display_options{$dt_map{$_}} = $Display_options{$_}
 		if $Display_options{$_};
 }
+
+%Style_sheet = (
+	default => <<EOF,
+<style type="text/css">
+.rborder {
+	background-color: #CCCCCC;
+	margin: 0;;
+	padding: 2
+}
+
+.rhead {
+	background-color: #E6E6E6;;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px
+}
+
+A.rhead:active,A.rhead:hover {
+	color: #000000;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+A.rhead:link,A.rhead:visited {
+	color: #000000;
+	font-size: 12px;
+	text-decoration:none;
+}
+
+.rheadBold {
+	background-color: #E6E6E6;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rheader {
+	background-color: #999999;
+	color: #663333;
+}
+
+.rmarq {
+	background-color: #999999;;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold
+}
+
+A.rmarq:active,A.rmarq:link,A.rmarq:visited {
+	color: #FFFFCC;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration:none;
+}
+
+A.rmarq:hover {
+	color: #FFFF99;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.rnobg {
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rnorm {
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
+}
+
+.rowalt {
+	background-color: #EAF1FB;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+A.rowalt:hover,A.rowalt:hover,A.rownorm:active,A.rownorm:hover {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+A.rowalt:link,A.rowalt:visited,A.rownorm:link,A.rownorm:visited {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration:none;
+}
+
+.rownorm {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rownormbold {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rseparator {
+	background-color: #CCCCCC;
+}
+
+.rshade {
+	background-color: #E6E6E6;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rspacer {
+	background-color: #999999;
+	margin: 0;;
+	padding: 0
+}
+
+.rsubbold {
+	background-color: #FFFFFF;
+	color: #808080;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rtitle {
+	background-color: #808080;;
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold
+}
+
+A.rtitle:active,A.rtitle:link,A.rtitle:visited {
+	color: #FFFFCC;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration:none;
+}
+
+
+.s1,.s2 {
+	color: #666666;;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px
+}
+
+.s3 {
+	color: #333333;;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px
+}
+
+.s4 {
+	color: #666666;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	width: 100%;
+}
+
+
+.rbreak {
+	background-color: #FFFFFF;
+}
+
+
+.cborder {
+	background-color: #999999;
+	padding: 0;
+}
+
+.cbreak {
+	background-color: #EEEEEE;
+	border-left: 1px solid #999999;
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.cdata {
+	border-bottom: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+	font-size: 11px;;
+	margin-right: 4px;
+	padding-right: 2px;
+	vertical-align: top
+}
+
+.cerror {
+	color: red;
+	font-size: 11px;
+}
+
+.cheader {
+	color: #663333;
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.chelp,.rhint {
+	color: #AFABA5;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.clabel {
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+	font-size: 11px;
+	vertical-align: top;
+	font-weight: medium;
+	padding-left: 5px;;
+	text-align: left
+}
+
+.cmiddle {
+	border-bottom: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+	font-size: 11px;
+	font-weight: medium;
+	padding-left: 5px;;
+	text-align: middle
+}
+
+.cmessage {
+	color: green;
+	font-size: 11px;
+}
+
+A:link.ctitle,A:visited.ctitle {
+	color: white;
+	font-size: 11px;;
+	font-weight: bold;
+	text-decoration: none
+}
+
+A:hover.ctitle,A:active.ctitle {
+	color: yellow;
+	font-size: 11px;;
+	font-weight: bold;
+	text-decoration: underline
+}
+
+.ctitle {
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.cwidget {
+	font-size: 11px;;
+	vertical-align: center
+}
+
+</style>
+EOF
+);
 
 my $fdesc_sort = sub {
 	return 1 if $a and ! $b;
@@ -3395,6 +3670,32 @@ $l_pkey</td>};
 	my $callback_postscript = sub {
 		push @postscript, @_;
 	};
+
+	if(my $sheet = $opt->{style_sheet}) {
+		$sheet =~ s/^\s+//;
+		$sheet =~ s/\s+$//;
+		if($Style_sheet{$sheet}) {
+			push @prescript, $Style_sheet{$sheet};
+		}
+		elsif($sheet =~ /\s/) {
+			my $pre_put;
+			if($sheet !~ /^<\w+/) {
+				$pre_put = 1;
+				push @prescript, q{<style type="text/css">}
+			}
+			push @prescript, $sheet;
+			push @prescript, q{</style>} if $pre_put;
+		}
+		else {
+			::logError(
+				"%s: style sheet %s not found, using default",
+				errmsg('table-editor'),
+				$sheet,
+			);
+			push @prescript, $Style_sheet{default};
+		}
+	}
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
