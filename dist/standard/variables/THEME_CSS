@@ -374,10 +374,10 @@ A.random_description:hover {
   	color: #000000;
   	font-weight: normal;
   	font-size: 11px;
-  	border-top: 2px solid black;
-  	border-bottom: 2px solid black;
+  	border-top: 0;
+  	border-bottom: 1px solid black;
   	border-left: 1px solid black;
-  	border-right: 2px solid black;
+  	border-right: 1px solid black;
 }
 
 
@@ -387,10 +387,10 @@ A.random_description:hover {
   	color: #000000;
   	font-weight: normal;
   	font-size: 11px;
-  	border-top: 2px solid black;
-  	border-bottom: 2px solid black;
+  	border-top: 0;
+  	border-bottom: 1px solid black;
   	border-left: 1px solid black;
-  	border-right: 2px solid black;
+  	border-right: 1px solid black;
 }
 
 A.cartlink:link, A.cartlink:active, A.cartlink:visited {
