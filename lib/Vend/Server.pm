@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.57 2004-07-28 00:48:35 mheins Exp $
+# $Id: Server.pm,v 2.58 2005-04-21 11:14:43 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1883,6 +1883,10 @@ my $pretty_vector = unpack('b*', $s_vector);
 			}
 			else {
 #::logDebug("we have our SOAP enable, entity is $entity");
+
+				$::Variable = $Vend::Cfg->{Variable};
+				$::Pragma = $Vend::Cfg->{Pragma};
+
 				($Vend::SessionID, $CGI::cookiehost) = split /:/, $env{SESSION_ID};
 #::logDebug("Received ID=$Vend::SessionID, host='$CGI::cookiehost'");
 				$Vend::NoInterpolate = 1
