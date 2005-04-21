@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.28 2005-04-13 16:55:20 mheins Exp $
+# $Id: Search.pm,v 2.29 2005-04-21 21:39:17 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -648,8 +648,8 @@ sub map_ops {
 		$c->[$i] =~ tr/ \t//;
 		my $o = $c->[$i];
 		$c->[$i] = $s->{mv_numeric}[$i]
-				? $numopmap{$o}
-				: $stropmap{$o};
+				? [ @{$numopmap{$o}} ]
+				: [ @{$stropmap{$o}} ];
 		if(! $c->[$i]) {
 			my $r;
 			$c->[$i] = [$r, $o], next
