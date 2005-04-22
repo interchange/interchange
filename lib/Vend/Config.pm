@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.166 2005-04-22 03:02:43 mheins Exp $
+# $Id: Config.pm,v 2.167 2005-04-22 14:47:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.166 $, 10);
+$VERSION = substr(q$Revision: 2.167 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1769,7 +1769,7 @@ sub external_cat {
 			else {
 				$walk = $walk->{$current};
 				if( CORE::ref($walk) eq 'HASH' ) {
-					$ref->{$current} = {};
+					$ref->{$current} ||= {};
 					$ref = $ref->{$current};
 				}
 				else {
