@@ -1,6 +1,7 @@
-# Vend::External - Interchange routines for calling external programs
+# Vend::External - Interchange setup for linking sessions to other programs
+# Vend::External - Also Interchange routines for calling external programs
 # 
-# $Id: External.pm,v 2.2 2003-06-18 17:34:44 jon Exp $
+# $Id: External.pm,v 2.3 2005-04-22 03:02:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -22,7 +23,31 @@
 package Vend::External;
 
 use strict;
+
+BEGIN {
+
+	if($ENV{EXT_INTERCHANGE_DIR}) {
+		$Global::VendRoot = $ENV{EXT_INTERCHANGE_DIR};
+		if(-f "$Global::VendRoot/_session_storable") {
+			$ENV{MINIVEND_STORABLE} = 1;
+		}
+	}
+}
+
 use Vend::Util;
+use Vend::Session;
+use Vend::Cart;
+use Cwd;
+require Data::Dumper;
+
+BEGIN {
+	if($ENV{EXT_INTERCHANGE_DIR}) {
+		die "No VendRoot specified.\n" unless $Global::VendRoot;
+		$Global::RunDir = $ENV{EXT_INTERCHANGE_RUNDIR} || "$Global::VendRoot/etc";
+		Vend::Util::setup_escape_chars();
+	}
+	$Global::ExternalFile = $ENV{EXT_INTERCHANGE_FILE}  || "$Global::RunDir/external.structure";
+}
 
 sub check_html {
 	my($out) = @_;
@@ -41,6 +66,144 @@ sub check_html {
 	unlink $file					or die "Couldn't unlink temp file $file: $!\n";
 	$$out .= $begin . $check . $end;
 	return;
+}
+
+1;
+
+package main;
+
+BEGIN {
+	if($ENV{EXT_INTERCHANGE_DIR}) {
+		sub logDebug {
+			warn caller() . ':external_debug: ', Vend::Util::errmsg(@_), "\n";
+		}
+
+		sub catalog {
+			my $cat = shift or return $Vend::Cat;
+			$Vend::Cat = $cat;
+		}
+
+		sub session {
+			my $id = shift;
+			$Vend::Cat ||= $ENV{EXT_INTERCHANGE_CATALOG}
+				or die "No Interchange catalog specified\n";
+			$Vend::Cfg = $Vend::Global->{Catalogs}{$Vend::Cat}{external_config}
+				or die "Catalog $Vend::Cat not found.\n";
+			$CGI::remote_addr = $ENV{REMOTE_ADDR};
+			if($id =~ /^(\w+):/) {
+				$Vend::SessionID = $1;
+				$Vend::SessionName = $id;
+			}
+			else {
+				$Vend::SessionID = $id;
+				$Vend::SessionName = "${id}:$CGI::remote_addr";
+			}
+			
+			Vend::Session::get_session();
+		}
+
+		sub _walk {
+			my $ref = shift;
+			my $last = pop (@_);
+
+			if($last =~ /->/ and ! scalar(@_)) {
+				@_ = split /->/, $last;
+				$last = pop @_;
+			}
+
+			eval {
+				for(@_) {
+					$ref = /^\[\d+\]$/ ? $ref->[0] : $ref->{$_};
+				}
+			};
+			if($@) {
+				logDebug(caller() . ": problem following structure: " . join("->", @_, $last));
+			}
+			return $last =~ /^\[\d+\]$/ ? $ref->[$last] : $ref->{$last};
+		}
+
+		sub _set_walk {
+			my $ref = shift;
+			my $value = shift;
+			my $last = pop (@_);
+
+			if($last =~ /->/ and ! scalar(@_)) {
+				@_ = split /->/, $last;
+				$last = pop @_;
+			}
+
+			eval {
+				for(@_) {
+					$ref = /^\[\d+\]$/ ? $ref->[0] : $ref->{$_};
+				}
+			};
+			if($@) {
+				logDebug(caller() . ": problem following structure: " . join("->", @_, $last));
+			}
+			if($last =~ /^\[\d+\]$/) {
+				$ref->[$last] = $value;
+			}
+			else {
+				$ref->{$last} = $value;
+			}
+		}
+
+		sub set_value {
+			return _set_walk($Vend::Session, @_);
+		}
+
+		sub value {
+			return _walk($Vend::Session, @_);
+		}
+
+		sub directive {
+			return _walk($Vend::Cfg, @_);
+		}
+
+		sub session_id {
+			return $Vend::SessionID;
+		}
+
+		sub session_name {
+			return $Vend::SessionName;
+		}
+
+		sub remote_addr {
+			my $in = shift 
+				or return $CGI::remote_addr;
+			$CGI::remote_addr = $CGI::host = $in;
+		}
+
+		sub write_session {
+			Vend::Session::write_session();
+		}
+
+		sub init_session {
+			Vend::Session::init_session();
+			return $Vend::Session;
+		}
+
+		sub new_session {
+			Vend::Session::new_session();
+		}
+
+		sub put_session {
+			Vend::Session::put_session();
+		}
+
+		*uneval = \&Vend::Util::uneval;
+#::logDebug("external file is $Global::ExternalFile");
+#::logDebug("storable is $ENV{MINIVEND_STORABLE}, dumper= $ENV{MINIVEND_NO_DUMPER}, signals=$ENV{PERL_SIGNALS}");
+		unless(-r $Global::ExternalFile) {
+			logDebug "Cannot read  $Global::ExternalFile.";
+			die "Cannot read  $Global::ExternalFile.";
+		}
+#::logDebug("ready to read global");
+		$Vend::Global ||= Vend::Util::eval_file($Global::ExternalFile)
+			or die "eval_file failed (value=$Vend::Global): $!";
+#::logDebug("DID read global");
+		#logDebug(uneval($Vend::Global));
+	}
 }
 
 1;

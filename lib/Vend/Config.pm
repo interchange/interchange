@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.165 2005-04-17 12:44:39 mheins Exp $
+# $Id: Config.pm,v 2.166 2005-04-22 03:02:43 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.165 $, 10);
+$VERSION = substr(q$Revision: 2.166 $, 10);
 
 my %CDname;
 my %CPname;
@@ -185,6 +185,22 @@ my %AllowScalarAction = (qw(
 					SOAP_Control		1
 				));
 
+my @External_directives = qw(
+	CatalogName 
+	ScratchDefault 
+	ValuesDefault 
+	ScratchDir 
+	SessionDB 
+	SessionDatabase 
+	SessionExpire 
+	VendRoot 
+	VendURL
+	SecureURL
+	Variable->SQLDSN
+	Variable->SQLPASS
+	Variable->SQLUSER
+);
+
 my $StdTags;
 
 use vars qw/ $configfile /;
@@ -223,14 +239,18 @@ sub config_warn {
 	}
 
 	local($^W);
-
-	::logGlobal({level => 'notice'},
-				"%s\nIn line %s of the configuration file '%s':\n%s\n",
+	my $extra = '';
+	if($configfile and $Vend::config_line) {
+		$extra = errmsg(
+				"\nIn line %s of the configuration file '%s':\n%s\n",
 						$msg,
 						$.,
 						$configfile,
 						$Vend::config_line,
 	);
+	}
+
+	::logGlobal({level => 'notice'}, "$msg$extra");
 }
 
 sub setcat {
@@ -362,6 +382,9 @@ sub global_directives {
 	['SubCatalog',		 'catalog',     	 ''],
 	['AutoVariable',	 'autovar',     	 'UrlJoiner'],
 	['XHTML',			 'yesno',	     	 'No'],
+	['External',		 'yesno',	     	 'No'],
+	['ExternalFile',	 'root_dir',	     "$Global::RunDir/external.structure"],
+	['ExternalExport',	 undef,				 'Global::Catalog=Catalog'],
 
 	];
 	return $directives;
@@ -564,6 +587,8 @@ sub catalog_directives {
 	['AutoVariable',	 'autovar',     	 ''],
 	['ErrorDestination', 'hash',             ''],
 	['XHTML',			 'yesno',	     	 $Global::XHTML],
+	['External',		 'yesno',	     	 'No'],
+	['ExternalExport',	 undef,		     	 join " ", @External_directives],
 
 	];
 
@@ -1653,6 +1678,110 @@ sub get_wildcard_list {
 	return parse_regex($var, $value);
 }
 
+sub external_global {
+	my ($value) = @_;
+
+	my $main = {};
+
+	my @sets = grep /\w/, split /[\s,]+/, $value;
+#::logDebug( "Parsing sets=" . join(",", @sets) . "\n" );
+
+	no strict 'refs';
+
+	for my $set (@sets) {
+#::logDebug( "Parsing $set\n" );
+		my @keys = split /->/, $set;
+		my ($k, $v) = split /=/, $keys[0];
+		my $major;
+		my $var;
+		if($k =~ m/^(\w+)::(\w+)$/) {
+			$major = $1;
+			$var = $2;
+		}
+		$major ||= 'Global';
+		$v ||= $var;
+		my $walk = ${"${major}::$var"};
+		my $ref = $main->{$v} = $walk;
+		for(my $i = 1; $i < @keys; $i++) {
+			my $current = $keys[$i];
+#::logDebug( "Walking $current\n" );
+			if($i == $#keys) {
+				if( CORE::ref($ref) eq 'ARRAY' ) {
+					$current =~ s/\D+//g;
+					$current =~ /^\d+$/
+						or config_error("External: Bad array index $current from $set");
+					$ref->[$current] = $walk->[$current];
+#::logDebug( "setting $current to ARRAY\n" );
+				}
+				elsif( CORE::ref($ref) eq 'HASH' ) {
+					$ref->{$current} = $walk->{$current};
+#::logDebug( "setting $current to HASH\n" );
+				}
+				else {
+					config_error("External: bad data structure for $set");
+				}
+			}
+			else {
+				$walk = $walk->{$current};
+#::logDebug( "Walking $current\n" );
+				if( CORE::ref($walk) eq 'HASH' ) {
+					$ref->{$current} = {};
+					$ref = $ref->{$current};
+				}
+				else {
+					config_error("External: bad data structure for $set");
+				}
+			}
+		}
+	}
+	return $main;
+}
+
+# Set the External environment, dumps, etc.
+sub external_cat {
+	my ($value) = @_;
+
+	my $c = $C
+		or config_error( "Not in catalog configuration context." );
+
+	my $main = {};
+	my @sets = grep /\w/, split /[\s,]+/, $value;
+	for my $set (@sets) {
+		my @keys = split /->/, $set;
+		my $ref  = $main;
+		my $walk = $c;
+		for(my $i = 0; $i < @keys; $i++) {
+			my $current = $keys[$i];
+			if($i == $#keys) {
+				if( CORE::ref($ref) eq 'ARRAY' ) {
+					$current =~ s/\D+//g;
+					$current =~ /^\d+$/
+						or config_error("External: Bad array index $current from $set");
+					$ref->[$current] = $walk->[$current];
+				}
+				elsif( CORE::ref($ref) eq 'HASH' ) {
+					$ref->{$current} = $walk->{$current};
+				}
+				else {
+					config_error("External: bad data structure for $set");
+				}
+			}
+			else {
+				$walk = $walk->{$current};
+				if( CORE::ref($walk) eq 'HASH' ) {
+					$ref->{$current} = {};
+					$ref = $ref->{$current};
+				}
+				else {
+					config_error("External: bad data structure for $set");
+				}
+			}
+		}
+	}
+
+	return $main;
+}
+
 # Set up an ActionMap or FormAction or FileAction
 sub parse_action {
 	my ($var, $value, $mapped) = @_;
@@ -2710,6 +2839,22 @@ sub set_default_search {
 			return 1 unless $C->{Autoload};
 			push @Dispatches, 'Autoload';
 			return 1;
+		},
+		External => sub {
+			return 1 unless $C->{External};
+			unless($Global::External) {
+				config_warn("External directive set to Yes, but not allowed by Interchange configuration.");
+				return 1;
+			}
+			return 1 unless $C->{External};
+			unless($Global::ExternalStructure) {
+				$Global::ExternalStructure = external_global($Global::ExternalExport);
+			}
+			$C->{ExternalExport} = external_cat($C->{ExternalExport});
+			$Global::ExternalStructure->{Catalogs}{ $C->{CatalogName} }{external_config}
+				= $C->{ExternalExport};
+			Vend::Util::uneval_file($Global::ExternalStructure, $Global::ExternalFile);
+			chmod 0644, $Global::ExternalFile;
 		},
 );
 
