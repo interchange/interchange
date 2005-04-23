@@ -1,0 +1,10 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: form_session_id.coretag,v 1.1 2005-04-23 15:47:20 jon Exp $
+
+UserTag form-session-id Routine <<EOR
+sub {
+	return if $Vend::Cookie and $::Scratch->{mv_no_session_id};
+	return qq{<input type="hidden" name="mv_session_id" value="$Vend::SessionID"$Vend::Xtrailer>};
+}
+EOR
