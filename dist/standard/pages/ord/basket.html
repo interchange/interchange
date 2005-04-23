@@ -85,7 +85,7 @@ ui_template_name: leftonly
 	[/if]
 
 	<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
-    	<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+        [form-session-id]
     	<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
     	<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
     	<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
@@ -344,7 +344,7 @@ EOF
     	    [L]To save this recurring order, give it a nickname, then press 'Save Cart'.[/L]<br>
     	    [L]Nickname[/L]:
     	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
-    	    <input type=hidden name=mv_session_id value="[data session id]">
+    	    [form-session-id]
 	    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="1">
     	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="recurring">
     	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
@@ -361,7 +361,7 @@ EOF
     	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="cart">
     	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
     	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-	    <input type=hidden name=mv_session_id vlaue="[data session id]">
+            [form-session-id]
     	    <input type=submit value="[L]Save Cart[/L]" class=button3>
 			
 	    </FORM>

@@ -440,6 +440,7 @@ __UI_META_TABLE__
 
 [output name=search_box]
 <form action="[area @@MV_PAGE@@]" style="margin: 0px; padding: 0px">
+[form-session-id]
 [tmp delete_loc][area href=admin/file_transfer form=| initial_dir=include/menus |][/tmp]
 <input	type=button
 		onClick="if(check_publish()) { location='[scratch delete_loc]' }"
@@ -1812,7 +1813,7 @@ function motion (idx, motion, fromchecked) {
 
 [output name="top_of_form"]
 <form name=qmenuform action="[process href=@@MV_PAGE@@]" method=POST>
-		<input name=mv_session_id type=hidden value="[data session id]">
+                [form-session-id]
 		<input name=mv_action type=hidden value="back">
 		<input name=cancelsubmit type=hidden value="">
 		<input name=return_page type=hidden value="[cgi return_page]">

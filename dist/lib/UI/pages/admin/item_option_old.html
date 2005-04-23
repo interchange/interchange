@@ -196,6 +196,7 @@
 [/perl]
 
 <FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
+[form-session-id]
 <INPUT TYPE=HIDDEN NAME="item_id" VALUE="[cgi item_id]">
 <INPUT TYPE=RADIO NAME="setting" VALUE="none" [if scratch setting eq 'none']CHECKED[/if]> [L]No Options[/L]<BR>
 <INPUT TYPE=RADIO NAME="setting" VALUE="simple" [if scratch setting eq 'simple']CHECKED[/if]> [L]Simple Options[/L]<BR>

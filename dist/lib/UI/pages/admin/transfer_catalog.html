@@ -70,6 +70,7 @@ Catalog output successfully.
 <tr>
 <td colspan=2>
 	<form action="[area @@MV_PAGE@@]" METHOD=POST>
+        [form-session-id]
 	<input type=hidden name=mv_action value="back">
 	Rename things with current catalog name <b>[calc]$Config->{CatalogName}[/calc]</b> to <input name=rename value="" size=12> <input type=submit value="[L]Rename[/L]">
 	</form>
@@ -79,6 +80,7 @@ Catalog output successfully.
 <td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
+[form-session-id]
 <input type=hidden name=mv_action value="back">
 <input type=hidden name=do_xfer value="1">
 <input type=hidden name=rename value="[cgi rename]">
@@ -183,4 +185,4 @@ CGI_DIR=CGI directory (where to copy link file)
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@  version: $Revision: 1.3 $ -->
+<!-- page: @@MV_PAGE@@  version: $Revision: 1.4 $ -->

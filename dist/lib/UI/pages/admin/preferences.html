@@ -57,7 +57,7 @@
 
 [output name=search_box]
 <FORM ACTION="[process href="__UI_BASE__/pref_select"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="variable">
 <INPUT TYPE=hidden NAME=ui_meta_specific VALUE="1">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
@@ -127,7 +127,7 @@
 		<table>
 			<tr>
 				<td>
-		<input type=hidden name=mv_session_id value="[data session id]">
+		[form-session-id]
 		<input type=hidden name=mv_action value="go">
 		<input type=hidden name=mv_check value="userdb_save">
 		<textarea name=personal_css rows=24 cols=50>[value personal_css]</textarea>

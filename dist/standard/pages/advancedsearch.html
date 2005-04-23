@@ -60,7 +60,7 @@ ui_template_name: leftright
 <table width="100%">
 	<tr>
 		<td colspan="2">
-			<input type=hidden name=mv_session_id value="[data session id]">
+			[form-session-id]
 			<b>[L]Search by Field[/L]:</b><br><br>
 		</td>
 	</tr>
@@ -154,7 +154,7 @@ ui_template_name: leftright
 		<td colspan="2">
 			<b>[L]Search by Price[/L]:</b><br><br>
 			<form action="[area search]" method=post>
-			<input type=hidden name=mv_session_id value="[data session id]">
+			[form-session-id]
 			<input type=hidden name=st value=db>
 			<input type=hidden name=co value=1>
 			<input type=hidden name=sf value=price>

@@ -18,7 +18,7 @@ ui_template_name: noleft
 <!-- BEGIN CONTENT -->
 
 <form action="[area href="ord/shipping" secure=1]" name=checkout>
-<input type=hidden NAME=mv_session_id    value="[data session id]">
+[form-session-id]
 <input type=hidden NAME=mv_action        value=return>
 <input type=hidden NAME=mv_nextpage      value="ord/shipping">
 <input type=hidden NAME=mv_failpage      value="ord/country">

@@ -113,6 +113,7 @@ return;
 	"][loop-code] [/loop][/tmp]
 
 <FORM METHOD=POST ACTION="[area ui]" NAME=transactions>
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/order_view">
@@ -332,6 +333,7 @@ return;
 <TR><TD>
 
 <FORM METHOD=POST ACTION="[area ui]" NAME="orderline[loop-increment]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">

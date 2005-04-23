@@ -40,7 +40,7 @@ ui_template_name: leftonly
 [userdb function=get_shipping_names]
 
 <FORM ACTION="[process secure=1]" METHOD="POST">
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
 <P>

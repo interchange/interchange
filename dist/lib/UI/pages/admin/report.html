@@ -282,6 +282,7 @@ EOF
 	<SMALL>
 	[scratchd report_delete_message]
 	<FORM METHOD=POST ACTION="[process]">
+        [form-session-id]
 	<INPUT TYPE=hidden NAME=mv_click VALUE=del_report>
 	<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 	<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -319,6 +320,7 @@ EOF
 <tr>
 <td colspan=2 class=rnorm>
 <FORM NAME=report ACTION="[area __UI_BASE__/report_results]" METHOD=POST>
+[form-session-id]
 <INPUT TYPE=hidden NAME=report_table VALUE="[value mv_data_table]">
 <INPUT TYPE=submit VALUE=Run>
 [if-mm advanced mml]

@@ -47,7 +47,7 @@ mv_nextpage=new_account
     <input type="hidden" name="mv_failpage" value="login">
     <input type="hidden" name="mv_successpage" value="[either][scratchd mv_successpage][or]member/service[/either]">
     <input type="hidden" name="mv_nextpage" value="index">
-    <input type="hidden" name="mv_session_id" value="[data session id]">
+    [form-session-id]
 
     <table border="0" align="center">
     <tr>
@@ -97,7 +97,7 @@ mv_nextpage=new_account
 [else]
 
     <form action="[process]" method="POST">
-    <input type="hidden" name="mv_session_id" value="[data session id]">
+    [form-session-id]
     <input type="hidden" name="mv_todo" value="return">
     <input type="hidden" name="mv_click" value="Logout_choice">
     <input type="hidden" name="mv_nextpage" value="login">

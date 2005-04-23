@@ -50,7 +50,7 @@ email=email
 		individual tables in include/checkout/*
 	[/comment]
     <form action="[process secure=1]" method="POST" name=checkout>
-    <input type=hidden NAME=mv_session_id    value="[data session id]">
+    [form-session-id]
     <input type=hidden NAME=mv_doit          value=refresh>
     <input type=hidden NAME=mv_successpage   value="ord/billing">
     <input type=hidden NAME=mv_failpage      value="ord/shipping">

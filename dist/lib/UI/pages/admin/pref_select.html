@@ -117,7 +117,7 @@
 
 [output name=search_box]
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
@@ -383,6 +383,7 @@ EOF
 <!-- tq: [scratch sparams] -->
 <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+        [form-session-id]
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 	[if cgi ui_meta_view]
 	[return-to]
@@ -607,4 +608,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.3 2003-11-14 12:08:28 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.4 2005-04-23 18:10:07 pvinci Exp $ -->

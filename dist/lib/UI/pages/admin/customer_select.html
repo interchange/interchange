@@ -138,7 +138,7 @@
 <!-- ----- Show the active/inactive buttons ----- -->
 
 <form action="[process href=@@MV_PAGE@@]" method=POST>
-<input type=hidden name=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
 <input type=hidden name=inactive value="false">

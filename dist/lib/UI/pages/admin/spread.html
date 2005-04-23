@@ -51,7 +51,7 @@
 
 [output name=search_box]
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_meta_view     value="[cgi ui_meta_view]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
@@ -124,6 +124,7 @@
 
 [output name="top_of_form"]
 <FORM METHOD=POST ACTION="[base-url]/ui">
+[form-session-id]
 <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
 <INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME="mv_data_table" VALUE="[cgi mv_data_table]">

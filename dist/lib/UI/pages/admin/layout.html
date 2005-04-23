@@ -38,7 +38,7 @@
 <td valign=top class=rnorm>
 
 <FORM METHOD=GET ACTION="[process]" name="areaform">
-<input type=hidden name=mv_session_id  value="[data session id]">
+[form-session-id]
 <input type=hidden name=ui_window_name value="mainwindow[scratch window_name]">
 <input type=hidden name=mv_todo        value=return>
 <input type=hidden name=mv_nextpage    value="@@MV_PAGE@@">
@@ -443,7 +443,7 @@ setarea=[cgi selector]
 
 [loop list="[value area]" prefix=table]
 <FORM METHOD=POST name=layout_area_properties ACTION="[area ui]">
-<input type=hidden name=mv_session_id  value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_section VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_area">
@@ -804,7 +804,7 @@ return;
 
 [loop list="[either][value cat][or]NEW[/either]" prefix=table]
 <FORM METHOD=GET ACTION="[area ui]" name=layout_cat_properties>
-<input type=hidden name=mv_session_id  value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_category VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">

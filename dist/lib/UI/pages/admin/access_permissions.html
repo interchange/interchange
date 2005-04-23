@@ -77,7 +77,7 @@
 
 [output name=top_of_form]
 <FORM METHOD=POST ACTION="[area ui]">
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_perm">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi ui_return_to][or]__UI_BASE__/access[/either]">

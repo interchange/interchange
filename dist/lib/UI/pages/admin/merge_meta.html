@@ -285,7 +285,7 @@
 	<dt class=titlebox>[L]Items to merge[/L] </dt>
 [output name=top_of_form]
 	<form action="[process href=@@MV_PAGE@@]" method=POST name=mergeform>
-	<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+	[form-session-id]
 	<input type=hidden name=mv_action value=back>
 [output name=""]
 	<table cellspacing=0 cellpadding=2 id=identical_tab width=800>

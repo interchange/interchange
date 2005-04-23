@@ -102,6 +102,7 @@ ui_template_name: noleft
 <!-- BEGIN CONTENT -->
 
 <form action="[process href=@@MV_PAGE@@]" method=POST NAME=edit_page>
+[form-session-id]
 <input type=hidden name=page_edit value="1">
 <input type=hidden name=page_name value="[scratch pagename]">
 [display type=textarea width=80 height=50 name=page_data value="[scratch pagedata]"]

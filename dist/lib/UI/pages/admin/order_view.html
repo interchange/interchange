@@ -404,7 +404,7 @@
 
 [output name=bottom_buttons]
 <form action="[area __UI_BASE__/order]" method=post>
-<input type=hidden name=mv_session_id value="[data session id]">
+[form-session-id]
 <input type=hidden name=mv_action value=back>
 <input type=hidden name=order value="[loop-data transactions order_number]">
 <input type=hidden name=archive value=false>
@@ -435,4 +435,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.20 2005-04-22 11:33:41 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.21 2005-04-23 18:10:07 pvinci Exp $ -->

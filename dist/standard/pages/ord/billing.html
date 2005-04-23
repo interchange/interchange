@@ -64,7 +64,7 @@ function do_address (form, clear) {
 </script>
 
 <form action="[area href="ord/shipmode" secure=1]" method="POST" name=checkout>
-<input type=hidden NAME=mv_session_id    value="[data session id]">
+[form-session-id]
 <input type=hidden NAME=mv_action        value=return>
 <input type=hidden NAME=mv_nextpage      value="ord/shipmode">
 <input type=hidden NAME=mv_failpage      value="ord/billing">

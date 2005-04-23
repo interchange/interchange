@@ -73,7 +73,7 @@
 
 <form action="[process download_name="@@MV_PAGE@@.sh"]" method=POST name=mailform>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_action VALUE=go>
 <INPUT TYPE=hidden NAME=hide_textarea VALUE="">
 <INPUT TYPE=hidden NAME=show_close VALUE="">
@@ -441,4 +441,4 @@ mail to this list again. And it be on your head...
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.9 2004-01-08 17:53:45 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.10 2005-04-23 18:10:07 pvinci Exp $ -->

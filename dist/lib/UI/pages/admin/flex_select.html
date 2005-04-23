@@ -52,7 +52,7 @@
 [output name=search_box]
 [if compare=`! $Config->{Database}{$CGI->{mv_data_table}}{HUGE}`]
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
@@ -60,7 +60,7 @@
 </FORM>
 [else]
 <FORM ACTION="[area href="admin/flex_editor"]" METHOD=GET>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <span class=s3>[L]Edit record[/L]:</span> <input NAME=item_id size=16 class=s2> 
@@ -74,4 +74,4 @@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.22 2003-07-24 17:28:59 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.23 2005-04-23 18:10:07 pvinci Exp $ -->

@@ -176,7 +176,7 @@ EOF
 [/if]
 
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
-<input type=hidden name=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genconfig">
 
@@ -297,7 +297,7 @@ ui_export_database=1
 	[/calc]
 [/set]
 <form action="[area href="process/[cgi mv_data_table]_slice.txt" add_dot_html=0] method="POST" name=dl>
-<input type=hidden name=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_action         VALUE=return>
 <INPUT TYPE=hidden NAME=mv_data_table     VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_click          VALUE=joincol>

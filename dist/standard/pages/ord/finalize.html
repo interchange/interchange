@@ -18,7 +18,7 @@ ui_template_name: noleft
 	individual tables in include/checkout/*
 [/comment]
 <form action="[area href="ord/finalize" secure=1]" method="POST" name=checkout>
-<input type=hidden NAME=mv_session_id    value="[data session id]">
+[form-session-id]
 <input type=hidden NAME=mv_action        value=refresh>
 <input type=hidden NAME=mv_nextpage      value="ord/finalize">
 <input type=hidden NAME=mv_failpage      value="ord/finalize">

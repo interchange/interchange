@@ -137,7 +137,7 @@
 <!-- end initialization -->
 
 <FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
-<input type=hidden name="mv_session_id" value="[data session id]">
+[form-session-id]
 
 [page	href="admin/entry_items"
 		form="
@@ -166,7 +166,7 @@
 	[/on-match]
 	[/query]
 [/if]
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_values_space VALUE="order_entry">
 <INPUT TYPE=hidden NAME=mv_todo VALUE="refresh">
 <INPUT TYPE=hidden NAME=order_desk_entry VALUE="1">

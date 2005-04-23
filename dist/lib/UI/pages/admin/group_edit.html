@@ -22,7 +22,7 @@
 [/if]
 [loop list="[cgi group_id]"]
 <form action="[area ui]" method="post">
-<input type=hidden name=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/group>
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">

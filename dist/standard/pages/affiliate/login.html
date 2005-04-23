@@ -39,7 +39,7 @@ ui_template_name: leftonly
 
 <table border="0" cellspacing="0" cellpadding="0">
 <FORM ACTION="[process secure=1]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_click VALUE=AFLogin>
 <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="affiliate/index">

@@ -58,7 +58,7 @@ often and have not already done so, you can create a new account.[/L]
 		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
 		<input type="hidden" name="mv_successpage" value="ord/country">
 		<input type="hidden" name="mv_nextpage" value="ord/country">
-		<input type="hidden" name="mv_session_id" value="[data session id]">
+		[form-session-id]
 
 		<table border="0" align="center" width="100%" height="100%">
 		<tr>
@@ -111,7 +111,7 @@ often and have not already done so, you can create a new account.[/L]
 		<table border="0" align="center" width="100%" height="100%">
 
 		<form action="[process secure=1]" method="POST">
-		<input type="hidden" name="mv_session_id" value="[data session id]">
+		[form-session-id]
 		<input type="hidden" name="mv_click" value=NewAccount>
 		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
 		<input type="hidden" name="mv_successpage" value="ord/country">

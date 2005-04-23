@@ -12,6 +12,7 @@
 	return;
 [/calc]
 <form action="[area @@MV_PAGE@@]" method=POST>
+[form-session-id]
 <input type=hidden name=mv_action value=back>
 <br>
 [display 
@@ -24,6 +25,7 @@ File name pattern to scan <input type=text name=pattern size=50 value="[cgi patt
 </form>
 
 <form action="[area @@MV_PAGE@@]" method=POST>
+[form-session-id]
 <input type=hidden name=mv_action value=back>
 <input type=hidden name=setting value="[cgi setting]">
 <input type=hidden name=pattern value="[cgi pattern]">

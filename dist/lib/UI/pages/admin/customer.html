@@ -187,6 +187,7 @@
 
 [output name=search_box]
 <FORM ACTION="[area @@MV_PAGE@@]">
+[form-session-id]
 <INPUT TYPE=text NAME=ui_text_qualification VALUE="" class=s3>
 <input type=submit value="[L]Search for customer[/L]" class=s3>
 </form>
@@ -204,6 +205,7 @@
 [/calc]
 [/if]
 <FORM ACTION="[process]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 [search-region more=1 search="
@@ -349,6 +351,7 @@ so there's a full line across the page even if table cells are blank.
 [if-mm advanced userdb=e]
 [output name=top_buttons]
 	<form action="[area @@MV_PAGE@@]">
+        [form-session-id]
 	<input type=hidden name=mv_action value=refresh>
 	<input type=hidden name=mv_click value=MMsu>
 	<span class=s3>Switch to a user:</span> <select name=user class=s3>
