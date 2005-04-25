@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.72 2005-04-19 05:23:42 mheins Exp $
+# $Id: Editor.pm,v 1.73 2005-04-25 05:29:38 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.72 $, 10);
+$VERSION = substr(q$Revision: 1.73 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -142,6 +142,19 @@ use vars qw/%Display_type %Display_options %Style_sheet/;
 		$opt->{break_cell_first_style} ||= 'border-top: 1px solid #999999';
 		return;
 	},
+	adjust_width => sub {
+		my $opt = shift;
+		$opt->{adjust_cell_class} ||= $opt->{widget_cell_class};
+		if($opt->{table_width} and $opt->{table_width} =~ /^\s*(\d+)(\w*)\s*$/) {
+			my $wid = $1;
+			my $type = $2 || '';
+			$opt->{help_cell_style} ||= 'width: ' . int($wid * .35) . $type;
+		}
+		else {
+			$opt->{help_cell_style} ||= 'width: 400';
+		}
+		return;
+	},
 );
 
 %Display_type = (
@@ -152,7 +165,7 @@ use vars qw/%Display_type %Display_options %Style_sheet/;
      {BLABEL}{LABEL}{ELABEL}{META_STRING}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
+     <table cellspacing="0" cellmargin="0" width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
            {WIDGET}
@@ -184,7 +197,7 @@ EOF
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
+     <table cellspacing="0" cellmargin="0" width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
            {WIDGET}
@@ -260,6 +273,32 @@ EOF
 		chomp $thing;
 		return $thing;
 	},
+	adjust_width => sub {
+		my $opt = shift;
+		my $span = shift;
+		$opt->{break_template} ||= <<EOF;
+$opt->{spacer_row}
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+EOF
+		my $thing = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}\{COLSPAN}>
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
+         </td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td align=right>{META_STRING}</td>
+       </tr>
+     </table>
+   </td>
+EOF
+		chomp $thing;
+		return $thing;
+	},
 	image_meta => sub {
 		my $opt = shift;
 		my $span = shift;
@@ -277,7 +316,7 @@ EOF
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
          <td align=right>{META_STRING}</td>
        </tr>
      </table>
@@ -2026,6 +2065,11 @@ sub resolve_options {
 		}
 	}
 
+	if(my $dt = $opt->{display_type}) {
+		my $sub = $Display_options{$dt};
+		$sub and ref($sub) eq 'CODE' and $sub->($opt);
+	}
+
 	# init the row styles
 	foreach my $rtype (qw/data break combo spacer title/) {
 		my $mainp = $rtype . '_row_extra';
@@ -2120,11 +2164,6 @@ sub resolve_options {
 	$opt->{ui_data_fields} =~ s/^[\s,\0]+//;
 	$opt->{ui_data_fields} =~ s/[\s,\0]+$//;
 #::logDebug("fields now=$opt->{ui_data_fields}");
-
-	if(my $dt = $opt->{display_type}) {
-		my $sub = $Display_options{$dt};
-		$sub and ref($sub) eq 'CODE' and $sub->($opt);
-	}
 
 	#### This code is also in main editor routine, change there too!
 	my $cells_per_span = $opt->{cell_span} || 2;
@@ -3664,12 +3703,23 @@ $l_pkey</td>};
 
 	my @prescript;
 	my @postscript;
-	my $callback_prescript = sub {
+
+	for(qw/callback_prescript callback_postscript/) {
+		next unless $opt->{$_};
+		next if ref($opt->{$_}) eq 'CODE';
+		$Tag->error({
+						name => errmsg('table-editor'), 
+						set => errmsg('%s is not a code reference', $_), 
+					});
+	}
+
+	my $callback_prescript = $opt->{callback_prescript} || sub {
 		push @prescript, @_;
 	};
-	my $callback_postscript = sub {
+	my $callback_postscript = $opt->{callback_postscript} || sub {
 		push @postscript, @_;
 	};
+
 
 	if(my $sheet = $opt->{style_sheet}) {
 		$sheet =~ s/^\s+//;
@@ -4272,6 +4322,37 @@ EOF
 		$end_script = <<EOF;
 <script>
 	document.$opt->{form_name}.$foc.focus();
+</script>
+EOF
+	}
+
+	if($opt->{adjust_cell_class}) {
+		$end_script .= <<EOF;
+<script>
+	var mytags=document.getElementsByTagName("td");
+
+	var max = 0;
+	var nextmax = 0;
+	var type = '$opt->{adjust_cell_class}';
+	for(var i = 0; i < mytags.length; i++) {
+		if(mytags[i].getAttribute('class') != type)
+			continue;
+		var wid = mytags[i].offsetWidth;
+		var span = mytags[i].getAttribute('colspan');
+		if(span < 2 && mytags[i].getAttribute('class') == type && wid > max) {
+			nextmax = max;
+			max = wid;
+	}
+	}
+	if((max / 2) > nextmax) 
+		max = nextmax;
+	for(var i = 0; i < mytags.length; i++) {
+		if(mytags[i].getAttribute('class') != type)
+			continue;
+		if(mytags[i].getAttribute('colspan') > 1)
+			continue;
+		mytags[i].setAttribute('width', max);
+	}
 </script>
 EOF
 	}
