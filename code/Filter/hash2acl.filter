@@ -1,0 +1,29 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: hash2acl.filter,v 1.1 2005-04-25 21:11:36 mheins Exp $
+
+CodeDef hash2acl Filter
+CodeDef hash2acl Description hash2acl
+CodeDef hash2acl Visibility private
+CodeDef hash2acl Routine <<EOR
+sub {
+	my ($value) = @_;
+	my $orig = $value;
+	$value =~ s/^\s+//;
+	$value =~ s/\s+$//;
+	$value =~ s/\0+//g;
+	my $hash = Vend::Util::get_option_hash($value)
+		or return $orig;
+	my @opts;
+	for(sort keys %$hash) {
+		! defined $hash and $hash->{$_} = '';
+		my $val = $_;
+		$val =~ s/,/&#44;/g;
+		$val =~ s/=/&#61;/g;
+		push @opts, "$val=$hash->{$_}";
+	}
+	$value = join ",", @opts;
+	return $value;
+}
+EOR
