@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.73 2005-04-25 05:29:38 mheins Exp $
+# $Id: Editor.pm,v 1.74 2005-04-25 05:43:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.73 $, 10);
+$VERSION = substr(q$Revision: 1.74 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -4339,12 +4339,12 @@ EOF
 			continue;
 		var wid = mytags[i].offsetWidth;
 		var span = mytags[i].getAttribute('colspan');
-		if(span < 2 && mytags[i].getAttribute('class') == type && wid > max) {
+		if(span < 2 && mytags[i].getAttribute('class') == type && wid >= max) {
 			nextmax = max;
 			max = wid;
 	}
 	}
-	if((max / 2) > nextmax) 
+	if(max > 500 && (max / 2) > nextmax) 
 		max = nextmax;
 	for(var i = 0; i < mytags.length; i++) {
 		if(mytags[i].getAttribute('class') != type)
