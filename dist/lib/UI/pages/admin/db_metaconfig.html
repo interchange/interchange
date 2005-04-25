@@ -128,9 +128,11 @@
 		extended.table_width extended.left_width
 		extended.widget_class extended.data_row_class
 		extended.break_row_class extended.spacer_row_class
-		extended.combo_row_class extended.label_cell_class
-		extended.data_cell_class extended.widget_cell_class
-		extended.help_cell_class
+		extended.combo_row_class
+		extended.label_cell_class   extended.label_cell_style 
+		extended.data_cell_class    extended.data_cell_style
+		extended.widget_cell_class  extended.widget_cell_style
+		extended.help_cell_class    extended.help_cell_style 
 
 		=Spreadsheet page
 
@@ -211,6 +213,10 @@
 		'extended.data_cell_class'		=> 'Data cell class (standard row)',
 		'extended.widget_cell_class'	=> 'Widget cell class (standard row)',
 		'extended.help_cell_class'		=> 'Help cell class (standard row)',
+		'extended.label_cell_style'		=> 'Label cell style (standard row)',
+		'extended.data_cell_style'		=> 'Data cell style (standard row)',
+		'extended.widget_cell_style'	=> 'Widget cell style (standard row)',
+		'extended.help_cell_style'		=> 'Help cell style (standard row)',
 		'extended.bottom_buttons'		=> 'Buttons only on bottom',
 		'extended.top_buttons'			=> 'Buttons only on top',
 		'fieldmeta'						=> 'Individual field meta (view only)',
@@ -373,6 +379,7 @@
 		'extended.display_type'		=> $Variable->{UI_TABLE_EDITOR_DISPLAY_TYPES}
 										|| q{
 			image_meta=Standard UI,
+			adjust_width=UI with adjusted width,
 			default=default,
 			simple_row=Simpler,
 			text_help=Simple with text/js help,
@@ -394,4 +401,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.20 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.21 $ -->
