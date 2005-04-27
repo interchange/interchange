@@ -1,4 +1,5 @@
 code/ActionMap/foo.am
+code/Filter/acl2hash.filter
 code/Filter/alpha.filter
 code/Filter/alphanumeric.filter
 code/Filter/backslash.filter
@@ -23,6 +24,7 @@ code/Filter/encrypt.filter
 code/Filter/filesafe.filter
 code/Filter/filter_select.filter
 code/Filter/gate.filter
+code/Filter/hash2acl.filter
 code/Filter/html2text.filter
 code/Filter/integer.filter
 code/Filter/italics.filter
@@ -273,6 +275,7 @@ code/UserTag/usps_query.tag
 code/UserTag/values_space.tag
 code/UserTag/var.tag
 code/UserTag/weight.tag
+code/Widget/acl.widget
 code/Widget/checkbox.widget
 code/Widget/combo.widget
 code/Widget/country_select.widget
