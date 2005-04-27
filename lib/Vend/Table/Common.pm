@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.37 2004-09-13 12:42:18 racke Exp $
+# $Id: Common.pm,v 2.38 2005-04-27 22:23:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1581,7 +1581,7 @@ sub log_error {
 		logGlobal($msg);
 	}
 	if($Vend::admin or ! defined($cfg->{LOG_ERROR_SESSION}) or $cfg->{LOG_ERROR_SESSION}) {
-		$Vend::Session->{errors} = {} unless ref($Vend::Session->{errors}) eq 'HASH';
+		$Vend::Session->{errors} = {} unless CORE::ref($Vend::Session->{errors}) eq 'HASH';
 		$Vend::Session->{errors}{$ekey} = $msg;
 	}
 	die $msg if $cfg->{DIE_ERROR};
