@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.240 2005-04-27 20:18:45 mheins Exp $
+# $Id: Interpolate.pm,v 2.241 2005-04-27 22:12:45 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.240 $, 10);
+$VERSION = substr(q$Revision: 2.241 $, 10);
 
 @EXPORT = qw (
 
@@ -4211,6 +4211,10 @@ sub iterate_hash_list {
 
 	# undef the $Row object, as it should only be set as needed by [PREFIX-calc]
 	undef $Row;
+
+	## We can't control defined state of these hash members, so we will
+	## kill warnings
+	no warnings;
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];

@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.29 2004-02-11 14:34:33 jon Exp $
+# $Id: Parse.pm,v 2.30 2005-04-27 22:12:45 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -772,6 +772,10 @@ EOF
 
 #::logDebug("output attr=$attr->{_output}");
 	$self->destination($attr->{_output}) if $attr->{_output};
+
+	## We can't control whether tags will return undef or not,
+	## so we turn off warnings
+	no warnings;
 
 	if($hasEndTag{$tag}) {
 		# Handle embedded tags, but only if interpolate is 
