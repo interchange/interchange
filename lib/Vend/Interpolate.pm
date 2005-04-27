@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.239 2005-04-12 19:08:01 jon Exp $
+# $Id: Interpolate.pm,v 2.240 2005-04-27 20:18:45 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.239 $, 10);
+$VERSION = substr(q$Revision: 2.240 $, 10);
 
 @EXPORT = qw (
 
@@ -918,7 +918,7 @@ sub conditional {
 	$base =~ s/^!// and $reverse = 1;
 	my ($op, $status);
 	my $noop;
-	$noop = 1 unless defined $operator;
+	$noop = 1, $operator = '' unless defined $operator;
 
 	my $sub;
 	my $newcomp;
@@ -3783,7 +3783,7 @@ sub find_matching_else {
 	my $pos;
 
   	$$buf =~ s{\[else\]}{[else]}igo;
-    $first = index($$buf, $open, $pos);
+    $first = index($$buf, $open);
 #::logDebug("first=$first");
 	return undef if $first < 0;
 	my $int     = $first;
@@ -4228,6 +4228,7 @@ sub iterate_hash_list {
 		}
 		$item->{mv_cache_price} = undef;
 		$code = $item->{$code_field} || $item->{code};
+		$code = '' unless defined $code;
 
 #::logDebug("Doing $code (variant $item->{code}) substitution, count $count++");
 
