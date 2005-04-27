@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.6 2004-04-12 03:06:32 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.7 2005-04-27 22:16:27 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use strict;
 
@@ -507,7 +507,7 @@ sub set_row {
 			for (my $i = 0; $i <= $max; $i++) {
 				if($sary->[$i] and ! defined $vals[$i]) {
 					push @flds, $s->[$NAME][$i];
-					@vals[$i], $sary->[$i]->($s);
+					$vals[$i] = $sary->[$i]->($s);
 					next;
 				}
 				next unless defined $ary->[$i];
