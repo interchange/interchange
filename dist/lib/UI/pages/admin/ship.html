@@ -49,7 +49,7 @@
 [if type=explicit
 	compare=|
 			[newer
-				source=__UI_PRODUCT_DIR__/shipping.asc
+				source="[either][scratch ui_shipping_asc][or]__UI_PRODUCT_DIR__/shipping.asc[/either]"
 				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
 				]
 			|]

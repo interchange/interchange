@@ -1,18 +1,24 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: write_shipping.coretag,v 1.3 2005-02-14 00:42:53 docelic Exp $
+# $Id: write_shipping.coretag,v 1.4 2005-04-27 15:02:18 mheins Exp $
 
 UserTag write-shipping Order      file
 UserTag write-shipping PosNumber  1
 UserTag write-shipping addAttr
-UserTag write-shipping Version    $Revision: 1.3 $
+UserTag write-shipping Version    $Revision: 1.4 $
 UserTag write-shipping Routine    <<EOR
 sub {
 	my ($file, $opt) = @_;
 	if(! $file) {
-		$file = $Vend::Cfg->{Special}{'shipping.asc'}
-			|| Vend::Util::catfile($Vend::Cfg->{ProductDir},'shipping.asc');
+		unless($file = $Vend::Cfg->{Special}{'shipping.asc'}) {
+			my $dir = $Vend::Cfg->{Shipping}{dir} || $Vend::Cfg->{ProductDir};
+			$file = Vend::Util::catfile($dir,'shipping.asc');
 	}
+	}
+
+	## This is set so the UI knows where to check for changes
+	$::Scratch->{ui_shipping_asc} = $file;
+
 	my $lines = $Vend::Cfg->{Shipping_line};
 	my @outlines;
 	for (@$lines) {
@@ -25,7 +31,10 @@ sub {
 		}
 		push @outlines, \@line;
 	}
-	rename($file, "$file.bak");
+
+	# Back the file up
+	$Tag->backup_file($file);
+
 	open(SHIPOUT, ">$file")
 		or die errmsg("Can't write shipping to %s: %s", $file, $!);
 	for(@outlines) {
