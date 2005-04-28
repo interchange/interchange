@@ -5,6 +5,7 @@
 	<tr>
 [menu
 	name="[scratch line_menu]"
+        inactive=inactive
 	full_interpolate=page
 	localize="name,description"
 	]
