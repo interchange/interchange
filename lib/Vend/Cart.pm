@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.10 2003-11-17 14:24:11 mheins Exp $
+# $Id: Cart.pm,v 2.11 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 use strict;
 
@@ -49,6 +49,7 @@ sub STORE {
 	if( ref($cart) eq 'ARRAY' ) {
 		for(keys %$::Carts) {
 #::logDebug("checking name $_ via ref comparison");
+			next unless $::Carts->{$_};
 			$name = $_ if $::Carts->{$_} eq $cart;
 		}
 

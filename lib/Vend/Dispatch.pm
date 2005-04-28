@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.50 2005-04-17 12:44:39 mheins Exp $
+# $Id: Dispatch.pm,v 1.51 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.50 $, 10);
+$VERSION = substr(q$Revision: 1.51 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1133,8 +1133,8 @@ sub dispatch {
 
     my($sessionid, $seed);
 
-	$sessionid = $CGI::values{mv_session_id} || undef;
-	$sessionid =~ s/\0.*//s;
+	$sessionid = $CGI::values{mv_session_id} || undef
+		and $sessionid =~ s/\0.*//s;
 
 	$::Instance->{CookieName} = $Vend::Cfg->{CookieName};
 
@@ -1322,7 +1322,7 @@ EOF
 
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 
-	if ($CGI::values{mv_pc} =~ /\D/) {
+	if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
 		$Vend::Session->{source} =	$CGI::values{mv_pc} eq 'RESET'
 										? ''
 										: $CGI::values{mv_pc};

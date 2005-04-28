@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.167 2005-04-22 14:47:37 mheins Exp $
+# $Id: Config.pm,v 2.168 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.167 $, 10);
+$VERSION = substr(q$Revision: 2.168 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4014,6 +4014,7 @@ my %tagCanon = ( qw(
 	posroutine		PosRoutine
 	maproutine		MapRoutine
 	noreparse		NoReparse
+	javascriptcheck JavaScriptCheck
 	required		Required
 	routine			Routine
 	version			Version
@@ -4109,7 +4110,8 @@ sub parse_mapped_code {
 	my($tag,$p,$val) = split /\s+/, $value, 3;
 	
 	# Canonicalize
-	$p = $tagCanon{lc $p};
+	$p = $tagCanon{lc $p} || ''
+		or ::logDebug("bizarre mapped code line '$value'");
 	$tag =~ tr/-/_/;
 	$tag =~ s/\W//g
 		and config_warn("Bad characters removed from '%s'.", $tag);

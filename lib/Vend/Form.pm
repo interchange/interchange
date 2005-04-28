@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.57 2005-04-16 13:40:29 mheins Exp $
+# $Id: Form.pm,v 2.58 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 @EXPORT = qw (
 	display
@@ -139,7 +139,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq(><br$Vend::Xtrailer><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
+		qq(><br{XTRAILER}><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
 		,
 	text =>
 		qq({PREPEND}<input type="text" name="{NAME}" value="{ENCODED}")

@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.30 2005-04-27 22:12:45 mheins Exp $
+# $Id: Parse.pm,v 2.31 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -187,8 +187,10 @@ $Routine{restrict} = sub {
 		$default = 1;
 		$opt->{policy} = 'deny';
 	}
-	my @enable  = split /[\s,\0]+/, $enable;
-	my @disable = split /[\s,\0]+/, $opt->{disable};
+	my @enable;
+	my @disable;
+	$enable			and @enable  = split /[\s,\0]+/, $enable;
+	$opt->{disable} and @disable = split /[\s,\0]+/, $opt->{disable};
 
 	for(@enable, @disable) {
 		$_ = lc $_;
@@ -422,6 +424,8 @@ sub do_tag {
 		if defined $Vend::Cfg->{AdminSub}{$tag} and
 			($Vend::restricted or ! $Vend::admin);
 	
+	no warnings;
+
 	if (! defined $Routine{$tag}) {
         if (! $Alias{$tag}) {
             ::logError("Tag '$tag' not defined.");

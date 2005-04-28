@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.10 2005-01-25 17:47:45 jon Exp $
+# $Id: Ship.pm,v 2.11 2005-04-28 01:54:44 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -628,8 +628,9 @@ sub shipping {
 	}
 	elsif($field eq 'quantity') {
 #::logDebug("quantity selection");
-    	foreach $i (0 .. $#$Vend::Items) {
-			$total = $total + $Vend::Items->[$i]->{$field};
+    	for (@$Vend::Items) {
+			next unless $_->{quantity};
+			$total = $total + $_->{quantity};
     	}
 	}
 	elsif ( index($field, ':') != -1) {

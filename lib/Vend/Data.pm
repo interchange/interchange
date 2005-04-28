@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.46 2005-01-01 00:09:12 jon Exp $
+# $Id: Data.pm,v 2.47 2005-04-28 01:54:44 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -132,6 +132,7 @@ sub instant_database {
 }
 
 sub database_exists_ref {
+	return unless $_[0];
 	return $_[0]->ref() if ref $_[0];
 	return $Vend::Interpolate::Db{$_[0]}
 			if $Vend::Interpolate::Db{$_[0]};
@@ -1566,7 +1567,8 @@ CHAIN:
 					redo CHAIN if ref $row ne 'HASH';
 
 					my $keep;
-					$keep = $row->{$field} if $row->{$field} != 0;
+					$keep = $row->{$field}
+						if length($row->{$field}) && $row->{$field} != 0;
 					for (@breaks) {
 						next unless exists $row->{$_};
 						$test = $_;
@@ -1808,7 +1810,7 @@ sub item_field {
 }
 
 sub item_subtotal {
-	item_price($_[0]) * $_[0]->{quantity};
+	item_price($_[0]) * ($_[0]->{quantity} || 0);
 }
 
 sub set_db {
