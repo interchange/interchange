@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.58 2005-04-21 11:14:43 mheins Exp $
+# $Id: Server.pm,v 2.59 2005-04-28 01:56:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -188,6 +188,9 @@ sub map_cgi {
 		or @Global::argv;
 
 	map_misc_cgi() if $h;
+
+	# Initialize since always used elsewhere, never will be 0
+	$CGI::content_type ||= '';
 
 	my $g = $Global::Selector{$CGI::script_name}
 		or do {
@@ -378,12 +381,14 @@ sub parse_post {
 
 sub parse_multipart {
 	my $sref = shift;
+
 	my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
 	$boundary = quotemeta $boundary;
-#::logDebug("got to multipart");
+
 	# Stolen from CGI.pm, thanks Lincoln
 	$boundary = "--$boundary"
 		unless $CGI::useragent =~ /MSIE 3\.0[12];  Mac/i;
+
 	unless ($$sref =~ s/^\s*$boundary\s+//) {
 		die ::errmsg("multipart/form-data sent incorrectly:\n%s\n", $$sref);
 	}
@@ -391,8 +396,6 @@ sub parse_multipart {
 	my @parts;
 	@parts = split /\r?\n$boundary/, $$sref;
 	
-#::logDebug("multipart: " . scalar @parts . " parts");
-
 	DOMULTI: {
 		for (@parts) {	
 		    last if ! $_ || ($_ =~ /^--(\r?\n)?$/);

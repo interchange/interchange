@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.38 2005-04-27 22:23:59 mheins Exp $
+# $Id: Common.pm,v 2.39 2005-04-28 01:56:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -774,7 +774,7 @@ sub query {
 	my $return;
 	my $spec;
 	my $stmt;
-	my $update;
+	my $update = '';
 	my %nh;
 	my @na;
 	my @update_fields;
