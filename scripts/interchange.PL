@@ -1,9 +1,9 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
 # Interchange version 5.3.1
 #
-# $Id: interchange.PL,v 2.83 2005-02-27 08:29:17 mheins Exp $
+# $Id: interchange.PL,v 2.84 2005-04-30 15:17:10 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -839,7 +839,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 			$high_enough = 1;
 		};
 		last SIGNALCHECK unless $high_enough;
-		if($ENV{PERL_SIGNALS} eq 'unsafe') {
+		if($ENV{PERL_SIGNALS} and $ENV{PERL_SIGNALS} eq 'unsafe') {
 			logGlobal("Running with old signals.");
 		}
 		else {
