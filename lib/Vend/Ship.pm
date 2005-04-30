@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.11 2005-04-28 01:54:44 mheins Exp $
+# $Id: Ship.pm,v 2.12 2005-04-30 14:52:55 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -35,6 +35,8 @@ require Exporter;
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
+use strict;
+no warnings qw(uninitialized numeric);
 
 use constant MAX_SHIP_ITERATIONS => 100;
 use constant MODE  => 0;
@@ -81,6 +83,8 @@ sub make_three {
 	}
 	return $zone;
 }
+
+use vars qw/%Ship_handler/;
 
 %Ship_handler = (
 		TYPE =>
@@ -756,7 +760,7 @@ sub shipping {
 		}
 		elsif ($what =~ s/^s\s*//) {
 			$what =~ s/\s+(.*)//;
-			$extra = $1;
+			my $extra = $1;
 			my $loc = $Vend::Cfg->{Shipping_repository}{$what}
 				or return do_error("Unknown custom shipping type '%s'", $what);
 			for(keys %$loc) {
@@ -919,10 +923,11 @@ sub shipping {
 	}
 
 	# If we got here, the mode and quantity fit was not found
-	$Vend::Session->{ship_message} .=
-		"No match found for mode '$mode', quantity '$total', "	.
-		($qual ? "qualifier '$qual', " : '')					.
-		"returning 0. ";
+	$Vend::Session->{ship_message} ||= '';
+	my $fmt = "No match found for mode '%s', quantity '%s', ";
+	$fmt .= "qualifier '%s', " if $qual;
+	$fmt .= "returning 0.";
+	$Vend::Session->{ship_message} .= errmsg($fmt, $mode, $total, $qual);
 	return undef;
 }
 
