@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.242 2005-04-28 01:54:44 mheins Exp $
+# $Id: Interpolate.pm,v 2.243 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.242 $, 10);
+$VERSION = substr(q$Revision: 2.243 $, 10);
 
 @EXPORT = qw (
 
@@ -88,6 +88,9 @@ BEGIN {
 		$hole = new Safe::Hole;
 	};
 }
+
+# We generally know when we are testing these things, but be careful
+no warnings qw(uninitialized numeric);
 
 use strict;
 use Vend::Util;
@@ -642,6 +645,8 @@ sub interpolate_html {
 	my ($name, @post);
 	my ($bit, %post);
 
+	local($^W);
+
 	my $toplevel;
 	if(defined $Vend::PageInit and ! $Vend::PageInit) {
 		defined $::Variable->{MV_AUTOLOAD}
@@ -652,6 +657,8 @@ sub interpolate_html {
 
 	vars_and_comments(\$html)
 		unless $opt and $opt->{onfly};
+
+	$^W = 1 if $::Pragma->{perl_warnings_in_page};
 
     # Returns, could be recursive
 	my $parse = new Vend::Parse $wantref;
@@ -1550,7 +1557,7 @@ sub tag_perl {
 
 #::logDebug("tag_perl: tables=$tables opt=" . uneval($opt) . " body=$body");
 #::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . uneval($::Carts));
-	if($opt->{subs} || (defined $opt->{arg} and $opt->{arg} =~ /\bsub\b/)) {
+	if($opt->{subs} or $opt->{arg} =~ /\bsub\b/) {
 		no strict 'refs';
 		for(keys %{$Global::GlobalSub}) {
 #::logDebug("tag_perl share subs: GlobalSub=$_");
@@ -1918,7 +1925,7 @@ sub log {
 
 	$file = ">$file" if $opt->{create};
 
-	unless($opt->{process} =~ /\bnostrip\b/i) {
+	unless($opt->{process} and $opt->{process} =~ /\bnostrip\b/i) {
 		$data =~ s/\r\n/\n/g;
 		$data =~ s/^\s+//;
 		$data =~ s/\s+$/\n/;
@@ -1929,28 +1936,31 @@ sub log {
 		next unless defined $opt->{$_};
 		$opt->{$_} = $ready_safe->reval(qq{$opt->{$_}});
 	}
-	if($opt->{type} =~ /^text/) {
-		$status = Vend::Util::writefile($file, $data, $opt);
-	}
-	elsif($opt->{type} =~ /^\s*quot/) {
-		$record_delim = $opt->{record_delim} || "\n";
-		@lines = split /$record_delim/, $data;
-		for(@lines) {
-			@fields = Text::ParseWords::shellwords $_;
-			$status = logData($file, @fields)
-				or last;
-		}
-	}
-	elsif($opt->{type} =~ /^(?:error|debug)/) {
-		if ($opt->{file}) {
-			$data = format_log_msg($data) unless $data =~ s/^\\//;;
+
+	if($opt->{type}) {
+		if($opt->{type} =~ /^text/) {
 			$status = Vend::Util::writefile($file, $data, $opt);
 		}
-		elsif ($opt->{type} =~ /^debug/) {
-			$status = Vend::Util::logDebug($data);
+		elsif($opt->{type} =~ /^\s*quot/) {
+			$record_delim = $opt->{record_delim} || "\n";
+			@lines = split /$record_delim/, $data;
+			for(@lines) {
+				@fields = Text::ParseWords::shellwords $_;
+				$status = logData($file, @fields)
+					or last;
+			}
 		}
-		else {
-			$status = Vend::Util::logError($data);
+		elsif($opt->{type} =~ /^(?:error|debug)/) {
+			if ($opt->{file}) {
+				$data = format_log_msg($data) unless $data =~ s/^\\//;;
+				$status = Vend::Util::writefile($file, $data, $opt);
+			}
+			elsif ($opt->{type} =~ /^debug/) {
+				$status = Vend::Util::logDebug($data);
+			}
+			else {
+				$status = Vend::Util::logError($data);
+			}
 		}
 	}
 	else {
@@ -2899,7 +2909,7 @@ sub tag_sort_ary {
 
 	@codes = sort {&$code($a, $b)} @$list;
 
-	if(defined $start and $start > 1) {
+	if($start > 1) {
 		splice(@codes, 0, $start - 1);
 	}
 
@@ -2985,7 +2995,7 @@ sub tag_sort_hash {
 
 	@codes = sort {&$code($a,$b)} @$list;
 
-	if(defined $start and $start > 1) {
+	if($start > 1) {
 		splice(@codes, 0, $start - 1);
 	}
 
@@ -3038,10 +3048,10 @@ sub list_compat {
 sub tag_search_region {
 	my($params, $opt, $text) = @_;
 	$opt->{search} = $params if $params;
-	$opt->{prefix}      = 'item'           if ! defined $opt->{prefix};
-	$opt->{list_prefix} = 'search[-_]list' if ! defined $opt->{list_prefix};
+	$opt->{prefix}      ||= 'item';
+	$opt->{list_prefix} ||= 'search[-_]list';
 # LEGACY
-	list_compat($opt->{prefix}, \$text);
+	list_compat($opt->{prefix}, \$text) if $text;
 # END LEGACY
 	return region($opt, $text);
 }
@@ -3392,6 +3402,7 @@ sub tag_labeled_data_row {
 	my ($row, $table, $tabRE);
 	my $done;
 	my $prefix;
+
 	if(defined $Prefix) {
 		$prefix = $Prefix;
 		undef $Prefix;
@@ -3465,7 +3476,7 @@ sub labeled_list {
 	return '' if ! $obj;
 
 	my $ary = $obj->{mv_results};
-	return if (! $ary or ! ref $ary or ! defined $ary->[0]);
+	return '' if (! $ary or ! ref $ary or ! defined $ary->[0]);
 	
 	my $save_unsafe = $MVSAFE::Unsafe || '';
 	$MVSAFE::Unsafe = 1;
@@ -3598,6 +3609,7 @@ sub labeled_list {
 
 sub tag_attr_list {
 	my ($body, $hash, $ucase) = @_;
+
 	if(! ref $hash) {
 		$hash = string_to_ref($hash);
 		if($@) {
@@ -3924,9 +3936,6 @@ sub alternate {
 		$inc ||= $::Values->{mv_item_alternate} || 2;
 	}
 
-	## We know we are going to do numeric compares on strings, so no warnings
-	no warnings;
-
 	return $count % $inc if $inc >= 1;
 
 	my $status;
@@ -4214,10 +4223,6 @@ sub iterate_hash_list {
 
 	# undef the $Row object, as it should only be set as needed by [PREFIX-calc]
 	undef $Row;
-
-	## We can't control defined state of these hash members, so we will
-	## kill warnings
-	no warnings;
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
@@ -4583,11 +4588,11 @@ sub region {
 
 	my $lprefix;
 	my $mprefix;
-	if(defined $opt->{list_prefix}) {
+	if($opt->{list_prefix}) {
 		$lprefix = $opt->{list_prefix};
 		$mprefix = "(?:$opt->{list_prefix}-)?";
 	}
-	elsif (defined $opt->{prefix}) {
+	elsif ($opt->{prefix}) {
 		$lprefix = "(?:$opt->{prefix}-)?list";
 		$mprefix = "(?:$opt->{prefix}-)?";
 	}
@@ -4643,6 +4648,7 @@ sub region {
 				!
 					$obj->{matches} > 0 ? '' : opt_region(0,0,1,$2,$opt)
 				!xige;
+
 	$page =~ s:\[($lprefix)\]($Some)\[/\1\]:labeled_list($opt,$2,$obj):ige
 		or $page = labeled_list($opt,$page,$obj);
 #::logDebug("past labeled_list");
@@ -4656,9 +4662,8 @@ sub tag_loop_list {
 	my $fn;
 	my @rows;
 
-	$opt->{prefix} = 'loop' unless defined $opt->{prefix};
-	$opt->{label}  =  "loop" . ++$::Instance->{List_it} . $Global::Variable->{MV_PAGE}
-						unless defined $opt->{label};
+	$opt->{prefix} ||= 'loop';
+	$opt->{label}  ||= "loop" . ++$::Instance->{List_it} . $Global::Variable->{MV_PAGE};
 
 #::logDebug("list is: " . uneval($list) );
 
@@ -4879,8 +4884,9 @@ sub fly_page {
 	$Vend::Track->view_product($code) if $Vend::Track;
 # END TRACK
 	
+	$opt->{prefix} ||= 'item';
 # LEGACY
-	list_compat($opt->{prefix}, \$page);
+	list_compat($opt->{prefix}, \$page) if $page;
 # END LEGACY
 
 	return labeled_list( {}, $page, { mv_results => [[$code]] });

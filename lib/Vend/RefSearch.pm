@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.7 2004-07-23 02:48:58 mheins Exp $
+# $Id: RefSearch.pm,v 2.8 2005-04-30 15:09:58 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -27,9 +27,10 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use strict;
+no warnings qw(uninitialized numeric);
 
 sub array {
 	my ($s, $opt) = @_;

@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.10 2005-04-18 12:12:28 mheins Exp $
+# $Id: Parser.pm,v 2.11 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -65,10 +65,11 @@ HTML::Parser - Gisle Aas <aas@sn.no>
 package Vend::Parser;
 
 use strict;
+no warnings qw(uninitialized numeric);
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 
 sub new

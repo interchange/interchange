@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.29 2005-04-21 21:39:17 mheins Exp $
+# $Id: Search.pm,v 2.30 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,9 +22,10 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 use strict;
+no warnings qw(uninitialized numeric);
 use vars qw($VERSION);
 
 sub new {

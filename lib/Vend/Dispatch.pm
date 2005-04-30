@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.51 2005-04-28 01:54:44 mheins Exp $
+# $Id: Dispatch.pm,v 1.52 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.51 $, 10);
+$VERSION = substr(q$Revision: 1.52 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -39,6 +39,7 @@ use Vend::Session;
 use Vend::Page;
 use Vend::UserDB;
 use Vend::CounterFile;
+no warnings qw(uninitialized numeric);
 
 # TRACK
 use Vend::Track;
@@ -60,6 +61,8 @@ require Exporter;
 				update_user
 				update_values
 			);
+
+use strict;
 
 my $H;
 sub http {

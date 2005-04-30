@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.58 2005-04-28 01:54:44 mheins Exp $
+# $Id: Form.pm,v 2.59 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -31,6 +31,7 @@ use Vend::Interpolate;
 use Vend::Util;
 use Vend::Tags;
 use strict;
+no warnings qw(uninitialized numeric);
 use POSIX qw{strftime};
 
 use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
@@ -38,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 @EXPORT = qw (
 	display
@@ -238,6 +239,7 @@ $Template{default} = $Template{text};
 sub attr_list {
 	my ($body, $hash) = @_;
 	return $body unless ref($hash) eq 'HASH';
+
 	$body =~ s!\{([A-Z_]+)\}!$hash->{lc $1}!g;
 	$body =~ s!\{([A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
 	$body =~ s!\{([A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
@@ -788,9 +790,7 @@ sub dropdown {
 			$value =~ s/\*$// and $select = 1;
 		}
 
-		if (defined $default) {
-			$select = '';
-		}
+		$select = '' if defined $default;
 
 		my $extra = '';
 		my $attr = {};
@@ -1360,7 +1360,6 @@ if($opt->{debug}) {
 	if(my $c = $opt->{check}) {
 		$c = "$opt->{name}=$c" unless $c =~ /=/;
 		HTML::Entities::encode($c);
-		no warnings;
 		$opt->{append} .= qq{<input type=hidden name="mv_individual_profile" value="$c">};
 	}
 

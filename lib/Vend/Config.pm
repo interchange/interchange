@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.168 2005-04-28 01:54:44 mheins Exp $
+# $Id: Config.pm,v 2.169 2005-04-30 15:09:57 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -33,6 +33,7 @@ require Exporter;
 @EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database);
 
 use strict;
+no warnings qw(uninitialized numeric);
 use vars qw(
 			$VERSION $C
 			@Locale_directives_ary @Locale_directives_scalar
@@ -49,7 +50,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.168 $, 10);
+$VERSION = substr(q$Revision: 2.169 $, 10);
 
 my %CDname;
 my %CPname;

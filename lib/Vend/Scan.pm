@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.29 2005-03-06 04:16:24 mheins Exp $
+# $Id: Scan.pm,v 2.30 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,9 +30,10 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 use strict;
+no warnings qw(uninitialized numeric);
 use Vend::Util;
 use Vend::File;
 use Vend::SQL_Parser;

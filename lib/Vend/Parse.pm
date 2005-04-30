@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.31 2005-04-28 01:54:44 mheins Exp $
+# $Id: Parse.pm,v 2.32 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,12 +36,13 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
 use strict;
+no warnings qw(uninitialized numeric);
 
 use vars qw($VERSION);
 
@@ -424,8 +425,6 @@ sub do_tag {
 		if defined $Vend::Cfg->{AdminSub}{$tag} and
 			($Vend::restricted or ! $Vend::admin);
 	
-	no warnings;
-
 	if (! defined $Routine{$tag}) {
         if (! $Alias{$tag}) {
             ::logError("Tag '$tag' not defined.");
@@ -776,10 +775,6 @@ EOF
 
 #::logDebug("output attr=$attr->{_output}");
 	$self->destination($attr->{_output}) if $attr->{_output};
-
-	## We can't control whether tags will return undef or not,
-	## so we turn off warnings
-	no warnings;
 
 	if($hasEndTag{$tag}) {
 		# Handle embedded tags, but only if interpolate is 

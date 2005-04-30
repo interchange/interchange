@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.17 2005-04-27 19:26:39 mheins Exp $
+# $Id: File.pm,v 2.18 2005-04-30 15:09:58 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -539,7 +539,7 @@ my %intrinsic = (
 	ic_scratch => sub {
 					my ($fn, $checkpath, $write, $sub, $compare) = @_;
 					my $false = $sub =~ s/^!\s*//;
-					my $status	= length($compare)
+					my $status	= defined $compare && length($compare)
 								? ($::Scratch->{$sub} eq $compare)
 								: ($::Scratch->{$sub});
 					return ! $false if $status;

@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.47 2005-04-28 01:54:44 mheins Exp $
+# $Id: Data.pm,v 2.48 2005-04-30 15:09:58 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -62,6 +62,7 @@ update_data
 @EXPORT_OK = qw(update_productbase column_index);
 
 use strict;
+no warnings qw(uninitialized numeric);
 use File::Basename;
 use Vend::Util;
 use Vend::Interpolate;

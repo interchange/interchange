@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.68 2005-03-05 19:01:54 mheins Exp $
+# $Id: Order.pm,v 2.69 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.68 $, 10);
+$VERSION = substr(q$Revision: 2.69 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -58,6 +58,7 @@ use Vend::Data;
 use Text::ParseWords;
 use Errno qw/:POSIX/;
 use strict;
+no warnings qw(uninitialized numeric);
 
 use autouse 'Vend::Error' => qw/do_lockout/;
 

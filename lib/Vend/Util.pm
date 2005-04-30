@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.82 2005-04-21 11:24:05 mheins Exp $
+# $Id: Util.pm,v 2.83 2005-04-30 15:09:58 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -78,6 +78,7 @@ require Exporter;
 );
 
 use strict;
+no warnings qw(uninitialized numeric);
 use Config;
 use Fcntl;
 use Errno;
@@ -87,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;

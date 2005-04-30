@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.39 2005-04-28 01:56:28 mheins Exp $
+# $Id: Common.pm,v 2.40 2005-04-30 15:09:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,13 +23,14 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 use strict;
 
 package Vend::Table::Common;
 require Vend::DbSearch;
 require Vend::TextSearch;
 require Vend::CounterFile;
+no warnings qw(uninitialized numeric);
 use Symbol;
 use Vend::Util;
 
@@ -479,6 +480,7 @@ sub clone_set {
 sub stuff_row {
     my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
+
 #::logDebug("stuff key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
 		if ! length($key);
@@ -934,7 +936,8 @@ eval {
 	}
 	else {
 #::logDebug(	" \$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
-		$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref}} = $search->array($spec);
+		$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref} || ''}
+			 = $search->array($spec);
 		$opt->{object} = $search;
 		$opt->{prefix} = 'sql' unless defined $opt->{prefix};
 	}

@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.35 2005-04-08 02:46:41 jon Exp $
+# $Id: UserDB.pm,v 2.36 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 use vars qw!
 	$VERSION
@@ -30,6 +30,7 @@ use Vend::Data;
 use Vend::Util;
 use Safe;
 use strict;
+no warnings qw(uninitialized numeric);
 
 my $ready = new Safe;
 
@@ -538,7 +539,7 @@ sub set_db {
 	}
 
 	for(@fields) {
-		if(defined $ignore{$_}) {
+		if($ignore{$_}) {
 			$self->{PRESENT}->{$_} = 1;
 			next;
 		}

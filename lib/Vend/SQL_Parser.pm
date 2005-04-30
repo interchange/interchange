@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.9 2004-02-20 01:10:27 jon Exp $
+# $Id: SQL_Parser.pm,v 2.10 2005-04-30 15:09:58 mheins Exp $
 #
 # Copyright (C) 2003-2004 Interchange Development Group
 #
@@ -37,7 +37,8 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+no warnings qw(uninitialized numeric);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 sub new {
 	my $class = shift;
