@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.59 2005-04-28 01:56:28 mheins Exp $
+# $Id: Server.pm,v 2.60 2005-04-30 14:51:29 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -993,8 +993,8 @@ sub setup_signals {
         $Sig_dec = sub { 1 };
 	}
     else {
-        $Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
-        $Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
+        $Sig_inc = sub { kill "USR1", $Vend::MasterProcess || 0; };
+        $Sig_dec = sub { kill "USR2", $Vend::MasterProcess || 0; };
     }
 }
 
@@ -2200,6 +2200,9 @@ sub server_both {
 	my $only_ipc = $master_ipc;
 	my $checked_soap;
 	my $cycle;
+
+	no warnings; ## We will last out of loop
+
     for (;;) {
 
 	  my $i = 0;
