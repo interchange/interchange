@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.19 2005-05-01 15:38:24 mheins Exp $
+# $Id: File.pm,v 2.20 2005-05-01 15:41:26 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,9 +52,10 @@ use Fcntl;
 use Errno;
 use Vend::Util;
 use File::Path;
+use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
