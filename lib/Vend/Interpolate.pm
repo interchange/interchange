@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.243 2005-04-30 15:09:58 mheins Exp $
+# $Id: Interpolate.pm,v 2.244 2005-05-02 14:13:51 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.243 $, 10);
+$VERSION = substr(q$Revision: 2.244 $, 10);
 
 @EXPORT = qw (
 
@@ -2592,8 +2592,6 @@ sub escape_mv {
 	return join $joiner, grep(defined $_, @args);
 }
 
-*form_link = \&tag_area;
-
 PAGELINK: {
 
 my ($urlroutine, $page, $arg, $opt);
@@ -2666,6 +2664,8 @@ sub tag_area {
 }
 
 }
+
+*form_link = \&tag_area;
 
 # Sets the default shopping cart for display
 sub tag_cart {
