@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.75 2005-04-30 15:09:59 mheins Exp $
+# $Id: Editor.pm,v 1.76 2005-05-02 14:12:11 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.75 $, 10);
+$VERSION = substr(q$Revision: 1.76 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -89,45 +89,6 @@ a "Back" button is presented to allow paging backward in the wizard.
 
 my $Tag = new Vend::Tags;
 
-%Vend::Interpolate::Filter_desc = (
-	filesafe        => 'Safe for filename',
-	currency        => 'Currency',
-	mailto          => 'mailto: link',
-	commify         => 'Commify',
-	lookup          => 'DB lookup',
-	uc              => 'Upper case',
-	date_change     => 'Date widget',
-	null_to_space   => 'NULL to SPACE',
-	null_to_comma   => 'NULL to COMMA',
-	null_to_colons  => 'NULL to ::',
-	space_to_null   => 'SPACE to NULL',
-	colons_to_null  => ':: to NULL',
-	last_non_null   => 'Reverse combo',
-	nullselect      => 'Combo box',
-	tabbed          => 'Newline to TAB',
-	lc              => 'Lower case',
-	digits_dot      => 'Digits-dots',
-	backslash       => 'Strip backslash',
-	option_format   => 'Option format',
-	crypt           => 'Crypt',
-	namecase        => 'Name case',
-	name            => 'Last&#44;First to First Last',
-	digits          => 'Digits only',
-	word            => 'A-Za-z_0-9',
-	unix            => 'DOS to UNIX newlines',
-	dos             => 'UNIX to DOS newlines',
-	mac             => 'UNIX/DOS to Mac OS newlines',
-	no_white        => 'No whitespace',
-	strip           => 'Trim whitespace',
-	sql             => 'SQL quoting',
-	textarea_put    => 'Textarea PUT',
-	textarea_get    => 'Textarea GET',
-	text2html       => 'Simple text2html',
-	urlencode       => 'URL encode',
-	entities        => 'HTML entities',
-);
-
-my $F_desc = \%Vend::Interpolate::Filter_desc;
 my $Trailer;
 
 use vars qw/%Display_type %Display_options %Style_sheet/;
@@ -663,12 +624,6 @@ A:hover.ctitle,A:active.ctitle {
 EOF
 );
 
-my $fdesc_sort = sub {
-	return 1 if $a and ! $b;
-	return -1 if ! $a and $b;
-	return lc($F_desc->{$a}) cmp lc($F_desc->{$b});
-};
-
 sub expand_values {
 	my $val = shift;
 	return $val unless $val =~ /\[/;
@@ -676,19 +631,6 @@ sub expand_values {
 	$val =~ s/\[var\s+([^\[]+)\]/$::Variable->{$1}/ig;
 	$val =~ s/\[value\s+([^\[]+)\]/$::Values->{$1}/ig;
 	return $val;
-}
-
-sub filters {
-	my ($exclude, $opt) = @_;
-	$opt ||= {};
-	my @out = map { $_ . ($F_desc->{$_} ? "=$F_desc->{$_}" : '') } 
-				sort $fdesc_sort keys %Vend::Interpolate::Filter;
-	if($exclude) {
-		@out = grep /=/, @out;
-	}
-	unshift @out, "=--add--" unless $opt->{no_add};
-	$opt->{joiner} = Vend::Interpolate::get_joiner($opt->{joiner}, ",\n");
-	return join $opt->{joiner}, @out;
 }
 
 sub widget_meta {
@@ -917,13 +859,10 @@ sub display {
 					my @tables = $Tag->list_databases();
 					$record->{passed} = join (',', "=--none--", @tables);
 				}
-				elsif($passed =~ /^\s*codedef:+(\w+)(:+(\w+))?\s*$/i) {
-					my $tag = $1;
+				elsif($passed =~ /^(?:filters|\s*codedef:+(\w+)(:+(\w+))?\s*)$/i) {
+					my $tag = $1 || 'filters';
 					my $mod = $3;
 					$record->{passed} = Vend::Util::codedef_options($tag, $mod);
-				}
-				elsif($passed eq 'filters') {
-					$record->{passed} = filters(1);
 				}
 				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
 					my $total = $1;
