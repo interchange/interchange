@@ -26,6 +26,12 @@ Default: false
 _Description: Replace the Interchange demo catalog?
  There seems to already exist an Interchange demo catalog.
 
+Template: interchange-cat-standard/vhost
+Type: string
+Default: 
+_Description: Virtual host for the demo catalog ?
+ You are running Interchange with "FullURL" enabled. Please specify the virtual host for the demo catalog.
+
 Template: interchange-cat-standard/username
 Type: string
 Default: interchange

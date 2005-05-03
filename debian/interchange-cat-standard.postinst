@@ -123,14 +123,21 @@ fi
 
 db_get interchange-cat-standard/install
 if [ "$RET" = "true" ]; then
+	db_get interchange/full_url
+	if [ "$RET" = "true" ]; then
+		db_get interchange-cat-standard/vhost
+		URLS="$RET/cgi-bin/ic/standard $RET:443/cgi-bin/ic/standard"
+	else
+		URLS="/cgi-bin/ic/standard"
+	fi
 	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-standard.cfg
 include usertag/standard/*
 require module Vend::Payment::TestPayment
-Catalog standard /var/lib/interchange/catalogs/standard /cgi-bin/ic/standard
+Catalog standard /var/lib/interchange/catalogs/standard $URLS
 EOF
 	if [ ! -f /var/run/interchange-install ]; then
 		# add catalog to running server
-		echo 'Catalog standard /var/lib/interchange/catalogs/standard /cgi-bin/ic/standard' | /usr/sbin/interchange --add standard
+		echo "Catalog standard /var/lib/interchange/catalogs/standard $URLS" | /usr/sbin/interchange --add standard
 	fi
 fi
 
