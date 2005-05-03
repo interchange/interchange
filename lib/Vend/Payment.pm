@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.14 2004-04-27 19:25:14 mheins Exp $
+# $Id: Payment.pm,v 2.15 2005-05-03 17:41:42 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -572,7 +572,7 @@ sub testsendmserver {
 sub post_data {
 	my ($opt, $query) = @_;
 
-	unless ($Have_Net_SSLeay or $Have_LWP) {
+	unless ($opt->{use_wget} or $Have_Net_SSLeay or $Have_LWP) {
 		die "No Net::SSLeay or Crypt::SSLeay found.\n";
 	}
 
@@ -608,7 +608,74 @@ sub post_data {
 	}
 
 	my %result;
-	if($Have_Net_SSLeay) {
+	if($opt->{use_wget}) {
+		## Don't worry about OS independence with UNIX wget
+		my $bdir = "$Vend::Cfg->{ScratchDir}/wget";
+		my $filebase = "$Vend::SessionID.wget";
+		my $statfile = Vend::File::get_filename("$filebase.stat", 1, 1, $bdir);
+		my $outfile  = Vend::File::get_filename("$filebase.out", 1, 1, $bdir);
+		my $infile   = Vend::File::get_filename("$filebase.in", 1, 1, $bdir);
+		my $cmd = $opt->{use_wget} =~ m{/} ? $opt->{use_wget} : 'wget';
+
+		my @post;
+		while( my ($k,$v) = each %$query ) {
+			$k = hexify($k);
+			$v = hexify($v);
+			push @post, "$k=$v";
+		}
+		my $post = join "&", @post;
+		open WIN, "> $infile"
+			or die errmsg("Cannot create wget post input file %s: %s", $infile, $!) . "\n";
+		print WIN $post;
+		close WIN
+			or die errmsg("Cannot close wget post input file %s: %s", $infile, $!) . "\n";
+		local($/);
+
+		my @args = $cmd;
+		push @args, "--output-file=$statfile";
+		push @args, "--output-document=$outfile";
+		push @args, "--server-response";
+		push @args, "--post-file=$infile";
+		push @args, $submit_url;
+		system @args;
+#::logDebug("wget cmd line: " . join(" ", @args));
+		if($?) {
+			$result{reply_os_error} = $!;
+			$result{reply_os_status} = $?;
+			$result{result_page} = 'FAILED';
+		}
+		else {
+#::logDebug("wget finished.");
+			open WOUT, "< $outfile"
+				or die errmsg("Cannot read wget output from %s: %s", $outfile, $!) . "\n";
+			$result{result_page} = <WOUT>;
+			close WOUT
+				or die errmsg("Cannot close wget output %s: %s", $outfile, $!) . "\n";
+			unlink $outfile unless $opt->{debug};
+		}
+		unlink $infile unless $opt->{debug};
+		open WSTAT, "< $statfile"
+			or die errmsg("Cannot read wget status from %s: %s", $statfile, $!) . "\n";
+		my $err = <WSTAT>;
+		close WSTAT
+			or die errmsg("Cannot close wget status %s: %s", $statfile, $!) . "\n";
+
+		unlink $statfile unless $opt->{debug};
+		$result{wget_output} = $err;
+		$err =~ s/.*HTTP\s+request\s+sent,\s+awaiting\s+response[.\s]*//s;
+		my @raw = split /\r?\n/, $err;
+		my @head;
+		for(@raw) {
+			s/^\s*\d+\s*//
+				or last;
+			push @head, $_;
+		}
+		$result{status_line} = shift @head;
+		$result{status_line} =~ /^HTTP\S+\s+(\d+)/
+			and $result{response_code} = $1;
+		$result{header_string} = join "\n", @head;
+	}
+	elsif($opt->{use_net_ssleay} or ! $opt->{use_crypt_ssl} && $Have_Net_SSLeay) {
 #::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
 #::logDebug("values: " . ::uneval($query) );
 		my ($page, $response, %reply_headers)
@@ -643,7 +710,7 @@ sub post_data {
 #::logDebug("received LWP header: $header_string");
 		$result{result_page} = $resp->content();
 	}
-#::logDebug("returning thing: " . ::uneval_it(\%result) );
+#::logDebug("returning thing: " . ::uneval(\%result) );
 	return \%result;
 }
 
