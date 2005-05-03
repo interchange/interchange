@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.170 2005-05-03 06:03:26 mheins Exp $
+# $Id: Config.pm,v 2.171 2005-05-03 14:17:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -51,7 +51,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.170 $, 10);
+$VERSION = substr(q$Revision: 2.171 $, 10);
 
 my %CDname;
 my %CPname;
@@ -408,7 +408,7 @@ sub global_directives {
 												)
 												? ($Global::Unix_Mode || 0) : 'Yes'],
 	['TcpMap',           'hash',             ''],
-	['TagRepository',    'root_dir',         ''],
+	['CodeRepository',   'root_dir',         ''],
 	['AccumulateCode',   'yesno',         	 'No'],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
@@ -752,7 +752,7 @@ sub code_from_file {
 	my $accdir = "$tdir/Accumulated";
 
 	my $newfn = $fn;
-	$newfn =~ s{^$Global::TagRepository/*}{};
+	$newfn =~ s{^$Global::CodeRepository/*}{};
 
 	my $lfile = "$accdir/$newfn";
 	my $ldir = $lfile;
@@ -1478,7 +1478,7 @@ sub get_system_groups {
 sub get_repos_code {
 
 #::logDebug("get_repos_code called");
-	return unless $Global::TagRepository;
+	return unless $Global::CodeRepository;
 
 	return if $Vend::ControllingInterchange;
 	
@@ -1489,7 +1489,7 @@ sub get_repos_code {
 		my $ext = $extmap{lc $1} or return;
 		push @files, [ $File::Find::name, $ext];
 	};
-	File::Find::find($wanted, $Global::TagRepository);
+	File::Find::find($wanted, $Global::CodeRepository);
 
 	my $c = $Global::TagLocation = {};
 
