@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.32 2005-04-30 15:09:58 mheins Exp $
+# $Id: Parse.pm,v 2.33 2005-05-03 06:03:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -425,13 +425,27 @@ sub do_tag {
 		if defined $Vend::Cfg->{AdminSub}{$tag} and
 			($Vend::restricted or ! $Vend::admin);
 	
+	if (! defined $Routine{$tag} and $Global::AccumulateCode) {
+#::logDebug("missing $tag, trying code_from_file");
+		if($Alias{$tag}) {
+			$tag = $Alias{$tag};
+#::logDebug("missing $tag found alias=$tag");
+		}
+		else {
+			$Routine{$tag} = Vend::Config::code_from_file('UserTag', $tag)
+				if ! $Routine{$tag};
+		}
+	}
+
 	if (! defined $Routine{$tag}) {
+#::logDebug("missing $tag, but didn't try code_from_file?");
         if (! $Alias{$tag}) {
             ::logError("Tag '$tag' not defined.");
             return undef;
         }
         $tag = $Alias{$tag};
 	};
+
 	if($Special{$tag}) {
 		my $ref = pop(@_);
 		my @args = @$ref{ @{$Order{$tag}} };
@@ -453,6 +467,7 @@ sub do_tag {
 		return &{$Routine{$tag}}(@args, $text || undef);
 	}
 	else {
+#::logDebug("Parse-do_tag tag=$tag: args now=" . ::uneval_it(\@_) );
 		return &{$Routine{$tag}}(@_);
 	}
 }
@@ -460,6 +475,11 @@ sub do_tag {
 sub resolve_args {
 	my $tag = shift;
 #::logDebug("resolving args for $tag, attrAlias = $attrAlias{$tag}");
+	if (! defined $Routine{$tag} and $Global::AccumulateCode) {
+#::logDebug("missing $tag, trying code_from_file");
+		$Routine{$tag} = Vend::Config::code_from_file('UserTag', $tag);
+	}
+
 	return @_ unless defined $Routine{$tag};
 	my $ref = shift;
 	my @list;
@@ -630,6 +650,18 @@ sub start {
 
     # $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	my $aliasname = '';
+	if (! defined $Routine{$tag} and $Global::AccumulateCode) {
+		my $newtag;
+		if($newtag = $Alias{$tag}) {
+			$newtag =~ s/\s+.*//s;
+			Vend::Config::code_from_file('UserTag', $newtag)
+				unless $Routine{$newtag};
+		}
+		else {
+			Vend::Config::code_from_file('UserTag', $tag);
+		}
+	}
+
 	unless (defined $Routine{$tag}) {
 		if(defined $Alias{$tag}) {
 			$aliasname = $tag;
@@ -686,6 +718,7 @@ sub start {
 
 	my ($routine,@args);
 
+#::logDebug("tag=$tag order=$Order{$tag}");
 	# Check for old-style positional tag
 	if(!@$attrseq and $origtext =~ s/\[[-\w]+\s+//i) {
 			$origtext =~ s/\]$//;

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.59 2005-04-30 15:09:58 mheins Exp $
+# $Id: Form.pm,v 2.60 2005-05-03 06:03:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1327,29 +1327,17 @@ if($opt->{debug}) {
 		}
 	}
 
-	# Optimization for large lists
-	unless($Vend::UserWidget) {
-		my $ref;
-		$Vend::UserWidget	= ($ref = $Vend::Cfg->{CodeDef}{Widget})
-							? $ref->{Routine}
-							: {};
-		if(my $ref = $Global::CodeDef->{Widget}{Routine}) {
-			while ( my ($k, $v) = each %$ref) {
-				next if $Vend::UserWidget->{$k};
-				$Vend::UserWidget->{$k} = $v;
-			}
-		}
-		if(my $ref = $Global::CodeDef->{Widget}{MapRoutine}) {
-			no strict 'refs';
-			while ( my ($k, $v) = each %$ref) {
-				next if $Vend::UserWidget->{$k};
-				$Vend::UserWidget->{$k} = \&{"$v"};
-			}
-		}
+	# Optimization for large lists, we cache the widgets
+	$Vend::UserWidget ||= Vend::Config::map_widgets();
+
+	my $sub =  $Vend::UserWidget->{$type};
+	if(! $sub and $Global::AccumulateCode) {
+		$sub = Vend::Config::code_from_file('Widget', $type)
+			and $Vend::UserWidget->{$type} = $sub;
 	}
 
-	my $sub =  $Vend::UserWidget->{$type} || $Vend::UserWidget->{default};
-	$sub ||= \&template_sub; # Just in case "default" widget is removed
+	# Last in case "default" widget is removed
+	$sub ||= $Vend::UserWidget->{default} || \&template_sub;
 
 	if($opt->{variant}) {
 #::logDebug("variant='$opt->{variant}'");

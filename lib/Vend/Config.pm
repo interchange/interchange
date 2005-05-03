@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.169 2005-04-30 15:09:57 mheins Exp $
+# $Id: Config.pm,v 2.170 2005-05-03 06:03:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -37,11 +37,12 @@ no warnings qw(uninitialized numeric);
 use vars qw(
 			$VERSION $C
 			@Locale_directives_ary @Locale_directives_scalar
-			@Locale_directives_code
+			@Locale_directives_code %tagCanon
 			%ContainerSave %ContainerTrigger %ContainerSpecial %ContainerType
 			%Default %Dispatch_code %Dispatch_priority
 			@Locale_directives_currency @Locale_keys_currency
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
+			$SystemReposDone $ReposDest
 			);
 use Safe;
 use Fcntl;
@@ -50,7 +51,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.169 $, 10);
+$VERSION = substr(q$Revision: 2.170 $, 10);
 
 my %CDname;
 my %CPname;
@@ -202,6 +203,110 @@ my @External_directives = qw(
 	Variable->SQLUSER
 );
 
+my %extmap = qw/
+	ia	ItemAction
+	fa	FormAction
+	am	ActionMap
+	oc	OrderCheck
+	ut	UserTag
+	fi	Filter
+	so	SearchOp
+	fw	Widget
+	lc	LocaleChange
+	tag	UserTag
+	ct	CoreTag
+	jsc	JavaScriptCheck
+/;
+
+for( values %extmap ) {
+	$extmap{lc $_} = $_;
+}
+
+%tagCanon = ( qw(
+
+	group			Group
+	actionmap		ActionMap
+	arraycode		ArrayCode
+	hashcode		HashCode
+	coretag  		CoreTag
+	searchop 		SearchOp
+	filter			Filter
+	formaction		FormAction
+	ordercheck		OrderCheck
+	usertag			UserTag
+	systemtag		SystemTag
+	widget  		Widget
+
+	alias			Alias
+	addattr  		addAttr
+	attralias		attrAlias
+	attrdefault		attrDefault
+	cannest			canNest
+	description  	Description
+	override	  	Override
+	visibility  	Visibility
+	help		  	Help
+	documentation	Documentation
+	extrameta		ExtraMeta
+	gobble			Gobble
+	hasendtag		hasEndTag
+	implicit		Implicit
+	interpolate		Interpolate
+	invalidatecache	InvalidateCache
+	isendanchor		isEndAnchor
+	norearrange		noRearrange
+	order			Order
+	posnumber		PosNumber
+	posroutine		PosRoutine
+	maproutine		MapRoutine
+	noreparse		NoReparse
+	javascriptcheck JavaScriptCheck
+	required		Required
+	routine			Routine
+	version			Version
+));
+
+
+my %tagAry 	= ( qw! Order 1 Required 1 ! );
+my %tagHash	= ( qw!
+                attrAlias   1
+                Implicit    1
+				attrDefault	1
+				! );
+my %tagBool = ( qw!
+                ActionMap   1
+                addAttr     1
+                canNest     1
+                Filter      1
+                FormAction  1
+                hasEndTag   1
+                Interpolate 1
+                isEndAnchor 1
+                isOperator  1
+                ItemAction  1
+				noRearrange	1
+				NoReparse   1
+                OrderCheck  1
+                UserTag     1
+				! );
+
+my %current_dest;
+my %valid_dest = qw/
+					actionmap        ActionMap
+					coretag          UserTag
+					filter           Filter
+					formaction       FormAction
+					itemaction       ItemAction
+					ordercheck       OrderCheck
+					usertag          UserTag
+					hashcode         HashCode
+					arraycode        ArrayCode
+					searchop 		 SearchOp
+					widget           Widget
+					javascriptcheck  JavaScriptCheck
+				/;
+
+
 my $StdTags;
 
 use vars qw/ $configfile /;
@@ -303,6 +408,8 @@ sub global_directives {
 												)
 												? ($Global::Unix_Mode || 0) : 'Yes'],
 	['TcpMap',           'hash',             ''],
+	['TagRepository',    'root_dir',         ''],
+	['AccumulateCode',   'yesno',         	 'No'],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
 	['AcceptRedirect',	 'yesno',			 'No'],
@@ -622,6 +729,124 @@ sub get_parse_routine {
 
 	return $routine;
 	
+}
+
+sub code_from_file {
+	my ($area, $name, $nohup) = @_;
+	my $c;
+	my $fn;
+#::logDebug("code_from_file $area, $name");
+	return unless $c = $Global::TagLocation->{$area};
+#::logDebug("We have a repos for $area");
+	return unless $fn = $c->{$name};
+#::logDebug("code_from_file found file=$fn");
+
+#::logDebug("master reading in new area=$area name=$name fn=$fn") if $nohup;
+
+	local $/;
+	$/ = "\n";
+
+	undef $C;
+
+	my $tdir = $Global::TagDir->[0];
+	my $accdir = "$tdir/Accumulated";
+
+	my $newfn = $fn;
+	$newfn =~ s{^$Global::TagRepository/*}{};
+
+	my $lfile = "$accdir/$newfn";
+	my $ldir = $lfile;
+	$ldir =~ s{/[^/]+$}{};
+	unless(-d $ldir) {
+		die "Supposed directory $ldir is a file" if -e $ldir;
+		File::Path::mkpath($ldir)
+			or die "Cannot create directory $ldir: $!";
+	}
+
+	my $printnew;
+	if(-f $lfile) {
+		## This has already been submitted for master integration, no
+		## need to do it
+		$nohup = 1;
+	}
+	else {
+		open NEWTAG, ">> $lfile"
+			or die "Cannot write new tag file $lfile: $!";
+		if (lockfile(\*NEWTAG, 1, 0)) {
+			## We got a lock, we are the only one
+			File::Copy::copy($fn, $lfile);
+			unlockfile(\*NEWTAG);
+			close NEWTAG;
+		}
+		else {
+			## No lock, some other process doing same thing
+		}
+	}
+
+	open SYSTAG, "< $fn"
+		or config_error("read system tag file %s: %s", $fn, $!);
+
+	while(<SYSTAG>) {
+		my $line = $_;
+		my($lvar, $value) = read_config_value($_, \*SYSTAG);
+		next unless $lvar;
+		eval {
+			$GlobalRead->($lvar, $value);
+		};
+		if($@ =~ /Duplicate\s+usertag/i) {
+			next;
+		}
+	}
+    close SYSTAG;
+    close NEWTAG;
+
+	finalize_mapped_code($area);
+
+	my $precursor = '';
+	my $routine;
+	my $init;
+	if($area eq 'UserTag') {
+		$init = $Global::UserTag->{Bootstrap}{$name};
+		$routine = $Global::UserTag->{Routine}{$name};
+#::logDebug("NO ROUTINE FOR area=$area name=$name") unless $routine;
+	}
+	else {
+		$precursor = 'CodeDef ';
+		$init = $Global::CodeDef->{$area}{Bootstrap}{$name};
+		$routine = $Global::CodeDef->{$area}{Routine}{$name};
+		if(! $routine) {
+			no strict 'refs';
+			$routine = $Global::CodeDef->{$area}{MapRoutine}{$name}
+				and $routine = \&{"$routine"};
+		}
+#::logDebug("area=$area name=$name now=" . ::uneval($Global::CodeDef->{$area}));
+	}
+
+	if($init and ref($routine) eq 'CODE') {
+		## Attempt to initialize
+		$init = Vend::Util::get_option_hash($init);
+		$routine->($init);
+	}
+
+
+	## Tell the master server we have a new tag
+	unless($nohup) {
+#::logDebug("notifying master of new area=$area name=$name fn=$fn");
+		## Bring this tag in global
+		open(RESTART, ">>$Global::RunDir/restart")
+				or die "open $Global::RunDir/restart: $!\n";
+		lockfile(\*RESTART, 1, 1)
+				or die "lock $Global::RunDir/restart: $!\n";
+		print RESTART "$precursor$area $name\n";
+		unlockfile(\*RESTART)
+				or die "unlock $Global::RunDir/restart: $!\n";
+		close RESTART;
+		kill 'HUP', $Vend::MasterProcess;
+	}
+
+#::logDebug("routine=$routine for area=$area name=$name");
+#::logDebug("REF IS=" . ::uneval($Global::UserTag)) if $nohup;
+	return $routine;
 }
 
 sub set_directive {
@@ -1227,25 +1452,6 @@ sub config_named_catalog {
 
 use File::Find;
 
-my %extmap = qw/
-	ia	ItemAction
-	fa	FormAction
-	am	ActionMap
-	oc	OrderCheck
-	ut	UserTag
-	fi	Filter
-	so	SearchOp
-	fw	Widget
-	lc	LocaleChange
-	tag	UserTag
-	ct	CoreTag
-	jsc	JavaScriptCheck
-/;
-
-for( values %extmap ) {
-	$extmap{lc $_} = $_;
-}
-
 sub get_system_groups {
 
 	my @files;
@@ -1267,6 +1473,59 @@ sub get_system_groups {
 		push @$g, $_->[1];
 	}
 	return;
+}
+
+sub get_repos_code {
+
+#::logDebug("get_repos_code called");
+	return unless $Global::TagRepository;
+
+	return if $Vend::ControllingInterchange;
+	
+	my @files;
+	my $wanted = sub {
+		return if (m{^\.} || ! -f $_);
+		return unless m{^[^.]+\.(\w+)$};
+		my $ext = $extmap{lc $1} or return;
+		push @files, [ $File::Find::name, $ext];
+	};
+	File::Find::find($wanted, $Global::TagRepository);
+
+	my $c = $Global::TagLocation = {};
+
+	# %valid_dest is scoped as my variable above
+
+	for(@files) {
+		my $foundfile	= $_->[0];
+		my $dest		= $_->[1];
+		open SYSTAG, "< $foundfile"
+			or next;
+		while(<SYSTAG>) {
+			my($lvar, $value) = read_config_value($_, \*SYSTAG);
+			my $name;
+			my $dest;
+			if($lvar eq 'codedef') {
+				$value =~ s/^(\S+)\s+(\S+).*//s;
+				$dest = $valid_dest{lc $2};
+				$name = $1;
+			}
+			elsif($dest = $valid_dest{$lvar}) {
+				$value =~ m/^(\S+)\s+/
+				and $name = $1;
+			}
+
+			next unless $dest and $name;
+
+			$name = lc $name;
+			$name =~ s/-/_/g;
+			$c->{$dest} ||= {};
+			$c->{$dest}{$name} ||= $foundfile;
+		}
+		close SYSTAG;
+	}
+
+#::logDebug("repos is:\n" . ::uneval($Global::TagLocation));
+
 }
 
 sub get_system_code {
@@ -1320,6 +1579,7 @@ sub read_config_value {
 				#
 	s/\s+$//;		#  trailing spaces
 	return undef unless $_;
+::logGlobal("What is going on? line=$_") unless /^.*\S.*/;
 
 	local($Vend::config_line);
 	$Vend::config_line = $_;
@@ -1335,7 +1595,7 @@ sub read_config_value {
 	}
 	else {
 		# lines read from the config file become untainted
-		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
+		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error from $_");
 		$var = $1;
 		$value = $2;
 	}
@@ -1487,21 +1747,25 @@ sub global_config {
 	my $read = sub {
 		my ($lvar, $value, $tie) = @_;
 
+#::logDebug("Doing a GlobalRead for $lvar") unless $Global::Foreground;
 		unless (defined $CDname{$lvar}) {
 			config_error("Unknown directive '%s'", $var);
 			return;
 		}
 
+#::logDebug("Continuing a GlobalRead for $lvar") unless $Global::Foreground;
 		if (defined $DumpSource{$CDname{$directive}}) {
 			$Global::Structure->{ $CDname{$directive} } = $value;
 		}
 
 		# call the parsing function for this directive
 		$parse = $parse{$lvar};
+#::logDebug("parse routine is $parse for $CDname{$lvar}") unless $Global::Foreground;
 		$value = $parse->($CDname{$lvar}, $value) if defined $parse;
 
 		# and set the Global::directive variable
 		${'Global::' . $CDname{$lvar}} = $value;
+#::logDebug("It is now=" . ::uneval($value)) unless $Global::Foreground;
 		$Global::Structure->{ $CDname{$lvar} } = $value
 			unless defined $DontDump{ $CDname{$lvar} };
 	};
@@ -1600,7 +1864,10 @@ GLOBLOOP:
 	ADDTAGS: {
 		Vend::Parse::global_init;
 	}
-	undef $GlobalRead;
+	undef $GlobalRead unless $Global::AccumulateCode;
+
+	## Pulls in the places where code can be found when AccumulatingTags
+	get_repos_code() if $Global::AccumulateCode;
 
 	finalize_mapped_code();
 
@@ -3977,118 +4244,116 @@ sub save_variable {
 
 }
 
-my %tagCanon = ( qw(
-
-	group			Group
-	actionmap		ActionMap
-	arraycode		ArrayCode
-	hashcode		HashCode
-	coretag  		CoreTag
-	searchop 		SearchOp
-	filter			Filter
-	formaction		FormAction
-	ordercheck		OrderCheck
-	usertag			UserTag
-	systemtag		SystemTag
-	widget  		Widget
-
-	alias			Alias
-	addattr  		addAttr
-	attralias		attrAlias
-	attrdefault		attrDefault
-	cannest			canNest
-	description  	Description
-	override	  	Override
-	visibility  	Visibility
-	help		  	Help
-	documentation	Documentation
-	extrameta		ExtraMeta
-	gobble			Gobble
-	hasendtag		hasEndTag
-	implicit		Implicit
-	interpolate		Interpolate
-	invalidatecache	InvalidateCache
-	isendanchor		isEndAnchor
-	norearrange		noRearrange
-	order			Order
-	posnumber		PosNumber
-	posroutine		PosRoutine
-	maproutine		MapRoutine
-	noreparse		NoReparse
-	javascriptcheck JavaScriptCheck
-	required		Required
-	routine			Routine
-	version			Version
-));
-
-
-my %tagAry 	= ( qw! Order 1 Required 1 Version 1 ! );
-my %tagHash	= ( qw!
-                attrAlias   1
-                Implicit    1
-				attrDefault	1
-				! );
-my %tagBool = ( qw!
-                ActionMap   1
-                addAttr     1
-                canNest     1
-                Filter      1
-                FormAction  1
-                hasEndTag   1
-                Interpolate 1
-                isEndAnchor 1
-                isOperator  1
-                ItemAction  1
-				noRearrange	1
-				NoReparse   1
-                OrderCheck  1
-                UserTag     1
-				! );
-
-my %current_dest;
-my %valid_dest = qw/
-					actionmap        ActionMap
-					coretag          UserTag
-					filter           Filter
-					formaction       FormAction
-					itemaction       ItemAction
-					ordercheck       OrderCheck
-					usertag          UserTag
-					hashcode         HashCode
-					arraycode        ArrayCode
-					searchop 		 SearchOp
-					widget           Widget
-				/;
-
-sub finalize_mapped_code {
-	my $c = $C ? $C->{CodeDef} : $Global::CodeDef;
-	my ($typeref, $ref, $cfg);
-
-	if(! $C && ($typeref = $c->{Filter}) && ($ref = $typeref->{Routine})) {
-		for(keys %$ref) {
-			$Vend::Interpolate::Filter{$_} = $ref->{$_};
+sub map_widgets {
+	my $ref;
+	my $return	= ($ref = $Vend::Cfg->{CodeDef}{Widget})
+						? $ref->{Routine}
+						: {};
+	if(my $ref = $Global::CodeDef->{Widget}{Routine}) {
+		while ( my ($k, $v) = each %$ref) {
+			next if $return->{$k};
+			$return->{$k} = $v;
 		}
-		if ($ref = $typeref->{Alias}) {
+	}
+	if(my $ref = $Global::CodeDef->{Widget}{MapRoutine}) {
+		no strict 'refs';
+		while ( my ($k, $v) = each %$ref) {
+			next if $return->{$k};
+			$return->{$k} = \&{"$v"};
+		}
+	}
+	return $return;
+}
+
+sub map_codedef_to_directive {
+	my $type = shift;
+
+	no strict 'refs';
+
+	my $c;
+	my $cfg;
+
+	if( $C ) {
+		$c = $C->{CodeDef};
+		$cfg = $C->{$type}			||= {};
+	}
+	else {
+		$c = $Global::CodeDef;
+		$cfg =${"Global::$type"}	||= {};
+	}
+
+	my $ref;
+	my $r;
+
+	next unless $r = $c->{$type};
+	next unless $ref = $r->{Routine};
+
+	for(keys %$ref ) {
+		$cfg->{$_} = $ref->{$_};
+		}
+}
+
+sub global_map_codedef {
+	my $type = shift;
+	map_codedef_to_directive($type);
+	Vend::Dispatch::update_global_actions();
+}
+
+my %MappedInit = (
+	Filter => sub {
+
+#::logDebug("Called filter MappedInit");
+		return if $C;
+#::logDebug("No \$C");
+
+		my $c = $Global::CodeDef;
+		my $typeref = $c->{Filter}
+			or return;
+		my $submap = $typeref->{Routine}
+			or return;
+
+		for(keys %$submap) {
+#::logDebug("Setting Filter for $_=$submap->{$_}");
+			$Vend::Interpolate::Filter{$_} = $submap->{$_};
+		}
+		if (my $ref = $typeref->{Alias}) {
+#::logDebug("We have an Alias ref");
 			for(keys %$ref) {
+#::logDebug("Checking Alias ref for $_=$ref->{$_}");
 				if (exists $Vend::Interpolate::Filter{$ref->{$_}}) {
-					$Vend::Interpolate::Filter{$_} = $Vend::Interpolate::Filter{$ref->{$_}};
+#::logDebug("Setting Alias ref to $Vend::Interpolate::Filter{$ref->{$_}}");
+					$submap->{$_}
+						= $Vend::Interpolate::Filter{$_}
+						= $Vend::Interpolate::Filter{$ref->{$_}};
 				}
 			}
 		}
+#::logDebug("Filter is " . ::uneval(\%Vend::Interpolate::Filter));
+	},
+	ItemAction	=> \&map_codedef_to_directive,
+	OrderCheck	=> \&map_codedef_to_directive,
+	ActionMap	=> \&global_map_codedef,
+	FormAction	=> \&global_map_codedef,
+	Widget		=> sub {
+						return unless $Vend::Cfg;
+						$Vend::UserWidget = map_widgets();
+					},
+	UserTag		=> sub {
+						return if $C;
+						return unless $Vend::Cfg;
+						Vend::Parse::add_tags($Global::UserTag);
+					},
+);
+
+sub finalize_mapped_code {
+	my @types = @_;
+	unless(@types) {
+		@types = grep $_, values %valid_dest;
 	}
 	
-	no strict 'refs';
-	for my $type (qw/ ActionMap FormAction ItemAction OrderCheck /) {
-		my $ref;
-		my $r;
-		next unless $r = $c->{$type};
-		next unless $ref = $r->{Routine};
-		my $cfg = $C
-				  ? ($C->{$type}		||= {})
-				  : (${"Global::$type"}	||= {})
-				  ;
-		for(keys %$ref ) {
-			$cfg->{$_} = $ref->{$_};
+	for my $type (@types) {
+		if(my $sub = $MappedInit{$type}) {
+			$sub->($type);
 		}
 	}
 }
@@ -4164,6 +4429,7 @@ sub parse_tag {
 	my ($var, $value) = @_;
 	my ($new);
 
+#::logDebug("parse_tag var=$var val=$value") unless $Global::Foreground;
 	return if $Vend::ExternalProgram;
 
 	unless (defined $value && $value) { 
@@ -4173,6 +4439,7 @@ sub parse_tag {
 	return parse_mapped_code($var, $value)
 		if $var ne 'UserTag';
 
+#::logDebug("ready to read tag, C='$C' SystemCodeDone=$SystemCodeDone") unless $Global::Foreground;
 	get_system_code() unless defined $SystemCodeDone;
 
 	my $c = defined $C ? $C->{UserTag} : $Global::UserTag;
@@ -4194,6 +4461,7 @@ sub parse_tag {
 		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
 	}
 
+#::logDebug("ready to read tag=$tag p=$p") unless $Global::Foreground;
 	if($p eq 'Override') {
 		for (keys %$c) {
 			delete $c->{$_}{$tag};
@@ -4273,6 +4541,7 @@ sub parse_tag {
 			unless defined $c->{Order}{$tag};
 	}
 	elsif (! $C and $p eq 'MapRoutine') {
+#::logDebug("In MapRoutine ") unless $Global::Foreground;
 		$val =~ s/^\s+//;
 		$val =~ s/\s+$//;
 		no strict 'refs';

@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.83 2005-04-30 15:09:58 mheins Exp $
+# $Id: Util.pm,v 2.84 2005-05-03 06:03:26 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.83 $, 10);
+$VERSION = substr(q$Revision: 2.84 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1797,16 +1797,25 @@ sub send_mail {
 	my @headers;
 	if(ref $to) {
 		my $head = $to;
+
+		for(my $i = $#$head; $i > 0; $i--) {
+			if($head->[$i] =~ /^\s/) {
+				my $new = splice @$head, $i, 1;
+				$head->[$i - 1] .= "\n$new";
+			}
+		}
+
 		$body = $subject;
 		undef $subject;
 		for(@$head) {
-			if( /^To:\s*(.+)/ ) {
+			s/\s+$//;
+			if( /^To:\s*(.+)/s ) {
 				$to = $1;
 			}
-			elsif (/Reply-to:\s*(.+)/) {
+			elsif (/^Reply-to:\s*(.+)/si) {
 				$reply = $_;
 			}
-			elsif (/^subj(?:ect)?:\s*(.+)/i) {
+			elsif (/^subj(?:ect)?:\s*(.+)/si) {
 				$subject = $1;
 			}
 			elsif($_) {
@@ -1814,7 +1823,6 @@ sub send_mail {
 			}
 		}
 	}
-
 
 	my($ok);
 #::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
@@ -1972,32 +1980,39 @@ sub send_mail {
 sub codedef_routine {
 	my ($tag, $routine, $modifier) = @_;
 
+	my $area = $Vend::Config::tagCanon{lc $tag}
+		or do {
+			logError("Unknown CodeDef type %s", $tag);
+			return undef;
+		};
+
+	$routine =~ s/-/_/g;
 	my @tries;
-	my $tried;
-
-	RESOLVEDEF: {
-		if($Vend::Cfg->{CodeDef}{$tag}) {
-			push @tries, $Vend::Cfg->{CodeDef}{$tag}{Routine} || {};
+	if ($tag eq 'UserTag') {
+		@tries = ($Vend::Cfg->{UserTag}, $Global::UserTag);
 		}
-		if($Global::CodeDef->{$tag}) {
-			push @tries, $Global::CodeDef->{$tag}{Routine} || {};
-		}
-		if(! @tries and ! $tried++) {
-			my @keys = keys %{$Vend::Cfg->{CodeDef}};
-			push @keys, keys %{$Global::CodeDef};
-			for(@keys) {
-				if(lc($tag) eq lc($_)) {
-					$tag = $_;
-					redo RESOLVEDEF;
-				}
-			}
-		}
+	else {
+		@tries = ($Vend::Cfg->{CodeDef}{$area}, $Global::CodeDef->{$area});
 	}
 
-	for(@tries) {
-		return $_->{$routine} if $_->{$routine};
+	no strict 'refs';
+
+	my $ref;
+
+	for my $base (@tries) {
+		next unless $base;
+	    $ref = $base->{Routine}{$routine}
+			 and return $ref;
+		$ref = $base->{MapRoutine}{$routine}
+		   and return \&{"$ref"};
 	}
-	return undef;
+
+	return undef unless $Global::AccumulateCode;
+#::logDebug("trying code_from file for area=$area routine=$routine");
+	$ref = Vend::Config::code_from_file($area, $routine)
+		or return undef;
+#::logDebug("returning ref=$ref for area=$area routine=$routine");
+	return $ref;
 }
 
 sub codedef_options {

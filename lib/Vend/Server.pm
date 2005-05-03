@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.60 2005-04-30 14:51:29 mheins Exp $
+# $Id: Server.pm,v 2.61 2005-05-03 06:03:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.60 $, 10);
+$VERSION = substr(q$Revision: 2.61 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1084,6 +1084,7 @@ sub housekeeping {
 				or die "lock $Global::RunDir/restart: $!\n";
 			while(<Vend::Server::RESTART>) {
 				chomp;
+#::logDebug("restart file reads line '$_'");
 				my ($directive,$value) = split /\s+/, $_, 2;
 				if($value =~ /<<(.*)/) {
 					my $mark = $1;
@@ -1107,6 +1108,13 @@ EOF
 						)
 					{
 						::remove_catalog($1);
+					}
+					elsif( $directive =~ /^usertag$/i) {
+						Vend::Config::code_from_file($directive, $value, 'nohup');
+					}
+					elsif( $directive =~ /^codedef$/i) {
+						($directive, $value) = split /\s+/, $value, 2;
+						Vend::Config::code_from_file($directive, $value, 'nohup');
 					}
 					else {
 						::change_global_directive($directive, $value);
