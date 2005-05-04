@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.15 2005-05-03 17:41:42 mheins Exp $
+# $Id: Payment.pm,v 2.16 2005-05-04 01:12:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -627,8 +627,6 @@ sub post_data {
 		open WIN, "> $infile"
 			or die errmsg("Cannot create wget post input file %s: %s", $infile, $!) . "\n";
 		print WIN $post;
-		close WIN
-			or die errmsg("Cannot close wget post input file %s: %s", $infile, $!) . "\n";
 		local($/);
 
 		my @args = $cmd;
@@ -653,6 +651,16 @@ sub post_data {
 				or die errmsg("Cannot close wget output %s: %s", $outfile, $!) . "\n";
 			unlink $outfile unless $opt->{debug};
 		}
+
+		seek(WIN, 0, 0)
+			or die errmsg("Cannot seek on wget input file %s: %s", $infile, $!) . "\n";
+		unless($opt->{debug}) {
+			my $len = int(length($post) / 8) + 1;
+			print WIN 'deadbeef' x $len;
+		}
+
+		close WIN
+			or die errmsg("Cannot close wget post input file %s: %s", $infile, $!) . "\n";
 		unlink $infile unless $opt->{debug};
 		open WSTAT, "< $statfile"
 			or die errmsg("Cannot read wget status from %s: %s", $statfile, $!) . "\n";
