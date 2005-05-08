@@ -10,7 +10,7 @@ ui_label: Small cart for left/right display
   [if items]
   <div padding="2" align="center">
   <div align="center" class="carttiny_title">	  
-	  <a href="[area cart]" class="carttiny_title">[image src="sml_cart.gif" border="0"]
+	  <a href="[area ord/basket]" class="carttiny_title">[image src="sml_cart.gif" border="0"]
 	  [L]Your Cart Contents[/L]</a>
   </div>
   <div class="carttiny">
