@@ -531,6 +531,7 @@ dist/lib/UI/pages/include/menus/Misc.txt
 dist/lib/UI/pages/include/menus/MiscFunction.txt
 dist/lib/UI/pages/include/menus/None.txt
 dist/lib/UI/pages/include/menus/Orders.txt
+dist/lib/UI/pages/include/menus/OrderStats.txt
 dist/lib/UI/pages/include/menus/OrderView.txt
 dist/lib/UI/pages/include/menus/Quicklinks.txt
 dist/lib/UI/pages/include/menus/Reports.txt
@@ -548,6 +549,7 @@ dist/lib/UI/pages/include/Options/old/item_option_simple
 dist/lib/UI/pages/include/Options/Simple
 dist/lib/UI/pages/include/order_delete_archive
 dist/lib/UI/pages/include/page_editor
+dist/lib/UI/pages/include/page_editor_standard
 dist/lib/UI/pages/include/table_populator
 dist/lib/UI/pages/include/template_editor
 dist/lib/UI/pages/include/templates/ui_print1
