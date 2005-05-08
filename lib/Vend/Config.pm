@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.171 2005-05-03 14:17:18 mheins Exp $
+# $Id: Config.pm,v 2.172 2005-05-08 14:51:07 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -51,7 +51,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.171 $, 10);
+$VERSION = substr(q$Revision: 2.172 $, 10);
 
 my %CDname;
 my %CPname;
@@ -138,7 +138,6 @@ qw/
 qw/
 	AutoModifier
 	Levies
-	PriceAdjustment
 	ProductFiles
 	UseModifier
 /   );
@@ -611,11 +610,8 @@ sub catalog_directives {
 	['NoImport',	 	 'boolean',     	 ''],
 	['NoImportExternal', 'yesno',	     	 'no'],
 	['CommonAdjust',	 undef,  	     	 ''],
-	['PriceAdjustment',	 'array',  	     	 ''],
-	['PriceBreaks',	 	 'array',  	     	 ''],
 	['PriceDivide',	 	 undef,  	     	 1],
 	['PriceCommas',		 'yesno',     	     'Yes'],
-	['MixMatch',		 'yesno',     	     'No'],
 	['OptionsEnable',	 undef,     	     ''],
 	['OptionsAttribute', undef,     	     ''],
 	['Options',			 'locale',     	     ''],
