@@ -283,6 +283,17 @@ EoPC
 [/tabbed-panel]
 
 [tabbed-panel [L]Page Controls[/L]]
+ <a href="[area
+ 			href="admin/flex_editor"
+			form="
+				mv_data_table=mv_metadata
+				item_id=standard_page_editor::ui_control
+				ui_data_fields=code extended.control_fields
+				ui_te_widget:extended.control_fields=textarea_10_40
+				ui_te_label:extended.control_fields=Constant fields for inclusion
+				ui_return_to=@@MV_PAGE@@
+				ui_return_to=ui_name=[cgi ui_name]
+			"]">Add fields</a>
 		[page-param _editor_table]
 [/tabbed-panel]
 

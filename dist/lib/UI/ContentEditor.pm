@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.15 2005-05-08 03:50:05 mheins Exp $
+# $Id: ContentEditor.pm,v 2.16 2005-05-08 17:38:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -1484,8 +1484,12 @@ sub page_component_editor {
 
 	if( my $extra_opt = $Extra_options{$opt->{editor_style}} ) {
 		my $name = $extra_opt->{name} || 'page_editor';
-		my $ef = $Tag->meta_record('ui_component', $name);
-		$ef ||= $extra_opt->{component_fields};
+		my $dbopt = $Tag->meta_record('ui_component', $name);
+		my $ef = $dbopt->{component_fields} || $extra_opt->{component_fields};
+		unless (ref $ef eq 'ARRAY') {
+			my @f = grep /\w/, split /[\s,\0]+/, $ef;
+			$ef = \@f;
+		}
 		if($ef) {
 			my $eo = $extra_opt->{component_fields_meta} || {};
 			my %seen;
@@ -1505,6 +1509,8 @@ sub page_component_editor {
 						href => 'admin/meta_editor',
 						form => qq{
 							item_id=${name}::ui_component::$_
+							ui_return_to=$Global::Variable->{MV_PAGE}
+							ui_return_to=ui_name=$cref->{ui_name}
 						},
 					});
 					my $anchor = errmsg('meta');
@@ -1594,8 +1600,12 @@ sub page_control_editor {
 
 	if( my $extra_opt = $Extra_options{$opt->{editor_style}} ) {
 		my $name = $extra_opt->{name} || 'page_editor';
-		my $ef = $Tag->meta_record('ui_control', $name);
-		$ef ||= $extra_opt->{control_fields};
+		my $dbopt = $Tag->meta_record('ui_control', $name);
+		my $ef = $dbopt->{control_fields} || $extra_opt->{control_fields};
+		unless (ref $ef eq 'ARRAY') {
+			my @f = grep /\w/, split /[\s,\0]+/, $ef;
+			$ef = \@f;
+		}
 		if($ef) {
 			my $eo = $extra_opt->{control_fields_meta} || {};
 			my %seen;
@@ -1615,7 +1625,8 @@ sub page_control_editor {
 						href => 'admin/meta_editor',
 						form => qq{
 							item_id=${name}::ui_control::$_
-
+							ui_return_to=$Global::Variable->{MV_PAGE}
+							ui_return_to=ui_name=$pref->{ui_name}
 						},
 					});
 					my $anchor = errmsg('meta');
