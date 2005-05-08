@@ -113,7 +113,12 @@ return;
 [/elsif]
 [else]
 	[set page_name_click][/set]
+	[if variable PAGE_EDITOR_STYLE]
+		[include include/page_editor___PAGE_EDITOR_STYLE__]
+	[else]
 	[include include/page_editor]
+	[/else]
+	[/if]
 [/else]
 [/if]
 

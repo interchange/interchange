@@ -47,6 +47,7 @@ MV_PAYMENT_VENDOR		Payment
 MYSQL	__MVC_MYSQL__	Database
 ORDERS_TO	__MVC_MAILORDERTO__	Order
 ORDER_ROUTES	log main copy_user	Order
+PAGE_EDITOR_STYLE	standard	Content Edit
 PGP_KEY		Encryption
 PGSQL	__MVC_PGSQL__	Database
 PHONE	(765) 555-1212	Company

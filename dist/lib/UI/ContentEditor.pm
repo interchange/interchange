@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.14 2004-02-23 01:55:50 racke Exp $
+# $Id: ContentEditor.pm,v 2.15 2005-05-08 03:50:05 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -70,6 +70,47 @@ my %New = (
 		component => {
 		},
 		);
+my %Extra_options = (
+		standard => {
+				name => 'standard_page_editor',
+				control_fields
+					=> [ qw/page_title page_banner display_class members_only /],
+				control_fields_meta => {
+					page_title => {
+						width => 30,
+						label => errmsg('Page Title'),
+					},
+					page_banner => {
+						width => 30,
+						label => errmsg('Page Banner'),
+					},
+					display_class => {
+						label => errmsg('Display class'),
+						help => errmsg('This overrides the template type with a different display'),
+					},
+					members_only => {
+						label => errmsg('Members only'),
+						help => errmsg('Allows only logged-in users to display the page'),
+						type => 'yesno',
+					},
+				},
+				component_fields => [qw/ output /],
+				component_fields_meta => {
+					output => {
+						label => errmsg('Output location'),
+						help => errmsg('Which section of the page the component should go to'),
+						type => 'select',
+						passed => qq[
+							=default,
+							left=Left,
+							right=Right,
+							top=Top,
+							Bottom=Bottom
+						],
+					},
+				},
+		},
+	);
 my %Template;  # Initialized at bottom of file
 my @All_templates;
 my @All_components;
@@ -1441,6 +1482,40 @@ sub page_component_editor {
 	my $order = $cref->{ui_display_order} || [];
 	#return undef unless @$order;
 
+	if( my $extra_opt = $Extra_options{$opt->{editor_style}} ) {
+		my $name = $extra_opt->{name} || 'page_editor';
+		my $ef = $Tag->meta_record('ui_component', $name);
+		$ef ||= $extra_opt->{component_fields};
+		if($ef) {
+			my $eo = $extra_opt->{component_fields_meta} || {};
+			my %seen;
+			for(@$order) {
+				$seen{$_} = 1;
+			}
+			for(@$ef) {
+				next if $seen{$_};
+				push @$order, $_;
+				$cref->{$_} = $Tag->meta_record("ui_component::$_",  $name)
+					or
+				$cref->{$_} = $eo->{$_} ? { %{ $eo->{$_} } } : {};
+			}
+			if($Tag->if_mm('super')) {
+				for(@$order) {
+					my $url = $Tag->area({
+						href => 'admin/meta_editor',
+						form => qq{
+							item_id=${name}::ui_component::$_
+						},
+					});
+					my $anchor = errmsg('meta');
+					my $title = errmsg('Edit meta');
+					$cref->{$_}{label} ||= $_;
+					$cref->{$_}{label} = qq{<a href="$url" title="$title" style="float: right">$anchor</a>$cref->{$_}{label}};
+				}
+			}
+		}
+	}
+
 	for my $f (@$order) {
 #::logDebug("building field $f");
 		$meta->{$f} = { %{ $cref->{$f} || {} } };
@@ -1516,6 +1591,41 @@ sub page_control_editor {
 
 	my $meta = { };
 	my @fields = 'code';
+
+	if( my $extra_opt = $Extra_options{$opt->{editor_style}} ) {
+		my $name = $extra_opt->{name} || 'page_editor';
+		my $ef = $Tag->meta_record('ui_control', $name);
+		$ef ||= $extra_opt->{control_fields};
+		if($ef) {
+			my $eo = $extra_opt->{control_fields_meta} || {};
+			my %seen;
+			for(@$order) {
+				$seen{$_} = 1;
+			}
+			for(@$ef) {
+				next if $seen{$_};
+				push @$order, $_;
+				$pref->{$_} = $Tag->meta_record("ui_control::$_",  $name)
+					or
+				$pref->{$_} = $eo->{$_} ? { %{ $eo->{$_} } } : {};
+			}
+			if($Tag->if_mm('super')) {
+				for(@$order) {
+					my $url = $Tag->area({
+						href => 'admin/meta_editor',
+						form => qq{
+							item_id=${name}::ui_control::$_
+
+						},
+					});
+					my $anchor = errmsg('meta');
+					my $title = errmsg('Edit meta');
+					$pref->{$_}{label} ||= $_;
+					$pref->{$_}{label} = qq{<a href="$url" title="$title" style="float: right">$anchor</a>$pref->{$_}{label}};
+				}
+			}
+		}
+	}
 
 	for my $f (@$order) {
 		$meta->{$f} = { %{ $pref->{$f} } };
@@ -2300,9 +2410,9 @@ sub publish_page {
 	$dest =~ s/^\s+$//;
 	my $record = ref_content($ref, $opt)
 		or return death("publish_page", "bad news");
+	delete_preview_page($ref, $opt);
 	my $text = format_page($ref);
 	$record->{page_text} = $text;
-#::logDebug("header record: " . uneval($record));
 	write_page($record);
 }
 
@@ -2336,12 +2446,17 @@ sub publish_component {
 	write_component($record);
 }
 
-sub cancel_edit {
+sub delete_preview_page {
 	my ($ref, $opt) = @_;
 	my $dir = preview_dir();
 	if($ref->{ui_name} and -f "$dir/$ref->{ui_name}") {
 		unlink "$dir/$ref->{ui_name}";
 	}
+}
+
+sub cancel_edit {
+	my ($ref, $opt) = @_;
+	delete_preview_page($ref, $opt);
 	my $store = $Vend::Session->{content_edit}
 		or return death('cancel', 'content store not found');
 	$store = $store->{$ref->{ui_type}}

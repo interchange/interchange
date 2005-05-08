@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.23 2003-06-25 16:38:17 mheins Exp $
+# $Id: Primitive.pm,v 2.24 2005-05-08 03:50:05 mheins Exp $
 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1998-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 $DEBUG = 0;
 
@@ -40,6 +40,7 @@ use vars qw!
 use File::Find;
 use Exporter;
 use strict;
+no warnings qw(uninitialized numeric);
 use Vend::Util qw/errmsg/;
 $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
