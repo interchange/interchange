@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.33 2005-05-03 06:03:26 mheins Exp $
+# $Id: Parse.pm,v 2.34 2005-05-09 02:35:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -263,7 +263,6 @@ my %Alias = (
 				),
 					getlocale		=> 'setlocale get=1',
 					process_search		=> 'area href=search',
-					buzzard		=> 'data table=products column=artist key=',
 			);
 
 my %Interpolate = (
