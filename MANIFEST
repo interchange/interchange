@@ -398,7 +398,6 @@ dist/lib/UI/pages/admin/customer_change_pass.html
 dist/lib/UI/pages/admin/customer_comments.html
 dist/lib/UI/pages/admin/customer_mailing.html
 dist/lib/UI/pages/admin/customer_pref.html
-dist/lib/UI/pages/admin/customer_select.html
 dist/lib/UI/pages/admin/customer_ship.html
 dist/lib/UI/pages/admin/customer_view.html
 dist/lib/UI/pages/admin/db_metaconfig.html
