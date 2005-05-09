@@ -1,5 +1,7 @@
+# $Id: interchange.spec,v 2.28 2005-05-09 21:36:37 jon Exp $
+
 # use Perl installation in /usr/local custom built from source?
-%define localperl 0
+%define localperl 1
 
 %if %localperl
 %define __perl /usr/local/bin/perl
@@ -26,7 +28,6 @@ Source1: interchange-wrapper
 Source2: interchange-init
 Source3: interchange-logrotate
 Source4: interchange-cron
-Source5: interchange.cfg.patch
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 Requires: perl >= 5.6.0
@@ -70,6 +71,8 @@ fi
 %__rm -rf $RPM_BUILD_ROOT
 %__mkdir_p $RPM_BUILD_ROOT
 
+export PERL_SIGNALS=unsafe
+
 ETCBASE=%{_sysconfdir}
 RUNBASE=%{_localstatedir}/run
 LOGBASE=%{_localstatedir}/log
@@ -89,12 +92,16 @@ ICBASE=%{_libdir}/interchange
 %__make test
 %__make NOCPANINSTALL=1 install
 
+# Install te program
+%__mkdir_p $RPM_BUILD_ROOT%_bindir
+%__install -m755 eg/te $RPM_BUILD_ROOT%_bindir
+%__rm -f eg/te
+
 # Copy over extra stuff that usually stays in source directory
 %__mkdir_p $RPM_BUILD_ROOT$ICBASE/build
 %__cp -p extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
 %__cp -p extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
 %__cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
-%__cp -p eg/te $RPM_BUILD_ROOT%_bindir
 
 # Tell Perl where to find IC libraries during build time
 export PERL5LIB=$RPM_BUILD_ROOT$ICBASE/lib
@@ -187,7 +194,7 @@ find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec %__rm
 %__ln_s $ETCBASE/interchange.cfg
 
 # Move location of debug log to /var/log/interchange
-patch -p0 $ETCBASE/interchange.cfg < %SOURCE5
+%__ln_s $LOGBASE/interchange/debug.log $RPM_BUILD_ROOT$ICBASE
 
 # Put global error log in /var/log/interchange instead of IC software directory
 RPMICLOG=$LOGBASE/interchange/error.log
@@ -247,7 +254,7 @@ find . -path .$ICBASE/standard -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 %doc README.rpm-dist
 %doc README.cvs
 %doc UPGRADE
-%doc WHATSNEW
+%doc WHATSNEW*
 %config(noreplace) %{_sysconfdir}/logrotate.d/interchange
 %config(noreplace) %{_sysconfdir}/cron.daily/interchange
 %config %{_sysconfdir}/rc.d/init.d/interchange
@@ -270,11 +277,14 @@ find . -path .$ICBASE/standard -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 
 %post
 
-# Create the error log if it doesn't exist
-if [ ! -f %{_localstatedir}/log/interchange/error.log ]; then
-    touch %{_localstatedir}/log/interchange/error.log
-    %__chown %{ic_user}.%{ic_group} %{_localstatedir}/log/interchange/error.log
-fi
+# Create the error and debug logs if they don't exist
+for i in error.log debug.log
+do
+	if [ ! -f %{_localstatedir}/log/interchange/$i ]; then
+		touch %{_localstatedir}/log/interchange/$i
+		%__chown %{ic_user}.%{ic_group} %{_localstatedir}/log/interchange/$i
+	fi
+done
 
 # Optionally set Interchange to start/stop with the operating system.
 #/sbin/chkconfig --add interchange
@@ -386,6 +396,12 @@ fi
 
 
 %changelog
+* Mon May  9 2005 Jon Jensen <jon@icdevgroup.org>
+- Set PERL_SIGNALS=unsafe in environment during build and run.
+- Remove interchange.cfg patch and symlink debug.log instead.
+- Fixed problem installing eg/te.
+- Updated to Interchange 5.3.1.
+
 * Mon Jul 12 2004 Jon Jensen <jon@icdevgroup.org>
 - Switch demo catalog to Standard instead of older Foundation.
 

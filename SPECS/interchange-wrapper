@@ -3,6 +3,7 @@
 # Interchange control script
 # Calls Interchange with special locations of files as installed by RPM
 # http://www.icdevgroup.org/
+# $Id: interchange-wrapper,v 2.3 2005-05-09 21:36:37 jon Exp $
 
 IC=/usr/lib/interchange
 ETC=/etc
@@ -22,8 +23,9 @@ RUNSTRING="$IC/bin/interchange \
 	IPCsocket=$RUN/socket.ipc"
 
 if test "`whoami`" = root
-then 
-	exec su - interch -c "$RUNSTRING $*"
+then
+	exec su - interch -c "PERL_SIGNALS=unsafe $RUNSTRING $*"
 else
+	export PERL_SIGNALS=unsafe
 	exec $RUNSTRING $*
 fi
