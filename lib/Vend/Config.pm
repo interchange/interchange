@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.172 2005-05-08 14:51:07 mheins Exp $
+# $Id: Config.pm,v 2.173 2005-05-09 03:19:12 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -51,7 +51,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.172 $, 10);
+$VERSION = substr(q$Revision: 2.173 $, 10);
 
 my %CDname;
 my %CPname;
@@ -76,6 +76,11 @@ my %CPname;
 			$ContainerSave{$var} ||= 'No';
 		}
 	},
+);
+
+my %DirectiveAlias = qw(
+	DataDir        ProductDir
+	DefaultTables  ProductFiles 
 );
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
@@ -974,6 +979,15 @@ sub config {
 			$CPname{$directive} = $d->[1];
 			$parse{$directive} = get_parse_routine($d->[1]);
 		}
+	}
+
+	for(keys %DirectiveAlias) {
+		my $k = lc $_;
+		my $v = $DirectiveAlias{$_};
+		my $lv = lc $v;
+		$CDname{$k} = $CDname{$lv};
+		$CPname{$k} = $CPname{$lv};
+		$parse{$k} = $parse{$lv};
 	}
 
 	no strict 'refs';
