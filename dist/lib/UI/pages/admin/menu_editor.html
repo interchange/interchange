@@ -161,6 +161,9 @@ __UI_META_TABLE__
 		if($menuname) {
 			$menufile = $Tag->filter('filesafe', "$menupath/$menuname.txt");
 			my $text = $CGI->{qmenu_text};
+
+#Debug("qmenu text length=" . length($text));
+#Debug("qmenu text value=$CGI->{qmenu_text}");
 			$text =~ s{\\([\\r])}{
 									if   ($1 eq 'r')  { "\r" }
 									elsif($1 eq "\\") { "\\" }
@@ -376,6 +379,7 @@ __UI_META_TABLE__
 			my $f = $1;
 			$f =~ s/\s+$//;
 			@menufields = split /\t/, $f;
+#Debug("menufields=" . join(",", @menufields));
 		}
 		else {
 			$filedata = join("\t", @menufields);
@@ -470,7 +474,7 @@ __UI_META_TABLE__
 <span class=cmessage>[warnings auto=1]</span>
 [error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 
-<script language="JavaScript1.2">
+<script>
 var lines = new Array;
 var toggle = new Array;
 var initialized = 0;
@@ -512,11 +516,11 @@ my @out;
 my $i = 0;
 
 $metabase ||= 'icmenu';
-for(@menufields) {
-	push @out, "    var \U$_\E = $i;";
+for my $f (@menufields) {
+	push @out, "    var \U$f\E = $i;";
 	DOMETA: {
-		last DOMETA if $required{$_} or $_ eq 'code';
-		my $metaname = "${metabase}::$_";
+		last DOMETA if $required{$f} or $f eq 'code';
+		my $metaname = "${metabase}::$f";
 		my $mrecord = $Tag->meta_record($metaname)
 			or last DOMETA;
 		my $lab;
@@ -526,7 +530,7 @@ for(@menufields) {
 		}
 		if($help = $mrecord->{help}) {
 			$help = '<span style="font-size: 12pt;">' .
-					'<u>' . "$lab " . "($_)" . '</u><br>' . $help .
+					'<u>' . "$lab " . "($f)" . '</u><br>' . $help .
 					'</span>';
 			$help = $Tag->filter('encode_entities', $help);
 			push @out, "    help[$i] = " . $Tag->jsq($help) . ';';
@@ -542,7 +546,7 @@ for(@menufields) {
 			push @out, "    meta[$i] = " . $Tag->jsq($u . 'meta</a>');
 		}
 		if(my $type = $mrecord->{type}) {
-			$mrecord->{name} = "ext_$_";
+			$mrecord->{name} = "ext_$f";
 			$mrecord->{extra} = qq{onChange="form_changed(1)"};
 			my $wid = $Tag->display( {
 									meta => $mrecord,
@@ -565,6 +569,7 @@ $i++;
 push @out, "\tvar MSG = $i;";
 
 push @out, "\tlines[0] = ['" . join("', '", @menufields) . "'];";
+#Debug("Generated code=" . join "\n", @out);
 return join "\n", @out;
 [/perl]
 
@@ -708,10 +713,10 @@ function set_checked_buttons (enab) {
 	var buttons = [ singles, f.loadbutton, f.copybutton ];
 	var j;
 	for ( j = 0; j < buttons.length; j++) {
-		var ary = buttons[j];
+		var ary = buttons[ j];
 		var i;
 		for( i = 0; i < ary.length; i++) {
-			var el = ary[i];
+			var el = ary[ i];
 			if(el != undefined) {
 				el.disabled			= dis;
 				el.style.visibility	= vis;
@@ -739,7 +744,7 @@ function set_save_buttons (enab) {
 	var buttons = f.savebutton;
 	var i;
 	for( i = 0; i < buttons.length; i++) {
-		var el = buttons[i];
+		var el = buttons[ i];
 		if(el != undefined) {
 			el.style.color			= color;
 			el.style.fontWeight	= weight;
@@ -752,10 +757,10 @@ function set_save_buttons (enab) {
 function checkit(idx) {
 	var nam = 'img' + idx;
 	var i_el = document.getElementById(nam);
-	var l = lines[idx];
+	var l = lines[ idx ];
 
-	if(l != undefined && l[CHECK] == 1) {
-		checkcur = l[CHECK] = 0;
+	if(l != undefined && l[ CHECK] == 1) {
+		checkcur = l[ CHECK] = 0;
 		i_el.src = empty_img;
 		set_checked_buttons(0);
 		return void(0);
@@ -764,21 +769,21 @@ function checkit(idx) {
 	var uncheck = new Array;
 	var j = 0;
 	for(i = 1; i < lines.length; i++)  {
-		if(lines[i][CHECK] == 1) {
-			uncheck[j] = i;
+		if(lines[ i][ CHECK] == 1) {
+			uncheck[ j] = i;
 			j++;
 		}
 	}
 
 	for(i = 0; i < uncheck.length; i++) {
-		var n = uncheck[i];
-		lines[n][CHECK] = 0;
+		var n = uncheck[ i];
+		lines[ n][ CHECK] = 0;
 		var el = document.getElementById('img' + n);
 		el.src = empty_img;
 	}
 
 	checkcur = idx;
-	lines[idx][CHECK] = 1;
+	lines[ idx ][ CHECK] = 1;
 	i_el.src = full_img;
 	set_checked_buttons(1);
 	// alert("checkcur=" + checkcur);
@@ -863,12 +868,12 @@ function toggleItem (idx, formel, explode) {
 		}
 	}
 	else {
-		if(lines[idx] == undefined)
+		if(lines[ idx ] == undefined)
 			return;
-		if(lines[idx][0] == 0)
-			lines[idx][0] = 1;
+		if(lines[ idx ][0] == 0)
+			lines[ idx ][0] = 1;
 		else 
-			lines[idx][0] = 0;
+			lines[ idx ][0] = 0;
 	}
 	for(var i = 1; i < lines.length; i++)
 		rewrite_tree(i, 1);
@@ -943,7 +948,7 @@ function show_title (idx, msg) {
 	if(el == undefined) 
 		return;
 	if(msg == undefined) 
-		msg = ltitle[idx];
+		msg = ltitle[ idx ];
 	if(idx == 0 || msg.length == 0) {
 		el.style.visibility = 'Hidden';
 		el.style.display = 'none';
@@ -973,7 +978,7 @@ function set_mode (mode) {
 	if(mode == 'tree') {
 		tree_mode = 1;
 		toggleItem(0, form.collapse, 0);
-		lines[1][MSORT] = 0;
+		lines[1][ MSORT] = 0;
 		el.value = "[L]Set simple mode[/L]";
 		ch.checked = 1;
 		cht.checked = 1;
@@ -983,7 +988,7 @@ function set_mode (mode) {
 	else {
 		toggleItem(0, form.explode, 1);
 		tree_mode = 0;
-		lines[1][MSORT] = 'x';
+		lines[1][ MSORT] = 'x';
 		el.value = "[L]Set tree mode[/L]";
 		ch.checked = 0;
 		cht.checked = 0;
@@ -1000,7 +1005,7 @@ function set_mode (mode) {
 function rewrite_tree (idx, tog) {
 	var out = '';
 
-	var l = lines[idx];
+	var l = lines[ idx ];
 	var next = lines[idx + 1];
 
 	var children = 0;
@@ -1008,23 +1013,23 @@ function rewrite_tree (idx, tog) {
 		
 	if(l != undefined && idx < lines.length) {
 		// out =	idx + 
-		if(next != undefined && next[MSORT] > l[MSORT] ) 
+		if(next != undefined && next[ MSORT] > l[ MSORT] ) 
 			children = 1;
 		out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
-		if(l[CHECK] == 1) {
+		if(l[ CHECK] == 1) {
 			out = out + 'src="' + full_img + '" ';
 		}
 		else {
 			out = out + 'src="' + empty_img + '" ';
 		}
 
-		var grp = l[MSORT] + '';
+		var grp = l[ MSORT] + '';
 // alert("rewrite grp=" + grp);
 		if(! grp.match(/^\d+$/) ) {
-			l[MSORT] = 0;
+			l[ MSORT] = 0;
 		}
 
-		toggle[ l[MSORT] ] = l[0];
+		toggle[ l[ MSORT] ] = l[0];
 
 		out = out + 'border=0 align=absbottom ' +
 				'id="img' + idx + '"></A>' + "\n" +
@@ -1038,7 +1043,7 @@ function rewrite_tree (idx, tog) {
 				'"><img src="' + right_img + '"' + right_title + ' border=0 align=absbottom></A>' + "\n" +
 				'<a href="javascript:loadForm(' + idx + ");void(0)" +
 				'"><img src="' + forward_img + '"' + forward_title + ' border=0 align=absbottom></A>' + "\n";
-		for(i = 0; i < l[MSORT]; i++)
+		for(i = 0; i < l[ MSORT]; i++)
 			out = out + '&nbsp;&nbsp;&nbsp;'; 
 		if(children == 1) {
 			var img;
@@ -1057,34 +1062,34 @@ function rewrite_tree (idx, tog) {
 		else {
 			out += '<img border=0 height=16 width=16 src="' + leaf_img + '">';
 		}
-		if(showlevel == 1 && l[MSORT] > 0) {
-			out = out + l[MSORT] + '&nbsp;'
+		if(showlevel == 1 && l[ MSORT] > 0) {
+			out = out + l[ MSORT] + '&nbsp;'
 		}
 
-		var nme = l[NAME];
+		var nme = l[ NAME];
 		// force text variable
 		nme = nme + '';
 		if(nme != undefined) {
 			nme = nme.replace(/</g, '&lt;');
 		}
-		if(l[PAGE]) {
+		if(l[ PAGE]) {
 			var i;
 			out = out + '<a href="javascript:loadForm(' +
 					idx + ');void(0)"' +
 					' onDblClick="checkit(' + idx + ')"' +
-					' title="' + l[PAGE];
-			if(l[FORM])
-				out = out + '?' + l[FORM];
-			if(l[DESCRIPTION])
-				out = out + " : " + l[DESCRIPTION];
+					' title="' + l[ PAGE];
+			if(l[ FORM])
+				out = out + '?' + l[ FORM];
+			if(l[ DESCRIPTION])
+				out = out + " : " + l[ DESCRIPTION];
 			out = out + '">' + nme + '</a>';
 		}
 		else {
 			out = out + '<b>' + nme + '</b>';
 		}
 
-		if(l[MSG]) {
-			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[MSG] + ')</i>';
+		if(l[ MSG]) {
+			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[ MSG] + ')</i>';
 		}
 	}
 
@@ -1092,8 +1097,8 @@ function rewrite_tree (idx, tog) {
 // alert("rewriting, el=" + el);
 	
 	if(tog == 1) {
-		for(var n = 0; n < l[MSORT]; n++) {
-			if(toggle[n] == 0)
+		for(var n = 0; n < l[ MSORT]; n++) {
+			if(toggle[ n] == 0)
 				out = '';
 		}
 		if(out != '') {
@@ -1111,7 +1116,7 @@ function rewrite_tree (idx, tog) {
 	}
 	el.innerHTML = out;
 
-	if(l != undefined && l[CHECK] == 1)
+	if(l != undefined && l[ CHECK] == 1)
 		checkcur = idx;
 	// alert("idx=" + idx + ", writing " + out);
 	if(lines.length > 25) 
@@ -1127,12 +1132,12 @@ function rewrite (idx) {
 
 	var out = '';
 
-	var l = lines[idx];
+	var l = lines[ idx ];
 		
 	if(l != undefined && idx < lines.length) {
 		// out =	idx + 
 		out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
-		if(l[CHECK] == 1) {
+		if(l[ CHECK] == 1) {
 			out = out + 'src="' + full_img + '" ';
 		}
 		else {
@@ -1142,9 +1147,9 @@ function rewrite (idx) {
 		var linktitle = '';
 		var lzero = lines[0];
 		for(var k = 1; k < lzero.length; k++) {
-			var lstring = l[k] + '';
+			var lstring = l[ k] + '';
 			if(lstring.length > 0)
-				linktitle = linktitle + '<b>' + lzero[k] + ':</b> ' + lstring + "<br>";
+				linktitle = linktitle + '<b>' + lzero[ k] + ':</b> ' + lstring + "<br>";
 		}
 		out = out + 'border=0 align=absbottom ' +
 				'id="img' + idx + '"></A>' + "\n" +
@@ -1155,19 +1160,19 @@ function rewrite (idx) {
 				'<a href="javascript:loadForm(' + idx + ");void(0)" +
 				'"><img src="' + transfer_img + '" border=0 align=absbottom></A>' + "\n";
 
-		var nme = l[NAME];
+		var nme = l[ NAME];
 		if(nme.length > 30) {
 			nme=nme.substr(0,27) + '...';
 		}
-		if(l[PAGE]) {
+		if(l[ PAGE]) {
 			out = out + '&nbsp;&nbsp;&nbsp;<a href="javascript:loadForm(' +
 					idx + ');void(0)"' +
 					' onDblClick="checkit(' + idx + ')"' +
 					' onMouseOver="show_title(' + idx + ')"' +
 					' onMouseOut="show_title(0)"' +
-					' title="' + l[PAGE];
-			if(l[FORM])
-				out = out + '?' + l[FORM];
+					' title="' + l[ PAGE];
+			if(l[ FORM])
+				out = out + '?' + l[ FORM];
 			out = out + '">' + nme + '</a>';
 		}
 		else {
@@ -1177,18 +1182,18 @@ function rewrite (idx) {
 					nme + '</span>';
 		}
 
-		if(l[MSG]) {
-			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[MSG] + ')</i>';
+		if(l[ MSG]) {
+			out = out + ' <i class=cmessage style="font-size: 8pt;">(' + l[ MSG] + ')</i>';
 		}
 
 		// Set box title array
-		ltitle[idx] = linktitle.replace(/\r/g, '<br>');
+		ltitle[ idx ] = linktitle.replace(/\r/g, '<br>');
 	}
 
 	var el = document.getElementById('box' + idx);
 // alert("rewriting idx=" + idx + ", el=" + el);
 	el.innerHTML = out;
-	if(l != undefined && l[CHECK] == 1)
+	if(l != undefined && l[ CHECK] == 1)
 		checkcur = idx;
 	// alert("idx=" + idx + ", writing " + out);
 	if(lines.length > 25) 
@@ -1215,23 +1220,23 @@ function delRow (idx) {
 		return;
 	}
 
-	var l = lines[idx];
+	var l = lines[ idx ];
 	if(l == undefined) {
 		alert("deleting non-existent row!");
 		return;
 	}
 
-	var needs_confirm = l[PAGE].length || l[FORM].length
+	var needs_confirm = l[ PAGE].length || l[ FORM].length
 
 	var i;
 	for(i = 3; i < 8; i++) {
-		if(l[i] != undefined && l[i].length) {
+		if(l[ i] != undefined && l[ i].length) {
 			needs_confirm = 1;
 			break;
 		}
 	}
 		
-	if(needs_confirm && ! confirm("Delete row " + idx + ", '" + lines[idx][NAME] + "'?") )
+	if(needs_confirm && ! confirm("Delete row " + idx + ", '" + lines[ idx ][ NAME] + "'?") )
 		return;
 
 	var len  = lines.length;
@@ -1239,7 +1244,7 @@ function delRow (idx) {
 
 	if(tree_mode == 1) {
 		var d = lines[idx + 1];
-		if(l[MSORT] == 0 && d != undefined && d[MSORT] > 0) {
+		if(l[ MSORT] == 0 && d != undefined && d[ MSORT] > 0) {
 			motion(idx + 1, 'left');
 		}
 		else {
@@ -1251,7 +1256,7 @@ function delRow (idx) {
 	}
 
 	for( i = idx; i <= last; i++) {
-		lines[i] = lines[i+1];
+		lines[ i] = lines[i+1];
 		rewrite(i);
 	}
 	len--;
@@ -1280,26 +1285,26 @@ function insRow (idx) {
 	lines.length = lines.length + 1;
 	var last = lines.length - 1;
 	
-	if(lines[idx] != undefined) {
+	if(lines[ idx ] != undefined) {
 		var penult = last - 1;
 		var i;
 		for( i = penult; i >= idx; i--) {
-			lines[i + 1] = lines[i];
+			lines[i + 1] = lines[ i];
 			rewrite(i + 1);
 		}
 	}
 
-	lines[idx] = new Array;
+	lines[ idx ] = new Array;
 	for (i = 0; i < CHECK; i++)
-		lines[idx][i] = '';
-	lines[idx][MSG] = '[L]NEW[/L]';
+		lines[ idx ][ i] = '';
+	lines[ idx ][ MSG] = '[L]NEW[/L]';
 
 	if(tree_mode == 1) {
 		if(lines[idx - 1] != undefined) {
-			lines[idx][MSORT] = lines[idx-1][MSORT];
+			lines[ idx ][ MSORT] = lines[idx-1][ MSORT];
 		}
 		else {
-			lines[idx][MSORT] = 0;
+			lines[ idx ][ MSORT] = 0;
 		}
 	}
 
@@ -1312,7 +1317,7 @@ function insRow (idx) {
 	var something = 0;
 	var i;
 	for(i = 0; i < ch.length; i++) {
-		if(ch[i] != undefined && ch[i].length > 0) {
+		if(ch[ i] != undefined && ch[ i].length > 0) {
 			something = 1;
 			break;
 		}
@@ -1341,24 +1346,24 @@ function loadForm (idx, msg, zeromsg) {
 	if(zeromsg == undefined)
 		zeromsg = '[L]loaded[/L]';
 
-	var l = lines[idx];
+	var l = lines[ idx ];
 	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
 
-	form.name.value      = name_rep   = l[NAME];
-	form.page.value      = page_rep   = l[PAGE];
-	form.params.value    = params_rep = unescapeParams(l[FORM]);
-	form.description.value            = l[DESCRIPTION];
-	form.mgroup.value                 = l[MGROUP];
+	form.name.value      = name_rep   = l[ NAME];
+	form.page.value      = page_rep   = l[ PAGE];
+	form.params.value    = params_rep = unescapeParams(l[ FORM]);
+	form.description.value            = l[ DESCRIPTION];
+	form.mgroup.value                 = l[ MGROUP];
 
 	for(var x = 0; x < extra.length; x++) {
 		var el;
-		var en = extra[x];
+		var en = extra[ x];
 		var un = en.toUpperCase();
 		var eidx;
 		eval('eidx = ' + un);
 		eval ('el = form.ext_' + en );
 //			if( x < 2) {
-// alert('loading extra form value ' + en + '(' + un + '), eidx=' + eidx + ', value=' + l[eidx]);
+// alert('loading extra form value ' + en + '(' + un + '), eidx=' + eidx + ', value=' + l[ eidx]);
 //			}
 		if(el == undefined) {
 			alert('bad extra form element: ' + en);
@@ -1366,20 +1371,20 @@ function loadForm (idx, msg, zeromsg) {
 		}
 		if(el.type == 'select') {
 			for(var j = 0; j < el.length; j++) {
-				if(el.options[j].value == l[eidx]) {
+				if(el.options[ j].value == l[ eidx]) {
 					el.selectedIndex = j;
 					break;
 				}
 			}
 		}
 		else {
-			el.value = l[eidx];
+			el.value = l[ eidx];
 		}
 	}
 
 	if(INACTIVE != undefined) {
 		form.inactive.disabled = 0;
-		form.inactive.checked = l[INACTIVE] ? 1 : 0;
+		form.inactive.checked = l[ INACTIVE] ? 1 : 0;
 	}
 	else {
 		form.inactive.disabled = 1;
@@ -1401,12 +1406,12 @@ function loadForm (idx, msg, zeromsg) {
 
 	var j;
 	for(j = 0; j < lines.length; j++) {
-		if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
-			lines[j][MSG] = '';
+		if(lines[ j] != undefined && lines[ j][ MSG] == zeromsg) {
+			lines[ j][ MSG] = '';
 			rewrite(j);
 		}
 	}
-	l[MSG] = msg;
+	l[ MSG] = msg;
 	rewrite(idx);
 	form_changed(0);
 	mvpan_selectTab(0);
@@ -1432,7 +1437,7 @@ function zeroForm (form) {
 
 	for(var x = 0; x < extra.length; x++) {
 		var el;
-		var en = extra[x];
+		var en = extra[ x ];
 		var un = en.toUpper;
 		eval ('el = form.ext_' + en );
 
@@ -1463,7 +1468,7 @@ function saveForm (idx, msg, zeromsg) {
 		alert("Improper line index " + idx);
 		return;
 	}
-	var l = lines[idx];
+	var l = lines[ idx ];
 
 	if(msg == undefined)
 		msg = '[L]saved[/L]';
@@ -1474,18 +1479,18 @@ function saveForm (idx, msg, zeromsg) {
 	// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
 
 	form.lineidx.value = idx;
-	l[PAGE] = form.page.value;
-	l[FORM] = escapeParams(form.params.value);
-	l[NAME] = form.name.value;
-	l[MGROUP] = form.mgroup.value;
+	l[ PAGE] = form.page.value;
+	l[ FORM] = escapeParams(form.params.value);
+	l[ NAME] = form.name.value;
+	l[ MGROUP] = form.mgroup.value;
 
 	var ttt = form.description.value;
 	ttt = ttt.replace(/\r\n/g, "\r");
-	l[DESCRIPTION] = ttt.replace(/\n/g, "\r");
+	l[ DESCRIPTION] = ttt.replace(/\n/g, "\r");
 
 	for(var x = 0; x < extra.length; x++) {
 		var el;
-		var en = extra[x];
+		var en = extra[ x ];
 		var un = en.toUpperCase();
 		var eidx;
 		eval('eidx = ' + un);
@@ -1494,30 +1499,30 @@ function saveForm (idx, msg, zeromsg) {
 		if(el.type == 'select') {
 			var sel = el.options[el.selectedIndex];
 			if(sel == defined) {
-				l[eidx] = sel.value;
+				l[ eidx ] = sel.value;
 			}
 			else {
-				l[eidx] = '';
+				l[ eidx ] = '';
 			}
 		}
 		else {
-			l[eidx] = el.value;
+			l[ eidx ] = el.value;
 		}
 	}
 
 	if(INACTIVE != undefined) {
-		l[INACTIVE] = form.inactive.checked ? 1 : 0;
+		l[ INACTIVE] = form.inactive.checked ? 1 : 0;
 	}
 
 	var j;
 	for(j = 0; j < lines.length; j++) {
-		if(lines[j] != undefined && lines[j][MSG] == zeromsg) {
-			lines[j][MSG] = '';
+		if(lines[ j ] != undefined && lines[ j ][ MSG ] == zeromsg) {
+			lines[ j ][ MSG ] = '';
 			rewrite(j);
 		}
 	}
 
-	l[MSG] = msg;
+	l[ MSG] = msg;
 	if(checkcur > 0)
 		checkit(checkcur);
 	rewrite(idx);
@@ -1530,6 +1535,7 @@ function setOutput () {
 	var i;
 	var linelen = [calc]scalar @menufields[/calc];
 	output[0] = "[calc]join "\\t", @menufields [/calc]";
+// alert("fields=" + output[0]);
 	document.qmenuform.qmenu_text.value = output[0];
 	for(i = 1; i < lines.length; i++) {
 		var ttt = "" + i;
@@ -1539,25 +1545,26 @@ function setOutput () {
 		var j;
 		tl[0] = ttt;
 		if(tree_mode != 1)
-			lines[i][MSORT] = 'x' + ttt;
+			lines[ i][ MSORT] = 'x' + ttt;
 		for( j = 1; j < linelen; j++) {
-			tl[j] = lines[i][j];
-			if(tl[j] == undefined) 
-				tl[j] = '';
+			tl[ j] = lines[ i][ j];
+			if(tl[ j] == undefined) 
+				tl[ j] = '';
 		}
-		tl[DESCRIPTION] = tl[DESCRIPTION].replace(/\r/g, "\\r");
+		if(tl[ DESCRIPTION]) 
+			tl[ DESCRIPTION] = tl[ DESCRIPTION].replace(/\r/g, "\\r");
 		if(EXTENDED != undefined) 
-			tl[EXTENDED] = tl[EXTENDED].replace(/\r/g, "\\r");
-		output[i] = tl.join("\t");
+			tl[ EXTENDED] = tl[ EXTENDED].replace(/\r/g, "\\r");
+		output[ i] = tl.join("\t");
 	}
 	document.qmenuform.qmenu_text.value = output.join("\n") + "\n";
-	// alert(document.qmenuform.qmenu_text.value);
+// alert(document.qmenuform.qmenu_text.value);
 	return;
 }
 
 function canon_lines () {
 	for(i = lines.length - 1; i > 0; i--) {
-		if(lines[i] != undefined)
+		if(lines[ i] != undefined)
 			break;
 		lines.length = lines.length - 1;
 	}
@@ -1583,9 +1590,9 @@ function moveit (idx, motion) {
 
 	dest = motion == 'up' ? up : dn;
 
-	var tmp = lines[dest];
-	lines[dest] = lines[idx];
-	lines[idx] = tmp;
+	var tmp = lines[ dest];
+	lines[ dest] = lines[ idx];
+	lines[ idx] = tmp;
 
 	rewrite(idx);
 	rewrite(dest);
@@ -1609,45 +1616,45 @@ function movetree (idx, motion) {
 	
 	var x;
 	for(x = idx; x <= end; x++) {
-		var l = lines[x];
-		var u = lines[up];
-		var d = lines[dn];
-		u[MSORT] *= 1;
-		l[MSORT] *= 1;
-		if(isNaN(u[MSORT])) {
-			u[MSORT] = 0;
+		var l = lines[ x];
+		var u = lines[ up];
+		var d = lines[ dn];
+		u[ MSORT] *= 1;
+		l[ MSORT] *= 1;
+		if(isNaN(u[ MSORT])) {
+			u[ MSORT] = 0;
 		}
 
-		if(isNaN(l[MSORT])) {
-			l[MSORT] = 0;
+		if(isNaN(l[ MSORT])) {
+			l[ MSORT] = 0;
 		}
 
 		if(motion == 'left') {
-			if(l[MSORT] == 0) {
+			if(l[ MSORT] == 0) {
 				if(x == idx) {
 					do_alert("Already at top level.");
 					break;
 				}
 			}
 			else {
-				l[MSORT] -= 1;
+				l[ MSORT] -= 1;
 			}
-			while (x >= end && d != undefined && d[MSORT] - 1 > l[MSORT]) {
-				d[MSORT] -= 1;
+			while (x >= end && d != undefined && d[ MSORT] - 1 > l[ MSORT]) {
+				d[ MSORT] -= 1;
 				rewrite_tree(dn, 1);
 				dn++;
-				d = lines[dn];
+				d = lines[ dn];
 			}
 		}
 		else {
-			if(l[MSORT] > u[MSORT]) {
+			if(l[ MSORT] > u[ MSORT]) {
 				if(x == idx) {
 					do_alert("Already at farthest right, need parent at same level or higher.");
 					break;
 				}
 			}
 			else {
-				l[MSORT] += 1;
+				l[ MSORT] += 1;
 			}
 		}
 		dn++;
@@ -1676,15 +1683,15 @@ function movethem (idx, end, target) {
 	reset_collapse();
 
 	for (var i = target; i < idx; i++) {
-		tmp[tmp.length] = lines[i];
+		tmp[tmp.length] = lines[ i];
 	}
 
 	var j = target;
 	for(var i = idx; i <= end; i++, j++) {
-		lines[j] = lines[i];
+		lines[ j] = lines[ i];
 	}
 	for (var i = 0; i < tmp.length; i++, j++) {
-		lines[j] = tmp[i];
+		lines[ j] = tmp[ i];
 	}
 	for(var i = 1; i < lines.length; i++) 
 		rewrite_tree(i, 1);
@@ -1722,18 +1729,18 @@ function motion (idx, motion, fromchecked) {
 			var m;
 			var nextpeer;
 			var prevpeer;
-			var clev = lines[checkcur][MSORT];
+			var clev = lines[ checkcur][ MSORT];
 			if(motion == 'down') {
 				
 				for(m=checkcur + 1; extant==undefined; m++) {
 // alert('in tree mode move, m=' + m + ', nextpeer=' + nextpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
-					if(lines[m] == undefined) {
+					if(lines[ m] == undefined) {
 						if(nextpeer == undefined)
 							return void(0);
 						extant = m - 1;
 // alert('ready for tree mode move, m=' + m + ', nextpeer=' + nextpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
 					}
-					else if(lines[m][MSORT] <= clev) {
+					else if(lines[ m][ MSORT] <= clev) {
 						if(nextpeer == undefined) {
 							nextpeer = m;
 						}
@@ -1749,17 +1756,17 @@ function motion (idx, motion, fromchecked) {
 			else {
 				var m;
 				for(m=checkcur + 1; extant==undefined; m++) {
-					if(lines[m] == undefined || lines[m][MSORT] == clev) {
+					if(lines[ m] == undefined || lines[ m][ MSORT] == clev) {
 // alert('tree move up, extant=' + extant + ', checkcur=' + checkcur + '');
 						extant = m - 1;
 					}
 				}
 				for(m=checkcur - 1; prevpeer==undefined; m--) {
-					if(lines[m] == undefined) {
+					if(lines[ m] == undefined) {
 							return void(0);
 					}
 // alert('in tree mode move, m=' + m + ',  prevpeer=' + prevpeer + ', extant=' + extant + ', checkcur=' + checkcur + '');
-					if(lines[m][MSORT] == clev) {
+					if(lines[ m][ MSORT] == clev) {
 						prevpeer = m;
 					}
 				}
@@ -2022,7 +2029,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		var tm = 1;
 
 		for(i = 1; i < lines.length; i++) {
-			if( isNaN(lines[i][MSORT] * 1)  ) {
+			if( isNaN(lines[ i][ MSORT] * 1)  ) {
 					tm=0;
 					break;
 			}
@@ -2046,29 +2053,29 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		}
 		initialized = 1;
 		var reserved = /^(extended|inactive|description|form|mgroup|msort|name|page|code)$/;
-		var f = lines[0];
+		var f = lines[ 0];
 		for (i = 0; i < f.length; i++) {
-			var fn = f[i];
-			if(! fn.match(reserved) ) {
+			var fn = f[ i];
+			if(fn && ! fn.match(reserved) ) {
 				var nn = 'ext_' + fn;
 				var un = fn.toUpperCase();
-// alert([jsq]fn=$fn nn=$nn un=$un[/jsq]);
+// alert([jsq]i=$i fn=$fn nn=$nn un=$un[/jsq]);
 				var eidx;
 				eval('eidx = ' + un);
-// alert([jsq]fn=$fn un=$un nn=$nn eidx=$eidx[/jsq]);
+// alert([jsq]i=$i fn=$fn un=$un nn=$nn eidx=$eidx[/jsq]);
 				var nidx = extra.length;
 				extra.length += 1;
-				extra[nidx] = fn;
+				extra[ nidx] = fn;
 				var lab = fn;
 				var wid;
-				var helptext = help[i];
+				var helptext = help[ i];
 				if(helptext == undefined)
 					helptext = '';
-				if(label[eidx] != undefined) {
-					lab = label[eidx];
+				if(label[ eidx] != undefined) {
+					lab = label[ eidx];
 				}
-				if(widget[eidx] != undefined) {
-					wid = widget[eidx];
+				if(widget[ eidx] != undefined) {
+					wid = widget[ eidx];
 				}
 				else {
 					wid = [jsq]<input type=text name="$nn" onChange="form_changed(1);">[/jsq];
