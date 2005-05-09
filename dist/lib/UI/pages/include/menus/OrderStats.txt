@@ -1,0 +1,6 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	OrderReports	x001					admin/orderstats		Order Reports Menu		0							
+002	OrderReports	x002					admin/reports/order/ByAffiliate		Overall by month		0							
+003	OrderReports	x003					admin/reports/order/Monthly		This month		0	 For this month						
+004	OrderReports	x004					admin/reports/order/Detail		Individual orders		0	 For this month						
+005	OrderReports	x005					admin/reports/order/BySKU		By SKU		0	 For this month						
