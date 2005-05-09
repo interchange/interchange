@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.9 2005-04-12 15:14:39 mheins Exp $
+# $Id: Matrix.pm,v 1.10 2005-05-09 19:17:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 =head1 NAME
 
@@ -125,6 +125,7 @@ sub display_options {
 	$opt->{display_type} ||= $record->{display_type};
 
 	$opt->{display_type} = lc $opt->{display_type};
+	$opt->{translate} = $loc->{translate} unless defined $opt->{translate};
 
 	my @rf;
 	my @out;
@@ -211,14 +212,25 @@ sub display_options {
 				$passed = "=$opt->{blank_label}, $passed";
 			}
 			if ($opt->{label}) {
-				$ref->[SEP_LABEL] = "<B>$ref->[SEP_LABEL]</b>" if $opt->{bold};
-				push @out, $ref->[SEP_LABEL];
+				my $lab = $ref->[SEP_LABEL];
+				$lab = errmsg($lab) if $opt->{translate};
+				$lab = "<B>$lab</b>" if $opt->{bold};
+				push @out, $lab;
 			}
+
+			my $ary = Vend::Form::options_to_array($passed);
+
+			if($opt->{translate}) {
+				for(@$ary) {
+					$_->[1] = errmsg($_->[1]);
+				}
+			}
+
 			push @out, Vend::Interpolate::tag_accessories(
 							$sku,
 							'',
 							{ 
-								passed => $passed,
+								passed => $ary,
 								type => $opt->{type} || $ref->[SEP_WIDGET] || 'select',
 								attribute => 'mv_sku',
 								price_data => $ref->[SEP_PRICE],
