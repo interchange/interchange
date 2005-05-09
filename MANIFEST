@@ -381,7 +381,6 @@ dist/lib/UI/pages/admin/accounting/return.html
 dist/lib/UI/pages/admin/add_meta_option.html
 dist/lib/UI/pages/admin/affiliates.html
 dist/lib/UI/pages/admin/auto_wizard.html
-dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
 dist/lib/UI/pages/admin/commerce.html
@@ -418,7 +417,6 @@ dist/lib/UI/pages/admin/entry_items.html
 dist/lib/UI/pages/admin/entry_select.html
 dist/lib/UI/pages/admin/env_vars.html
 dist/lib/UI/pages/admin/error.html
-dist/lib/UI/pages/admin/error_item.html
 dist/lib/UI/pages/admin/export_table.html
 dist/lib/UI/pages/admin/file_transfer.html
 dist/lib/UI/pages/admin/flex_editor.html
