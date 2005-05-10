@@ -1203,7 +1203,6 @@ SPECS/interchange-cron
 SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
-SPECS/interchange.cfg.patch
 SPECS/interchange.spec
 test.pl
 UPGRADE
