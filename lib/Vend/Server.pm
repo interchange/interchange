@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.62 2005-05-10 09:13:14 racke Exp $
+# $Id: Server.pm,v 2.63 2005-05-12 17:52:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -36,6 +36,8 @@ use Config;
 use Socket;
 use Symbol;
 use strict;
+
+no warnings qw(uninitialized);
 
 my $ppidsub = sub { return getppid };
 
