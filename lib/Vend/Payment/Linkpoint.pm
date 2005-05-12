@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.3 2005-02-19 04:00:14 jon Exp $
+# $Id: Linkpoint.pm,v 1.4 2005-05-12 19:38:33 mheins Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -271,14 +271,14 @@ sub linkpoint {
 
 	$amount = $opt->{total_cost} unless $amount;
 	
+	## If Linkpoint doesn't accept anything but two digits, and
+	## you use something besides Locale foo_FOO frac_digits 2
+	## you might break here
 	if(! $amount) {
 		$amount = Vend::Interpolate::total_cost();
 		$amount = Vend::Util::round_to_frac_digits($amount,$precision);
 	}
 
-	$amount =~ s/\D//g;
-
-	$amount = int ($amount / 100) . '.' . ($amount % 100);
 	$shipping = Vend::Interpolate::tag_shipping();
 	$subtotal = Vend::Interpolate::subtotal();
 	$salestax = Vend::Interpolate::salestax();
