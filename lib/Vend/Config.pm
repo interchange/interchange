@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.173 2005-05-09 03:19:12 mheins Exp $
+# $Id: Config.pm,v 2.174 2005-05-12 17:54:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -51,7 +51,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.173 $, 10);
+$VERSION = substr(q$Revision: 2.174 $, 10);
 
 my %CDname;
 my %CPname;
@@ -81,6 +81,7 @@ my %CPname;
 my %DirectiveAlias = qw(
 	DataDir        ProductDir
 	DefaultTables  ProductFiles 
+	Profiles       OrderProfile 
 );
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
@@ -3809,7 +3810,6 @@ sub parse_database {
 		return $c;
 	}
 
-#::logDebug("parse_database: $value");
 	$c = $C ? $C->{Database} : $Global::Database;
 
 	my($database,$remain) = split /[\s,]+/, $value, 2;
@@ -3883,7 +3883,7 @@ sub parse_database {
 		elsif ($d->{'type'} eq '9') { $d->{Class} = 'LDAP'						}
 		else 						{ $d->{Class} ||= $Global::Default_database	}
 
-		if($C->{DatabaseDefault}) {
+		if($C and $C->{DatabaseDefault}) {
 			while ( my($k, $v) = each %{$C->{DatabaseDefault}}) {
 				$d->{$k} = $v;
 			}

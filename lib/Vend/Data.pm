@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.48 2005-04-30 15:09:58 mheins Exp $
+# $Id: Data.pm,v 2.49 2005-05-12 17:54:37 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -829,7 +829,7 @@ sub import_database {
 	my $class_config;
 	my $db;
 
-	my $no_import = defined $Vend::Cfg->{NoImport}->{$name};
+	my $no_import = defined $Vend::Cfg->{NoImport}->{$name} || $obj->{NO_IMPORT};
 
 	if (defined $Vend::ForceImport{$name}) {
 		undef $no_import;
