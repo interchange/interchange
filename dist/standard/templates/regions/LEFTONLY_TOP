@@ -15,12 +15,6 @@ __LINE_MENU__
 [output name=top_menu]
 __COMMON_MENU__
 
-[set meta_header]
- <meta http-equiv="Pragma" content="no-cache" />
- <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
-
-[/set]
-
 [output name=breadcrumbs]
 [breadcrumbs reset-on-product=1]
 
