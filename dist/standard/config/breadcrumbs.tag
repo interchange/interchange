@@ -172,7 +172,7 @@ sub {
 	@$crumbs = grep $_, reverse @new;
 
 	my $tpl = $opt->{template} || <<EOF;
-<a href="{url}"{description?} title="{description}" class=breadlink>{title}</a>
+<a href="{url}"{description?} title="{description}"{/description?} class=breadlink>{title}</a>
 EOF
 
 	my @out;
