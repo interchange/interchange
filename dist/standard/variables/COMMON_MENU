@@ -1,4 +1,4 @@
-[menu name="[scratch menu_bar]"
+[menu name="[either][scratch menu_bar][or]catalog/top[/either]"
 		menu-type=flyout
 		use-file=1
 		anchor_down=1

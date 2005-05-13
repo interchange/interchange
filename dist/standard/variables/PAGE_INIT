@@ -7,4 +7,6 @@
 		$Tag->deliver({ location => $Tag->area('login')});
 	}
 	return;
-[/calc]
+[/calc][if !scratch logo]
+[seti logo][var LOGO][/seti]
+[/if]
