@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.49 2005-05-12 17:54:37 mheins Exp $
+# $Id: Data.pm,v 2.50 2005-05-13 04:10:58 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1908,6 +1908,7 @@ sub update_data {
 
     my @file_fields = split /[\s\0,]+/, $CGI::values{mv_data_file_field};
     my @file_paths = split /\0/, $CGI::values{mv_data_file_path};
+    my @file_name_from = split /\0/, $CGI::values{mv_data_file_name_from};
     my @file_oldfiles = split /\0/, $CGI::values{mv_data_file_oldfile};
 
 	if($en_col) {
@@ -2049,6 +2050,19 @@ sub update_data {
 			# remove path components
 			$dref->[0] =~ s:.*/::; 
 			$dref->[0] =~ s:.*\\::; 
+
+			if(my $switch = $file_name_from[$i]) {
+				my $new;
+				if($data{$switch} and $new = $data{$switch}->[0]) {
+					my $ext = $dref->[0];
+					if($ext =~ s/.*\.//) {
+						$dref->[0] = join '.', $new, $ext;
+					}
+					else {
+						$dref->[0] = $new;
+					}
+				}
+			}
 
 			if (length ($file_paths[$i])) {
 				# real file upload
