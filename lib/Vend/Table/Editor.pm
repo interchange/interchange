@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.76 2005-05-02 14:12:11 mheins Exp $
+# $Id: Editor.pm,v 1.77 2005-05-16 05:21:48 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.76 $, 10);
+$VERSION = substr(q$Revision: 1.77 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -655,7 +655,7 @@ sub widget_meta {
 }
 
 sub meta_record {
-	my ($item, $view, $mdb, $extended_only) = @_;
+	my ($item, $view, $mdb, $extended_only, $overlay) = @_;
 
 #::logDebug("meta_record: item=$item view=$view mdb=$mdb");
 	return undef unless $item;
@@ -710,6 +710,12 @@ sub meta_record {
 		my $view_hash = $record->{view}{$view};
 		ref $view_hash
 			and @$record{keys %$view_hash} = values %$view_hash;
+	}
+
+	# Allow overlay of certain settings
+	if($overlay and $record->{overlay}) {
+		my $ol_hash = $record->{overlay}{$overlay};
+		Vend::Util::copyref($ol_hash, $record) if $ol_hash;
 	}
 #::logDebug("return meta_record=" . ::uneval($record) );
 	return $record;
@@ -950,6 +956,15 @@ sub display {
 		}
 
 #::logDebug("calling Vend::Form");
+		if($record->{save_defaults}) {
+			my $sd = $Vend::Session->{meta_defaults} ||= {};
+			$sd = $sd->{"${table}::$column"} ||= {}; 
+			while (my ($k,$v) = each %$record) {
+				next if ref($v) eq 'CODE';
+				$sd->{$k} = $v;
+			}
+		}
+
 		$w = Vend::Form::display($record);
 		if($record->{filter}) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="};

@@ -248,7 +248,8 @@ EOF
 	
 	# Always want this removed first, don't proceed if no view
 	$Tag->tmp('tmp_defaults');
-	return unless $CGI->{ui_meta_view};
+#Debug("meta_view=$CGI->{ui_meta_view}, item_id=$CGI->{item_id}");
+	return unless $m_view;
 
 	my $db = $Db{$CGI->{mv_data_table}};
 
@@ -257,7 +258,8 @@ EOF
 
 	my $id = $CGI->{item_id};
 	$id =~ s/^[^:]+:+//;
-	my $rec = $db->row_hash($id)
+#Debug("checking id=$id");
+	my $rec = $db->row_hash($id) || $Session->{meta_defaults}{$id}
 		or return;
 	delete $rec->{code};
 	$Scratch->{tmp_defaults} = $rec;
@@ -285,4 +287,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.17 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.18 $ -->
