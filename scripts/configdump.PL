@@ -3,7 +3,7 @@
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 2.2 2002-06-27 18:55:50 jon Exp $
+# $Id: configdump.PL,v 2.3 2005-05-16 20:01:22 mheins Exp $
 #
 # Copyright 1999-2002 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -29,6 +29,7 @@ use lib '/usr/local/interchange';
 
 use strict;
 use Vend::Config;
+use Vend::Dispatch;
 use Vend::Util;
 
 BEGIN {
