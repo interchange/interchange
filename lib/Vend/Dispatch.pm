@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.53 2005-05-03 06:03:26 mheins Exp $
+# $Id: Dispatch.pm,v 1.54 2005-05-16 21:22:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.53 $, 10);
+$VERSION = substr(q$Revision: 1.54 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1017,10 +1017,12 @@ EOF
 	  )
 	{
 
-#::logDebug("deliver image: method=$CGI::request_method type=$mt");
 		my $imgdir = $Vend::Cfg->{ImageDir};
 		my $fn = $CGI::path_info;
+#::logDebug("deliver image: method=$CGI::request_method type=$mt fn=$fn");
 		$fn =~ s:^/+::;
+		## Won't resend any images beginning with admin/
+		$fn =~ s{^admin/}{};
 		if($CGI::secure) {
 			 $imgdir = $Vend::Cfg->{ImageDirSecure}
 				if $Vend::Cfg->{ImageDirSecure};
@@ -1110,7 +1112,15 @@ sub run_macro {
 		if ($m =~ /^\w+$/) {
 			my $sub = $Vend::Cfg->{Sub}{$m} || $Global::GlobalSub->{$m}
 				or do {
-					logError("Unknown Autoload macro '%s'.", $m);
+					my $call = join(',', caller());
+
+					my $msg = errmsg("Unknown macro '%s' from %s.", $m, $call);
+					if($Vend::Cfg->{CatalogName}) {
+						logError($msg);
+					}
+					else {
+						logGlobal($msg);
+					}
 					next;
 				};
 			$sub->($content_ref);

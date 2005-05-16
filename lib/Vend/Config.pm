@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.174 2005-05-12 17:54:37 mheins Exp $
+# $Id: Config.pm,v 2.175 2005-05-16 21:22:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -50,8 +50,9 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::File;
 use Vend::Data;
+use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.174 $, 10);
+$VERSION = substr(q$Revision: 2.175 $, 10);
 
 my %CDname;
 my %CPname;
@@ -443,6 +444,7 @@ sub global_directives {
 	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1'],
 	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
 	['HouseKeeping',     'time',          60],
+	['HouseKeepingCron', 'cron',          ''],
 	['Mall',	          'yesno',           'No'],
 	['TagGroup',		 'tag_group',		 $StdTags],
 	['TagInclude',		 'tag_include',		 'ALL'],
@@ -3539,6 +3541,13 @@ sub parse_time {
 	config_error("Bad time format ('$value') in the $var directive\n")
 	unless defined $n;
 	$n;
+}
+
+sub parse_cron {
+	my($var, $value) = @_;
+
+	return '' unless $value =~ /\s/ and $value =~ /[a-zA-Z]/;
+	return Vend::Cron::read_cron($value);
 }
 
 # Determine catalog structure from Catalog config line(s)

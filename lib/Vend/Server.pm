@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.63 2005-05-12 17:52:51 mheins Exp $
+# $Id: Server.pm,v 2.64 2005-05-16 21:22:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.63 $, 10);
+$VERSION = substr(q$Revision: 2.64 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1017,6 +1017,23 @@ sub housekeeping {
 #::logDebug("called housekeeping");
 	return if defined $interval and ($now - $Last_housekeeping < $interval);
 
+	my $do;
+	my $do_before;
+	my $do_after;
+
+#my $date = POSIX::strftime("time=%H:%M:%S", localtime($now));
+	if($Global::HouseKeepingCron) {
+		($do, $do_before, $do_after) = Vend::Cron::housekeeping($now);
+#::logDebug("got housekeeping at $date do=" . ::uneval($do));
+	}
+	else {
+		$do = {
+			restart => 1,
+			reconfig => 1,
+			jobs => 1,
+		};
+	}
+
 #::logDebug("actually doing housekeeping interval=$interval now=$now last=$Last_housekeeping");
 	rand();
 	$Last_housekeeping = $now;
@@ -1069,10 +1086,25 @@ sub housekeeping {
 		@files = readdir Vend::Server::CHECKRUN;
 		closedir(Vend::Server::CHECKRUN)
 			or die "closedir $Global::RunDir: $!\n";
-		($reconfig) = grep $_ eq 'reconfig', @files;
+		($reconfig) = grep $_ eq 'reconfig', @files
+			if $do->{reconfig};
 		($restart) = grep $_ eq 'restart', @files
 			if $Signal_Restart || $Global::Windows;
-		($jobs) = grep $_ eq 'jobsqueue', @files;
+		($jobs) = grep $_ eq 'jobsqueue', @files
+			if $do->{jobs};
+
+		if($do_before) {
+			for(@$do_before) {
+#::logDebug("run before macro $_");
+				eval {
+					Vend::Dispatch::run_macro($_);
+				};
+				if($@) {
+					::logGlobal("cron before macro '%s' failed: %s", $_, $@);
+				}
+			}
+		}
+
 		if($Global::PIDcheck) {
 			$Num_servers = 0;
 			@pids = grep /^pid\.\d+$/, @files;
@@ -1101,6 +1133,7 @@ EOF
 						last;
 					}
 					chomp $value;
+#::logDebug("restart file reads value '$value'");
 				}
 				eval {
 					if($directive =~ /^\s*(sub)?catalog$/i) {
@@ -1121,7 +1154,7 @@ EOF
 						Vend::Config::code_from_file($directive, $value, 'nohup');
 					}
 					else {
-						::change_global_directive($directive, $value);
+						::change_global_directive("$directive $value");
 					}
 				};
 				if($@) {
@@ -1244,6 +1277,18 @@ EOF
 
 				if($@) {
 					::logGlobal({ level => 'notice' }, $@);
+				}
+			}
+		}
+
+		if($do_after) {
+			for(@$do_after) {
+#::logDebug("would run after macro $_");
+				eval {
+					Vend::Dispatch::run_macro($_);
+				};
+				if($@) {
+					::logGlobal("cron after macro '%s' failed: %s", $_, $@);
 				}
 			}
 		}

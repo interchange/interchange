@@ -305,6 +305,7 @@ sub initialize {
 		compile_link
 		config_prog
 		configdump
+		crontab
 		dump
 		expire
 		expireall

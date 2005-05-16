@@ -298,6 +298,7 @@ code/Widget/realvalue.widget
 code/Widget/select.widget
 code/Widget/show.widget
 code/Widget/text.widget
+code/Widget/time.widget
 code/Widget/uploadblob.widget
 code/Widget/uploadhelper.widget
 code/Widget/value.widget
@@ -1034,6 +1035,7 @@ lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
 lib/Vend/CounterFile.pm
+lib/Vend/Cron.pm
 lib/Vend/Data.pm
 lib/Vend/DbSearch.pm
 lib/Vend/Dispatch.pm
@@ -1117,6 +1119,7 @@ relocate.pl
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL
+scripts/crontab.PL
 scripts/dump.PL
 scripts/expire.PL
 scripts/expireall.PL
@@ -1211,3 +1214,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
+META.yml                                 Module meta-data (added by MakeMaker)

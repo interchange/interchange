@@ -3,7 +3,7 @@
 #
 # Interchange version 5.3.1
 #
-# $Id: interchange.PL,v 2.84 2005-04-30 15:17:10 mheins Exp $
+# $Id: interchange.PL,v 2.85 2005-05-16 21:22:28 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -639,6 +639,7 @@ sub parse_options {
 		serve           => $modesub,
 
 		test			=> $modesub,
+		globalconfig	=> sub { $Vend::Quiet = 1; $modesub->('globalconfig') },
 		unixmode        => \$Global::Unix_Mode,
 		version         => sub { version(); exit 0 },
 		stop			=> \&control_interchange,
@@ -709,6 +710,7 @@ sub parse_options {
         email=s
         exclude|e=s
         help|h
+		globalconfig
         inetmode|inet|i
         jobgroup=s
         kill:s
@@ -813,6 +815,11 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	# Read interchange.cfg (or whatever its name is set to be)
 	global_config();
+
+	if($Vend::mode eq 'globalconfig') {
+		print Vend::Util::uneval($Global::Structure);
+		exit;
+	}
 	# Select locking mode
 	set_lock_type();
 
