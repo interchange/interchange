@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.245 2005-05-03 06:03:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.246 2005-05-17 16:59:33 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.245 $, 10);
+$VERSION = substr(q$Revision: 2.246 $, 10);
 
 @EXPORT = qw (
 
@@ -5811,6 +5811,7 @@ sub levies {
 		my $item = {
 							code			=> $name,
 							mode			=> $mode,
+							type			=> $type,
 							sort			=> $sort,
 							cost			=> round_to_frac_digits($cost),
 							currency		=> currency($cost),
@@ -5848,6 +5849,8 @@ sub levies {
 
 	for(@$lcart) {
 		next if $opt->{group} and $opt->{group} ne $_->{group};
+		next if $_->{type} eq 'salestax'
+			and $_->{inclusive} || $Vend::Cfg->{TaxInclusive};
 		$run += $_->{cost};
 	}
 
