@@ -1,6 +1,6 @@
 # Vend::Cron - Determine tasks to run based on time
 #
-# $Id: Cron.pm,v 2.1 2005-05-16 21:22:28 mheins Exp $
+# $Id: Cron.pm,v 2.2 2005-05-17 03:02:30 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 #
@@ -22,7 +22,7 @@
 package Vend::Cron;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -67,7 +67,7 @@ sub read_cron {
 		}
 		push @cronobj, {
 			times => \@times,
-			things => [ Text::ParseWords::shellwords($thing) ],
+			things => [ split /\s*;\s*/, $thing ],
 			original => $_,
 		};
 	}
@@ -128,6 +128,7 @@ sub cron {
 	my %do;
 	my @do_before;
 	my @do_after;
+	my @cronjobs;
 
 	my $date = POSIX::strftime("time=%H:%M:%S", localtime($time));
 	for my $obj (@todo) {
@@ -136,6 +137,9 @@ sub cron {
 			my $j = $_;
 			if($j =~ s/^://) {
 				$do{$j} = 1;
+			}
+			elsif($j =~  s/^=//) {
+				push @cronjobs, $j;
 			}
 			elsif($j =~  s/^>//) {
 				push @do_after, $j;
@@ -150,8 +154,8 @@ sub cron {
 	my @out = \%do;
 	push @out, (scalar(@do_before) ? \@do_before : undef);
 	push @out, (scalar(@do_after) ? \@do_after : undef);
+	push @out, (scalar(@cronjobs) ? \@cronjobs : undef);
 	return @out;
-
 }
 
 sub housekeeping {

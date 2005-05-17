@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.64 2005-05-16 21:22:28 mheins Exp $
+# $Id: Server.pm,v 2.65 2005-05-17 03:02:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1020,11 +1020,10 @@ sub housekeeping {
 	my $do;
 	my $do_before;
 	my $do_after;
+	my $cronjobs;
 
-#my $date = POSIX::strftime("time=%H:%M:%S", localtime($now));
 	if($Global::HouseKeepingCron) {
-		($do, $do_before, $do_after) = Vend::Cron::housekeeping($now);
-#::logDebug("got housekeeping at $date do=" . ::uneval($do));
+		($do, $do_before, $do_after, $cronjobs) = Vend::Cron::housekeeping($now);
 	}
 	else {
 		$do = {
@@ -1273,6 +1272,20 @@ EOF
 			for my $jobref (@scheduled_jobs) {
 				eval {
 					run_jobs (@$jobref);
+				};
+
+				if($@) {
+					::logGlobal({ level => 'notice' }, $@);
+				}
+			}
+		}
+
+		if($cronjobs) {
+			for(@$cronjobs) {
+				s/^=//;
+				my (@job) = split /[\s,\0]+/, $_;
+				eval {
+					run_jobs (@job);
 				};
 
 				if($@) {
