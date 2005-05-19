@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: weight.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+# $Id: weight.tag,v 1.5 2005-05-19 01:07:24 mheins Exp $
 
 UserTag weight Order   attribute
 UserTag weight addAttr
-UserTag weight Version $Revision: 1.4 $
+UserTag weight Version $Revision: 1.5 $
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;
@@ -92,6 +92,7 @@ sub {
 
 	my $total = 0;
 	for(@$cart) {
+		next if $_->{mv_free_shipping} && ! $opt->{no_free_shipping};
 		$total += $_->{quantity} * $wsub->($_);
 		next unless $osub;
 		$total += $_->{quantity} * $osub->($_);
