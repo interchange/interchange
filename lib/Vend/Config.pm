@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.175 2005-05-16 21:22:28 mheins Exp $
+# $Id: Config.pm,v 2.176 2005-05-20 13:55:19 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -42,7 +42,7 @@ use vars qw(
 			%Default %Dispatch_code %Dispatch_priority
 			@Locale_directives_currency @Locale_keys_currency
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
-			$SystemReposDone $ReposDest
+			$SystemReposDone $ReposDest @include
 			);
 use Safe;
 use Fcntl;
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.175 $, 10);
+$VERSION = substr(q$Revision: 2.176 $, 10);
 
 my %CDname;
 my %CPname;
@@ -380,6 +380,7 @@ sub global_directives {
 	['DebugFile',		 'root_dir',     	 ''],
 	['CatalogUser',		 'hash',			 ''],
 	['ConfigDir',		  undef,	         'etc/lib'],
+	['FeatureDir',		 'root_dir',	     'features'],
 	['ConfigDatabase',	 'config_db',	     ''],
 	['ConfigParseComments',	'yesno',		'Yes'],
 	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
@@ -572,6 +573,7 @@ sub catalog_directives {
 	['AutoEnd',			 'routine_array',	 ''],
 	['Replace',			 'replace',     	 ''],
 	['Member',		  	 'variable',     	 ''],
+	['Feature',          'feature',          ''],
 	['WritePermission',  'permission',       'user'],
 	['ReadPermission',   'permission',       'user'],
 	['SessionExpire',    'time',             '1 hour'],
@@ -733,6 +735,39 @@ sub get_parse_routine {
 
 	return $routine;
 	
+}
+
+sub global_chunk {
+	my ($fn) = @_;
+
+	my $save_c = $C;
+	undef $C;
+
+	local $/;
+	$/ = "\n";
+
+
+	open GCHUNK, "< $fn"
+		or config_error("read global chunk %s: %s", $fn, $!);
+
+	while(<GCHUNK>) {
+		my $line = $_;
+		my($lvar, $value) = read_config_value($_, \*GCHUNK);
+		next unless $lvar;
+		eval {
+			$GlobalRead->($lvar, $value);
+		};
+		if($@ =~ /Duplicate\s+usertag/i) {
+			next;
+		}
+	}
+    close GCHUNK;
+
+	Vend::Dispatch::update_global_actions();
+	finalize_mapped_code();
+
+	$C = $save_c;
+	return 1;
 }
 
 sub code_from_file {
@@ -1017,7 +1052,7 @@ sub config {
 		}
 	}
 
-	my(@include) = ($passed_file || $C->{ConfigFile});
+	@include = ($passed_file || $C->{ConfigFile});
 	my %include_hash = ($include[0] => 1);
 	my $done_one;
 	my ($db, $dname, $nm);
@@ -1592,7 +1627,6 @@ sub read_config_value {
 				#
 	s/\s+$//;		#  trailing spaces
 	return undef unless $_;
-::logGlobal("What is going on? line=$_") unless /^.*\S.*/;
 
 	local($Vend::config_line);
 	$Vend::config_line = $_;
@@ -2155,6 +2189,98 @@ sub get_directive {
 	else {
 		return ${"Global::$name"};
 	}
+}
+
+# Adds features contained in FeatureDir called by catalog
+
+sub parse_feature {
+	my ($var, $value) = @_;
+	my $c = $C->{$var} || {};
+	return $c unless $value;
+
+	$value =~ s/^\s+//;
+	$value =~ s/\s+$//;
+	my $fdir = Vend::File::catfile($Global::FeatureDir, $value);
+
+	unless(-d $fdir) {
+		config_warn("Feature '%s' not found, skipping.", $value);
+		return $c;
+	}
+
+	my @gfiles = glob("$fdir/*.global");
+	my %seen;
+	@seen{@gfiles} = @gfiles;
+	my @ifiles = glob("$fdir/*.init");
+	@seen{@ifiles} = @ifiles;
+	my @cfiles = grep ! $seen{$_}++, glob("$fdir/*");
+
+	my @cdirs = grep -d $_, @cfiles;
+	@cfiles   = grep -f $_, @cfiles;
+
+	@gfiles = grep ! $Global::FeatureSeen{$_}++, @gfiles;
+
+	unshift @include, @cfiles;
+
+	my @copy;
+	my $wanted = sub {
+		return unless -f $_;
+		my $n = $File::Find::name;
+		$n =~ s{^$fdir/}{};
+		my $d = $File::Find::dir;
+		$d =~ s{^$fdir/}{};
+		push @copy, [$n, $d];
+	};
+
+	if(@cdirs) {
+		File::Find::find($wanted, @cdirs);
+	}
+#::logDebug("gfiles=" . ::uneval(\@gfiles));
+#::logDebug("cfiles=" . ::uneval(\@cfiles));
+#::logDebug("ifiles=" . ::uneval(\@ifiles));
+#::logDebug("cdirs=" . ::uneval(\@cdirs));
+#::logDebug("copy=" . ::uneval(\@copy));
+
+	for(@copy) {
+		my ($n, $d) = @$_;
+
+		my $tf = Vend::File::catfile($C->{VendRoot}, $n);
+		next if -f $tf;
+
+		my $td = Vend::File::catfile($C->{VendRoot}, $d);
+		unless(-d $td) {
+			File::Path::mkpath($td)
+				or do {
+					config_warn("Feature %s not able to make directory %s", $value, $td);
+					next;
+				};
+		}
+		File::Copy::copy("$fdir/$n", $tf)
+			or do {
+				config_warn("Feature %s not able to copy %s to %s", $value, "$fdir/$n", $tf);
+				next;
+			};
+	}
+
+	for(@gfiles) {
+		global_chunk($_);
+	}
+
+	if(@ifiles) {
+		my $initdir = Vend::File::catfile($C->{ConfDir}, 'init', $value);
+		File::Path::mkpath($initdir) unless -d $initdir;
+		for(@ifiles) {
+			my $fn = $_;
+			$fn =~ s{^$fdir/}{};
+			next if -f "$initdir/$fn";
+			$C->{Init} ||= [];
+			push @{$C->{Init}}, [$_, "$initdir/$fn"];
+		}
+	}
+
+#::logDebug("Init=" . ::uneval($C->{Init}));
+
+	$c->{$value} = 1;
+	return $c;
 }
 
 # Changes configuration directives into Variable settings, i.e.

@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.54 2005-05-16 21:22:28 mheins Exp $
+# $Id: Dispatch.pm,v 1.55 2005-05-20 13:55:19 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.54 $, 10);
+$VERSION = substr(q$Revision: 1.55 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1420,6 +1420,37 @@ EOF
 		}
 		for(keys %$macro) {
 			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} } );
+		}
+	}
+
+	## Here we initialize new features
+	if(my $ary = $Vend::Cfg->{Init}) {
+		undef $Vend::Cfg->{Init};
+		for(@$ary) {
+			my ($source, $touch) = @$_;
+			next if -f $touch;
+			open INITOUT, "> $touch"
+				or do {
+					::logError(
+						"Unable to open init file %s for feature init", $touch,
+						);
+					next;
+				};
+			my $out;
+			eval {
+				$out = Vend::Interpolate::interpolate_html(
+									Vend::Util::readfile($source)
+						  );
+			};
+			if($@) {
+				$out .= $@;
+			}
+			print INITOUT errmsg(
+							"Results of init at %s: ",
+							POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime()),
+							);
+			print INITOUT $out;
+			close INITOUT;
 		}
 	}
 

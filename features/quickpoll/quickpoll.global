@@ -1,0 +1,194 @@
+ActionMap quickpoll <<EOR
+sub {
+	my $path = shift;
+	$path =~ s{^quickpoll/}{};
+
+	use vars qw/$Tag/;
+	$CGI::values{mv_nextpage} ||= $path;
+	my $code = $CGI::values{poll};
+	$code =~ s/\D+//g;
+	return 1 if $Vend::Session->{quickpoll}{$code}++;
+	my $answer = $CGI::values{answer};
+	my $adb = dbref($::Variable->{POLL_ANSWER_TABLE} || 'quickpoll_answer');
+	my $pdb = dbref($::Variable->{POLL_TABLE} || 'quickpoll');
+	my $poll = $pdb->row_hash($code) 
+		or do {
+			::logError("Bad poll %s, no database record", $code);
+			return 1;
+		};
+	my $date = POSIX::strftime('%Y%m%d%H%M%S', localtime());
+	my $poll_id = $poll->{poll_id} || $code;
+	my $record = {
+		answer => $CGI::values{answer},
+		poll_id => $poll_id,
+		question_id => $code,
+		ipaddr => $CGI::remote_addr,
+		username => $Vend::username,
+		answer_date => $date,
+		login_table => $Vend::login_table,
+	};
+	$Vend::Session->{quickpoll}{$code} = $adb->set_slice(undef, $record);
+	return 1;
+}
+EOR
+
+UserTag poll-answer Order code
+UserTag poll-answer addAttr
+UserTag poll-answer Routine <<EOR
+sub {
+	my ($code, $opt) = @_;
+
+	use vars qw/$Tag/;
+
+	my $adb = dbref($::Variable->{POLL_ANSWER_TABLE} || 'quickpoll_answer');
+	my $pdb = dbref($::Variable->{POLL_TABLE} || 'quickpoll');
+	my $poll = $pdb->row_hash($code)
+		or do {
+			::logError("Bad poll %s, no database record", $code);
+			return undef;
+		};
+	my $answer_ary = Vend::Form::options_to_array($poll->{choices});
+	my %key;
+	for(@$answer_ary) {
+		$key{$_->[0]} = $_->[1];
+	}
+	
+	my $tname = $adb->name();
+	my $q = qq{SELECT answer, COUNT(answer) FROM $tname
+				WHERE question_id = $code
+				GROUP BY answer
+			};
+
+	my $ary = $adb->query($q)
+		or do {
+			::logError("Bad answers to poll %s, no database return", $code);
+			return undef;
+		};
+	my @out;
+	push @out, qq{<table>};
+
+	my $total = 0;
+	my @results;
+
+	for(@$ary) {
+		my ($ans, $number) = @$_;
+		$total += $number;
+		push @results, [$ans, $number];
+	}
+
+	@results = sort { $b->[1] <=> $a->[1] } @results;
+
+	return "No answers yet!" unless $total > 0;
+
+	my $tops = $opt->{shown} || 4;
+	if(@results > $tops) {
+		my $other = 0;
+		for(my $i = $tops; $i < @results; $i++) {
+			$other += $results[$i][1];
+		}
+		splice @results, $tops;
+		push @results, [ $opt->{other_title} || 'Other', $other];
+	}
+
+	for(@results) {
+		push @$_, int($_->[1] / $total * 100);
+	}
+
+	my @colors = qw(
+		red
+		green
+		blue
+		orange
+		yellow
+		brown
+		purple
+		cyan
+		chartruese
+	);
+
+	if($poll->{colors}) {
+		my @custom = grep /\w/, split /[\s,\0]+/, $poll->{colors};
+		for(my $i = 0; $i < @custom; $i++) {
+			$colors[$i] = $custom[$i];
+		}
+	}
+
+	for( my $i = 0; $i < @results; $i++) {
+		my ($answer, $number, $percent) = @{$results[$i]};
+		$answer = $key{$answer} if $key{$answer};
+		my $short = $Tag->filter('16.', $answer);
+		if(length($answer) > length($short)) {
+			my $encode_answer = HTML::Entities::encode($answer);
+			my $encode_short = HTML::Entities::encode($short);
+			$answer = qq{<span title="$encode_answer">$encode_short</span>};
+		}
+		else {
+			HTML::Entities::encode($answer);
+		}
+		my $opt = {
+			hr => 1,
+			hr_color => $colors[$i],
+			value => $percent,
+		};
+		my $graph = $Tag->ascii_graph($opt);
+		push @out, <<EOF;
+<tr>
+	<td>$answer</td>
+	<td>$number</td>
+	<td>$graph</td>
+</tr>
+EOF
+	}
+	push @out, '</table>';
+	return join "\n", @out;
+	
+}
+EOR
+
+UserTag ascii-graph Order value scale
+UserTag ascii-graph addAttr
+UserTag ascii-graph Routine <<EOR
+sub {
+	my ($value, $scale, $opt) = @_;
+
+	unless($opt->{div_per_scale}) {
+		$opt->{div_per_scale} = ($opt->{image} || $opt->{hr}) ? 100 : 25;
+	}
+	$scale ||= 100;
+	my $factor = $opt->{div_per_scale} / $scale;
+	
+	my $amount = int($value * $factor);
+
+	my $out = '';
+
+	return $out unless $amount;
+
+	if($opt->{image}) {
+		$opt->{line_width} ||= 5;
+		if($opt->{vertical}) {
+			$out = qq{<img src="$opt->{image}" height=$amount width=$opt->{line_width}>};
+		}
+		else {
+			$out = qq{<img src="$opt->{image}" width=$amount height=$opt->{line_width}>};
+		}
+	}
+	elsif ($opt->{hr}) {
+		$opt->{hr_color} ||= '#666666';
+		$opt->{hr_height} ||= 5;
+		my $shade = $opt->{hr_noshade} ? ' noshade' : '';
+		$out = qq{<hr align=left size=$opt->{hr_height} width=$amount$shade color="$opt->{hr_color}">};
+	}
+	else {
+		my $char = $opt->{character} || $opt->{char} || '*';
+		$out = $char x $amount;
+	}
+
+	if($opt->{prepend_value}) {
+		$out = qq{<table cellspacing=0 cellpadding=0><tr><td width=20 align=right>$value</td><td>&nbsp;</td><td>$out</td></tr></table>};
+	}
+	elsif($opt->{append_value}) {
+		$out = "$out&nbsp;$value";
+	}
+	return $out;
+}
+EOR
