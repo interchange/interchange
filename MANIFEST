@@ -207,7 +207,6 @@ code/UI_Tag/get_gpg_keys.coretag
 code/UI_Tag/global_value.coretag
 code/UI_Tag/grep_mm.coretag
 code/UI_Tag/if_mm.coretag
-code/UI_Tag/image_collate.coretag
 code/UI_Tag/import_fields.coretag
 code/UI_Tag/jsq.coretag
 code/UI_Tag/jsqn.coretag
