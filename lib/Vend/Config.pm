@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.177 2005-05-22 12:49:46 mheins Exp $
+# $Id: Config.pm,v 2.178 2005-05-22 12:55:24 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.177 $, 10);
+$VERSION = substr(q$Revision: 2.178 $, 10);
 
 my %CDname;
 my %CPname;
@@ -749,6 +749,7 @@ sub global_chunk {
 	open GCHUNK, "< $fn"
 		or config_error("read global chunk %s: %s", $fn, $!);
 
+#::logDebug("GCHUNK length: " . -s $fn);
 	while(<GCHUNK>) {
 		my $line = $_;
 		my($lvar, $value) = read_config_value($_, \*GCHUNK);
@@ -758,6 +759,9 @@ sub global_chunk {
 		};
 		if($@ =~ /Duplicate\s+usertag/i) {
 			next;
+		}
+		if($@) {
+			::logDebug("error running global $lvar: $@");
 		}
 	}
     close GCHUNK;
@@ -1329,7 +1333,9 @@ CONFIGLOOP:
 	set_readonly_config();
 	# Ugly legacy stuff so API won't break
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
-	return $C;
+	my $return = $C;
+	undef $C;
+	return $return;
 }
 
 sub read_container {
@@ -1910,7 +1916,6 @@ GLOBLOOP:
 	ADDTAGS: {
 		Vend::Parse::global_init;
 	}
-	undef $GlobalRead unless $Global::AccumulateCode;
 
 	## Pulls in the places where code can be found when AccumulatingTags
 	get_repos_code() if $Global::AccumulateCode;
@@ -2206,18 +2211,32 @@ sub parse_feature {
 		return $c;
 	}
 
+	# Get the global install files and remove them from the config list
 	my @gfiles = glob("$fdir/*.global");
 	my %seen;
 	@seen{@gfiles} = @gfiles;
+
+	# Get the init files and remove them from the config list
 	my @ifiles = glob("$fdir/*.init");
 	@seen{@ifiles} = @ifiles;
+
+	# Get the uninstall files and remove them from the config list
+	my @ufiles = glob("$fdir/*.uninstall");
+	@seen{@ufiles} = @ifiles;
+
+	# Any other files are config files
 	my @cfiles = grep ! $seen{$_}++, glob("$fdir/*");
 
+	# directories are for copying
 	my @cdirs = grep -d $_, @cfiles;
+
+	# strip the directories from the config list, leaving catalog.cfg stuff
 	@cfiles   = grep -f $_, @cfiles;
 
+	# Don't install global more than once
 	@gfiles = grep ! $Global::FeatureSeen{$_}++, @gfiles;
 
+	# Place the catalog configuration in the config list
 	unshift @include, @cfiles;
 
 	my @copy;
@@ -2236,6 +2255,7 @@ sub parse_feature {
 #::logDebug("gfiles=" . ::uneval(\@gfiles));
 #::logDebug("cfiles=" . ::uneval(\@cfiles));
 #::logDebug("ifiles=" . ::uneval(\@ifiles));
+#::logDebug("ufiles=" . ::uneval(\@ufiles));
 #::logDebug("cdirs=" . ::uneval(\@cdirs));
 #::logDebug("copy=" . ::uneval(\@copy));
 
@@ -2267,9 +2287,24 @@ sub parse_feature {
 	if(@ifiles) {
 		my $initdir = Vend::File::catfile($C->{ConfDir}, 'init', $value);
 		File::Path::mkpath($initdir) unless -d $initdir;
+		my $unfile = Vend::File::catfile($initdir, 'uninstall');
+
+		## Feature was previously uninstalled, we *do* need to run init
+		my $ignore = -f $unfile;
+
+		if($ignore) {
+			unlink $unfile
+					or die errmsg("Couldn't unlink $unfile: $!");
+		}
+
 		for(@ifiles) {
 			my $fn = $_;
 			$fn =~ s{^$fdir/}{};
+			if($ignore) {
+				unlink "$initdir/$fn"
+					or die errmsg("Couldn't unlink $fn: $!");
+			}
+
 			next if -f "$initdir/$fn";
 			$C->{Init} ||= [];
 			push @{$C->{Init}}, [$_, "$initdir/$fn"];
@@ -2281,6 +2316,157 @@ sub parse_feature {
 	$c->{$value} = 1;
 	return $c;
 }
+
+sub uninstall_feature {
+	my ($value) = @_;
+	my $c = $Vend::Cfg
+		or die "Not in catalog context.\n";
+
+#::logDebug("Running uninstall for cat=$Vend::Cat, from cfg ref=$c->{CatalogName}");
+	$value =~ s/^\s+//;
+	$value =~ s/\s+$//;
+	my $fdir = Vend::File::catfile($Global::FeatureDir, $value);
+
+	unless(-d $fdir) {
+		config_warn("Feature '%s' not found, skipping.", $value);
+		return $c;
+	}
+
+	my $etag = errmsg("feature %s uninstall -- ", $value);
+
+	# Get the global install files and remove them from the config list
+	my @gfiles = glob("$fdir/*.global");
+	my %seen;
+	@seen{@gfiles} = @gfiles;
+
+	# Get the init files and remove them from the config list
+	my @ifiles = glob("$fdir/*.init");
+	@seen{@ifiles} = @ifiles;
+
+	# Get the uninstall files and remove them from the config list
+	my @ufiles = glob("$fdir/*.uninstall");
+	@seen{@ufiles} = @ifiles;
+
+	# Any other files are config files
+	my @cfiles = grep ! $seen{$_}++, glob("$fdir/*");
+
+	# directories are for copying
+	my @cdirs = grep -d $_, @cfiles;
+
+	my $Tag = new Vend::Tags;
+
+	my @copy;
+	my @errors;
+	my @warnings;
+
+	my $wanted = sub {
+		return unless -f $_;
+		my $n = $File::Find::name;
+		$n =~ s{^$fdir/}{};
+		my $d = $File::Find::dir;
+		$d =~ s{^$fdir/}{};
+		push @copy, [$n, $d];
+	};
+
+	if(@cdirs) {
+		File::Find::find($wanted, @cdirs);
+	}
+#::logDebug("ufiles=" . ::uneval(\@ufiles));
+#::logDebug("ifiles=" . ::uneval(\@ifiles));
+#::logDebug("cdirs=" . ::uneval(\@cdirs));
+#::logDebug("copy=" . ::uneval(\@copy));
+
+	for(@ufiles) {
+#::logDebug("Running uninstall file $_");
+		my $save = $Global::AllowGlobal->{$Vend::Cat};
+		$Global::AllowGlobal->{$Vend::Cat} = 1;
+		open UNFILE, "< $_"
+			or do {
+				push @errors, $etag . errmsg("error reading %s: %s", $_, $!);
+			};
+		my $chunk = join "", <UNFILE>;
+		close UNFILE;
+
+#::logDebug("uninstall chunk length=" . length($chunk));
+
+		my $out;
+		eval {
+			$out = Vend::Interpolate::interpolate_html($chunk);
+		};
+
+		if($@) {
+			push @errors, $etag . errmsg("error running uninstall %s: %s", $_, $@);
+		}
+
+		push @warnings, $etag . errmsg("message from %s: %s", $_, $out)
+			if $out =~ /\S/;
+
+		$Global::AllowGlobal->{$Vend::Cat} = $save;
+	}
+
+	for(@copy) {
+		my ($n, $d) = @$_;
+
+		my $tf = Vend::File::catfile($c->{VendRoot}, $n);
+		next unless -f $tf;
+
+		my $contents1 = Vend::File::readfile($tf);
+
+		my $sf = "$fdir/$n";
+
+		open UNSRC, "< $sf"
+			or die $etag . errmsg("Couldn't read uninstall source file %s: %s", $sf, $!);
+
+		local $/;
+		my $contents2 = <UNSRC>;
+
+		if($contents1 ne $contents2) {
+			push @warnings, $etag . errmsg("will not uninstall %s, changed.", $tf);
+			next;
+		}
+
+		unlink $tf
+			or do {
+				push @errors,
+					$etag . errmsg("$etag couldn't unlink file %s: %s", $tf, $!);
+				next;
+			};
+
+		my $td = Vend::File::catfile($c->{VendRoot}, $d);
+		my @left = glob("$td/*");
+		push @left, glob("$td/.?*");
+		next if @left;
+		File::Path::rmtree($td);
+	}
+
+	if(@ifiles) {
+#::logDebug("running uninstall touch and init");
+		my $initdir = Vend::File::catfile($c->{ConfDir}, 'init', $value);
+		File::Path::mkpath($initdir) unless -d $initdir;
+		my $fn = Vend::File::catfile($initdir, 'uninstall');
+#::logDebug("touching uninstall file $fn");
+		open UNFILE, ">> $fn"
+			or die errmsg("Couldn't create uninstall flag file %s: %s", $fn, $!);
+		print UNFILE $etag . errmsg("uninstalled at %s.\n", scalar(localtime));
+		close UNFILE;
+	}
+
+
+	my $errors;
+	for(@errors) {
+		$Tag->error({ set => $_});
+		::logError($_);
+		$errors++;
+	}
+
+	for(@warnings) {
+		$Tag->warnings($_);
+		::logError($_);
+	}
+
+	return ! $errors;
+}
+
 
 # Changes configuration directives into Variable settings, i.e.
 # DescriptionField becomes __DescriptionField__, ProductFiles becomes
