@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.176 2005-05-20 13:55:19 mheins Exp $
+# $Id: Config.pm,v 2.177 2005-05-22 12:49:46 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.176 $, 10);
+$VERSION = substr(q$Revision: 2.177 $, 10);
 
 my %CDname;
 my %CPname;
@@ -589,7 +589,6 @@ sub catalog_directives {
 	['LocaleDatabase',   'configdb',         ''],
 	['ExecutionLocale',   undef,             'C'],
 	['DefaultLocale',     undef,             ''],
-	['DbDatabase',        'dbdatabase',        ''],
 	['RouteDatabase',     'configdb',        ''],
 	['DirectiveDatabase', 'dbconfig',        ''],
 	['VariableDatabase',  'dbconfig',        ''],
@@ -4268,44 +4267,6 @@ sub parse_dbconfig {
 	}
 	for(@h) {
 		$Vend::Cfg->{Hash}{$_->[0]} = $_->[1];
-	}
-	$db->close_table();
-	return $table;
-}
-
-sub parse_dbdatabase {
-	my ($var, $value) = @_;
-
-	return '' if ! $value;
-	local($Vend::Cfg) = $C;
-	my ($db, $table) = get_configdb($var, $value);
-	$db = $db->ref();
-	my $kindex = $db->config('KEY_INDEX');
-#::logDebug("kindex=$kindex");
-	local($^W) = 0;
-	my ($k, @f);	# key and fields
-	my @l;			# refs to locale repository
-	my @n;			# names of locales
-	my $name;		# names of current locale
-
-	@n = $db->columns();
-	$k = 0;
-	foreach $name (@n) {
-		next if $k++ == $kindex;
-		my $file = $db->field('_file', $name);
-		my $type = $db->field('_type', $name);
-		next unless $file and $type;
-		parse_database('', "$name $file $type");
-	}
-	while( ($k , @f ) = $db->each_record) {
-		next if $k =~ /^_/;
-		my $i;
-		for ($i = 0; $i < @f; $i++) {
-			next if $i == $kindex;
-			next unless length $f[$i];
-#::logDebug("f-i=$f[$i] i=$i kindex=$kindex");
-			Vend::Config::parse_database('', "$n[$i] $k $f[$i]");
-		}
 	}
 	$db->close_table();
 	return $table;
