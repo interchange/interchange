@@ -234,6 +234,7 @@ code/UI_Tag/tabbed_display.coretag
 code/UI_Tag/table_editor.coretag
 code/UI_Tag/traffic_report.coretag
 code/UI_Tag/uneval.coretag
+code/UI_Tag/uninstall_feature.tag
 code/UI_Tag/unlink_file.coretag
 code/UI_Tag/update_order_status.tag
 code/UI_Tag/version.coretag
@@ -356,6 +357,12 @@ dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
 dist/etc/jobs/merchandising/topsellers
+dist/features/quickpoll/doc/quickpoll/README
+dist/features/quickpoll/quickpoll.catalog.cfg
+dist/features/quickpoll/quickpoll.global
+dist/features/quickpoll/quickpoll.init
+dist/features/quickpoll/quickpoll.uninstall
+dist/features/quickpoll/templates/components/quickpoll
 dist/interchange.cfg.dist
 dist/lib/UI/ContentEditor.pm
 dist/lib/UI/ichelp.txt
@@ -1213,4 +1220,3 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
-META.yml                                 Module meta-data (added by MakeMaker)
