@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.84 2005-05-03 06:03:26 mheins Exp $
+# $Id: Util.pm,v 2.85 2005-05-22 12:53:36 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.84 $, 10);
+$VERSION = substr(q$Revision: 2.85 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -886,6 +886,20 @@ sub get_option_hash {
 		}
 	}
 	return \%hash;
+}
+
+sub word2ary {
+	my $val = shift;
+	return $val if ref($val) eq 'ARRAY';
+	my @ary = grep /\w/, split /[\s,\0]+/, $val;
+	return \@ary;
+}
+
+sub ary2word {
+	my $val = shift;
+	return $val if ref($val) ne 'ARRAY';
+	@$val = grep /\w/, @$val;
+	return join " ", @$val;
 }
 
 ## Takes an IC scalar form value (parm=val\nparm2=val) and translates it
