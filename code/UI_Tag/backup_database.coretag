@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: backup_database.coretag,v 1.5 2005-04-27 20:38:31 docelic Exp $
+# $Id: backup_database.coretag,v 1.6 2005-05-24 07:33:08 docelic Exp $
 
 UserTag backup-database Order    tables
 UserTag backup-database AddAttr
-UserTag backup-database Version  $Revision: 1.5 $
+UserTag backup-database Version  $Revision: 1.6 $
 UserTag backup-database Routine  <<EOR
 sub {
 	my ($tables, $opt) = @_;
@@ -224,6 +224,6 @@ sub {
 		$::Scratch->{ui_error} .= join "</li>\n<li>", @errors;
 		$::Scratch->{ui_error} .= '</li></ul>';
 	}
-	return $done;
+	return $opt->{hide} ? "" : $done;
 }
 EOR
