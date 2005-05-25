@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: weight.tag,v 1.5 2005-05-19 01:07:24 mheins Exp $
+# $Id: weight.tag,v 1.6 2005-05-25 00:31:20 mheins Exp $
 
 UserTag weight Order   attribute
 UserTag weight addAttr
-UserTag weight Version $Revision: 1.5 $
+UserTag weight Version $Revision: 1.6 $
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;
@@ -59,6 +59,50 @@ sub {
 	  }
 	}
 
+	my $exclude;
+	my %exclude;
+	if(my $thing = $opt->{exclude_attribute}) {
+	  eval {
+		if(ref($thing) eq 'HASH') {
+			for(keys %$thing) {
+				$exclude{$_} = qr{$thing->{$_}};
+			}
+		}
+		else {
+			my ($k, $v) = split /=/, $thing;
+			$exclude{$k} = qr{$v};
+		}
+	  };
+	  if($@) {
+	  	::logError("Bad weight exclude option: %s", ::uneval($thing));
+	  }
+	  else {
+	  	$exclude = 1;
+	  }
+	}
+
+	my $zero_unless;
+	my %zero_unless;
+	if(my $thing = $opt->{zero_unless_attribute}) {
+	  eval {
+		if(ref($thing) eq 'HASH') {
+			for(keys %$thing) {
+				$zero_unless{$_} = qr{$thing->{$_}};
+			}
+		}
+		else {
+			my ($k, $v) = split /=/, $thing;
+			$zero_unless{$k} = qr{$v};
+		}
+	  };
+	  if($@) {
+	  	::logError("Bad weight zero_unless option: %s", ::uneval($thing));
+	  }
+	  else {
+	  	$zero_unless = 1;
+	  }
+	}
+
 	if($attr) {
 		$attr = $opt->{field} || 'weight';
 		$wsub = sub {
@@ -91,7 +135,20 @@ sub {
 	}
 
 	my $total = 0;
+	CARTCHECK:
 	for(@$cart) {
+		if($exclude) {
+			my $found;
+			for my $k (keys %exclude) {
+				$found = 1, last if $_->{$k} =~ $exclude{$k};
+			}
+			next if $found;
+		}
+		if($zero_unless) {
+			for my $k (keys %zero_unless) {
+				return 0 unless $_->{$k} =~ $zero_unless{$k};
+			}
+		}
 		next if $_->{mv_free_shipping} && ! $opt->{no_free_shipping};
 		$total += $_->{quantity} * $wsub->($_);
 		next unless $osub;
@@ -120,6 +177,8 @@ ITL tag [weight] -- calculate shipping weight from cart
     cart=cartname*
     field=sh_weight*
     fill-attribute=weight*
+    zero-unless-attribute="attribute=regex"
+    exclude-attribute="attribute=regex"
     hide=1|0*
 	matrix=1
     no-set=1|0*
@@ -154,6 +213,38 @@ The cart to calculate for. Defaults to current cart.
 
 The fieldname to use -- default "weight". This applies both to attribute
 and database.
+
+=item exclude-attribute
+
+If an attribute I<already in the cart hash> matches the regex, it
+will not show up as weight. Can be a scalar or hash.
+
+	[weight exclude-attribute="prod_group=Gift Certificates"]
+
+and 
+
+	[weight exclude-attribute.prod_group="Gift Certificates"]
+
+are identical, but with the second form you can do:
+
+	[weight
+		exclude-attribute.prod_group="Gift Certificates"
+		exclude-attribute.category="Downloads"
+	]
+
+The value is a regular expression, so you can group with C<|>,
+or make case insensitive with:
+
+	[weight exclude-attribute.prod_group="(?i)certificate"]
+
+If the regular expression does not compile, an error is logged
+and no exclusion is done.
+
+It is IMPORTANT to note that you must have the attribute pre-filled
+for this to work -- no database accesses will be done. If you want
+to do this, use L<AutoModifier>, i.e. put in catalog.cfg:
+
+	AutoModifier prod_group
 
 =item fill-attribute
 
@@ -198,6 +289,13 @@ product was ordered from (or the first ProductFiles).
 =item weight-scratch
 
 The scratch variable name to set -- default is "total_weight".
+
+=item zero-unless-attribute
+
+Same as C<exclude-attribute> except that a zero weight is returned
+unless B<all> items match the expression. This allows you to do
+something like only offer Book Rate shipping when all items have
+a prod_group of "Books".
 
 =back
 
