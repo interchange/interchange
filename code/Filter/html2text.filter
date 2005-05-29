@@ -1,14 +1,14 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: html2text.filter,v 1.2 2005-04-12 03:23:18 mheins Exp $
+# $Id: html2text.filter,v 1.3 2005-05-29 14:37:34 docelic Exp $
 
 CodeDef html2text Filter
 CodeDef html2text Description Simple html2text
 CodeDef html2text Routine <<EOR
 sub {
 	my $val = shift;
-	$val =~ s|\s*<BR>\s*|\n|gi;
+	$val =~ s|\s*<BR\s*/?>\s*|\n|gi;
 	$val =~ s|\s*<P>\s*|\n|gi;
 	$val =~ s|\s*</P>\s*||gi;
 	return $val;
