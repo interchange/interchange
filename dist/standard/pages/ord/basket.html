@@ -136,7 +136,7 @@ ui_template_name: leftonly
 	<TR class="[item-calc]$row_class || 'cartnorm'[/item-calc]">
 		<TD align=center valign="top">
 [if-item-param !mv_si]
-	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+	    		<INPUT TYPE=checkbox NAME="[item-quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
 [/if-item-param]
 	  	</TD>
 	  	<TD valign="top"><b>[item-sku]</b></TD>
@@ -236,10 +236,10 @@ EOF
 
 	  </TD>
 
-[input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
+[input-filter name="[item-quantity-name]" op="nullselect digits_dot"][/input-filter]
 
 	  <TD ALIGN=CENTER valign="top">
-	    <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
+	    <INPUT TYPE=text NAME="[item-quantity-name]" VALUE="[item-quantity]" SIZE=3>
 	  </TD>
 	[if discount [item-code]]
 	  <TD ALIGN=right valign="top">

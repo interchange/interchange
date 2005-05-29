@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.246 2005-05-17 16:59:33 mheins Exp $
+# $Id: Interpolate.pm,v 2.247 2005-05-29 15:30:19 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.246 $, 10);
+$VERSION = substr(q$Revision: 2.247 $, 10);
 
 @EXPORT = qw (
 
@@ -397,12 +397,12 @@ my @th = (qw!
 		elsif
 		matches
 		match_count
-		modifier_name
+		_modifier_name
 		more
 		more_list
 		no_match
 		on_match
-		quantity_name
+		_quantity_name
 		sort
 		then
 
@@ -470,14 +470,12 @@ my @th = (qw!
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
 	'_line'			=> qr($T{_line}$Opt\]),
-	'_modifier_if'	=> qr($T{_modifier}(\d*)$Spacef(!?)$Spaceo($Codere)$Optr\]($Some)),
-	'_modifier'		=> qr($T{_modifier}$Spacef(\w+)\]),
 	'_next'			=> qr($T{_next}\]\s*($Some)\s*),
 	'_options'		=> qr($T{_options}($Spacef[^\]]+)?\]),
 	'_header_param'	=> qr($T{_header_param}$Mandf$Optr\]),
 	'_header_param_if'	=> qr($T{_header_param}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
-	'_param_if'		=> qr($T{_param}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
-	'_param'		=> qr($T{_param}$Mandf\]),
+	'_param_if'		=> qr((?:$T{_param}|$T{_modifier})(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
+	'_param'		=> qr((?:$T{_param}|$T{_modifier})$Mandf\]),
 	'_parent_if'	=> qr($T{_parent}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_parent'		=> qr($T{_parent}$Mandf\]),
 	'_pos_if'		=> qr($T{_pos}(\d*)$Spacef(!?)\s*(\d+)$Optr\]($Some)),
@@ -496,12 +494,12 @@ my @th = (qw!
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
 	'match_count'		=> qr($T{match_count}\]),
-	'modifier_name'	=> qr($T{modifier_name}$Spacef(\w+)\]),
 	'more'			=> qr($T{more}\]),
 	'more_list'		=> qr($T{more_list}$Optx$Optx$Optx$Optx$Optx\]($Some)$T{'/more_list'}),
 	'no_match'   	=> qr($T{no_match}\]($Some)$T{'/no_match'}),
 	'on_match'   	=> qr($T{on_match}\]($Some)$T{'/on_match'}),
-	'quantity_name'	=> qr($T{quantity_name}\]),
+	'_quantity_name'	=> qr($T{_quantity_name}\]),
+	'_modifier_name'	=> qr($T{_modifier_name}$Spacef(\w+)\]),
 	'then'			=> qr(^\s*$T{then}$T($Some)$T{'/then'}),
 );
 
@@ -3031,11 +3029,14 @@ sub list_compat {
 	my $prefix = shift;
 	my $textref = shift;
 
+	$$textref =~ s:\[quantity[-_]name:[$prefix-quantity-name:gi;
+	$$textref =~ s:\[modifier[-_]name\s:[$prefix-modifier-name :gi;
+
 	$$textref =~ s:\[if[-_]data\s:[if-$prefix-data :gi
 		and $$textref =~ s:\[/if[-_]data\]:[/if-$prefix-data]:gi;
 
-	$$textref =~ s:\[if[-_]modifier\s:[if-$prefix-modifier :gi
-		and $$textref =~ s:\[/if[-_]modifier\]:[/if-$prefix-modifier]:gi;
+	$$textref =~ s:\[if[-_]modifier\s:[if-$prefix-param :gi
+		and $$textref =~ s:\[/if[-_]modifier\]:[/if-$prefix-param]:gi;
 
 	$$textref =~ s:\[if[-_]field\s:[if-$prefix-field :gi
 		and $$textref =~ s:\[/if[-_]field\]:[/if-$prefix-field]:gi;
@@ -4077,7 +4078,7 @@ my $once = 0;
 						  alternate($count, $1, $end, $page_start, $array_last)
 				  							?	pull_else($2)
 											:	pull_if($2)#ige;
-		1 while $run =~ s#$IB$QR{_param_if}$IE[-_]param\1\]#
+		1 while $run =~ s#$IB$QR{_param_if}$IE[-_](?:param|modifier)\1\]#
 				  (defined $fh->{$3} ? $row->[$fh->{$3}] : '')
 				  					?	pull_if($5,$2,$4,$row->[$fh->{$3}])
 									:	pull_else($5,$2,$4,$row->[$fh->{$3}])#ige;
@@ -4252,7 +4253,7 @@ sub iterate_hash_list {
 											:	pull_if($2)#ge;
 		tag_labeled_data_row($code,\$run);
 		$run =~ s:$B$QR{_line}:join "\t", @{$hash}:ge;
-		1 while $run =~ s#$IB$QR{_param_if}$IE[-_]param\1\]#
+		1 while $run =~ s#$IB$QR{_param_if}$IE[-_](?:param|modifier)\1\]#
 				  $item->{$3}	?	pull_if($5,$2,$4,$item->{$3})
 								:	pull_else($5,$2,$4,$item->{$3})#ige;
 		1 while $run =~ s#$IB$QR{_parent_if}$IE[-_]parent\1\]#
@@ -4262,9 +4263,6 @@ sub iterate_hash_list {
 				  my $tmp = item_field($item, $3);
 				  $tmp	?	pull_if($5,$2,$4,$tmp)
 						:	pull_else($5,$2,$4,$tmp)#ge;
-		1 while $run =~ s#$IB$QR{_modifier_if}$IE[-_]modifier\1\]#
-				  $item->{$3}	?	pull_if($5,$2,$4,$item->{$3})
-								:	pull_else($5,$2,$4,$item->{$3})#ge;
 		$run =~ s:$B$QR{_increment}:$i + 1:ge;
 		
 		$run =~ s:$B$QR{_accessories}:
@@ -4274,11 +4272,10 @@ sub iterate_hash_list {
 		$run =~ s:$B$QR{_sku}:$code:ig;
 		$run =~ s:$B$QR{_code}:$item->{code}:ig;
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
-		$run =~ s:$B$QR{_modifier}:ed($item->{$1}):ge;
 		$run =~ s:$B$QR{_param}:ed($item->{$1}):ge;
 		$run =~ s:$B$QR{_parent}:ed($opt->{$1}):ge;
-		$run =~ s:$QR{quantity_name}:quantity$item->{mv_ip}:g;
-		$run =~ s:$QR{modifier_name}:$1$item->{mv_ip}:g;
+		$run =~ s:$B$QR{_quantity_name}:quantity$item->{mv_ip}:g;
+		$run =~ s:$B$QR{_modifier_name}:$1$item->{mv_ip}:g;
 		$run =~ s!$B$QR{_subtotal}!currency(item_subtotal($item),$1)!ge;
 		$run =~ s!$B$QR{_discount_subtotal}!
 						currency( discount_subtotal($item), $1 )!ge;

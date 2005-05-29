@@ -74,7 +74,7 @@ ui_template_name: noleft
 
         <TR class="[item-alternate 2]cartdisplay[else]cartdisplay_alt[/else][/item-alternate]">
           <TD align=center valign=top>
-            <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
+            <INPUT TYPE=checkbox NAME="[item-quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
           </TD>
           <TD><b>[item-sku]</b></TD>
           <TD><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
@@ -88,7 +88,7 @@ ui_template_name: noleft
             [/if-item-field]
           </TD>
           <TD ALIGN=CENTER valign=top>
-            <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
+            <INPUT TYPE=text NAME="[item-quantity-name]" VALUE="[item-quantity]" SIZE=3>
           </TD>
           <TD ALIGN=RIGHT>
             [item-discount-price]

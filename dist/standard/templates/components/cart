@@ -93,7 +93,7 @@ continue_shopping:
 
 	<TR class="[item-calc]$row_class || 'cartnorm'[/item-calc]">
 		<TD align=center valign="top">
-	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+	    		<INPUT TYPE=checkbox NAME="[item-quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
 	  	</TD>
 	  	<TD valign="top"><b>[item-sku]</b></TD>
 	  	<td><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></A><br><br>
@@ -190,10 +190,10 @@ EOF
 
 	  </TD>
 
-[input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
+[input-filter name="[item-quantity-name]" op="nullselect digits_dot"][/input-filter]
 
 	  <TD ALIGN=CENTER valign="top">
-	    <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
+	    <INPUT TYPE=text NAME="[item-quantity-name]" VALUE="[item-quantity]" SIZE=3>
 	  </TD>
 	[if discount [item-code]]
 	  <TD ALIGN=right valign="top">
@@ -234,7 +234,7 @@ EOF
 	  <TD>&nbsp;</td>
 	  <TD>
 	    <SMALL>
-	    <INPUT TYPE=hidden NAME="[modifier-name mv_an]" VALUE="{mv_an}">
+	    <INPUT TYPE=hidden NAME="[item-modifier-name mv_an]" VALUE="{mv_an}">
 	    {textarea}
 	    </SMALL>
 	  </TD>
@@ -247,7 +247,7 @@ EOF
 	  </TD>
 	  <TD>
 	    <SMALL>
-	    <PRE>{mv_ad}</PRE><INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
+	    <PRE>{mv_ad}</PRE><INPUT TYPE=hidden NAME="[item-modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
 	    </SMALL>
 	  </TD>
 	  <TD>&nbsp;</TD>
