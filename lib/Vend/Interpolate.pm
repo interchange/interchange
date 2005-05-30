@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.247 2005-05-29 15:30:19 mheins Exp $
+# $Id: Interpolate.pm,v 2.248 2005-05-30 16:22:21 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.247 $, 10);
+$VERSION = substr(q$Revision: 2.248 $, 10);
 
 @EXPORT = qw (
 
@@ -5721,7 +5721,10 @@ sub levies {
 				next unless $::Values->{$if};
 			}
 			elsif($if =~ /__[A-Z]\w+__|[[a-zA-Z]/) {
-				next unless interpolate_html($if);
+				my $val = interpolate_html($if);
+				$val =~ s/^\s+//;
+				$val =~ s/^s+$//;
+				next unless $val;
 			}
 			else {
 				next unless tag_calc($if);
@@ -5732,7 +5735,10 @@ sub levies {
 				next if $::Values->{$if};
 			}
 			elsif($if =~ /__[A-Z]\w+__|[[a-zA-Z]/) {
-				next if interpolate_html($if);
+				my $val = interpolate_html($if);
+				$val =~ s/^\s+//;
+				$val =~ s/^s+$//;
+				next if $val;
 			}
 			else {
 				next if tag_calc($if);
@@ -5813,6 +5819,7 @@ sub levies {
 							cost			=> round_to_frac_digits($cost),
 							currency		=> currency($cost),
 							group			=> $group,
+							inclusive		=> $l->{inclusive},
 							label			=> $l->{label} || $desc,
 							part_number		=> $l->{part_number},
 							description		=> $desc,
