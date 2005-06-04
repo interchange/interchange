@@ -28,6 +28,15 @@ ui_template_name: leftonly
 
 @_LEFTONLY_TOP_@
 
+[if cgi product]
+[perl tables=products]
+	## Set the subject if coming from product page
+	my $desc = tag_data('products', $Config->{DescriptionField}, $Session->{arg});
+	$CGI->{subject} = $desc;
+	return;
+[/perl]
+[/if]
+
 [perl tables="forum"]
 #code	parent	artid	mod_time	created	username	host	score	lastscore	reason	anon	extended	subject	comment
 	sub scrub {
@@ -53,6 +62,10 @@ ui_template_name: leftonly
 		$value = $Tag->filter($filter,$value)
 			unless $noscrub;
 		return $value;
+	}
+	if($CGI->{product}) {
+		$Session->{forum_start} ||= {};
+		$Session->{forum_start}{$CGI->{product}} = 1;
 	}
 	return;
 [/perl]
@@ -102,7 +115,7 @@ submit if you are satisfied.
 	my $db = $Db{forum}
 		or return "Database error.";
 	$v{host} = $Session->{host};
-	$v{score} = 0;
+	$v{score} = 1;
 	my $noscrub;
 	if(! $CGI->{commtype}) {
 		# do nothing
@@ -123,11 +136,29 @@ submit if you are satisfied.
 	$v{mod_time} =
 	$v{created} =  $Tag->time( { body => "%Y-%m-%d %H:%M:%S" });
 	$v{subject} =  $Tag->filter('encode_entities', $CGI->{subject}, 'subject');
-	$v{artid}  =  '0';
-	$v{parent} =  '0';
-	$Scratch->{tmp_code} = $db->set_slice(undef, [ keys %v ], [values %v])
+	$v{artid}  =  $CGI->{artid} || 0;
+
+	my $code;
+
+	if($CGI->{parent}) {
+		my $existing = $db->query("select * from forum where parent = '$CGI->{parent}'");
+		if($existing and ! @$existing) {
+			$v{artid} = $CGI->{parent};
+			$code = $CGI->{parent};
+			$v{parent} = 0;
+		}
+		else {
+			$v{parent} =  $CGI->{parent};
+		}
+	}
+	$Scratch->{tmp_code} = $db->set_slice($code, \%v)
 		or return "Error submitting reply!";
 	$Scratch->{tmp_code} =~ s/'//g;
+
+	unless ($code) {
+		$Scratch->{tmp_code} = $v{parent};
+	}
+
 	## This is special processing only if there is a submission email address
 	## is found
 	if($Variable->{FORUM_SUBMIT_EMAIL}) {
@@ -174,11 +205,14 @@ EOF
 	return;
 [/perl]
 
-	[if scratch tmp_code]
-		Your story has been submitted. You will receive a response when it
-		is handled. For questions, contact <A HREF="mailto:webmaster@perusion.com">webmaster@perusion.com</A>
-		<P>
-		[page index]Return to the Intranet home</A>
+	[if cgi parent]
+		Your comment has been submitted.
+		[if type=data term="products::sku::[cgi parent]"]
+		 [page href="[cgi parent]"]Return to product</a>.
+		[else]
+		 [page href="forum/display" arg="[cgi parent]"]See in context.
+		[/else]
+		[/if]
 	[/if]
 [else]
 	[include include/forum/submit_form]

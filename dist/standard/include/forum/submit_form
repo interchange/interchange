@@ -8,6 +8,7 @@
 <form ACTION="[area @@MV_PAGE@@]" METHOD="GET">
 <input TYPE="HIDDEN" NAME="artid" VALUE="[loop-data forum artid]">
 <input TYPE="HIDDEN" NAME="parent" VALUE="[loop-code]">
+<input TYPE="HIDDEN" NAME="product" VALUE="[cgi product]">
 <input TYPE="HIDDEN" NAME="mv_arg" VALUE="[loop-code]">
 <table BORDER="0" CELLSPACING="0" CELLPADDING="4">
 <!--
@@ -18,7 +19,10 @@
 <tr><td ALIGN="RIGHT"><br>[L]Subject[/L]: </td>
 <td><br><input TYPE="text" NAME="subject" VALUE="[loop-calc]
 						my $subj = $CGI->{subject} || q{[loop-data forum subject]};
-						$subj = "Re: $subj" unless $subj =~ /^\s*re:/i;
+
+						unless($subj =~ /^\s*re:/i or $CGI->{product}) {
+							$subj = "Re: $subj";
+						}
 						return $Tag->filter('restrict_html', $subj);
 				 [/loop-calc]" SIZE=50 MAXLENGTH=50></td>
 </tr>

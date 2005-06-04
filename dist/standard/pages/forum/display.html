@@ -73,7 +73,9 @@ Forum thread: [data table=forum col=subject key="[data session arg]"]
 	<A HREF="{DISPLAY_URL}">One message below your threshold</a>
 [/tmp]
 
-
+[if type=data term="products::sku::[data session arg]"]
+	[bounce page="[data session arg]"]
+[/if]
 [forum
 	top="[data session arg]"
 	show-score=2
