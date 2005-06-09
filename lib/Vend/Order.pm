@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.69 2005-04-30 15:09:58 mheins Exp $
+# $Id: Order.pm,v 2.70 2005-06-09 19:29:07 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.69 $, 10);
+$VERSION = substr(q$Revision: 2.70 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -368,11 +368,11 @@ sub _format {
 	}
 	elsif ($OrderCheck and $sub = $OrderCheck->{$routine}) {
 #::logDebug("Using coderef OrderCheck = $sub");
-		@args = ($ref,$var,$val);
+		@args = ($ref,$var,$val,$message);
 	}
 	elsif (defined &{"_$routine"}) {
 		$sub = \&{"_$routine"};
-		@args = ($ref,$var,$val);
+		@args = ($ref,$var,$val,$message);
 	}
 	else {
 		return (undef, $var, errmsg("No format check routine for '%s'", $routine));
