@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.50 2005-05-13 04:10:58 mheins Exp $
+# $Id: Data.pm,v 2.51 2005-06-09 19:28:45 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -525,8 +525,9 @@ sub read_salestax {
     my($code, $percent);
 
 	return unless $Vend::Cfg->{SalesTax};
+	return if $Vend::Cfg->{SalesTax} eq 'multi';
 	my $file = $Vend::Cfg->{Special}{'salestax.asc'};
-	$file = Vend::Util::catfile($Vend::Cfg->{ProductDir}, "salestax.asc")
+	$file = Vend::File::catfile($Vend::Cfg->{ProductDir}, "salestax.asc")
 		unless $file;
 
 	$Vend::Cfg->{SalesTaxTable} = {};
