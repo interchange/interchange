@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.60 2005-05-03 06:03:26 mheins Exp $
+# $Id: Form.pm,v 2.61 2005-06-09 18:15:28 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.60 $, 10);
+$VERSION = substr(q$Revision: 2.61 $, 10);
 
 @EXPORT = qw (
 	display
@@ -226,7 +226,7 @@ my $Tag = new Vend::Tags;
 		qq(</td>)
 		,
 	boxgroup =>
-		qq(</tr><tr><td{TD_GROUP?} {TD_GROUP}{/TD_GROUP?} COLSPAN=2>)
+		qq(</tr><tr><td{TD_GROUP?} {TD_GROUP}{/TD_GROUP?} colspan="2">)
 		.
 		qq(<b>{TVALUE}</b>)
 		.
@@ -312,11 +312,11 @@ sub links {
 	$opt->{extra} = " $opt->{extra}" if $opt->{extra};
 
 	my $template = $opt->{template} || <<EOF;
-<A HREF="{URL}"{EXTRA}>{SELECTED <B>}{LABEL}{SELECTED </B>}</A>
+<a href="{URL}"{EXTRA}>{SELECTED <b>}{LABEL}{SELECTED </b>}</a>
 EOF
 
 	my $o_template = $opt->{o_template} || <<EOF;
-<B>{TVALUE}</B>
+<b>{TVALUE}</b>
 EOF
 
 	my $href = $opt->{href} || $Global::Variable->{MV_PAGE};
@@ -467,36 +467,36 @@ sub date_widget {
 		$val = POSIX::strftime("%Y%m%d%H00", @t);
 	}
 	my $sel = 0;
-	my $out = qq{<SELECT NAME="$name"$sel_extra>};
+	my $out = qq{<select name="$name"$sel_extra>};
 	my $o;
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0"$opt_extra>------</OPTION>';
+		$out .= '<option value="0"$opt_extra>------</option>';
 	}
 	for(@Months) {
-		$o = qq{<OPTION VALUE="$_->[0]"$opt_extra>} . errmsg($_->[1]) . '</OPTION>';
+		$o = qq{<option value="$_->[0]"$opt_extra>} . errmsg($_->[1]) . '</option>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 4, 2) eq $_->[0];
 		$out .= $o;
 	}
 	$sel = 0;
-	$out .= qq{</SELECT>};
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name"$sel_extra>};
+	$out .= qq{</select>};
+	$out .= qq{<input type="hidden" name="$name" value="/">};
+	$out .= qq{<select name="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0"$opt_extra>--</OPTION>';
+		$out .= '<option value="0"$opt_extra>--</option>';
 	}
 	for(@Days) {
-		$o = qq{<OPTION VALUE="$_->[0]"$opt_extra>$_->[1]} . '</OPTION>';
+		$o = qq{<option value="$_->[0]"$opt_extra>$_->[1]} . '</option>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 6, 2) eq $_->[0];
 		$out .= $o;
 	}
 	$sel = 0;
-	$out .= qq{</SELECT>};
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name"$sel_extra>};
+	$out .= qq{</select>};
+	$out .= qq{<input type="hidden" name="$name" value="/">};
+	$out .= qq{<select name="$name"$sel_extra>};
 	if(my $by = $opt->{year_begin} || $::Variable->{UI_DATE_BEGIN}) {
 		my $cy = $t[5] + 1900;
 		my $ey = $opt->{year_end}  || $::Variable->{UI_DATE_END} || ($cy + 10);
@@ -509,25 +509,25 @@ sub date_widget {
 		@Years = ($by .. $ey);
 	}
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0000"$opt_extra>----</OPTION>';
+		$out .= '<option value="0000"$opt_extra>----</option>';
 	}
 	for(@Years) {
-		$o = qq{<OPTION$opt_extra>$_} . '</OPTION>';
+		$o = qq{<option$opt_extra>$_} . '</option>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 0, 4) eq $_;
 		$out .= $o;
 	}
-	$out .= qq{</SELECT>};
+	$out .= qq{</select>};
 	return $out unless $opt->{time};
 
 	$val =~ s/^\d{8}//;
 	$val =~ s/\D+//g;
 	$val = round_to_fifteen($val);
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
-	$out .= qq{<SELECT NAME="$name"$sel_extra>};
+	$out .= qq{<input type="hidden" name="$name" value=":">};
+	$out .= qq{<select name="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<OPTION VALUE="0"$opt_extra>--:--</OPTION>';
+		$out .= '<option value="0"$opt_extra>--:--</option>';
 	}
 	
 	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
@@ -591,7 +591,7 @@ sub date_widget {
 				$disp_hour = sprintf("%02d:%02d", $hr, $min);
 			}
 			my $time = sprintf "%02d%02d", $hr, $min;
-			$o = sprintf qq{<OPTION VALUE="%s"$opt_extra>%s}, $time, $disp_hour;
+			$o = sprintf qq{<option value="%s"$opt_extra>%s}, $time, $disp_hour;
 			($out .= $o, next) unless ! $sel and $val;
 #::logDebug("prospect=$time actual=$val");
 			$o =~ s/>/ SELECTED>/ && $sel++
@@ -599,7 +599,7 @@ sub date_widget {
 			$out .= $o;
 		}
 	}
-	$out .= "</SELECT>";
+	$out .= "</select>";
 	return $out;
 }
 
@@ -610,7 +610,7 @@ sub option_widget_box {
 	$val =~ s/"/&quot;/g;
 	$lab =~ s/"/&quot;/g;
 	$width = 10 if ! $width;
-	return qq{<tr><td><small><input type="text" name="$name" value="$val" size="$half"></small></td><td><small><input type="text" name="$name" value="$lab" size=$width></small></td><td><small><small><select name="$name"><option value="0">no<option value="1"$sel>default*</select></small></small></td></tr>};
+	return qq{<tr><td><small><input type="text" name="$name" value="$val" size="$half"></small></td><td><small><input type="text" name="$name" value="$lab" size="$width"></small></td><td><small><select name="$name"><option value="0">no<option value="1"$sel>default*</select></small></td></tr>};
 }
 
 sub option_widget {
@@ -672,7 +672,7 @@ sub movecombo {
 			$template .= q( cols="{COLS|20}" name="{NAME}">{ENCODED}</textarea>);
 		}
 		else {
-			$template .= qq(<input TYPE="text" size="{COLS||40}");
+			$template .= qq(<input type="text" size="{COLS||40}");
 			$template .= qq( name="{NAME}" value="{ENCODED}">);
 		}
 	}
@@ -697,7 +697,7 @@ sub combo {
 				$template .= q(</textarea>);
 			}
 			else {
-				$template .= qq(<input TYPE="text" size="{COLS|40}");
+				$template .= qq(<input type="text" size="{COLS|40}");
 				$template .= qq( name="{NAME}" value=");
 				$template .= '{ENCODED}'
 					unless $opt->{conditional_text} and length($opt->{value}) < 3;
@@ -707,8 +707,8 @@ sub combo {
 		$addl = attr_list($template, $opt);
 	}
 	else {
-		$addl = qq|<INPUT TYPE=text NAME="$opt->{name}"|;
-		$addl   .= qq| SIZE="$opt->{cols}" VALUE="">|;
+		$addl = qq|<input type="text" name="$opt->{name}"|;
+		$addl   .= qq| size="$opt->{cols}" value="">|;
 	}
 	if($opt->{reverse}) {
 		$opt->{append} = length($opt->{append}) ? "$addl$opt->{append}" : $addl;
@@ -1348,7 +1348,7 @@ if($opt->{debug}) {
 	if(my $c = $opt->{check}) {
 		$c = "$opt->{name}=$c" unless $c =~ /=/;
 		HTML::Entities::encode($c);
-		$opt->{append} .= qq{<input type=hidden name="mv_individual_profile" value="$c">};
+		$opt->{append} .= qq{<input type="hidden" name="mv_individual_profile" value="$c">};
 	}
 
 	if($opt->{js}) {
