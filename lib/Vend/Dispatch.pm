@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.55 2005-05-20 13:55:19 mheins Exp $
+# $Id: Dispatch.pm,v 1.56 2005-06-09 17:57:05 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.55 $, 10);
+$VERSION = substr(q$Revision: 1.56 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -342,10 +342,11 @@ sub do_deliver {
 	{
 		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
 		my $msg = get_locale_message(403, <<EOF);
-<B>Authorization Required<B>
-<P>
+<b>Authorization Required</b>
+<p>
 This server could not verify that you are authorized to access the document
 requested. 
+</p>
 EOF
 		response($msg);
 		return 0;
@@ -354,10 +355,10 @@ EOF
 	if (! -f $file) {
 		$Vend::StatusLine = "Status: 404\nContent-Type: text/html";
 		my $msg = get_locale_message(404, <<EOF, $file);
-<B>Not Found<B>
-<P>
+<b>Not Found</b>
+<p>
 The requested file %s was not found on this server.
-
+</p>
 EOF
 		response($msg);
 		return 0;
@@ -1376,10 +1377,10 @@ EOF
 							my $msg = shift;
 							put_session() if $Vend::HaveSession;
 							my $content = get_locale_message(500, <<EOF, $msg);
-<HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
-<H1>FATAL error</H1>
-<PRE>%s</PRE>
-</BODY></HTML>
+<html><head><title>Fatal Interchange Error</title></head><body>
+<h1>FATAL error</h1>
+<pre>%s</pre>
+</body></html>
 EOF
 							response(\$content);
 							exit 0;
