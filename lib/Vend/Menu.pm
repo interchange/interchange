@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.43 2005-04-30 15:09:58 mheins Exp $
+# $Id: Menu.pm,v 2.44 2005-06-09 18:43:58 docelic Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 use Vend::Util;
 use strict;
@@ -401,10 +401,10 @@ sub old_tree {
 	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
 
 	$opt->{header_template} ||= <<EOF;
-<P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
-<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
-</P>
+<p>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</a><br$Vend::Xtrailer>
+<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</a>
+</p>
 EOF
 
 	my $header;
@@ -526,7 +526,7 @@ sub dhtml_flyout {
 	my $vpf = $opt->{js_prefix} ||= 'mv_';
 
 	$template = <<EOF if $template !~ /\S/;
-{MV_LEVEL:}<div>{PAGE?}{MV_SPACER}<a id="{CODE}" href="{PAGE}" onMouseOver="${vpf}mousein(this)" onMouseOut="${vpf}mouseout(this)" TITLE="{DESCRIPTION}" class="$opt->{link_class}">{NAME}</A>{/PAGE?}{PAGE:}{MV_SPACER}{NAME}{/MV_SPACER}{/PAGE:}</div>{/MV_LEVEL:}
+{MV_LEVEL:}<div>{PAGE?}{MV_SPACER}<a id="{CODE}" href="{PAGE}" onMouseOver="${vpf}mousein(this)" onMouseOut="${vpf}mouseout(this)" title="{DESCRIPTION}" class="$opt->{link_class}">{NAME}</a>{/PAGE?}{PAGE:}{MV_SPACER}{NAME}{/MV_SPACER}{/PAGE:}</div>{/MV_LEVEL:}
 EOF
 
 	$opt->{cursor_type} ||= 'hand';
@@ -650,9 +650,9 @@ EOF
 			if(${vpf}submenu_image_left.substr(0,1) == '<')
 				out += ${vpf}submenu_image_left;
 			else
-				out += '<img src="' + ${vpf}submenu_image_left + '" border=0>';
+				out += '<img src="' + ${vpf}submenu_image_left + '" border="0">';
 		}
-		out += '</td><td><DIV';
+		out += '</td><td><div';
 		
 		if(l[${vpf}MV_CHILDREN] > 0) {
 			out += ' id="' + l[0] + '"' + mouseo_beg + "''" + mouseo_end;
@@ -691,7 +691,7 @@ EOF
 			if(${vpf}submenu_image_right.substr(0,1) == '<')
 				out += ${vpf}submenu_image_right;
 			else
-				out += '<img src="' + ${vpf}submenu_image_right + '" border=0>';
+				out += '<img src="' + ${vpf}submenu_image_right + '" border="0">';
 		}
 		out += '</td></tr>';
 
@@ -719,7 +719,7 @@ EOF
 		clearTimeout( ${vpf}timeoutCode );
 		${vpf}timeoutCode = -1;
 
-		var html = "<table cellpadding=0 cellspacing=0 border=0>";
+		var html = qq{<table cellpadding="0" cellspacing="0" border="0">};
 
 		var idx = -1;
 		var digid = obj.id;
@@ -877,7 +877,7 @@ EOF
 						display:none;
 						$opt->{flyout_style}
 					"
-		 OnMouseOver="${vpf}menuBusy();" OnMouseOut="${vpf}mouseout();"></DIV>
+		 OnMouseOver="${vpf}menuBusy();" OnMouseOut="${vpf}mouseout();"></div>
 EOF
 	}
 
@@ -919,10 +919,10 @@ sub file_tree {
 	my $explode_label = errmsg($opt->{explode_label} || 'Explode tree');
 	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
 	$opt->{header_template} ||= <<EOF;
-<P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
-<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
-</P>
+<p>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</a><br$Vend::Xtrailer>
+<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</a>
+</p>
 EOF
 
 	my $header;
@@ -936,7 +936,7 @@ EOF
 	$opt->{div_style} ||= '';
 	push @out, <<EOF;
 
-<div id=${vpf}treebox style="visibility: Visible">
+<div id="${vpf}treebox" style="visibility: Visible">
 Test.
 </div>
 <script language="JavaScript1.3">
@@ -1038,7 +1038,7 @@ EOF
 	}
 
 	$opt->{image_link_extra} = $Tag->jsq($opt->{image_link_extra});
-	$opt->{image_link_extra} ||= qq{'border=0'};
+	$opt->{image_link_extra} ||= qq{'border="0"'};
 
 	$opt->{specific_image_toggle} ||= 0;
 
@@ -1066,14 +1066,14 @@ EOF
 		and $canonheight = $1;
 
 	if($canonwidth) {
-		$opt->{toggle_anchor_clear} =~ s{\bwidth\s*=\s*"*\d+"*}{width=$canonwidth};
+		$opt->{toggle_anchor_clear} =~ s{\bwidth\s*=\s*"*\d+"*}{width="$canonwidth"};
 	}
 	if($canonheight) {
-		$opt->{toggle_anchor_clear} =~ s{\bheight\s*=\s*"*\d+"*}{height=$canonheight};
+		$opt->{toggle_anchor_clear} =~ s{\bheight\s*=\s*"*\d+"*}{height="$canonheight"};
 	}
 
 	$opt->{toggle_anchor_clear} =~ s{\balign\s*=\s*"*\w+"*}{}i;
-	$opt->{toggle_anchor_clear} =~ s{\s*>}{ align=absbottom>}i;
+	$opt->{toggle_anchor_clear} =~ s{\s*>}{ align="absbottom">}i;
 
 #::logDebug("toggle_anchor_clear=$opt->{toggle_anchor_clear}");
 
@@ -1246,7 +1246,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_open;
 			tstyle = ${vpf}link_style_open;
 			if(spec_toggle > 0) {
-				tanchor = '<img border=0 align=absbottom  src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
 			}
 			else {
 				tanchor = ${vpf}toggle_anchor_open;
@@ -1257,7 +1257,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_closed;
 			tstyle = ${vpf}link_style_closed;
 			if(spec_toggle > 0) {
-				tanchor = '<img border=0 align=absbottom  src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
@@ -1312,7 +1312,7 @@ function ${vpf}tree_link (idx) {
 				}
 
 				if(${vpf}icon[ ext ]) {
-					out += '<img border=0 align=absbottom src="';
+					out += '<img border="0" align="absbottom" src="';
 					out += ${vpf}icon[ ext ];
 					out += '">';
 				}
@@ -1439,10 +1439,10 @@ sub dhtml_tree {
 	my $explode_label = errmsg($opt->{explode_label} || 'Explode tree');
 	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
 	$opt->{header_template} ||= <<EOF;
-<P>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</A><br$Vend::Xtrailer>
-<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</A>
-</P>
+<p>
+<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</a><br$Vend::Xtrailer>
+<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</a>
+</p>
 EOF
 
 	my $header;
@@ -1456,7 +1456,7 @@ EOF
 	$opt->{div_style} ||= '';
 	push @out, <<EOF;
 
-<div id=${vpf}treebox style="visibility: Visible">
+<div id="${vpf}treebox" style="visibility: Visible">
 Test.
 </div>
 <script language="JavaScript1.3">
@@ -1555,7 +1555,7 @@ EOF
 	}
 
 	$opt->{image_link_extra} = Vend::Tags->jsq($opt->{image_link_extra});
-	$opt->{image_link_extra} ||= qq{'border=0'};
+	$opt->{image_link_extra} ||= qq{'border="0"'};
 
 	$opt->{specific_image_toggle} ||= 0;
 
@@ -1644,7 +1644,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_open;
 			tstyle = ${vpf}link_style_open;
 			if(spec_toggle > 0) {
-				tanchor = '<img border=0 src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
@@ -1659,7 +1659,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_closed;
 			tstyle = ${vpf}link_style_closed;
 			if(spec_toggle > 0) {
-				tanchor = '<img border=0 src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
@@ -1814,7 +1814,7 @@ sub tree_link {
 	}
 
 	$template ||= qq[
-{MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{PAGE?}<A href="{HREF}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{PAGE?}<A href="{HREF}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN:}<br$Vend::Xtrailer>
+{MV_SPACER}{MV_CHILDREN?}<a href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</a>{PAGE?}<a href="{HREF}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{PAGE?}<A href="{HREF}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/PAGE?}{NAME}{PAGE?}</a>{/PAGE?}{/MV_CHILDREN:}<br$Vend::Xtrailer>
 ];
 
 	if(! $row->{page}) {
@@ -2317,15 +2317,15 @@ sub menu {
 			$opt->{toggle_anchor_open} = Vend::Tags->image( {
 							src => $opt->{img_open}  || $menu_default_img{open},
 							border => 0,
-							extra => $opt->{img_open_extra} || 'align=absbottom',
+							extra => $opt->{img_open_extra} || 'align="absbottom"',
 							});
 			$opt->{toggle_anchor_closed} = Vend::Tags->image( {
 							src => $opt->{img_closed} || $menu_default_img{closed},
 							border => 0,
-							extra => $opt->{img_closed_extra} || 'align=absbottom',
+							extra => $opt->{img_closed_extra} || 'align="absbottom"',
 							});
 			if($opt->{toggle_anchor_closed} =~ /\s+width="?(\d+)/i) {
-				$opt->{img_clear_extra} ||= "height=1 width=$1";
+				$opt->{img_clear_extra} ||= qq{height="1" width="$1"};
 			}
 			$opt->{toggle_anchor_clear} = Vend::Tags->image( {
 							src => $opt->{img_clear} || $menu_default_img{clear},

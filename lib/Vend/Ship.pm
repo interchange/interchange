@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.12 2005-04-30 14:52:55 mheins Exp $
+# $Id: Ship.pm,v 2.13 2005-06-09 18:43:58 docelic Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -888,7 +888,7 @@ sub shipping {
 
 		$opt->{format} ||= '%M=%D (%F)' if $opt->{output_options};
 		
-		my $label = $opt->{format} || '<OPTION VALUE="%M"%S>%D (%F)';
+		my $label = $opt->{format} || '<option value="%M"%S>%D (%F)';
 		my $sel = $::Values->{mv_shipmode} eq $mode;
 #::logDebug("label start: $label");
 		my %subst = (
