@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.62 2005-04-30 15:09:59 mheins Exp $
+# $Id: DBI.pm,v 2.63 2005-06-09 19:27:01 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -439,7 +439,8 @@ sub create {
 		for my $def (@{$config->{INDEX}}) {
 			my $uniq = '';
 			$uniq = 'UNIQUE' if $def =~ s/^\s*unique\s+//i;
-			$def =~ s/:\w+//g;
+			$def =~ s/:(\w+)//g
+				and $config->{INDEX_OPTIONS}{$def} = $1;
 			my $col = $def;
 			$col =~ s/\W.*//s;
 			$key_index_found = 1 if lc($col) eq lc($key);

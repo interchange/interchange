@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.40 2005-04-30 15:09:59 mheins Exp $
+# $Id: Common.pm,v 2.41 2005-06-09 19:27:01 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1185,6 +1185,10 @@ EndOfExcel
 				my $option = $1;
 				push @o, $1;
 			}
+			elsif (exists $options->{INDEX_OPTIONS}{$f}) {
+
+				push @o, $options->{INDEX_OPTIONS}{$f};
+			}
 			else {
 				push @o, '';
 			}
@@ -1219,6 +1223,11 @@ EndOfExcel
 				if($o[$i] =~ s/c//) {
 					$index .= <<EndOfIndex;
 			map { print { \$fh[$i] } "\$_\\t\$fields[0]\\n" } split /\\s*,\\s*/, \$fields[$fnum];
+EndOfIndex
+				}
+				elsif($o[$i] =~ s/s//) {
+					$index .= <<EndOfIndex;
+			map { print { \$fh[$i] } "\$_\\t\$fields[0]\\n" } split /\\s*;\\s*/, \$fields[$fnum];
 EndOfIndex
 				}
 				else {
