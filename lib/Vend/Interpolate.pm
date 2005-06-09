@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.248 2005-05-30 16:22:21 mheins Exp $
+# $Id: Interpolate.pm,v 2.249 2005-06-09 18:23:21 docelic Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.248 $, 10);
+$VERSION = substr(q$Revision: 2.249 $, 10);
 
 @EXPORT = qw (
 
@@ -627,8 +627,8 @@ sub vars_and_comments {
 	1 while $$html =~ s%$QR{comment}%%go;
 
 	# Translate legacy atomic [/page] and [/order] tags
-	$$html =~ s,\[/page(?:target)?\],</A>,ig;
-	$$html =~ s,\[/order\],</A>,ig;
+	$$html =~ s,\[/page(?:target)?\],</a>,ig;
+	$$html =~ s,\[/order\],</a>,ig;
 
 	# Translate Interchange tags embedded in HTML comments like <!--[tag ...]-->
 	! $::Pragma->{no_html_comment_embed}
@@ -1887,7 +1887,7 @@ EndOFmiMe
 		$id = _mime_id();
 		$::Instance->{MIME} = 1;
 		my $desc = $opt->{description} || $option;
-		my $type = $opt->{type} || 'TEXT/PLAIN; CHARSET=US-ASCII';
+		my $type = $opt->{type} || 'text/plain; charset=US-ASCII';
 		my $disposition = $opt->{attach_only} ? qq{attachment; filename="$desc"} : "inline";
 		$out = <<EndOFmiMe;
 --$::Instance->{MIME_BOUNDARY}
@@ -3183,14 +3183,14 @@ sub tag_more_list {
 	undef $link_template;
 	$r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i
 		and $link_template = $1;
-	$link_template ||= q{<A HREF="$URL$">$ANCHOR$</A>};
+	$link_template ||= q{<a href="$URL$">$ANCHOR$</a>};
 
 	if(! $chunk or $chunk >= $total) {
 		return '';
 	}
 
-	$border = qq{ BORDER="$border"} if defined $border;
-	$border_selected = qq{ BORDER="$border_selected"}
+	$border = qq{ border="$border"} if defined $border;
+	$border_selected = qq{ border="$border_selected"}
 		if defined $border_selected;
 
 	$adder = ($total % $chunk) ? 1 : 0;
@@ -3224,7 +3224,7 @@ sub tag_more_list {
 			}
 		}
 		elsif ($prev_anchor ne 'none') {
-			$prev_anchor = qq%<IMG SRC="$prev_anchor"$border>%;
+			$prev_anchor = qq%<img src="$prev_anchor"$border>%;
 		}
 		unless ($prev_anchor eq 'none') {
 			$arg = $session;
@@ -3252,7 +3252,7 @@ sub tag_more_list {
 			}
 		}
 		else {
-			$next_anchor = qq%<IMG SRC="$next_anchor"$border>%;
+			$next_anchor = qq%<img src="$next_anchor"$border>%;
 		}
 		$last = $next + $chunk - 1;
 		$last = $last > ($total - 1) ? $total - 1 : $last;
@@ -3286,7 +3286,7 @@ sub tag_more_list {
 		}
 	}
 	elsif ($page_anchor ne 'none') {
-		$page_anchor = qq%<IMG SRC="$page_anchor?__PAGE__"__BORDER__>%;
+		$page_anchor = qq%<img src="$page_anchor?__PAGE__"__BORDER__>%;
 	}
 
 	$page_anchor =~ s/\$(MIN|MAX)?PAGE\$/__${1}PAGE__/g;
@@ -3296,11 +3296,11 @@ sub tag_more_list {
 	if( $q->{mv_more_decade} or $r =~ m:\[decade[-_]next\]:) {
 		$r =~ s:\[decade[-_]next\]($All)\[/decade[-_]next\]::i
 			and $decade_next = $1;
-		$decade_next = "<SMALL>&#91;$more_string&gt;&gt;&#93;</SMALL>"
+		$decade_next = "<small>&#91;$more_string&gt;&gt;&#93;</small>"
 			if ! $decade_next;
 		$r =~ s:\[decade[-_]prev\]($All)\[/decade[-_]prev\]::i
 			and $decade_prev = $1;
-		$decade_prev = "<SMALL>&#91;&lt;&lt;$more_string&#93;</SMALL>"
+		$decade_prev = "<small>&#91;&lt;&lt;$more_string&#93;</small>"
 			if ! $decade_prev;
 		$decade_div = $q->{mv_more_decade} > 1 ? $q->{mv_more_decade} : 10;
 	}
@@ -4142,7 +4142,7 @@ my $once = 0;
                     '' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
                     $Ary_code{next}->($1) != 0 ? next : '' #ixge;
-		$run =~ s/<option\s*/<OPTION SELECTED /i
+		$run =~ s/<option\s*/<option SELECTED /i
 			if $opt_select and $opt_select->($code);
 		undef $Row;
 		$r .= $run;
@@ -4343,7 +4343,7 @@ sub iterate_hash_list {
                     '' #xoge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
                     interpolate_html($1) != 0 ? next : '' #oge;
-		$run =~ s/<option\s*/<OPTION SELECTED /i
+		$run =~ s/<option\s*/<option SELECTED /i
 			if $opt_select and $opt_select->($code);	
 
 		$r .= $run;
@@ -4426,40 +4426,40 @@ sub html_table {
 	$td = '' if ! defined $td;
 	if(! defined $th || $th and scalar @$na ) {
 		$th = '' if ! defined $th;
-		$r .= "<TR$tr>";
+		$r .= "<tr$tr>";
 		for(@$na) {
-			$r .= "<TH$th><B>$_</B></TH>";
+			$r .= "<th$th><b>$_</b></th>";
 		}
-		$r .= "</TR>\n";
+		$r .= "</tr>\n";
 	}
 	my $row;
 	if($fr) {
-		$r .= "<TR$fr>";
+		$r .= "<tr$fr>";
 		my $val;
 		$row = shift @$ary;
 		if($fc) {
 			$val = (shift @$row) || '&nbsp;';
-			$r .= "<TD$fc>$val</TD>";
+			$r .= "<td$fc>$val</td>";
 		}
 		foreach (@$row) {
 			$val = $_ || '&nbsp;';
-			$r .= "<TD$td>$val</TD>";
+			$r .= "<td$td>$val</td>";
 		}
-		$r .= "</TR>\n";
+		$r .= "</tr>\n";
 		
 	}
 	foreach $row (@$ary) {
-		$r .= "<TR$tr>";
+		$r .= "<tr$tr>";
 		my $val;
 		if($fc) {
 			$val = (shift @$row) || '&nbsp;';
-			$r .= "<TD$fc>$val</TD>";
+			$r .= "<td$fc>$val</td>";
 		}
 		foreach (@$row) {
 			$val = $_ || '&nbsp;';
-			$r .= "<TD$td>$val</TD>";
+			$r .= "<td$td>$val</td>";
 		}
-		$r .= "</TR>\n";
+		$r .= "</tr>\n";
 	}
 	return $r;
 }
