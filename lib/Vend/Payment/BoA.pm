@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.11 2004-06-07 20:59:18 mheins Exp $
+# $Id: BoA.pm,v 1.12 2005-06-10 10:54:33 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -457,7 +457,7 @@ sub boa {
 #::logDebug("BoA post_data response: " . ::uneval($thing) );
 	
 	my %result;
-	my $sep = "<BR>";
+	my $sep = "<br>";
 
 	$page =~ s/\r*<html>.*$//is;
 

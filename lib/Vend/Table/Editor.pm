@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.77 2005-05-16 05:21:48 mheins Exp $
+# $Id: Editor.pm,v 1.78 2005-06-10 10:56:51 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.77 $, 10);
+$VERSION = substr(q$Revision: 1.78 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -132,7 +132,7 @@ use vars qw/%Display_type %Display_options %Style_sheet/;
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<br><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}</td>
        </tr>
      </table>
    </td>
@@ -152,7 +152,7 @@ EOF
 		my $opt = shift;
 		my $span = shift;
 		$opt->{break_template} ||= <<EOF;
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
+<tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
    <td$opt->{label_cell_extra}> 
@@ -164,8 +164,8 @@ EOF
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
-         <td align=right>{META_STRING}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<br><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}</td>
+         <td align="right">{META_STRING}</td>
        </tr>
      </table>
    </td>
@@ -180,7 +180,7 @@ EOF
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
    </td>
 EOF
 		chomp $thing;
@@ -195,7 +195,7 @@ EOF
    <td$opt->{data_cell_extra}\{COLSPAN} nowrap>
    	{WIDGET}
    </td>
-   <td>{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   <td>{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
    </td>
 EOF
 		chomp $thing;
@@ -208,7 +208,7 @@ EOF
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
    </td>
 EOF
 		chomp $thing;
@@ -218,17 +218,17 @@ EOF
 		my $opt = shift;
 		my $thing = <<EOF;
 {HELP?}
-	<td colspan=2$opt->{help_cell_extra}>
+	<td colspan="2"$opt->{help_cell_extra}>
 		{HELP}
 	</td>
 </tr>
 <tr>
-{/HELP?}	<td colspan=2$opt->{label_cell_extra}>
+{/HELP?}	<td colspan="2"$opt->{label_cell_extra}>
 		{LABEL}
 	</td>
 </tr>
 <tr>
-	<td colspan=2$opt->{widget_cell_extra}>
+	<td colspan="2"$opt->{widget_cell_extra}>
 		{WIDGET}
 	</td>
 EOF
@@ -240,20 +240,20 @@ EOF
 		my $span = shift;
 		$opt->{break_template} ||= <<EOF;
 $opt->{spacer_row}
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+<tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
+     <table cellspacing="0" cellmargin="0" width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
-         <td align=right>{META_STRING}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<br><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}</td>
+         <td align="right">{META_STRING}</td>
        </tr>
      </table>
    </td>
@@ -266,20 +266,20 @@ EOF
 		my $span = shift;
 		$opt->{break_template} ||= <<EOF;
 $opt->{spacer_row}
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+<tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
-     <table cellspacing=0 cellmargin=0 width="100%">
+     <table cellspacing="0" cellmargin="0" width="100%">
        <tr> 
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
-         <td align=right>{META_STRING}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}{HELP}{/HELP?}{HELP:}&nbsp;{/HELP:}{HELP_URL?}<br><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}</td>
+         <td align="right">{META_STRING}</td>
        </tr>
      </table>
    </td>
@@ -297,7 +297,7 @@ EOF
 				{WIDGET}
 				{HELP_EITHER?}<br$Trailer>{/HELP_EITHER?}
 				{HELP}{HELP_URL?}<br$Trailer><a href="{HELP_URL}">$opt->{help_anchor}</a>{/HELP_URL?}
-				{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+				{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
 			</td>
 		</tr>
 	</table>
@@ -319,8 +319,8 @@ EOF
 			<td style="padding-left: 3px">
 				{WIDGET}
 			</td>
-			<td align=right>
-				{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}"><img src="$opt->{help_icon}" border=0></a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+			<td align="right">
+				{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}"><img src="$opt->{help_icon}" border="0"></a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
 			</td>
 		</tr>
 	</table>
@@ -967,7 +967,7 @@ sub display {
 
 		$w = Vend::Form::display($record);
 		if($record->{filter}) {
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="};
+			$w .= qq{<input type="hidden" name="ui_filter:$record->{name}" value="};
 			$w .= $record->{filter};
 			$w .= '">';
 		}
@@ -987,7 +987,7 @@ sub display {
 			$count++;
 			$count = 20 if $count > 20;
 			$w = <<EOF;
-	<TEXTAREA NAME="$iname" COLS=60 ROWS=$count>$text</TEXTAREA>
+	<textarea name="$iname" cols="60" rows="$count">$text</textarea>
 EOF
 		}
 		elsif ($text =~ /^\d+$/) {
@@ -998,7 +998,7 @@ EOF
 			$size = 60;
 		}
 			$w = <<EOF;
-	<INPUT NAME="$iname" SIZE=$size VALUE="$text">
+	<input name="$iname" size="$size" value="$text">
 EOF
 	}
 
@@ -1019,7 +1019,7 @@ EOF
 	<b>\$LABEL\$</b>
 </td>
 <td valign="top">
-	<table cellspacing="0" cellmargin="0"><tr><td>\$WIDGET\$</td><td>\$HELP\${HELP_URL}<br$Vend::Xtrailer><a href="\$HELP_URL\$">help</A>{/HELP_URL}</td></tr></table>
+	<table cellspacing="0" cellmargin="0"><tr><td>\$WIDGET\$</td><td>\$HELP\${HELP_URL}<br$Vend::Xtrailer><a href="\$HELP_URL\$">help</a>{/HELP_URL}</td></tr></table>
 </td>
 </tr>
 EOF
@@ -1138,7 +1138,7 @@ EOF
 	my $cArray = qq{var ${vpf}colors = ['} . join("','", @colors) . qq{'];};
 #::logDebug("num rows=$num_rows");
 	my $out = <<EOF;
-<SCRIPT language="JavaScript">
+<script language="JavaScript">
 <!--
 var ${vpf}panelID = "$id"
 var ${vpf}numDiv = $num_panels;
@@ -1263,8 +1263,8 @@ function ${vpf}selectTab(n) {
 }
 
 //-->
-</SCRIPT>
-<STYLE type="text/css">
+</script>
+<style type="text/css">
 <!--
 .${id}tab {
 	font-weight: bold;
@@ -1285,7 +1285,7 @@ function ${vpf}selectTab(n) {
 	$opt->{panel_style}
 	}
 -->
-</STYLE>
+</style>
 EOF
 	my $s1 = '';
 	my $s2 = '';
@@ -1309,7 +1309,7 @@ EOF
 					- ($opt->{tab_height} - $opt->{tab_vert_offset});
 		my $cliprect = $opt->{tab_height} * (int($i / $tabs_per_row) + 1);
 		$s1 .= <<EOF;
-<DIV id="${id}panel$i"
+<div id="${id}panel$i"
 		class="${id}panel"
 		style="
 			background-color: $colors[$i]; 
@@ -1318,25 +1318,25 @@ EOF
 $opt->{panel_prepend}
 $cont->[$i]
 $opt->{panel_append}
-</DIV>
+</div>
 EOF
 		if($opt->{ui_style}) {
 			$s2 .= <<EOF;
-<td class=subtabdown id="${vpf}td$i"> 
+<td class="subtabdown" id="${vpf}td$i"> 
 EOF
 
 			$dntabs[$i] = <<EOF;
-	<table width="100%" border=0 cellspacing=0 cellpadding=0>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
-		 <td class=subtabdownleft><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
-		 <td nowrap class=subtabdownfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
-		 <td class=subtabdownright><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
+		 <td class="subtabdownleft"><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width="16" height="16" border="0"></a></td>
+		 <td nowrap class="subtabdownfill"><a href="javascript:${vpf}tripTab($i,1)" class="subtablink">$tit->[$i]</a></td>
+		 <td class="subtabdownright"><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width="16" height="16" border="0"></a></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=darkshade><img src="$clear" height=1></td>
+		 <td colspan="3" class="darkshade"><img src="$clear" height="1"></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=lightshade><img src="$clear" height=1></td>
+		 <td colspan="3" class="lightshade"><img src="$clear" height="1"></td>
 	  </tr>
    </table>
 EOF
@@ -1344,14 +1344,14 @@ EOF
 			$s2 .= $dntabs[$i];
 
 			$uptabs[$i] = <<EOF;
-	<table width="100%" border=0 cellspacing=0 cellpadding=0>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
-		 <td class=subtableft><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
-		 <td nowrap class=subtabfill><a href="javascript:${vpf}tripTab($i,1)" class=subtablink>$tit->[$i]</a></td>
-		 <td class=subtabright><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width=16 height=16 border=0></a></td>
+		 <td class="subtableft"><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width="16" height="16" border="0"></a></td>
+		 <td nowrap class="subtabfill"><a href="javascript:${vpf}tripTab($i,1)" class="subtablink">$tit->[$i]</a></td>
+		 <td class="subtabright"><a href="javascript:${vpf}tripTab($i,1)"><img src="$clear" width="16" height="16" border="0"></a></td>
 	  </tr>
 	  <tr> 
-		 <td colspan=3 class=subtabfilllwr><img src="$clear" height=1></td>
+		 <td colspan="3" class="subtabfilllwr"><img src="$clear" height="1"></td>
 	  </tr>
 	</table>
 EOF
@@ -1360,7 +1360,7 @@ EOF
 		}
 		else {
 			$s1 .= <<EOF;
-<DIV
+<div
 	onclick="${vpf}selectTab($i)"
 	id="${id}tab$i"
 	class="${id}tab"
@@ -1374,7 +1374,7 @@ EOF
 		clip:rect(0 auto $cliprect 0);
 		">
 $tit->[$i]
-</DIV>
+</div>
 EOF
 		}
 	}
@@ -1658,7 +1658,7 @@ sub produce_hidden {
 	}
 	for(@p) {
 		s/"/&quot;/g;
-		push @o, qq{<input type=hidden name="$key" value="$_">\n};
+		push @o, qq{<input type="hidden" name="$key" value="$_">\n};
 	}
 	return join "", @o;
 }
@@ -2155,7 +2155,7 @@ sub resolve_options {
 	# Make standard fixed rows
 	$opt->{spacer_row} = <<EOF;
 <tr$opt->{spacer_row_extra}>
-<td colspan=$span $opt->{spacer_row_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
+<td colspan="$span" $opt->{spacer_row_extra}><img src="$opt->{clear_image}" width="1" height="$opt->{spacer_height}" alt="x"></td>
 </tr>
 EOF
 
@@ -2166,13 +2166,13 @@ EOF
 		if $opt->{form_extra};
 	$opt->{form_extra} ||= '';
 
-	$opt->{form_extra} .= qq{ NAME="$opt->{form_name}"}
+	$opt->{form_extra} .= qq{ name="$opt->{form_name}"}
 		if $opt->{form_name};
 
-	$opt->{form_extra} .= qq{ TARGET="$opt->{form_target}"}
+	$opt->{form_extra} .= qq{ target="$opt->{form_target}"}
 		if $opt->{form_target};
 
-	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
+	$opt->{enctype} = $opt->{file_upload} ? ' enctype="multipart/form-data"' : '';
 
 }
 # UserTag table-editor Order mv_data_table item_id
@@ -2512,7 +2512,7 @@ EOP
 EOF
 		$opt->{blabel} = '<span style="font-weight: normal">';
 		$opt->{elabel} = '</span>';
-		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<B>Bold</B> fields are required');
+		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<b>Bold</b> fields are required');
 		$have_errors = $Tag->error( {
 									all => 1,
 									show_var => $error_show_var,
@@ -2725,7 +2725,7 @@ EOF
 												mv_blob_nick=$key$extra
 											",
 										});
-					$url_data{$key} .= "$key - $lab</A><br$Trailer>";
+					$url_data{$key} .= "$key - $lab</a><br$Trailer>";
 				}
 				else {
 					$wid_data{$key} = $key;
@@ -2737,7 +2737,7 @@ EOF
 												mv_blob_nick=$key$extra
 											",
 										});
-					$url_data{$key} .= "$key</A>";
+					$url_data{$key} .= "$key</a>";
 				}
 			}
 #::logDebug("wid_data is " . ::uneval_it(\%wid_data));
@@ -2763,12 +2763,12 @@ EOF
 			}
 			$lfrom_msg = errmsg("loaded from %s", $lfrom_msg);
 			$loaded_from = <<EOF;
-<I>($lfrom_msg)</I><BR>
+<i>($lfrom_msg)</i><br>
 EOF
 			if(@labels) {
-				$loaded_from .= errmsg("Load from") . ":<BLOCKQUOTE>";
+				$loaded_from .= errmsg("Load from") . ":<blockquote>";
 				$loaded_from .=  join (" ", @url_data{ sort keys %url_data });
-				$loaded_from .= "</BLOCKQUOTE>";
+				$loaded_from .= "</blockquote>";
 			}
 
 			my $checked;
@@ -2792,24 +2792,24 @@ EOF
 					$$_ =~ s/ /&nbsp;/g;
 				}
 				$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
-<B>$msg1:</B> $blob_widget&nbsp;
-<INPUT TYPE=checkbox NAME=mv_blob_only class="$opt->{widget_class}" VALUE=1$checked>&nbsp;$msg2</SMALL>
+<b>$msg1:</b> $blob_widget&nbsp;
+<input type="checkbox" name="mv_blob_only" class="$opt->{widget_class}" value="1"$checked>&nbsp;$msg2</small>
 EOF
 			}
 
 			$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
-<TR$opt->{data_row_extra}>
+<tr$opt->{data_row_extra}>
 	 <td width="$opt->{left_width}"$opt->{label_cell_extra}>
-	   <SMALL>$opt->{mv_blob_title}<BR>
+	   <small>$opt->{mv_blob_title}<br>
 		$loaded_from
 	 </td>
 	 <td$opt->{data_cell_extra}>
 	 	$blob_widget&nbsp;
 	 </td>
-</TR>
+</tr>
 
 <tr>
-<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan="$span"$opt->{border_cell_extra}><img src="$opt->{clear_image}" width="1" height="$opt->{border_height}" alt="x"></td>
 </tr>
 EOF
 
@@ -2870,7 +2870,7 @@ EOF
 	chunk ttag(), $restrict_begin;
 
 	chunk 'FORM_BEGIN', 'OUTPUT_MAP', <<EOF;
-<form method="$opt->{method}" ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
+<form method="$opt->{method}" action="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
 EOF
 
 	my $prescript_marker = $#out;
@@ -2888,8 +2888,8 @@ EOF
 	}
 
 	chunk 'HIDDEN_ALWAYS', 'OUTPUT_MAP', <<EOF;
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
-<INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
+<input type="hidden" name="mv_session_id" value="$Vend::Session->{id}">
+<input type="hidden" name="mv_click" value="process_filter">
 EOF
 
 	my @opt_set = (qw/
@@ -2959,15 +2959,15 @@ EOF
 		$opt->{inner_table_height} ||= ($opt->{panel_height} || 600);
 	}
 	chunk ttag(), <<EOF; # unless $wo;
-<table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}" height="$opt->{table_height}">
+<table class="touter" border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}" height="$opt->{table_height}">
 <tr>
-  <td valign=top>
+  <td valign="top">
 
-<table class=tinner width="$opt->{inner_table_width}" height="$opt->{inner_table_height}" cellspacing=0 cellmargin=0 cellpadding="2" align="center" border="0">
+<table class="tinner" width="$opt->{inner_table_width}" height="$opt->{inner_table_height}" cellspacing="0" cellmargin="0" cellpadding="2" align="center" border="0">
 EOF
 	chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF; # unless $opt->{no_top} or $wo;
 <tr> 
-<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan="$span"$opt->{border_cell_extra}><img src="$opt->{clear_image}" width="1" height="$opt->{border_height}" alt="x"></td>
 </tr>
 EOF
 
@@ -2975,10 +2975,10 @@ EOF
 #::logDebug("intro_text=$opt->{intro_text}");
 		chunk ttag(), <<EOF;
 <tr $opt->{spacer_row_extra}> 
-	<td colspan=$span $opt->{spacer_cell_extra}>$opt->{intro_text}</td>
+	<td colspan="$span" $opt->{spacer_cell_extra}>$opt->{intro_text}</td>
 </tr>
 <tr $opt->{title_row_extra}> 
-	<td colspan=$span $opt->{title_cell_extra}>$::Scratch->{page_title}</td>
+	<td colspan="$span" $opt->{title_cell_extra}>$::Scratch->{page_title}</td>
 </tr>
 EOF
 	}
@@ -2998,11 +2998,11 @@ EOF
 		  chunk ttag(), 'OUTPUT_MAP', <<EOF; # unless $wo;
 <tr$opt->{data_row_extra}>
 <td$opt->{label_cell_extra}>&nbsp;</td>
-<td align=left colspan=$oddspan$opt->{data_cell_extra}>
+<td align="left" colspan="$oddspan"$opt->{data_cell_extra}>
 EOF
 			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS OUTPUT_MAP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
-<BR>
+<input type="submit" name="mv_click" value="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<b><input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{next_button_extra}></b>
+<br>
 EOF
 			chunk 'MLABEL', 'OUTPUT_MAP', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
@@ -3013,13 +3013,13 @@ EOF
 		}
 		elsif ($opt->{wizard}) {
 			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
-<TR$opt->{data_row_extra}>
+<tr$opt->{data_row_extra}>
 <td$opt->{label_cell_extra}>&nbsp;</td>
-<td align=left colspan=$oddspan$opt->{data_cell_extra}>
+<td align="left" colspan="$oddspan"$opt->{data_cell_extra}>
 EOF
 			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF; 
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
-<BR>
+<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<b><input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{next_button_extra}></b>
+<br>
 EOF
 			chunk 'MLABEL', 'NO_TOP OUTPUT_MAP', 'MESSAGES', $mlabel;
 			chunk ttag(), 'NO_TOP OUTPUT_MAP', <<EOF;
@@ -3030,23 +3030,23 @@ EOF
 		}
 		else {
 		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
-<TR$opt->{data_row_extra}>
+<tr$opt->{data_row_extra}>
 <td$opt->{label_cell_extra}>&nbsp;</td>
-<td align=left colspan=$oddspan$opt->{data_cell_extra}>
+<td align="left" colspan="$oddspan"$opt->{data_cell_extra}>
 EOF
 
 		  chunk 'OK_TOP', 'NO_TOP OUTPUT_MAP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{ok_button_extra}>
+<input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{ok_button_extra}>
 EOF
 		  chunk 'CANCEL_TOP', 'NOCANCEL BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>
+<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>
 EOF
 
 		  if($opt->{show_reset}) {
 			  chunk 'RESET_TOP', 'BOTTOM_BUTTONS NO_TOP OUTPUT_MAP', <<EOF;
 &nbsp;
-<INPUT TYPE=reset$opt->{reset_button_extra}>
+<input type="reset"$opt->{reset_button_extra}>
 EOF
 		  }
 
@@ -3148,14 +3148,14 @@ EOF
 			next unless $db->record_exists($opt->{ui_clone_id});
 			my $checked = $tab_checked{$_} ? ' CHECKED' : '';
 			$tabform .= <<EOF;
-<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"$checked> clone to <b>$_</B><BR>
+<input type="checkbox" name="ui_clone_tables" value="$_"$checked> clone to <b>$_</b><br>
 EOF
 		}
 		for(@sets) {
 			my ($t, $col) = split /:/, $_;
 			my $checked = $tab_checked{$_} ? ' CHECKED' : '';
 			$tabform .= <<EOF;
-<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"$checked> clone entries of <b>$t</B> matching on <B>$col</B><BR>
+<input type="checkbox" name="ui_clone_tables" value="$_"$checked> clone entries of <b>$t</b> matching on <b>$col</b><br>
 EOF
 		}
 
@@ -3164,11 +3164,11 @@ EOF
 		$::Scratch->{clone_tables} = $set;
 		chunk ttag(), <<EOF; # unless $wo;
 <tr>
-<td colspan=$span$opt->{border_cell_extra}>
+<td colspan="$span"$opt->{border_cell_extra}>
 EOF
 		chunk 'CLONE_TABLES', <<EOF;
-$tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
-<INPUT TYPE=hidden NAME=ui_clone_id VALUE="$opt->{ui_clone_id}">
+$tabform<input type="hidden" name="mv_check" value="clone_tables">
+<input type="hidden" name="ui_clone_id" value="$opt->{ui_clone_id}">
 EOF
 		chunk ttag(), <<EOF; # unless $wo;
 </td>
@@ -3199,7 +3199,7 @@ EOF
 		}
 	}
 	if(!$db and ! $opt->{notable}) {
-		return "<TR><TD>Broken table '$table'</TD></TR>";
+		return "<tr><td>Broken table '$table'</td></tr>";
 	}
 
 	my $passed_fields = $opt->{ui_data_fields};
@@ -3297,7 +3297,7 @@ EOF
 
 	if($show_meta) {
 		if(! $opt->{row_template} and ! $opt->{simple_row}) {
-			$opt->{meta_prepend} = "<br$Trailer><font size=1>"
+			$opt->{meta_prepend} = qq{<br$Trailer><font size="1">}
 				unless defined $opt->{meta_prepend};
 
 			$opt->{meta_append} = '</font>'
@@ -3311,7 +3311,7 @@ EOF
 		$opt->{meta_title_specific} ||= errmsg('Item-specific meta edit, table %s, column %s, key %s');
 		$opt->{meta_image_specific} ||= errmsg('specmeta.png');
 		$opt->{meta_image} ||= errmsg('meta.png');
-		$opt->{meta_image_extra} ||= 'border=0';
+		$opt->{meta_image_extra} ||= 'border="0"';
 		$opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
 		$opt->{meta_anchor} ||= errmsg('meta');
 		$opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
@@ -3356,7 +3356,7 @@ EOF
 EOF
 
 	$opt->{break_template} ||= <<EOF;
-<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
+<tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
 EOF
 
 	my %serialize;
@@ -3470,8 +3470,8 @@ EOF
 			my $an_piece = '';
 			if($lra) {
 				$an_piece = <<EOF;
-<input type=hidden name="mv_data_auto_number__$tcount" value="$lra">
-<input type=hidden name="mv_data_function__$tcount" value="insert">
+<input type="hidden" name="mv_data_auto_number__$tcount" value="$lra">
+<input type="hidden" name="mv_data_function__$tcount" value="insert">
 EOF
 			}
 
@@ -3489,13 +3489,13 @@ EOF
 			my $lextra = $opt->{link_extra} || '';
 			$lextra = " $lextra" if $lextra;
 
-			my @lout = q{<table cellspacing=0 cellpadding=1>};
+			my @lout = q{<table cellspacing="0" cellpadding="1">};
 			push @lout, qq{<tr><td$lextra>
-<input type=hidden name="mv_data_table__$tcount" value="$lt">
-<input type=hidden name="mv_data_fields__$tcount" value="$df">
-<input type=hidden name="mv_data_multiple__$tcount" value="1">
-<input type=hidden name="mv_data_key__$tcount" value="$l_pkey">
-<input type=hidden name="mv_data_multiple_qual__$tcount" value="$lrq">
+<input type="hidden" name="mv_data_table__$tcount" value="$lt">
+<input type="hidden" name="mv_data_fields__$tcount" value="$df">
+<input type="hidden" name="mv_data_multiple__$tcount" value="1">
+<input type="hidden" name="mv_data_key__$tcount" value="$l_pkey">
+<input type="hidden" name="mv_data_multiple_qual__$tcount" value="$lrq">
 $an_piece
 $l_pkey</td>};
 			push @lout, $Tag->row_edit({ table => $lt, columns => "$lk $lf" });
@@ -3511,12 +3511,12 @@ $l_pkey</td>};
 			for(@$ary) {
 				my $rk = $_->[0];
 				my $pp = $rcount ? "${rcount}_" : '';
-				my $hid = qq{<input type=hidden name="$pp${l_pkey}__$tcount" value="};
+				my $hid = qq{<input type="hidden" name="$pp${l_pkey}__$tcount" value="};
 				$hid .= HTML::Entities::encode($rk);
 				$hid .= qq{">};
 				push @lout, qq{<tr><td$lextra>$rk$hid</td>};
 				if($lba) {
-					my $hid = qq{<input type=hidden name="$pp${lk}__$tcount" value="};
+					my $hid = qq{<input type="hidden" name="$pp${lk}__$tcount" value="};
 					$hid .= HTML::Entities::encode($k);
 					$hid .= qq{">};
 					push @lout, qq{<td$lextra>$k$hid</td>};
@@ -3536,7 +3536,7 @@ $l_pkey</td>};
 
 			if($lba and $lrq eq $lk || $lrq eq $l_pkey) {
 				my $colcount = scalar(@cf) + 1;
-				push @lout, "<td colspan=$colcount>Link row qualifier must be different than link_key and primary code when in auto mode.</td>";
+				push @lout, "<td colspan="$colcount">Link row qualifier must be different than link_key and primary code when in auto mode.</td>";
 				$lnb = 1;
 			}
 
@@ -3554,11 +3554,11 @@ $l_pkey</td>};
 					);
 					my $ktype = $lba ? 'hidden' : 'text';
 					push @lout, qq{<tr><td$lextra>};
-					push @lout, qq{<input size=8 type=$ktype name="${start_ptr}_${l_pkey}__$tcount" value="">};
+					push @lout, qq{<input size="8" type="$ktype" name="${start_ptr}_${l_pkey}__$tcount" value="">};
 					push @lout, '(auto)' if $lba;
 					push @lout, '</td>';
 					if($lba) {
-						my $hid = qq{<input type=hidden name="${start_ptr}_${lk}__$tcount" value="};
+						my $hid = qq{<input type="hidden" name="${start_ptr}_${lk}__$tcount" value="};
 						$hid .= HTML::Entities::encode($k);
 						$hid .= qq{">};
 						push @lout, qq{<td$lextra>$k$hid</td>};
@@ -3638,8 +3638,8 @@ $l_pkey</td>};
         my $pw = $opt->{panel_width} || '800';
         my $th = $opt->{tab_height} || '30';
         my $oh = $ph + $th;
-        my $extra = " width=$pw height=$oh valign=top";
-        chunk ttag(), qq{<tr><td colspan=$span$extra>\n};
+        my $extra = qq{ width="$pw" height="$oh" valign="top"};
+        chunk ttag(), qq{<tr><td colspan="$span"$extra>\n};
     }
 
 #::logDebug("include_before: " . uneval($opt->{include_before}));
@@ -3710,7 +3710,7 @@ $l_pkey</td>};
 			if($opt->{ui_hide_key}) {
 				my $kval = $key || $override->{$col} || $default->{$col};
 				push @extra_hidden,
-					qq{<INPUT TYPE=hidden NAME="$col" VALUE="$kval">};
+					qq{<input type="hidden" name="$col" value="$kval">};
 				if($break{$col}) {
 					$titles[$ctl_index] = $break_label{$col};
 				}
@@ -3849,14 +3849,14 @@ $l_pkey</td>};
 				$parm->{keep} = 1;
 				if(! $::Pragma->{compatible_5_2}) {
 					$parm->{text} = $opt->{error_template} || <<EOF;
-<FONT COLOR="$opt->{color_fail}">\$LABEL\$ (%s)</FONT>
-[else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
+<font color="$opt->{color_fail}">\$LABEL\$ (%s)</font>
+[else]{REQUIRED <b>}{LABEL}{REQUIRED </b>}[/else]
 EOF
 				}
 				else {
 					$parm->{text} = $opt->{error_template} || <<EOF;
-<FONT COLOR="$opt->{color_fail}">\$LABEL\$</FONT><!--%s-->
-[else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
+<font color="$opt->{color_fail}">\$LABEL\$</font><!--%s-->
+[else]{REQUIRED <b>}{LABEL}{REQUIRED </b>}[/else]
 EOF
 				}
 			}
@@ -3906,28 +3906,28 @@ EOF
 												}
 										});
 				$meta_specific = <<EOF;
-<br$Trailer><a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor_specific}</A>
+<br$Trailer><a href="$meta_url_specific"$opt->{meta_extra} tabindex="9999">$opt->{meta_anchor_specific}</a>
 EOF
 			}
 								
-			$opt->{meta_append} = '</FONT>'
+			$opt->{meta_append} = '</font>'
 				unless defined $opt->{meta_append};
 			if($opt->{image_meta}) {
 #::logDebug("meta-title=$opt->{meta_title}");
 				my $title = errmsg($opt->{meta_title}, $t, $c);
 				$meta_string = <<EOF;
-<a href="$meta_url"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></a>
+<a href="$meta_url"$opt->{meta_extra} tabindex="9999"><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></a>
 EOF
 				if($meta_specific) {
 					$title = errmsg($opt->{meta_title_specific}, $t, $c, $key);
 					$meta_string .= <<EOF;
-<a href="$meta_url_specific"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image_specific}" title="$title" $opt->{meta_image_extra}></A>
+<a href="$meta_url_specific"$opt->{meta_extra} tabindex="9999"><img src="$opt->{meta_image_specific}" title="$title" $opt->{meta_image_extra}></a>
 EOF
 				}
 			}
 			else {
 				$meta_string = <<EOF;
-$opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra} tabindex=9999>$opt->{meta_anchor}</A>
+$opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra} tabindex="9999">$opt->{meta_anchor}</a>
 $meta_specific$opt->{meta_append}
 EOF
 			}
@@ -3994,7 +3994,7 @@ EOF
 		$display->{TKEY}   = $tkey_message;
 		$display->{BLABEL} = $blabel;
 		$display->{ELABEL} = $elabel;
-		$display->{COLSPAN} = " colspan=$colspan->{$namecol}" 
+		$display->{COLSPAN} = qq{ colspan="$colspan->{$namecol}"}
 			if $colspan->{$namecol};
 		$display->{ERROR}  = $err_string;
 
@@ -4054,7 +4054,7 @@ EOF
 	}
 
 	while($rowcount % $rowdiv) {
-		chunk ttag(), '<td colspan=$cells_per_span>&nbsp;</td>'; # unless $wo;
+		chunk ttag(), '<td colspan="$cells_per_span">&nbsp;</td>'; # unless $wo;
 		$rowcount++;
 	}
 
@@ -4077,12 +4077,12 @@ EOF
 			if is_hash($serial_data{$_});
 		$serial_data{$_} =~ s/\&/&amp;/g;
 		$serial_data{$_} =~ s/"/&quot;/g;
-		push @o, qq{<INPUT TYPE=hidden NAME="$_" VALUE="$serial_data{$_}">}; # unless $wo;
+		push @o, qq{<input type="hidden" name="$_" value="$serial_data{$_}">}; # unless $wo;
 		push @serial_fields, @{$serialize{$_}};
 	}
 
 	if(! $wo and @serial_fields) {
-		push @o, qq{<INPUT TYPE=hidden NAME="ui_serial_fields" VALUE="};
+		push @o, qq{<input type="hidden" name="ui_serial_fields" value="};
 		push @o, join " ", @serial_fields;
 		push @o, qq{">};
 		chunk 'HIDDEN_SERIAL', 'OUTPUT_MAP', join("", @o);
@@ -4115,39 +4115,39 @@ EOF
 	my ($beghid, $endhid) = split m{</td>}i, $opt->{spacer_row}, 2;
 	$endhid = "</td>$endhid" if $endhid;
 	chunk ttag(), 'OUTPUT_MAP', $beghid;
-	chunk 'HIDDEN_EXTRA', 'OUTPUT_MAP', qq{<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden};
+	chunk 'HIDDEN_EXTRA', 'OUTPUT_MAP', qq{<input type="hidden" name="mv_data_fields" value="$passed_fields">@extra_hidden};
 	chunk ttag(), 'OUTPUT_MAP', $endhid;
 
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $wo || $opt->{nosave}; 
 #::logDebug("in SAVEWIDGETS");
 		chunk ttag(), 'OUTPUT_MAP', <<EOF;
-<TR$opt->{data_row_extra}>
+<tr$opt->{data_row_extra}>
 <td$opt->{label_cell_extra}>&nbsp;</td>
-<td align=left colspan=$oddspan$opt->{data_cell_extra}>
+<td align="left" colspan="$oddspan"$opt->{data_cell_extra}>
 EOF
 
 	  	if($opt->{back_text}) {
 
 			chunk 'COMBINED_BUTTONS_BOTTOM', 'OUTPUT_MAP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
+<input type="submit" name="mv_click" value="$opt->{back_text}"$opt->{back_button_extra}>&nbsp;<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<b><input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{next_button_extra}></b>
 EOF
 		}
 		elsif($opt->{wizard}) {
 			chunk 'WIZARD_BUTTONS_BOTTOM', 'OUTPUT_MAP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{next_button_extra}></B>
+<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>&nbsp;<b><input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{next_button_extra}></b>
 EOF
 		}
 		else {
 			chunk 'OK_BOTTOM', 'OUTPUT_MAP', <<EOF;
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"$opt->{ok_button_extra}>
+<input type="submit" name="mv_click" value="$opt->{next_text}"$opt->{ok_button_extra}>
 EOF
 
 			chunk 'CANCEL_BOTTOM', 'NOCANCEL OUTPUT_MAP', <<EOF;
-&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}"$opt->{cancel_button_extra}>
+&nbsp;<input type="submit" name="mv_click" value="$opt->{cancel_text}"$opt->{cancel_button_extra}>
 EOF
 
-			chunk 'RESET_BOTTOM', 'OUTPUT_MAP', qq{&nbsp;<INPUT TYPE=reset$opt->{reset_button_extra}>}
+			chunk 'RESET_BOTTOM', 'OUTPUT_MAP', qq{&nbsp;<input type="reset"$opt->{reset_button_extra}>}
 				if $opt->{show_reset};
 		}
 
@@ -4181,7 +4181,7 @@ EOF
 		}
 		else {
 			chunk 'DELETE_BUTTON', 'NOSAVE OUTPUT_MAP', <<EOF; # if ! $opt->{nosave};
-<BR><BR><A onClick="return confirm('$delmsg')" HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> $delstr
+<br><br><a onClick="return confirm('$delmsg')" href="$url"><img src="delete.gif" alt="Delete $key" border="0"></a> $delstr
 EOF
 		}
 
@@ -4197,7 +4197,7 @@ EOF
 <small>
 &nbsp;
 &nbsp;
-	<INPUT TYPE=checkbox class="$opt->{widget_class}" title="$msg" NAME=mv_auto_export VALUE="$table"$checked><span class="$opt->{widget_class}" title="$msg">&nbsp;$autoexpstr</span>
+	<input type="checkbox" class="$opt->{widget_class}" title="$msg" name="mv_auto_export" value="$table"$checked><span class="$opt->{widget_class}" title="$msg">&nbsp;$autoexpstr</span>
 EOF
 
 	}
@@ -4229,18 +4229,18 @@ EOF
 	my $message = '';
 
 	if(@errors) {
-		$message .= '<P>Errors:';
-		$message .= qq{<FONT COLOR="$opt->{color_fail}">};
-		$message .= '<BLOCKQUOTE>';
-		$message .= join "<BR>", @errors;
-		$message .= '</BLOCKQUOTE></FONT>';
+		$message .= '<p>Errors:';
+		$message .= qq{<font color="$opt->{color_fail}">};
+		$message .= '<blockquote>';
+		$message .= join "<br>", @errors;
+		$message .= '</blockquote></font>';
 	}
 	if(@messages) {
-		$message .= '<P>Messages:';
-		$message .= qq{<FONT COLOR="$opt->{color_success}">};
-		$message .= '<BLOCKQUOTE>';
-		$message .= join "<BR>", @messages;
-		$message .= '</BLOCKQUOTE></FONT>';
+		$message .= '<p>Messages:';
+		$message .= qq{<font color="$opt->{color_success}">};
+		$message .= '<blockquote>';
+		$message .= join "<br>", @messages;
+		$message .= '</blockquote></font>';
 	}
 	$Tag->error( { all => 1 } );
 
@@ -4259,7 +4259,7 @@ EOF
 #::logDebug("tcount=$tcount_all, prior to closing table");
 	chunk ttag(), <<EOF; # unless $wo;
 <tr> 
-<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan="$span"$opt->{border_cell_extra}><img src="$opt->{clear_image}" width="1" height="$opt->{border_height}" alt="x"></td>
 </tr>
 </table>
 </td></tr></table>
@@ -4464,7 +4464,7 @@ $tstart
 			for(@controls) {
 				push @tabcont, create_rows($opt, $_);
 			}
-			$opt->{panel_table_extra} ||= 'width="100%" cellpadding=3 cellspacing=1';
+			$opt->{panel_table_extra} ||= 'width="100%" cellpadding="3" cellspacing="1"';
 			$opt->{panel_table_extra} =~ s/^/ /;
 			$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 			$opt->{panel_append} ||= '</table>';
@@ -4497,7 +4497,7 @@ $tstart
 		for(@controls) {
 			push @tabcont, create_rows($opt, $_);
 		}
-		$opt->{panel_table_extra} ||= 'width="100%" cellpadding=3 cellspacing=1';
+		$opt->{panel_table_extra} ||= 'width="100%" cellpadding="3" cellspacing="1"';
 		$opt->{panel_table_extra} =~ s/^/ /;
 		$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 		$opt->{panel_append} ||= '</table>';
@@ -4582,7 +4582,7 @@ sub create_rows {
 	if($rowcount % $rowdiv) {
 		my $w = '';
 		while($rowcount % $rowdiv) {
-			$w .= '<TD colspan=$cells_per_span>&nbsp;</td>';
+			$w .= '<td colspan="$cells_per_span">&nbsp;</td>';
 			$rowcount++;
 		}
 		$w .= "</tr>";

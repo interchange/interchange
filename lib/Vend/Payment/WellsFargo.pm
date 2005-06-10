@@ -1,6 +1,6 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.7 2004-06-07 20:59:18 mheins Exp $
+# $Id: WellsFargo.pm,v 1.8 2005-06-10 10:54:33 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -515,7 +515,7 @@ sub wellsfargo {
 	
 	my %result;
 
-	my $sep = '<BR>';
+	my $sep = '<br>';
 
 	if ($sale) {
 		$page =~ s/\r*<html>.*$//is;
@@ -584,7 +584,7 @@ sub wellsfargo {
 				$result{ioc_reject_description} || 
 				$response_map->{ $result{ioc_response_code} } ||
 				$timeout_error;
-		$msg .= '<p>Please contact customer service or try a different card.';
+		$msg .= '<p>Please contact customer service or try a different card.</p>';
 		$result{MErrMsg} = errmsg($msg);
 		return (%result);
 	}
@@ -626,7 +626,7 @@ sub wellsfargo {
 		$result{MStatus} = 'failure';
 		delete $result{'order-id'};
 
-		my $msg = "authorization passed but settlment failed (gateway returned code %s: %s)<p>Please contact customer service or try a different card.";
+		my $msg = "<p>Authorization passed but settlment failed (gateway returned code %s: %s).</p><p>Please contact customer service or try a different card.</p>";
 		$result{MErrMsg} = errmsg($msg, $sale_result{ioc_response_code},
 						$sale_result{ioc_response_desc} ||
 						$response_map->{ $sale_result{ioc_response_code} } ||
