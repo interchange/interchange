@@ -1,17 +1,21 @@
 # Copyright (c) 2005 Cursor Software Limited (http://www.cursor.biz/)
 # Copyright (c) 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL. See file LICENSE for details.
-# $Id: roman.filter,v 1.1 2005-06-27 19:46:51 kwalsh Exp $
+# $Id: roman.filter,v 1.2 2005-06-28 18:59:03 kwalsh Exp $
 
 CodeDef roman Filter
 CodeDef roman Description Integer to Roman numerals
-CodeDef roman Routine <<EOR
+CodeDef roman Visibility  private
+CodeDef roman Routine     <<EOR
 sub {
     my $val = shift;
-    $val =~ s/\D+//g;
-    $val =~ m/(\d*?)(\d{1,3})$/;
 
-    my $buf = 'M' x $1;
+    $val =~ s/\D+//g;
+    return '' unless $val;
+
+    $val =~ m/(\d*?)(\d{1,3})$/ or return '';
+
+    my $buf = 'M' x ($1 || 0);
     my @digits = reverse(split('',$2));
 
     my @numerals = (
