@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.78 2005-06-10 10:56:51 docelic Exp $
+# $Id: Editor.pm,v 1.79 2005-06-28 07:10:57 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.78 $, 10);
+$VERSION = substr(q$Revision: 1.79 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3536,7 +3536,7 @@ $l_pkey</td>};
 
 			if($lba and $lrq eq $lk || $lrq eq $l_pkey) {
 				my $colcount = scalar(@cf) + 1;
-				push @lout, "<td colspan="$colcount">Link row qualifier must be different than link_key and primary code when in auto mode.</td>";
+				push @lout, qq{<td colspan="$colcount">Link row qualifier must be different than link_key and primary code when in auto mode.</td>};
 				$lnb = 1;
 			}
 
