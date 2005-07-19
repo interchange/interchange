@@ -960,6 +960,7 @@ dist/standard/templates/regions/LEFTRIGHT_BOTTOM
 dist/standard/templates/regions/LEFTRIGHT_TOP
 dist/standard/templates/regions/NOLEFT_BOTTOM
 dist/standard/templates/regions/NOLEFT_TOP
+dist/standard/upload/.empty
 dist/standard/variables/COMMON_MENU
 dist/standard/variables/COPYRIGHT
 dist/standard/variables/LINE_MENU
