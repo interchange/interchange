@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.36 2005-04-30 15:09:58 mheins Exp $
+# $Id: UserDB.pm,v 2.37 2005-07-19 14:30:26 jonc Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1090,7 +1090,7 @@ sub login {
 		my $foreign = $self->{OPTIONS}{indirect_login};
 
 		if($foreign) {
-			my $uname = ($self->{PASSED_USERNAME} ||= $self->{USERNAME});
+			my $uname = ($self->{PASSED_USERNAME} ||= $::Values->{$foreign});
 			my $ufield = $self->{LOCATION}{USERNAME};
 			$uname = $udb->quote($uname);
 			my $q = "select $ufield from $self->{DB_ID} where $foreign = $uname";
@@ -1532,7 +1532,6 @@ sub new_account {
 			$Vend::Session->{auto_created_user} = $self->{USERNAME};
 		}
 		else {
-			$self->{USERNAME} = $foreign if $foreign;
 			username_cookies($self->{USERNAME}, $pw) 
 				if $Vend::Cfg->{CookieLogin};
 
