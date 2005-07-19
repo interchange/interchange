@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.44 2005-06-09 18:43:58 docelic Exp $
+# $Id: Menu.pm,v 2.45 2005-07-19 12:37:40 jonc Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 use Vend::Util;
 use strict;
@@ -719,7 +719,7 @@ EOF
 		clearTimeout( ${vpf}timeoutCode );
 		${vpf}timeoutCode = -1;
 
-		var html = qq{<table cellpadding="0" cellspacing="0" border="0">};
+		var html = '<table cellpadding="0" cellspacing="0" border="0">';
 
 		var idx = -1;
 		var digid = obj.id;
