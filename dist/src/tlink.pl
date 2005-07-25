@@ -1,9 +1,11 @@
 #!/usr/bin/perl -wT
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
+#           via a TCP socket
 #
-# $Id: tlink.pl,v 2.2 2003-06-18 17:34:43 jon Exp $
+# $Id: tlink.pl,v 2.3 2005-07-25 14:03:44 jon Exp $
 #
+# Copyright (C) 2005 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -52,7 +54,7 @@ Content-type: text/html
 
 <HTML><HEAD><TITLE>Interchange server not running</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<H3>We're sorry, the Interchange server was not running...</H3>
+<H3>We're sorry, the Interchange server is unavailable...</H3>
 <P>
 We are out of service or may be experiencing high system demand.
 Please try again soon.
@@ -94,12 +96,11 @@ sub get_entity {
   $check = read(STDIN, $Entity, $len);
 
   die_page("Entity wrong length")
-      unless $check == $len;
+    unless $check == $len;
 
   $Entity;
 
 }
-
 
 
 sub send_arguments {
@@ -177,21 +178,6 @@ print SOCK send_environment();
 print SOCK send_entity();
 print SOCK "end\n";
 
-
-while(<SOCK>) {
-	print;
-}
-
-close (SOCK)								or die "close: $!\n";
-exit;
-
-
-
-get_entity();
-
-print SOCK send_arguments();
-print SOCK send_environment();
-print SOCK send_entity();
 
 while(<SOCK>) {
 	print;

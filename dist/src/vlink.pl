@@ -1,10 +1,11 @@
 #!/usr/bin/perl -wT
 
 # vlink.pl: runs as a cgi program and passes request to Interchange server
-#           via TCP UNIX-domain socket
+#           via a UNIX socket
 
-# $Id: vlink.pl,v 2.2 2003-06-18 17:34:43 jon Exp $
+# $Id: vlink.pl,v 2.3 2005-07-25 14:03:44 jon Exp $
 #
+# Copyright (C) 2005 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -30,6 +31,7 @@ my $LINK_FILE    = '~@~INSTALLARCHLIB~@~/etc/socket';
 my $LINK_TIMEOUT = 30;
 #my $LINK_TIMEOUT = ~_~LINK_TIMEOUT~_~;
 my $ERROR_ACTION = "-notify";
+
 $ENV{PATH} = "/bin:/usr/bin";
 $ENV{IFS} = " ";
 
@@ -86,10 +88,13 @@ sub get_entity {
 
   my $check;
 
+  # Can't hurt, helps Windows people
+  binmode(STDIN);
+
   $check = read(STDIN, $Entity, $len);
 
   die_page("Entity wrong length")
-	  unless $check == $len;
+    unless $check == $len;
 
   $Entity;
 
@@ -123,7 +128,6 @@ sub send_environment () {
 sub send_entity {
 	return '' unless defined $ENV{CONTENT_LENGTH};
 	my $len = $ENV{CONTENT_LENGTH};
-
 	return '' unless $len > 0;
 
 	my $val = "entity\n";
@@ -134,7 +138,7 @@ sub send_entity {
 $SIG{PIPE} = sub { die_page("signal"); };
 $SIG{ALRM} = sub { server_not_running(); exit 1; };
 
-alarm $LINK_TIMEOUT;
+eval { alarm $LINK_TIMEOUT; };
 
 socket(SOCK, PF_UNIX, SOCK_STREAM, 0)	or die "socket: $!\n";
 
@@ -144,8 +148,8 @@ do {
    $ok = connect(SOCK, sockaddr_un($LINK_FILE));
 } while ( ! defined $ok and $! =~ /interrupt|such file or dir/i);
 
-my $undef = ! defined $ok;
-die "ok=$ok def: $undef connect: $!\n" if ! $ok;
+my $def = defined $ok;
+die "ok=$ok def: $def connect: $!\n" if ! $ok;
 
 get_entity();
 

@@ -2,8 +2,9 @@
  * tlink.c: runs as a CGI program and passes request to Interchange
  *          server via TCP/IP
  *
- * $Id: tlink.c,v 2.3 2003-06-18 17:34:43 jon Exp $
+ * $Id: tlink.c,v 2.4 2005-07-25 14:03:44 jon Exp $
  *
+ * Copyright (C) 2005 Interchange Development Group, http://www.icdevgroup.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
  *
@@ -57,14 +58,13 @@ struct sockaddr_in ServAddr;
  */
 #define CGIOUT 1
 
-/* Define as x to enable verbose debugging output.
- */
-
 #ifdef HAVE_STRERROR
 #define ERRMSG strerror
 #else
 #define ERRMSG perror
 #endif
+
+
 
 /* Return this message to the browser when the server is not running.
  */
@@ -227,10 +227,10 @@ static void open_socket()
     close(sock);
     sleep(1);
   }
-
-  /* exits if socket open fails */
-  if (s < 0) server_not_running();
-
+  if (s < 0) {
+    server_not_running();
+    exit(1);
+  }
 }
 
 /* Close the socket connection.
