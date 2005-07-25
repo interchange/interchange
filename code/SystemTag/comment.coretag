@@ -1,0 +1,13 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: comment.coretag,v 1.1 2005-07-25 14:25:35 jon Exp $
+
+# This tag exists to strip out any [comment]...[/comment] blocks
+# that weren't caught by &Vend::Interpolate::vars_and_comments,
+# e.g. in reparsed output from [perl] blocks
+
+UserTag comment Version $Revision: 1.1 $
+UserTag comment hasEndTag
+UserTag comment Routine <<EOR
+sub { '' }
+EOR

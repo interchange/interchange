@@ -93,6 +93,7 @@ code/SystemTag/catch.coretag
 code/SystemTag/cgi.coretag
 code/SystemTag/charge.coretag
 code/SystemTag/checked.coretag
+code/SystemTag/comment.coretag
 code/SystemTag/control.coretag
 code/SystemTag/control_set.coretag
 code/SystemTag/counter.coretag
