@@ -10,7 +10,11 @@ BODY {
 /**********General classes*/
 
 /*Index page heading style*/
-h1 { color: #094989; font-size:12pt }
+h1 {
+	color: #094989;
+	font-size:12pt;
+	padding-top: 10px;
+}
 
 /*Body text*/
 p { font-size: 10pt }
@@ -55,8 +59,9 @@ td { font-size: 10pt }
 .titletab_small {
   	background-color: #094989;
   	color: white;
-  	font-weight: normal;
-  	font-size: 11px;
+  	font-weight: bold;
+  	font-size: 10pt;
+  	padding: 3px;
 }
 
 /*Large blue title bar*/
@@ -73,13 +78,27 @@ td { font-size: 10pt }
 	border-top: 1px #999999 solid;
 	border-bottom: 2px #999999 solid;
 	border-right: 2px #999999 solid;
+	padding: 3px;
 }
 
 /*Form text/heading*/
 .contentbar1 {
   	color: #000000;
-  	font-weight: bold;
-  	font-size: 10px;
+  	font-weight: normal;
+  	font-size: 9pt;
+}
+
+/* Box for session errors */
+.errorbox {
+	border-color: #000000;
+	border-style: solid;
+	border-width: 1 2 2 1px;
+	padding: 5px;
+	margin: 3px;
+	background: #ffffff;
+	align: center;
+	color: #f00;
+	font-weight: bold; 
 }
 
 /**********End general classes*/
