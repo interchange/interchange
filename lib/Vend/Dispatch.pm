@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.56 2005-06-09 17:57:05 docelic Exp $
+# $Id: Dispatch.pm,v 1.57 2005-07-27 09:37:26 racke Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.56 $, 10);
+$VERSION = substr(q$Revision: 1.57 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -769,6 +769,9 @@ sub run_in_catalog {
 			run_macro($jobscfg->{autoload});
 
 			push @out, interpolate_html($_->[1]);
+
+			# Run once at end of each job
+			run_macro($jobscfg->{autoend});
 		}
 	}
 	else {
