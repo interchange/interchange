@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: usps_query.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+# $Id: usps_query.tag,v 1.5 2005-08-02 13:54:28 mheins Exp $
 
 UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
-UserTag  usps-query  Version $Revision: 1.4 $
+UserTag  usps-query  Version $Revision: 1.5 $
 UserTag  usps-query  Routine <<EOR
 
 sub {
@@ -21,7 +21,12 @@ sub {
 			      'GLOBAL EXPRESS GUARANTEED DOCUMENT SERVICE'     => 1,
 			      'GLOBAL EXPRESS GUARANTEED NON-DOCUMENT SERVICE' => 1,
 			      'GLOBAL EXPRESS MAIL (EMS)'                      => 1,
+			      'GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (LARGE)' => 1,
+			      'GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (SMALL)' => 1,
+			      'GLOBAL PRIORITY MAIL - VARIABLE WEIGHT (SINGLE)' => 1,
+			      'AIRMAIL LETTER-POST'                            => 1,
 			      'AIRMAIL PARCEL POST'                            => 1,
+			      'ECONOMY (SURFACE) LETTER-POST'                  => 1,
 			      'ECONOMY (SURFACE) PARCEL POST'                  => 1,
 			      'POSTCARDS - AIRMAIL'                            => 1,
 			      'AEROGRAMMES - AIRMAIL'                          => 1,
@@ -57,7 +62,7 @@ sub {
     my $size = uc ($opt->{size} || $::Variable->{USPS_SIZE} || 'REGULAR');
     if (! $package_sizes{$size}) {
 	$error_msg .= "unknown package size $size.";
-	return
+	return;
 	}
 
     if ($service eq 'PARCEL') {
@@ -224,7 +229,12 @@ The USPS service you wish to get a rate quote for. Services currently supported:
     GLOBAL EXPRESS GUARANTEED DOCUMENT SERVICE
     GLOBAL EXPRESS GUARANTEED NON-DOCUMENT SERVICE
     GLOBAL EXPRESS MAIL (EMS)
+    GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (LARGE)
+    GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (SMALL)
+    GLOBAL PRIORITY MAIL - VARIABLE WEIGHT (SINGLE)
+    AIRMAIL LETTER-POST
     AIRMAIL PARCEL POST
+    ECONOMY (SURFACE) LETTER-POST
     ECONOMY (SURFACE) PARCEL POST
     POSTCARDS - AIRMAIL
     AEROGRAMMES - AIRMAIL
