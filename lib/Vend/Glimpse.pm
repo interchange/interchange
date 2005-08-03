@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.12 2004-08-21 22:47:23 jon Exp $
+# $Id: Glimpse.pm,v 2.13 2005-08-03 19:33:39 jon Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -26,7 +26,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 use strict;
 use Vend::File;
 use Vend::Util;
@@ -393,29 +393,26 @@ EOF
 }
 
 # Unfortunate hack need for Safe searches
-*escape         	= \&Vend::Search::escape;
-*spec_check         = \&Vend::Search::spec_check;
-*get_scalar         = \&Vend::Search::get_scalar;
-*more_matches       = \&Vend::Search::more_matches;
-*get_return         = \&Vend::Search::get_return;
-*map_ops            = \&Vend::Search::map_ops;
-*get_limit          = \&Vend::Search::get_limit;
-*saved_params       = \&Vend::Search::saved_params;
-*range_check        = \&Vend::Search::range_check;
 *create_search_and  = \&Vend::Search::create_search_and;
 *create_search_or   = \&Vend::Search::create_search_or;
-*save_context       = \&Vend::Search::save_context;
 *dump_options       = \&Vend::Search::dump_options;
+*escape             = \&Vend::Search::escape;
+*get_limit          = \&Vend::Search::get_limit;
+*get_return         = \&Vend::Search::get_return;
+*get_scalar         = \&Vend::Search::get_scalar;
+*hash_fields        = \&Vend::Search::hash_fields;
+*map_ops            = \&Vend::Search::map_ops;
+*more_matches       = \&Vend::Search::more_matches;
+*range_check        = \&Vend::Search::range_check;
+*restore_specs      = \&Vend::Search::restore_specs;
+*save_context       = \&Vend::Search::save_context;
 *save_more          = \&Vend::Search::save_more;
+*save_specs         = \&Vend::Search::save_specs;
+*saved_params       = \&Vend::Search::saved_params;
+*search_error       = \&Vend::Search::search_error;
 *sort_search_return = \&Vend::Search::sort_search_return;
-*get_scalar 		= \&Vend::Search::get_scalar;
-*hash_fields 		= \&Vend::Search::hash_fields;
-*save_specs 		= \&Vend::Search::save_specs;
-*restore_specs 		= \&Vend::Search::restore_specs;
-*splice_specs 		= \&Vend::Search::splice_specs;
-*search_error 		= \&Vend::Search::search_error;
-*save_more 			= \&Vend::Search::save_more;
-*sort_search_return = \&Vend::Search::sort_search_return;
+*spec_check         = \&Vend::Search::spec_check;
+*splice_specs       = \&Vend::Search::splice_specs;
 
 1;
 __END__

@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.8 2005-04-30 15:09:58 mheins Exp $
+# $Id: RefSearch.pm,v 2.9 2005-08-03 19:33:39 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -27,7 +27,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -339,29 +339,26 @@ sub search {
 }
 
 # Unfortunate hack need for Safe searches
-*escape         	= \&Vend::Search::escape;
-*spec_check         = \&Vend::Search::spec_check;
-*get_scalar         = \&Vend::Search::get_scalar;
-*more_matches       = \&Vend::Search::more_matches;
-*get_return         = \&Vend::Search::get_return;
-*map_ops            = \&Vend::Search::map_ops;
-*get_limit          = \&Vend::Search::get_limit;
-*saved_params       = \&Vend::Search::saved_params;
-*range_check        = \&Vend::Search::range_check;
 *create_search_and  = \&Vend::Search::create_search_and;
 *create_search_or   = \&Vend::Search::create_search_or;
-*save_context       = \&Vend::Search::save_context;
 *dump_options       = \&Vend::Search::dump_options;
+*escape             = \&Vend::Search::escape;
+*get_limit          = \&Vend::Search::get_limit;
+*get_return         = \&Vend::Search::get_return;
+*get_scalar         = \&Vend::Search::get_scalar;
+*hash_fields        = \&Vend::Search::hash_fields;
+*map_ops            = \&Vend::Search::map_ops;
+*more_matches       = \&Vend::Search::more_matches;
+*range_check        = \&Vend::Search::range_check;
+*restore_specs      = \&Vend::Search::restore_specs;
+*save_context       = \&Vend::Search::save_context;
 *save_more          = \&Vend::Search::save_more;
+*save_specs         = \&Vend::Search::save_specs;
+*saved_params       = \&Vend::Search::saved_params;
+*search_error       = \&Vend::Search::search_error;
 *sort_search_return = \&Vend::Search::sort_search_return;
-*get_scalar 		= \&Vend::Search::get_scalar;
-*hash_fields 		= \&Vend::Search::hash_fields;
-*save_specs 		= \&Vend::Search::save_specs;
-*restore_specs 		= \&Vend::Search::restore_specs;
-*splice_specs 		= \&Vend::Search::splice_specs;
-*search_error 		= \&Vend::Search::search_error;
-*save_more 			= \&Vend::Search::save_more;
-*sort_search_return = \&Vend::Search::sort_search_return;
+*spec_check         = \&Vend::Search::spec_check;
+*splice_specs       = \&Vend::Search::splice_specs;
 
 1;
 __END__

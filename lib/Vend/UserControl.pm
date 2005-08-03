@@ -1,6 +1,6 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# $Id: UserControl.pm,v 2.3 2004-06-27 19:00:44 mheins Exp $
+# $Id: UserControl.pm,v 2.4 2005-08-03 19:33:39 jon Exp $
 #
 # Copyright (C) 2003 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
@@ -17,7 +17,7 @@
 
 package Vend::UserControl;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 require Vend::UserDB;
 use Vend::Data;
@@ -615,8 +615,8 @@ sub delete_address {
 	return $adb->query($q);
 }
 
-*delete_shipping = \&delete_address;
 *delete_billing = \&delete_address;
+*delete_shipping = \&delete_address;
 *get_billing_names = \&get_names;
 *get_shipping_names = \&get_names;
 
