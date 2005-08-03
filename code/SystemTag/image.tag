@@ -1,12 +1,12 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.13 2005-02-09 13:39:42 docelic Exp $
+# $Id: image.tag,v 1.14 2005-08-03 18:58:48 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.13 $
+UserTag image Version   $Revision: 1.14 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -247,7 +247,7 @@ sub {
 	$opt->{title} = $opt->{alt} if ! defined $opt->{title} and $opt->{alt};
 
 	my $opts = '';
-	for (qw: width height alt title border hspace vspace align :) {
+	for (qw: width height alt title border hspace vspace align valign style class :) {
 		if (defined $opt->{$_}) {
 			my $val = $opt->{$_};
 			$val = HTML::Entities::encode($val) if $val =~ /\W/;
