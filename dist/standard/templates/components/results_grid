@@ -100,7 +100,7 @@ Please send any comments or suggestions for improvement to:
 
 [on-match]
 <FORM ACTION="[area nothing]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_session_id value="[data session id]">
+[form-session-id]
 <INPUT TYPE=hidden NAME=mv_action VALUE=refresh>
 <INPUT TYPE=hidden NAME=mv_separate_items VALUE=0>
 <INPUT TYPE=hidden NAME=mv_click VALUE=munge_quantity>

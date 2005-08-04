@@ -17,7 +17,7 @@ matches:
     <td class="[control table_class categorybar]"> 
       <br>     
       <form action="[area search]" method=post>
-	  <input type=hidden name=mv_session_id value="[data session id]">
+      [form-session-id]
       <table border="0" width="100%">
       <tr> 
 	    <td align="center">
