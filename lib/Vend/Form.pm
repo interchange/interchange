@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.61 2005-06-09 18:15:28 docelic Exp $
+# $Id: Form.pm,v 2.62 2005-08-07 16:06:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.61 $, 10);
+$VERSION = substr(q$Revision: 2.62 $, 10);
 
 @EXPORT = qw (
 	display
@@ -75,9 +75,9 @@ my $Tag = new Vend::Tags;
 		.
 		qq({ROWS?} size="{ROWS}"{/ROWS?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
-		qq({MULTIPLE?} MULTIPLE{/MULTIPLE?})
+		qq({MULTIPLE?} multiple{/MULTIPLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
@@ -95,7 +95,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({COLS?} cols="{COLS}"{/COLS?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
@@ -140,7 +140,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq(><br{XTRAILER}><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
+		qq(><br{XTRAILER}><textarea cols="{WIDTH}" rows="{HEIGHT}" name="{NAME}">{ENCODED}</textarea>{APPEND})
 		,
 	text =>
 		qq({PREPEND}<input type="text" name="{NAME}" value="{ENCODED}")
@@ -149,7 +149,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
@@ -180,9 +180,9 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
-		qq({SELECTED?} CHECKED{/SELECTED?})
+		qq({SELECTED?} checked{/SELECTED?})
 		.
 		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?})
 		,
@@ -193,9 +193,9 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
-		qq({SELECTED?} CHECKED{/SELECTED?})
+		qq({SELECTED?} checked{/SELECTED?})
 		.
 		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?}&nbsp;&nbsp;)
 		,
@@ -215,11 +215,11 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
-		qq({DISABLED?} DISABLED{/DISABLED?})
+		qq({DISABLED?} disabled{/DISABLED?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq({SELECTED?} CHECKED{/SELECTED?})
+		qq({SELECTED?} checked{/SELECTED?})
 		.
 		qq(>)
 		.
