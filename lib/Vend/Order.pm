@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.70 2005-06-09 19:29:07 mheins Exp $
+# $Id: Order.pm,v 2.71 2005-08-09 21:10:37 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -646,18 +646,25 @@ sub guess_cc_type {
 
 	# based on logic by Karl Moore from http://www.vb-world.net/tips/tip509.html
 	if ($ccnum eq '')										{ '' }
-	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)				{ 'visa' }
-	elsif ($ccnum =~ /^5[1-5]\d{14}$/)						{ 'mc' }
-	elsif ($ccnum =~ /^6011\d{12}$/)						{ 'discover' }
-	elsif ($ccnum =~ /^3[47]\d{13}$/)						{ 'amex' }
-	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)			{ 'dinersclub' }
-	elsif ($ccnum =~ /^38\d{12}$/)							{ 'carteblanche' }
-	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)				{ 'enroute' }
-	elsif ($ccnum =~ /^56\d{14}$/)                          { 'bankcard' }
-	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)	{ 'jcb' }
-	else													{ 'other' }
-}
+	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)				{ return 'visa' }
+	elsif ($ccnum =~ /^5[1-5]\d{14}$/)						{ return 'mc' }
+	elsif ($ccnum =~ /^6011\d{12}$/)						{ return 'discover' }
+	elsif ($ccnum =~ /^3[47]\d{10,13}$/)						{ return 'amex' }
+	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)			{ return 'dinersclub' }
+	elsif ($ccnum =~ /^38\d{12}$/)							{ return 'carteblanche' }
+	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)				{ return 'enroute' }
+	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)	{ return 'jcb' }
+    elsif ($ccnum =~ /^49(03(0[2-9]|3[5-9])|11(0[1-2]|7[4-9]|8[1-2])|36[0-9]{2})\d{10}(\d{2,3})?$/
+      or $ccnum =~ /^564182\d{10}(\d{2,3})?$/
+      or $ccnum =~ /^6(3(33[0-4][0-9])|759[0-9]{2})\d{10}(\d{2,3})?$/) 
+															{ return 'switch' }
 
+	elsif ($ccnum =~ /^56\d{14}$/)                          { return 'bankcard' }
+    elsif ($ccnum =~ /^6(3(34[5-9][0-9])|767[0-9]{2})\d{10}(\d{2,3})?$/)
+		 { return 'solo' }
+
+	else { return $::Variable->{MV_PAYMENT_OTHER_CARD} || 'other' }
+}
 
 # Takes a reference to a hash (usually %CGI::values) that contains
 # the following:
