@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.79 2005-06-28 07:10:57 jon Exp $
+# $Id: Editor.pm,v 1.80 2005-08-11 22:07:50 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.79 $, 10);
+$VERSION = substr(q$Revision: 1.80 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3498,7 +3498,7 @@ EOF
 <input type="hidden" name="mv_data_multiple_qual__$tcount" value="$lrq">
 $an_piece
 $l_pkey</td>};
-			push @lout, $Tag->row_edit({ table => $lt, columns => "$lk $lf" });
+			push @lout, $Tag->row_edit({ table => $lt, columns => $lf });
 			push @lout, '</tr>';
 
 			my $tname = $ldb->name();
