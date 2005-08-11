@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.178 2005-05-22 12:55:24 mheins Exp $
+# $Id: Config.pm,v 2.179 2005-08-11 22:17:22 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.178 $, 10);
+$VERSION = substr(q$Revision: 2.179 $, 10);
 
 my %CDname;
 my %CPname;
@@ -633,7 +633,7 @@ sub catalog_directives {
 	['Promiscuous',		 'yesno',     	     'No'],
 	['Cookies',			 'yesno',     	     'Yes'],
 	['CookieName',		 undef,     	     ''],
-	['CookiePattern',	 'regex',     	     '[-\w:.]+'],
+	['CookiePattern',	 'regex',     	     '\w{8,32}'],
 	['CookieLogin',      'yesno',            'No'],
 	['CookieDomain',     undef,              ''],
 	['MasterHost',		 undef,     	     ''],
