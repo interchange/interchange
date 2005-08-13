@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: history_scan.tag,v 1.17 2005-04-17 19:28:02 mheins Exp $
+# $Id: history_scan.tag,v 1.18 2005-08-13 16:01:27 mheins Exp $
 
 UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
-UserTag history-scan Version $Revision: 1.17 $
+UserTag history-scan Version $Revision: 1.18 $
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1
@@ -79,7 +79,8 @@ sub {
 					$len,
 					$opt->{size_limit},
 				);
-		$Tag->error({ name => 'history-scan', set => $m });
+		$Tag->error({ name => 'history-scan', set => $m })
+			if $opt->{debug};
 		return undef;
 	}
 	return $string;
