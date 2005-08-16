@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.180 2005-08-12 08:51:52 docelic Exp $
+# $Id: Config.pm,v 2.181 2005-08-16 20:38:49 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.180 $, 10);
+$VERSION = substr(q$Revision: 2.181 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2860,7 +2860,7 @@ sub parse_warn {
 # Sets a boolean array for any type of item
 sub parse_boolean {
 	my($item,$settings) = @_;
-	my(@setting) = split /[\s,]+/, $settings;
+	my(@setting) = grep /\S/, split /[\s,]+/, $settings;
 	my $c;
 
 	if(defined $C) {
