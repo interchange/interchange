@@ -460,18 +460,9 @@ mv_nextpage=__UI_BASE__/content_preview
 	[else]
 
 [page-calc]
-	$page_content = <<'EoPA';
-[page-param CONTENT]
-EoPA
-	$page_preamble = <<'EoPB';
-[page-param PREAMBLE]
-EoPB
-	$page_postamble = <<'EoPC';
-[page-param POSTAMBLE]
-EoPC
-	for(\$page_content, \$page_preamble, \$page_postamble) {
-		chop $$_;
-	}
+	$page_content = $Row->{CONTENT};
+	$page_preamble = $Row->{PREAMBLE};
+	$page_postamble = $Row->{POSTAMBLE};
 	return;
 [/page-calc]
 
@@ -519,21 +510,12 @@ EoPC
 	</div>
 [/components]
 
-[calcn]
-	$page_content = <<'EoPA';
-[page-param CONTENT]
-EoPA
-	$page_preamble = <<'EoPB';
-[page-param PREAMBLE]
-EoPB
-	$page_postamble = <<'EoPC';
-[page-param POSTAMBLE]
-EoPC
-	for(\$page_content, \$page_preamble, \$page_postamble) {
-		chop $$_;
-	}
+[page-calc]
+	$page_content = $Row->{CONTENT};
+	$page_preamble = $Row->{PREAMBLE};
+	$page_postamble = $Row->{POSTAMBLE};
 	return;
-[/calcn]
+[/page-calc]
 
 [if !scratch CONTENT_shown]
 
@@ -734,9 +716,9 @@ EoPC
 [components]
 [if cgi ui_content_pos]
 	<script>
-		visible([calc]
+		visible([calcn]
 					$CGI->{ui_content_pos} + 1
-				[/calc], 'comp')
+				[/calcn], 'comp')
 	</script>
 [else]
 	[if-comp-param !code]
