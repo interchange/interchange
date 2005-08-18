@@ -34,6 +34,7 @@ code/Filter/lc.filter
 code/Filter/line.filter
 code/Filter/line2options.filter
 code/Filter/linkdecode.filter
+code/Filter/liven_urls.filter
 code/Filter/loc.filter
 code/Filter/lookup.filter
 code/Filter/mac.filter
@@ -56,6 +57,7 @@ code/Filter/pgbooln.filter
 code/Filter/pre.filter
 code/Filter/qb_safe.filter
 code/Filter/restrict_html.filter
+code/Filter/roman.filter
 code/Filter/show_null.filter
 code/Filter/small.filter
 code/Filter/space_to_null.filter
