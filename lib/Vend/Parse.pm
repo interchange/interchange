@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.34 2005-05-09 02:35:27 mheins Exp $
+# $Id: Parse.pm,v 2.35 2005-08-18 18:37:00 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -420,10 +420,6 @@ sub do_tag {
 
 	}
 
-	die errmsg("Unauthorized for admin tag %s", $tag)
-		if defined $Vend::Cfg->{AdminSub}{$tag} and
-			($Vend::restricted or ! $Vend::admin);
-	
 	if (! defined $Routine{$tag} and $Global::AccumulateCode) {
 #::logDebug("missing $tag, trying code_from_file");
 		if($Alias{$tag}) {
