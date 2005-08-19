@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.181 2005-08-16 20:38:49 jon Exp $
+# $Id: Config.pm,v 2.182 2005-08-19 06:29:11 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.181 $, 10);
+$VERSION = substr(q$Revision: 2.182 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1518,7 +1518,7 @@ sub get_system_groups {
 		$ext =~ /Tag$/ or return;
 		push @files, [ $group, $tname ];
 	};
-	File::Find::find($wanted, @$Global::TagDir);
+	File::Find::find({ wanted => $wanted, follow => 1 }, @$Global::TagDir);
 
 	$Global::TagGroup ||= {};
 	for(@files) {
@@ -1542,7 +1542,7 @@ sub get_repos_code {
 		my $ext = $extmap{lc $1} or return;
 		push @files, [ $File::Find::name, $ext];
 	};
-	File::Find::find($wanted, $Global::CodeRepository);
+	File::Find::find({ wanted => $wanted, follow => 1 }, $Global::CodeRepository);
 
 	my $c = $Global::TagLocation = {};
 
@@ -1595,7 +1595,7 @@ sub get_system_code {
 		my $ext = $extmap{lc $1} or return;
 		push @files, [ $File::Find::name, $ext];
 	};
-	File::Find::find($wanted, @$Global::TagDir);
+	File::Find::find({ wanted => $wanted, follow => 1 }, @$Global::TagDir);
 
 	local($configfile);
 	for(@files) {
@@ -2250,7 +2250,7 @@ sub parse_feature {
 	};
 
 	if(@cdirs) {
-		File::Find::find($wanted, @cdirs);
+		File::Find::find({ wanted => $wanted, follow => 1 }, @cdirs);
 	}
 #::logDebug("gfiles=" . ::uneval(\@gfiles));
 #::logDebug("cfiles=" . ::uneval(\@cfiles));
@@ -2369,7 +2369,7 @@ sub uninstall_feature {
 	};
 
 	if(@cdirs) {
-		File::Find::find($wanted, @cdirs);
+		File::Find::find({ wanted => $wanted, follow => 1 }, @cdirs);
 	}
 #::logDebug("ufiles=" . ::uneval(\@ufiles));
 #::logDebug("ifiles=" . ::uneval(\@ifiles));
