@@ -1,12 +1,12 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+# $Id: email.tag,v 1.6 2005-08-19 04:54:05 jon Exp $
 
 UserTag email Order       to subject reply from extra
 UserTag email hasEndTag
 UserTag email addAttr
 UserTag email Interpolate
-UserTag email Version     $Revision: 1.5 $
+UserTag email Version     $Revision: 1.6 $
 UserTag email Routine     <<EOR
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
@@ -22,15 +22,13 @@ sub {
 		$from =~ s/,.*//;
 	}
 	$extra =~ s/\s*$/\n/ if $extra;
-        $extra .= "From: $from\n" if $from;
+	$extra .= "From: $from\n" if $from;
 	@extra = grep /\S/, split(/\n/, $extra);
 
-    SEND: {
-            $ok = send_mail($to, $subject, $body, $reply, 0, @extra);
-    }
+	$ok = send_mail($to, $subject, $body, $reply, 0, @extra);
 
     if (!$ok) {
-        logError("Unable to send mail using $Vend::Cfg->{'SendMailProgram'}\n" .
+        logError("Unable to send mail using $Vend::Cfg->{SendMailProgram}\n" .
             "To '$to'\n" .
             "From '$from'\n" .
             "With extra headers '$extra'\n" .
