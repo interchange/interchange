@@ -1,0 +1,18 @@
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: uc_attr_list.coretag,v 1.1 2005-08-19 04:54:51 jon Exp $
+
+UserTag uc-attr-list           addAttr
+UserTag uc-attr-list           hasEndTag
+UserTag uc-attr-list           PosNumber    0
+UserTag uc-attr-list           noRearrange
+UserTag uc-attr-list           Version      $Revision: 1.1 $
+UserTag uc-attr-list           Routine      <<EOR
+sub {
+	my ($opt, $body) = @_;
+	if( ref $opt->{hash} ) {
+		$opt = $opt->{hash};
+	}
+	return Vend::Interpolate::tag_attr_list($body, $opt, 1);
+}
+EOR
