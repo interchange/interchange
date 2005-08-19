@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.35 2005-08-18 18:37:00 jon Exp $
+# $Id: Parse.pm,v 2.36 2005-08-19 18:13:49 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -709,7 +709,11 @@ sub start {
 
 	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
 	$attr->{reparse} = 1
-		unless (defined $NoReparse{$tag} || defined $attr->{'reparse'});
+		unless (
+			defined $NoReparse{$tag}
+			|| defined $attr->{reparse}
+			|| $::Pragma->{no_default_reparse}
+		);
 
 	my ($routine,@args);
 
