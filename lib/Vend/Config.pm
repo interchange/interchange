@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.182 2005-08-19 06:29:11 jon Exp $
+# $Id: Config.pm,v 2.183 2005-08-20 02:53:45 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.182 $, 10);
+$VERSION = substr(q$Revision: 2.183 $, 10);
 
 my %CDname;
 my %CPname;
@@ -866,7 +866,7 @@ sub code_from_file {
 
 	if($init and ref($routine) eq 'CODE') {
 		## Attempt to initialize
-		$init = Vend::Util::get_option_hash($init);
+		$init = get_option_hash($init);
 		$routine->($init);
 	}
 
@@ -1495,8 +1495,8 @@ sub config_named_catalog {
 	delete $c->{Source};
 
 	my $stime = scalar localtime();
-	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n$g->{dir}\n");
-	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
+	writefile(">$Global::RunDir/status.$g->{name}", "$stime\n$g->{dir}\n");
+	writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
 
 	return $c;
 
@@ -2742,10 +2742,10 @@ sub parse_varname {
 		if (! $Global::VarName) {
 			unless (-s "$Global::ConfDir/varnames" && -r _) {
 				$settings = $Varnames . "\n$settings";
-				Vend::Util::writefile("$Global::ConfDir/varnames", $Varnames);
+				writefile("$Global::ConfDir/varnames", $Varnames);
 			}
 			else {
-				$settings = Vend::Util::readfile("$Global::ConfDir/varnames");
+				$settings = readfile("$Global::ConfDir/varnames");
 			}
 		}
 		undef $Varnames;
@@ -3049,7 +3049,7 @@ sub parse_hash {
 		$c = ${"Global::$item"} || {};
 	}
 
-	return Vend::Util::hash_string($settings,$c);
+	return hash_string($settings,$c);
 }
 
 # Set up illegal values for certain directives
@@ -3658,7 +3658,7 @@ sub parse_root_dir {
 	my($var, $value) = @_;
 	return '' unless $value;
 	$value = "$Global::VendRoot/$value"
-		unless Vend::Util::file_name_is_absolute($value);
+		unless file_name_is_absolute($value);
 	$value =~ s./+$..;
 	return $value;
 }
@@ -3674,7 +3674,7 @@ sub parse_root_dir_array {
 
 	foreach my $dir (@dirs) {
 		$dir = "$Global::VendRoot/$dir"
-			unless Vend::Util::file_name_is_absolute($dir);
+			unless file_name_is_absolute($dir);
 		$dir =~ s./+$..;
 		push @$c, $dir;
 	}
@@ -3685,7 +3685,7 @@ sub parse_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
 	$value = "$C->{VendRoot}/$value"
-		unless Vend::Util::file_name_is_absolute($value);
+		unless file_name_is_absolute($value);
 	$value =~ s./+$..;
 	$C->{$var} = [] unless $C->{$var};
 	my $c = $C->{$var} || [];
@@ -3702,7 +3702,7 @@ sub parse_relative_dir {
 	config_error(
 	  "No leading / allowed if NoAbsolute set. Contact administrator.\n"
 	  )
-	  if Vend::Util::file_name_is_absolute($value) and $Global::NoAbsolute;
+	  if file_name_is_absolute($value) and $Global::NoAbsolute;
 	config_error(
 	  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n"
 	  )
@@ -3711,7 +3711,7 @@ sub parse_relative_dir {
 	$C->{Source}{$var} = $value;
 
 	$value = "$C->{VendRoot}/$value"
-		unless Vend::Util::file_name_is_absolute($value);
+		unless file_name_is_absolute($value);
 	$value =~ s./+$..;
 	$value;
 }
