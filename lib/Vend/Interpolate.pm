@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.250 2005-08-05 12:20:04 mheins Exp $
+# $Id: Interpolate.pm,v 2.251 2005-08-20 02:54:54 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.250 $, 10);
+$VERSION = substr(q$Revision: 2.251 $, 10);
 
 @EXPORT = qw (
 
@@ -3848,7 +3848,7 @@ sub tag_dispatch {
 	}
 	else {
 		$attrhash->{body} = $this_tag unless defined $attrhash->{body};
-#::logDebug("calling do_tag tag=$tag this_tag=$this_tag attrhash=" . uneval($attrhash));
+#::logDebug("calling tag tag=$tag this_tag=$this_tag attrhash=" . uneval($attrhash));
 		$Tag ||= new Vend::Tags;
 		$out = $Tag->$tag($attrhash);
 	}
