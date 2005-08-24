@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.11 2004-07-23 03:03:39 mheins Exp $
+# $Id: LDAP.pm,v 2.12 2005-08-24 06:23:40 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 use strict;
 
 use vars qw(
@@ -514,7 +514,6 @@ sub query {
 #::logDebug("receieved query. object=" . ::uneval($opt));
 
 	if(defined $opt->{values}) {
-		# do nothing
 		@arg = $opt->{values} =~ /['"]/
 				? ( Text::ParseWords::shellwords($opt->{values})  )
 				: (grep /\S/, split /\s+/, $opt->{values});
