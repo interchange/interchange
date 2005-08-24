@@ -16,6 +16,10 @@
 	}
 	if(! $CGI->{ui_data_fields}) {
 		@cols = split /\s+/, q{[db-columns name=pricing]};
+		unless (@cols) {
+			$Session->{errors}->{pricing} = 'Table missing';
+			return;
+		}
 		@cols = grep $_ ne 'sku' && $_ ne 'price_group', @cols;
 		my $colstring = join "\n", @cols;
 		$CGI->{ui_data_fields} = qq{
