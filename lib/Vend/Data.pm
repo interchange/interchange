@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.51 2005-06-09 19:28:45 mheins Exp $
+# $Id: Data.pm,v 2.52 2005-08-24 19:41:19 jon Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1403,7 +1403,7 @@ sub export_database {
 		unlink $f if $f;
 	}
 	else {
-		$db->touch() unless defined $notouch;
+		$db->touch();
 	}
 	if (my $subs = $db->config('POSTEXPORT')) {
 		# Make a copy of the options once to hand off to each sub.
