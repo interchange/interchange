@@ -30,7 +30,6 @@ Payment processing...payment_method=[value mv_order_profile]
 [/comment]
 
 	[tmp tmp_total][total-cost noformat=1][/tmp]
-	[tmp tmp_total][total-cost noformat=1][/tmp]
 	[set charge_total_message][/set]
 	[set pay_cert_total][/set]
 	[tmp tmp_remaining][total-cost noformat=1][/tmp]
