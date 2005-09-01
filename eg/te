@@ -30,21 +30,59 @@ tab-delimited, that apply for that file.
 Editing is pretty straightforward when you see it in action. The
 rules are:
 
-Empty lines and comment lines (beginning with C<#>) are ignored.
+=over 4
+
+=item *
+
+Empty lines are ignored.
+
+=item *
+
+Comment lines (beginning with C<#>) are ignored at the beginning of the
+file, and terminate a record in the middle.
+
+=item *
+
+The fields in the first record are used in all subsequent records,
+and the order in which they are specified are the order in which the
+columns will be written.
+
+=item *
+
+To delete a column, delete it's line in the first record.
+
+=item *
+
+To change which order the columns are in, re-order the first record.
+
+=item *
+
+To add a column, add it to the first record (and as many subsequent
+records as you wish).
+
+=item * 
+
+If you delete a column, you do not need to delete it from every record;
+any instances of that field in records after the first will be ignored.
+
+=item *
 
 Any space left after the field name and colon (like C<fieldname:>) will be
 included as part of the field. Any tabs you put in the field data itself
 will be converted to spaces (as they would corrupt the table otherwise).
 
-A new record begins immediately after the previous one ends; no special
-record-separation marker is used. All fields must be represented for each
-record, even fields with no data. A record can be deleted by removing
-all its fields. A new record can be added by inserting a new block of
-all fields at a record boundary.
+=item *
 
-If any errors are encountered, such as non-existent field names, fields
-out of order, or lines that don't follow the prescribed format, processing
-aborts immediately and the original file is left untouched.
+A record can be deleted by removing all its fields. A new record can be
+added by inserting a new block of all fields at a record boundary.
+
+=item *
+
+If any errors are encountered, such as non-existent field names or lines
+that don't follow the prescribed format, processing aborts immediately
+and the original file is left untouched.
+
+=back
 
 You can edit several files in succession by naming each on the command
 line. The editor will be called for each one independently. If you start
@@ -84,7 +122,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.8 2004-06-08 00:07:56 jon Exp $
+$Id: te,v 2.9 2005-09-01 00:34:29 mheins Exp $
 
 =head1 CHANGELOG
 
@@ -121,6 +159,9 @@ persistent options in environment variable TE_OPTIONS.
 
 2004-06-07. Fixed bug that misinterpreted file as having no data rows
 when last line of file was empty.
+
+2005-08-29. Added ability to delete, re-order, or add columns by placing
+them in the first record.
 
 =cut
 
@@ -199,7 +240,7 @@ for my $filename (@ARGV) {
 	}
 	else {
 		die "Error in '$filename' header: null field name found\n" if /\t\t/;
-	@fieldnames = split /\t/, $_, $fieldcount;
+		@fieldnames = split /\t/, $_, $fieldcount;
 	}
 
 	($name, $path) = fileparse($filename);
@@ -283,27 +324,53 @@ EOF
 	print STDERR "Importing changes back into '$filename'\n";
 	$newfile = "$path.$name.new.$$";
 	open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
-	print OUT join("\t", @fieldnames), "\n" unless $opt_f;
+
+	my @newfields;
+	my %found_fields;
+	@found_fields{@fieldnames} = @fieldnames;
+
+	my $fields_out = join("\t", @fieldnames) . "\n";
+
 	my $tabcounter = 0;
 	my $fieldpos = 0;
 	my $done;
 	seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
-	@fields = ();
+
+	my %record;
+
+	no warnings qw/ uninitialized /;
+
 	while (<IN>) {
 		$done = 1 if /^#\s*DONE/;
-		next if /^\s*#/ || /^\s*$/;
+		if(/^#/) {
+			next unless $fieldpos;
+			if($fields_out) {
+				@found_fields{@newfields} = @newfields;
+				$fields_out = join("\t", @newfields) . "\n";
+				print OUT $fields_out;
+				undef $fields_out;
+			}
+			print OUT join("\t", @record{@newfields} ), "\n";
+			%record = ();
+			$fieldpos = 0;
+			next;
+		}
+		next unless /\S/;
 		/^([^:]+):(.*)$/ or
 			die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
-		$1 eq $fieldnames[$fieldpos] or
-			die "Error parsing line $. of '$tmpfile': expected field name '$fieldnames[$fieldpos]', found '$1'\n";
+		my $fn = $1;
+
+		if($fields_out) {
+			push @newfields, $fn;
+		}
+		elsif (! $found_fields{$fn}) {
+			die "Error parsing line $. of '$tmpfile': bad field name '$fn'\n";
+		}
+
 		$_ = $2;
 		$tabcounter += s/\t/ /g;
-		push @fields, $_;
-		if (++$fieldpos >= $fieldcount) {
-			print OUT join("\t", @fields), "\n";
-			@fields = ();
-			$fieldpos = 0;
-		}
+		$record{$fn} = $_;
+		$fieldpos++;
 	}
 	print STDERR "$tabcounter tab character",
 		$tabcounter == 1 ? ' was' : 's were',
