@@ -1,14 +1,12 @@
 #!/bin/sh
 
-# $Id: configure,v 2.20 2005-01-24 22:08:13 jon Exp $
-
-ICVERSION='5.3.1'
+# $Id: configure,v 2.21 2005-09-04 15:22:40 docelic Exp $
 
 cat <<EOF
 
- Interchange Version $ICVERSION Configuration
+ Interchange
 
- Copyright 2002-2005 Interchange Development Group
+ Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
  Copyright 1996-2002 Red Hat, Inc.
 
  Interchange was originally based on Vend 0.2 and 0.3
@@ -17,94 +15,15 @@ cat <<EOF
  Distributed under the GNU General Public License.
  See the file LICENSE for license information.
 
+ To install Interchange, please run:
+
+    perl Makefile.PL [arguments...]
+    make
+    make test && make install
+
+ If you would like to use a specific version of Perl, simply invoke
+ Perl with an absolute path to the Perl binary, such as
+
+    /usr/local/bin/perl Makefile.PL [arguments...]
+
 EOF
-
-for i in $*
-do
-	case $i in
-		-[dD]) DEBUG=-D ;;
-		-[iI]) INSTALL=-I ;;
-		*)
-	esac
-done
-
-if test `echo -n test | wc -c` -eq 4
-then F='-n'
-E=
-else F=
-E='\c'
-fi
-
-TESTPERL=perl
-while true
-do
-	PERL=""
-	IFS="${IFS=   }"
-	SAVEIFS="$IFS"
-	IFS="${IFS}:"
-  	for TESTDIR in $PATH
-	do
-    	test -z "$TESTDIR" && TESTDIR=.
-    	if test -f $TESTDIR/$TESTPERL
-		then
-      		PERL="$TESTDIR/$TESTPERL"
-      		break
-     	fi
-  	done
-  	IFS="$SAVEIFS"
-	while true
-	do
-		if test -n "$PERL"
-		then VER=`$PERL -e '((print $]), exit 1) unless $] >= 5.006 or $^V; printf "%vd", $^V'`
-		else false
-		fi
-		if [ $? -eq 0 ]
-		then
-			echo "Found Perl $VER as $PERL"
-			break 2
-		else
-			if test "$TESTPERL" = perl
-			then 
-				TESTPERL=perl5
-				break
-			else
-				if [ -n "$VER" ]
-				then
-					echo "Found Perl $VER as $PERL"
-					echo "Interchange $ICVERSION requires Perl version 5.6.0 or newer!"
-					VER=""
-				else
-					echo "Perl not found! Perl 5.6.0 or newer is required to run Interchange $ICVERSION."
-				fi
-			fi
-		fi
-	
-		echo
-		echo "I need to know where the Perl interpreter resides (version 5.6.0 or higher)."
-		echo "It was not 'perl' or 'perl5', or it was not in your path. Please enter a full"
-		echo "path name, or just press <enter> to quit."
-		echo
-		echo $F "Where is your Perl, please? $E"
-		read PERL
-		if test -z "$PERL"
-		then exit 1
-		else
-			TESTPERL=$PERL
-			case $PERL in
-				[/]*) continue;;
-	 			*) break ;;
-			esac
-		fi
-	done
-done
-
-if test ! -f .cpan.tried
-then
-	echo
-	echo "If you get a CPAN error, rerun the configuration and it should go away."
-	echo
-fi
-
-$PERL Makefile.PL $*
-make
-make test && make install
