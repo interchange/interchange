@@ -1,7 +1,7 @@
 # Copyright 2005 Davor Ocelic (docelic@mail.inet.hr)
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: liven_urls.filter,v 1.1 2005-08-11 23:21:22 docelic Exp $
+# $Id: liven_urls.filter,v 1.2 2005-09-05 10:33:49 docelic Exp $
 
 CodeDef liven_urls Filter
 CodeDef liven_urls Description Make URLs clickable
@@ -10,7 +10,7 @@ CodeDef liven_urls Routine <<EOR
 my %regexps = (
 
 http => <<'ENDR',
-(?:http://(?:(?:(?:(?:(?:[a-zA-Z\d](?:(?:[a-zA-Z\d]|-)*[a-zA-Z\d])?)\.)*(?:[a-zA-Z](?:(?:[a-zA-Z\d]|-)*[a-zA-Z\d])?))|(?:(?:\d+)(?:\.(?:\d+)){3}))(?::(?:\d+))?)(?:/(?:(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*)(?:/(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*))*)(?:\?(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*))?)?)
+(?:https?://(?:(?:(?:(?:(?:[a-zA-Z\d](?:(?:[a-zA-Z\d]|-)*[a-zA-Z\d])?)\.)*(?:[a-zA-Z](?:(?:[a-zA-Z\d]|-)*[a-zA-Z\d])?))|(?:(?:\d+)(?:\.(?:\d+)){3}))(?::(?:\d+))?)(?:/(?:(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*)(?:/(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*))*)(?:\?(?:(?:(?:[a-zA-Z\d$\-_.+!*'(),]|(?:%[a-fA-F\d]{2}))|[;:@&=])*))?)?)
 ENDR
 
 
@@ -106,7 +106,7 @@ sub {
 	@arg or return $val;
 	my $match_url = join '|', @regexps{@arg};
 
-	$val =~ s/($match_url)/<a href="$1">$1<\/a>/gs;
+	$val =~ s/($match_url)/<a href="$1">$1<\/a>/gsi;
 	$val
 }
 EOR
