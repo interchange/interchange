@@ -106,18 +106,24 @@ EOF
 	my $pre_scr = '';
 	my $post_scr = '';
 	my $onmouse = '';
+	my $extra = '';
+	
+	if ($opt->{extra}) {
+		$extra = ", $opt->{extra}";
+	}
+
 	if($Session->{browser} =~ /MSIE/) {
 	    $pre_scr = qq{
 <script>
 var htmlarea_needinit_$pname = true;
 </script>
 };
-		$onmouse = qq{ onMouseOver="if(htmlarea_needinit_$pname) { HTMLArea.replace('htmlarea_$pname'); htmlarea_needinit_$pname=false }"};
+		$onmouse = qq{ onMouseOver="if(htmlarea_needinit_$pname) { HTMLArea.replace('htmlarea_$pname'$extra); htmlarea_needinit_$pname=false }"};
 	}
 	else {
 		$post_scr = <<EOF;
 <script>
-	HTMLArea.replace('htmlarea_$pname');
+	HTMLArea.replace('htmlarea_$pname'$extra);
 </script>
 EOF
 	}
