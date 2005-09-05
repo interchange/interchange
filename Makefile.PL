@@ -679,6 +679,10 @@ EOF
 					require URI::URL;
 				};
 			push(@mods_to_get, 'URI::URL') if $@;
+			eval {
+					require Set::Crontab;
+				};
+			push(@mods_to_get, 'Set::Crontab') if $@;				
 		}
 		if(@mods_to_get) {
 			my $mods = join "\n\t", @mods_to_get;
