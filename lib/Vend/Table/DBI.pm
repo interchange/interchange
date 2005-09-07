@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.63 2005-06-09 19:27:01 mheins Exp $
+# $Id: DBI.pm,v 2.64 2005-09-07 08:43:54 racke Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.63 $, 10);
+$VERSION = substr(q$Revision: 2.64 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1391,7 +1391,7 @@ sub set_row {
     $s->bind_entire_row($cfg->{_Insert_h}, @fields);
 
 	my $rc = $cfg->{_Insert_h}->execute()
-		or die $s->log_error("%s error: $DBI::errstr", 'set_row', $DBI::errstr);
+		or die $s->log_error("%s error on key '%s': $DBI::errstr", 'set_row', $fields[$ki], $DBI::errstr);
 
 	$val	= $cfg->{AUTO_SEQUENCE}
 			?  $s->last_sequence_value($fields[$ki])
