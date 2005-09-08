@@ -142,7 +142,7 @@
 		SELECT		*
 		FROM		transactions
 		WHERE		1=1
-		AND			deleted != 1
+		AND			deleted <> 1
 		[if cgi date_from]
 			AND order_ymd >= '[cgi date_from]'
 			AND order_ymd <= '[cgi date_to]'
@@ -164,7 +164,7 @@
 	[tmp mv_add_dot_html]0[/tmp] 
 	
 	
-	[query prefix=tx list=1 type=list sql='[scratch sql]']
+	[query base=transactions prefix=tx list=1 type=list sql='[scratch sql]']
 		[no-match] No Match.  Query was <pre>[scratch sql]</pre> [/no-match]
 		[list]
 			
