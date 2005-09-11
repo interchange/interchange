@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: uploadhelper.widget,v 1.3 2005-09-11 23:46:40 docelic Exp $
+
 CodeDef uploadhelper  Widget  1
 CodeDef uploadhelper  Description File upload
 CodeDef uploadhelper  Routine <<EOR
@@ -32,4 +36,3 @@ sub {
 	return $out;
 }
 EOR
-

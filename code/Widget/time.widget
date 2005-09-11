@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: time.widget,v 1.2 2005-09-11 23:46:40 docelic Exp $
+
 CodeDef time Widget 1
 CodeDef time Description Time selector
 CodeDef time Routine <<EOR

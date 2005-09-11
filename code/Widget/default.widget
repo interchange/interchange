@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: default.widget,v 1.2 2005-09-11 23:46:39 docelic Exp $
+
 CodeDef default Widget 1
 CodeDef default Description Default widget if none selected
 CodeDef default Visibility private

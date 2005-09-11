@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: country_select.widget,v 1.8 2005-09-11 23:46:39 docelic Exp $
+
 CodeDef state_select  Widget  1
 CodeDef state_select  Description State (needs country_select)
 CodeDef state_select  Help Requires country_select widget for country to work properly

@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: required.jsc,v 1.3 2005-09-11 23:46:39 docelic Exp $
+
 CodeDef required  JavaScriptCheck  1
 CodeDef required  Description Javascript non-blank check
 CodeDef required  Help Also checks for only whitespace

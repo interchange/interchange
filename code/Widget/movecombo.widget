@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: movecombo.widget,v 1.2 2005-09-11 23:46:39 docelic Exp $
+
 CodeDef movecombo Widget 1
 CodeDef movecombo Description Combo move
 CodeDef movecombo Help Selects any/all of many options, puts in text box

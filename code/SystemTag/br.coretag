@@ -1,3 +1,8 @@
-UserTag br PosNumber 0
-UserTag br Description Return <br> or <br/> based on XHTML setting
-UserTag br Routine sub { return "<br$Vend::Xtrailer>" }
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: br.coretag,v 1.2 2005-09-11 23:46:39 docelic Exp $
+
+UserTag br PosNumber    0
+UserTag br Description  Return <br> or <br/> based on XHTML setting
+UserTag br Version      $Revision: 1.2 $
+UserTag br Routine      sub { return "<br$Vend::Xtrailer>" }

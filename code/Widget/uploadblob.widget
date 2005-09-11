@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: uploadblob.widget,v 1.4 2005-09-11 23:46:40 docelic Exp $
+
 CodeDef uploadblob  Widget  1
 CodeDef uploadblob  Description File upload to BLOB
 CodeDef uploadblob  Routine <<EOR
@@ -44,4 +48,3 @@ CodeDef uploadblob ExtraMeta <<EOM
 	},
 }
 EOM
-

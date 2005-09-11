@@ -1,3 +1,7 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: labels.widget,v 1.2 2005-09-11 23:46:39 docelic Exp $
+
 CodeDef labels Widget 1
 CodeDef labels Description Show labels
 CodeDef labels MapRoutine Vend::Form::show_labels
