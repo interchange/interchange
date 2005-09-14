@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.64 2005-09-07 08:43:54 racke Exp $
+# $Id: DBI.pm,v 2.65 2005-09-14 02:01:14 jon Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1743,8 +1743,8 @@ sub list_fields {
 	my($db, $name, $config) = @_;
 	my @fld;
 
-	my $q = "select * from $name";
-	$q .= " limit 1" if $config->{HAS_LIMIT};
+	my $q = "SELECT * FROM $name WHERE 2 = 1";
+
 	my $sth = $db->prepare($q)
 		or die ::errmsg("%s prepare on %s: %s", 'list_fields', $name, $DBI::errstr);
 
