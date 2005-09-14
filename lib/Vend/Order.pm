@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.71 2005-08-09 21:10:37 mheins Exp $
+# $Id: Order.pm,v 2.72 2005-09-14 13:18:42 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.71 $, 10);
+$VERSION = substr(q$Revision: 2.72 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -643,6 +643,14 @@ sub build_cc_info {
 sub guess_cc_type {
 	my ($ccnum) = @_;
 	$ccnum =~ s/\D+//g;
+
+	if(my $subname = $Vend::Cfg->{SpecialSub}{guess_cc_type}) {
+		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		my $guess;
+		if( $sub and $guess = $sub->($ccnum) ) {
+			return $guess;
+		}
+	}
 
 	# based on logic by Karl Moore from http://www.vb-world.net/tips/tip509.html
 	if ($ccnum eq '')										{ '' }
