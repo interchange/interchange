@@ -87,7 +87,6 @@ code/SystemTag/area.coretag
 code/SystemTag/assign.coretag
 code/SystemTag/attr_list.coretag
 code/SystemTag/banner.coretag
-code/SystemTag/br.coretag
 code/SystemTag/calc.coretag
 code/SystemTag/calcn.coretag
 code/SystemTag/cart.coretag
