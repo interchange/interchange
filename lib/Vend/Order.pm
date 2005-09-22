@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.73 2005-09-16 18:55:19 mheins Exp $
+# $Id: Order.pm,v 2.74 2005-09-22 16:37:52 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.73 $, 10);
+$VERSION = substr(q$Revision: 2.74 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2587,15 +2587,27 @@ sub add_items {
 			}
 			if($Vend::Cfg->{AutoModifier}) {
 				foreach $i (@{$Vend::Cfg->{AutoModifier}}) {
-					my ($table,$key,$attrib) = split /:/, $i;
-					my $select = $attrib ? $item->{$attrib} : $code;
+					my $attr;
+					my ($table,$key,$foreign) = split /:+/, $i, 3;
+
+					if($table =~ /=/) {
+						($attr, $table) = split /\s*=\s*/, $table, 2;
+					}
+
 					unless ($key) {
 						$key = $table;
-						$item->{$key} = item_common($item, $key, $select)
+						$table = $item->{mv_ib};
 					}
-					else {
-						$item->{$key} = tag_data($table, $key, $select);
-					}
+
+					$attr ||= $key;
+
+
+					my $select = $foreign ? $item->{$foreign} : $code;
+					$select ||= $code;
+
+#::logDebug("attr=$attr table=$table key=$key select=$select foreign=$foreign");
+					$item->{$attr} = ::tag_data($table, $key, $select);
+#::logDebug("item->$attr=$item->{$attr}");
 				}
 			}
 

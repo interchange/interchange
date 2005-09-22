@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.52 2005-08-24 19:41:19 jon Exp $
+# $Id: Data.pm,v 2.53 2005-09-22 16:37:52 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1702,12 +1702,27 @@ sub item_price {
 		)
 	{
 		foreach my $i (@{$Vend::Cfg->{AutoModifier}}) {
-			my ($table,$key) = split /:/, $i;
+			my $attr;
+			my ($table,$key,$foreign) = split /:+/, $i, 3;
+
+			if($table =~ /=/) {
+				($attr, $table) = split /\s*=\s*/, $table, 2;
+			}
+
 			unless ($key) {
 				$key = $table;
 				$table = $item->{mv_ib};
 			}
-			$item->{$key} = ::tag_data($table, $key, $item->{code});
+
+			$attr ||= $key;
+			$table ||= $Vend::Cfg->{ProductFiles}[0];
+
+			my $select = $foreign ? $item->{$foreign} : $item->{code};
+			$select ||= $item->{code};
+
+#::logDebug("attr=$attr table=$table key=$key select=$select foreign=$foreign");
+			$item->{$attr} = ::tag_data($table, $key, $select);
+#::logDebug("item->$attr=$item->{$attr}");
 		}
 #::logDebug("item=" . ::uneval($item));
 	}
