@@ -1,3 +1,9 @@
+interchange (5.2.1-1) unstable; urgency=high
+
+  * new upstream release (fixes ITL injection, Closes: #329705)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 23 Sep 2005 00:08:14 +0200
+
 interchange (5.2.0-1) unstable; urgency=low
 
   * new upstream release
