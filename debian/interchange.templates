@@ -65,13 +65,6 @@ Default: /var/www/shops
 _Description: Static HTML files location:
  Catalog installations need a directory where HTML files can be placed.
 
-Template: interchange/debug
-Type: boolean
-Default: false
-_Description: Enable debug mode?
- Debug mode is only useful if you modified the Interchange sources
- accordingly.
-
 Template: interchange/gpghome
 Type: string
 Default: /var/lib/interchange/.gnupg
