@@ -13,8 +13,9 @@ for the Interchange Debian packages.
 APT Sources
 ===========
 
-Interchange Debian packages for stable (woody), testing (sarge) 
-and unstable (sid) are part of the official Debian distribution.
+Interchange Debian packages for oldstable (woody) and unstable (sid) are
+part of the official Debian distribution. There are no official packages
+for stable (sarge).
 
 Up-to-date Interchange Debian packages for stable are available from:
 
