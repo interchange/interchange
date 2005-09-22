@@ -48,13 +48,16 @@ ui_template_name: leftonly
 		my $noscrub;
 		if(! $type) {
 			# do nothing
+			$value =~ s/\[/&#91;/g;
 		}
 		elsif($type eq '2') {
 			$value = $Tag->filter('text2html', $value);
+			$value =~ s/\[/&#91;/g;
 		}
 		elsif($type eq '4') {
 			unless ($value =~ m{</\s*xmp\s*>}i) {
 				$noscrub = 1;
+				$value =~ s/\[//g;
 				$value = "<XMP>$value</XMP>";
 			}
 		}
@@ -77,7 +80,9 @@ ui_template_name: leftonly
 	<table>
 	<tr>
 	<td bgcolor="#eeeeee">
-	<B>[cgi name=subject filter=restrict_html]<br>
+	[restrict enable=cgi]
+	<B>[cgi name=subject filter="restrict_html"]<br>
+	[/restrict]
 	by [either][value fname][or]Guest user[/either] on [convert-date fmt="%A, %B %e, %Y @%H:%M"][/convert-date]<B>
 	</td>
 	</tr>
