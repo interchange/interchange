@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 5.0.1
+# Interchange version 5.0.2
 #
-# $Id: interchange.PL,v 2.77.2.1 2004-03-15 14:25:26 jon Exp $
+# $Id: interchange.PL,v 2.77.2.2 2005-09-22 19:09:36 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -140,7 +140,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '5.0.1';
+	$VERSION = '5.0.2';
 
 	unless ($] >= 5.006) {
 		die "Interchange $VERSION requires Perl 5.6.0 or later,\nbut you're trying to run it under Perl $]. Exiting.\n";
@@ -354,7 +354,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.0.1
+5.0.2
 
 =head1 DESCRIPTION
 
