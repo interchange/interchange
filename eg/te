@@ -32,51 +32,51 @@ rules are:
 
 =over 4
 
-=item *
+=item o
 
 Empty lines are ignored.
 
-=item *
+=item o
 
 Comment lines (beginning with C<#>) are ignored at the beginning of the
 file, and terminate a record in the middle.
 
-=item *
+=item o
 
 The fields in the first record are used in all subsequent records,
 and the order in which they are specified are the order in which the
 columns will be written.
 
-=item *
+=item o
 
 To delete a column, delete it's line in the first record.
 
-=item *
+=item o
 
 To change which order the columns are in, re-order the first record.
 
-=item *
+=item o
 
 To add a column, add it to the first record (and as many subsequent
 records as you wish).
 
-=item * 
+=item o 
 
 If you delete a column, you do not need to delete it from every record;
 any instances of that field in records after the first will be ignored.
 
-=item *
+=item o
 
 Any space left after the field name and colon (like C<fieldname:>) will be
 included as part of the field. Any tabs you put in the field data itself
 will be converted to spaces (as they would corrupt the table otherwise).
 
-=item *
+=item o
 
 A record can be deleted by removing all its fields. A new record can be
 added by inserting a new block of all fields at a record boundary.
 
-=item *
+=item o
 
 If any errors are encountered, such as non-existent field names or lines
 that don't follow the prescribed format, processing aborts immediately
@@ -122,7 +122,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.9 2005-09-01 00:34:29 mheins Exp $
+$Id: te,v 2.10 2005-09-22 16:32:26 mheins Exp $
 
 =head1 CHANGELOG
 
