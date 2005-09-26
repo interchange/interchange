@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.7 2005-08-28 14:31:30 mheins Exp $
+# $Id: email.tag,v 1.8 2005-09-26 19:36:59 jon Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -10,8 +10,10 @@ UserTag email Routine <<EOR
 
 my $Have_mime_lite;
 BEGIN {
-	require MIME::Lite;
-	$Have_mime_lite = 1;
+	eval {
+		require MIME::Lite;
+		$Have_mime_lite = 1;
+	};
 }
 
 sub {
@@ -29,9 +31,22 @@ sub {
 		$from = $Vend::Cfg->{MailOrderTo};
 		$from =~ s/,.*//;
 	}
-	$extra =~ s/\s*$/\n/ if $extra;
-        $extra .= "From: $from\n" if $from;
-	@extra = grep /\S/, split(/\n/, $extra);
+
+	# Prevent header injections from spammers' hostile content
+	for ($to, $subject, $reply, $from) {
+		# unfold valid RFC 2822 "2.2.3. Long Header Fields"
+		s/\r?\n([ \t]+)/$1/g;
+		# now remove any invalid extra lines left over
+		s/[\r\n](.*)//s
+			and ::logError("Header injection attempted in email tag: %s", $1);
+	}
+
+	for (grep /\S/, split /[\r\n]+/, $extra) {
+		# require header conformance with RFC 2822 section 2.2
+		push (@extra, $_), next if /^[\x21-\x39\x3b-\x7e]+:[\x00-\x09\x0b\x0c\x0e-\x7f]+$/;
+		::logError("Invalid header given to email tag: %s", $_);
+	}
+	unshift @extra, "From: $from" if $from;
 
 	ATTACH: {
 #::logDebug("Checking for attachment");
@@ -145,12 +160,10 @@ sub {
 		}
 	}
 
-    SEND: {
-            $ok = send_mail($to, $subject, $body, $reply, 0, @extra);
-    }
+	$ok = send_mail($to, $subject, $body, $reply, 0, @extra);
 
     if (!$ok) {
-        logError("Unable to send mail using $Vend::Cfg->{'SendMailProgram'}\n" .
+        logError("Unable to send mail using $Vend::Cfg->{SendMailProgram}\n" .
             "To '$to'\n" .
             "From '$from'\n" .
             "With extra headers '$extra'\n" .
