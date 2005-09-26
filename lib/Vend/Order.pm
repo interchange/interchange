@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.74 2005-09-22 16:37:52 mheins Exp $
+# $Id: Order.pm,v 2.75 2005-09-26 19:25:02 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.74 $, 10);
+$VERSION = substr(q$Revision: 2.75 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2071,7 +2071,6 @@ sub route_order {
 
 	foreach $msg (@out) {
 		eval {
-#### change this to use Vend::Mail::send
 			send_mail(@$msg);
 		};
 		if($@) {
