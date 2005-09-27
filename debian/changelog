@@ -1,11 +1,13 @@
-interchange (5.3.1-1) unstable; urgency=low
+interchange (5.3.0.20050927-1) experimental; urgency=low
 
   * new upstream release
   * remove configuration snippet for demo catalog on deinstallation
+  * remove configuration snippet for foundation from catalogs.cfg
   * added te editor for tab-delimited files (Closes: #132757)
   * remove Debconf question about debug mode
+  * support code for Swish added to interchangeconfig and interchange.cfg
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 20 Apr 2004 13:56:38 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 22 Sep 2005 17:33:40 +0200
 
 interchange (5.2.1-1) unstable; urgency=high
 
