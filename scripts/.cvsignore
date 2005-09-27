@@ -2,6 +2,7 @@ chkcat
 compile_link
 configdump
 config_prog
+crontab
 dump
 expire
 expireall
