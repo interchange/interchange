@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.8 2005-09-26 19:36:59 jon Exp $
+# $Id: email.tag,v 1.9 2005-09-28 22:07:24 jon Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -52,6 +52,11 @@ sub {
 #::logDebug("Checking for attachment");
 		last ATTACH unless $opt->{attach} || $opt->{html};
 
+		unless ($Have_mime_lite) {
+			::logError("email tag: attachment without MIME::Lite installed.");
+			last ATTACH;
+		}
+
 		my $att1_format;
 		if($opt->{html}) {
 			$opt->{mimetype} ||= 'multipart/alternative';
@@ -61,10 +66,6 @@ sub {
 			$opt->{mimetype} ||= 'multipart/mixed';
 		}
 
-		if(! $Have_mime_lite) {
-			::logError("email tag: attachment without MIME::Lite installed.");
-			last ATTACH;
-		}
 		my $att = $opt->{attach};
 		my @attach;
 		my @extra_headers;
