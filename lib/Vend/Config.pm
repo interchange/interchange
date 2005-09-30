@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.183 2005-08-20 02:53:45 jon Exp $
+# $Id: Config.pm,v 2.184 2005-09-30 09:46:15 docelic Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.183 $, 10);
+$VERSION = substr(q$Revision: 2.184 $, 10);
 
 my %CDname;
 my %CPname;
@@ -670,7 +670,7 @@ sub catalog_directives {
 	['SOAP_Control',     'action',             ''],		  
 	['UserDB',			 'locale',	     	 ''], 
 	['UserControl',		 'yesno',	     	 'No'], 
-	['UserDatabase',	 undef,		     	 ''],  #undocumented
+	['UserDatabase',	 undef,		     	 ''],
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
 	['StaticPage',		 'warn',     	     ''],
