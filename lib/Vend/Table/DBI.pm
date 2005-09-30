@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.65 2005-09-14 02:01:14 jon Exp $
+# $Id: DBI.pm,v 2.66 2005-09-30 20:56:58 jon Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.65 $, 10);
+$VERSION = substr(q$Revision: 2.66 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1769,7 +1769,7 @@ sub list_fields {
 			}
 		};
 	}
-	my @num = map { exists $config->{NUMERIC}{$_} ? DBI::SQL_INTEGER : undef } @fld;
+	my @num = map { exists $config->{NUMERIC}{$_} ? DBI::SQL_NUMERIC : undef } @fld;
 	$config->{_Numeric_ary} = \@num;
 	if($config->{UPPERCASE}) {
 		@fld = map { lc $_ } @fld;
