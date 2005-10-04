@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.252 2005-10-04 11:11:32 racke Exp $
+# $Id: Interpolate.pm,v 2.253 2005-10-04 19:34:29 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.252 $, 10);
+$VERSION = substr(q$Revision: 2.253 $, 10);
 
 @EXPORT = qw (
 
@@ -4393,6 +4393,12 @@ sub query {
 
 	$opt->{query} = $query
 		if $query;
+
+	$opt->{query} =~ s:
+			\[\Q$opt->{prefix}\E[_-]quote\](.*?)\[/\Q$opt->{prefix}\E[_-]quote\]
+		:
+			$db->quote($1)
+		:xige;
 
 	if (! $opt->{wantarray} and ! defined $MVSAFE::Safe) {
 		my $result = $db->query($opt, $text);
