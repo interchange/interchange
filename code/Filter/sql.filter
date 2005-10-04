@@ -1,14 +1,15 @@
-# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: sql.filter,v 1.2 2005-04-12 03:23:18 mheins Exp $
+# $Id: sql.filter,v 1.3 2005-10-04 19:27:11 jon Exp $
 
 CodeDef sql Filter
-CodeDef sql Description SQL quoting
+CodeDef sql Description SQL quoting, generic
 CodeDef sql Routine <<EOR
 sub {
 	my $val = shift;
 	$val =~ s:':'':g;
+	$val =~ s:\\:\\\\:g unless $::Pragma->{filter_sql_no_backslash};
 	return $val;
 }
 EOR
