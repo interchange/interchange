@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.57 2005-07-27 09:37:26 racke Exp $
+# $Id: Dispatch.pm,v 1.58 2005-10-04 10:53:34 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.57 $, 10);
+$VERSION = substr(q$Revision: 1.58 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -751,6 +751,19 @@ sub run_in_catalog {
 	undef $Vend::Session;
 	
 	if(@itl) {
+		# Track job
+		my ($trackdb, $trackid);
+		
+		if ($jobscfg->{trackdb}) {
+			if ($trackdb = database_exists_ref($jobscfg->{trackdb})) {
+				$trackid = $trackdb->set_slice('', [qw(name begin_run pid)],
+											   [$job, Vend::Interpolate::mvtime(undef, {}, '%Y-%m-%d %H:%M'), $$]);
+			}
+			else {
+				::logError ("Invalid jobs tracking database $jobscfg->{trackdb}");
+			}
+		}
+		
 		# Run once at beginning
 		run_macro($jobscfg->{initialize});
 
@@ -772,6 +785,11 @@ sub run_in_catalog {
 
 			# Run once at end of each job
 			run_macro($jobscfg->{autoend});
+		}
+
+		if ($trackid) {
+			$trackdb->set_field($trackid, 'end_run',
+								Vend::Interpolate::mvtime(undef, {}, '%Y-%m-%d %H:%M'));
 		}
 	}
 	else {
