@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.4 2005-08-03 19:33:39 jon Exp $
+# $Id: Swish.pm,v 1.5 2005-10-04 12:38:20 racke Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 use strict;
 
 sub array {
@@ -136,8 +136,9 @@ sub search {
 	$s->{mv_return_delim} = $s->{mv_index_delim}
 		unless defined $s->{mv_return_delim};
 
-	return $s->search_error("Search with swish, no swish configured.")
-		if ! $s->{swish_cmd};
+	unless ($s->{swish_cmd} && -x $s->{swish_cmd}) {
+		return $s->search_error("Invalid swish command $s->{swish_cmd}");
+	}
 
 	@specs = @{$s->{mv_searchspec}};
 
