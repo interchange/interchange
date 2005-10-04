@@ -1,4 +1,4 @@
-interchange (5.3.0.20050927-1) experimental; urgency=low
+interchange (5.3.0.20051004-1) experimental; urgency=low
 
   * new upstream release
   * remove configuration snippet for demo catalog on deinstallation
