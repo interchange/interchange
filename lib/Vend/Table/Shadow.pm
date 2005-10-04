@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.50 2005-08-15 14:12:01 racke Exp $
+# $Id: Shadow.pm,v 1.51 2005-10-04 11:11:32 racke Exp $
 #
 # Copyright (C) 2002-2005 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.50 $, 10);
+$VERSION = substr(q$Revision: 1.51 $, 10);
 
 # CREDITS
 #
@@ -99,7 +99,9 @@ sub close_table {
 sub dbh {
 	my ($s) = shift;
 	$s = $s->import_db() unless defined $s->[$OBJ];
-	return $s->[$OBJ]->dbh();
+	if ($s->[$OBJ]->can('dbh')) {
+		return $s->[$OBJ]->dbh();
+	}
 }
 
 sub name {
