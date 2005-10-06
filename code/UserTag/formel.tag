@@ -1,11 +1,11 @@
-# Copyright 2002-2003 Interchange Development Group (http://www.icdevgroup.org/)
-# Copyright 2000-2003 Stefan Hornburg (racke@linuxia.de)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.11 2005-02-10 14:38:39 docelic Exp $
+# $Id: formel.tag,v 1.12 2005-10-06 08:46:14 racke Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.11 $
+UserTag formel Version $Revision: 1.12 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -74,7 +74,11 @@ sub {
 	}
 
 	if ($type eq 'radio' || $type eq 'checkbox') {		
-		my ($rlabel, $rvalue, $select);
+		my ($rlabel, $rvalue, $select, @vals);
+		
+		if ($type eq 'checkbox') {
+			@vals = split(/\0/, $::Values->{$name});
+		}
 
 		for my $button (split (/\s*,\s*/, $opt->{choices})) {
 			$select = '';
@@ -86,7 +90,15 @@ sub {
 				$rvalue = $rlabel = $button;
 			}
 
-			if ($::Values->{$name} eq $rvalue) {
+			if ($type eq 'checkbox') {
+				# multiple values possible for checkboxes
+				for my $val (@vals) {
+					if ($val eq $rvalue) {
+						$select = 'checked';
+						last;
+					}
+				}
+			} elsif ($::Values->{$name} eq $rvalue) {
 				$select = ' checked';
 			}
 
