@@ -1,0 +1,17 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: relative_filename.oc,v 1.1 2005-10-07 11:38:55 racke Exp $
+
+CodeDef relative_filename OrderCheck 1
+CodeDef relative_filename Routine <<EOR
+sub {
+	my ($name, $value, $code) = @_;
+
+	if ($code =~ /\S/ && $code !~ /^\.{1,2}$/ 
+		&& ! Vend::File::absolute_or_relative($code)) {
+		return (1, $value, '');
+	} else {
+		return (0, $value, "filename not relative");
+	}
+}
+EOR
