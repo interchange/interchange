@@ -50,6 +50,7 @@ code/Filter/null_to_colons.filter
 code/Filter/null_to_comma.filter
 code/Filter/null_to_space.filter
 code/Filter/nullselect.filter
+code/Filter/oneline.filter
 code/Filter/option_format.filter
 code/Filter/options2line.filter
 code/Filter/pagefile.filter
