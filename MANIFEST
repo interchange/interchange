@@ -83,6 +83,7 @@ code/Filter/word.filter
 code/Filter/yesno.filter
 code/Filter/zerofix.filter
 code/JavaScriptCheck/required.jsc
+code/OrderCheck/email_only.oc
 code/OrderCheck/relative_filename.oc
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
