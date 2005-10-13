@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.66 2005-09-30 20:56:58 jon Exp $
+# $Id: DBI.pm,v 2.67 2005-10-13 05:47:01 jon Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.66 $, 10);
+$VERSION = substr(q$Revision: 2.67 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -2129,23 +2129,17 @@ eval {
 
 sub auto_config {
 	my $string = shift;
-	my ($dsn, $user, $pass) = Text::ParseWords::shellwords($string);
+	my ($dsn, $user, $pass, $catalog, $schema, $name, $type) = Text::ParseWords::shellwords($string);
 	my $handle = DBI->connect($dsn, $user, $pass)
 		or ::logDebug(::errmsg("DatabaseAuto DSN '%s' does not connect.", $dsn));
-	my $schema;
 	my @tabs;
 	my @out;
-	eval {
-		require DBIx::DBSchema;
-		$schema = new_native DBIx::DBSchema $handle;
-	};
-
 	my $sth;
 	eval {
-		$sth = $handle->table_info()
+		$sth = $handle->table_info($catalog, $schema, $name, $type)
 			or die "Table info not enabled for this driver.\n";
 		while(my $ref = $sth->fetchrow_arrayref) {
-			next unless $ref->[3] eq 'TABLE';
+			next unless $ref->[3] eq 'TABLE' or $type;
 			push @tabs, $ref->[2];
 		}
 	};
@@ -2157,8 +2151,8 @@ sub auto_config {
 	elsif(exists $Vend::Config::C->{DatabaseAutoIgnore}) {
 		 $re = $Vend::Config::C->{DatabaseAutoIgnore};
 	}
-	$re and $re = qr/$re/;
 #::logDebug("ignore re=$re");
+	$re and $re = qr/$re/;
 
 	my %found;
 	return undef unless @tabs;
@@ -2170,15 +2164,21 @@ sub auto_config {
 		push @out, [$t, "PASS $pass"] if $pass;
 	}
 
-	if($schema) {
-		for my $create ($schema->sql($handle)) {
-			$create =~ /^CREATE\s+TABLE\s+(\w+)\s+/
+	my $dbschema;
+	eval {
+		require DBIx::DBSchema;
+		$dbschema = DBIx::DBSchema->new_native($handle);
+	};
+	if ($dbschema) {
+		for my $sql ($dbschema->sql($handle)) {
+			$sql =~ /^CREATE\s+TABLE\s+(\w+)\s+/
 				or next;
 			my $t = $1;
 			next unless $found{$t};
-			push @out, [ $t, "CREATE_SQL $create"];
+			push @out, [ $t, "CREATE_SQL $sql" ];
 		}
 	}
+
 	return @out;
 }
 
