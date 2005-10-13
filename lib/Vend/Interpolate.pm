@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.253 2005-10-04 19:34:29 jon Exp $
+# $Id: Interpolate.pm,v 2.254 2005-10-13 16:31:33 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.253 $, 10);
+$VERSION = substr(q$Revision: 2.254 $, 10);
 
 @EXPORT = qw (
 
@@ -1865,7 +1865,7 @@ sub mime {
 							':=' . $$
 		unless defined $::Instance->{MIME_BOUNDARY};
 
-	my $msg_type = "multipart/mixed";
+	my $msg_type = $opt->{type} || "multipart/mixed";
 	if($option eq 'reset') {
 		undef $::Instance->{MIME_TIMESTAMP};
 		undef $::Instance->{MIME_BOUNDARY};
@@ -1894,13 +1894,21 @@ EndOFmiMe
 		$::Instance->{MIME} = 1;
 		my $desc = $opt->{description} || $option;
 		my $type = $opt->{type} || 'text/plain; charset=US-ASCII';
-		my $disposition = $opt->{attach_only} ? qq{attachment; filename="$desc"} : "inline";
+		my $disposition = $opt->{attach_only}
+						? qq{attachment; filename="$desc"}
+						: "inline";
+		my $encoding = $opt->{transfer_encoding};
+		my @headers;
+		push @headers, "Content-Type: $type";
+		push @headers, "Content-ID: $id";
+		push @headers, "Content-Disposition: $disposition";
+		push @headers, "Content-Description: $desc";
+		push @headers, "Content-Transfer-Encoding: $opt->{transfer_encoding}"
+			if $opt->{transfer_encoding};
+		my $head = join "\n", @headers;
 		$out = <<EndOFmiMe;
 --$::Instance->{MIME_BOUNDARY}
-Content-Type: $type
-Content-ID: $id
-Content-Disposition: $disposition
-Content-Description: $desc
+$head
 
 $text
 EndOFmiMe
