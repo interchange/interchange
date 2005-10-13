@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.76 2005-10-13 20:15:05 racke Exp $
+# $Id: Order.pm,v 2.77 2005-10-13 22:23:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.77 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -627,6 +627,13 @@ sub build_cc_info {
 		$cardinfo = \%c;
 	} elsif (ref $cardinfo ne 'HASH') {
 		return;
+	}
+
+	if(my $num = $cardinfo->{MV_CREDIT_CARD_NUMBER}) {
+		my @quads;
+		$num =~ s/\D//g;
+		@quads = $num =~ m{(\d\d\d\d)(\d\d\d\d)(\d\d\d\d)(\d+)};
+		$cardinfo->{MV_CREDIT_CARD_QUADS} = join "-", @quads;
 	}
 
 	$template = $template ||
