@@ -1,0 +1,48 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: exists.oc,v 1.1 2005-10-14 07:42:50 racke Exp $
+
+CodeDef exists OrderCheck 1
+CodeDef exists Routine <<EOR
+sub {
+	my($ref, $name, $value, $code) = @_;
+
+	$code =~ s/(\w+)(:+(\w+))?\s*//;
+	my $tab = $1
+		or return (0, $name, errmsg("no table specified"));
+	my $col = $3;
+	my $msg = $code;
+
+	my $db = database_exists_ref($tab)
+		or do {
+			$msg = errmsg(
+						  "Table %s doesn't exist",
+						  $tab,
+						 );
+			return(0, $name, $msg);
+		};
+
+	my $used;
+	if(! $col) {
+		$used = $db->record_exists($value);
+	}
+	else {
+		#::logDebug("Doing foreign key check, tab=$tab col=$col value=$value");
+		$used = $db->foreign($value, $col);
+	}
+
+	#::logDebug("Checking exists, tab=$tab col=$col, used=$used");
+	if($used) {
+		return (1, $name, '');
+	}
+	else {
+		$msg = errmsg(
+					  "Key %s does not exist in %s, try again.",
+					  $value,
+					  $tab,
+					 ) unless $msg;
+		return(0, $name, $msg);
+	}
+
+}
+EOR
