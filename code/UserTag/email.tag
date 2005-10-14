@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.9 2005-09-28 22:07:24 jon Exp $
+# $Id: email.tag,v 1.10 2005-10-14 13:04:05 racke Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -25,8 +25,6 @@ sub {
 
     $subject = '<no subject>' unless defined $subject && $subject;
 
-    $reply = '' unless defined $reply;
-    $reply = "Reply-to: $reply\n" if $reply;
 	if (! $from) {
 		$from = $Vend::Cfg->{MailOrderTo};
 		$from =~ s/,.*//;
@@ -40,6 +38,9 @@ sub {
 		s/[\r\n](.*)//s
 			and ::logError("Header injection attempted in email tag: %s", $1);
 	}
+
+    $reply = '' unless defined $reply;
+    $reply = "Reply-to: $reply\n" if $reply;
 
 	for (grep /\S/, split /[\r\n]+/, $extra) {
 		# require header conformance with RFC 2822 section 2.2
