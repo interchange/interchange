@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.62 2005-08-07 16:06:27 mheins Exp $
+# $Id: Form.pm,v 2.63 2005-10-14 08:53:08 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 @EXPORT = qw (
 	display
@@ -470,7 +470,7 @@ sub date_widget {
 	my $out = qq{<select name="$name"$sel_extra>};
 	my $o;
 	if ($opt->{blank}) {
-		$out .= '<option value="0"$opt_extra>------</option>';
+		$out .= qq{<option value="0"$opt_extra>------</option>};
 	}
 	for(@Months) {
 		$o = qq{<option value="$_->[0]"$opt_extra>} . errmsg($_->[1]) . '</option>';
@@ -484,7 +484,7 @@ sub date_widget {
 	$out .= qq{<input type="hidden" name="$name" value="/">};
 	$out .= qq{<select name="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<option value="0"$opt_extra>--</option>';
+		$out .= qq{<option value="0"$opt_extra>--</option>};
 	}
 	for(@Days) {
 		$o = qq{<option value="$_->[0]"$opt_extra>$_->[1]} . '</option>';
@@ -509,7 +509,7 @@ sub date_widget {
 		@Years = ($by .. $ey);
 	}
 	if ($opt->{blank}) {
-		$out .= '<option value="0000"$opt_extra>----</option>';
+		$out .= qq{<option value="0000"$opt_extra>----</option>};
 	}
 	for(@Years) {
 		$o = qq{<option$opt_extra>$_} . '</option>';
@@ -527,7 +527,7 @@ sub date_widget {
 	$out .= qq{<input type="hidden" name="$name" value=":">};
 	$out .= qq{<select name="$name"$sel_extra>};
 	if ($opt->{blank}) {
-		$out .= '<option value="0"$opt_extra>--:--</option>';
+		$out .= qq{<option value="0"$opt_extra>--:--</option>};
 	}
 	
 	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
