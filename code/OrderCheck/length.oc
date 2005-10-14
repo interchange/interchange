@@ -1,0 +1,33 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: length.oc,v 1.1 2005-10-14 14:18:35 racke Exp $
+
+CodeDef length OrderCheck 1
+CodeDef length Routine <<EOR
+sub {
+	my($ref, $name, $value, $msg) = @_;
+	$msg =~ s/^(\d+)(?:\s*-(\d+))?\s*//
+		or return undef;
+	my $min = $1;
+	my $max = $2;
+	my $len = length($value);
+
+	if($len < $min) {
+		$msg = errmsg(
+					  "%s length %s less than minimum length %s.",
+					  $name,
+					  $len,
+					  $min) if ! $msg;
+		return(0, $name, $msg);
+	}
+	elsif($max and $len > $max) {
+		$msg = errmsg(
+					  "%s length %s more than maximum length %s.",
+					  $name,
+					  $len,
+					  $max) if ! $msg;
+		return(0, $name, $msg);
+	}
+	return (1, $name, '');
+}
+EOR

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.78 2005-10-14 07:42:50 racke Exp $
+# $Id: Order.pm,v 2.79 2005-10-14 14:18:35 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.78 $, 10);
+$VERSION = substr(q$Revision: 2.79 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -127,32 +127,6 @@ my %Parse = (
 								$params =~ s/\s+//g;
 								return $params;
 							},
-	'length'		=>  sub {
-							my($name, $value, $msg) = @_;
-							$msg =~ s/^(\d+)(?:\s*-(\d+))?\s*//
-								or return undef;
-							my $min = $1;
-							my $max = $2;
-							my $len = length($value);
-
-							if($len < $min) {
-								$msg = errmsg(
-										"%s length %s less than minimum length %s.",
-										$name,
-										$len,
-										$min) if ! $msg;
-								return(0, $name, $msg);
-							}
-							elsif($max and $len > $max) {
-								$msg = errmsg(
-										"%s length %s more than maximum length %s.",
-										$name,
-										$len,
-										$max) if ! $msg;
-								return(0, $name, $msg);
-							}
-							return (1, $name, '');
-						},
 	'filter'			=> sub {		
 							my($name, $value, $code) = @_;
 							my $message;
@@ -172,38 +146,6 @@ my %Parse = (
 							if($test ne $value) {
 								$message ||= errmsg("%s caught by filter %s", $name, $filter);
 								return ( 0, $name, $message);
-							}
-							return (1, $name, '');
-						},
-	'regex'			=>	sub {		
-							my($name, $value, $code) = @_;
-							my $message;
-
-							$code =~ s/\\/\\\\/g;
-							my @code = Text::ParseWords::shellwords($code);
-							if($code =~ /(["']).+?\1$/) {
-								$message = pop(@code);
-							}
-
-							for(@code) {
-								my $negate;
-								s/^!\s*// and $negate = 1;
-								my $op = $negate ? "!~" :  '=~';
-								my $regex = qr($_);
-								my $status;
-								if($negate) {
-									$status = ($value !~ $regex);
-								}
-								else {
-									$status = ($value =~ $regex);
-								}
-								if(! $status) {
-									$message = errmsg(
-										"failed pattern - %s",
-										"'$value' $op $_"
-										) if ! $message;
-									return ( 0, $name, $message);
-								}
 							}
 							return (1, $name, '');
 						},
@@ -259,38 +201,6 @@ my %Parse = (
 								my $msg = errmsg("%s set failed.", $var);
 								return ($value, $var, $msg);
 							},
-	future => sub {
-							my($name, $value, $code) = @_;
-							my $message;
-
-							my @code = Text::ParseWords::shellwords($code);
-							if($code =~ /(["']).+?\1$/) {
-								$message = pop(@code);
-							}
-							my $adjust = join " ", @code;
-							if(! $message) {
-								$message = errmsg(
-											"Date must be in the future at least %s",
-											$adjust,
-											);
-							}
-							if($value =~ /\0/) {
-								$value = Vend::Interpolate::filter_value(
-											'date_change',
-											$value,
-										);
-							}
-							my $current = Vend::Interpolate::mvtime(
-													undef,
-													{ adjust => $adjust },
-													"%Y%m%d%H%M",
-													);
-#::logDebug("current time: $current input value=$value");
-							if($value lt $current) {
-								return (0, $name, $message);
-							}
-							return (1, $name, '');
-						},
 );
 
 sub _update {

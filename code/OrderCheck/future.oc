@@ -1,0 +1,39 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: future.oc,v 1.1 2005-10-14 14:18:35 racke Exp $
+
+CodeDef future OrderCheck 1
+CodeDef future Routine <<EOR
+sub {
+	my($ref, $name, $value, $code) = @_;
+	my $message;
+
+	my @code = Text::ParseWords::shellwords($code);
+	if($code =~ /(["']).+?\1$/) {
+		$message = pop(@code);
+	}
+	my $adjust = join " ", @code;
+	if(! $message) {
+		$message = errmsg(
+						  "Date must be in the future at least %s",
+						  $adjust,
+						 );
+	}
+	if($value =~ /\0/) {
+		$value = Vend::Interpolate::filter_value(
+												 'date_change',
+												 $value,
+												);
+	}
+	my $current = Vend::Interpolate::mvtime(
+											undef,
+											{ adjust => $adjust },
+											"%Y%m%d%H%M",
+										   );
+	#::logDebug("current time: $current input value=$value");
+	if($value lt $current) {
+		return (0, $name, $message);
+	}
+	return (1, $name, '');
+}
+EOR

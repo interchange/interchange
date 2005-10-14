@@ -85,6 +85,10 @@ code/Filter/zerofix.filter
 code/JavaScriptCheck/required.jsc
 code/OrderCheck/email_only.oc
 code/OrderCheck/exists.oc
+code/OrderCheck/future.oc
+code/OrderCheck/length.oc
+code/OrderCheck/natural.oc
+code/OrderCheck/regex.oc
 code/OrderCheck/relative_filename.oc
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
