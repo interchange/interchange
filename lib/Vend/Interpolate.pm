@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.254 2005-10-13 16:31:33 mheins Exp $
+# $Id: Interpolate.pm,v 2.255 2005-10-15 01:25:23 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.254 $, 10);
+$VERSION = substr(q$Revision: 2.255 $, 10);
 
 @EXPORT = qw (
 
@@ -41,6 +41,7 @@ $CGI
 $Session
 $Values
 $Discounts
+$Sub
 );
 
 =head1 NAME
@@ -103,6 +104,7 @@ use HTML::Entities;
 use Vend::Server;
 use Vend::Scan;
 use Vend::Tags;
+use Vend::Subs;
 use Vend::Document;
 use Vend::Parse;
 use POSIX qw(ceil strftime LC_CTYPE);
@@ -142,6 +144,7 @@ BEGIN {
 							$TextSearch
 							$Values
 							$Variable
+							$Sub
 						/;
 	@Share_routines = qw/
 							&tag_data
@@ -189,6 +192,7 @@ sub reset_calc {
 		$DbSearch   = new Vend::DbSearch;
 		$TextSearch = new Vend::TextSearch;
 		$Tag        = new Vend::Tags;
+		$Sub        = new Vend::Subs;
 	}
 	$Tmp        = {};
 	undef $s;

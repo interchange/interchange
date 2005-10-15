@@ -1110,6 +1110,7 @@ lib/Vend/Ship/QueryUPS.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
 lib/Vend/SQL_Parser.pm
+lib/Vend/Subs.pm
 lib/Vend/Swish.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DB_File.pm
