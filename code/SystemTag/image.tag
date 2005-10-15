@@ -1,12 +1,12 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.14 2005-08-03 18:58:48 jon Exp $
+# $Id: image.tag,v 1.15 2005-10-15 00:32:41 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.14 $
+UserTag image Version   $Revision: 1.15 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -258,7 +258,7 @@ sub {
 		$opts .= " $opt->{extra}";
 	}
 	$image =~ s/"/&quot;/g;
-	return qq{<img src="$image"$opts>};
+	return qq{<img src="$image"$opts$Vend::Xtrailer>};
 }
 EOR
 
