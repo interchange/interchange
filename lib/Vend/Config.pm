@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.184 2005-09-30 09:46:15 docelic Exp $
+# $Id: Config.pm,v 2.185 2005-10-15 00:09:29 danb Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.184 $, 10);
+$VERSION = substr(q$Revision: 2.185 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1724,8 +1724,26 @@ sub read_config_value {
 			);
 		}
 		$file = $CDname{$lvar} unless $file;
-		$file = "$confdir/$file" unless $file =~ m!^/!;
-		$file = escape_chars($file);			# make safe for filename
+		
+		# If the file isn't already specified with an absolute path, try the 
+		# Config directory, then the current directory.  When neither file
+		# exists, use the Config directory and continue.
+		if ($file !~ m!^/!) {
+			my $test_with_confdir = escape_chars("$confdir/$file");
+			if (-f $test_with_confdir) {
+				$file = $test_with_confdir;
+			}
+			else {
+				my $test_without_confdir = escape_chars($file);
+				if (-f $test_without_confdir) {
+					$file = $test_without_confdir;
+				}
+				else {
+					$file = $test_with_confdir;
+				}
+			}
+		}
+		 
 		my $tmpval = readfile($file);
 		unless( defined $tmpval ) {
 			config_warn(
