@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.255 2005-10-15 01:25:23 jon Exp $
+# $Id: Interpolate.pm,v 2.256 2005-10-18 15:38:47 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.255 $, 10);
+$VERSION = substr(q$Revision: 2.256 $, 10);
 
 @EXPORT = qw (
 
@@ -5102,9 +5102,7 @@ sub timed_build {
 	$Scratch->{mv_no_session_id} = 1;
 
 	if($opt->{auto}) {
-		$opt->{login} =    1 unless defined $opt->{login};
 		$opt->{minutes} = 60 unless defined $opt->{minutes};
-		$opt->{login} = 1;
 		my $dir = "$Vend::Cfg->{ScratchDir}/auto-timed";
 		unless (allowed_file($dir)) {
 			log_file_violation($dir, 'timed_build');
