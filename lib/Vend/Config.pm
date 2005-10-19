@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.185 2005-10-15 00:09:29 danb Exp $
+# $Id: Config.pm,v 2.186 2005-10-19 14:21:06 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.185 $, 10);
+$VERSION = substr(q$Revision: 2.186 $, 10);
 
 my %CDname;
 my %CPname;
@@ -80,6 +80,7 @@ my %CPname;
 );
 
 my %DirectiveAlias = qw(
+	URL	           VendURL
 	DataDir        ProductDir
 	DefaultTables  ProductFiles 
 	Profiles       OrderProfile 
@@ -578,7 +579,7 @@ sub catalog_directives {
 	['ReadPermission',   'permission',       'user'],
 	['SessionExpire',    'time',             '1 hour'],
 	['SaveExpire',       'time',             '30 days'],
-	['MailOrderTo',      undef,              undef],
+	['MailOrderTo',      undef,              ''],
 	['SendMailProgram',  'executable',		$Global::SendMailProgram],
 	['PGP',              undef,       		 ''],
 # GLIMPSE
