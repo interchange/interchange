@@ -274,19 +274,19 @@
             </tr>
             <tr>
               <td align=right>
-                [error name=check_acct std_label="[L]Account Number[/L]" required=1]
+                [error name=check_account std_label="[L]Account Number[/L]" required=1]
               </td>
               <td colspan=3 align=left>
-                <input type=text name=check_acct size=22 value="[value check_acct]">
+                <input type=text name=check_account size=22 value="[value check_account]">
               </td>
             </tr>
             <tr>
               <td align="right">
-                [error name=check_route std_label="[L]Routing Number[/L]" required=1]
+                [error name=check_routing std_label="[L]Routing Number[/L]" required=1]
                 
               </td>
               <td align="left" colspan="3">
-                <b><input type=text name=check_route size=22 value="[value check_route]"></b>
+                <b><input type=text name=check_routing size=22 value="[value check_routing]"></b>
               </td>
             </tr>
             <tr>
