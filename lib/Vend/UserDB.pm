@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.38 2005-08-11 22:55:06 racke Exp $
+# $Id: UserDB.pm,v 2.39 2005-10-19 14:26:32 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 use vars qw!
 	$VERSION
@@ -599,9 +599,12 @@ sub clear_values {
 }
 
 sub get_values {
-	my($self, @fields) = @_;
+	my($self, $valref, $scratchref) = @_;
 
-	@fields = @{ $self->{DB_FIELDS} } unless @fields;
+	$valref = $::Values unless ref($valref);
+	$scratchref = $::Scratch unless ref($scratchref);
+
+	my @fields = @{ $self->{DB_FIELDS} };
 
 	my $db = $self->{DB}
 		or die errmsg("No user database found.");
@@ -636,6 +639,17 @@ sub get_values {
 				 ? $row->{$self->{LOCATION}->{OUTBOARD_KEY}}
 				 : $self->{USERNAME};
 
+	if(my $ef = $self->{OPTIONS}->{extra_fields}) {
+		my @s = grep /\w/, split /[\s,]+/, $ef;
+		my $field = $self->{LOCATION}{PREFERENCES};
+		my $loc   = $self->{OPTIONS}{extra_selector} || 'default';
+		my $hash = get_option_hash($row->{$field});
+		if($hash and $hash = $hash->{$loc} and ref($hash) eq 'HASH') {
+			for(@s) {
+				$::Values->{$_} = $hash->{$_};
+			}
+		}
+	}
 
 	for(@fields) {
 		if($ignore{$_}) {
@@ -673,13 +687,14 @@ sub get_values {
 }
 
 sub set_values {
-	my($self) = @_;
+	my($self, $valref, $scratchref) = @_;
 
-	my @fields;
+	$valref = $::Values unless ref($valref);
+	$scratchref = $::Scratch unless ref($scratchref);
 
 	my $user = $self->{USERNAME};
 
-	@fields = @{$self->{DB_FIELDS}};
+	my @fields = @{$self->{DB_FIELDS}};
 
 	my $db = $self->{DB};
 
@@ -705,16 +720,35 @@ sub set_values {
 	my @bvals;
 
   eval {
+
+	my @extra;
+
+	if(my $ef = $self->{OPTIONS}->{extra_fields}) {
+		my $row = $db->row_hash($user);
+		my @s = grep /\w/, split /[\s,]+/, $ef;
+		my $field = $self->{LOCATION}{PREFERENCES};
+		my $loc   = $self->{OPTIONS}{extra_selector} || 'default';
+		my $hash = get_option_hash( $row->{$field} ) || {};
+
+		my $subhash = $hash->{$loc} ||= {};
+		for(@s) {
+			$subhash->{$_} = $valref->{$_};
+		}
+
+		push @extra, $field;
+		push @extra, uneval_it($hash);
+	}
+
 	for( @fields ) {
-#::logDebug("set_values saving $_ as $::Values->{$_}\n");
+#::logDebug("set_values saving $_ as $valref->{$_}\n");
 		my $val;
 		if ($scratch{$_}) {
-			$val = $::Scratch->{$_}
-				if defined $::Scratch->{$_};	
+			$val = $scratchref->{$_}
+				if defined $scratchref->{$_};	
 		}
 		else {
-			$val = $::Values->{$_}
-				if defined $::Values->{$_};	
+			$val = $valref->{$_}
+				if defined $valref->{$_};	
 		}
 
 		next if ! defined $val;
@@ -737,6 +771,11 @@ sub set_values {
 		}
 	}
 	
+	while(@extra) {
+		push @bfields, shift @extra;
+		push @bvals, shift @extra;
+	}
+
 	if(@bfields) {
 		$db->set_slice($user, \@bfields, \@bvals);
 	}
