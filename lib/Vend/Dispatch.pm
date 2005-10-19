@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.58 2005-10-04 10:53:34 racke Exp $
+# $Id: Dispatch.pm,v 1.59 2005-10-19 14:15:43 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.58 $, 10);
+$VERSION = substr(q$Revision: 1.59 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -578,7 +578,33 @@ $form_action{go} = $form_action{return};
 
 sub do_process {
 
-    my @filters = grep /^[mu][vi]_filter:/, keys %CGI::values;
+	# Prevent using keys operation more than once
+    my @cgikeys = keys %CGI::values;
+
+    my @multis = grep /^mv\d\d?_/, @cgikeys;
+
+	## Only operates on up to 100 items to prevent "amplification"
+	## which could result in DOS attacks
+	MULTIS:
+	if(@multis) {
+		my %hash;
+		for(@multis) {
+			my $val = delete $CGI::values{$_};
+			# Have to handle nulls somehow....
+			$val =~ s/\0/::/g;
+			m{^mv\d+\d?_(.*)};
+			my $idx = $1;
+			my $key = $2;
+			$hash{$key} ||= [];
+			$hash{$key}[$idx] = $val;
+		}
+		while (my ($k, $v) = each %hash) {
+			$CGI::values{$k} = join "\0", @$v;
+		}
+	}
+
+    my @filters = grep /^[mu][vi]_filter:/, @cgikeys;
+
 	FILTERS: {
 		last FILTERS unless @filters;
 		foreach my $key (@filters) {
@@ -624,7 +650,7 @@ sub do_process {
 		# by Jeff Carnahan
 		$todo = action_map($x,$y,$map);
 	}
-	elsif( my @todo = grep /^mv_todo\.\w+(?:\.x)?$/, keys %CGI::values ) {
+	elsif( my @todo = grep /^mv_todo\.\w+(?:\.x)?$/, @cgikeys ) {
 		# Only one todo!
 		for(@todo) {
 			delete $CGI::values{$_};
