@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.10 2005-10-14 13:04:05 racke Exp $
+# $Id: email.tag,v 1.11 2005-10-19 15:09:38 mheins Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -74,6 +74,7 @@ sub {
 		for(@extra) {
 			m{(.*?):\s+(.*)};
 			my $name = $1 or next;
+			next if lc($name) eq 'from';
 			my $content = $2 or next;
 			$name =~ s/[-_]+/-/g;
 			$name =~ s/\b(\w)/\U$1/g;
