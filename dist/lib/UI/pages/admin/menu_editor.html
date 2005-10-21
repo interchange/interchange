@@ -183,7 +183,7 @@ __UI_META_TABLE__
 				$Tag->error({ name => 'Save menu',
 							  set => errmsg(
 										"Failed to save menu '%s' to file %s.",
-										$Tag->filter('unescape', $menuname),
+										$Tag->filter('urldecode', $menuname),
 										$menufile,
 									),
 								});
