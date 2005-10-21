@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.45 2005-07-19 12:37:40 jonc Exp $
+# $Id: Menu.pm,v 2.46 2005-10-21 12:02:29 racke Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 
 use Vend::Util;
 use strict;
@@ -2002,7 +2002,7 @@ EOF
 	}
 
 	$row->{mv_ip} = $opt->{mv_ip}++ || 0;
-	$row->{mv_increment} = ++$opt->{mv_incrmement};
+	$row->{mv_increment} = ++$opt->{mv_increment};
 
 	for(@{$opt->{_transform}}) {
 		return unless $transform{$_}->($row, $opt->{$_});
