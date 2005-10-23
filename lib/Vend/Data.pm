@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.53 2005-09-22 16:37:52 mheins Exp $
+# $Id: Data.pm,v 2.54 2005-10-23 14:23:45 mheins Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1707,6 +1707,12 @@ sub item_price {
 
 			if($table =~ /=/) {
 				($attr, $table) = split /\s*=\s*/, $table, 2;
+			}
+
+			if(! $key and ! $foreign) {
+				$attr ||= $table;
+				$item->{$attr} = item_common($item, $table);
+				next;
 			}
 
 			unless ($key) {

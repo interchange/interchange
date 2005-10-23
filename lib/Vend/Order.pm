@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.79 2005-10-14 14:18:35 racke Exp $
+# $Id: Order.pm,v 2.80 2005-10-23 14:23:45 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.79 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2456,6 +2456,12 @@ sub add_items {
 
 					if($table =~ /=/) {
 						($attr, $table) = split /\s*=\s*/, $table, 2;
+					}
+
+					if(! $key and ! $foreign) {
+						$attr ||= $table;
+						$item->{$attr} = item_common($item, $table);
+						next;
 					}
 
 					unless ($key) {
