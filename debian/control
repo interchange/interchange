@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 4.1.16), libdigest-md5-perl, libmime-base64-perl, l
 
 Package: interchange-cat-standard
 Architecture: all
-Depends: libwww-perl, debconf (>= 0.2.26), interchange (>=5.3.0), interchange-ui (>=5.3.0), libdbd-mysql-perl | libdbd-pg-perl
+Depends: libwww-perl, debconf | debconf-2.0, interchange (>=5.3.0), interchange-ui (>=5.3.0), libdbd-mysql-perl | libdbd-pg-perl
 Description: Standard store, a sample Interchange catalog
  The Standard store is a demo catalog which you can use to
  build your Interchange applications from. While the Standard store
@@ -18,7 +18,7 @@ Description: Standard store, a sample Interchange catalog
 
 Package: interchange-ui
 Architecture: all
-Depends: ${perl:Depends}, debconf, interchange (>=4.8.1)
+Depends: ${perl:Depends}, debconf | debconf-2.0, interchange (>=4.8.1)
 Suggests: apache-ssl | libapache-mod-ssl, libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
 Description: Interchange administration interface (UI)
  With the Interchange administration interface, called UI, you are able
@@ -27,7 +27,7 @@ Description: Interchange administration interface (UI)
 
 Package: interchange
 Architecture: any
-Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl
+Depends: ${perl:Depends}, debconf | debconf-2.0, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl
 Recommends: interchange-ui
 Suggests: apache-ssl | libapache-mod-ssl
 Description: e-commerce and general HTTP database display system

@@ -1,3 +1,11 @@
+interchange (5.3.0.20051028-1) experimental; urgency=low
+
+  * new upstream release fixing menu editor bug (Closes: #335012)
+  * debconf-2.0 alternative dependency added (Closes: #331860, thanks to
+    Joey Hess <joey@kitenet.net>)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 27 Oct 2005 15:29:18 +0200
+
 interchange (5.3.0.20051004-1) experimental; urgency=low
 
   * new upstream release
