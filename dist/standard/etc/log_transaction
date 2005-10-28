@@ -264,8 +264,8 @@ Set order number in session: [calc]
 		[/seti]
 		Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
 	[else]
-	Auto-create of user failed.
-	[perl] die errmsg("Auto-create of user failed."); [/perl]
+	Auto-create of user failed. Reason: [data session failure]
+	[perl] die errmsg("Auto-create of user failed. Reason: %s", $Session->{failure}) [/perl]
 	[/else]
 	[/if]
 [/try]
@@ -296,8 +296,8 @@ There was an error adding you to the customer table.
 
 	[value name=customer_id set="[scratch tmp_username]" hide=1]
 	[if !value customer_id]
-	Auto-create of user failed.
-	[perl] die errmsg("Auto-create of user failed."); [/perl]
+	Auto-create of user failed. Reason: [data session failure]
+	[perl] die errmsg("Auto-create of user failed. Reason: %s", $Session->{failure}) [/perl]
 	[/else]
 	[/if]
 [/try]
