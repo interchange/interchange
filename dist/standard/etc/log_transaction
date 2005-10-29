@@ -147,7 +147,7 @@ Payment processing...payment_method=[value mv_order_profile]
 				}
 				die errmsg(
 						"Real-time online check failed. Reason: %s\n",
-						errmsg($Session->{cybercash_error}),
+						errmsg($Session->{payment_error}),
 					);
 			[/calc]
 		[/else]
@@ -188,7 +188,7 @@ Payment processing...payment_method=[value mv_order_profile]
 		}
 		die errmsg(
 				"Real-time charge failed. Reason: %s\n",
-				errmsg($Session->{cybercash_error}),
+				errmsg($Session->{payment_error}),
 			);
 	[/calc]
 	[/else]
