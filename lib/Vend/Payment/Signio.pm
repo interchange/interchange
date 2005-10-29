@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.13 2004-03-30 18:56:05 jon Exp $
+# $Id: Signio.pm,v 2.14 2005-10-29 00:11:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -383,10 +383,13 @@ sub signio {
 	}
 
 	# set certificate path for modern pfpro
-	$ENV{PFPRO_CERT_PATH} ||= charge_param('cert_path');
+	my $cert_path = charge_param('cert_path');
+	$cert_path = "$Global::VendRoot/$cert_path"
+		unless Vend::File::file_name_is_absolute($cert_path);
+	$ENV{PFPRO_CERT_PATH} ||= $cert_path;
 	if(! -d $ENV{PFPRO_CERT_PATH} ) {
 		my @try = (
-					charge_param('cert_path'),
+					$cert_path,
 					$Global::VendRoot,
 					"$Global::VendRoot/lib",
 					'/usr/local/ssl',
