@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.8 2004-01-30 17:35:03 mheins Exp $
+# $Id: Error.pm,v 2.9 2005-10-31 15:13:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -155,7 +155,7 @@ sub full_dump {
 
 sub do_lockout {
 	my ($cmd);
-	my $msg = shift || '';
+	my $msg = '';
 	if($cmd = $Global::LockoutCommand) {
 		my $host = $CGI::remote_addr;
 		$cmd =~ s/%s/$host/ or $cmd .= " $host";
@@ -166,7 +166,7 @@ sub do_lockout {
 		logGlobal({level => 'notice'}, $msg);
 	}
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
-	logError($msg);
+	logError($msg) if $msg;
 }
 
 1;
