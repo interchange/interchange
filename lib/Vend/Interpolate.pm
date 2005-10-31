@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.256 2005-10-18 15:38:47 jon Exp $
+# $Id: Interpolate.pm,v 2.257 2005-10-31 18:00:38 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.256 $, 10);
+$VERSION = substr(q$Revision: 2.257 $, 10);
 
 @EXPORT = qw (
 
@@ -5393,7 +5393,7 @@ sub tax_vat {
 		for(@$ary) {
 			next unless $_->[0];
 			push @taxes, $_->[0];
-	}
+		}
 	}
 	else {
 		@taxes = $type;
@@ -5420,7 +5420,7 @@ sub tax_vat {
 		if($t =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
 			my $rate = $1;
 			$rate /= 100 if $2;
-                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+            $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $amount = Vend::Interpolate::taxable_amount();
 			$total += ($rate * $amount);
 		}
@@ -5441,7 +5441,7 @@ sub tax_vat {
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
 			next if $rate <= 0;
                         $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
-			my $sub = Vend::Data::item_subtotal($item);
+			my $sub = discount_subtotal($item);
 #::logDebug("item $item->{code} subtotal=$sub");
 			$total += $sub * $rate;
 #::logDebug("tax total=$total");
