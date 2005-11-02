@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.42 2005-11-02 17:26:43 mheins Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.43 2005-11-02 19:52:01 jon Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -149,8 +149,7 @@ Variable UI_STD_HEAD <<EOV
 
 	for(@things) {
 		next unless $CGI->{$_};
-		$Tag->tmp($_);
-		$Scratch->{$_} = $CGI->{$_};
+		$Tag->tmp($_ => $CGI->{$_});
 	}
 	return;
 [/calc]
