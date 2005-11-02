@@ -600,7 +600,6 @@ dist/src/cpan_local_install
 dist/src/mod_interchange/Makefile
 dist/src/mod_interchange/mod_interchange.c
 dist/src/mod_interchange/mod_interchange.html
-dist/src/mod_interchange/mod_interchange.spec
 dist/src/mod_interchange/README
 dist/src/mod_perl2/Interchange/Link.pm
 dist/src/mod_perl2/README
@@ -1235,3 +1234,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
+META.yml                                 Module meta-data (added by MakeMaker)
