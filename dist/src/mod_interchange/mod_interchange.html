@@ -1,23 +1,23 @@
-<!-- $Id: mod_interchange.html,v 2.9 2004-03-26 22:30:45 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.10 2005-11-02 03:08:51 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.30)</title>
+   <title>Apache module: mod_interchange (version 1.33)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.30)</h1>
+    <h1>Apache module: mod_interchange (version 1.33)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
 	that come with <a href="http://www.icdevgroup.org/">Interchange</a>.&nbsp;
 	It has been tested with all Interchange versions up to and
-	including 4.9.6 (development).&nbsp;
+	including 5.3.1 (development).&nbsp;
 	Although this module is known to have worked with MiniVend versions 3
 	and 4, its current compatibility has not been tested.
     </p>
     <p>
 	This module has been tested with Apache versions 1.3.6
-	through 1.3.29.&nbsp;
+	through 1.3.33.&nbsp;
 	<b>Note that this module is not compatible with Apache 2.</b>
     </p>
 
@@ -224,7 +224,7 @@
     <code>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>/opt/interchange/etc/socket</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>DropRequestList</b> <i>/default.ida /x.ida /cmd.exe /root.exe</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
     </code>
@@ -239,7 +239,7 @@
     <code>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/</i><b>&gt;</b><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>/opt/interchange/etc/socket</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>OrdinaryFileList</b> <i>/foundation/ /interchange-5/ /robots.txt</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
     </code>
@@ -276,7 +276,7 @@
     <code>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>/opt/interchange/etc/socket</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeScript</b> <i>/foo</i><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
     </code>
@@ -295,6 +295,53 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.33
+	    (Mon 07 Jun 2005)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Applied a patch supplied by Jonathon Sim of Zeald.&nbsp;
+		    Thanks Jon!&nbsp;
+		    The patch fixes a problem where the result code from
+		    a call to the <code>ap_scan_script_header_err_buff()</code>
+		    Apache API function was not being examined closely
+		    enough.&nbsp;
+		    This apparently caused problems with GoogleBot and
+		    caching proxies that make use of the
+		    <code>If-Modified-Since:</code> HTTP header.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.32
+	    (Mon 21 Jan 2005)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug that caused problems with
+		    <code>[history-scan]</code> regex matches.&nbsp;
+		    The entire <code>Location</code> path was being
+		    stripped from the URI, which was fine unless
+		    <code>&lt;Location /&gt;</code> was specified.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.31
+	    (Thu 13 Oct 2004)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug with a patch kindly supplied by Josh Lavin.&nbsp;
+		    The <code>OrdinaryFileList</code> code was using the
+		    <code>IC_MAX_DROPLIST</code> configurable setting instead
+		    of its own <code>IC_MAX_ORDINARYLIST</code>.&nbsp;
+		    That'll teach me not to copy/paste when creating new
+		    code. :-)
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.30
 	    (Thu 08 Mar 2004)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
@@ -581,8 +628,8 @@
     <br><hr>
     <h2><a name="copyright">Copyright and License</a></h2>
     <p>
+	Copyright &copy; 2000-2005 Cursor Software Limited.<br>
 	Copyright &copy; 1999 Francis J. Lacoste and iNsu Innovations Inc.<br>
-	Copyright &copy; 2000-2004 Cursor Software Limited.<br>
 	All rights reserved.
     </p>
     <p>

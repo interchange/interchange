@@ -1,9 +1,9 @@
 mod_interchange
 ===============
 
-$Id: README,v 2.8 2004-03-26 22:30:44 kwalsh Exp $
+$Id: README,v 2.9 2005-11-02 03:08:51 kwalsh Exp $
 
-Version: 1.30
+Version: 1.33
 
 Description
 -----------
@@ -108,7 +108,7 @@ waste any more time processing the (bogus) requests than we have to.
 
     <Location /shop>
 	SetHandler interchange-handler
-	InterchangeServer localhost:7786
+	InterchangeServer /opt/interchange/etc/socket
 	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
     </Location>
 
@@ -119,7 +119,7 @@ Instead, the file will be directly served by Apache.  For example:
 
     <Location />
 	SetHandler interchange-handler
-	InterchangeServer localhost:7786
+	InterchangeServer /opt/interchange/etc/socket
 	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
 	OrdinaryFileList /foundation/ /interchange-5/ /robots.txt /somefile.css
     </Location>
@@ -146,13 +146,15 @@ The InterchangeScript parameter allows the SCRIPT_NAME to be different from
 the <Location>.  For example:
 
     <Location /shop>
-        ...
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
     </Location>
 
 The above will set the SCRIPT_NAME to "/shop".
 
     <Location /shop>
-        ...
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
 	InterchangeScript /foo
     </Location>
 
@@ -172,17 +174,24 @@ Send bug reports and suggestions to Kevin Walsh <kevin@cursor.biz>
 Copyright and License
 ---------------------
 
+Author: Kevin Walsh <kevin@cursor.biz>
+Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
+
+Copyright (c) 2000-2005 Cursor Software Limited.
 Copyright (c) 1999 Francis J. Lacoste and iNsu Innovations Inc.
-Copyright (c) 2000-2003 Cursor Software Limited.
 All rights reserved.
 
-This program is free software.  You can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation.  You may refer to either version 2 of the
-License or (at your option) any later version.
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.

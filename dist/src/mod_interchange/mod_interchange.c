@@ -1,16 +1,20 @@
-#define	MODULE_VERSION	"mod_interchange/1.30"
+#define	MODULE_VERSION	"mod_interchange/1.33"
 /*
- *	$Id: mod_interchange.c,v 2.9 2004-03-26 22:30:44 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.10 2005-11-02 03:08:51 kwalsh Exp $
  *
- *	Apache Module implementation of the Interchange application server
+ *	Apache Module implementation of the Interchange application server's
  *	link programs.
+ *
+ *	----------------------------------------------------------------------
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
  *
+ *	Copyright (c) 2000-2005 Cursor Software Limited.
  *	Copyright (c) 1999 Francis J. Lacoste, iNsu Innovations.
- *	Copyright (c) 2000-2004 Cursor Software Limited.
  *	All rights reserved.
+ *
+ *	----------------------------------------------------------------------
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,7 +29,7 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *	02111-1307 USA
+ *	02111-1307 USA.
  */
 #include "httpd.h"
 #include "http_config.h"
@@ -81,14 +85,14 @@ typedef struct ic_socket_struct{
 typedef struct ic_conf_struct{
 	ic_socket_rec *server[IC_MAX_SERVERS];	/* connection to IC server(s) */
 	int connect_tries;	/* number of times to ret to connect to IC */
-	int connect_retry_delay; /* delay this many seconds between retries */
+	int connect_retry_delay;/* delay this many seconds between retries */
 	int droplist_no;	/* number of entries in the "drop list" */
 	int ordinarylist_no;	/* number of entries in the "ordinary file list" */
 	int location_len;	/* length of the configured <Location> path */
 	char location[IC_CONFIG_STRING_LEN+1];	/* configured <Location> path */
 	char script_name[IC_CONFIG_STRING_LEN+1];
 	char droplist[IC_MAX_DROPLIST][IC_MAX_LIST_ENTRYSIZE+1];
-	char ordinarylist[IC_MAX_DROPLIST][IC_MAX_LIST_ENTRYSIZE+1];
+	char ordinarylist[IC_MAX_ORDINARYLIST][IC_MAX_LIST_ENTRYSIZE+1];
 }ic_conf_rec;
 
 typedef struct ic_response_buffer_struct{
@@ -361,7 +365,7 @@ static const char *ic_ordinaryfilelist_cmd(cmd_parms *parms,void *mconfig,const 
 {
 	ic_conf_rec *conf_rec = (ic_conf_rec *)mconfig;
 
-	if (conf_rec->ordinarylist_no < IC_MAX_DROPLIST){
+	if (conf_rec->ordinarylist_no < IC_MAX_ORDINARYLIST){
 		strncpy(conf_rec->ordinarylist[conf_rec->ordinarylist_no],arg,IC_MAX_LIST_ENTRYSIZE);
 		conf_rec->ordinarylist[conf_rec->ordinarylist_no++][IC_MAX_LIST_ENTRYSIZE] = '\0';
 	}
@@ -567,11 +571,21 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	}
 
 	rp = request_uri;
+
 	while (*rp == '/')
 		rp++;
 
-	if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
-		rp += conf_rec->location_len;
+	/*
+	 *	strip the location path from the request_uri string
+	 *	unless the location is "/"
+	 */
+	if (conf_rec->location[0] != '\0'){
+		if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
+			rp += conf_rec->location_len;
+	}else{
+		if (rp != request_uri)
+			rp--;
+	}
 
 	strncpy(request_uri,rp,MAX_STRING_LEN - 1);
 	request_uri[MAX_STRING_LEN - 1] = '\0';
@@ -603,11 +617,21 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	 */
 	if (redirect_url[0] != '\0'){
 		rp = redirect_url;
+
 		while (*rp == '/')
 			rp++;
 
-		if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
-			rp += conf_rec->location_len;
+		/*
+		 *	strip the location path from the request_uri string
+		 *	unless the location is "/"
+		 */
+		if (conf_rec->location[0] != '\0'){
+			if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
+				rp += conf_rec->location_len;
+		}else{
+			if (rp != redirect_url)
+				rp--;
+		}
 
 		strncpy(redirect_url,rp,MAX_STRING_LEN - 1);
 		redirect_url[MAX_STRING_LEN - 1] = '\0';
@@ -717,9 +741,11 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 	/*
 	 *	check the HTTP header to make sure that it looks valid
 	 */
-	if (ap_scan_script_header_err_buff(r,ic_buff,sbuf)){
-		ap_log_rerror(APLOG_MARK,APLOG_ERR|APLOG_NOERRNO,r,"Malformed header return by Interchange: %s",sbuf);
-		return HTTP_INTERNAL_SERVER_ERROR;
+	if ((rc = ap_scan_script_header_err_buff(r,ic_buff,sbuf)) != OK) {
+		if (rc == HTTP_INTERNAL_SERVER_ERROR) {
+			ap_log_rerror(APLOG_MARK,APLOG_ERR|APLOG_NOERRNO,r,"Malformed header return by Interchange: %s",sbuf);
+		}
+		return rc;
 	}
 
 	/*
@@ -881,7 +907,7 @@ static int ic_handler(request_rec *r)
 /*
  *	the module's configuration directives
  */
-static command_rec ic_cmds[] ={
+static command_rec ic_cmds[] = {
 	{
 		"InterchangeServer",	/* directive name */
 		ic_server_cmd,		/* config action routine */
@@ -920,7 +946,7 @@ static command_rec ic_cmds[] ={
 		NULL,			/* argument to include in call */
 		ACCESS_CONF,		/* where available */
 		ITERATE,		/* arguments */
-		"Drop the request if the URI path contains one of the specified strings"
+		"Drop the request if the URI path contains one of the specified values"
 	},
 	{
 		"OrdinaryFileList",	/* directive name */
@@ -928,7 +954,7 @@ static command_rec ic_cmds[] ={
 		NULL,			/* argument to include in call */
 		ACCESS_CONF,		/* where available */
 		ITERATE,		/* arguments */
-		"Don't pass to Interchange if the URI path matches one of the strings"
+		"Don't pass to Interchange if the URI path starts with one of the specified values"
 	},
 	{
 		"InterchangeScript",	/* directive name */
@@ -944,7 +970,7 @@ static command_rec ic_cmds[] ={
 /*
  *	make the name of the content handler known to Apache
  */
-static handler_rec ic_handlers[] ={
+static handler_rec ic_handlers[] = {
 	{"interchange-handler",ic_handler},
 	{NULL}
 };
@@ -952,7 +978,7 @@ static handler_rec ic_handlers[] ={
 /*
  *	tell Apache what phases of the transaction we handle
  */
-module MODULE_VAR_EXPORT interchange_module ={
+module MODULE_VAR_EXPORT interchange_module = {
 	STANDARD_MODULE_STUFF,
 	ic_initialise,		/* module initialiser                 */
 	ic_create_dir_config,	/* per-directory config creator       */
