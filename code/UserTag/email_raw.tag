@@ -1,16 +1,40 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email_raw.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+# $Id: email_raw.tag,v 1.6 2005-11-03 05:16:55 jon Exp $
 
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
 UserTag email-raw Interpolate
-UserTag email-raw Version     $Revision: 1.5 $
+UserTag email-raw Version     $Revision: 1.6 $
 UserTag email-raw Routine     <<EOR
 sub {
     my($opt, $body) = @_;
     my($ok);
     $body =~ s/^\s+//;
+
+	# If configured, intercept all outgoing email and re-route
+	if (
+		my $intercept = $::Variable->{MV_EMAIL_INTERCEPT}
+		                || $Global::Variable->{MV_EMAIL_INTERCEPT}
+	) {
+		$body =~ s/\A(.*?)\r?\n\r?\n//s;
+		my $header_block = $1;
+		# unfold valid RFC 2822 "2.2.3. Long Header Fields"
+		$header_block =~ s/\r?\n([ \t]+)/$1/g;
+		my @headers;
+		for (split /\r?\n/, $header_block) {
+			if (my ($header, $value) = /^(To|Cc|Bcc):\s*(.+)/si) {
+				logError(
+					"Intercepting outgoing email (%s: %s) and instead sending to '%s'",
+					$header, $value, $intercept
+				);
+				$_ = "$header: $intercept";
+				push @headers, "X-Intercepted-$header: $value";
+			}
+			push @headers, $_;
+		}
+		$body = join("\n", @headers) . "\n\n" . $body;
+	}
 
     SEND: {
         open(Vend::MAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;

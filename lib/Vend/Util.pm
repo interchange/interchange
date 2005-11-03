@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.85 2005-05-22 12:53:36 mheins Exp $
+# $Id: Util.pm,v 2.86 2005-11-03 05:16:55 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.85 $, 10);
+$VERSION = substr(q$Revision: 2.86 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1808,7 +1808,6 @@ sub read_cookie {
 sub send_mail {
 	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
 
-	my @headers;
 	if(ref $to) {
 		my $head = $to;
 
@@ -1823,7 +1822,7 @@ sub send_mail {
 		undef $subject;
 		for(@$head) {
 			s/\s+$//;
-			if( /^To:\s*(.+)/s ) {
+			if (/^To:\s*(.+)/si) {
 				$to = $1;
 			}
 			elsif (/^Reply-to:\s*(.+)/si) {
@@ -1836,6 +1835,26 @@ sub send_mail {
 				push @extra_headers, $_;
 			}
 		}
+	}
+
+	# If configured, intercept all outgoing email and re-route
+	if (
+		my $intercept = $::Variable->{MV_EMAIL_INTERCEPT}
+		                || $Global::Variable->{MV_EMAIL_INTERCEPT}
+	) {
+		my @info_headers;
+		$to = "To: $to";
+		for ($to, @extra_headers) {
+			next unless my ($header, $value) = /^(To|Cc|Bcc):\s*(.+)/si;
+			logError(
+				"Intercepting outgoing email (%s: %s) and instead sending to '%s'",
+				$header, $value, $intercept
+			);
+			$_ = "$header: $intercept";
+			push @info_headers, "X-Intercepted-$header: $value";
+		}
+		$to =~ s/^To: //;
+		push @extra_headers, @info_headers;
 	}
 
 	my($ok);
