@@ -88,6 +88,7 @@ UI_IMAGE_DIR	__MVC_SHAREURL__/interchange-5/	Admin Control
 UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange-5/	Admin Control
 UI_ITEM_TABLES	products pricing inventory merchandising options:sku	Item display
 UI_META_LINK	1	Admin Control
+UI_USER_MERGE_TABLES		Admin Control
 UI_ORDER_VIEWNEXT_MAX_SKIP	20	Admin Control
 UI_PAGE_DIR	pages	Directories and Paths
 UI_SECURE		Admin Control
