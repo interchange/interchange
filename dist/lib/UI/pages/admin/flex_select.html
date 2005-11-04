@@ -51,20 +51,21 @@
 
 [output name=search_box]
 [if compare=`! $Config->{Database}{$CGI->{mv_data_table}}{HUGE}`]
-<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+<form action="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" method=GET>
 [form-session-id]
-<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
-<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+<input type=hidden name=mv_data_table    value="[cgi mv_data_table]">
+<input type=hidden name=mv_action        value=back>
+<input type=hidden name=ui_meta_view     value="[cgi ui_meta_view]">
+<input type=hidden name=ui_show_fields value="[cgi ui_show_fields]">
 <span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
 </FORM>
 [else]
-<FORM ACTION="[area href="admin/flex_editor"]" METHOD=GET>
+<form action="[area href="admin/flex_editor"]" method=GET>
 [form-session-id]
-<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
-<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<input type=hidden name=mv_data_table    value="[cgi mv_data_table]">
+<input type=hidden name=mv_action        value=back>
 <span class=s3>[L]Edit record[/L]:</span> <input NAME=item_id size=16 class=s2> 
-</FORM>
+</form>
 [/else]
 [/if]
 [output name=""]
@@ -74,4 +75,4 @@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.23 2005-04-23 18:10:07 pvinci Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.24 2005-11-04 05:00:59 mheins Exp $ -->
