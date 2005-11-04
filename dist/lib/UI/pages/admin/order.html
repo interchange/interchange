@@ -321,6 +321,7 @@
 		order=[item-code]
 	']"
 	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+<input type="radio" name="item_radio" value="[item-code]" title="Select target for merge">
 [/if]
 </td>
 <TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></td>
@@ -367,6 +368,17 @@
 	[/button]
 &nbsp;
 [/if]
+
+[if-mm advanced merge_users]
+[button form=batch
+			no-src="[scratch archive_img]"
+			extra="class=s3"
+			link-text-too=1
+			text="Merge orders from checked users to one user"
+			]
+[user-merge from="[cgi order]" to="[cgi item_radio]" from-order=1]
+[/button]
+[/if-mm]
 
 [button form=batch
 			no-src="[scratch archive_img]"
@@ -498,4 +510,4 @@ mv_nextpage=__UI_BASE__/order_status
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.18 2005-04-23 18:10:07 pvinci Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.19 2005-11-04 05:14:24 mheins Exp $ -->

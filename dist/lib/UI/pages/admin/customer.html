@@ -294,6 +294,7 @@
 	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"
 	title=delete
 ><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+<input type="radio" name="item_radio" value="[item-code]" title="Select target for merge">
 [/if]
 </td><td>
 [page href=__UI_BASE__/customer_view
@@ -335,6 +336,18 @@ so there's a full line across the page even if table cells are blank.
 <br>
 [on-match]
 [output name=bottom_buttons]
+
+[if-mm advanced merge_users]
+[button form=batch
+			no-src="[scratch archive_img]"
+			extra="class=s3"
+			link-text-too=1
+			text="[L]Merge checked users to one user[/L]"
+			confirm="Are you sure you want to merge checked users to one user?"
+			]
+[user-merge from="[cgi customer]" to="[cgi item_radio]" from-user=1]
+[/button]
+[/if-mm]
 [if scratch can_delete]
 [button extra="class=s3" form=batch text="[L]Delete checked customers[/L]"
  confirm='[L]Are you sure you want to delete the checked customers?[/L]']deletecustomer=1
