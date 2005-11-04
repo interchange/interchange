@@ -1,12 +1,12 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: flex_select.coretag,v 1.12 2005-02-14 00:42:53 docelic Exp $
+# $Id: flex_select.coretag,v 1.13 2005-11-04 04:57:34 mheins Exp $
 
 UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.12 $
+UserTag flex-select Version    $Revision: 1.13 $
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/
@@ -162,9 +162,9 @@ sub flex_select_init {
 		$extra .= "<b>$tm->{name}</br>";
 	}
 	if($ts->{help_url}) {
-		$extra .= qq{&nbsp;&nbsp;&nbsp;<small><A HREF="$ts->{help_url}">};
+		$extra .= qq{&nbsp;&nbsp;&nbsp;<small><a href="$ts->{help_url}">};
 		$extra .= errmsg('help');
-		$extra .= "</A></small>";
+		$extra .= "</a></small>";
 	}
 	if($ts->{help}) {
 		$extra .= "<blockquote>$ts->{help}</blockquote>";
@@ -630,6 +630,8 @@ EOF
 		meta_image => errmsg('meta.png'),
 		label => "flex_select_$table",
 		no_checkbox => 0,
+		radio_box => 0,
+		user_merge => 0,
 		check_uncheck_all => 0,
 		number_list => 0,
 		table_border  => 0,
@@ -682,16 +684,16 @@ EOF
 
 	$output{TOP_OF_FORM} = <<EOF;
 <form action="$action" method="$opt->{form_method}"$opt->{form_extra}>
-<INPUT TYPE=hidden NAME=mv_data_table    VALUE="$table">
-<INPUT TYPE=hidden NAME=mv_action        VALUE="$opt->{mv_action}">
-<INPUT TYPE=hidden NAME=mv_click         VALUE="warn_me_main_form">
-<INPUT TYPE=hidden NAME=mv_session_id    VALUE="$Vend::SessionID">
+<input type=hidden name=mv_data_table    value="$table">
+<input type=hidden name=mv_action        value="$opt->{mv_action}">
+<input type=hidden name=mv_click         value="warn_me_main_form">
+<input type=hidden name=mv_session_id    value="$Vend::SessionID">
 EOF
 
 	### What the heck is going on here?
 	if($CGI->{ui_meta_view}) {
 		$output{TOP_OF_FORM} .= <<EOF;
-<INPUT TYPE=hidden NAME=ui_meta_view         VALUE="$CGI->{ui_meta_view}">
+<input type=hidden name=ui_meta_view         value="$CGI->{ui_meta_view}">
 EOF
 		$output{TOP_OF_FORM} .= $Tag->return_to();
 	}
@@ -774,6 +776,9 @@ EOF
 	if(! $opt->{no_checkbox}) {
 		push @head, "	<td class=rhead>&nbsp;</td>" 
 	}
+	if($opt->{radio_box}) {
+		push @head, "	<td class=rhead>&nbsp;</td>" 
+	}
 	if($opt->{number_list}) {
 		push @head, "	<td class=rhead align=right>#&nbsp;</td>" ;
 	}
@@ -832,7 +837,7 @@ EOF
 
 			push @head, <<EOF;
       <td align="right" valign="center" width=1>
-		<A HREF="$u" title="$msg"><img src="$opt->{group_image}" border=0></a>
+		<a href="$u" title="$msg"><img src="$opt->{group_image}" border=0></a>
       </td>
 EOF
 
@@ -935,7 +940,7 @@ EOF
 
 		push @head, <<EOF;
 	  <td$td_extra>
-		<a href="$url" class=$opt->{header_link_class} title="$sort_msg">$lab</A>
+		<a href="$url" class=$opt->{header_link_class} title="$sort_msg">$lab</a>
       </td>
 EOF
 
@@ -974,6 +979,7 @@ EOF
 	my $ncols = $idx;
 	$ncols++ if $opt->{explicit_edit};
 	$ncols++ if $opt->{number_list};
+	$ncols++ if $opt->{radio_box};
 	$ncols++ unless $opt->{no_checkbox};
 
 	$output{HEADER_AREA} = join "", @head;
@@ -981,6 +987,7 @@ EOF
 
 	my $cb_width = $opt->{checkbox_width} || '30';
 	my $cb_name = $opt->{checkbox_name} || 'item_id';
+	my $rb_name = $opt->{radiobox_name} || 'item_radio';
 	my $edit_page = $opt->{edit_page} || 'admin/flex_editor';
 	my $edit_parm = $opt->{edit_parm} || 'item_id';
 	my $edit_extra = <<EOF;
@@ -1108,7 +1115,12 @@ EOF
 
 			unless($opt->{no_checkbox}) {
 				$out .= <<EOF;
-<td width="$cb_width"><INPUT TYPE=checkbox NAME=$cb_name VALUE="$ecode"></td>
+<td width="$cb_width"><input type=checkbox name=$cb_name value="$ecode"></td>
+EOF
+			}
+			if($opt->{radio_box}) {
+				$out .= <<EOF;
+<td width="$cb_width"><input type=radio name=$rb_name value="$ecode"></td>
 EOF
 			}
 
@@ -1184,7 +1196,7 @@ EOF
 				$lab = $Tag->filter($filter_show[$i], $lab, $cols[$i]);
 
 				$lab =~ s/\[/&#91;/g;
-				$out .= "<TD$extra>$pre$lab$post</TD>";
+				$out .= "<td$extra>$pre$lab$post</td>";
 
 				$i++;
 			}
@@ -1255,6 +1267,7 @@ EOF
 							},
 							$calc_sequence,
 						);
+	my $mbutton = '';
 	my $dbutton = '';
 	if($Tag->if_mm({ function => 'tables', table => "$table=d"}) ) {
 		$opt->{confirm} ||= "Are you sure you want to delete the checked records?";
@@ -1271,6 +1284,20 @@ mv_click=db_maintenance};
 							},
 							$dtext,
 						);
+		
+		if($opt->{user_merge}) {
+			$opt->{confirm_merge} ||= "Are you sure you want to merge the checked users?";
+			$mbutton = '&nbsp;';
+			$mbutton .= $Tag->button(	
+								{
+									text => errmsg('Merge checked users'),
+									extra => $opt->{merge_button_extra} || ' class=s2',
+									confirm => errmsg($opt->{confirm_merge}),
+								},
+								'[user-merge]',
+							);
+				
+		}
 	}
 	my $cboxes = '';
 
@@ -1280,12 +1307,12 @@ mv_click=db_maintenance};
 		$ch_msg =~ s/\s/&nbsp;/g;
 		$uc_msg =~ s/\s/&nbsp;/g;
 		$cboxes = <<EOF;
-<A HREF="javascript:checkAll(document.$opt->{form_name}, '$cb_name')">
+<a href="javascript:checkAll(document.$opt->{form_name}, '$cb_name')">
 $ch_msg
-</A>&nbsp;&nbsp;
-<A HREF="javascript:checkAll(document.$opt->{form_name}, '$cb_name', 1)">
+</a>&nbsp;&nbsp;
+<a href="javascript:checkAll(document.$opt->{form_name}, '$cb_name', 1)">
 $uc_msg
-</A>&nbsp;&nbsp;
+</a>&nbsp;&nbsp;
 EOF
 		$cboxes =~ s/\n//g;
 	}
@@ -1294,6 +1321,10 @@ EOF
 		unless($opt->{no_top} || $opt->{bottom_buttons}) {
 			$output{TOP_BUTTONS} = $cboxes;
 			$output{TOP_BUTTONS} .= $ebutton;
+			if($mbutton) {
+				$output{TOP_BUTTONS} .= '&nbsp;' x 4;
+				$output{TOP_BUTTONS} .= $mbutton;
+			}
 			if($dbutton) {
 				$output{TOP_BUTTONS} .= '&nbsp;' x 4;
 				$output{TOP_BUTTONS} .= $dbutton;
@@ -1303,6 +1334,10 @@ EOF
 		unless($opt->{no_bottom} || $opt->{top_buttons}) {
 			$output{BOTTOM_BUTTONS} = $cboxes;
 			$output{BOTTOM_BUTTONS} .= $ebutton;
+			if($mbutton) {
+				$output{BOTTOM_BUTTONS} .= '&nbsp;' x 4;
+				$output{BOTTOM_BUTTONS} .= $mbutton;
+			}
 			if($dbutton) {
 				$output{BOTTOM_BUTTONS} .= '&nbsp;' x 4;
 				$output{BOTTOM_BUTTONS} .= $dbutton;
@@ -1349,7 +1384,7 @@ EOF
 	<tr>
 	<td>&nbsp;</td>
 	[loop list="[cgi ui_description_fields]"]
-	<TD>
+	<td>
 		<input type=hidden name=mv_like_field value="[loop-code]">
 		<input type=text name=mv_like_spec size=10>
 	</td>
