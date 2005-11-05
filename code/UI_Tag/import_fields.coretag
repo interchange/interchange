@@ -1,10 +1,10 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: import_fields.coretag,v 1.11 2005-02-14 00:42:53 docelic Exp $
+# $Id: import_fields.coretag,v 1.12 2005-11-05 22:53:33 mheins Exp $
 
 UserTag import_fields Order   table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.11 $
+UserTag import_fields Version $Revision: 1.12 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -80,20 +80,20 @@ EOF
 			eval {
 				require Spreadsheet::ParseExcel;
 				import Spreadsheet::ParseExcel;
-				my $oExcel = new Spreadsheet::ParseExcel;
 
-				my $oBook = $oExcel->Parse($file);
+				my $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file);
 #::logDebug("oBook is $oBook");
 				if(! $oBook) {
 					die errmsg("Failed to parse XLS file %s: %s\n", $file, $!);
 				}
 				my($iR, $iC, $oWkS, $oWkC);
 
+				my $sheetcount = $oBook->{SheetCount};
+#::logDebug("Sheetcount is $sheetcount");
 				my $sheets = {};
 
-					for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-					   my $oWkS = $oBook->{Worksheet}[$iSheet]
-										or next;
+					for my $oWkS (@{$oBook->{Worksheet}}) {
+					   next unless defined $oWkS;
 
 					   for(qw/MaxCol MaxRow MinCol MinRow/) {
 						   die "No $_!"           if ! defined $oWkS->{$_};
