@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.258 2005-11-07 21:22:24 racke Exp $
+# $Id: Interpolate.pm,v 2.259 2005-11-07 22:06:25 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.258 $, 10);
+$VERSION = substr(q$Revision: 2.259 $, 10);
 
 @EXPORT = qw (
 
@@ -1047,6 +1047,9 @@ sub conditional {
 				if defined $comp;
 	}
 	elsif($base eq 'discount') {
+		# Use switch_discount_space to ensure that the hash is set properly.
+		switch_discount_space($Vend::DiscountSpaceName)
+			unless ref $::Discounts eq 'HASH';
 		$op =	qq%$::Discounts->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -2711,6 +2714,13 @@ sub switch_discount_space {
 			= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName = $dspace}
 			||= {};
 #::logDebug("switch_discount_space: changed discount space from '$oldspace' to '$Vend::DiscountSpaceName'");
+	}
+	else {
+		# Make certain the hash is set, in case app programmer manipulated the session directly.
+		$::Discounts
+			= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName}
+			unless ref $::Discounts eq 'HASH';
 	}
 	return $oldspace;
 }
@@ -5605,9 +5615,10 @@ sub subtotal {
 
 	levies() unless $Vend::Levying;
 	
-	$oldspace = switch_discount_space($dspace) if $dspace;
+	# Use switch_discount_space unconditionally to guarantee existance of proper discount structures.
+	$oldspace = switch_discount_space($dspace || $Vend::DiscountSpaceName);
 	
-	my $discount = (defined $::Discounts and %$::Discounts);
+	my $discount = (ref($::Discounts) eq 'HASH' and %$::Discounts);
 
     $subtotal = 0;
 	$tmp = 0;
@@ -5637,8 +5648,8 @@ sub subtotal {
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_subtotal} = $subtotal;
 
-	# Switch to original discount space if one exists.
-	switch_discount_space($oldspace) if defined $oldspace;
+	# Switch to original discount space if an actual switch occured.
+	switch_discount_space($oldspace) if $dspace and defined $oldspace;
 
     return $subtotal;
 }
