@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.39 2005-10-19 14:26:32 mheins Exp $
+# $Id: UserDB.pm,v 2.40 2005-11-07 21:58:43 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1266,7 +1266,16 @@ sub login {
 	$Vend::login_table = $Vend::Session->{login_table} = $self->{DB_ID};
 	$Vend::username = $Vend::Session->{username} = $self->{USERNAME};
 	$Vend::Session->{logged_in} = 1;
-	
+
+	if (my $macros = $self->{OPTIONS}{postlogin_action}) {
+		eval {
+			Vend::Dispatch::run_macro $macros;
+		};
+		if ($@) {
+			logError("UserDB postlogin_action execution error: %s\n", $@);
+		}
+	}
+
 	1;
 }
 
