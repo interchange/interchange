@@ -1,12 +1,12 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.15 2005-10-15 00:32:41 jon Exp $
+# $Id: image.tag,v 1.16 2005-11-07 23:30:15 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.15 $
+UserTag image Version   $Revision: 1.16 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -234,6 +234,10 @@ sub {
 				my ($width, $height) = Image::Size::imgsize($path);
 				($opt->{width}, $opt->{height}) = ($width, $height)
 					if $width and $height;
+				if ($opt->{size_scratch_prefix}) {
+					Vend::Interpolate::set_tmp($opt->{size_scratch_prefix} . '_' . $_, $opt->{$_})
+						for qw/width height/;
+				}
 			};
 		}
 	}
