@@ -1,6 +1,6 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# $Id: UserControl.pm,v 2.4 2005-08-03 19:33:39 jon Exp $
+# $Id: UserControl.pm,v 2.5 2005-11-07 22:37:02 mheins Exp $
 #
 # Copyright (C) 2003 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
@@ -17,7 +17,7 @@
 
 package Vend::UserControl;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 require Vend::UserDB;
 use Vend::Data;
@@ -460,7 +460,7 @@ sub set_shipping {
 
 	my $o = $self->{OPTIONS} || {};
 
-	my $nick = $o->{nickname} || $::Values->{s_nickname};
+	my $nick = $o->{nickname} || $::Values->{s_nickname} || 'shipping';
 
 	my $map = make_field_map($o->{shipping_map}) || \%s_map;
 
@@ -472,7 +472,7 @@ sub set_billing {
 
 	my $o = $self->{OPTIONS} || {};
 
-	my $nick = $o->{nickname} || $::Values->{b_nickname};
+	my $nick = $o->{nickname} || $::Values->{b_nickname} || 'billing';
 
 	my $map = make_field_map($o->{billing_map}) || \%b_map;
 
