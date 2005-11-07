@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.187 2005-11-07 21:40:40 jon Exp $
+# $Id: Config.pm,v 2.188 2005-11-07 21:53:55 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.187 $, 10);
+$VERSION = substr(q$Revision: 2.188 $, 10);
 
 my %CDname;
 my %CPname;
@@ -703,6 +703,8 @@ sub catalog_directives {
 	['XHTML',			 'yesno',	     	 $Global::XHTML],
 	['External',		 'yesno',	     	 'No'],
 	['ExternalExport',	 undef,		     	 join " ", @External_directives],
+	['CartTrigger',		 'routine_array',	 ''],
+	['CartTriggerQuantity',	'yesno',		 'no'],
 
 	];
 

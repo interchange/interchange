@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.11 2005-04-28 01:54:44 mheins Exp $
+# $Id: Cart.pm,v 2.12 2005-11-07 21:53:55 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use strict;
 
@@ -180,6 +180,11 @@ sub toss_cart {
 	my $sub;
 	my (@master);
 	my (@cascade);
+	my ($raise_event, $quantity_raise_event)
+		= @{$Vend::Cfg}{qw/CartTrigger CartTriggerQuantity/};
+	$quantity_raise_event = $raise_event && $quantity_raise_event;
+	my $event_cartname = $cartname || $Vend::CurrentCart;
+	my $old_item;
 	DELETE: for (;;) {
 		foreach $i (0 .. $#$s) {
 			my $item = $s->[$i];
@@ -195,7 +200,13 @@ sub toss_cart {
 				elsif ( $item->{mv_ci} ) {
 					push (@master, $item->{mv_ci});
 				}
+				$old_item = $s->[$i] if $raise_event;
 				splice(@$s, $i, 1);
+				trigger_delete(
+						$s,
+						$old_item,
+						$event_cartname
+					) if $raise_event;
 				next DELETE;
 			}
 
@@ -216,8 +227,15 @@ sub toss_cart {
 					$item->{quantity} < $item->{mv_min_quantity}
 					)
 				{
+					$old_item = { %$item } if $quantity_raise_event;
 					$item->{quantity} = $item->{mv_min_quantity};
 					$item->{mv_min_under} = 1;
+					trigger_update(
+							$s,
+							$item,
+							$old_item,
+							$event_cartname
+						) if $quantity_raise_event;
 				}
 			}
 
@@ -235,18 +253,25 @@ sub toss_cart {
 					$item->{quantity} > $item->{mv_max_quantity}
 					)
 				{
+					$old_item = { %$item } if $quantity_raise_event;
 					$item->{quantity} = $item->{mv_max_quantity};
 					$item->{mv_max_over} = 1;
+					trigger_update(
+							$s,
+							$item,
+							$old_item,
+							$event_cartname
+						) if $quantity_raise_event;
 				}
 			}
 
-			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line}
+				and $item->{quantity} > $Vend::Cfg->{Limit}{cart_quantity_per_line};
 			
-			$item->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line}
-				if
-					$item->{quantity}
-						>
-					$Vend::Cfg->{Limit}{cart_quantity_per_line};
+			$old_item = { %$item } if $quantity_raise_event;				
+			$item->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			trigger_update( $s, $item, $old_item, $event_cartname )
+				if $quantity_raise_event;
 		}
 		last DELETE;
 	}
@@ -275,6 +300,10 @@ sub toss_cart {
 			}
 			@items = @$s;
 			@{$s} = @items[sort {$a <=> $b} keys %save];
+			if ($raise_event and scalar(@items) > scalar(@$s)) {
+				trigger_delete($s, $items[$_], $event_cartname)
+					for grep { ! $save{$_} } (0..$#items);
+			}
 		}
 	}
 	Vend::Interpolate::levies(1, $cartname);
@@ -293,6 +322,47 @@ sub toss_cart {
 	# ENDTEST
 
 =cut
+
+sub trigger_event {
+	my($s, $action, $new_row, $old_row, $cartname) = @_;
+	return unless my $subs = $Vend::Cfg->{CartTrigger};
+	$subs = [ split /\s+/, $subs ] unless ref $subs eq 'ARRAY';
+	my @results;
+	for my $subname (@$subs) {
+		next unless my $sub
+			= $Vend::Cfg->{Sub}{$subname}
+			|| $Global::GlobalSub->{$subname};
+
+		my $result;
+		eval {
+			$result = $sub->($s, $action, $new_row, $old_row, $cartname);
+		};
+		if ($@) {
+			::logError( "CartTrigger event handler '%' action '%' returned error:\n%",
+				$Vend::Cfg->{CartTrigger},
+				$action,
+				$@ );
+			$result = undef;
+		}
+		push @results, $result
+	}
+	return @results;
+}
+
+sub trigger_add {
+	my($s,$new_row,$cartname) = @_;
+	return trigger_event($s, 'add', $new_row, undef, $cartname);
+}
+
+sub trigger_update {
+	my($s,$new_row,$old_row,$cartname) = @_;
+	return trigger_event($s, 'update', $new_row, $old_row, $cartname);
+}
+
+sub trigger_delete {
+	my($s,$old_row,$cartname) = @_;
+	return trigger_event($s, 'delete', undef, $old_row, $cartname);
+}
 
 1;
 

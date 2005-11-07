@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.81 2005-11-01 11:14:49 racke Exp $
+# $Id: Order.pm,v 2.82 2005-11-07 21:53:55 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.81 $, 10);
+$VERSION = substr(q$Revision: 2.82 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2095,14 +2095,19 @@ my @Scan_modifiers = qw/
 sub update_quantity {
     return 1 unless defined  $CGI::values{"quantity0"}
 		|| $CGI::values{mv_quantity_update};
-	my($h, $i, $quantity, $modifier, $cart);
+	my ($h, $i, $quantity, $modifier, $cart, $cartname, %altered_items, %old_items);
 
 	if ($CGI::values{mv_cartname}) {
-		$cart = $::Carts->{$CGI::values{mv_cartname}} ||= [];
+		$cart = $::Carts->{$cartname = $CGI::values{mv_cartname}} ||= [];
 	}
 	else {
 		$cart = $Vend::Items;
+		$cartname = $Vend::CurrentCart;
 	}
+
+	my ($raise_event, $quantity_raise_event)
+		= @{$Vend::Cfg}{qw/CartTrigger CartTriggerQuantity/};
+	$quantity_raise_event = $raise_event && $quantity_raise_event;
 
 	my @mods;
 	@mods = @{$Vend::Cfg->{UseModifier}} if $Vend::Cfg->{UseModifier};
@@ -2123,6 +2128,7 @@ sub update_quantity {
 			next if
 				!   defined $CGI::values{"$h$i"}
 				and defined $cart->[$i]{$h};
+			$old_items{$i} ||= { %{$cart->[$i]} } if $raise_event;
 			$modifier = $CGI::values{"$h$i"}
 					  || (defined $cart->[$i]{$h} ? '' : undef);
 #::logDebug("line $i modifier $h now $modifier");
@@ -2131,6 +2137,9 @@ sub update_quantity {
 				$modifier =~ s/\0$//;
 				$modifier =~ s/^\0//;
 				$modifier =~ s/\0/, /g;
+				$altered_items{$i} = 1
+					if $raise_event
+					and $cart->[$i]->{$h} ne $modifier;
 				$cart->[$i]->{$h} = $modifier;
 				$::Values->{"$h$i"} = $modifier;
 				delete $CGI::values{"$h$i"};
@@ -2145,14 +2154,21 @@ sub update_quantity {
     	$quantity = $CGI::values{"quantity$i"};
     	next unless defined $quantity;
 		my $do_update;
+		my $old_item = $old_items{$i} ||= { %$line } if $raise_event;
     	if ($quantity =~ m/^\d*$/) {
         	$line->{'quantity'} = $quantity || 0;
 			$do_update = 1;
+			$altered_items{$i} = 1
+				if $quantity_raise_event
+				and $line->{quantity} != $old_item->{quantity};
     	}
     	elsif ($quantity =~ m/^[\d.]+$/
 				and $Vend::Cfg->{FractionalItems} ) {
         	$line->{'quantity'} = $quantity;
 			$do_update = 1;
+			$altered_items{$i} = 1
+				if $quantity_raise_event
+				and $line->{quantity} != $old_item->{quantity};
     	}
 		# This allows a last-positioned input of item quantity to
 		# remove the item
@@ -2234,9 +2250,17 @@ sub update_quantity {
 				else {
 					$line->{code}	= $sku;
 				}
+				$altered_items{$i} = 1 if $raise_event;
 			}
 		}
-    }
+	}
+
+	Vend::Cart::trigger_update(
+			$cart,
+			$cart->[$_], # new item version
+			$old_items{$_}, # old item version
+			$cartname
+		) for sort { $a <=> $b } keys %altered_items;
 #::logDebug("after update, cart is: " . ::uneval($cart));
 
 	# If the user has put in "0" for any quantity, delete that item
@@ -2271,13 +2295,18 @@ sub add_items {
 
 	::update_quantity() if ! defined $CGI::values{mv_orderline};
 
-	my $cart;
-	if($CGI::values{mv_cartname}) {
-		$cart = $::Carts->{$CGI::values{mv_cartname}} ||= [];
+	my ($cart, $cartname);
+	if ($cartname = $CGI::values{mv_cartname}) {
+		$cart = $::Carts->{$cartname} ||= [];
 	}
 	else {
 		$cart = $Vend::Items;
+		$cartname = $Vend::CurrentCart;
 	}
+
+	my ($raise_event,$track_quantity)
+		= @{$Vend::Cfg}{qw/CartTrigger CartTriggerQuantity/};
+	$raise_event = @$raise_event if ref $raise_event eq 'ARRAY';
 
 	@items      = split /\0/, ($items);
 	@quantities = split /\0/, ($quantities || delete $CGI::values{mv_order_quantity} || '');
@@ -2415,7 +2444,14 @@ sub add_items {
 					# Increment quantity. This is different than
 					# the standard handling because we are ordering
 					# accessories, and may want more than 1 of each
+					my %old_item = %{$cart->[$i]} if $raise_event and $track_quantity;
 					$cart->[$i]{quantity} = $set ? $quantity : $cart->[$i]{quantity} + $quantity;
+					Vend::Cart::trigger_update(
+							$cart,
+							$cart->[$i], # new row
+							\%old_item, # old row
+							$cartname
+						) if $raise_event and $track_quantity;
 				}
 			}
 		} # INCREMENT
@@ -2504,13 +2540,25 @@ sub add_items {
 			}
 
 			if($lines[$j] =~ /^\d+$/ and defined $cart->[$lines[$j]] ) {
+				my %old = %{$cart->[$lines[$j]]} if $raise_event;
 				$cart->[$lines[$j]] = $item;
+				Vend::Cart::trigger_update(
+						$cart,
+						$item, # new item
+						\%old, # old item
+						$cartname,
+					) if $raise_event;
 			}
 			else {
 # TRACK
 				$Vend::Track->add_item($cart,$item) if $Vend::Track;
 # END TRACK
 				push @$cart, $item;
+				Vend::Cart::trigger_add(
+						$cart,
+						$item, # new item
+						$cartname,
+					) if $raise_event;
 			}
 		}
 		$j++;
