@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.257 2005-10-31 18:00:38 mheins Exp $
+# $Id: Interpolate.pm,v 2.258 2005-11-07 21:22:24 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.257 $, 10);
+$VERSION = substr(q$Revision: 2.258 $, 10);
 
 @EXPORT = qw (
 
@@ -4854,7 +4854,7 @@ sub tag_loop_list {
 sub fly_page {
 	my($code, $opt, $page) = @_;
 
-	my $selector;
+	my ($selector, $subname, $base, $listref);
 
 	return $page if (! $code and $Vend::Flypart eq $Vend::FinalPath);
 
@@ -4863,7 +4863,15 @@ sub fly_page {
 
 	$Vend::Flypart = $code;
 
-	my $base = product_code_exists_ref($code);
+	if ($subname = $Vend::Cfg->{SpecialSub}{flypage}) {
+		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname}; 
+		$listref = $sub->($code);
+		$base = $listref;
+	} else {
+		$base = product_code_exists_ref($code);
+		$listref = {mv_results => [[$code]]};
+	}
+	
 #::logDebug("fly_page: code=$code base=$base page=" . substr($page, 0, 100));
 	return undef unless $base || $opt->{onfly};
 
@@ -4912,7 +4920,7 @@ sub fly_page {
 	list_compat($opt->{prefix}, \$page) if $page;
 # END LEGACY
 
-	return labeled_list( {}, $page, { mv_results => [[$code]] });
+	return labeled_list( {}, $page, $listref);
 }
 
 sub item_difference {
