@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.259 2005-11-07 22:06:25 jon Exp $
+# $Id: Interpolate.pm,v 2.260 2005-11-07 22:08:50 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.259 $, 10);
+$VERSION = substr(q$Revision: 2.260 $, 10);
 
 @EXPORT = qw (
 
@@ -4000,6 +4000,8 @@ sub iterate_array_list {
 
 	# The $Row object needs to be built per-row, so undef it initially.
 	$fa ||= [];
+	@$fa = sort { $fh->{$a} <=> $fh->{$b} } keys %$fh
+		if ! @$fa and ref $fh eq 'HASH';
 	undef $Row;
 
 	my $lim;
