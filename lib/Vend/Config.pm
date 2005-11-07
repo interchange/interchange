@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.186 2005-10-19 14:21:06 mheins Exp $
+# $Id: Config.pm,v 2.187 2005-11-07 21:40:40 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.186 $, 10);
+$VERSION = substr(q$Revision: 2.187 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3335,7 +3335,6 @@ sub set_default_search {
 			$C->{Shipping} = $o->{default} || $o->{Postal};
 		},
 		UserDB => sub {
-					shift;
 					my $set = $C->{UserDB_repository};
 					for(keys %$set) {
 						next unless defined $set->{$_}{admin};
@@ -3345,9 +3344,7 @@ sub set_default_search {
 					return 1;
 				},
 		UserControl => sub {
-					shift;
-					return 1 unless defined $C;
-					return 1 unless $C->{UserControl};
+					return 1 unless shift;
 					require Vend::UserControl;
 					return 1;
 				},
@@ -3374,14 +3371,12 @@ sub set_default_search {
 					return 1;
 				},
 		SOAP_Socket => sub {
-					shift;
 					return 1 if $Have_set_global_defaults;
 					$Global::SOAP_Socket = ['7780']
 						if $Global::SOAP and ! $Global::SOAP_Socket;
 					return 1;
 				},
 		TcpMap => sub {
-					shift;
 					return 1 if defined $Have_set_global_defaults;
 					my (@sets) = keys %{$Global::TcpMap};
 					if(scalar @sets == 1 and $sets[0] eq '-') {
