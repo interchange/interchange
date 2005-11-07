@@ -1,3 +1,9 @@
+interchange (5.3.2-1) experimental; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Nov 2005 15:55:35 +0100
+
 interchange (5.3.0.20051028-1) experimental; urgency=low
 
   * new upstream release fixing menu editor bug (Closes: #335012)
