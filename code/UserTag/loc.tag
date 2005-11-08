@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: loc.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+# $Id: loc.tag,v 1.6 2005-11-08 18:14:42 jon Exp $
 
 # [loc locale*] message [/loc]
 #
@@ -11,7 +11,7 @@ UserTag loc Order       locale
 UserTag l   Alias       loc
 UserTag loc hasEndTag   1
 UserTag loc Interpolate 1
-UserTag loc Version     $Revision: 1.5 $
+UserTag loc Version     $Revision: 1.6 $
 UserTag loc Routine     <<EOF
 sub {
     my ($locale, $message) = @_;

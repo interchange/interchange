@@ -1,8 +1,8 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.7 2005-04-27 22:16:27 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.8 2005-11-08 18:14:47 jon Exp $
 #
-# Copyright (C) 2002-2004 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use strict;
 

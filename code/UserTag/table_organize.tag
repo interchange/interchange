@@ -1,13 +1,13 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: table_organize.tag,v 1.7 2005-02-10 14:38:39 docelic Exp $
+# $Id: table_organize.tag,v 1.8 2005-11-08 18:14:43 jon Exp $
 
 UserTag table-organize Order         cols
 UserTag table-organize attrAlias     columns cols
 UserTag table-organize Interpolate
 UserTag table-organize addAttr
 UserTag table-organize hasEndTag
-UserTag table-organize Version       $Revision: 1.7 $
+UserTag table-organize Version       $Revision: 1.8 $
 UserTag table-organize Documentation <<EOD
 
 =head1 table-organize

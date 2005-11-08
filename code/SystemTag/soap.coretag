@@ -1,13 +1,13 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: soap.coretag,v 1.4 2005-02-09 13:39:42 docelic Exp $
+# $Id: soap.coretag,v 1.5 2005-11-08 18:14:36 jon Exp $
 
 UserTag soap                Order        call uri proxy
 UserTag soap                addAttr
 UserTag soap                PosNumber    3
-UserTag soap                Version      $Revision: 1.4 $
+UserTag soap                Version      $Revision: 1.5 $
 UserTag soap                MapRoutine   Vend::SOAP::tag_soap
 
 UserTag soap_entity			addAttr
-UserTag soap_entity     Version      $Revision: 1.4 $
+UserTag soap_entity			Version      $Revision: 1.5 $
 UserTag soap_entity			MapRoutine   Vend::SOAP::tag_soap_entity

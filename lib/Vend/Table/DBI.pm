@@ -1,8 +1,8 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.67 2005-10-13 05:47:01 jon Exp $
+# $Id: DBI.pm,v 2.68 2005-11-08 18:14:47 jon Exp $
 #
-# Copyright (C) 2002-2004 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);

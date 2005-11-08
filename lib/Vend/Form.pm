@@ -1,8 +1,8 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.63 2005-10-14 08:53:08 racke Exp $
+# $Id: Form.pm,v 2.64 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.63 $, 10);
+$VERSION = substr(q$Revision: 2.64 $, 10);
 
 @EXPORT = qw (
 	display

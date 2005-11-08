@@ -1,8 +1,8 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.7 2004-06-07 20:59:18 mheins Exp $
+# $Id: Skipjack.pm,v 2.8 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Written by Cameron Prince and Mark Johnson, based on code by Mike Heins

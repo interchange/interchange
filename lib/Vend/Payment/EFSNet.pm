@@ -1,13 +1,13 @@
 # Vend::Payment::EFSNet - Interchange EFSNet support
 #
-# $Id: EFSNet.pm,v 1.3 2004-06-07 20:59:18 mheins Exp $
+# $Id: EFSNet.pm,v 1.4 2005-11-08 18:14:46 jon Exp $
 #
 # Connection routine for Concord EFSNet ( http://www.concordefsnet.com/ )
 #
 # Based on AuthorizeNet.pm. Modified for EFSNet by Chris Wenham of Synesmedia, Inc.
 # cwenham@synesmedia.com, http://www.synesmedia.com/
 #
-# Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2005 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:

@@ -1,8 +1,8 @@
 # Vend::Payment::PSiGate - Interchange PSiGate support
 #
-# $Id: PSiGate.pm,v 1.4 2004-06-07 20:59:18 mheins Exp $
+# $Id: PSiGate.pm,v 1.5 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
+# Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 #	Gary Benson <gary@geton.com>

@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: import.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+# $Id: import.coretag,v 1.4 2005-11-08 18:14:36 jon Exp $
 
 UserTag import              Order        table type
 UserTag import              addAttr
@@ -9,5 +9,5 @@ UserTag import              attrAlias    database table
 UserTag import              hasEndTag
 UserTag import              Interpolate
 UserTag import              PosNumber    2
-UserTag import              Version      $Revision: 1.3 $
+UserTag import              Version      $Revision: 1.4 $
 UserTag import              MapRoutine   Vend::Data::import_text

@@ -1,7 +1,7 @@
-# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: null_to_colons.filter,v 1.2 2005-04-12 03:23:18 mheins Exp $
+# $Id: null_to_colons.filter,v 1.3 2005-11-08 18:14:32 jon Exp $
 
 CodeDef null_to_colons Filter
 CodeDef null_to_colons Description NULL to ::

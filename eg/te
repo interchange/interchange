@@ -108,6 +108,7 @@ Jon Jensen <jon@icdevgroup.org>
 
 =head1 COPYRIGHT
 
+Copyright (C) 2002-2005 Jon Jensen and Mike Heins
 Copyright (C) 2001-2002 Red Hat, Inc.
 
 This program is free software; you can redistribute it and/or modify it
@@ -122,7 +123,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.10 2005-09-22 16:32:26 mheins Exp $
+$Id: te,v 2.11 2005-11-08 18:14:44 jon Exp $
 
 =head1 CHANGELOG
 

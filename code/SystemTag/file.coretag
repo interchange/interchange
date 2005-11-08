@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: file.coretag,v 1.4 2005-08-11 18:47:52 docelic Exp $
+# $Id: file.coretag,v 1.5 2005-11-08 18:14:35 jon Exp $
 
 UserTag file                Order        name type
 UserTag file                PosNumber    2
-UserTag file                Version      $Revision: 1.4 $
+UserTag file                Version      $Revision: 1.5 $
 UserTag file                Routine      <<EOR
 sub {
 	my ($file, $type) = @_;

@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: usps_query.tag,v 1.5 2005-08-02 13:54:28 mheins Exp $
+# $Id: usps_query.tag,v 1.6 2005-11-08 18:14:43 jon Exp $
 
 UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
-UserTag  usps-query  Version $Revision: 1.5 $
+UserTag  usps-query  Version $Revision: 1.6 $
 UserTag  usps-query  Routine <<EOR
 
 sub {

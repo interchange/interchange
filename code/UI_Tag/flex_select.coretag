@@ -1,12 +1,12 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: flex_select.coretag,v 1.13 2005-11-04 04:57:34 mheins Exp $
+# $Id: flex_select.coretag,v 1.14 2005-11-08 18:14:40 jon Exp $
 
 UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.13 $
+UserTag flex-select Version    $Revision: 1.14 $
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/

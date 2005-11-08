@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: get_url.tag,v 1.8 2005-02-10 14:38:39 docelic Exp $
+# $Id: get_url.tag,v 1.9 2005-11-08 18:14:42 jon Exp $
 
 UserTag get-url Order        url
 UserTag get-url AddAttr
 UserTag get-url Interpolate
-UserTag get-url Version      $Revision: 1.8 $
+UserTag get-url Version      $Revision: 1.9 $
 UserTag get-url Routine      <<EOR
 require LWP::UserAgent;
 sub {

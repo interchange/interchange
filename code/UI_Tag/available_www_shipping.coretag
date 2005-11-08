@@ -1,9 +1,9 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: available_www_shipping.coretag,v 1.2 2005-02-14 00:42:52 docelic Exp $
+# $Id: available_www_shipping.coretag,v 1.3 2005-11-08 18:14:39 jon Exp $
 
 UserTag available_www_shipping Order   only
-UserTag available_www_shipping Version $Revision: 1.2 $
+UserTag available_www_shipping Version $Revision: 1.3 $
 UserTag available_www_shipping Routine <<EOR
 sub {
 	my ($only) = @_;

@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: include.coretag,v 1.6 2005-02-09 13:39:42 docelic Exp $
+# $Id: include.coretag,v 1.7 2005-11-08 18:14:36 jon Exp $
 
 UserTag include             Order        file locale
 UserTag include             PosNumber    2
-UserTag include             Version      $Revision: 1.6 $
+UserTag include             Version      $Revision: 1.7 $
 UserTag include             Routine      <<EOR
 sub {
 	my ($file, $locale) = @_;

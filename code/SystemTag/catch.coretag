@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: catch.coretag,v 1.5 2005-02-09 13:39:41 docelic Exp $
+# $Id: catch.coretag,v 1.6 2005-11-08 18:14:35 jon Exp $
 
 UserTag catch               Order        label
 UserTag catch               addAttr
 UserTag catch               hasEndTag
-UserTag catch               Version      $Revision: 1.5 $
+UserTag catch               Version      $Revision: 1.6 $
 UserTag catch               Routine      <<EOR
 sub {
 	my ($label, $opt, $body) = @_;

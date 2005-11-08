@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: write_shipping.coretag,v 1.4 2005-04-27 15:02:18 mheins Exp $
+# $Id: write_shipping.coretag,v 1.5 2005-11-08 18:14:40 jon Exp $
 
 UserTag write-shipping Order      file
 UserTag write-shipping PosNumber  1
 UserTag write-shipping addAttr
-UserTag write-shipping Version    $Revision: 1.4 $
+UserTag write-shipping Version    $Revision: 1.5 $
 UserTag write-shipping Routine    <<EOR
 sub {
 	my ($file, $opt) = @_;

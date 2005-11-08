@@ -1,8 +1,8 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.36 2005-08-19 18:13:49 jon Exp $
+# $Id: Parse.pm,v 2.37 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);

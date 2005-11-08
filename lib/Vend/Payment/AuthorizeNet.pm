@@ -3,9 +3,9 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.15 2004-06-07 20:59:18 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.16 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2003-2004 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2005 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:

@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: history_scan.tag,v 1.18 2005-08-13 16:01:27 mheins Exp $
+# $Id: history_scan.tag,v 1.19 2005-11-08 18:14:42 jon Exp $
 
 UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
-UserTag history-scan Version $Revision: 1.18 $
+UserTag history-scan Version $Revision: 1.19 $
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1

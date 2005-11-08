@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: selected.coretag,v 1.6 2005-02-09 13:39:42 docelic Exp $
+# $Id: selected.coretag,v 1.7 2005-11-08 18:14:36 jon Exp $
 
 UserTag selected            Order        name value
 UserTag selected            addAttr
 UserTag selected            PosNumber    2
-UserTag selected            Version      $Revision: 1.6 $
+UserTag selected            Version      $Revision: 1.7 $
 UserTag selected            Routine      <<EOR
 # Returns ' SELECTED' when a value is present on the form
 # Must match exactly, but NOT case-sensitive

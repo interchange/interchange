@@ -3,9 +3,9 @@
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
+# $Id: update.PL,v 2.5 2005-11-08 18:14:48 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify

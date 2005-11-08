@@ -1,10 +1,10 @@
-# Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2003-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: css.tag,v 1.6 2005-02-10 14:38:39 docelic Exp $
+# $Id: css.tag,v 1.7 2005-11-08 18:14:42 jon Exp $
 
 UserTag css Order   name
 UserTag css addAttr
-UserTag css Version $Revision: 1.6 $
+UserTag css Version $Revision: 1.7 $
 UserTag css Routine <<EOR
 sub {
 	my ($name, $opt) = @_;

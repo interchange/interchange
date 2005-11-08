@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: diffmerge.coretag,v 1.2 2005-02-14 00:42:52 docelic Exp $
+# $Id: diffmerge.coretag,v 1.3 2005-11-08 18:14:39 jon Exp $
 
 # This tag uses GNU diff3 to merge two texts blocks that were
 # modified from the same ancestral text together, and marks
@@ -42,7 +42,7 @@
 UserTag diffmerge Interpolate   1
 UserTag diffmerge hasEndTag
 UserTag diffmerge addAttr
-UserTag diffmerge Version       $Revision: 1.2 $
+UserTag diffmerge Version       $Revision: 1.3 $
 
 # These designations come from the diff3 manpage.
 # It seemed easier to use their names than to make up new ones.

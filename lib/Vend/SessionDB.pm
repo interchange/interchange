@@ -1,8 +1,8 @@
 # Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 2.6 2004-07-08 18:13:30 mheins Exp $
+# $Id: SessionDB.pm,v 2.7 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 sub TIEHASH {
 	my($class, $db) = @_;

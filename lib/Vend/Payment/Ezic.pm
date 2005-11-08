@@ -1,7 +1,8 @@
 # Vend::Payment::Ezic - Interchange Ezic support
 #
-# $Id: Ezic.pm,v 1.2 2005-03-06 04:01:41 mheins Exp $
+# $Id: Ezic.pm,v 1.3 2005-11-08 18:14:46 jon Exp $
 #
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # by shawn@oceanebi.com with code reused and inspired by
@@ -35,7 +36,7 @@
 package Vend::Payment::Ezic;
 =head1 Interchange Ezic Support
 
-Vend::Payment::Ezic $Revision: 1.2 $
+Vend::Payment::Ezic $Revision: 1.3 $
 
 =head1 SYNOPSIS
 

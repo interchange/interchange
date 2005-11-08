@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: field.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+# $Id: field.coretag,v 1.3 2005-11-08 18:14:35 jon Exp $
 
 UserTag field               Order        name code
 UserTag field               attrAlias    column name
@@ -9,5 +9,5 @@ UserTag field               attrAlias    row code
 UserTag field               attrAlias    field name
 UserTag field               attrAlias    key code
 UserTag field               PosNumber    2
-UserTag field               Version      $Revision: 1.2 $
+UserTag field               Version      $Revision: 1.3 $
 UserTag field               MapRoutine   Vend::Data::product_field

@@ -1,13 +1,13 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: subtotal.coretag,v 1.5 2005-02-09 13:39:42 docelic Exp $
+# $Id: subtotal.coretag,v 1.6 2005-11-08 18:14:36 jon Exp $
 
 UserTag subtotal            Order        name noformat
 UserTag subtotal            attrAlias    cart name
 UserTag subtotal            attrAlias    space discount_space
 UserTag subtotal            addAttr
 UserTag subtotal            PosNumber    2
-UserTag subtotal            Version      $Revision: 1.5 $
+UserTag subtotal            Version      $Revision: 1.6 $
 UserTag subtotal            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

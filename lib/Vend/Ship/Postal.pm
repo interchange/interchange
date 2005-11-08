@@ -1,8 +1,8 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Postal.pm,v 1.3 2004-04-09 03:18:55 mheins Exp $
+# $Id: Postal.pm,v 1.4 2005-11-08 18:14:47 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

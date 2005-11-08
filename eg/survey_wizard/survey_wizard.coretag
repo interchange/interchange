@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: survey_wizard.coretag,v 1.1 2005-04-10 05:25:14 mheins Exp $
+# $Id: survey_wizard.coretag,v 1.2 2005-11-08 18:14:44 jon Exp $
 
 UserTag  survey-wizard  Order     name
 UserTag  survey-wizard  AddAttr
 UserTag  survey-wizard  HasEndTag
-UserTag  survey-wizard  Version   $Revision: 1.1 $
+UserTag  survey-wizard  Version   $Revision: 1.2 $
 UserTag  survey-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;

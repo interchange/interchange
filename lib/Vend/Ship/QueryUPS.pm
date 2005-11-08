@@ -1,8 +1,8 @@
 # Vend::Ship::QueryUPS - Interchange shipping code
 # 
-# $Id: QueryUPS.pm,v 1.4 2003-06-30 18:21:44 mheins Exp $
+# $Id: QueryUPS.pm,v 1.5 2005-11-08 18:14:47 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

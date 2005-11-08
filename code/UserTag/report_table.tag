@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: report_table.tag,v 1.2 2005-02-10 14:38:39 docelic Exp $
+# $Id: report_table.tag,v 1.3 2005-11-08 18:14:42 jon Exp $
 
 UserTag report-table addAttr
 UserTag report-table Documentation <<EOD
@@ -336,7 +336,7 @@ To get a blank column:
 
 
 EOD
-UserTag report-table Version $Revision: 1.2 $
+UserTag report-table Version $Revision: 1.3 $
 UserTag report-table Routine <<EOR
 sub prep_cell {
 	my ($def,$datum,$linecount,$record) = @_;

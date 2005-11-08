@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: convert_date.tag,v 1.5 2005-02-10 14:38:39 docelic Exp $
+# $Id: convert_date.tag,v 1.6 2005-11-08 18:14:42 jon Exp $
 
 UserTag convert-date Order       adjust
 UserTag convert-date PosNumber   1
@@ -9,7 +9,7 @@ UserTag convert-date AttrAlias   fmt format
 UserTag convert-date AttrAlias   days adjust
 UserTag convert-date HasEndTag
 UserTag convert-date Interpolate
-UserTag convert-date Version     $Revision: 1.5 $
+UserTag convert-date Version     $Revision: 1.6 $
 UserTag convert-date Routine     <<EOR
 sub {
     my ($adjust, $opt, $text) = @_;

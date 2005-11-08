@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: traffic_report.coretag,v 1.4 2005-02-14 00:42:53 docelic Exp $
+# $Id: traffic_report.coretag,v 1.5 2005-11-08 18:14:40 jon Exp $
 
 UserTag traffic-report Order   save
 UserTag traffic-report addAttr
-UserTag traffic-report Version $Revision: 1.4 $
+UserTag traffic-report Version $Revision: 1.5 $
 UserTag traffic-report Routine <<EOR
 sub {
 	my ($save, $opt) = @_;

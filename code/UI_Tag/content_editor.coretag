@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: content_editor.coretag,v 1.4 2005-02-14 00:42:52 docelic Exp $
+# $Id: content_editor.coretag,v 1.5 2005-11-08 18:14:39 jon Exp $
 
 UserTag content-editor Order      name
 UserTag content-editor addAttr
 UserTag content-editor hasEndTag
-UserTag content-editor Version    $Revision: 1.4 $
+UserTag content-editor Version    $Revision: 1.5 $
 UserTag content-editor Routine    <<EOR
 use UI::ContentEditor;
 sub {

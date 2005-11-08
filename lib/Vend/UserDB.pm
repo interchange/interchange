@@ -1,8 +1,8 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.40 2005-11-07 21:58:43 jon Exp $
+# $Id: UserDB.pm,v 2.41 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 use vars qw!
 	$VERSION

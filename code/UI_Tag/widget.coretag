@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: widget.coretag,v 1.4 2005-02-14 00:42:53 docelic Exp $
+# $Id: widget.coretag,v 1.5 2005-11-08 18:14:40 jon Exp $
 
 UserTag widget Order       name
 UserTag widget PosNumber   1
@@ -10,7 +10,7 @@ UserTag widget attrAlias   outboard key
 UserTag widget addAttr
 UserTag widget HasEndTag   1
 UserTag widget Interpolate 1
-UserTag widget Version     $Revision: 1.4 $
+UserTag widget Version     $Revision: 1.5 $
 UserTag widget Routine     <<EOR
 sub {
 	my($name, $opt, $string) = @_;

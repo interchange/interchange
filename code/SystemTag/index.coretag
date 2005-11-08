@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: index.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+# $Id: index.coretag,v 1.4 2005-11-08 18:14:36 jon Exp $
 
 UserTag index               Order        table
 UserTag index               addAttr
 UserTag index               attrAlias    base table
 UserTag index               attrAlias    database table
 UserTag index               PosNumber    1
-UserTag index               Version      $Revision: 1.3 $
+UserTag index               Version      $Revision: 1.4 $
 UserTag index               MapRoutine   Vend::Data::index_database

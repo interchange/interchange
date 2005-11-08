@@ -1,8 +1,8 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.14 2003-06-23 14:59:14 racke Exp $
+# $Id: SOAP.pm,v 2.15 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2000-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;

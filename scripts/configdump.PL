@@ -3,8 +3,9 @@
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 2.3 2005-05-16 20:01:22 mheins Exp $
+# $Id: configdump.PL,v 2.4 2005-11-08 18:14:48 jon Exp $
 #
+# Copyright 2002-2005 Interchange Development Group
 # Copyright 1999-2002 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -170,7 +171,9 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1999-2000, Stefan Hornburg. All rights reserved except as in the
+Copyright 2002-2005, Interchange Development Group.
+
+Copyright 1999-2002, Stefan Hornburg. All rights reserved except as in the
 license.
 
 =head1 AUTHOR

@@ -1,11 +1,11 @@
-# Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2003-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: bar_button.tag,v 1.3 2005-02-10 14:38:39 docelic Exp $
+# $Id: bar_button.tag,v 1.4 2005-11-08 18:14:42 jon Exp $
 
 UserTag bar-button Order     page current
 UserTag bar-button PosNumber 2
 UserTag bar-button HasEndTag 1
-UserTag bar-button Version   $Revision: 1.3 $
+UserTag bar-button Version   $Revision: 1.4 $
 UserTag bar-button Routine   <<EOR
 sub {
 	use strict;

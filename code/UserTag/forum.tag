@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: forum.tag,v 1.4 2005-02-10 14:38:39 docelic Exp $
+# $Id: forum.tag,v 1.5 2005-11-08 18:14:42 jon Exp $
 
 UserTag forum-userlink PosNumber 0
 UserTag forum-userlink addAttr 
-UserTag forum-userlink Version   $Revision: 1.4 $
+UserTag forum-userlink Version   $Revision: 1.5 $
 UserTag forum-userlink Routine   <<EOR
 sub {
 	my ($row) = @_;
@@ -19,7 +19,7 @@ EOR
 UserTag forum Order     top
 UserTag forum addAttr 
 UserTag forum hasEndTag 
-UserTag forum Version   $Revision: 1.4 $
+UserTag forum Version   $Revision: 1.5 $
 UserTag forum Routine   <<EOR
 my @uls;
 my $lastlevel;

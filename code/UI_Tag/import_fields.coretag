@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: import_fields.coretag,v 1.12 2005-11-05 22:53:33 mheins Exp $
+# $Id: import_fields.coretag,v 1.13 2005-11-08 18:14:40 jon Exp $
 
 UserTag import_fields Order   table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.12 $
+UserTag import_fields Version $Revision: 1.13 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;

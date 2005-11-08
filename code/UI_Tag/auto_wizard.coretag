@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: auto_wizard.coretag,v 1.18 2005-03-11 05:38:33 mheins Exp $
+# $Id: auto_wizard.coretag,v 1.19 2005-11-08 18:14:39 jon Exp $
 
 UserTag  auto-wizard  Order     name
 UserTag  auto-wizard  AddAttr
 UserTag  auto-wizard  HasEndTag
-UserTag  auto-wizard  Version   $Revision: 1.18 $
+UserTag  auto-wizard  Version   $Revision: 1.19 $
 UserTag  auto-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;

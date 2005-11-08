@@ -3,9 +3,9 @@
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.8 2003-12-07 00:11:46 racke Exp $
+# $Id: localize.PL,v 2.9 2005-11-08 18:14:48 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -383,7 +383,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.8 2003-12-07 00:11:46 racke Exp $
+# $Id: localize.PL,v 2.9 2005-11-08 18:14:48 jon Exp $
 
 =head1 SYNOPSIS
 

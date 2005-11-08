@@ -1,5 +1,6 @@
 #
 # Vend::Accounting::SQL_Ledger
+# $Id: SQL_Ledger.pm,v 1.12 2005-11-08 18:14:46 jon Exp $
 #
 # SQL-Ledger Accounting Interface for Interchange
 #

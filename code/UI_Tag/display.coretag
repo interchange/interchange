@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: display.coretag,v 1.12 2005-02-14 00:42:53 docelic Exp $
+# $Id: display.coretag,v 1.13 2005-11-08 18:14:39 jon Exp $
 
 UserTag display Order       table column key
 UserTag display attrAlias   base table
@@ -12,5 +12,5 @@ UserTag display addAttr     1
 UserTag display Interpolate 1
 UserTag display posNumber   3
 Require Module  Vend::Table::Editor
-UserTag display Version     $Revision: 1.12 $
+UserTag display Version     $Revision: 1.13 $
 UserTag display MapRoutine  Vend::Table::Editor::display

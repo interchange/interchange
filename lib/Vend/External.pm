@@ -1,8 +1,9 @@
 # Vend::External - Interchange setup for linking sessions to other programs
-# Vend::External - Also Interchange routines for calling external programs
+# and routines for calling external programs
 # 
-# $Id: External.pm,v 2.3 2005-04-22 03:02:43 mheins Exp $
+# $Id: External.pm,v 2.4 2005-11-08 18:14:45 jon Exp $
 #
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify

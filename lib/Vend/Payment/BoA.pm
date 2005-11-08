@@ -1,8 +1,8 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.12 2005-06-10 10:54:33 docelic Exp $
+# $Id: BoA.pm,v 1.13 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # by Mark Johnson based off of AuthorizeNet.pm by

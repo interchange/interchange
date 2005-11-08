@@ -1,8 +1,8 @@
 # Vend::Payment::CyberCash - Interchange CyberCash support
 #
-# $Id: CyberCash.pm,v 2.4 2004-06-07 20:59:18 mheins Exp $
+# $Id: CyberCash.pm,v 2.5 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 
 # This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 =head1 NAME
 

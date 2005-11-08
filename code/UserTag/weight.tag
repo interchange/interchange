@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: weight.tag,v 1.6 2005-05-25 00:31:20 mheins Exp $
+# $Id: weight.tag,v 1.7 2005-11-08 18:14:43 jon Exp $
 
 UserTag weight Order   attribute
 UserTag weight addAttr
-UserTag weight Version $Revision: 1.6 $
+UserTag weight Version $Revision: 1.7 $
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;

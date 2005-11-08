@@ -1,7 +1,7 @@
-# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: hash2acl.filter,v 1.1 2005-04-25 21:11:36 mheins Exp $
+# $Id: hash2acl.filter,v 1.2 2005-11-08 18:14:32 jon Exp $
 
 CodeDef hash2acl Filter
 CodeDef hash2acl Description hash2acl

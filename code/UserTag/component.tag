@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: component.tag,v 1.7 2005-02-10 14:38:39 docelic Exp $
+# $Id: component.tag,v 1.8 2005-11-08 18:14:42 jon Exp $
 
 UserTag component Order     component
 UserTag component addAttr
 UserTag component NoReparse 1
-UserTag component Version   $Revision: 1.7 $
+UserTag component Version   $Revision: 1.8 $
 UserTag component Routine   <<EOR
 sub {
 	my ($name, $opt) = @_;

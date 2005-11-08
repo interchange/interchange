@@ -3,9 +3,9 @@
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
+# $Id: dump.PL,v 2.5 2005-11-08 18:14:48 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -222,7 +222,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-# $Id: dump.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
+# $Id: dump.PL,v 2.5 2005-11-08 18:14:48 jon Exp $
 
 =head1 SEE ALSO
 

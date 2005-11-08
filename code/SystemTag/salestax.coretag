@@ -1,13 +1,13 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: salestax.coretag,v 1.6 2005-02-09 13:39:42 docelic Exp $
+# $Id: salestax.coretag,v 1.7 2005-11-08 18:14:36 jon Exp $
 
 UserTag salestax            Order        name noformat
 UserTag salestax            attrAlias    cart name
 UserTag salestax            attrAlias    space discount_space
 UserTag salestax            addAttr
 UserTag salestax            PosNumber    2
-UserTag salestax            Version      $Revision: 1.6 $
+UserTag salestax            Version      $Revision: 1.7 $
 UserTag salestax            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

@@ -1,12 +1,12 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: row.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+# $Id: row.coretag,v 1.3 2005-11-08 18:14:36 jon Exp $
 
 UserTag row                 Order        width
 UserTag row                 hasEndTag
 UserTag row                 Interpolate
 UserTag row                 PosNumber    1
-UserTag row                 Version      $Revision: 1.2 $
+UserTag row                 Version      $Revision: 1.3 $
 UserTag row                 Routine      <<EOR
 sub tag_column {
 	my($spec,$text) = @_;

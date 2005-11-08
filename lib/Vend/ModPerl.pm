@@ -1,8 +1,8 @@
 # Vend::ModPerl - Run Interchange inside Apache and mod_perl
 #
-# $Id: ModPerl.pm,v 2.6 2004-07-23 12:58:56 jon Exp $
+# $Id: ModPerl.pm,v 2.7 2005-11-08 18:14:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 package Vend::ModPerl;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use Apache::Constants qw(:common);
 use Apache::Request ();

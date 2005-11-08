@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: order.coretag,v 1.5 2005-02-09 13:39:42 docelic Exp $
+# $Id: order.coretag,v 1.6 2005-11-08 18:14:36 jon Exp $
 
 UserTag order               Order        code quantity
 UserTag order               attrAlias    item code
@@ -13,7 +13,7 @@ UserTag order               attrAlias    href page
 UserTag order               attrAlias    variant mv_sku
 UserTag order               addAttr
 UserTag order               PosNumber    2
-UserTag order               Version      $Revision: 1.5 $
+UserTag order               Version      $Revision: 1.6 $
 UserTag order               Routine      <<EOR
 # Returns an href to place an order for the product PRODUCT_CODE.
 # If AlwaysSecure is set, goes by the page accessed, otherwise 

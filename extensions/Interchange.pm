@@ -1,7 +1,8 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 1.2 2003-06-18 17:34:44 jon Exp $
+# $Id: Interchange.pm,v 1.3 2005-11-08 18:14:44 jon Exp $
 # 
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,7 +31,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 BEGIN {
 	require 5.005;

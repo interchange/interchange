@@ -1,12 +1,12 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.1 2005-04-10 05:25:14 mheins Exp $
+# $Id: email.tag,v 1.2 2005-11-08 18:14:44 jon Exp $
 
 UserTag email Order       to subject reply from extra
 UserTag email hasEndTag
 UserTag email addAttr
 UserTag email Interpolate
-UserTag email Version     $Revision: 1.1 $
+UserTag email Version     $Revision: 1.2 $
 UserTag email Routine     <<EOR
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;

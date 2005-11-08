@@ -1,6 +1,6 @@
-# Copyright 2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2004-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: vars_and_comments.filter,v 1.3 2005-04-13 16:13:27 mheins Exp $
+# $Id: vars_and_comments.filter,v 1.4 2005-11-08 18:14:32 jon Exp $
 
 CodeDef vars_and_comments Filter
 CodeDef vars_and_comments Description Vars/comments

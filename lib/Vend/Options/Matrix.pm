@@ -1,9 +1,9 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.10 2005-05-09 19:17:20 mheins Exp $
+# $Id: Matrix.pm,v 1.11 2005-11-08 18:14:46 jon Exp $
 #
+# Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
-# Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 =head1 NAME
 

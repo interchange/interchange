@@ -1,8 +1,8 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.24 2005-05-08 03:50:05 mheins Exp $
+# $Id: Primitive.pm,v 2.25 2005-11-08 18:14:44 jon Exp $
 
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1998-2002 Red Hat, Inc.
 
 # Authors:
@@ -27,7 +27,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 $DEBUG = 0;
 

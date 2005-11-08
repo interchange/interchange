@@ -3,9 +3,9 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.5 2003-08-01 15:05:54 jon Exp $
+# $Id: compile_link.PL,v 2.6 2005-11-08 18:14:48 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify

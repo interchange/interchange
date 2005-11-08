@@ -1,10 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: update_order_status.tag,v 1.10 2005-02-14 00:42:53 docelic Exp $
+# $Id: update_order_status.tag,v 1.11 2005-11-08 18:14:40 jon Exp $
 
 UserTag update-order-status Order   order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Revision: 1.10 $
+UserTag update-order-status Version $Revision: 1.11 $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;

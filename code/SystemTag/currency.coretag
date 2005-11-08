@@ -1,13 +1,13 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: currency.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+# $Id: currency.coretag,v 1.4 2005-11-08 18:14:35 jon Exp $
 
 UserTag currency            Order        convert noformat
 UserTag currency            hasEndTag
 UserTag currency            Interpolate
 UserTag currency            addAttr
 UserTag currency            PosNumber    2
-UserTag currency            Version      $Revision: 1.3 $
+UserTag currency            Version      $Revision: 1.4 $
 UserTag currency            Routine      <<EOR
 sub {
 	my($convert,$noformat,$opt,$amount) = @_;

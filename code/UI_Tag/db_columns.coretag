@@ -1,11 +1,11 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: db_columns.coretag,v 1.3 2005-02-14 00:42:52 docelic Exp $
+# $Id: db_columns.coretag,v 1.4 2005-11-08 18:14:39 jon Exp $
 
 UserTag db_columns  Order       name columns joiner passed_order
 UserTag db_columns  AttrAlias   table name
 UserTag db_columns  AttrAlias   fields columns
-UserTag db_columns  Version     $Revision: 1.3 $
+UserTag db_columns  Version     $Revision: 1.4 $
 UserTag db_columns  Routine     <<EOR
 sub {
 	my ($table,$columns, $joiner, $passed_order) = @_;

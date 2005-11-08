@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: input_filter.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+# $Id: input_filter.coretag,v 1.4 2005-11-08 18:14:36 jon Exp $
 
 UserTag input-filter        Order        name
 UserTag input-filter        addAttr
@@ -9,5 +9,5 @@ UserTag input-filter        attrAlias    variable name
 UserTag input-filter        attrAlias    ops op
 UserTag input-filter        hasEndTag
 UserTag input-filter        PosNumber    1
-UserTag input-filter        Version      $Revision: 1.3 $
+UserTag input-filter        Version      $Revision: 1.4 $
 UserTag input-filter        MapRoutine   Vend::Interpolate::input_filter

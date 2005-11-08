@@ -492,6 +492,6 @@ o    What are the IIF File Headers?
 o    Also see the Quickbooks Help item, "Reference guide to import
      files"
 
-Copyright 2002 ICDEVGROUP. Freely redistributable under terms of the
+Copyright 2002-2005 ICDEVGROUP. Freely redistributable under terms of the
 GNU General Public License.
 

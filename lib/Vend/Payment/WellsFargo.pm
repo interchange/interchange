@@ -1,8 +1,8 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.8 2005-06-10 10:54:33 docelic Exp $
+# $Id: WellsFargo.pm,v 1.9 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # by Mark Johnson based off of AuthorizeNet.pm by

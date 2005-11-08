@@ -1,10 +1,11 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.7 2005-04-08 02:19:18 jon Exp $
+# $Id: ECHO.pm,v 1.8 2005-11-08 18:14:46 jon Exp $
 #
-# Copyright (C) 2002 
-#      Electric Pulp. <info@electricpulp.com> 
-#    & Kavod Technologies <info@kavod.com>
+# Copyright (C) 2002-2005
+# Interchange Development Group
+# Electric Pulp. <info@electricpulp.com> 
+# Kavod Technologies <info@kavod.com>
 #
 # VERSION HISTORY
 # + v1.1 08/06/2002 Fixed a problem with handling the return status from the

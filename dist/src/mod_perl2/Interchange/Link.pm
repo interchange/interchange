@@ -2,10 +2,10 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.7 2005-04-03 19:58:08 pvinci Exp $
+# $Id: Link.pm,v 1.8 2005-11-08 18:14:44 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc.
 # Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.7 $
+$Revision: 1.8 $
 
 =head1 SYNOPSIS
 

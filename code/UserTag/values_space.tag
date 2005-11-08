@@ -1,10 +1,10 @@
-# Copyright 2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2004-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: values_space.tag,v 1.3 2005-02-10 14:38:39 docelic Exp $
+# $Id: values_space.tag,v 1.4 2005-11-08 18:14:43 jon Exp $
 
 UserTag values-space Order   name
 UserTag values-space addAttr
-UserTag values-space Version $Revision: 1.3 $
+UserTag values-space Version $Revision: 1.4 $
 UserTag values-space Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
