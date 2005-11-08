@@ -147,7 +147,7 @@ msgid ""
 "of different languages. Each selected locale will increase the memory "
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
-msgstr "Der Interchange Demokatalog kann dem Benutzer in verschiedenen Sprachen präsentiert werden. Jede ausgewählte Sprache erhöht den Hauptspeicherbedarf der Interchange-Prozesse. Wählen Sie deshalb bitte nur Sprachen aus, die sie wirklich benöötigen."
+msgstr "Der Interchange Demokatalog kann dem Benutzer in verschiedenen Sprachen präsentiert werden. Jede ausgewählte Sprache erhöht den Hauptspeicherbedarf der Interchange-Prozesse. Wählen Sie deshalb bitte nur Sprachen aus, die sie wirklich benötigen."
 
 #. Type: select
 #. Description
