@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.260 2005-11-07 22:08:50 jon Exp $
+# $Id: Interpolate.pm,v 2.261 2005-11-08 01:39:37 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.260 $, 10);
+$VERSION = substr(q$Revision: 2.261 $, 10);
 
 @EXPORT = qw (
 
@@ -5352,6 +5352,12 @@ sub fly_tax {
 	return $amount * $rate;
 }
 
+sub percent_rate {
+	my $rate = shift;
+	$rate =~ s/\s*%\s*$// and $rate /= 100;
+	return $rate;
+}
+
 sub tax_vat {
 	my($type, $opt) = @_;
 #::logDebug("entering VAT, opts=" . uneval($opt));
@@ -5458,20 +5464,31 @@ sub tax_vat {
 			my $cat = join ":", @{$rhash}{@pfield};
 			my $rate = defined $tax->{$cat} ? $tax->{$cat} : $tax->{default};
 #::logDebug("item $item->{code} cat=$cat rate=$rate");
-			$rate =~ s/\s*%\s*$// and $rate /= 100;
+			$rate = percent_rate($rate);
 			next if $rate <= 0;
-                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+			$rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = discount_subtotal($item);
 #::logDebug("item $item->{code} subtotal=$sub");
 			$total += $sub * $rate;
 #::logDebug("tax total=$total");
 		}
-			
+
+		my $tax_shipping_rate = 0;
+
+		## Add some tax on shipping ONLY IF TAXABLE ITEMS
+		## if rate for mv_shipping_when_taxable category is set
+		if ($tax->{mv_shipping_when_taxable} and $total > 0) {
+			$tax_shipping_rate += percent_rate($tax->{mv_shipping_when_taxable});
+		}
+
 		## Add some tax on shipping if rate for mv_shipping category is set
 		if ($tax->{mv_shipping} > 0) {
-			my $rate = $tax->{mv_shipping};
+			$tax_shipping_rate += percent_rate($tax->{mv_shipping});
+		}
+
+		if($tax_shipping_rate > 0) {
+			my $rate = $tax_shipping_rate;
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
-                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = tag_shipping() * $rate;
 #::logDebug("applying shipping tax rate of $rate, tax of $sub");
 			$total += $sub;
@@ -5481,7 +5498,7 @@ sub tax_vat {
 		if ($tax->{mv_handling} > 0) {
 			my $rate = $tax->{mv_handling};
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
-                        $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+			$rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = tag_handling() * $rate;
 #::logDebug("applying handling tax rate of $rate, tax of $sub");
 			$total += $sub;
