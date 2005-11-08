@@ -1,7 +1,11 @@
 interchange (5.3.2-1) experimental; urgency=low
 
   * new upstream release
-
+  * added Czech translation of Debconf templates (Closes: #315878, thanks
+    to Martin Sin <martin.sin@seznam.cz>
+  * added Vietnamese translation of Debconf templates (Closes: #311962,
+    thanks to Clytie Siddall <clytie@riverland.net.au>)
+  
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Nov 2005 15:55:35 +0100
 
 interchange (5.3.0.20051028-1) experimental; urgency=low

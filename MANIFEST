@@ -359,11 +359,13 @@ debian/libapache-mod-interchange.docs
 debian/libapache-mod-interchange.files
 debian/makecat.cfg
 debian/makecat.wrapper
+debian/po/cs.po
 debian/po/de.po
 debian/po/fr.po
 debian/po/POTFILES.in
 debian/po/ru.po
 debian/po/templates.pot
+debian/po/vi.po
 debian/robots.cfg
 debian/rules
 debian/TODO
