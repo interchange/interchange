@@ -1,0 +1,29 @@
+# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: filter.oc,v 1.1 2005-11-08 09:50:23 racke Exp $
+
+CodeDef filter OrderCheck 1
+CodeDef filter Routine <<EOR
+sub {		
+	my ($ref, $name, $value, $code) = @_;
+	my $message;
+	my $filter;
+
+	$code =~ s/\\/\\\\/g;
+	if($code =~ /(["']).+?\1$/) {
+		my @code = Text::ParseWords::shellwords($code);
+		$message = pop(@code);
+		$filter = join " ", @code;
+	}
+	else {
+		($filter, $message) = split /\s+/, $code, 2;
+	}
+
+	my $test = Vend::Interpolate::filter_value($filter, $value, $name);
+	if($test ne $value) {
+		$message ||= errmsg("%s caught by filter %s", $name, $filter);
+		return ( 0, $name, $message);
+	}
+	return (1, $name, '');
+}
+EOR

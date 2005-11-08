@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.82 2005-11-07 21:53:55 jon Exp $
+# $Id: Order.pm,v 2.83 2005-11-08 09:50:24 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -127,68 +127,6 @@ my %Parse = (
 								$params =~ s/\s+//g;
 								return $params;
 							},
-	'filter'			=> sub {		
-							my($name, $value, $code) = @_;
-							my $message;
-							my $filter;
-
-							$code =~ s/\\/\\\\/g;
-							if($code =~ /(["']).+?\1$/) {
-								my @code = Text::ParseWords::shellwords($code);
-								$message = pop(@code);
-								$filter = join " ", @code;
-							}
-							else {
-								($filter, $message) = split /\s+/, $code, 2;
-							}
-
-							my $test = Vend::Interpolate::filter_value($filter, $value, $name);
-							if($test ne $value) {
-								$message ||= errmsg("%s caught by filter %s", $name, $filter);
-								return ( 0, $name, $message);
-							}
-							return (1, $name, '');
-						},
-	'unique'			=> sub {
-							my($name, $value, $code) = @_;
-
-							$code =~ s/(\w+)(:+(\w+))?\s*//;
-							my $tab = $1
-								or return (0, $name, errmsg("no table specified"));
-							my $col = $3;
-							my $msg = $code;
-
-							my $db = database_exists_ref($tab)
-								or do {
-									$msg = errmsg(
-										"Table %s doesn't exist",
-										$tab,
-									);
-									return(0, $name, $msg);
-								};
-							my $used;
-							if(! $col) {
-								$used = $db->record_exists($value);
-							}
-							else {
-#::logDebug("Doing foreign key check, tab=$tab col=$col value=$value");
-								$used = $db->foreign($value, $col);
-							}
-
-#::logDebug("Checking unique, tab=$tab col=$col, used=$used");
-							if(! $used) {
-								return (1, $name, '');
-							}
-							else {
-								$msg = errmsg(
-										"Key %s already exists in %s, try again.",
-										$value,
-										$tab,
-									) unless $msg;
-								return(0, $name, $msg);
-							}
-
-						},
 	'&set'			=>	sub {		
 								my($ref,$params) = @_;
 								my ($var, $value) = split /\s+/, $params, 2;
