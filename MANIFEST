@@ -388,6 +388,7 @@ dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
 dist/lib/UI/locales/en_US.cfg
 dist/lib/UI/locales/es_ES.cfg
+dist/lib/UI/locales/gr_GR.cfg
 dist/lib/UI/locales/he_IL.cfg
 dist/lib/UI/locales/it_IT.cfg
 dist/lib/UI/locales/ja_JP.cfg
@@ -1238,3 +1239,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
+META.yml                                 Module meta-data (added by MakeMaker)
