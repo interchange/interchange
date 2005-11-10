@@ -1,4 +1,4 @@
-# $Id: interchange.spec,v 2.28 2005-05-09 21:36:37 jon Exp $
+# $Id: interchange.spec,v 2.29 2005-11-10 16:11:48 jon Exp $
 
 # use Perl installation in /usr/local custom built from source?
 %define localperl 1
@@ -16,7 +16,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.3.1
+Version: 5.3.2
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -396,6 +396,9 @@ fi
 
 
 %changelog
+* Thu Nov 10 2005 Jon Jensen <jon@icdevgroup.org> 5.3.2-1
+- Update for 5.3.2 release.
+
 * Mon May  9 2005 Jon Jensen <jon@icdevgroup.org>
 - Set PERL_SIGNALS=unsafe in environment during build and run.
 - Remove interchange.cfg patch and symlink debug.log instead.
