@@ -663,18 +663,23 @@ function visible (selnam) {
 							[/else]
 							[/if]">
               [if variable CREDIT_CARDS_ACCEPTED]
+              [or variable ENTRY_CREDIT_CARDS_ACCEPTED]
               <option [selected mv_order_profile credit_card] value="credit_card">[L]Credit Card[/L]
               [/if]
               [if variable CHECK_ACCEPTED]
+              [or variable ENTRY_CHECK_ACCEPTED]
               <option [selected mv_order_profile online_check] value="online_check">[L]Online Check[/L]
               [/if]
               [if variable PO_ACCEPTED]
+              [or variable ENTRY_PO_ACCEPTED]
               <option [selected mv_order_profile purchase_order] value="purchase_order">[L]Company P.O.[/L]
               [/if]
               [if variable POSTAL_ACCEPTED]
+              [or variable ENTRY_POSTAL_ACCEPTED]
               <option [selected mv_order_profile postal] value="postal">[L]Postal Billing[/L]
               [/if]
               [if variable COD_ACCEPTED]
+              [or variable ENTRY_COD_ACCEPTED]
               <option [selected mv_order_profile cod] value="cod">[L]C.O.D.[/L]
               [/if]
               </SELECT>
@@ -1045,7 +1050,7 @@ function visible (selnam) {
               </td>
               <td align=left colspan=3 class="contentbar1">
                 <b>
-                <INPUT NAME=project_id VALUE="[value project_id]" SIZE=14>
+                <INPUT NAME="po_number" VALUE="[value po_number]" SIZE=14>
                 </b>
               </td>
             </tr>

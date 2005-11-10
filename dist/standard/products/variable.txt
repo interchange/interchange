@@ -10,11 +10,14 @@ CHECKOUT_MAIL_LIST	1	Cart/Checkout
 CHECKOUT_PAGE	ord/multi	Cart/Checkout
 CHECKOUT_PAYMENT_HEIGHT	120	Cart/Checkout
 CHECK_ACCEPTED	1	Payment
+ENTRY_CHECK_ACCEPTED	1	Payment
 CITY	Anywhere, OH 45056	Company
 COD_ACCEPTED	0	Payment
+ENTRY_COD_ACCEPTED	0	Payment
 COMPANY	__MVC_COMPANY__	Company
 CONTRAST	RED	Template
 CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
+ENTRY_CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
 DECREMENT_INVENTORY	1	Order
 DEFAULT_LOCALE	en_US	Internationalization
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
@@ -52,7 +55,9 @@ PGP_KEY		Encryption
 PGSQL	__MVC_PGSQL__	Database
 PHONE	(765) 555-1212	Company
 POSTAL_ACCEPTED	0	Payment
+ENTRY_POSTAL_ACCEPTED	0	Payment
 PO_ACCEPTED	1	Payment
+ENTRY_PO_ACCEPTED	1	Payment
 PUBLISH_DO_RCS	0	Admin Control
 PUBLISH_NO_PAGE_ROOT	0	Admin Control
 PUBLISH_PUT_IMAGES	images	Admin Control

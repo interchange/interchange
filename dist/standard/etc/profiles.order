@@ -92,7 +92,9 @@ email=email
 &fatal = yes
 &setcheck = end_profile 1
 
+[if !session admin]
 &set = prof_po_accepted [var PO_ACCEPTED]
+[/if]
 
 prof_po_accepted=required This site doesn't accept purchase orders. You should not have been offered that option; please contact us.
 
@@ -130,7 +132,9 @@ __NAME__                            postal
 
  __COMMON_ORDER_PROFILE__
 
+[if !session admin]
 &set = prof_mode_accepted [var POSTAL_ACCEPTED]
+[/if]
 
 prof_mode_accepted=required This site doesn't accept postal orders. You should not have been offered that option; please contact us.
 
@@ -157,7 +161,9 @@ not_po_box=mandatory No PO boxes allowed for COD.
 not_po_box=mandatory No PO boxes allowed for COD.
 [/if]
 
+[if !session admin]
 &set = prof_mode_accepted [var COD_ACCEPTED]
+[/if]
 
 prof_mode_accepted=required This site doesn't accept COD orders. You should not have been offered that option; please contact us.
 
@@ -178,7 +184,9 @@ __NAME__                            online_check
 
  __COMMON_ORDER_PROFILE__
 
+[if !session admin]
 &set = prof_mode_accepted [var CHECK_ACCEPTED]
+[/if]
 
 prof_mode_accepted=required This site doesn't accept online checks. You should not have been offered that option; please contact us.
 [value name=check_routing filter=digits hide=1]
