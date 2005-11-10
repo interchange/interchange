@@ -1,14 +1,14 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: oneline.filter,v 1.1 2005-10-08 10:33:08 jon Exp $
+# $Id: oneline.filter,v 1.2 2005-11-10 02:39:26 jon Exp $
 
 CodeDef oneline Filter
-CodeDef oneline Description Truncate at first newline (CR or LF)
+CodeDef oneline Description Truncate at first newline (CR or LF) or ASCII NUL
 CodeDef oneline Visibility  public
 CodeDef oneline Routine <<EOR
 sub {
 	my $val = shift;
-	$val =~ s/[\r\n].*//s;
+	$val =~ s/[\r\n\0].*//s;
 	return $val;
 }
 EOR
