@@ -1,18 +1,21 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: dbi_quote.filter,v 1.1 2005-10-04 19:31:27 jon Exp $
+# $Id: dbi_quote.filter,v 1.2 2005-11-10 02:36:48 jon Exp $
 
 CodeDef dbi_quote Filter
 CodeDef dbi_quote Description SQL quoting using DBI
 CodeDef dbi_quote Routine <<EOR
 sub {
-	my $val = shift;
-	shift;  # get rid of tag
-	my $table = shift || $Vend::Cfg->{ProductFiles}[0];
-	my $db = dbref($table) or do {
-		::logError("filter dbi_quote couldn't find dbref for table '%s'", $table);
+	my ($val, $tag, $table) = @_;
+
+	$table ||= $Vend::Cfg->{ProductFiles}[0];
+
+	my $db;
+	unless ($db = dbref($table)) {
+		::logError("filter dbi_quote cannot find database handle for table '%s'", $table);
 		return;
-	};
+	}
+
 	return $db->quote($val);
 }
 EOR
