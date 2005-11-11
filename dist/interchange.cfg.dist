@@ -125,7 +125,7 @@ include usertag/*.tag
 RobotUA <<EOR
     ATN_Worldwide, AltaVista, Arachnoidea, Aranha, Architext, Ask, Atomz,
     BackRub, Builder, CMC, Contact, Digital*Integrity, Directory, EZResult,
-    Excite, Ferret, Fireball, Google, Gromit, Gulliver, Harvest, Hubater,
+    Excite, Ferret, Fireball, GoogleBot, Gromit, Gulliver, Harvest, Hubater,
     H?m?h?kki, INGRID, IncyWincy, Jack, KIT*Fireball, Kototoi, LWP, Lycos,
     MegaSheep, Mercator, Nazilla, NetMechanic, NetResearchServer, NetScoop,
     ParaSite, Refiner, RoboDude, Rover, Rutgers, Scooter, Slurp, Spyder,
