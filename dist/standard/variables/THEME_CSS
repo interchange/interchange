@@ -363,7 +363,7 @@ A.crosstitle:hover {
 	
 /*Random component body*/
 .random_body {
-	width="100%";
+	width:100%;
 	margin:0;
 	border:solid #BB720A 2px;			
 }
