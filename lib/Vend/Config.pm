@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.188 2005-11-07 21:53:55 jon Exp $
+# $Id: Config.pm,v 2.189 2005-11-15 01:08:03 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.188 $, 10);
+$VERSION = substr(q$Revision: 2.189 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1169,13 +1169,13 @@ CONFIGLOOP:
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
 	while(<CONFIG>) {
-		if($allcfg) {
-			print ALLCFG $_
-				unless /^#?include\s+/i;
-		}
-		chomp;			# zap trailing newline,
 		# Look for meta commands (ifdef, endif, include) after '#'?
 		my $leadinghash = $C->{ConfigParseComments} ? '#?' : '';
+		if($allcfg) {
+			print ALLCFG $_
+				unless /^${leadinghash}include\s+/i;
+		}
+		chomp;			# zap trailing newline,
 		if(/^\s*${leadinghash}endif\s*$/i) {
 #print "found $_\n";
 			undef $ifdef;
@@ -1296,17 +1296,17 @@ CONFIGLOOP:
 		}
 	}
 
-	# We need to make this directory if it isn't already there....
-	if(! $existing and $C->{ScratchDir} and ! -e $C->{ScratchDir}) {
-		mkdir $C->{ScratchDir}, 0700
-			or die "Can't make temporary directory $C->{ScratchDir}: $!\n";
-	}
-
 	if(defined $ifdef) {
 		config_error("Failed to close #ifdef on line %s.", $begin_ifdef);
 	}
 
 } # end CONFIGLOOP
+
+	# We need to make this directory if it isn't already there....
+	if(! $existing and $C->{ScratchDir} and ! -e $C->{ScratchDir}) {
+		mkdir $C->{ScratchDir}, 0700
+			or die "Can't make temporary directory $C->{ScratchDir}: $!\n";
+	}
 
 	return $C if $existing;
 
