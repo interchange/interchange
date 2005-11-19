@@ -1,3 +1,9 @@
+interchange (5.5.0-0.0.1) experimental; urgency=low
+
+  * tracking new unstable branch of Interchange sources 
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 19 Nov 2005 20:40:25 +0100
+
 interchange (5.3.2-1) unstable; urgency=low
 
   * new upstream release
