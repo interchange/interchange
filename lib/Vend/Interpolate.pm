@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.261 2005-11-08 01:39:37 mheins Exp $
+# $Id: Interpolate.pm,v 2.261.2.1 2005-11-21 20:39:56 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.261 $, 10);
+$VERSION = substr(q$Revision: 2.261.2.1 $, 10);
 
 @EXPORT = qw (
 
@@ -4949,7 +4949,7 @@ sub discount_subtotal {
 	my ($item, $price) = @_;
 
 	unless (ref $item) {
-		::logError("Bad call to disount price, item is not reference: %s", $item);
+		::logError("Bad call to discount price, item is not reference: %s", $item);
 		return 0;
 	}
 
