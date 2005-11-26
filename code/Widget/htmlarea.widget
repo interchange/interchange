@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: htmlarea.widget,v 1.6 2005-09-11 23:46:39 docelic Exp $
+# $Id: htmlarea.widget,v 1.6.2.1 2005-11-26 10:02:25 racke Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -110,10 +110,10 @@ EOF
 	my $pre_scr = '';
 	my $post_scr = '';
 	my $onmouse = '';
-	my $extra = '';
+	my $htmlarea_config = '';
 	
-	if ($opt->{extra}) {
-		$extra = ", $opt->{extra}";
+	if ($opt->{htmlarea_config}) {
+		$htmlarea_config = ", $opt->{htmlarea_config}";
 	}
 
 	if($Session->{browser} =~ /MSIE/) {
@@ -122,12 +122,12 @@ EOF
 var htmlarea_needinit_$pname = true;
 </script>
 };
-		$onmouse = qq{ onMouseOver="if(htmlarea_needinit_$pname) { HTMLArea.replace('htmlarea_$pname'$extra); htmlarea_needinit_$pname=false }"};
+		$onmouse = qq{ onMouseOver="if(htmlarea_needinit_$pname) { HTMLArea.replace('htmlarea_$pname'$htmlarea_config); htmlarea_needinit_$pname=false }"};
 	}
 	else {
 		$post_scr = <<EOF;
 <script>
-	HTMLArea.replace('htmlarea_$pname'$extra);
+	HTMLArea.replace('htmlarea_$pname'$htmlarea_config);
 </script>
 EOF
 	}
