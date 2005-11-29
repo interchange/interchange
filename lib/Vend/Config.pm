@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.189 2005-11-15 01:08:03 jon Exp $
+# $Id: Config.pm,v 2.190 2005-11-29 02:19:07 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -52,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.189 $, 10);
+$VERSION = substr(q$Revision: 2.190 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3874,6 +3874,16 @@ sub parse_cron {
 	my($var, $value) = @_;
 
 	return '' unless $value =~ /\s/ and $value =~ /[a-zA-Z]/;
+
+	unless($Vend::Cron::Loaded) {
+		 config_warn(
+			"Cannot use %s unless %s module loaded%s",
+			'crontab',
+			'Vend::Cron',
+			' (missing Set::Crontab?)',
+			);
+		 return '';
+	}
 	return Vend::Cron::read_cron($value);
 }
 
