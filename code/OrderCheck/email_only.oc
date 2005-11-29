@@ -1,8 +1,9 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email_only.oc,v 1.1 2005-10-13 20:15:05 racke Exp $
+# $Id: email_only.oc,v 1.1.2.1 2005-11-29 20:05:35 racke Exp $
 
 CodeDef email_only OrderCheck 1
+CodeDef email_only Description Email address
 CodeDef email_only Routine <<EOR
 sub {
 	my($ref, $var, $val) = @_;
