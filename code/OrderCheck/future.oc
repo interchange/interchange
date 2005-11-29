@@ -1,8 +1,9 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: future.oc,v 1.1 2005-10-14 14:18:35 racke Exp $
+# $Id: future.oc,v 1.2 2005-11-29 20:31:16 racke Exp $
 
 CodeDef future OrderCheck 1
+CodeDef future Description Future date
 CodeDef future Routine <<EOR
 sub {
 	my($ref, $name, $value, $code) = @_;

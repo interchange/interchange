@@ -1,8 +1,9 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: filter.oc,v 1.1 2005-11-08 09:50:23 racke Exp $
+# $Id: filter.oc,v 1.2 2005-11-29 20:30:56 racke Exp $
 
 CodeDef filter OrderCheck 1
+CodeDef filter Description Passes filter unchanged
 CodeDef filter Routine <<EOR
 sub {		
 	my ($ref, $name, $value, $code) = @_;

@@ -1,8 +1,9 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: natural.oc,v 1.1 2005-10-14 14:18:35 racke Exp $
+# $Id: natural.oc,v 1.2 2005-11-29 20:32:05 racke Exp $
 
 CodeDef natural OrderCheck
+CodeDef natural Description Natural number
 CodeDef natural Routine <<EOR
 sub {
 	my ($ref, $name, $value, $code) = @_;
@@ -11,7 +12,14 @@ sub {
 		return (1, $name, '');
 	}
 
-	return (0, $name, 'no natural number');
+	$code =~ s/\\/\\\\/g;
+	$code =~ s/^\s*(["'])(.+?)\1$/$2/;
+	
+	if ($code =~ /\S/) {
+		return (0, $name, $code);
+	} else {
+		return (0, $name, 'no natural number');
+	}
 }
 EOR
 
