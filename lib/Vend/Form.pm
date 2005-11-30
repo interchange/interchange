@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.64 2005-11-08 18:14:45 jon Exp $
+# $Id: Form.pm,v 2.65 2005-11-30 15:07:15 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 @EXPORT = qw (
 	display
@@ -462,15 +462,15 @@ sub date_widget {
 	}
 
 	my @t = localtime($now || time);
-	if (not $val) {
-		$t[2]++ if $t[2] < 23;
-		$val = POSIX::strftime("%Y%m%d%H00", @t);
-	}
 	my $sel = 0;
 	my $out = qq{<select name="$name"$sel_extra>};
 	my $o;
 	if ($opt->{blank}) {
 		$out .= qq{<option value="0"$opt_extra>------</option>};
+	} elsif (not $val) {
+		# use current time with possible adjustments as default value
+		$t[2]++ if $t[2] < 23;
+		$val = POSIX::strftime("%Y%m%d%H00", @t);
 	}
 	for(@Months) {
 		$o = qq{<option value="$_->[0]"$opt_extra>} . errmsg($_->[1]) . '</option>';
