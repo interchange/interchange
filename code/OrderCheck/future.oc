@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: future.oc,v 1.3 2005-12-01 15:04:20 racke Exp $
+# $Id: future.oc,v 1.4 2005-12-01 19:44:04 racke Exp $
 
 CodeDef future OrderCheck 1
 CodeDef future Description Future date
@@ -33,7 +33,7 @@ sub {
 										   );
 
 	# reject invalid dates
-	if($value !~ /^[0-9]{12,12}$/) {
+	if($value !~ /^[12]\d\d\d[01]\d[0123]\d(?:[0-2]\d[0-5]\d(?:[0-5]\d)?)?$/) {
 		return (0, $name, $message);
 	} 
 	
