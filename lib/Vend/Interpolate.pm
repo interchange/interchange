@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.262 2005-11-21 20:41:46 racke Exp $
+# $Id: Interpolate.pm,v 2.263 2005-12-02 18:57:23 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.262 $, 10);
+$VERSION = substr(q$Revision: 2.263 $, 10);
 
 @EXPORT = qw (
 
@@ -2696,9 +2696,15 @@ sub tag_cart {
 # Sets the discount namespace.
 sub switch_discount_space {
 	my $dspace = shift || 'main';
+
+	if (! $Vend::Cfg->{DiscountSpacesOn}) {
+		$::Discounts
+			= $Vend::Session->{discount}
+			||= {};
+		return $Vend::DiscountSpaceName = 'main';
+	}
+
 	my $oldspace = $Vend::DiscountSpaceName || 'main';
-	logError('Attempt to set discount space in catalog with discount spaces set to OFF.'), return $oldspace
-		unless $Vend::Cfg->{DiscountSpacesOn};
 #::logDebug("switch_discount_space: called for space '$dspace'; current space is $oldspace.");
 	unless ($Vend::Session->{discount} and $Vend::Session->{discount_space}) {
 		$::Discounts
@@ -2714,6 +2720,13 @@ sub switch_discount_space {
 			= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName = $dspace}
 			||= {};
 #::logDebug("switch_discount_space: changed discount space from '$oldspace' to '$Vend::DiscountSpaceName'");
+	}
+	else {
+		# Make certain the hash is set, in case app programmer manipulated the session directly.
+		$::Discounts
+			= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{$Vend::DiscountSpaceName}
+			unless ref $::Discounts eq 'HASH';
 	}
 	else {
 		# Make certain the hash is set, in case app programmer manipulated the session directly.
