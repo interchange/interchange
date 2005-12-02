@@ -50,7 +50,7 @@
 			<input
 				type="radio"
 				name="mv_same_billing"
-				value="1
+				value="1"
 				onClick="check_bill_elements(this)"
 				 [checked mv_same_billing 1]>
 						Same as shipping			
