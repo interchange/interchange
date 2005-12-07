@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.83 2005-11-08 09:50:24 racke Exp $
+# $Id: Order.pm,v 2.83.2.1 2005-12-07 17:15:49 kwalsh Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.83 $, 10);
+$VERSION = substr(q$Revision: 2.83.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1310,14 +1310,24 @@ sub _isbn {
 	# Values (product)	0 +81 +32 + 0 + 0 + 5 +24 + 9 + 6 + 8 --> sum is: 165
 	# Sum must be divisable by 11 without remainder: 165/11=15 (no remainder)
 	# Result: isbn 0-940016-33-8 is a valid isbn number.
+	# Note: the last "digit" could be a "X", which would be treated as 10 in the above
 	
 	my($ref, $var, $val) = @_;
-	$val =~ s/\D//g;	# weed out non-digits
+	$val =~ s/[^\dXx]//g;	# weed out non-digits
 	if( $val && length($val) == 10 ) {
 	  my @digits = split("", $val);
 	  my $sum=0;
 	  for(my $i=10; $i > 0; $i--) {
-		$sum += $digits[10-$i] * $i;
+	  	my $d = $digits[10 - $i];
+		if ($d =~ /[Xx]/) {
+		    if ($i == 1) {
+			$d = 10;
+		    }
+		    else {
+			return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
+		    }
+		}
+		$sum += $d * $i;
 	  }
 	  return ( $sum%11 ? 0 : 1, $var, '' );
 	}
