@@ -12,45 +12,161 @@ Interchange 5.3.2 released on 2005-11-10.
 Core
 ----
 
-* Fix X-Track headers so that they will always be canonical.
+* Implement new AccumulateCode and TagRepository directives. The rationale
+  is:
 
-* Fixed bug that prevented catalog-level Sub definitions from being
-  recognized in CodeDef Routine directives.
+    -- There is a huge base of Interchange code, much of which is not
+       needed in even the standard catalog with full UI. This causes a
+       larger memory profile than necessary.
+
+    -- It is difficult to determine from the page code what code is
+       needed, especially when a [tag] can call a $Tag can call
+       a filter can call some sort of Action.
+
+    -- A feature is needed to allow building catalogs with a more
+       nearly optimal set of code than just "everything".
+
+  If AccumulateCode is no, operation is exactly as before. There have
+  been some code initialization changes and routine calling changes,
+  but the data structures are identical and no difference in operation
+  should be seen.
+
+  If you set AccumulateCode to "Yes" and specify a TagRepository that
+  contains all known UserTag, ActionMap, Filter, Widget, etc. etc.
+  code, Interchange starts accumulating and compiling these as
+  needed.
+
+  The code is sent to the master process for compilation and
+  incorporation, so that the next iteration of a page after HouseKeeping
+  seconds will find the code already compiled and ready to go.
+
+  Over time, as you access pages and routines, a full set of tags
+  will be developed and you can turn AccumulateCode to "No".
+
+* Add HouseKeepingCron capability with cron-style execution of
+  Jobs, reconfig, restart, and other arbitrary tasks (using GlobalSub).
+
+  Uses Set::CronTab and a modified crontab format that includes
+  seconds.
+
+* Add more file tests than -f for [if file].
+
+    [if file-s catalog.cfg > 10000]
+        catalog.cfg size is greater than 10000
+    [else]
+        catalog.cfg size is not greater than 10000
+    [/else]
+    [/if]
+
+    [if file-w catalog.cfg]
+        catalog.cfg can be written
+    [/if]
+
+    [if file-T catalog.cfg]
+        catalog.cfg is a text file
+    [/if]
+
+    [if file-B catalog.cfg]
+        catalog.cfg is a binary file
+    [/if]
+
+    etc.
+
+  The tests are standard Perl tests, supported are:
+
+    A B d e f g l M r s T u w x
+
+* Add MIME support for [email ..] usertag, which allows you to easily
+  attach files or create HTML email.
+
+  [email
+    from="Me@me.com"
+    to="You@you.com"
+    subject=Test
+    attach="foo.pdf"
+  ]Here is the pdf.[/email]
+
+* Improved Net::SMTP support.
+
+* Add Discount spaces, which allows you to create switchable discount
+  spaces similar to the existing values-space functionality. The [discount-
+  space] usertag can be used to change the current discount namespace,
+  causing all subsequent discount-related tags and calculations to
+  operate from that particular
+
+* Add CartTrigger, which allows for specification of any number of
+  subroutines (global or catalog subs, specified by name) to execute
+  whenever the contents of a shopping cart are changed via the standard
+  means available through CGI variable space.
+
+* Add new "Feature" facility which allows easy installation of new
+  capabilities to Interchange.
+
+* Add a directive alias feature to Vend::Config, with the following
+  defaults:
+
+        DataDir           == ProductDir
+        DefaultDataTables == ProductFiles
+
+* Add ErrorDestination directive which allows you to route error
+  messages to different files. For example:
+
+    ErrorDestination  "search error: %s" logs/search_errors.log
+
+* Improved coverage for AutoModifier, allowing it to map arbitrary
+  item paramters/modifiers to arbitrary tables and columns.
 
 * Add support for uploaded files in IC-in-mod_perl server mode,
   supplied by Spencer Christensen <schristensen@backcountry.com>.
 
-* Add more file tests than -f for [if file].
+* Add serialization of arbitrary values in UserDB on login/logout/save.
+  This allows adding extra form-initialization values for a user
+  (like mv_same_billing) without having to always create a new DB field.
 
-	[if file-s catalog.cfg > 10000]
-		catalog.cfg size is greater than 10000
-	[else]
-		catalog.cfg size is not greater than 10000
-	[/else]
-	[/if]
+* Make AutoLoad and AutoEnd accept multiple routines in different
+  configuration lines.
 
-	[if file-w catalog.cfg]
-		catalog.cfg can be written
-	[/if]
+* Add "Help" option for display widgets, allowing tooltips on hovering
+  over an option.
 
-	[if file-T catalog.cfg]
-		catalog.cfg is a text file
-	[/if]
+* "Permanent more" facility allows you to create pageable searches
+  that are shared between people and are cacheable by search engines.
 
-	[if file-B catalog.cfg]
-		catalog.cfg is a binary file
-	[/if]
+* Add DispatchRoutines code to allow inserting initialization code based
+  on directive/feature set. Previously, you would have to add a test
+  or branch in Vend::Dispatch -- now you can just push your routine on a
+  stack if appropriate.
 
-	etc.
+  CookieLogin, Autoload, DiscountSpaces, and Locale use this.
+  
+* Many minor changes to improve XHTML support.
 
-  The tests are standard Perl tests, supported are:
+* Add $Row object for accessing the current list row in embedded Perl.
 
-	A B d e f g l M r s T u w x
+* Add Vend::External mechanism for communication with PHP, Python, or Ruby.
 
 * Fix bug in Glimpse search that caused mv_substring_match never to work. 
   Glimpse only allows setting substring or full word matches per search, 
   not per word, so if any word is flagged as a substring match, the whole 
   search is. Otherwise, it's a full word match.
+
+* Levies fixes to allow conditional exclusives and return of false
+  values containing whitespace.
+
+* Additional credit card types recognized, settable "Other" value
+  for default card. SpecialSub guess_cc_type allows custom card
+  recognition on a per-catalog basis.
+
+* Add no_default_reparse to make the default Reparse setting false,
+  which can be (as always) overridden by the tag's Reparse setting, and
+  finally by the reparse=X tag attribute.
+
+* Add more ability for DatabaseAuto to process Postgres definitions
+  and prevent addition of global schemas while possibly allowing 
+  addition of views.
+
+* Improve large-table performance on SQL databases that don't
+  support LIMIT (i.e. Oracle).
 
 * Fix bug that prevented multiple-field searches from working, e.g.
   sf=15:16:17:18.
@@ -63,6 +179,33 @@ Core
 * Fix bug that prevented the use of "<filename" to slurp configuration contents
   from a file.
   
+* Various performance and reliability optimizations to the [menu ...]
+  tag and Menu.pm.
+
+* Changes to remove some warnings and make it easier to run with
+  -w flag.
+
+* Break most all Widget, Filter, and OrderCheck function definitions
+  into individual files in the ICROOT/code tree. Remove the corresponding
+  fixed functions from Vend::Form, Vend::Interpolate, and Vend::Order.
+
+* Fix X-Track headers so that they will always be canonical.
+
+* Fixed bug that prevented catalog-level Sub definitions from being
+  recognized in CodeDef Routine directives.
+
+
+Widgets
+-------
+
+* country_select and state_select widgets allow dynamic linkage of
+  a state/province widget with the country, based on a database.
+
+* Add Description to most widgets.
+
+* Create public and non-public visibility distinction allowing
+  you to build a list of widgets for selection.
+
 UI
 --
 
@@ -74,6 +217,28 @@ UI
   return from meta_editor.
 
 * Display "New item" in the HTML title of the item editor for new items.
+
+* New page editor style, with possibility to add your own custom layout.
+
+* User merge facility to allow order admins to merge customer accounts when
+  they order with additional IDs.
+
+* Added several new display styles for the table editor.
+
+* Change admin/miscfunction to have an editable links menu as well as
+  an editable Miscellaneous function menu.
+
+* Add "Save Link" function that can help build a menu in the
+  admin/miscfunction page.
+
+* Many minor table editor enhancements -- improved meta editing, views,
+  and customization.
+
+* Fix [write-shipping] to support the changeable location of
+  shipping.asc.
+
+* Fix references to [modifier-name] and [quantity-name] which would
+  cause problems when editing pages with an [item-list].
 
 Menu
 ----
@@ -105,10 +270,17 @@ UserTag
 
     URLs have the "%" character encoded: % = %25
 
+Standard Demo
+-------------
+
+* Added new "Standard" demo based on the former contributed "mike" demo.
+
+* New standard demo adds multi-page checkout.
+
 Foundation
 ----------
 
-* Void mv_form_profile on changing shipping country in account page.
+* Removed foundation catalog, replaced with "standard" demo.
 
 Payment
 -------
@@ -118,13 +290,31 @@ Payment
 * New Business::OnlinePayment interface contributed by Ivan Kohler. See
   http://420.am/business-onlinepayment/ for available modules.
 
+* use_wget option in Vend::Payment allows using the wget program
+  for fetching payment results. This may improve reliability of
+  some payment modules that use HTTPS.
+
+  Requires wget to be linked with an SSL library, of course.
+
+* Add support for CVV (AuthorizeNet) and AVS (Echo) for some modules.
+
+* Fix Linkpoint module so it nominally operates.
+
+* Updated Vend::Payment::PRI code from Marty Tennison.
+
+* Vend::Signio: Allow cert_path relative to IC root for PayFlow Pro
+  (akin to other default path attempts in $ICROOT and $ICROOT/lib).
+
+
 i18n
 ----
 
 * Continued translation of UI.
 
-* Update of Italian UI translation thanks to Marco Mescoli
-  <m.mescoli@omnibit.nu>.
+* Update of Italian UI translation thanks to Marco Mescoli.
+
+* Added Vietnamese, Czech, and Greek UI translations thanks to 
+  Clytie Siddall, Martin Sin and Gert van der Spoel.
 
 Link
 ----
@@ -133,6 +323,10 @@ Link
   optionally can replace vlink and tlink. It includes many features found in
   mod_interchange and also a mechanism to deliver static files outside of
   Interchange.
+
+* Clean up vlink/tlink program code to remove cruft and make consistent.
+
+* Bug fixes to Interchange::Link (mod_perl2 link module).
 
 Debian
 ------
