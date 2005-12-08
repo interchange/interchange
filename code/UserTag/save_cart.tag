@@ -1,10 +1,10 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: save_cart.tag,v 1.4 2005-11-08 18:14:43 jon Exp $
+# $Id: save_cart.tag,v 1.5 2005-12-08 16:19:50 racke Exp $
 
 UserTag save_cart Order     nickname recurring
 UserTag save_cart AttrAlias name nickname
-UserTag save_cart Version   $Revision: 1.4 $
+UserTag save_cart Version   $Revision: 1.5 $
 UserTag save_cart Routine   <<EOR
 sub {
 	my($nickname,$recurring) = @_;
@@ -34,7 +34,9 @@ sub {
 
 	my $nn = join(':',$nickname,time(),$recurring);
 
-	$Tag->userdb({function => 'set_cart', nickname => $nn});
+	unless ($Tag->userdb({function => 'set_cart', nickname => $nn})) {
+		return '';
+	}
 
 	$Carts->{main} = [];
 
