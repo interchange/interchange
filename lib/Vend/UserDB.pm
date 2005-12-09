@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.41 2005-11-08 18:14:45 jon Exp $
+# $Id: UserDB.pm,v 2.42 2005-12-09 17:39:26 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 use vars qw!
 	$VERSION
@@ -990,7 +990,7 @@ sub get_hash {
 		$s = $self->{DB}->field( $self->{USERNAME}, $field_name);
 
 		if($s) {
-			$self->{$name} = $ready->reval($s);
+			$self->{$name} = string_to_ref($s);
 			die errmsg("Bad structure in %s: %s", $field_name, $@) if $@;
 		}
 		else {
@@ -1658,7 +1658,7 @@ sub get_cart {
 		die errmsg("no saved carts.") . "\n" unless $s;
 
 		my @carts = split /\0/, $from;
-		my $d = $ready->reval($s);
+		my $d = string_to_ref($s);
 #::logDebug ("saved carts=" . ::uneval_it($d));
 
 		die errmsg("eval failed?")				unless ref $d;
