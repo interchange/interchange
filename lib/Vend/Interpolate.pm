@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.264 2005-12-03 19:30:43 mheins Exp $
+# $Id: Interpolate.pm,v 2.265 2005-12-12 18:15:29 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.264 $, 10);
+$VERSION = substr(q$Revision: 2.265 $, 10);
 
 @EXPORT = qw (
 
@@ -4991,7 +4991,7 @@ sub discount_price {
 			||= {} if $Vend::Cfg->{DiscountSpacesOn};
 	}
 
-	return $price unless $extra || %$::Discounts;
+	return $price unless $extra or $::Discounts && %$::Discounts;
 
 	$quantity = $item->{quantity};
 
