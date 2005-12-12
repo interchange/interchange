@@ -3,7 +3,7 @@
 #
 # Interchange version 5.3.2
 #
-# $Id: interchange.PL,v 2.86 2005-11-08 18:14:48 jon Exp $
+# $Id: interchange.PL,v 2.87 2005-12-12 16:36:19 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -384,7 +384,7 @@ if they uniquely identifiable. The canonical forms are:
 
 =over 4 
 
-=item C<-a, --add>
+=item -a, --add
 
 Add a catalog to the system. Information taken from the input file
 (or standard input). Implies reconfig=catalog. Example:
