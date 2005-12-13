@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.190 2005-11-29 02:19:07 mheins Exp $
+# $Id: Config.pm,v 2.191 2005-12-13 14:39:08 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,9 @@ use vars qw(
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code %tagCanon
 			%ContainerSave %ContainerTrigger %ContainerSpecial %ContainerType
-			%Default %Dispatch_code %Dispatch_priority
+			%Default
+			%Dispatch_code %Dispatch_priority
+			%Cleanup_code %Cleanup_priority
 			@Locale_directives_currency @Locale_keys_currency
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			$SystemReposDone $ReposDest @include
@@ -52,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.190 $, 10);
+$VERSION = substr(q$Revision: 2.191 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3097,12 +3099,24 @@ my %IllegalValue = (
 );
 
 my @Dispatches;
+my @Cleanups;
+
+%Cleanup_priority = (
+	AutoEnd => 1,
+);
 
 %Dispatch_priority = (
 	CookieLogin => 1,
 	Locale => 2,
 	DiscountSpaces => 5,
-	Autoload => 9,
+	Autoload => 8,
+);
+
+%Cleanup_code = (
+	AutoEnd => sub {
+#::logDebug("Doing AutoEnd dispatch...");
+		Vend::Dispatch::run_macro($Vend::Cfg->{AutoEnd});
+	},
 );
 
 %Dispatch_code = (
@@ -3448,6 +3462,11 @@ sub set_default_search {
 			push @Dispatches, 'Autoload';
 			return 1;
 		},
+		AutoEnd => sub {
+			return 1 unless $C->{AutoEnd};
+			push @Cleanups, 'AutoEnd';
+			return 1;
+		},
 		External => sub {
 			return 1 unless $C->{External};
 			unless($Global::External) {
@@ -3485,6 +3504,7 @@ sub set_readonly_config {
 
 sub set_defaults {
 	@Dispatches = ();
+	@Cleanups = ();
 	for(keys %Default) {
 		my ($status, $error) = $Default{$_}->($C->{$_});
 		next if $status;
@@ -3497,8 +3517,12 @@ sub set_defaults {
 		);
 	}
 	@Dispatches = sort { $Dispatch_priority{$a} cmp $Dispatch_priority{$b} } @Dispatches;
+	@Cleanups = sort { $Cleanup_priority{$a} cmp $Cleanup_priority{$b} } @Cleanups;
 	for(@Dispatches) {
 		push @{ $C->{DispatchRoutines} ||= [] }, $Dispatch_code{$_};
+	}
+	for(@Cleanups) {
+		push @{ $C->{CleanupRoutines} ||= [] }, $Cleanup_code{$_};
 	}
 	$Have_set_global_defaults = 1;
 	return;
