@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
-# Interchange version 5.3.2
+# Interchange version 5.3.3
 #
-# $Id: interchange.PL,v 2.86 2005-11-08 18:14:48 jon Exp $
+# $Id: interchange.PL,v 2.86.2.1 2005-12-13 15:39:21 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -143,7 +143,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '5.3.2';
+	$VERSION = '5.3.3';
 
 	unless ($] >= 5.006) {
 		die "Interchange $VERSION requires Perl 5.6.0 or later,\nbut you're trying to run it under Perl $]. Exiting.\n";
@@ -357,7 +357,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.3.2
+5.3.3
 
 =head1 DESCRIPTION
 
@@ -372,7 +372,7 @@ its web site:
 
 		http://www.icdevgroup.org/
 
-Interchange requires Perl 5.005 or higher; more information on Perl can
+Interchange requires Perl 5.6.0 or higher; more information on Perl can
 be seen at:
 
 		http://www.perl.com/
