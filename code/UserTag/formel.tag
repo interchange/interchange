@@ -1,11 +1,11 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2002-2005 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.13 2005-11-21 10:40:59 racke Exp $
+# $Id: formel.tag,v 1.14 2005-12-19 10:08:11 racke Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.13 $
+UserTag formel Version $Revision: 1.14 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -172,9 +172,9 @@ sub {
 		else {
 			# pass type directly to display tag
 			if ($opt->{order}) {
-				$fmt = sprintf($fmt, '$WIDGET$', '$LABEL$');
+				$fmt = sprintf($fmt, '$WIDGET$', '$LABEL$', $opt->{help});
 			} else {
-				$fmt = sprintf($fmt, '$LABEL$', '$WIDGET$');
+				$fmt = sprintf($fmt, '$LABEL$', '$WIDGET$', $opt->{help});
 			}
 
 			return $Tag->display({name => $name,
