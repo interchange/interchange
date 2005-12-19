@@ -1,11 +1,11 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2002-2005 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.14 2005-12-19 10:08:11 racke Exp $
+# $Id: formel.tag,v 1.15 2005-12-19 21:58:52 racke Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.14 $
+UserTag formel Version $Revision: 1.15 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -166,7 +166,7 @@ sub {
 		if ($type eq 'textarea') {
 			$elhtml = qq{<textarea name="${name}"$sizestr>$::Values->{$name}</textarea>};
 		}
-		elsif ($type eq 'text' || $type !~ /\S/) {
+		elsif ($type eq 'text' || $type eq 'password' || $type !~ /\S/) {
 			$elhtml = qq{<input type="$type" name="$name" value="$::Values->{$name}"$sizestr>};
 		}
 		else {
