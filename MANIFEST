@@ -251,6 +251,7 @@ code/UI_Tag/uneval.coretag
 code/UI_Tag/uninstall_feature.tag
 code/UI_Tag/unlink_file.coretag
 code/UI_Tag/update_order_status.tag
+code/UI_Tag/user_merge.tag
 code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
 code/UI_Tag/widget_meta.coretag
