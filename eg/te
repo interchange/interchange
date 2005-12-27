@@ -60,6 +60,10 @@ To change which order the columns are in, re-order the first record.
 To add a column, add it to the first record (and as many subsequent
 records as you wish).
 
+Note that if you're using the "extended" option (-e), you can't add new
+columns, because they can't be distinguished from the extended fields that
+go into the serialized hash. You'd need to do that in a separate pass.
+
 =item o 
 
 If you delete a column, you do not need to delete it from every record;
@@ -123,7 +127,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.11 2005-11-08 18:14:44 jon Exp $
+$Id: te,v 2.12 2005-12-27 18:15:33 jon Exp $
 
 =head1 CHANGELOG
 
@@ -164,13 +168,16 @@ when last line of file was empty.
 2005-08-29. Added ability to delete, re-order, or add columns by placing
 them in the first record.
 
+2005-11-15. Added support for extended columns containing Perl
+serialized hashes with the -e option.
+
 =cut
 
 use strict;
 use Digest::MD5;
 use File::Basename 'fileparse';
 use Text::ParseWords;
-
+use Data::Dumper;
 use Getopt::Std;
 
 my ($prog) = fileparse($0);
@@ -181,10 +188,11 @@ Usage: $prog [-i] [-s startpoint] tablefile1 [tablefile2 ...]
 Edit tab-delimited file with easy field name delineation.
 
 Options:
-	-i       Ignores case on vim jump search.
-	-s TEXT  Jumps to first line where TEXT is. Only for vim.
-	-f       Do not look for field names on first line of file.
-	-n       Number rows in comments
+    -i       Ignores case on vim jump search.
+    -s TEXT  Jumps to first line where TEXT is. Only for vim.
+    -f       Do not look for field names on first line of file.
+    -n       Number rows in comments
+    -e field Extra fields in this field, a stringified hash
 
 See 'man te' or 'perldoc $0' for more information.
 
@@ -193,8 +201,8 @@ EOF
 unshift @ARGV, Text::ParseWords::shellwords($ENV{TE_OPTIONS})
 	if defined $ENV{TE_OPTIONS};
 
-use vars qw/$opt_i $opt_s $opt_f $opt_n/;
-getopts('is:fn') or die "$@\n$USAGE";
+use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e/;
+getopts('is:fne:') or die "$@\n$USAGE";
 
 die $USAGE unless @ARGV;
 
@@ -243,6 +251,7 @@ for my $filename (@ARGV) {
 		die "Error in '$filename' header: null field name found\n" if /\t\t/;
 		@fieldnames = split /\t/, $_, $fieldcount;
 	}
+	my %fieldnames = map { $_ => 1 } @fieldnames;
 
 	($name, $path) = fileparse($filename);
 
@@ -269,9 +278,31 @@ EOF
 		s/\x0d?\x0a?$//;
 		++$rowcount, print OUT "# row $rowcount\n" if $opt_n;
 		@fields = split /\t/, $_, $fieldcount;
+		my $extended;
 		for (my $i = 0; $i < @fieldnames; $i++) {
+			$extended = $i, next if $opt_e and $fieldnames[$i] eq $opt_e;
 			print OUT $fieldnames[$i], ":",
 				defined $fields[$i] ? $fields[$i] : '', "\n";
+		}
+		if ($opt_e) {
+			die "Extended field '$opt_e' does not exist\n"
+				unless $fieldnames{$opt_e};
+			my $extra = eval $fields[$extended];
+			if (ref($extra) eq 'HASH') {
+				for (sort keys %$extra) {
+					if ($fieldnames{$_}) {
+						print OUT <<EOF;
+# NOTE! The following field '$_' from the serialized hash
+# in field '$opt_e' duplicates one of the base columns.
+# If duplicates exist when saving, the last one encountered will win.
+EOF
+					}
+					print OUT $_, ":", $extra->{$_}, "\n";
+				}
+			}
+			elsif ($fields[$extended]) {
+				die "Invalid extended field '$opt_e': $fields[$extended]\n";
+			}
 		}
 		print OUT "#\n";
 	}
@@ -345,13 +376,27 @@ EOF
 		$done = 1 if /^#\s*DONE/;
 		if(/^#/) {
 			next unless $fieldpos;
-			if($fields_out) {
+			if ($fields_out) {
+				if ($opt_e) {
+					# can't change field list when -e in effect
+					@newfields = @fieldnames;
+				}
 				@found_fields{@newfields} = @newfields;
 				$fields_out = join("\t", @newfields) . "\n";
 				print OUT $fields_out;
 				undef $fields_out;
 			}
-			print OUT join("\t", @record{@newfields} ), "\n";
+			if ($opt_e) {
+				my %extra;
+				for (keys %record) {
+					next if $fieldnames{$_};
+					$extra{$_} = delete $record{$_};
+				}
+				my $d = Data::Dumper->new([ \%extra ]);
+				$d->Indent(0)->Terse(1);
+				$record{$opt_e} = $d->Dump;
+			}
+			print OUT join("\t", @record{@newfields}), "\n";
 			%record = ();
 			$fieldpos = 0;
 			next;
@@ -361,10 +406,10 @@ EOF
 			die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
 		my $fn = $1;
 
-		if($fields_out) {
+		if ($fields_out) {
 			push @newfields, $fn;
 		}
-		elsif (! $found_fields{$fn}) {
+		elsif (! $found_fields{$fn} and ! $opt_e) {
 			die "Error parsing line $. of '$tmpfile': bad field name '$fn'\n";
 		}
 
