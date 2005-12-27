@@ -1,6 +1,6 @@
-# Vend::Ship - Interchange shipping code
+# Vend::Ship::Postal - Interchange shipping code
 # 
-# $Id: Postal.pm,v 1.5 2005-12-27 10:36:15 ton Exp $
+# $Id: Postal.pm,v 1.6 2005-12-27 18:16:56 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
