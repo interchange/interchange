@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Postal.pm,v 1.4 2005-11-08 18:14:47 jon Exp $
+# $Id: Postal.pm,v 1.5 2005-12-27 10:36:15 ton Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -99,9 +99,9 @@ sub calculate {
 			my $w = $weight;
 			while($w > $modulo) {
 				$w -= $modulo;
-				$cost += tag_postal($type, $modulo, $country, $opt);
+				$cost += calculate($type, $modulo, $country, $opt);
 			}
-			$cost += tag_postal($type, $w, $country, $opt);
+			$cost += calculate($type, $w, $country, $opt);
 			return $cost;
 		}
 	}
