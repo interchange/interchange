@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '5.3.2';
+$VERSION = '5.5.0';
 
 my @os_hints;
 eval {
