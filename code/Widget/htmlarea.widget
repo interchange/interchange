@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: htmlarea.widget,v 1.6.2.2 2005-12-01 21:21:27 racke Exp $
+# $Id: htmlarea.widget,v 1.6.2.3 2006-01-04 15:50:30 racke Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -198,7 +198,7 @@ EOF
 	$textra .= qq{ style="$opt->{text_style}"} if $opt->{text_style};
 
 	my $wid = $pre_scr . $Tag->uc_attr_list({hash => {name => $pname,
-		height => $opt->{height}, width => $opt->{width}, mouse => $onmouse,
+		height => $opt->{height}, width => $opt->{width}, onmouse => $onmouse,
 		value => $val}, body => $flavours{$flavour}->{area}}) . $post_scr;
 	
 	return $wid;
