@@ -1,8 +1,8 @@
-interchange (5.3.3-1) unstable; urgency=low
+interchange (5.4.0-1) unstable; urgency=low
 
   * new upstream release fixing htmlarea widget bug (Closes: #340568)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  2 Dec 2005 12:31:02 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat,  7 Jan 2006 13:38:57 +0100
 
 interchange (5.3.2-1) unstable; urgency=low
 
