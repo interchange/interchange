@@ -1,12 +1,12 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: flex_select.coretag,v 1.14 2005-11-08 18:14:40 jon Exp $
+# $Id: flex_select.coretag,v 1.15 2006-01-09 20:20:18 mheins Exp $
 
 UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.14 $
+UserTag flex-select Version    $Revision: 1.15 $
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/
@@ -279,6 +279,57 @@ sub {
 		$CGI->{mv_data_table_real} = $table = $ref->config('name');
 	}
 
+	my @labels;          ## Locally set labels in ui_show_fields
+	my @views;           ## Locally set view data in ui_show_fields
+	my @filter_show;     ## Locally set filters in ui_show_fields
+	my @calcs;           ## Data calculation code (if any) from fs_data_calc
+	my @redirect;        ## A column with a different metadata from standard
+	my @extras;          ## A column with a different metadata from standard
+	my @style;           ## Style for data cell, only have to read once
+	my @link_page;       ## Locally set filters in ui_show_fields
+	my @link_parm;       ## Locally set filters in ui_show_fields
+	my @link_parm_extra; ## Locally set filters in ui_show_fields
+	my @link_anchor;     ## Locally set filters in ui_show_fields
+	my $filters_done;    ## Tells us we are done with filters
+
+	if(my $show = $CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field}) {
+		my $i = 0;
+		if($show =~ s/[\r\n]+/\n/g) {
+			$show =~ s/^\s+//;
+			$show =~ s/\s+$//;
+			my @f = split /\n/, $show;
+			my @c;
+			for(@f) {
+				s/^\s+//;
+				s/\s+$//;
+				if(s/\s*\((.+)\)\s*$//)  {
+					$filter_show[$i] = $1;
+				}
+				
+				if(/^(\w+)-(\w+)$/) {
+					push @c, $1;
+					$redirect[$i] = $2;
+				}
+				elsif(/^(\w+)(?:-([^=]+))?(?:=(.*))?/) {
+					push @c, $1;
+					$views[$i] = $2 if $2;
+					$labels[$i] = $3;
+				}
+				else {
+					push @c, $_;
+				}
+				$i++;
+			}
+			$show = join ",", @c;
+		}
+		else {
+			$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+			$show =~ s/[\0,\s]+/,/g;
+		}
+		$CGI->{ui_description_fields} = $show;
+		$filters_done = 1;
+	}
+
 	if($spec) {
 #::logDebug("flex_select spec=$spec");
 		if($spec->{rf} and $spec->{rf}[0] ne '*') {
@@ -337,8 +388,6 @@ sub {
 #::logDebug("deliver=$url");
 		return;
 	}
-
-	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
 
 	my $sf;
 	if($sf = $CGI->{ui_sort_field} and $sf =~ s/^(\w+)([,\s\0]+.*)?$/$1/) {
@@ -498,19 +547,6 @@ EOF
 	$CGI->{ui_list_size} = $opt->{height} || $meta->{height}
 		if ! $CGI->{ui_list_size};
 
-
-	my @labels;          ## Locally set labels in ui_show_fields
-	my @views;           ## Locally set view data in ui_show_fields
-	my @filter_show;     ## Locally set filters in ui_show_fields
-	my @calcs;           ## Data calculation code (if any) from fs_data_calc
-	my @redirect;        ## A column with a different metadata from standard
-	my @extras;          ## A column with a different metadata from standard
-	my @style;           ## Style for data cell, only have to read once
-	my @link_page;       ## Locally set filters in ui_show_fields
-	my @link_parm;       ## Locally set filters in ui_show_fields
-	my @link_parm_extra; ## Locally set filters in ui_show_fields
-	my @link_anchor;     ## Locally set filters in ui_show_fields
-
 	if(! $CGI->{ui_show_fields} ) {
 		$CGI->{ui_show_fields} = 
 			$CGI->{ui_description_fields}
@@ -519,39 +555,44 @@ EOF
 	else {
 		my $i = 0;
 		my $show = $CGI->{ui_show_fields};
-		if($show =~ s/[\r\n]+/\n/g) {
-			$show =~ s/^\s+//;
-			$show =~ s/\s+$//;
-			my @f = split /\n/, $show;
-			my @c;
-			for(@f) {
-				s/^\s+//;
-				s/\s+$//;
-				if(s/\s*\((.+)\)\s*$//)  {
-					$filter_show[$i] = $1;
-				}
-				
-				if(/^(\w+)-(\w+)$/) {
-					push @c, $1;
-					$redirect[$i] = $2;
-				}
-				elsif(/^(\w+)(?:-([^=]+))?(?:=(.*))?/) {
-					push @c, $1;
-					$views[$i] = $2 if $2;
-					$labels[$i] = $3;
-				}
-				else {
-					push @c, $_;
-				}
-				$i++;
-			}
-			$show = join ",", @c;
+		if($filters_done) {
+			# do nothing
 		}
 		else {
-			$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
-			$show =~ s/[\0,\s]+/,/g;
+			if($show =~ s/[\r\n]+/\n/g) {
+				$show =~ s/^\s+//;
+				$show =~ s/\s+$//;
+				my @f = split /\n/, $show;
+				my @c;
+				for(@f) {
+					s/^\s+//;
+					s/\s+$//;
+					if(s/\s*\((.+)\)\s*$//)  {
+						$filter_show[$i] = $1;
+					}
+					
+					if(/^(\w+)-(\w+)$/) {
+						push @c, $1;
+						$redirect[$i] = $2;
+					}
+					elsif(/^(\w+)(?:-([^=]+))?(?:=(.*))?/) {
+						push @c, $1;
+						$views[$i] = $2 if $2;
+						$labels[$i] = $3;
+					}
+					else {
+						push @c, $_;
+					}
+					$i++;
+				}
+				$show = join ",", @c;
+			}
+			else {
+				$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+				$show =~ s/[\0,\s]+/,/g;
+			}
+			$CGI->{ui_description_fields} = $show;
 		}
-		$CGI->{ui_description_fields} = $show;
 	}
 
 	my @cols = split /,/, $CGI->{ui_description_fields};
@@ -830,6 +871,7 @@ EOF
 								form => qq(
 											mv_data_table=$table
 											ui_meta_view=$mview
+											from_page=$Global::Variable->{MV_PAGE}
 											mv_arg=$col
 										),
 							});
