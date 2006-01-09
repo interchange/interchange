@@ -1,10 +1,10 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: add_gpg_key.coretag,v 1.4 2005-11-08 18:14:39 jon Exp $
+# $Id: add_gpg_key.coretag,v 1.4.2.1 2006-01-09 16:13:10 mheins Exp $
 
 UserTag add-gpg-key Order   name
 UserTag add-gpg-key addAttr
-UserTag add-gpg-key Version $Revision: 1.4 $
+UserTag add-gpg-key Version $Revision: 1.4.2.1 $
 UserTag add-gpg-key Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
@@ -44,7 +44,7 @@ sub {
 			};
 		my $id;
 		while(<GETGPGID>) {
-			next unless /\bkey (\w+): public key imported/;
+			next unless /\bkey\s+(\w+)\s*:\s+(public\s+key|)(.*)(imported|not\s+changed)/i;
 			$id = $1;
 			last;
 		}
