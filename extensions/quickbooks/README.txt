@@ -1,7 +1,7 @@
 Interchange + QuickBooks HOWTO
 ==============================
 
-ic_howto_qb.1.4 (Draft)
+ic_howto_qb.1.6 (Draft)
 
 1. Introduction
 ===============
@@ -66,10 +66,12 @@ The extension files can be found in the Interchange tarball under the
 'extensions/quickbooks' directory.  The following files are used with
 this extension:
 
-  usertag/import_quicken_items  UserTag for importing items
-  usertag/export_quicken_items  UserTag for exporting items
-  pages/admin/quickbooks/*      Menu support for Interchange UI
-  qb.catalog.cfg                Quickbooks configuration.
+  usertag/import_quicken_items           UserTag for importing items
+  usertag/export_quicken_items           UserTag for exporting items
+  usertag/export_quicken_coa.tag         UserTag for exporting Chart Of Accounts
+  usertag/get_quicken_orders.tag       UserTag for exporting orders
+  pages/admin/quickbooks/*                Menu support for Interchange UI
+  qb.catalog.cfg                          Quickbooks configuration.
 
 4. Installation
 ===============
@@ -147,22 +149,30 @@ read permission.
 4.3. Quick Installation Script
 ------------------------------
 
-This script will install the necessary files for you, provided that
-you modify the variables to your environment.  Alternately, you can
-follow the more detailed installation instructions that follow it.
+This script will install the necessary files for you.  To use it, you
+must first create a new file, and paste the template script (below)
+into it.  Then, modify the environment variables to match your
+environment.
+
+the variables to your environment.  Alternately, you can follow the
+more detailed installation instructions that follow it.
 
 Note that if you are not using a 4.9.8+ version of Interchange, you
 will need to manually install the qb_safe.filter by copying it from
 the 4.9.8 code/Filter/qb_safe.filter into your Interchange version.
 
 
+#
+# ================  o<  === Quick Installation Script === >o ================
+#
 # Modify these three variables to match your environment.
+#
 export QB=/path/to/interchange/extensions/quickbooks
 export VENDROOT=/usr/local/interchange
 export CATROOT=/home/interch/catalogs/foundation
 
 mkdir -p $CATROOT/include/menus $CATROOT/vars
-cp -r $QB/TRANS_QUICKBOOKS \
+cp -r $QB/vars/TRANS_QUICKBOOKS \
       $CATROOT/vars
 cp -r $QB/pages/admin/quickbooks \
       $CATROOT/pages/admin
@@ -193,13 +203,16 @@ cat   $QB/menus/Admin.txt.append >> \
 # Some configuration changes.
 cat >> $CATROOT/catalog.cfg <<EOF
 # Allows vars/TRANS_QUICKBOOKS
-DirConfig vars
+DirConfig Variable vars
 # You can remove these requires if you don't want to use the
 # Quickbooks UI menu items
 Require usertag import_quicken_items
 Require usertag export_quicken_items
 EOF
 
+#
+# ================  o<  === Quick Installation Script === >o ================
+#
 
 4.4. Admin UI Usage
 -------------------
@@ -239,24 +252,15 @@ Copy pages
      extensions/quickbooks/pages/admin/quickbooks \
      /var/lib/interchange/foundation/pages
 
-Copy report generation file etc/trans_quickbooks
-
-     This file is used to generate the IIF file(s) for transaction
-     import into QuickBooks.
-
-     cd /usr/lib/interchange/ cp
-     extensions/quickbooks/etc/trans_quickbooks \
-     /var/lib/interchange/foundation/etc
-
 Copy usertags
 
      If you want to use the UI item import/export, two usertags are
      required. The easiest thing is just to copy them to the
-     Interchange software directory subdirectory lib/UI/usertag, which
-     is #included as a part of the UI configuration file.
+     Interchange software directory subdirectory code/UI_Tag, which is
+     #included as a part of the UI configuration file.
 
      cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/*
-     lib/UI/usertag
+     code/UI_Tag
 
 4.5. Additional database fields -- userdb
 -----------------------------------------
@@ -299,6 +303,19 @@ mysql prompt:
 alter table inventory add column account char(20); alter table
 inventory add column cogs_account char(20);
 
+4.7. Additional database fields -- inventory
+--------------------------------------------
+
+Quicken also needs an tax agency field for sales tax Add the following
+fields to the "state" table:
+
+account cogs_account
+
+To add the fields in MySQL, you can issue the following query at the
+mysql prompt:
+
+alter table state add column qb_tax_agency varchar(255);
+
 Other SQL databases will have similar facilities.
 
 If you are using Interchange DBM files, just export the inventory
@@ -306,7 +323,7 @@ database, stop the Interchange server (to prevent corruption), add the
 fields on the first line by editing the inventory.txt file, then
 restart Interchange.
 
-4.7. Modify catalog.cfg with additions:
+4.8. Modify catalog.cfg with additions:
 ---------------------------------------
 
 Add the entries in qb.catalog.cfg to catalog.cfg (you can use an
@@ -316,7 +333,7 @@ There are some Require directives to ensure that the needed UserTag
 definitions are included in the catalog, as well as the Route which is
 used
 
-4.8. Add quickbooks order route
+4.9. Add quickbooks order route
 -------------------------------
 
 In the Interchange UI, there is a Preferences area "ORDER_ROUTES". You
@@ -333,8 +350,8 @@ Variable ORDER_ROUTES  log quickbooks main copy_user
 Also, you can use other methods to set order routes. See the
 Interchange reference documentation.
 
-4.9. Additional Variables
--------------------------
+4.10. Additional Variables
+--------------------------
 
 Optionally, you may specify some variables that modify the behavior of
 the Quickbooks export feature.  Documentation for these variables is
@@ -345,13 +362,13 @@ See the installation script at the top of this document for commands
 that will append the empty variables to your variable.txt and the help
 information to your mv_metadata.asc files.
 
-4.10. Restart the catalog
+4.11. Restart the catalog
 -------------------------
 
 This can be done by restarting the Interchange server or by clicking
 Apply Changes in the UI.
 
-4.11. Export the items
+4.12. Export the items
 ----------------------
 
 You can access the Quickbooks UI index by making your URL:
@@ -365,7 +382,7 @@ QuickBooks uses the product "name" as an SKU, along with an integer
 reference number. Either you need to make your SKUs match the integer
 reference number, or you must ensure your product title is unique.
 
-4.12. Test
+4.13. Test
 ----------
 
 Place a test order on your Interchange catalog once you have finished
@@ -492,6 +509,6 @@ o    What are the IIF File Headers?
 o    Also see the Quickbooks Help item, "Reference guide to import
      files"
 
-Copyright 2002-2005 ICDEVGROUP. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2002-2006 ICDEVGROUP. Freely redistributable under terms of
+the GNU General Public License.
 

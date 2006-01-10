@@ -52,17 +52,19 @@
 <BR>
 <A HREF="#Additional database fields -- inventory">4.6. Additional database fields -- inventory</A>
 <BR>
-<A HREF="#Modify catalog.cfg with additions:">4.7. Modify catalog.cfg with additions:</A>
+<A HREF="#Additional database fields -- inventory">4.7. Additional database fields -- inventory</A>
 <BR>
-<A HREF="#Add quickbooks order route">4.8. Add quickbooks order route</A>
+<A HREF="#Modify catalog.cfg with additions:">4.8. Modify catalog.cfg with additions:</A>
 <BR>
-<A HREF="#Additional Variables">4.9. Additional Variables</A>
+<A HREF="#Add quickbooks order route">4.9. Add quickbooks order route</A>
 <BR>
-<A HREF="#Restart the catalog">4.10. Restart the catalog</A>
+<A HREF="#Additional Variables">4.10. Additional Variables</A>
 <BR>
-<A HREF="#Export the items">4.11. Export the items</A>
+<A HREF="#Restart the catalog">4.11. Restart the catalog</A>
 <BR>
-<A HREF="#Test">4.12. Test</A></UL>
+<A HREF="#Export the items">4.12. Export the items</A>
+<BR>
+<A HREF="#Test">4.13. Test</A></UL>
 <BR>
 <A HREF="#Usage">5. Usage</A><UL>
 <A HREF="#Accessing Admin UI Features">5.1. Accessing Admin UI Features</A>
@@ -110,10 +112,12 @@
 <H1><A NAME="Contents">3. Contents</A></H1>
 <P>The extension files can be found in the Interchange tarball under the '<TT>extensions/quickbooks</TT>' directory.  The following files are used with this extension:</P>
 <PRE>
-  usertag/import_quicken_items  UserTag for importing items
-  usertag/export_quicken_items  UserTag for exporting items
-  pages/admin/quickbooks/*      Menu support for Interchange UI
-  qb.catalog.cfg                Quickbooks configuration.
+  usertag/import_quicken_items           UserTag for importing items
+  usertag/export_quicken_items           UserTag for exporting items
+  usertag/export_quicken_coa.tag         UserTag for exporting Chart Of Accounts
+  usertag/get_quicken_orders.tag       UserTag for exporting orders
+  pages/admin/quickbooks/*                Menu support for Interchange UI
+  qb.catalog.cfg                          Quickbooks configuration.
 </PRE>
 <HR>
 <H1><A NAME="Installation">4. Installation</A></H1>
@@ -156,17 +160,22 @@ We will use the user ID <TT>interch</TT> in these examples.</UL>
 <P>This extension requires you to add some files to your catalog.</P>
 <P>It is assumed you have tools and knowledge to create directories with the proper permissions. Any directories that will contain varying files like order transaction logs will require write permission for the Interchange daemon user; pages and configuration only need have read permission.</P>
 <H2><A NAME="Quick Installation Script">4.3. Quick Installation Script</A></H2>
-<P>This script will install the necessary files for you, provided that you modify the variables to your environment.  Alternately, you can follow the more detailed installation instructions that follow it.</P>
+<P>This script will install the necessary files for you.  To use it, you must first create a new file, and paste the template script (below) into it.  Then, modify the environment variables to match your environment.</P>
+<P>the variables to your environment.  Alternately, you can follow the more detailed installation instructions that follow it.</P>
 <P>Note that if you are not using a 4.9.8+ version of Interchange, you will need to manually install the qb_safe.filter by copying it from the 4.9.8 code/Filter/qb_safe.filter into your Interchange version.</P>
 <PRE>
 
+#
+# ================  o&lt;  === Quick Installation Script === &gt;o ================
+#
 # Modify these three variables to match your environment.
+#
 export QB=/path/to/interchange/extensions/quickbooks
 export VENDROOT=/usr/local/interchange
 export CATROOT=/home/interch/catalogs/foundation
 
 mkdir -p $CATROOT/include/menus $CATROOT/vars
-cp -r $QB/TRANS_QUICKBOOKS \
+cp -r $QB/vars/TRANS_QUICKBOOKS \
       $CATROOT/vars
 cp -r $QB/pages/admin/quickbooks \
       $CATROOT/pages/admin
@@ -197,13 +206,16 @@ cat   $QB/menus/Admin.txt.append &gt;&gt; \
 # Some configuration changes.
 cat &gt;&gt; $CATROOT/catalog.cfg &lt;&lt;EOF
 # Allows vars/TRANS_QUICKBOOKS
-DirConfig vars
+DirConfig Variable vars
 # You can remove these requires if you don't want to use the
 # Quickbooks UI menu items
 Require usertag import_quicken_items
 Require usertag export_quicken_items
 EOF
 
+#
+# ================  o&lt;  === Quick Installation Script === &gt;o ================
+#
 </PRE>
 <H2><A NAME="Admin UI Usage">4.4. Admin UI Usage</A></H2>
 <P>After successful installation, there should be a &quot;Quickbooks&quot; menu item under the &quot;Admin&quot; category.  From there, you can &quot;generate IIF files&quot;, download them, and perform other Quickbooks-related tasks.</P>
@@ -227,16 +239,11 @@ Each day will have a file, and when a day is complete you should download the or
 You will want the Interchange UI support if you are using the UI. It provides links for importing/exporting items, downloading and viewing IIF files, and possibly other functions over time. At the UNIX command line:
 <BR>
 cd /usr/lib/interchange/ cp -r extensions/quickbooks/pages/admin/quickbooks \ /var/lib/interchange/foundation/pages</UL>
-<P><B>Copy report generation file etc/trans_quickbooks</B></P>
-<UL>
-This file is used to generate the IIF file(s) for transaction import into QuickBooks.
-<BR>
-cd /usr/lib/interchange/ cp extensions/quickbooks/etc/trans_quickbooks \ /var/lib/interchange/foundation/etc</UL>
 <P><B>Copy usertags</B></P>
 <UL>
-If you want to use the UI item import/export, two usertags are required. The easiest thing is just to copy them to the Interchange software directory subdirectory <TT>lib/UI/usertag</TT>, which is #included as a part of the UI configuration file.
+If you want to use the UI item import/export, two usertags are required. The easiest thing is just to copy them to the Interchange software directory subdirectory <TT>code/UI_Tag</TT>, which is #included as a part of the UI configuration file.
 <BR>
-cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* lib/UI/usertag</UL>
+cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* code/UI_Tag</UL>
 <H2><A NAME="Additional database fields -- userdb">4.5. Additional database fields -- userdb</A></H2>
 <P>If your catalog is not based on a 4.6+ version of the foundation catalog, you may not have some of the additional database fields necessary.  If you want the user to retain their customer number, add the following field to the &quot;userdb&quot; table:</P>
 <P>customer_number</P>
@@ -250,28 +257,33 @@ cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* lib/UI/usertag</UL
 <P>account cogs_account</P>
 <P>To add the fields in MySQL, you can issue the following queries at the mysql prompt:</P>
 <P>alter table inventory add column account char(20); alter table inventory add column cogs_account char(20);</P>
+<H2><A NAME="Additional database fields -- inventory">4.7. Additional database fields -- inventory</A></H2>
+<P>Quicken also needs an tax agency field for sales tax Add the following fields to the &quot;state&quot; table:</P>
+<P>account cogs_account</P>
+<P>To add the fields in MySQL, you can issue the following query at the mysql prompt:</P>
+<P>alter table state add column qb_tax_agency varchar(255);</P>
 <P>Other SQL databases will have similar facilities.</P>
 <P>If you are using Interchange DBM files, just export the inventory database, stop the Interchange server (to prevent corruption), add the fields on the first line by editing the <TT>inventory.txt</TT> file, then restart Interchange.</P>
-<H2><A NAME="Modify catalog.cfg with additions:">4.7. Modify catalog.cfg with additions:</A></H2>
+<H2><A NAME="Modify catalog.cfg with additions:">4.8. Modify catalog.cfg with additions:</A></H2>
 <P>Add the entries in qb.catalog.cfg to catalog.cfg (you can use an include statement if you wish).</P>
 <P>There are some Require directives to ensure that the needed UserTag definitions are included in the catalog, as well as the Route which is used</P>
-<H2><A NAME="Add quickbooks order route">4.8. Add quickbooks order route</A></H2>
+<H2><A NAME="Add quickbooks order route">4.9. Add quickbooks order route</A></H2>
 <P>In the Interchange UI, there is a Preferences area &quot;ORDER_ROUTES&quot;. You should add the <TT>quickbooks</TT> route. Place it after the transaction logging step, i.e.</P>
 <P>code     ORDER_ROUTES Variable log quickbooks main copy_user</P>
 <P>ADVANCED, If you know Interchange Variable settings, you can add it directly:</P>
 <P>Variable ORDER_ROUTES  log quickbooks main copy_user</P>
 <P>Also, you can use other methods to set order routes. See the Interchange reference documentation.</P>
-<H2><A NAME="Additional Variables">4.9. Additional Variables</A></H2>
+<H2><A NAME="Additional Variables">4.10. Additional Variables</A></H2>
 <P>Optionally, you may specify some variables that modify the behavior of the Quickbooks export feature.  Documentation for these variables is provided via item-specific meta data, which can be added to your mv_metadata.asc file for automatic display by the Admin UI.</P>
 <P>See the installation script at the top of this document for commands that will append the empty variables to your variable.txt and the help information to your mv_metadata.asc files.</P>
-<H2><A NAME="Restart the catalog">4.10. Restart the catalog</A></H2>
+<H2><A NAME="Restart the catalog">4.11. Restart the catalog</A></H2>
 <P>This can be done by restarting the Interchange server or by clicking <TT>Apply Changes</TT> in the UI.</P>
-<H2><A NAME="Export the items">4.11. Export the items</A></H2>
+<H2><A NAME="Export the items">4.12. Export the items</A></H2>
 <P>You can access the Quickbooks UI index by making your URL:</P>
 <P><A HREF="http://YOURCATALOG_URL/admin/quickbooks/index">http://YOURCATALOG_URL/admin/quickbooks/index</A></P>
 <P>It will provide options for importing and exporting items. This is necessary so QuickBooks will be able to take orders for your items.</P>
 <P>QuickBooks uses the product &quot;name&quot; as an SKU, along with an integer reference number. Either you need to make your SKUs match the integer reference number, or you must ensure your product title is unique.</P>
-<H2><A NAME="Test">4.12. Test</A></H2>
+<H2><A NAME="Test">4.13. Test</A></H2>
 <P>Place a test order on your Interchange catalog once you have finished installing. You should find a file in the <TT>orders</TT> directory with the name <TT>qbYYYYMMDD.iif</TT>. (YYYY=year, MM=month, DD=day.) Transfer this file to your QuickBooks machine and run File/Import and select that file as the source. This should import the customer and order into the system. If it doesn't work, it may be due to lack of sales tax or shipping definitions, discussed below.</P>
 <HR>
 <H1><A NAME="Usage">5. Usage</A></H1>
@@ -317,16 +329,16 @@ cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* lib/UI/usertag</UL
 <UL>
 <LI>What are the IIF File Headers? <A HREF="http://www.quickbooks.com/support/faqs/qbw2000/121756.html">http://www.quickbooks.com/support/faqs/qbw2000/121756.html</A>
 <LI>Also see the Quickbooks Help item, &quot;Reference guide to import files&quot;</UL>
-<P>Copyright 2002-2005 ICDEVGROUP. Freely redistributable under terms of the GNU General Public License.</P>
+<P>Copyright 2002-2006 ICDEVGROUP. Freely redistributable under terms of the GNU General Public License.</P>
 </DIV>
 <DIV CLASS="footer">
 <DIV CLASS="navigate">
 <P ALIGN="Center"><A HREF="index.html" TARGET="_top">Catalog</A></P>
 </DIV>
 <HR>
-<ADDRESS><SPAN CLASS="doc-id">ic_howto_qb-1.4</SPAN> <SPAN CLASS="doc-status">(Draft)</SPAN></ADDRESS>
-<ADDRESS CLASS="doc-modified">2 July 2003</ADDRESS>
-<ADDRESS CLASS="copyright">Copyright &copy;  2001-2005 Mike Heins &lt;<A HREF="mailto:mike@perusion.com">mike@perusion.com</A>&gt;, Dan Browning &lt;<A HREF="mailto:db@kavod.com">db@kavod.com</A>&gt;</ADDRESS>
+<ADDRESS><SPAN CLASS="doc-id">ic_howto_qb-1.6</SPAN> <SPAN CLASS="doc-status">(Draft)</SPAN></ADDRESS>
+<ADDRESS CLASS="doc-modified">10 January 2006</ADDRESS>
+<ADDRESS CLASS="copyright">Copyright &copy;  Mike Heins &lt;<A HREF="mailto:mike@perusion.com">mike@perusion.com</A>&gt;, Dan Browning &lt;<A HREF="mailto:db@kavod.com">db@kavod.com</A>&gt;</ADDRESS>
 </DIV>
 
 </BODY>
