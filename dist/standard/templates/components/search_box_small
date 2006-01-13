@@ -43,7 +43,7 @@ matches:
       </tr>
       <tr>
 	    <td align="center">
-	           <a href="[area advancedsearch]"><font size=-2 class="[control table_class categorybar]">[L]Advanced Search[/L]</a>
+	           <a href="[area advancedsearch]"><font size=-2 class="[control table_class categorybar]">[L]Advanced Search[/L]</font></a>
 	    </td>
       </tr>
       </table>
