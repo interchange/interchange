@@ -42,7 +42,7 @@ sub {
 		}
 	}
 	else {
-		my $total_cost = $Tag->total_cost( { noformat => 1 });
+		my $total_cost = round_to_frac_digits($Tag->total_cost( { noformat => 1 }));
 		my $remaining = $total_cost;
 
 		$certs ||= $::Values->{use_pay_cert} || $::Scratch->{pay_cert_code};
