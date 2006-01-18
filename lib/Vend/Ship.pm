@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.13 2005-06-09 18:43:58 docelic Exp $
+# $Id: Ship.pm,v 2.14 2006-01-18 17:47:14 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -574,7 +574,11 @@ sub shipping {
 		}
 	}
 
-	my $o = get_option_hash($lines[0][OPT]) || {};
+	my $lopt = $lines[0][OPT];
+	if(ref($lopt) eq 'HASH') {
+		$lopt = { %$lopt };
+	}
+	my $o = get_option_hash($lopt) || {};
 
 #::logDebug("shipping opt=" . uneval($o));
 
@@ -692,8 +696,12 @@ sub shipping {
 				$row->[CRIT] !~ /\S/;
 		}
 
-		$o = get_option_hash($row->[OPT], $o)
-			if $row->[OPT];
+		my $ropt = $row->[OPT];
+		if(ref($ropt) eq 'HASH' ) {
+			$ropt = { %$ropt };
+		}
+		$o = get_option_hash($ropt, $o)
+			if $ropt;
 		# unless field begins with 'x' or 'f', straight cost is returned
 		# - otherwise the quantity is multiplied by the cost or a formula
 		# is applied
@@ -852,7 +860,6 @@ sub shipping {
 		$o->{free} = interpolate_html($o->{free}) if $o->{free} =~ /[_@[]/;
 		unless ($o->{free}) {
 			return '' if $final == 0;
-			$o->{adder} =~ s/\bx\b/$final/g;
 			$o->{adder} =~ s/\@\@TOTAL\@\\?\@/$final/g;
 			$o->{adder} =~ s/\@\@CRIT\@\\?\@/$total/g;
 			$o->{adder} = $Vend::Interpolate::ready_safe->reval($o->{adder});
