@@ -83,6 +83,7 @@ code/Filter/word.filter
 code/Filter/yesno.filter
 code/Filter/zerofix.filter
 code/JavaScriptCheck/required.jsc
+code/OrderCheck/always_fail.oc
 code/OrderCheck/email_only.oc
 code/OrderCheck/exists.oc
 code/OrderCheck/filter.oc
@@ -250,6 +251,7 @@ code/UI_Tag/uneval.coretag
 code/UI_Tag/uninstall_feature.tag
 code/UI_Tag/unlink_file.coretag
 code/UI_Tag/update_order_status.tag
+code/UI_Tag/user_merge.tag
 code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
 code/UI_Tag/widget_meta.coretag
@@ -371,6 +373,7 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
+dist/etc/jobs/db/export
 dist/etc/jobs/merchandising/topsellers
 dist/features/quickpoll/doc/quickpoll/README
 dist/features/quickpoll/quickpoll.catalog.cfg
@@ -924,6 +927,7 @@ dist/standard/products/ship/450ps.csv
 dist/standard/products/ship/Accessorials.csv
 dist/standard/products/ship/air_pp.txt
 dist/standard/products/ship/Book.txt
+dist/standard/products/ship/ems.txt
 dist/standard/products/ship/Expedited.csv
 dist/standard/products/ship/Express.csv
 dist/standard/products/ship/Ground.csv
@@ -1237,4 +1241,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
-META.yml                                 Module meta-data (added by MakeMaker)
+WHATSNEW-5.5

@@ -1,0 +1,12 @@
+# Copyright 2006 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: always_fail.oc,v 1.1 2006-01-30 22:36:32 jon Exp $
+
+CodeDef always_fail OrderCheck 1
+CodeDef always_fail Description Always fails
+CodeDef always_fail Routine <<EOR
+sub {
+	my ($ref, $name, $value, $msg) = @_;
+	return (0, $name, $msg || errmsg('failed'));
+}
+EOR
