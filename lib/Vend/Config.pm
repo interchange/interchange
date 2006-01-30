@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.192 2006-01-30 17:44:10 jon Exp $
+# $Id: Config.pm,v 2.193 2006-01-30 17:45:49 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.192 $, 10);
+$VERSION = substr(q$Revision: 2.193 $, 10);
 
 my %CDname;
 my %CPname;
@@ -616,7 +616,6 @@ sub catalog_directives {
 	['MinQuantityField', undef,     	     ''],
 	['LogFile', 		  undef,     	     'etc/log'],
 	['Pragma',		 	 'boolean_value',    ''],
-	['DynamicData', 	 'warn',     	 ''],
 	['NoImport',	 	 'boolean',     	 ''],
 	['NoImportExternal', 'yesno',	     	 'no'],
 	['CommonAdjust',	 undef,  	     	 ''],
@@ -647,9 +646,7 @@ sub catalog_directives {
 	['SeparateItems',    'yesno',			 'No'],
 	['PageSelectField',  undef,     	     ''],
 	['NonTaxableField',  undef,     	     ''],
-	['CyberCash',	 	 'warn',     	     ''],
 	['CreditCardAuto',	 'yesno',     	     'No'],
-	['NoCache',	     	 'warn',    	     ''],
 	['FormIgnore',	     'boolean',    	     ''],
 	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
 	['EncryptKey',		 undef,     	     ''],
@@ -658,12 +655,6 @@ sub catalog_directives {
 	['TrackPageParam',	 'hash',     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
-	['StaticDBM',  	 	 'warn',     	     ''],
-	['Static',   	 	 'warn',     	     ''],
-	['StaticAll',		 'warn',     	     ''],
-	['StaticDepth',		 'warn',     	     ''],
-	['StaticFly',		 'warn',     	     ''],
-	['StaticLogged',	 'warn',     	     ''],
 	['StaticDir',		 undef,     	     ''],
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
@@ -674,10 +665,6 @@ sub catalog_directives {
 	['UserDatabase',	 undef,		     	 ''],
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
-	['StaticPage',		 'warn',     	     ''],
-	['StaticPath',		 'warn',     	     ''],
-	['StaticPattern',	 'warn',     	     ''],
-	['StaticSuffix',	 'warn',     	     ''],
 	['RedirectCache',	 undef,				 ''],
 	['HTMLsuffix',	     undef,     	     '.html'],
 	['CustomShipping',	 undef,     	     ''],
