@@ -173,7 +173,6 @@ code/SystemTag/setlocale.coretag
 code/SystemTag/shipping.coretag
 code/SystemTag/shipping_desc.coretag
 code/SystemTag/soap.coretag
-code/SystemTag/sql.coretag
 code/SystemTag/strip.coretag
 code/SystemTag/subtotal.coretag
 code/SystemTag/tag.coretag

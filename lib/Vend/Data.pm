@@ -1,8 +1,8 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.54 2005-10-23 14:23:45 mheins Exp $
+# $Id: Data.pm,v 2.55 2006-01-30 17:33:55 jon Exp $
 # 
-# Copyright (C) 2002-2004 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -44,7 +44,6 @@ item_description
 item_field
 item_price
 item_subtotal
-sql_query
 open_database
 product_category
 product_code_exists_ref
@@ -410,71 +409,6 @@ TAGBUILD: {
 		$T{$tag} = "\\[$_";
 	}
 }
-
-# SQL
-sub sql_query {
-	my($type, $query, $opt, $list) = @_;
-
-	my ($db);
-
-	$opt->{table} = $Vend::Cfg->{ProductFiles}[0] unless defined $opt->{table};
-	$db = database_exists_ref($opt->{table})
-		or die "dbi_query: unknown base table $opt->{table}.\n";
-
-	$type = lc $type;
-	$type ||= 'list';
-
-	if ($list and $type ne 'list') {
-		$query = '' if ! defined $query;
-		$query .= $list;
-	}
-
-	my $perlquery;
-
-	my @arg;
-	while ($query =~ s:\[arg\](.*?)\[/arg\]::o) {
-		push(@arg, $1);
-	}
-
-	while ($query =~ s:\[control\s+([\w][-\w]*)\]([\000-\377]*?)\[/control\]::) {
-		my ($key, $val) = ($1, $2);
-		if($key =~ /PERL/i) {
-			$perlquery = 1;
-			$opt->{textref} = 0;
-		}
-		elsif ($key =~ /BOTH/i){
-			$perlquery = 1;
-			$opt->{textref} = 1;
-		}
-		else {
-			$opt->{"\L$key"} = $val;
-		}
-	}
-
-	if($type eq 'list') {
-		$opt->{list} = 1;
-		push(@arg, $1) while $query =~ s:\[arg\](.*?)\[/arg\]::o;
-		$list =~ s:\[query\]([\000-\377]+)\[/query\]::i and $query = $1;
-	}
-	elsif ($type eq 'hash') {
-		$opt->{textref} = 1;
-		$opt->{hashref} = 1;
-	}
-	elsif ($type eq 'array') {
-		$opt->{textref} = 1;
-	}
-	elsif ($type eq 'param') {
-		warn "sql query type=param deprecated";
-		$opt->{list} = 1;
-		$list = '"[sql-code]" ';
-	}
-	elsif ($type eq 'html') {
-		$opt->{html} = 1;
-	}
-	$opt->{query} = $query if $query;
-	return $db->query($opt, $list, @arg);
-}
-# END SQL
 
 sub column_index {
     my ($field_name) = @_;
