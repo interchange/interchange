@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.81 2005-11-08 18:14:47 jon Exp $
+# $Id: Editor.pm,v 1.82 2006-01-30 17:50:03 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.81 $, 10);
+$VERSION = substr(q$Revision: 1.82 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3847,18 +3847,10 @@ $l_pkey</td>};
 					};
 			if($opt->{all_errors}) {
 				$parm->{keep} = 1;
-				if(! $::Pragma->{compatible_5_2}) {
-					$parm->{text} = $opt->{error_template} || <<EOF;
+				$parm->{text} = $opt->{error_template} || <<EOF;
 <font color="$opt->{color_fail}">\$LABEL\$ (%s)</font>
 [else]{REQUIRED <b>}{LABEL}{REQUIRED </b>}[/else]
 EOF
-				}
-				else {
-					$parm->{text} = $opt->{error_template} || <<EOF;
-<font color="$opt->{color_fail}">\$LABEL\$</font><!--%s-->
-[else]{REQUIRED <b>}{LABEL}{REQUIRED </b>}[/else]
-EOF
-				}
 			}
 			$err_string = $Tag->error($parm);
 			if($template->{$c} !~ /{ERROR\??}/) {
