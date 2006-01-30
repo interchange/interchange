@@ -34,9 +34,6 @@ Variable  TRAFFIC  low
 
 #========================================================================#
 
-# Disable old C-style meta-directives like #ifdef, #endif, and #include.
-ConfigParseComments No
-
 Environment  MOD_PERL
 
 # Prevent arbitrary [file ...] and [include ...] among other things.

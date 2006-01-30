@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.191 2005-12-13 14:39:08 mheins Exp $
+# $Id: Config.pm,v 2.192 2006-01-30 17:44:10 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.191 $, 10);
+$VERSION = substr(q$Revision: 2.192 $, 10);
 
 my %CDname;
 my %CPname;
@@ -385,7 +385,6 @@ sub global_directives {
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['FeatureDir',		 'root_dir',	     'features'],
 	['ConfigDatabase',	 'config_db',	     ''],
-	['ConfigParseComments',	'yesno',		'Yes'],
 	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
 	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
 	['Message',          'message',           ''],
@@ -530,7 +529,6 @@ sub catalog_directives {
 	['ConfigDir',        'relative_dir',	 'config'],
 	['TemplateDir',      'dir_array', 		 ''],
 	['ConfigDatabase',	 'config_db',	     ''],
-	['ConfigParseComments',	'yesno',		'Yes'],
 	['Require',			 'require',			 ''],
 	['Suggest',			 'suggest',			 ''],
 	['Message',          'message',           ''],
@@ -1171,20 +1169,18 @@ CONFIGLOOP:
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
 	while(<CONFIG>) {
-		# Look for meta commands (ifdef, endif, include) after '#'?
-		my $leadinghash = $C->{ConfigParseComments} ? '#?' : '';
 		if($allcfg) {
 			print ALLCFG $_
-				unless /^${leadinghash}include\s+/i;
+				unless /^\s*include\s+/i;
 		}
 		chomp;			# zap trailing newline,
-		if(/^\s*${leadinghash}endif\s*$/i) {
+		if(/^\s*endif\s*$/i) {
 #print "found $_\n";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
+		if(/^\s*if(n?)def\s+(.*)/i) {
 			if(defined $ifdef) {
 				config_error("Can't overlap ifdef at line %s of %s", $., $configfile);
 			}
@@ -1196,7 +1192,7 @@ CONFIGLOOP:
 		if(defined $ifdef) {
 			next unless $ifdef;
 		}
-		if(/^\s*${leadinghash}include\s+(.+)/i) {
+		if(/^\s*include\s+(.+)/i) {
 #print "found $_\n";
 			my $spec = $1;
 			$spec = substitute_variable($spec) if $C->{ParseVariables};
@@ -1874,15 +1870,13 @@ GLOBLOOP:
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
 	while(<GLOBAL>) {
-		# Look for meta commands (ifdef, endif, include) after '#'?
-		my $leadinghash = $Global::ConfigParseComments ? '#?' : '';
-		if(/^\s*${leadinghash}endif\s*$/i) {
+		if(/^\s*endif\s*$/i) {
 #print "found $_";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
+		if(/^\s*if(n?)def\s+(.*)/i) {
 #print "found $_";
 			if(defined $ifdef) {
 				config_error(
@@ -1898,7 +1892,7 @@ GLOBLOOP:
 		if(defined $ifdef) {
 			next unless $ifdef;
 		}
-		if(/^\s*${leadinghash}include\s+(.+)/) {
+		if(/^\s*include\s+(.+)/) {
 #print "found $_";
 			my $spec = $1;
 			my $ref = [ $configfile, tell(GLOBAL)];
