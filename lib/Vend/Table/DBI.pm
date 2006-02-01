@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.68 2005-11-08 18:14:47 jon Exp $
+# $Id: DBI.pm,v 2.69 2006-02-01 00:36:04 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.68 $, 10);
+$VERSION = substr(q$Revision: 2.69 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1848,7 +1848,6 @@ sub each_nokey {
             or die $s->log_error('prepare');
 		$query->execute()
             or die $s->log_error('execute');
-		my $idx = $s->[$CONFIG]{KEY_INDEX};
 		$each = sub {
 			my $ref = $query->fetchrow_arrayref()
 				or return undef;
