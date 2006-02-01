@@ -3,9 +3,9 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.88 2005-12-28 00:59:24 jon Exp $
+# $Id: interchange.PL,v 2.89 2006-02-01 15:42:04 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -37,11 +37,11 @@ use lib '/usr/local/interchange';
 use strict;
 
 use Config;
-
-## Comment this back in when we remove support for Perl 5.6.0
-#no Config;
+no Config;
 
 BEGIN {
+	require 5.008;
+
 	$Global::Foreground = 1;
 	
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -57,14 +57,12 @@ BEGIN {
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
-	-f "$Global::VendRoot/_allow_threads" and $ENV{MINIVEND_FORCE_THREADS} = 1;
-
 	if( ($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) ) {
 		$Global::TryingThreads = 1;
 	}
 
-	if( $Global::TryingThreads and ! $ENV{MINIVEND_FORCE_THREADS} ) {
-		die "Interchange will not work with a thread-enabled perl.\n";
+	if( $Global::TryingThreads and $] < 5.008_005 ) {
+		die "Interchange will not work with a thread-enabled perl older than Perl 5.8.5.\n";
 	}
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
@@ -144,10 +142,6 @@ require Exporter;
 
 BEGIN {
 	$VERSION = '5.5.0';
-
-	unless ($] >= 5.006) {
-		die "Interchange $VERSION requires Perl 5.6.0 or later,\nbut you're trying to run it under Perl $]. Exiting.\n";
-	}
 }
 
 use Fcntl;
@@ -344,7 +338,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2005 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2006 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -372,7 +366,7 @@ its web site:
 
 		http://www.icdevgroup.org/
 
-Interchange requires Perl 5.005 or higher; more information on Perl can
+Interchange requires Perl 5.8.0 or higher; more information on Perl can
 be seen at:
 
 		http://www.perl.com/
@@ -861,15 +855,6 @@ EOF
 
 	THREADCHECK: {
 		last THREADCHECK unless $Global::TryingThreads;
-		my $high_enough;
-		eval {
-			require 5.8.5;
-			$high_enough = 1;
-		};
-
-		unless($high_enough) {
-			die "Your Perl version is not high enough to run threads, needs 5.8.5.\n";
-		}
 
 		my $msg = <<EOF;
 ***************************************************************
@@ -888,8 +873,8 @@ EOF
 ***************************************************************
 ***************************************************************
 EOF
-			chomp $msg;
-			logGlobal($msg);
+		chomp $msg;
+		logGlobal($msg);
 	}
 
 	# The global configuration set up which catalogs exist.
@@ -1023,7 +1008,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2005 Interchange Development Group
+Copyright (C) 2002-2006 Interchange Development Group
 Copyright (C) 1995-2002 Red Hat, Inc.
 All rights reserved except those granted in the license.
 
@@ -1037,7 +1022,9 @@ The Interchange Development Group is:
 
 Brev Patterson
 Dan Browning
+Davor Ocelic
 Ed LaFrance
+Ethan Rowe
 Jonathan Clark
 Jon Jensen
 Kevin Walsh
