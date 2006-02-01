@@ -5,8 +5,11 @@
 
 Interchange is designed to be drop-in compatible in its major version.
 
+ 5.2.x -- There should be few to no compatibility issues in
+          upgrading from Interchange 5.2.x.
+
  5.0.x -- There should be few to no compatibility issues in
-          upgrading from another 5.x version.
+          upgrading from Interchange 5.0.x.
 
  4.8.x -- There should be only a few issues in upgrading from 4.8.x; known
           issues are shown below. The major change is in the admin UI,
@@ -26,7 +29,7 @@ NOTE:    All below procedures assume you have installed in
 
 WARNING: BACK UP EVERYTHING BEFORE YOU START!
 
-    1. Make a tar backup of your Interchange software directory, i.e.
+    1. Make a tar backup of your Interchange software directory, e.g.
        
         tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
@@ -61,13 +64,13 @@ That's it. Verify your catalog's operation, and you are live.
 
 ---------------------------------------------------------------------------
 
-                K N O W N   I S S U E S
+                         K N O W N   I S S U E S
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
-A rather arcane feature has been removed from Interchange. HTML
-comments surrounding ITL like in <!--[data session browser]-->
-are no longer eliminated.
+    None.
+
 
 KNOWN ISSUES UPGRADING FROM 5.0.x
 
