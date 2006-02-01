@@ -26,8 +26,7 @@ BJ	9	Other	BJ	surf_pp air_pp	Benin	BEN	204
 BM	9	Other	BM	surf_pp air_pp	Bermuda	BMU	060	
 BT	9	Other	BT	surf_pp air_pp	Bhutan	BTN	064	
 BO	9	Other	BO	surf_pp air_pp	Bolivia	BOL	068	
-BA	9	Other	BA		Bosnia And Herzegowina	BIH	070	
-XB	9	Other	XB	surf_pp air_pp	Bosnia-Herzegovina			
+BA	9	Other	BA	surf_pp air_pp	Bosnia And Herzegowina	BIH	070	
 BW	9	Other	BW	surf_pp air_pp	Botswana	BWA	072	
 BV	9	Other	BV		Bouvet Island	BVT	074	
 BR	9	Other	BR	surf_pp air_pp	Brazil	BRA	076	
@@ -53,7 +52,6 @@ KM	9	Other	KM	surf_pp air_pp	Comoros	COM	174
 CG	9	Other	CG	surf_pp air_pp	Congo	COG	178	
 CD	9	Other	CD		Congo, The Democratic Republic O	COD	180	
 CK	9	Other	CK		Cook Islands	COK	184	
-XE	3	Europe-EC	XE	surf_pp air_pp	Corsica			
 CR	9	Other	CR	surf_pp air_pp	Costa Rica	CRI	188	
 CI	9	Other	CI	surf_pp air_pp	Cote d` Ivoire (Ivory Coast)	CIV	384	
 HR	9	Other	HR	surf_pp air_pp	Croatia	HRV	191	
@@ -99,7 +97,7 @@ GW	9	Other	GW	surf_pp air_pp	Guinea-Bissau	GNB	624
 GY	9	Other	GY	surf_pp air_pp	Guyana	GUY	328	
 HT	9	Other	HT	surf_pp air_pp	Haiti	HTI	332	
 HM	9	Other	HM		Heard And Mc Donald Islands	HMD	334	
-VA	9	Other	VA		Holy See (Vatican City State)	VAT	336	
+VA	3	Europe-EC	VA	surf_pp air_pp	Vatican City State (Holy See)	VAT	336	
 HN	9	Other	HN	surf_pp air_pp	Honduras	HND	340	
 HK	9	Other	HK	surf_pp air_pp	Hong Kong	HKG	344	
 HU	9	Other	HU	surf_pp air_pp	Hungary	HUN	348	
@@ -190,7 +188,7 @@ SM	9	Other	SM		San Marino	SMR	674
 ST	9	Other	ST	surf_pp air_pp	Sao Tome and Principe	STP	678	
 SA	9	Other	SA	surf_pp air_pp	Saudi Arabia	SAU	682	
 SN	9	Other	SN	surf_pp air_pp	Senegal	SEN	686	
-XS	9	Other	XS	surf_pp air_pp	Serbia-Montenegro			
+CS	9	Other	CS	surf_pp air_pp	Serbia-Montenegro	SCG	891	
 SC	9	Other	SC	surf_pp air_pp	Seychelles	SYC	690	
 SL	9	Other	SL	surf_pp air_pp	Sierra Leone	SLE	694	
 SG	9	Other	SG	surf_pp air_pp	Singapore	SGP	702	
@@ -223,7 +221,6 @@ TG	9	Other	TG	surf_pp air_pp	Togo	TGO	768
 TK	9	Other	TK		Tokelau	TKL	772	
 TO	9	Other	TO	surf_pp air_pp	Tonga	TON	776	
 TT	9	Other	TT	surf_pp air_pp	Trinidad and Tobago	TTO	780	
-XU	9	Other	XU	surf_pp air_pp	Tristan da Cunha			
 TN	9	Other	TN	surf_pp air_pp	Tunisia	TUN	788	
 TR	9	Other	TR	surf_pp air_pp	Turkey	TUR	792	
 TM	9	Other	TM		Turkmenistan	TKM	795	
@@ -238,7 +235,6 @@ UM	9	Other	UM		United States Minor Outlying Isl	UMI	581
 UY	9	Other	UY	surf_pp air_pp	Uruguay	URY	858	
 UZ	9	Other	UZ		Uzbekistan	UZB	860	
 VU	9	Other	VU	surf_pp air_pp	Vanuatu	VUT	548	
-XV	9	Other	XV	surf_pp air_pp	Vatican City			
 VE	9	Other	VE	surf_pp air_pp	Venezuela	VEN	862	
 VN	9	Other	VN	surf_pp air_pp	Vietnam	VNM	704	
 VI	9	Other	VI		Virgin Islands (U.S.)	VIR	850	
