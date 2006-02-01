@@ -5,8 +5,15 @@
 
 Interchange is designed to be drop-in compatible in its major version.
 
+ 5.4.x -- A number of incompatible changes were made. Most of them will be
+          simple to deal with, but please consult the list below in the
+          "Known Issues" section.
+
+ 5.2.x -- There should be few to no compatibility issues in
+          upgrading from Interchange 5.2.x.
+
  5.0.x -- There should be few to no compatibility issues in
-          upgrading from another 5.x version.
+          upgrading from Interchange 5.0.x.
 
  4.8.x -- There should be only a few issues in upgrading from 4.8.x; known
           issues are shown below. The major change is in the admin UI,
@@ -26,7 +33,7 @@ NOTE:    All below procedures assume you have installed in
 
 WARNING: BACK UP EVERYTHING BEFORE YOU START!
 
-    1. Make a tar backup of your Interchange software directory, i.e.
+    1. Make a tar backup of your Interchange software directory, e.g.
        
         tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
@@ -61,13 +68,32 @@ That's it. Verify your catalog's operation, and you are live.
 
 ---------------------------------------------------------------------------
 
-                K N O W N   I S S U E S
+                         K N O W N   I S S U E S
+
+
+KNOWN ISSUES UPGRADING FROM 5.4.x
+
+The long-deprecated [sql] tag has been removed. You'll likely want to
+rewrite queries to use the [query] tag.
+
+The ConfigParseComments directive has been removed, and Interchange now
+behaves as if "ConfigParseComments No" has been specified. That means that
+no configuration file line beginning with # will be parsed, including
+#ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
+must now be used.
+
+All previously deprecated configuration directives have been removed.
+
+Deprecated-feature pragmas and associated code have been removed:
+* compatible_5_2 - used to keep table editor error text (mistakenly)
+  hidden, as it was the case up to Interchange 5.2.
+* no_html_parse - used to disable parsing of MV= arguments inside HTML tags.
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
-A rather arcane feature has been removed from Interchange. HTML
-comments surrounding ITL like in <!--[data session browser]-->
-are no longer eliminated.
+    None.
+
 
 KNOWN ISSUES UPGRADING FROM 5.0.x
 
@@ -175,7 +201,7 @@ to your CGI directory and name it "test5", i.e.
 
   EXAMPLE:
 
-    cp src/vlink /var/www/cgi-bin/test5
+    cp -p src/vlink /var/www/cgi-bin/test5
 
 7. IMPORTANT: Make sure its permissions match the permissions on your
 running 4.x catalog! You may have to make it SUID, i.e.:
