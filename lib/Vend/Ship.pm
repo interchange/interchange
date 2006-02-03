@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.14 2006-01-18 17:47:14 mheins Exp $
+# $Id: Ship.pm,v 2.15 2006-02-03 15:34:32 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -308,6 +308,8 @@ sub read_shipping {
 				my @common = qw/
 							mult_factor				
 							str_length				
+							eas
+							quiet
 							zone_data
 							zone_file				
 							zone_name				
@@ -1128,7 +1130,8 @@ sub tag_ups {
 	}
 
 	unless (defined $point) {
-		logError("Zone '$code' lookup failed, type '$type' not found");
+		logError("Zone '%s' lookup failed, type '%s' not found", $code, $type)
+			unless $zref->{quiet};
 		return undef;
 	}
 
