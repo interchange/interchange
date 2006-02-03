@@ -394,6 +394,8 @@ po_number: [value filter=strip name=po_number]
 There was an error adding the order to the transaction table. It was: $ERROR$
 [/catch]
 
+[goto if="[scratch mv_route_failed]"]
+
 [try]
 [if value mv_payment_mode eq purchase_order]
 set credit_limit: [seti credit_limit][data
