@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.16 2006-02-03 16:36:45 ton Exp $
+# $Id: Ship.pm,v 2.17 2006-02-03 16:42:48 ton Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1146,7 +1146,8 @@ sub tag_ups {
 	}
 
 	unless (defined $point) {
-		logError("Zone '$code' lookup failed, type '$type' not found");
+		logError("Zone '%s' lookup failed, type '%s' not found", $code, $type)
+			unless $zref->{quiet};
 		return undef;
 	}
 
