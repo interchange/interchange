@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.15 2006-02-03 15:34:32 mheins Exp $
+# $Id: Ship.pm,v 2.16 2006-02-03 16:36:45 ton Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -370,13 +370,15 @@ sub read_shipping {
 				next;
 			}
 			my (@zone) = grep /\S/, split /[\r\n]+/, $ref->{zone_data};
-			shift @zone while @zone and $zone[0] !~ /^(Postal|Dest.*Z)/;
+			shift @zone while @zone and $zone[0] !~ /^(Postal|Dest.*Z|low)/;
 			if($zone[0] =~ /^Postal/) {
 				$zone[0] =~ s/,,/,/;
 				for(@zone[1 .. $#zone]) {
 					s/,/-/;
 				}
 			}
+			@zone = grep /\S/, @zone;
+			@zone = grep /^[^"]/, @zone;
 			if($zone[0] !~ /\t/) {
 				my $len = $ref->{str_length} || 3;
 				@zone = grep /\S/, @zone;
@@ -1120,7 +1122,21 @@ sub tag_ups {
 
 	my $rawzip = $zip;
 
-	$zip = substr($zip, 0, ($zref->{str_length} || 3));
+	my $country;
+	if($opt->{country_prefix}) {
+		$country = $::Values->{country} || '';
+		$country = uc $country;
+		$country =~ s/\W+//g;
+		$country =~ m{^\w\w$} 
+			or do {
+				logDebug('Country code not present with country_prefix');
+				return undef;
+			};
+		$zip = $country . ":" . $zip;
+	}
+	else {
+		$zip = substr($zip, 0, ($zref->{str_length} || 3));
+	}
 
 	@fieldnames = split /\t/, $zdata->[0];
 	for($i = 2; $i < @fieldnames; $i++) {
@@ -1130,8 +1146,7 @@ sub tag_ups {
 	}
 
 	unless (defined $point) {
-		logError("Zone '%s' lookup failed, type '%s' not found", $code, $type)
-			unless $zref->{quiet};
+		logError("Zone '$code' lookup failed, type '$type' not found");
 		return undef;
 	}
 
@@ -1146,8 +1161,17 @@ sub tag_ups {
 	}
 
 #::logDebug("tag_ups looking in zone data.");
+	my $zip_trimmed;
 	for(@{$zdata}[1..$#{$zdata}]) {
 		@data = split /\t/, $_;
+
+                unless($zip_trimmed) {
+			if ( $data[0] =~ m{^(([A-Z][A-Z]):)?(\w+)} and $2 eq $country ) {
+				$zip = substr($zip, 0, length($1.$3));
+				$zip_trimmed++;
+			}
+		}		
+
 		next unless ($zip ge $data[0] and $zip le $data[1]);
 		$zone = $data[$point];
 		$eas_zone = $data[$eas_point] if defined $eas_point;
