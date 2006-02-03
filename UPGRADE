@@ -73,6 +73,10 @@ That's it. Verify your catalog's operation, and you are live.
 
 KNOWN ISSUES UPGRADING FROM 5.4.x
 
+Perl 5.8.0 or newer is now required. Running with threads is still not
+recommended for production installations, but is allowed under Perl 5.8.5
+or newer.
+
 The long-deprecated [sql] tag has been removed. You'll likely want to
 rewrite queries to use the [query] tag.
 
