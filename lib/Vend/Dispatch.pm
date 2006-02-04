@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.61 2005-12-13 14:39:08 mheins Exp $
+# $Id: Dispatch.pm,v 1.62 2006-02-04 18:24:12 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.61 $, 10);
+$VERSION = substr(q$Revision: 1.62 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1593,7 +1593,7 @@ EOF
 	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
-	my ($sub, $status, $action);
+	my ($sub, $status);
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
 		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
