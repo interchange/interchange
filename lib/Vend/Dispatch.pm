@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.62 2006-02-04 18:24:12 jon Exp $
+# $Id: Dispatch.pm,v 1.63 2006-02-10 15:02:40 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.62 $, 10);
+$VERSION = substr(q$Revision: 1.63 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1457,10 +1457,8 @@ EOF
 	}
 # END LEGACY
 
-	if(my $ary = $Vend::Cfg->{DispatchRoutines}) {
-		for(@$ary) {
-			$_->();
-		}
+	for my $routine (@{$Vend::Cfg->{DispatchRoutines}}) {
+		$routine->();
 	}
 
 #show_times("end dispatch routines (Autoload, etc.)") if $Global::ShowTimes;
@@ -1639,10 +1637,8 @@ EOF
 	do_page() if $status;
 #show_times("end page display") if $Global::ShowTimes;
 
-	if(my $ary = $Vend::Cfg->{CleanupRoutines}) {
-		for(@$ary) {
-			$_->();
-		}
+	for my $routine (@{$Vend::Cfg->{CleanupRoutines}}) {
+		$routine->();
 	}
   }
 
