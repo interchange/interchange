@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.88 2005-12-22 02:03:40 kwalsh Exp $
+# $Id: Util.pm,v 2.89 2006-02-12 22:23:58 mheins Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.88 $, 10);
+$VERSION = substr(q$Revision: 2.89 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -421,6 +421,11 @@ sub setlocale {
 
         for(@Vend::Config::Locale_directives_currency) {
             $Vend::Cfg->{$_} = $curr->{$_}
+                if defined $curr->{$_};
+        }
+
+        for(@Vend::Config::Locale_keys_currency) {
+            $Vend::Cfg->{Locale}{$_} = $curr->{$_}
                 if defined $curr->{$_};
         }
     }
