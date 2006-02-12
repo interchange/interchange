@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.194 2006-02-03 20:16:48 jon Exp $
+# $Id: Config.pm,v 2.195 2006-02-12 22:25:11 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.194 $, 10);
+$VERSION = substr(q$Revision: 2.195 $, 10);
 
 my %CDname;
 my %CPname;
@@ -110,6 +110,7 @@ qw/
 	currency_symbol
 	frac_digits
 	int_curr_symbol
+	int_currency_symbol
 	int_frac_digits
 	mon_decimal_point
 	mon_grouping
