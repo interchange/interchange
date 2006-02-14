@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.69 2006-02-01 00:36:04 jon Exp $
+# $Id: DBI.pm,v 2.70 2006-02-14 08:30:51 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.69 $, 10);
+$VERSION = substr(q$Revision: 2.70 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1982,8 +1982,8 @@ sub query {
 			my $newdb;
 			eval {
 				$trytab = Vend::Scan::sql_statement($query, { table_only => 1 } );
-				$newdb = Vend::Data::database_exists_ref($trytab);
-				if($newdb->config('name') eq $s->config('name')) {
+				if(($newdb = Vend::Data::database_exists_ref($trytab))
+				   && $newdb->config('name') eq $s->config('name')) {
 					die $origmsg;
 				}
 			};
