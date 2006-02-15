@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.63 2006-02-10 15:02:40 jon Exp $
+# $Id: Dispatch.pm,v 1.64 2006-02-15 05:39:53 kwalsh Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.63 $, 10);
+$VERSION = substr(q$Revision: 1.64 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1309,9 +1309,13 @@ RESOLVEID: {
 				# do nothing, no host checking
 			}
 			elsif(! $compare_host) {
-				new_session($seed) unless $CGI::secure;
-				init_session();
-				$Vend::Session->{shost} = $CGI::remote_addr;
+				if ($CGI::secure) {
+				    $Vend::Session->{shost} = $CGI::remote_addr;
+				}
+				else {
+				    new_session($seed);
+				    init_session();
+				}
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
 				new_session($seed);
