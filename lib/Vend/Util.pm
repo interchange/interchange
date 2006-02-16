@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.90 2006-02-15 09:27:53 ton Exp $
+# $Id: Util.pm,v 2.91 2006-02-16 21:44:10 kwalsh Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.90 $, 10);
+$VERSION = substr(q$Revision: 2.91 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -506,9 +506,18 @@ sub currency {
 		my $cs;
 		my $display = lc($opt->{display}) || 'symbol';
 		my $sep_by_space = $loc->{p_sep_by_space};
+		my $cs_precedes = $loc->{p_cs_precedes};
+
 		if( $loc->{int_currency_symbol} && $display eq 'text' ) {
 			$cs = $loc->{int_currency_symbol};
-			$sep_by_space = 0;
+			$cs_precedes = 1;
+
+			if (length($cs) > 3 || $cs =~ /\W$/) {
+				$sep_by_space = 0;
+			}
+			else {
+				$sep_by_space = 1;
+			}
 		}
 		elsif ( $display eq 'none' ) {
 			$cs = '';
@@ -517,7 +526,7 @@ sub currency {
 			$cs = $loc->{currency_symbol} || '';
 		}
 		if($cs) {
-			if($loc->{p_cs_precedes}) {
+			if ($cs_precedes) {
 				$precede = $cs;
 				$precede = "$precede " if $sep_by_space;
 			}
