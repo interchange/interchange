@@ -94,6 +94,12 @@ Deprecated-feature pragmas and associated code have been removed:
 * no_html_parse - used to disable parsing of MV= arguments inside HTML tags.
 
 
+KNOWN ISSUES UPGRADING FROM 5.4.x
+
+If MV_COUNTRY_FIELD was in use to determine the country for
+tax purposes, then that setting needs to be changed to
+MV_COUNTRY_TAX_VAR.
+
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
     None.
@@ -118,6 +124,10 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
 * Add a new column "extended" to products/mv_metadata.asc. This just involves
   adding a TAB and "extended" to the end of the first line of the file.
+
+* If MV_COUNTRY_FIELD was in use to determine the country for
+  tax purposes, then that setting needs to be changed to
+  MV_COUNTRY_TAX_VAR.
 
 * Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
   them to the new location, e.g. replace /interchange/
