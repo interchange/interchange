@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.266 2006-02-01 15:37:47 jon Exp $
+# $Id: Interpolate.pm,v 2.267 2006-02-16 16:25:18 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.266 $, 10);
+$VERSION = substr(q$Revision: 2.267 $, 10);
 
 @EXPORT = qw (
 
@@ -5380,7 +5380,7 @@ sub percent_rate {
 sub tax_vat {
 	my($type, $opt) = @_;
 #::logDebug("entering VAT, opts=" . uneval($opt));
-	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
+	my $cfield = $::Variable->{MV_COUNTRY_TAX_VAR} || 'country';
 	my $country = $opt->{country} || $::Values->{$cfield};
 
 	return 0 if ! $country;
