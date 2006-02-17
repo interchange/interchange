@@ -374,7 +374,7 @@
                         compare="[total-cost noformat=1]"
                 ]
                 <br>
-                [msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/L]
+                [msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/msg]
                 [/if]
                 <br>
               </td>
