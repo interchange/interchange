@@ -215,6 +215,7 @@ PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to 
 Parent	Parent			Ouder
 Part No.	Part No.			Onderdeel No.
 Password	Password	Passwort		Wachtwoord
+Password and check value don't match.		Passwort und Gegenprobe stimmen nicht überein.
 Payment Method	Payment Method			Betalingsmethode
 Perl Information	Perl Information			Perl informatie
 Phone	Phone			Telefoon
