@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.196 2006-02-16 14:21:01 jon Exp $
+# $Id: Config.pm,v 2.197 2006-02-23 03:34:53 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.196 $, 10);
+$VERSION = substr(q$Revision: 2.197 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4943,6 +4943,19 @@ sub parse_subroutine {
 	unless (defined $value and $value) { 
 		return $c || {};
 	}
+
+    # Allow mapping a Perl package and subroutine directly
+    if (
+        $value =~ /\A(\w+)\s+((?:\w+::)+\w+)\z/
+        and (
+            ! $C
+            or $Global::AllowGlobal->{$C->{CatalogName}}
+        )
+    ) {
+        no strict 'refs';
+        $c->{$1} = \&{"$2"};
+        return $c;
+    }
 
 	$value =~ s/^(\w+\s+)?\s*sub\s+(\w+\s*)?{/sub {/;
 
