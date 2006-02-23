@@ -6,6 +6,7 @@ CGIWRAP	__MVC_CGIWRAP__	Admin Control
 CGI_DIR	__MVC_CGIDIR__	Admin Control
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECKOUT_FORM_WIDTH	600	Cart/Checkout
+CHECKOUT_MAIL		Cart/Checkout
 CHECKOUT_MAIL_LIST	1	Cart/Checkout
 CHECKOUT_PAGE	ord/multi	Cart/Checkout
 CHECKOUT_PAYMENT_HEIGHT	120	Cart/Checkout
