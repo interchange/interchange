@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.10 2005-11-08 18:14:46 jon Exp $
+# $Id: Old48.pm,v 1.11 2006-02-25 23:40:48 docelic Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 =head1 NAME
 
@@ -193,7 +193,7 @@ sub display_options_matrix {
 			$phony->{mv_sku} = $def[$i];
 
 			if ($opt->{label}) {
-				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
+				$ref->[4] = "<b>$ref->[4]</b>" if $opt->{bold};
 				push @out, $ref->[4];
 			}
 			push @out, Vend::Interpolate::tag_accessories(
@@ -399,12 +399,12 @@ sub display_options_simple {
 		# skip unless o_value
 		next unless $ref->[3];
 		if ($opt->{label}) {
-			$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
+			$ref->[4] = "<b>$ref->[4]</b>" if $opt->{bold};
 			push @out, $ref->[4];
 		}
 		my $precursor = $opt->{report}
 					  ? "$ref->[2]$opt->{separator}"
-					  : qq{<input type=hidden name="mv_item_option" value="$ref->[2]">};
+					  : qq{<input type="hidden" name="mv_item_option" value="$ref->[2]">};
 		push @out, $precursor . Vend::Interpolate::tag_accessories(
 						$sku,
 						'',

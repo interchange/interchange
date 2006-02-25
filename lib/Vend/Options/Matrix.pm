@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.11 2005-11-08 18:14:46 jon Exp $
+# $Id: Matrix.pm,v 1.12 2006-02-25 23:40:48 docelic Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 =head1 NAME
 
@@ -214,7 +214,7 @@ sub display_options {
 			if ($opt->{label}) {
 				my $lab = $ref->[SEP_LABEL];
 				$lab = errmsg($lab) if $opt->{translate};
-				$lab = "<B>$lab</b>" if $opt->{bold};
+				$lab = "<b>$lab</b>" if $opt->{bold};
 				push @out, $lab;
 			}
 

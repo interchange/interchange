@@ -1,6 +1,6 @@
 # Vend::Options::Simple - Interchange Simple product options
 #
-# $Id: Simple.pm,v 1.6 2005-11-08 18:14:46 jon Exp $
+# $Id: Simple.pm,v 1.7 2006-02-25 23:40:48 docelic Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Simple;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 =head1 NAME
 
@@ -207,12 +207,12 @@ sub display_options {
 #::logDebug("tag_options attribute=" . GROUP);
 
 		if ($opt->{label}) {
-			$ref->[LABEL] = "<B>$ref->[LABEL]</b>" if $opt->{bold};
+			$ref->[LABEL] = "<b>$ref->[LABEL]</b>" if $opt->{bold};
 			push @out, $ref->[LABEL];
 		}
 		my $precursor = $opt->{report}
 					  ? "$ref->[GROUP]$opt->{separator}"
-					  : qq{<input type=hidden name="mv_item_option" value="$ref->[GROUP]">};
+					  : qq{<input type="hidden" name="mv_item_option" value="$ref->[GROUP]">};
 
 		my $passed = $ref->[VALUE];
 		if($opt->{blank_label}) {
@@ -334,39 +334,39 @@ $Admin_page = <<'EoAdminPage';
 [/if]
 
 
-<FORM ACTION="[area @@MV_PAGE@@]" METHOD="post">
+<form action="[area @@MV_PAGE@@]" method="post">
 [if scratch ui_failure]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</FONT>
-</BLOCKQUOTE>
-<P>
+<p>
+<blockquote>
+<font color="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</font>
+</blockquote>
+<p>
 &nbsp;
 [/if]
 [if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_message][set ui_message][/set]</FONT>
-</BLOCKQUOTE>
-<P>
+<p>
+<blockquote>
+<font color="__CONTRAST__">[scratch ui_message][set ui_message][/set]</font>
+</blockquote>
+<p>
 &nbsp;
 [/if]
-<INPUT TYPE=hidden NAME=sku              VALUE="[cgi item_id]">
-<INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
-<INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_banner]">
-<INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
-<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<input type="hidden" name="sku"           value="[cgi item_id]">
+<input type="hidden" name="ui_page_title" value="[cgi ui_page_title]">
+<input type="hidden" name="ui_page_title" value="[cgi ui_page_banner]">
+<input type="hidden" name="ui_return_to"  value="@@MV_PAGE@@">
+<input type="hidden" name="mv_action"     value="back">
 
-<TABLE BORDER=0><TR><TD VALIGN=TOP>
+<table border="0"><tr><td valign="top">
 
 [query list=1 sql="select * from options where sku='[filter op=sql interpolate=1][cgi item_id][/filter]' and o_group is not null"]
 [list]
 [if-sql-data options o_group]
 [calc] $Scratch->{mod_code} = q{[sql-code]}; $Scratch->{mod_code} =~ s/-/_/g; return;[/calc]
-<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]">
-<TR><TD VALIGN=CENTER>Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_[scratch mod_code]" VALUE="[filter entities][sql-param o_group][/filter]">
+<table border="0" cellspacing="0" cellpadding="3" bgcolor="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]">
+<tr><td valign="center">Name: <input type="text" size="20" name="opt_group_[scratch mod_code]" value="[filter entities][sql-param o_group][/filter]">
 
-<A HREF="[area href='@@MV_PAGE@@'
+<a href="[area href='@@MV_PAGE@@'
                form='deleterecords=1
                      ui_delete_id=[sql-code]
                      item_id=[cgi item_id]
@@ -375,24 +375,24 @@ $Admin_page = <<'EoAdminPage';
                      mv_action=back
                      mv_nextpage=@@MV_PAGE@@
                     '
-         ]"><IMG SRC="delete.gif" ALT="[L]Delete[/L]" ALIGN=CENTER BORDER=0></A>
-<br>[L]Label[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_label_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
-<INPUT TYPE=hidden NAME="reset_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
+         ]"><img src="delete.gif" alt="[L]Delete[/L]" align="center" border="0"></a>
+<br>[L]Label[/L]: <input type="text" size="20" name="opt_label_[scratch mod_code]" value="[filter entities][sql-param o_label][/filter]">
+<input type="hidden" name="reset_[scratch mod_code]" value="[filter entities][sql-param o_label][/filter]">
 <script><!--
-document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[sql-param o_group]} ? 'CHECKED' : undef;[/sql-calc]\n' +
+document.write('<br><input type="checkbox" [sql-calc]q{[sql-param o_label]} eq q{[sql-param o_group]} ? "CHECKED" : undef;[/sql-calc]\n' +
 '	onClick="if (this.checked) { this.form.opt_label_[scratch mod_code].value = this.form.opt_group_[scratch mod_code].value; } else { this.form.opt_label_[scratch mod_code].value = this.form.reset_[scratch mod_code].value; }">\n' +
 '<font size=2>[L]Set label to name[/L]</font>');
 // -->
 </script>
-</TD></TR>
+</td></tr>
 [tmp o_value][perl]
     my @vals = split(',',q{[sql-param o_value]});
     map { s/[\r\n]//g; } @vals;
     return join("\n",@vals);
 [/perl][/tmp]
 
-<TR><TD>
-<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[scratch mod_code]">[scratch o_value]</TEXTAREA><br>
+<tr><td>
+<textarea rows="5" cols="30" name="opt_value_[scratch mod_code]">[scratch o_value]</textarea><br>
 [page href="admin/flex_editor"
 		form="
 			mv_data_table=options
@@ -400,53 +400,53 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 			ui_return_to=admin/item_option
 			ui_return_to=item_id=[cgi item_id]
 			ui_data_fields=code o_widget o_width o_height
-		"]Widget type edit</A>
-</TD></TR>
-</TABLE>
+		"]Widget type edit</a>
+</td></tr>
+</table>
 [/if-sql-data]
 [/list]
 [/query]
 
-<BR><BR><BR>
+<br><br><br>
 [button text="[L]Commit Changes[/L]"]
 
-</TD><TD><PRE>                          </PRE></TD><TD VALIGN=TOP>
+</td><td><pre>                          </pre></td><td valign="top">
 
-<B>[L]Create a new option[/L]:</B><BR>
-[L]Name[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE="">
-<br>[L]Label[/L]: <INPUT TYPE=text SIZE=20 NAME="opt_label_">
+<b>[L]Create a new option[/L]:</b><br>
+[L]Name[/L]: <input type="text" size="20" name="opt_group_" value="">
+<br>[L]Label[/L]: <input type="text" size="20" name="opt_label_">
 <script><!--
-document.write('<br><INPUT TYPE=checkbox\n' +
+document.write('<br><input type="checkbox"\n' +
 '	onClick="if (this.checked) { this.form.opt_label_.value = this.form.opt_group_.value; } else { this.form.opt_label_.value = \'\'; }">\n' +
-'<font size=2>[L]Set label to name[/L]</font>');
+'<font size="2">[L]Set label to name[/L]</font>');
 // -->
 </script>
-<BR>
-<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_"></TEXTAREA>
-<BR>
+<br>
+<textarea rows="5" cols="30" name="opt_value_"></textarea>
+<br>
 [button text="[L]Create option[/L]"]
-<BR><BR>
+<br><br>
 
-<HR>
+<hr>
 
-<BR><BR><B>[L]Clone an existing option set[/L]:</B><BR>
+<br><br><b>[L]Clone an existing option set[/L]:</b><br>
 
 [query
 	list=1
 	prefix=clone
 	sql="select DISTINCT sku from [cgi mv_data_table]"
 	more=1]
-<SELECT NAME=ui_clone_id>
-<OPTION VALUE=""> --
+<select name="ui_clone_id">
+<option value=""> --
 [list]
 [if-clone-data options o_enable]
-<OPTION VALUE="[clone-code]">[clone-filter 20][clone-description][/clone-filter]
+<option value="[clone-code]">[clone-filter 20][clone-description][/clone-filter]
 [/if-clone-data]
 [/list]
-</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="[L]Clone options[/L]"]<BR>
-</FORM>
+</select>[more-list]<br>[more]<br>[/more-list][/query]&nbsp;[button text="[L]Clone options[/L]"]<br>
+</form>
 
-</TD></TR></TABLE>
+</td></tr></table>
 
 EoAdminPage
 
