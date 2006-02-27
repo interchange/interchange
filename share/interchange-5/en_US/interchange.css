@@ -30,7 +30,7 @@ A.alertlink:active,A.alertlink:hover,A.alertlink:link,A.alertlink:visited {
 
 .block3inner {
 	background-color: #D4D0C8;
-	height: 100%;;
+	height: 100%;
 	padding: 6px;
 	vertical-align: top
 }
@@ -41,7 +41,7 @@ A.alertlink:active,A.alertlink:hover,A.alertlink:link,A.alertlink:visited {
 }
 
 .block4bold,.mainbold {
-	background-color: #E6E6E6;;
+	background-color: #E6E6E6;
 	color: #808080;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
@@ -49,7 +49,7 @@ A.alertlink:active,A.alertlink:hover,A.alertlink:link,A.alertlink:visited {
 }
 
 .block4sub {
-	background-color: #E6E6E6;;
+	background-color: #E6E6E6;
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
@@ -73,7 +73,7 @@ body {
 .cbreak {
 	background-color: #EEEEEE;
 	border-left: 1px solid #999999;
-	font-size: 11px;;
+	font-size: 11px;
 	font-weight: bold
 }
 
@@ -81,7 +81,7 @@ body {
 	border-bottom: 1px solid #CCCCCC;
 	border-right: 1px solid #CCCCCC;
 	border-top: 1px solid #CCCCCC;
-	font-size: 11px;;
+	font-size: 11px;
 	margin-right: 4px;
 	padding-right: 2px;
 	vertical-align: top
@@ -94,7 +94,7 @@ body {
 
 .cheader {
 	color: #663333;
-	font-size: 11px;;
+	font-size: 11px;
 	font-weight: bold
 }
 
@@ -112,7 +112,7 @@ body {
 	border-top: 1px solid #CCCCCC;
 	font-size: 11px;
 	font-weight: medium;
-	padding-left: 5px;;
+	padding-left: 5px;
 	text-align: left
 }
 
@@ -123,25 +123,25 @@ body {
 
 A:link.ctitle,A:visited.ctitle {
 	color: white;
-	font-size: 11px;;
+	font-size: 11px;
 	font-weight: bold;
 	text-decoration: none
 }
 
 A:hover.ctitle,A:active.ctitle {
 	color: yellow;
-	font-size: 11px;;
+	font-size: 11px;
 	font-weight: bold;
 	text-decoration: underline
 }
 
 .ctitle {
-	font-size: 11px;;
+	font-size: 11px;
 	font-weight: bold
 }
 
 .cwidget {
-	font-size: 11px;;
+	font-size: 11px;
 	vertical-align: center
 }
 
@@ -220,12 +220,12 @@ A.headlink:active,A.headlink:hover,A.headlink:link,A.headlink:visited {
 
 .rborder {
 	background-color: #CCCCCC;
-	margin: 0;;
+	margin: 0;
 	padding: 2
 }
 
 .rhead {
-	background-color: #E6E6E6;;
+	background-color: #E6E6E6;
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px
@@ -248,7 +248,7 @@ A.rhead:link,A.rhead:visited {
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	font-weight: bold;;
+	font-weight: bold;
 	padding: 4px
 }
 
@@ -258,7 +258,7 @@ A.rhead:link,A.rhead:visited {
 }
 
 .rmarq {
-	background-color: #999999;;
+	background-color: #999999;
 	color: #FFFFFF;
 	font-size: 12px;
 	font-weight: bold
@@ -325,7 +325,7 @@ A.rowalt:link,A.rowalt:visited,A.rownorm:link,A.rownorm:visited {
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	font-weight: bold;;
+	font-weight: bold;
 	padding: 4px
 }
 
@@ -343,7 +343,7 @@ A.rowalt:link,A.rowalt:visited,A.rownorm:link,A.rownorm:visited {
 
 .rspacer {
 	background-color: #999999;
-	margin: 0;;
+	margin: 0;
 	padding: 0
 }
 
@@ -352,12 +352,12 @@ A.rowalt:link,A.rowalt:visited,A.rownorm:link,A.rownorm:visited {
 	color: #808080;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	font-weight: bold;;
+	font-weight: bold;
 	padding: 4px
 }
 
 .rtitle {
-	background-color: #808080;;
+	background-color: #808080;
 	color: #FFFFFF;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 12px;
@@ -373,13 +373,13 @@ A.rtitle:active,A.rtitle:link,A.rtitle:visited {
 
 
 .s1,.s2 {
-	color: #666666;;
+	color: #666666;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10px
 }
 
 .s3 {
-	color: #333333;;
+	color: #333333;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10px
 }
