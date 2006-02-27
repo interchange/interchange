@@ -1,6 +1,6 @@
 # Vend::Options - Interchange item options base module
 #
-# $Id: Options.pm,v 2.5 2005-11-08 18:14:45 jon Exp $
+# $Id: Options.pm,v 2.6 2006-02-27 20:26:27 danb Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Options;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -89,7 +89,7 @@ sub find_options_type {
 		if(! defined $item->{$attrib}) {
 			$tab = $item->{mv_ib} || product_code_exists_tag($sku)
 					or do {
-						logOnce("options: Unknown product %s.", $sku);
+						logOnce('error', "options: Unknown product %s.", $sku);
 						return;
 					};
 			$item->{$attrib} = tag_data($tab, $field, $sku);
