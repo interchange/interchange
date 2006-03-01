@@ -1,0 +1,41 @@
+# Copyright 2002-2006 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: date_change_null.filter,v 1.1 2006-03-01 22:09:41 jon Exp $
+
+CodeDef date_change_null Filter
+CodeDef date_change_null Description Date widget for NULL Blank
+CodeDef date_change_null Routine <<EOR
+sub {
+	my $val = shift;
+	HTML::Entities::decode_entities($val) if $val =~ /\&/;
+	$val =~ s/\0+//g;
+	return $val 
+		unless $val =~ m:(\d*)[-/]+(\d*)[-/]+(\d*):;
+	my ($yr, $mon, $day);
+
+	if (length($1) == 4) {
+        # ISO date style 2003-03-20
+		($yr, $mon, $day) = ($1, $2, $3);
+	}
+	else {
+		($yr, $mon, $day) = ($3, $1, $2);
+	}
+
+	return unless grep /[1-9]/, ($yr, $mon, $day);
+
+	my $time;
+	$val =~ /:(\d+)$/
+		and $time = $1;
+	if (length($yr) < 4) {
+		$yr =~ s/^0//;
+		$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
+	}
+	$mon =~ s/^0//;
+	$day =~ s/^0//;
+	$val = sprintf("%04d%02d%02d", $yr, $mon, $day);
+	return $val unless $time;
+	$val .= sprintf('%04d', $time);
+	return $val;
+}
+EOR
