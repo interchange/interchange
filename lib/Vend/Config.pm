@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.198 2006-03-02 07:12:27 jon Exp $
+# $Id: Config.pm,v 2.199 2006-03-02 12:27:31 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.198 $, 10);
+$VERSION = substr(q$Revision: 2.199 $, 10);
 
 my %CDname;
 my %CPname;
@@ -432,7 +432,7 @@ sub global_directives {
 										  ],
 	['EncryptProgram',  'executable',		 [ 'gpg', 'pgpe', 'none', ] ],
 	['PIDfile',     	 'root_dir',         "etc/$Global::ExeName.pid"],
-	['SocketFile',     	 'root_dir_array',   undef],
+	['SocketFile',     	 'root_dir_array',   ''],
 	['SocketPerms',      'integer',          0600],
 	['SOAP',     	     'yesno',            'No'],
 	['SOAP_Socket',       'array',            ''],
@@ -450,6 +450,7 @@ sub global_directives {
 	['HouseKeepingCron', 'cron',          ''],
 	['Mall',	          'yesno',           'No'],
 	['TagGroup',		 'tag_group',		 $StdTags],
+	['ConfigParseComments',		 'warn',		 ''],
 	['TagInclude',		 'tag_include',		 'ALL'],
 	['ActionMap',		 'action',			 ''],
 	['FileControl',		 'action',			 ''],
@@ -565,6 +566,7 @@ sub catalog_directives {
 	['SessionDB',  		 undef,     		 ''],
 	['SessionType', 	 undef,     		 'File'],
 	['SessionDatabase',  'relative_dir',     'session'],
+	['ConfigParseComments',		 'warn',		 ''],
 	['SessionLockFile',  undef,     		 'etc/session.lock'],
 	['MoreDB',			 'yesno',     		 'No'],
 	['DatabaseDefault',  'hash',	     	 ''],
@@ -3379,7 +3381,7 @@ sub set_default_search {
 				},
 		SocketFile => sub {
 					@$Global::SocketFile = "$Global::VendRoot/etc/socket"
-						unless @$Global::SocketFile;
+						unless @$Global::SocketFile and $Global::SocketFile->[0];
 					return 1;
 				},
 		TcpMap => sub {
