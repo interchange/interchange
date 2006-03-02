@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.200 2006-03-02 15:55:42 jon Exp $
+# $Id: Config.pm,v 2.201 2006-03-02 16:08:28 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.200 $, 10);
+$VERSION = substr(q$Revision: 2.201 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1483,7 +1483,7 @@ sub config_named_catalog {
 
 	dump_structure($c, "$c->{RunDir}/$g->{name}") if $Global::DumpStructure;
 
-    my $status_dir = ($C->{Source}{RunDir} ? $c->{RunDir} : $c->{ConfDir});
+    my $status_dir = ($c->{Source}{RunDir} ? $c->{RunDir} : $c->{ConfDir});
 
 	delete $c->{Source};
 
