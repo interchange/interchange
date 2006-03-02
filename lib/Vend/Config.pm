@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.197 2006-02-23 03:34:53 jon Exp $
+# $Id: Config.pm,v 2.198 2006-03-02 07:12:27 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.197 $, 10);
+$VERSION = substr(q$Revision: 2.198 $, 10);
 
 my %CDname;
 my %CPname;
@@ -386,8 +386,8 @@ sub global_directives {
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['FeatureDir',		 'root_dir',	     'features'],
 	['ConfigDatabase',	 'config_db',	     ''],
-	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
-	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
+	['ConfigAllBefore',	 'root_dir_array',	 'catalog_before.cfg'],
+	['ConfigAllAfter',	 'root_dir_array',	 'catalog_after.cfg'],
 	['Message',          'message',           ''],
 	['Capability',		 'capability',		 ''],
 	['Require',			 'require',			 ''],
@@ -431,8 +431,8 @@ sub global_directives {
 											  ]
 										  ],
 	['EncryptProgram',  'executable',		 [ 'gpg', 'pgpe', 'none', ] ],
-	['PIDfile',     	  undef,             "$Global::VendRoot/etc/$Global::ExeName.pid"],
-	['SocketFile',     	 'array',            "$Global::VendRoot/etc/socket"],
+	['PIDfile',     	 'root_dir',         "etc/$Global::ExeName.pid"],
+	['SocketFile',     	 'root_dir_array',   undef],
 	['SocketPerms',      'integer',          0600],
 	['SOAP',     	     'yesno',            'No'],
 	['SOAP_Socket',       'array',            ''],
@@ -445,7 +445,7 @@ sub global_directives {
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Control',     'action',           ''],
 	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1'],
-	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
+	['IPCsocket',		 'root_dir',	     'etc/socket.ipc'],
 	['HouseKeeping',     'time',          60],
 	['HouseKeepingCron', 'cron',          ''],
 	['Mall',	          'yesno',           'No'],
@@ -489,7 +489,7 @@ sub global_directives {
 	['HammerLock',		 'time',     	 30],
 	['DataTrace',		 'integer',     	 0],
 	['ShowTimes',		 'yesno',	     	 0],
-	['ErrorFile',		  undef,     	     undef],
+	['ErrorFile',		 'root_dir',   	     undef],
 	['SysLog',			 'hash',     	     undef],
 	['Logging',			 'integer',     	 0],
 	['CheckHTML',		  undef,     	     ''],
@@ -516,7 +516,7 @@ sub catalog_directives {
 
 #   Directive name      Parsing function    Default value
 
-	['ErrorFile',        undef,              'error.log'],
+	['ErrorFile',        'relative_dir',     'error.log'],
 	['ActionMap',		 'action',			 ''],
 	['FileControl',		 'action',			 ''],
 	['FormAction',		 'action',			 ''],
@@ -526,6 +526,7 @@ sub catalog_directives {
 	['ProductDir',       'relative_dir',     'products'],
 	['OfflineDir',       'relative_dir',     'offline'],
 	['ConfDir',          'relative_dir',	 'etc'],
+	['RunDir',           'relative_dir',	 ''],
 	['ConfigDir',        'relative_dir',	 'config'],
 	['TemplateDir',      'dir_array', 		 ''],
 	['ConfigDatabase',	 'config_db',	     ''],
@@ -1389,7 +1390,7 @@ sub read_here {
 
 sub config_named_catalog {
 	my ($cat_name, $source, $db_only, $dbconfig) = @_;
-	my ($g,$c);
+	my ($g, $c, $dir);
 
 	$g = $Global::Catalog{$cat_name};
 	unless (defined $g) {
@@ -1455,7 +1456,8 @@ sub config_named_catalog {
 
 	if (defined $g->{base}) {
 		open_database(1);
-		dump_structure($c, $g->{name}) if $Global::DumpStructure;
+		$dir = $c->{RunDir} || '.';
+		dump_structure($c, "$dir/$g->{name}") if $Global::DumpStructure;
 		return $c;
 	}
 
@@ -1478,13 +1480,15 @@ sub config_named_catalog {
      	return undef;
     }
 
-	dump_structure($c, $g->{name}) if $Global::DumpStructure;
+	$dir = $c->{RunDir} || '.';
+	dump_structure($c, "$dir/$g->{name}") if $Global::DumpStructure;
 
 	delete $c->{Source};
 
 	my $stime = scalar localtime();
 	writefile(">$Global::RunDir/status.$g->{name}", "$stime\n$g->{dir}\n");
-	writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
+	$dir = $c->{RunDir} || $c->{ConfDir};
+	writefile(">$dir/status.$g->{name}", "$stime\n");
 
 	return $c;
 
@@ -3371,6 +3375,11 @@ sub set_default_search {
 					return 1 if $Have_set_global_defaults;
 					$Global::SOAP_Socket = ['7780']
 						if $Global::SOAP and ! $Global::SOAP_Socket;
+					return 1;
+				},
+		SocketFile => sub {
+					@$Global::SocketFile = "$Global::VendRoot/etc/socket"
+						unless @$Global::SocketFile;
 					return 1;
 				},
 		TcpMap => sub {
