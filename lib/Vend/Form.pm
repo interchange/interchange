@@ -1,8 +1,8 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.65 2005-11-30 15:07:15 racke Exp $
+# $Id: Form.pm,v 2.66 2006-03-02 23:19:19 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.65 $, 10);
+$VERSION = substr(q$Revision: 2.66 $, 10);
 
 @EXPORT = qw (
 	display
@@ -521,7 +521,10 @@ sub date_widget {
 	$out .= qq{</select>};
 	return $out unless $opt->{time};
 
-	$val =~ s/^\d{8}//;
+	$val =~ s/^(\d{8})//;
+	# If the date is blank (0000-00-00), treat time of 00:00 as blank,
+	# not midnight, in the option selection below
+	my $blank_time = ($opt->{blank} and $1 !~ /[1-9]/);
 	$val =~ s/\D+//g;
 	$val = round_to_fifteen($val);
 	$out .= qq{<input type="hidden" name="$name" value=":">};
@@ -564,7 +567,7 @@ sub date_widget {
 	}
 	$opt->{start_hour}	||= 0;
 	$opt->{end_hour}	||= 23;
-	
+
 	for my $hr ( $opt->{start_hour} .. $opt->{end_hour} ) {
 		next if defined $opt->{start_hour} and $hr < $opt->{start_hour};
 		next if defined $opt->{end_hour} and $hr > $opt->{end_hour};
@@ -595,7 +598,7 @@ sub date_widget {
 			($out .= $o, next) unless ! $sel and $val;
 #::logDebug("prospect=$time actual=$val");
 			$o =~ s/>/ SELECTED>/ && $sel++
-				if $val eq $time;
+				if ! $blank_time and $val eq $time;
 			$out .= $o;
 		}
 	}
