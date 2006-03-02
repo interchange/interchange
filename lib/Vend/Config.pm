@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.199 2006-03-02 12:27:31 mheins Exp $
+# $Id: Config.pm,v 2.200 2006-03-02 15:55:42 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.199 $, 10);
+$VERSION = substr(q$Revision: 2.200 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1392,7 +1392,7 @@ sub read_here {
 
 sub config_named_catalog {
 	my ($cat_name, $source, $db_only, $dbconfig) = @_;
-	my ($g, $c, $dir);
+	my ($g, $c);
 
 	$g = $Global::Catalog{$cat_name};
 	unless (defined $g) {
@@ -1458,8 +1458,7 @@ sub config_named_catalog {
 
 	if (defined $g->{base}) {
 		open_database(1);
-		$dir = $c->{RunDir} || '.';
-		dump_structure($c, "$dir/$g->{name}") if $Global::DumpStructure;
+		dump_structure($c, "$c->{RunDir}/$g->{name}") if $Global::DumpStructure;
 		return $c;
 	}
 
@@ -1482,15 +1481,15 @@ sub config_named_catalog {
      	return undef;
     }
 
-	$dir = $c->{RunDir} || '.';
-	dump_structure($c, "$dir/$g->{name}") if $Global::DumpStructure;
+	dump_structure($c, "$c->{RunDir}/$g->{name}") if $Global::DumpStructure;
+
+    my $status_dir = ($C->{Source}{RunDir} ? $c->{RunDir} : $c->{ConfDir});
 
 	delete $c->{Source};
 
 	my $stime = scalar localtime();
 	writefile(">$Global::RunDir/status.$g->{name}", "$stime\n$g->{dir}\n");
-	$dir = $c->{RunDir} || $c->{ConfDir};
-	writefile(">$dir/status.$g->{name}", "$stime\n");
+	writefile(">$status_dir/status.$g->{name}", "$stime\n");
 
 	return $c;
 
