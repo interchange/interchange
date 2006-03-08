@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.66 2006-03-02 23:19:19 jon Exp $
+# $Id: Form.pm,v 2.67 2006-03-08 18:22:08 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.66 $, 10);
+$VERSION = substr(q$Revision: 2.67 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1323,10 +1323,10 @@ if($opt->{debug}) {
 		if($opt->{extra}) {
 			$opt->{extra} =~ s{(^|\s+)class=(["'])?[^\s'"]+\2}{$1};
 			$opt->{extra} =~ s/\s+$//;
-			$opt->{extra} .=	qq{class="$opt->{class}"} ;
+			$opt->{extra} .= qq{ class="$opt->{class}"};
 		}
 		else {
-			$opt->{extra} =	qq{class="$opt->{class}"} ;
+			$opt->{extra} = qq{class="$opt->{class}"};
 		}
 	}
 
