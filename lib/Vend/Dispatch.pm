@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.64 2006-02-15 05:39:53 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.65 2006-03-09 10:23:46 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.64 $, 10);
+$VERSION = substr(q$Revision: 1.65 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -819,7 +819,7 @@ sub run_in_catalog {
 		}
 	}
 	else {
-		logGlobal("Empty job=%s", $job);
+		logError("Empty job=%s", $job);
 	}
 	my $out = join "", @out;
 	my $filter = $jobscfg->{filter} || 'strip';
