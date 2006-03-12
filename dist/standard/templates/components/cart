@@ -96,7 +96,7 @@ continue_shopping:
 	    		<INPUT TYPE=checkbox NAME="[item-quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
 	  	</TD>
 	  	<TD valign="top"><b>[item-sku]</b></TD>
-	  	<td><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></A><br><br>
+	  	<td><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></A><br><br>
 
 	[if scratch dealer]
 	[if-item-data pricing sku]

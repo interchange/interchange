@@ -32,7 +32,7 @@ ui_label: Smaller cart for display in content area
 	  <a href="[area href="ord/basket"]" class="cartlink">[L]edit[/L]</A>
 	</TD>
 	<td valign=top>[item-sku]</TD>
-	<td valign=top><a href="[area href="item-sku"]" class="cartlink">[item-data products description]</a></TD>
+	<td valign=top><a href="[area href="[item-sku]"]" class="cartlink">[item-data products description]</a></TD>
 
 	<TD ALIGN=CENTER>[item-quantity]</TD>
 	<TD ALIGN=right>
