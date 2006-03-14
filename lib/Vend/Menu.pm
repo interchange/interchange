@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.46 2005-10-21 12:02:29 racke Exp $
+# $Id: Menu.pm,v 2.47 2006-03-14 19:17:21 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 
 use Vend::Util;
 use strict;
@@ -541,6 +541,7 @@ EOF
 EOF
 
 	$opt->{anchor_down} = is_yes($opt->{anchor_down}) || 0;
+	my $top_timeout = $opt->{timeout} || 1000;
 
 	push @out, <<EOF;
 <script language="JavaScript1.3">
@@ -809,7 +810,7 @@ EOF
 		if(level == undefined) 
 			level = 0;
 		level++;
-		${vpf}timeoutCode = setTimeout( "${vpf}menuClear();", 1000 );
+		${vpf}timeoutCode = setTimeout( "${vpf}menuClear();", $top_timeout );
 	}
 
 	function ${vpf}menuClear(level)
