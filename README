@@ -81,12 +81,20 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-5.5.0.tar.gz | tar xvf -
-cd interchange-5.5.0
-./configure
+    tar xvzf interchange-5.5.0.tar.gz
+    cd interchange-5.5.0
+    perl Makefile.PL
+    make
+    make test
+    make install
 
-The configure script asks where you'd like to install Interchange, and
-(against common practice) also install it.
+If you would like to use a specific version of Perl, simply invoke
+perl with an absolute path to the Perl binary, such as
+
+    /usr/local/bin/perl Makefile.PL
+
+The build procedure asks where you'd like to install Interchange and
+the name of the user account that will own the installation.
 
 The Interchange server doesn't do much if it isn't servicing one or more
 actual catalogs, so you next need to make your first Interchange catalog,
@@ -103,7 +111,7 @@ installed Interchange (default is "interchange" in your home directory,
 /usr/local/interchange for root installations, or /usr/lib/interchange
 for RPM installations) and run:
 
-bin/makecat
+    bin/makecat
 
 Follow the prompts and after restarting the Interchange server you
 should be able to access the demo catalog.
@@ -122,7 +130,7 @@ A documentation package is available, with documentation in many different
 formats. This and other information is available at the Interchange home on
 the web:
 
-http://www.icdevgroup.org/
+    http://www.icdevgroup.org/
 
 -----------------------------------------------------------------------------
 
