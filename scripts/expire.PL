@@ -3,7 +3,7 @@
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.8 2005-11-08 18:14:48 jon Exp $
+# $Id: expire.PL,v 2.9 2006-03-21 14:50:44 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -141,6 +141,7 @@ BEGIN {
 }
 
 use Vend::Session;
+use Vend::Dispatch;
 use Vend::Config qw(get_catalog_default global_config parse_time);
 use Vend::Util qw/errmsg/;
 use Getopt::Std;
