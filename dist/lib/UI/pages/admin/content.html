@@ -67,7 +67,7 @@
 [/if]
 
 <div class=titlebox>[L]Edit pages[/L]</div>
-
+<p>
 [if session content_edit]
 	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
 				onClick="return confirm('[L]Are you sure you want to purge all in-process edits?[/L]')"
@@ -80,7 +80,9 @@
 					form=auto
 					ui_type=page
 					new=1
-				]"><img src="layout.gif" border=0 align=center> [L]New page[/L]</A><br><br>
+				]"><img src="layout.gif" border=0 align=center> [L]New page[/L]</A>
+</p>
+<p>
 <table width="100%">
 [table-organize columns=3 columnize=1 interpolate=1 min-rows=15]
 
@@ -97,6 +99,7 @@
 			]
 [/table-organize]
 </table>
+</p>
 
 </form>
 
