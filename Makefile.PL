@@ -154,7 +154,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2005 Interchange Development Group.
+ Copyright (C) 2002-2006 Interchange Development Group.
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
@@ -215,14 +215,6 @@ sub extra_libs {
 	if ($@) {
 		push @extra_lib_dirs, 'Tie';
 		push @extra_lib_files, 'Tie/ShadowHash.pm';
-	}
-
-	eval {
-		require Business::Fedex;
-	};
-	if ($@) {
-		push @extra_lib_dirs, 'Business';
-		push @extra_lib_files, 'Business/Fedex.pm';
 	}
 
 	eval {

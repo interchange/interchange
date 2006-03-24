@@ -1,15 +1,14 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2006 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: available_www_shipping.coretag,v 1.3 2005-11-08 18:14:39 jon Exp $
+# $Id: available_www_shipping.coretag,v 1.4 2006-03-24 21:32:52 jon Exp $
 
 UserTag available_www_shipping Order   only
-UserTag available_www_shipping Version $Revision: 1.3 $
+UserTag available_www_shipping Version $Revision: 1.4 $
 UserTag available_www_shipping Routine <<EOR
 sub {
 	my ($only) = @_;
 	my $ups;
-	my $fedex;
-	my $other;
+
 	if(! $only or $only =~ /ups/i) {
 		eval {
 			require Business::UPS;
@@ -17,14 +16,7 @@ sub {
 		$ups = $@ ? 0 : 1;
 	}
 	
-	if(! $only or $only =~ /fed/i) {
-		eval {
-			require Business::Fedex;
-		};
-		$fedex = $@ ? 0 : 1;
-	}
 	my @ups_modes;
-	my @fed_modes;
 	if($ups) {
 		push @ups_modes,
 			'1DM' => {type => 'UPS', description => 'Next Day Air Early AM'},
@@ -48,20 +40,8 @@ sub {
 		;
 	}
 
-	if($fedex) {
-		push @fed_modes,
-		'FEG' => {type => 'FED', description => 'FedEx Ground'},
-		'FEH' => {type => 'FED', description => 'FedEx Home Delivery'},
-		'FPO' => {type => 'FED', description => 'FedEx Priority Overnight'},
-		'FSO' => {type => 'FED', description => 'FedEx Standard Overnight'},
-		'F2D' => {type => 'FED', description => 'FedEx 2-Day'},
-		'FES' => {type => 'FED', description => 'FedEx Express Saver'},
-		'FIP' => {type => 'FED', description => 'FedEx International Priority'},
-		'FIE' => {type => 'FED', description => 'FedEx International Economy'},
-		;
-	}
 	if (wantarray) {
-		return @ups_modes, @fed_modes;
+		return @ups_modes;
 	}
 	else {
 		my $out = '';
@@ -69,10 +49,6 @@ sub {
 		for ($i = 0; $i < @ups_modes; $i += 2) {
 			my $ref = $ups_modes[$i + 1];
 			$out .= qq{UPSE:$ups_modes[$i]\t$ref->{type}: $ref->{description}\n};
-		}
-		for ($i = 0; $i < @fed_modes; $i += 2) {
-			my $ref = $fed_modes[$i + 1];
-			$out .= qq{FEDE:$fed_modes[$i]\t$ref->{type}: $ref->{description}\n};
 		}
 		return $out;
 	}
