@@ -86,6 +86,8 @@ no configuration file line beginning with # will be parsed, including
 #ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
 must now be used.
 
+Removed unused SOAP_Host directive.
+
 All previously deprecated configuration directives have been removed.
 
 Deprecated-feature pragmas and associated code have been removed:
@@ -93,12 +95,16 @@ Deprecated-feature pragmas and associated code have been removed:
   hidden, as it was the case up to Interchange 5.2.
 * no_html_parse - used to disable parsing of MV= arguments inside HTML tags.
 
+If MV_COUNTRY_FIELD was in use to determine the country for tax
+purposes, then that setting needs to be changed to MV_COUNTRY_TAX_VAR.
 
-KNOWN ISSUES UPGRADING FROM 5.4.x
+The [either] tag historically reparsed its output. This has been changed
+so that while the tag body parts are interpolated, the tag output is not
+reparsed.
 
-If MV_COUNTRY_FIELD was in use to determine the country for
-tax purposes, then that setting needs to be changed to
-MV_COUNTRY_TAX_VAR.
+Removed the [fedex-query] tag, which hasn't been useful for some time
+because FedEx discontinued their web API that the tag interfaced with.
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
