@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.201 2006-03-02 16:08:28 jon Exp $
+# $Id: Config.pm,v 2.202 2006-03-24 18:01:22 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.201 $, 10);
+$VERSION = substr(q$Revision: 2.202 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2789,7 +2789,12 @@ sub parse_directive {
 	return '' unless $val;
 	my($dir, $parser, $default) = split /\s+/, $val, 3 ;
 	if(! defined &{"parse_$parser"} and ! defined &{"$parser"}) {
-		$parser = undef;
+		if (defined $Global::GlobalSub->{"parse_$parser"}) {
+			no strict 'refs';
+			*{"Vend::Config::parse_$parser"} = $Global::GlobalSub->{"parse_$parser"};
+		} else {
+			$parser = undef;
+		}
 	}
 	$default = '' if ! $default or $default eq 'undef';
 	$Global::AddDirective = [] unless $Global::AddDirective;
