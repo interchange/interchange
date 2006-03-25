@@ -988,7 +988,6 @@ dist/standard/variables/THEME_CSS
 eg/compact
 eg/filter/calculated.filter
 eg/gpg_display
-eg/grant.sql
 eg/ifdef
 eg/news_feature/dbconf/default_db/news.dbm
 eg/news_feature/dbconf/mysql/news.mysql
