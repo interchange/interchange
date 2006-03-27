@@ -105,6 +105,10 @@ reparsed.
 Removed the [fedex-query] tag, which hasn't been useful for some time
 because FedEx discontinued their web API that the tag interfaced with.
 
+Removed the [/page] and [/order] macros. The [page] and [order] tags have
+never been container tags; [/page] and [/order] were macros that were
+replaced with </a>. You should now just use </a> in HTML instead.
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
