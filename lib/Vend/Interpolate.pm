@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.267 2006-02-16 16:25:18 mheins Exp $
+# $Id: Interpolate.pm,v 2.268 2006-03-27 18:42:50 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.267 $, 10);
+$VERSION = substr(q$Revision: 2.268 $, 10);
 
 @EXPORT = qw (
 
@@ -438,8 +438,6 @@ my @th = (qw!
 	'/_next'		=> qr($T{_next}\]),
 	'/_pos'			=> qr($T{_pos}\]),
 	'/_sub'			=> qr($T{_sub}\]),
-	'/order'		=> qr(\[/order\])i,
-	'/page'			=> qr(\[/page(?:target)?\])i,
 	'_accessories'  => qr($T{_accessories}($Spacef[^\]]+)?\]),
 	'_alternate'	=> qr($T{_alternate}$Opt\]($Some)),
 	'_calc' 		=> qr($T{_calc}\]($Some)),
@@ -630,15 +628,13 @@ sub vars_and_comments {
 	# Strip out [comment] [/comment] blocks
 	1 while $$html =~ s%$QR{comment}%%go;
 
-	# Translate legacy atomic [/page] and [/order] tags
-	$$html =~ s,\[/page(?:target)?\],</a>,ig;
-	$$html =~ s,\[/order\],</a>,ig;
-
 	# Translate Interchange tags embedded in HTML comments like <!--[tag ...]-->
 	! $::Pragma->{no_html_comment_embed}
 	and
 		$$html =~ s/<!--+\[/[/g
 			and $$html =~ s/\]--+>/]/g;
+
+	return;
 }
 
 sub interpolate_html {
