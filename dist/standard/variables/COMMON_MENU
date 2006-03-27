@@ -15,6 +15,7 @@
 		link_class=submenu
 		nbsp=name
 		logged_in=member
+		localize="name,description"
 	  ]
 [menu-header]
 <table class=menubar>
