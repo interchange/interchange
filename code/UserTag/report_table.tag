@@ -1,6 +1,6 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: report_table.tag,v 1.3 2005-11-08 18:14:42 jon Exp $
+# $Id: report_table.tag,v 1.4 2006-03-27 22:21:13 docelic Exp $
 
 UserTag report-table addAttr
 UserTag report-table Documentation <<EOD
@@ -61,8 +61,8 @@ Or something fancier:
 	]
 	<tr>
 	  <td colspan="4" align="right">
-	    <input type="hidden" name="rows" value="[scratch report_table_linecount]"/>
-	    <input type="submit" value="Save addresses"/>
+	    <input type="hidden" name="rows" value="[scratch report_table_linecount]" $Vend::Xtrailer>
+	    <input type="submit" value="Save addresses" $Vend::Xtrailer>
 	  </td>
 	</tr>
 	</table>
@@ -336,7 +336,7 @@ To get a blank column:
 
 
 EOD
-UserTag report-table Version $Revision: 1.3 $
+UserTag report-table Version $Revision: 1.4 $
 UserTag report-table Routine <<EOR
 sub prep_cell {
 	my ($def,$datum,$linecount,$record) = @_;
@@ -362,9 +362,9 @@ sub prep_cell {
 			# for "delete/edit checked rows" type forms.
 			my $checked = '';
 			if ($datum) {
-				$checked = ' CHECKED';
+				$checked = ' checked="checked"';
 			}
-			$cell = '<input type="checkbox" name="'. $def->{colname} .'_'. $linecount ."\" value=\"1\"$checked/>";
+			$cell = '<input type="checkbox" name="'. $def->{colname} .'_'. $linecount ."\" value=\"1\"$checked $Vend::Xtrailer>";
 		} else {
 			my $widget_name = $def->{colname} .'_'. $linecount;
 			# We need to bludgeon Interchange over the head with the proper value
@@ -628,7 +628,7 @@ sub {
 		}
 		if ($row->{id}) {
 			my $name = $opt->{row_hidden_id} .'_'. $row->{dynamic}->{linecount};
-			$id = "<input type=\"hidden\" name=\"$name\" value=\"$row->{id}\"/>";
+			$id = "<input type=\"hidden\" name=\"$name\" value=\"$row->{id}\" $Vend::Xtrailer>";
 		}
 		$output .= "<tr$odd>$id$html</tr>\n";
 	}

@@ -1,11 +1,11 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 2002-2005 Stefan Hornburg (racke@linuxia.de)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.15 2005-12-19 21:58:52 racke Exp $
+# $Id: formel.tag,v 1.16 2006-03-27 22:21:13 docelic Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.15 $
+UserTag formel Version $Revision: 1.16 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -104,7 +104,7 @@ sub {
 
 			$rlabel = &$labelproc($rlabel, 1);
 
-			$elhtml .= qq{<input type="$type" name="$name" value="${rvalue}"$select> $rlabel};
+			$elhtml .= qq{<input type="$type" name="$name" value="${rvalue}"$select $Vend::Xtrailer> $rlabel};
 		}
 		# delete error implicitly
 		$labelhtml = &$labelproc($label);
@@ -127,13 +127,13 @@ sub {
 			}
 
 			if ($::Values->{$name} eq $rvalue) {
-				$select = ' selected';
+				$select = ' selected="selected"';
 			}
 			if ($rvalue eq $rlabel) {	
-				$elhtml .= qq{<option $select>$rlabel};
+				$elhtml .= qq{<option $select>$rlabel</option>};
 			}
 			else {
-				$elhtml .= qq{<option value="$rvalue"$select>$rlabel};
+				$elhtml .= qq{<option value="$rvalue"$select>$rlabel</option>};
 			}
 		}
 		return sprintf ($fmt, $labelhtml, 
@@ -159,15 +159,16 @@ sub {
 			$elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
 		}
 		else {
-			$elhtml = qq{<input type="$type" name="${name}"$sizestr>};
+			$elhtml = qq{<input type="$type" name="${name}"$sizestr $Vend::Xtrailer>};
 		}
 	}
 	else {
 		if ($type eq 'textarea') {
 			$elhtml = qq{<textarea name="${name}"$sizestr>$::Values->{$name}</textarea>};
+
 		}
 		elsif ($type eq 'text' || $type eq 'password' || $type !~ /\S/) {
-			$elhtml = qq{<input type="$type" name="$name" value="$::Values->{$name}"$sizestr>};
+			$elhtml = qq{<input type="$type" name="$name" value="$::Values->{$name}"$sizestr $Vend::Xtrailer>};
 		}
 		else {
 			# pass type directly to display tag

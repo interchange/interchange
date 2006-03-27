@@ -1,11 +1,11 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: selected.coretag,v 1.7 2005-11-08 18:14:36 jon Exp $
+# $Id: selected.coretag,v 1.8 2006-03-27 22:21:13 docelic Exp $
 
 UserTag selected            Order        name value
 UserTag selected            addAttr
 UserTag selected            PosNumber    2
-UserTag selected            Version      $Revision: 1.7 $
+UserTag selected            Version      $Revision: 1.8 $
 UserTag selected            Routine      <<EOR
 # Returns ' SELECTED' when a value is present on the form
 # Must match exactly, but NOT case-sensitive
@@ -13,7 +13,7 @@ sub {
 	my ($field,$value,$opt) = @_;
 	$value = '' unless defined $value;
 	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return ' SELECTED' if ! length($ref) and $opt->{default};
+	return ' selected="selected"' if ! length($ref) and $opt->{default};
 
 	if(! $opt->{case}) {
 		$ref = lc($ref);
@@ -22,7 +22,7 @@ sub {
 
 	my $r = '';
 
-	return ' SELECTED' if $ref eq $value;
+	return ' selected="selected"' if $ref eq $value;
 
 	if ($opt->{delimiter}) {
 		$opt->{multiple} = 1;
@@ -45,7 +45,7 @@ sub {
 	    }
 
 	    my $regex = qr/$be\Q$value\E$ee/;
-	    return ' SELECTED' if $ref =~ $regex;
+	    return ' selected="selected"' if $ref =~ $regex;
 	}
 
 	return '';

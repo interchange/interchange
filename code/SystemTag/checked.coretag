@@ -1,13 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: checked.coretag,v 1.7 2005-11-08 18:14:35 jon Exp $
+# $Id: checked.coretag,v 1.8 2006-03-27 22:21:13 docelic Exp $
 
 UserTag checked             Order        name value
 UserTag checked             addAttr
 UserTag checked             Implicit     multiple multiple
 UserTag checked             Implicit     default default
 UserTag checked             PosNumber    2
-UserTag checked             Version      $Revision: 1.7 $
+UserTag checked             Version      $Revision: 1.8 $
 UserTag checked             Routine      <<EOR
 sub {
 	my ($field,$value,$opt) = @_;
@@ -15,14 +15,14 @@ sub {
 	$value = 'on' unless defined $value;
 
 	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return ' CHECKED' if ! length($ref) and $opt->{default};
+	return ' checked="checked"' if ! length($ref) and $opt->{default};
 
 	if(! $opt->{case}) {
 		$ref = lc($ref);
 		$value = lc($value);
 	}
 
-	return ' CHECKED' if $ref eq $value;
+	return ' checked="checked"' if $ref eq $value;
 
 	if ($opt->{delimiter}) {
 		$opt->{multiple} = 1;
@@ -45,7 +45,7 @@ sub {
 	    }
 
 	    my $regex = qr/$be\Q$value\E$ee/;
-	    return ' CHECKED' if $ref =~ $regex;
+	    return ' checked="checked"' if $ref =~ $regex;
 	}
 	return '';
 }
