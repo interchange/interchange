@@ -9,7 +9,7 @@ This should have a session id and count [area @@MV_PAGE@@]<BR>
 [set mv_no_count]1[/set]
 [set mv_no_session_id]1[/set]
 This should NOT have a session id and count [area @@MV_PAGE@@]<P>
-[page @@MV_PAGE@@]Test[/page]&nbsp;&nbsp;
+[page @@MV_PAGE@@]Test</a>&nbsp;&nbsp;
 <A HREF="#middle">Middle</A>
 <A NAME=top HREF="#bottom">Bottom</A>
 <HR>
@@ -45,7 +45,7 @@ Test:
 	sq=select code from products2 where title like '% ? %'
 	st=sql
 	"
-	]Search for '% of %'[/page]
+	]Search for '% of %'</a>
 
 Same thing in form:
 <FORM ACTION="[process-target]" METHOD=POST>
@@ -671,11 +671,11 @@ OK[else]ERROR[/else][/if] 2.
 <U>Positional</U>
 session is [data session id] (check URL)<BR>
 <A NAME=arg></A>
-arg: [data arg]=[data session arg] -- [page @@MV_PAGE@@ SUCCESS]this link to test[/page]<BR>
+arg: [data arg]=[data session arg] -- [page @@MV_PAGE@@ SUCCESS]this link to test</a><BR>
 <U>Named</U>
 session is [data base=session name=id] (check URL)<BR>
 <A NAME=arg></A>
-arg: [data base=session name=arg]=[data base=arg] -- [page @@MV_PAGE@@ SUCCESS]this link to test[/page]<BR>
+arg: [data base=session name=arg]=[data base=arg] -- [page @@MV_PAGE@@ SUCCESS]this link to test</a><BR>
 [set mv_no_session_id]1[/set]
 
 <P>
@@ -964,16 +964,16 @@ Price should be back to original = [price 99-102]
 <H3>&#91;order code cart/page* database*]</H3>
 
 <U>Positional</U><BR>
-[order 00-0011 layaway/basket2]Order 00-0011 to layaway[/order]
-[order 00-0011 layaway/basket2 products2]Order 00-0011 from products2 to layaway[/order]<BR>
-[order 00-0011 main/basket1]Order 00-0011 to main[/order]
-[order 00-0011 main/basket1 products2]Order 00-0011 from products2 to main[/order]<BR>
+[order 00-0011 layaway/basket2]Order 00-0011 to layaway</a>
+[order 00-0011 layaway/basket2 products2]Order 00-0011 from products2 to layaway</a><BR>
+[order 00-0011 main/basket1]Order 00-0011 to main</a>
+[order 00-0011 main/basket1 products2]Order 00-0011 from products2 to main</a><BR>
 
 <U>Named</U><BR>
-[order code=00-0011 href=layaway/basket2]Order 00-0011 to layaway[/order]
-[order code=00-0011 href=layaway/basket2 base=products2]Order 00-0011 from products2 to layaway[/order]<BR>
-[order code=00-0011 href=main/basket1]Order 00-0011 to main[/order]
-[order code=00-0011 href=main/basket1 base=products2]Order 00-0011 from products2 to main[/order]<BR>
+[order code=00-0011 href=layaway/basket2]Order 00-0011 to layaway</a>
+[order code=00-0011 href=layaway/basket2 base=products2]Order 00-0011 from products2 to layaway</a><BR>
+[order code=00-0011 href=main/basket1]Order 00-0011 to main</a>
+[order code=00-0011 href=main/basket1 base=products2]Order 00-0011 from products2 to main</a><BR>
 
 
 [perl] "Delim is '" . $Config->{Delimiter} . "'"; [/perl]
@@ -991,17 +991,17 @@ Test inventory.
 
 Old:
 
-[page 00-0011]Main products, no XXXX[/page]<BR>
-[page 00-0011 products2]Second products, should have XXXX in description[/page]<BR>
-[page X0-342]Fall through to second products[/page]
+[page 00-0011]Main products, no XXXX</a><BR>
+[page 00-0011 products2]Second products, should have XXXX in description</a><BR>
+[page X0-342]Fall through to second products</a>
 
 <BR>
 
 <U>Named</U>
 
-[page href="00-0011"]Main products, no XXXX[/page]<BR>
-[page href="00-0011" arg=products2]Second products, should have XXXX in description[/page]<BR>
-[page href="X0-342"]Fall through to second products[/page]<BR>
+[page href="00-0011"]Main products, no XXXX</a><BR>
+[page href="00-0011" arg=products2]Second products, should have XXXX in description</a><BR>
+[page href="X0-342"]Fall through to second products</a><BR>
 
 <HR>
 
@@ -1080,9 +1080,9 @@ Category: [item-field category] OK
 <P>
 Catalog No.: [item-code]
 <P>
-Price: [item-price 1] [page quantity [item-code]]See quantity pricing[/page]
+Price: [item-price 1] [page quantity [item-code]]See quantity pricing</a>
 <P>
-[order [item-code]]<IMG BORDER=0 SRC="ordernow.gif" ALT="(ORDER NOW)">[/order]
+[order [item-code]]<IMG BORDER=0 SRC="ordernow.gif" ALT="(ORDER NOW)"></a>
 [/fly-list]
 
 [set name=nothing send=1][/set]
@@ -1118,7 +1118,7 @@ Default: [price 00-0011]
 Default: [price 00-0011]
 
 <HR>
-[page @@MV_PAGE@@]Test[/page]&nbsp;&nbsp;
+[page @@MV_PAGE@@]Test</a>&nbsp;&nbsp;
 <A NAME=bottom HREF="#top">Top</A>
 <A HREF="#middle">Middle</A>
 <HR>
