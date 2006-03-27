@@ -423,7 +423,7 @@ buy now	buy now			koop nu
 by	by			door
 contact us	contact us			neem contact met ons op
 create a new account	create a new account			nieuwe rekening aanmaken
-currency_symbol	$	EUR	FF	Euro
+currency_symbol	$	&#8364;	&#8364;	&#8364;
 decimal_point	.	.	.	.
 default	1	0	0	1
 e-mail	e-mail			
@@ -431,6 +431,7 @@ edit	edit			bewerk
 frac_digits	2	2	2	2
 in	in			in
 in the category	in the category			in categorie
+int_currency_symbol	$	EUR	EUR	EUR
 log in	log in			Aanmelden
 mon_decimal_point	.	,	,	.
 mon_thousand_sep		 		
@@ -441,7 +442,6 @@ or	or			of
 p_cs_precedes	1			1
 p_sep_by_space			1	1
 password minder	password minder			wachtwoord verzorger
-price_picture		DM ### ### ###,##		
 primary	primary			primair
 products		de_products	produits	
 test number	test number			testnummer
