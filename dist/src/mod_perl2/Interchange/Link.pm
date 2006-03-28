@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.8 2005-11-08 18:14:44 jon Exp $
+# $Id: Link.pm,v 1.8.2.1 2006-03-28 17:05:07 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,14 +23,17 @@
 
 package Interchange::Link;
 
+
 use strict;
 use ModPerl::Registry;
 use ModPerl::Code;
-use Apache::Const;
-require Apache::Connection;
-require Apache::RequestRec;
-require Apache::RequestIO;
-require Apache::RequestUtil;
+#use Apache::Const;
+use Apache2::Const;
+use Apache2::ServerRec ();
+require Apache2::Connection;
+require Apache2::RequestRec;
+require Apache2::RequestIO;
+require Apache2::RequestUtil;
 use Socket;
 
 $ENV{PATH} = "/bin:/usr/bin";
@@ -45,7 +48,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.8 $
+$Revision: 1.8.2.1 $
 
 =head1 SYNOPSIS
 
@@ -98,6 +101,11 @@ via this procedure:
 
     mkdir -p /usr/lib/httpd/perl/Interchange
     cp Link.pm /usr/lib/httpd/perl/Interchange
+
+If you have mod_perl2 1.999_21 or earlier, you should instead do:
+
+    mkdir -p /usr/lib/httpd/perl/Interchange
+    cp Link.pm.mod_perl-1.999_21_and_before /usr/lib/httpd/perl/Interchange
 
 Then you provide a startup script that tells mod_perl where its
 libraries are:
@@ -339,7 +347,7 @@ sub setup_location {
     my $s = $r->server;
     my $location = $r->location;
 
-    return $config{$location} if $config{$location} && !($s->is_virtual);
+    return $config{$location} if $config{$location} && !($s->is_virtual());
 
 #warn "Getting location $location\n";
 
@@ -490,7 +498,7 @@ sub send_environment {
         for(@$ord) {
 #warn "checking for OrdinaryFile $_\n";
             next unless $uri =~ $_;
-            $global_status = Apache::DECLINED;
+            $global_status = Apache2::Const::DECLINED;
             return undef;
         }
     }
@@ -502,7 +510,7 @@ sub send_environment {
             $r->headers_out->{Status} = '404 Not found';
             $r->content_type('text/html');
 #warn "dropping request for $uri\n";
-            $global_status = Apache::NOT_FOUND;
+            $global_status = Apache2::Const::NOT_FOUND;
             return undef;
         }
     }
@@ -669,7 +677,7 @@ sub handler {
 
     $ok   or do {
                     server_not_running($r);
-                    return Apache::OK;
+                    return Apache2::Const::OK;
             };
 
     my $former = select SOCK;
@@ -730,12 +738,12 @@ sub handler {
 #warn "Doing redirect\n";
             $r->content_type($set_content);
             close (SOCK)                                or die "close: $!\n";
-            return Apache::REDIRECT;
+            return Apache2::Const::REDIRECT;
         }
         elsif($set_status =~ /^404/) {
 #warn "404 not found status\n";
             close (SOCK)                                or die "close: $!\n";
-            return Apache::OK;
+            return Apache2::Const::OK;
         }
 		elsif($set_status eq 'httpd_deliver') {
 			$deliver_object = $set_status;
@@ -754,11 +762,11 @@ sub handler {
 			$r->content_type('text/html');
 			if(! -e $fn) {
 				$r->headers_out->{Status} = '404 Not found';
-				return Apache::NOT_FOUND;
+				return Apache2::Const::NOT_FOUND;
 			}
 			else {
 				$r->headers_out->{Status} = '403 Permission denied';
-				return Apache::FORBIDDEN;
+				return Apache2::Const::FORBIDDEN;
 			}
 		}
 
@@ -784,7 +792,7 @@ sub handler {
 	}
 
 #warn "Returning OK\n";
-    return Apache::OK;
+    return Apache2::Const::OK;
 }
 
 1;

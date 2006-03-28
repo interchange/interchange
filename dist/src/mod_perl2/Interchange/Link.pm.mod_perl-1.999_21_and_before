@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm.mod_perl-1.999_21_and_before,v 1.1 2006-03-28 17:02:47 mheins Exp $
+# $Id: Link.pm.mod_perl-1.999_21_and_before,v 1.1.2.1 2006-03-28 17:05:07 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.1 $
+$Revision: 1.1.2.1 $
 
 =head1 SYNOPSIS
 
