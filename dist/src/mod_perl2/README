@@ -7,7 +7,7 @@ NAME
        change
 
 VERSION
-       $Revision: 1.2 $
+       $Revision: 1.3 $
 
 SYNOPSIS
 	 <Location /foundation>
@@ -57,6 +57,11 @@ INSTALLATION
 	   mkdir -p /usr/lib/httpd/perl/Interchange
 	   cp Link.pm /usr/lib/httpd/perl/Interchange
 
+       If you have mod_perl2 1.999_21 or earlier, you should instead do:
+
+	   mkdir -p /usr/lib/httpd/perl/Interchange
+	   cp Link.pm.mod_perl-1.999_21_and_before /usr/lib/httpd/perl/Interchange
+
        Then you provide a startup script that tells mod_perl where its
        libraries are:
 
@@ -105,7 +110,7 @@ CONFIGURATION
 	   Note that your file permissions for the socket file need to allow
 	   the Apache User uid to read and write it. This usually means "Sock-
 	   etPerms 0666" or in interchange.cfg.	 You can also do "SocketPerms
-	   0666" if you set the group of the containing directory to the
+	   0660" if you set the group of the containing directory to the
 	   Apache Group value, and change the directory permissions to enable
 	   the setgid bit. (That is accomplished with "chmod g+s <direc-
 	   tory>".)
@@ -271,7 +276,7 @@ BUGS
 
 COPYRIGHT AND LICENSE
 	Copyright (C) 1996-2002 Red Hat, Inc.
-	Copyright (C) 2002-2004 Interchange Development Group
+	Copyright (C) 2002-2005 Interchange Development Group
 
        This program is free software.  You can redistribute it and/or modify
        it under the terms of the GNU General Public License as published by
@@ -285,4 +290,4 @@ COPYRIGHT AND LICENSE
 
 
 
-perl v5.8.4			  2004-06-29		  Interchange::Link(3)
+perl v5.8.8			  2006-03-28		  Interchange::Link(3)
