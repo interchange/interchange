@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.92 2006-02-21 12:18:38 ton Exp $
+# $Id: Util.pm,v 2.93 2006-03-30 15:51:49 racke Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.92 $, 10);
+$VERSION = substr(q$Revision: 2.93 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -512,8 +512,11 @@ sub currency {
 		$dec = $loc->{mon_decimal_point} || $loc->{decimal_point} || '.';
 		return picture_format($amount, $loc->{price_picture}, $sep, $dec)
 			if defined $loc->{price_picture};
-		$fmt = "%." . $loc->{frac_digits} .  "f";
-
+		if (defined $loc->{frac_digits}) {
+			$fmt = "%." . $loc->{frac_digits} .  "f";
+		} else {
+			$fmt = "%.2f";
+		}
 		my $cs;
 		my $display = lc($opt->{display}) || 'symbol';
 		my $sep_by_space = $loc->{p_sep_by_space};
