@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.65 2006-03-09 10:23:46 racke Exp $
+# $Id: Dispatch.pm,v 1.66 2006-04-03 19:19:21 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.65 $, 10);
+$VERSION = substr(q$Revision: 1.66 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1531,6 +1531,7 @@ EOF
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//
 		and $Vend::Extension = $1;
+	$Vend::Session->{extension} = $1 || '';
 
 	my $record;
 	my $adb;
@@ -1577,7 +1578,6 @@ EOF
 
 	}
 
-	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath mv_action=$CGI::values{mv_action}");
 
   DOACTION: {
