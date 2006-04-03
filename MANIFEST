@@ -217,7 +217,6 @@ code/UI_Tag/dump_session.coretag
 code/UI_Tag/export_database.coretag
 code/UI_Tag/file_info.coretag
 code/UI_Tag/file_navigator.coretag
-code/UI_Tag/filters.coretag
 code/UI_Tag/flex_select.coretag
 code/UI_Tag/get_gpg_keys.coretag
 code/UI_Tag/global_value.coretag
@@ -1236,4 +1235,3 @@ WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
 WHATSNEW-5.5
-META.yml                                 Module meta-data (added by MakeMaker)
