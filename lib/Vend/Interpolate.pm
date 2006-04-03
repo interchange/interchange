@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.268 2006-03-27 18:42:50 jon Exp $
+# $Id: Interpolate.pm,v 2.269 2006-04-03 23:30:59 docelic Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.268 $, 10);
+$VERSION = substr(q$Revision: 2.269 $, 10);
 
 @EXPORT = qw (
 
@@ -2607,7 +2607,7 @@ sub escape_mv {
 		@args = split /&/, $scan;
 	}
 	else {
-		$scan =~ s!::!__ESLASH__!g;
+		$scan =~ s!::!__SLASH__!g;
 		@args  = split m:/:, $scan;
 	}
 	@args = grep $_, @args;
