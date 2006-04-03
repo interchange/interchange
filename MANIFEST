@@ -85,6 +85,7 @@ code/Filter/yesno.filter
 code/Filter/zerofix.filter
 code/JavaScriptCheck/required.jsc
 code/OrderCheck/always_fail.oc
+code/OrderCheck/always_pass.oc
 code/OrderCheck/email_only.oc
 code/OrderCheck/exists.oc
 code/OrderCheck/filter.oc
@@ -1235,3 +1236,4 @@ WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
 WHATSNEW-5.5
+META.yml                                 Module meta-data (added by MakeMaker)

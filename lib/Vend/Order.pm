@@ -1,8 +1,8 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.84 2005-12-07 17:10:10 kwalsh Exp $
+# $Id: Order.pm,v 2.85 2006-04-03 21:23:40 racke Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.84 $, 10);
+$VERSION = substr(q$Revision: 2.85 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -227,11 +227,6 @@ sub _and_check {
 		return (1);
 	}
 	return chain_checks(0, @_);
-}
-
-sub _always_pass {
-	my($ref,$var,$val) = @_;
-	return (1, $var, '')
 }
 
 sub _or_check {
