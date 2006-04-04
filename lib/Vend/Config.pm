@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.202 2006-03-24 18:01:22 racke Exp $
+# $Id: Config.pm,v 2.203 2006-04-04 19:07:48 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.202 $, 10);
+$VERSION = substr(q$Revision: 2.203 $, 10);
 
 my %CDname;
 my %CPname;
@@ -654,7 +654,7 @@ sub catalog_directives {
 	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
 	['EncryptKey',		 undef,     	     ''],
 	['AsciiTrack',	 	 undef,     	     ''],
-	['TrackFile',	 	 undef,     	     ''],
+	['TrackFile',	 	 'relative_dir',     ''],
 	['TrackPageParam',	 'hash',     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
@@ -3735,14 +3735,17 @@ sub parse_dir_array {
 sub parse_relative_dir {
 	my($var, $value) = @_;
 
-	config_error(
-	  "No leading / allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if file_name_is_absolute($value) and $Global::NoAbsolute;
-	config_error(
-	  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if $value =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+	if ($Global::NoAbsolute) {
+		# sanity check on filenames
+		if (file_name_is_absolute($value)) {
+			config_error('Absolute path %s not allowed in %s directive',
+						 $value, $var)
+		}
+		if ($value =~ m#^\.\./.*\.\.#) {
+			config_error('Path %s outside of catalog directory not allowed in %s directive',
+						 $value, $var)
+		}
+	}
 
 	$C->{Source}{$var} = $value;
 
