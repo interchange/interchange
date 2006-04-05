@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.203 2006-04-04 19:07:48 racke Exp $
+# $Id: Config.pm,v 2.204 2006-04-05 08:01:58 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.203 $, 10);
+$VERSION = substr(q$Revision: 2.204 $, 10);
 
 my %CDname;
 my %CPname;
@@ -654,7 +654,7 @@ sub catalog_directives {
 	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
 	['EncryptKey',		 undef,     	     ''],
 	['AsciiTrack',	 	 undef,     	     ''],
-	['TrackFile',	 	 'relative_dir',     ''],
+	['TrackFile',	 	 undef,              ''],
 	['TrackPageParam',	 'hash',     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
