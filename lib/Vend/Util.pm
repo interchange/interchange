@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.93 2006-03-30 15:51:49 racke Exp $
+# $Id: Util.pm,v 2.94 2006-04-05 15:31:38 mheins Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.93 $, 10);
+$VERSION = substr(q$Revision: 2.94 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -750,6 +750,11 @@ sub logData {
 		close(MVLOGDATA) or die "close\n";
     };
     if ($@) {
+
+		if($::Limit->{logdata_error_length} > 0) {
+			$msg = substr($msg, 0, $::Limit->{logdata_error_length});
+		}
+
 		logError ("Could not %s log file '%s': %s\nto log this data:\n%s",
 				$@,
 				$file,
