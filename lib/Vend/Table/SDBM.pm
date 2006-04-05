@@ -1,6 +1,6 @@
 # Vend::Table::SDBM - Access an Interchange table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 2.12 2005-11-08 18:14:48 jon Exp $
+# $Id: SDBM.pm,v 2.13 2006-04-05 14:42:20 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -31,7 +31,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -51,7 +51,7 @@ sub create {
 	my $dbm;
 	my $failed = 0;
 
-	my $retry = $Vend::Cfg->{Limit}{dbm_open_retries} || 10;
+	my $retry = $::Limit->{dbm_open_retries} || 10;
 
 	while( $failed < $retry ) {
 		$dbm = tie(%$tie, 'SDBM_File', $filename, $flags, $File_permission_mode)

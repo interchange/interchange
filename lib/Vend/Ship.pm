@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.17 2006-02-03 16:42:48 ton Exp $
+# $Id: Ship.pm,v 2.18 2006-04-05 14:42:19 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -68,7 +68,7 @@ my %Ship_remap = ( qw/
 sub do_error {
 	my $msg = errmsg(@_);
 	Vend::Tags->error({ name => 'shipping', set => $msg });
-	unless ($Vend::Cfg->{Limit}{no_ship_message}) {
+	unless ($::Limit->{no_ship_message}) {
 		$Vend::Session->{ship_message} ||= '';
 		$Vend::Session->{ship_message} .= $msg . ($msg =~ / $/ ? '' : ' ');
 	}

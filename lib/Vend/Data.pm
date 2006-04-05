@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.55 2006-01-30 17:33:55 jon Exp $
+# $Id: Data.pm,v 2.56 2006-04-05 14:42:19 mheins Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1404,7 +1404,7 @@ sub chain_cost {
 	else {
 		@p = Text::ParseWords::shellwords($raw);
 	}
-	if(scalar @p > ($Vend::Cfg->{Limit}{chained_cost_levels} || 64)) {
+	if(scalar @p > ($::Limit->{chained_cost_levels} || 64)) {
 		logError('Too many chained cost levels for item ' .  uneval($item) );
 		return undef;
 	}
@@ -1416,7 +1416,7 @@ sub chain_cost {
 CHAIN:
 	foreach $price (@p) {
 		next if ! length($price);
-		if($its++ > ($Vend::Cfg->{Limit}{chained_cost_levels} || 64)) {
+		if($its++ > ($::Limit->{chained_cost_levels} || 64)) {
 			logError('Too many chained cost levels for item ' .  uneval($item) );
 			last CHAIN;
 		}

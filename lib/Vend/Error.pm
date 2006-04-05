@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.10 2005-11-08 18:14:45 jon Exp $
+# $Id: Error.pm,v 2.11 2006-04-05 14:42:19 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -156,6 +156,35 @@ sub full_dump {
 sub do_lockout {
 	my ($cmd);
 	my $msg = '';
+
+	# If the lockout SpecialSub exists, it is run. If it returns 
+	# true, we return now. If it returns false, we run the lockout
+	# as normal.
+	if (my $subname = $Vend::Cfg->{SpecialSub}{lockout}) {
+		::logDebug(errmsg("running subroutine '%s' for lockout", $subname));
+		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		my $status;
+		eval {
+			$status = $sub->();
+		};
+
+		if($@) {
+			::logError("Error running lockout subroutine %s: %s", $subname, $@);
+		}
+
+		return if $status;
+	}
+
+	# Now we log the error after custom lockout routine gets chance
+	# to bypass 
+	my $pause = $::Limit->{lockout_reset_seconds} || 30;
+	my $msg = errmsg(
+		"WARNING: POSSIBLE BAD ROBOT. %s accesses with no %d second pause.",
+		$Vend::Session->{accesses},
+		$pause,
+	);
+	::logError($msg);
+
 	if($cmd = $Global::LockoutCommand) {
 		my $host = $CGI::remote_addr;
 		$cmd =~ s/%s/$host/ or $cmd .= " $host";

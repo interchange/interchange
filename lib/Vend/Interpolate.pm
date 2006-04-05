@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.269 2006-04-03 23:30:59 docelic Exp $
+# $Id: Interpolate.pm,v 2.270 2006-04-05 14:42:19 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.269 $, 10);
+$VERSION = substr(q$Revision: 2.270 $, 10);
 
 @EXPORT = qw (
 
@@ -1446,7 +1446,7 @@ sub tag_profile {
 
 sub produce_range {
 	my ($ary, $max) = @_;
-	$max = $Vend::Cfg->{Limit}{option_list} if ! $max;
+	$max = $::Limit->{option_list} if ! $max;
 	my @do;
 	for (my $i = 0; $i < scalar(@$ary); $i++) {
 		$ary->[$i] =~ /^\s* ([a-zA-Z0-9]+) \s* \.\.+ \s* ([a-zA-Z0-9]+) \s* $/x
@@ -4020,12 +4020,12 @@ sub iterate_array_list {
 	undef $Row;
 
 	my $lim;
-	if($lim = $Vend::Cfg->{Limit}{list_text_size} and length($text) > $lim) {
+	if($lim = $::Limit->{list_text_size} and length($text) > $lim) {
 		my $len = length($text);
 		my $caller = join "|", caller();
 		my $msg = "Large list text encountered,  length=$len, caller=$caller";
 		logError($msg);
-		return undef if $Vend::Cfg->{Limit}{list_text_overflow} eq 'abort';
+		return undef if $::Limit->{list_text_overflow} eq 'abort';
 	}
 
 	# Optimize for no-match, on-match, etc

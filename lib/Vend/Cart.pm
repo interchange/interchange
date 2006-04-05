@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.13 2005-11-08 18:14:44 jon Exp $
+# $Id: Cart.pm,v 2.14 2006-04-05 14:42:19 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use strict;
 
@@ -265,11 +265,11 @@ sub toss_cart {
 				}
 			}
 
-			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line}
-				and $item->{quantity} > $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			next unless $::Limit->{cart_quantity_per_line}
+				and $item->{quantity} > $::Limit->{cart_quantity_per_line};
 			
 			$old_item = { %$item } if $quantity_raise_event;				
-			$item->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			$item->{quantity} = $::Limit->{cart_quantity_per_line};
 			trigger_update( $s, $item, $old_item, $event_cartname )
 				if $quantity_raise_event;
 		}
