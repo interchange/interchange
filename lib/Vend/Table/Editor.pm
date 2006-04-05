@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.82 2006-01-30 17:50:03 jon Exp $
+# $Id: Editor.pm,v 1.83 2006-04-05 17:40:38 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.82 $, 10);
+$VERSION = substr(q$Revision: 1.83 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -4145,6 +4145,7 @@ EOF
 
 
 	if($exists and ! $opt->{nodelete} and $Tag->if_mm('tables', "$table=d")) {
+		my $key_display = join '/', split /\0/, $key;
 		my $extra = $Tag->return_to( { type => 'click', tablehack => 1 });
 		my $page = $CGI->{ui_return_to};
 		$page =~ s/\0.*//s;
@@ -4160,20 +4161,20 @@ EOF
 					!,
 					});
 		my $delstr = errmsg('Delete');
-		my $delmsg = errmsg('Are you sure you want to delete %s?',$key);
+		my $delmsg = errmsg('Are you sure you want to delete %s?', $key_display);
 		if($opt->{output_map} or $opt->{button_delete}) {
 			chunk 'DELETE_BUTTON', 'NOSAVE OUTPUT_MAP', <<EOF;
 &nbsp;
 	<input
 		type=button
 		onClick="if(confirm('$delmsg')) { location='$url' }"
-		title="Delete $key"
+		title="Delete $key_display"
 		value="$delstr"$opt->{delete_button_extra}>
 EOF
 		}
 		else {
 			chunk 'DELETE_BUTTON', 'NOSAVE OUTPUT_MAP', <<EOF; # if ! $opt->{nosave};
-<br><br><a onClick="return confirm('$delmsg')" href="$url"><img src="delete.gif" alt="Delete $key" border="0"></a> $delstr
+<br><br><a onClick="return confirm('$delmsg')" href="$url"><img src="delete.gif" alt="Delete $key_display" border="0"></a> $delstr
 EOF
 		}
 
