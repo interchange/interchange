@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.56 2006-04-05 14:42:19 mheins Exp $
+# $Id: Data.pm,v 2.57 2006-04-06 20:04:53 jon Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -110,7 +110,7 @@ sub instant_database {
 						$_[0],
 					);
 		logError($msg);
-		logGloba($msg);
+		logGlobal($msg);
 		return undef;
 	}
 	elsif (! -f $_[0]) {
