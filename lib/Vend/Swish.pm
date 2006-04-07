@@ -1,10 +1,10 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.6 2005-11-08 18:14:45 jon Exp $
+# $Id: Swish.pm,v 1.7 2006-04-07 13:53:23 racke Exp $
 #
 # Adapted from Vend::Glimpse
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 use strict;
 
 sub array {
@@ -114,8 +114,11 @@ sub search {
 	my(@specs);
 	my(@pats);
 
+	# map Swish-e auto properties to field names
 	my %fmap = qw/
 					code	swishreccount
+					description swishdescription
+					dbfile    swishdbfile
 					score	swishrank
 					url		swishdocpath
 					title	swishtitle
