@@ -86,6 +86,8 @@ no configuration file line beginning with # will be parsed, including
 #ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
 must now be used.
 
+Removed RequiredFields, HTMLmirror and UseCode directives.
+
 Removed unused SOAP_Host directive.
 
 All previously deprecated configuration directives have been removed.
