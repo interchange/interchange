@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.7 2006-04-07 13:53:23 racke Exp $
+# $Id: Swish.pm,v 1.8 2006-04-10 20:27:37 racke Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 use strict;
 
 sub array {
@@ -66,7 +66,7 @@ sub init {
 #::logDebug("initting Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish}));
 	$Vend::Cfg->{Swish} ||= {};
 	@{$s}{keys %Default} = (values %Default);
-	$s->{mv_base_directory}     = $Vend::Cfg->{Swish}{configfile} || undef,
+	$s->{mv_base_directory}     = undef,
 	$s->{mv_begin_string}       = [];
 	$s->{mv_all_chars}	        = [1];
 	$s->{mv_case}               = [];
@@ -169,8 +169,8 @@ sub search {
 	push @cmd, "-c $s->{mv_base_directory}"
 			if $s->{mv_base_directory};
 
-	if(@{$s->{mv_search_file} || []} ) {
-		push @cmd, "-f " . join(" ", @{$s->{mv_search_file}} );
+	if (@searchfiles) {
+		push @cmd, "-f " . join(" ", @searchfiles);
 	}
 	
 	push @cmd, "-m $s->{mv_max_matches}" if $s->{mv_max_matches};
