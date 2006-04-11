@@ -1,12 +1,11 @@
 # Copyright 2006 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: always_pass.oc,v 1.1 2006-04-03 21:23:40 racke Exp $
+# $Id: always_pass.oc,v 1.2 2006-04-11 07:48:34 racke Exp $
 
 CodeDef always_pass OrderCheck 1
 CodeDef always_pass Description Always succeeds
 CodeDef always_pass Routine <<EOR
 sub {
-	my ($ref, $name, $value, $msg) = @_;
-	return (0, $name, $msg || errmsg('succeeded'));
+	return (1, $_[1], '');
 }
 EOR
