@@ -1,38 +1,74 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2006 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: date_change.filter,v 1.4 2005-11-08 18:14:32 jon Exp $
+# $Id: date_change.filter,v 1.5 2006-04-11 14:43:57 racke Exp $
 
 CodeDef date_change Filter
 CodeDef date_change Description Date widget
 CodeDef date_change Routine <<EOR
 sub {
-	my $val = shift;
-	HTML::Entities::decode_entities($val) if $val =~ /\&/;
-	$val =~ s/\0+//g;
-	return $val 
-		unless $val =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):;
-	my ($yr, $mon, $day);
+    my $val = shift;
+    my $opt = { map { $_ => 1 } @_ };
 
-	if (length($1) == 4) {
-	# MySQL date style 2003-03-20
-		($yr, $mon, $day) = ($1, $2, $3);
-	} else {
-		($yr, $mon, $day) = ($3, $1, $2);
-	}
+    HTML::Entities::decode_entities($val) if $val =~ /&/;
+    $val =~ s/\0+//g;
+    my $re = $opt->{undef}
+           ? qr:(\d*)[-/]+(\d*)[-/]+(\d*):
+           : qr:(\d+)[-/]+(\d+)[-/]+(\d+):
+           ;
+    return $val unless $val =~ /$re/;
 
-	my $time;
-	$val =~ /:(\d+)$/
-		and $time = $1;
-	if(length($yr) < 4) {
-		$yr =~ s/^0//;
-		$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
-	}
-	$mon =~ s/^0//;
-	$day =~ s/^0//;
-	$val = sprintf("%04d%02d%02d", $yr, $mon, $day);
-	return $val unless $time;
-	$val .= sprintf('%04d', $time);
-	return $val;
+    my ($year, $month, $day);
+
+    if (length($1) == 4) {
+        # ISO date style 2003-03-20
+        ($year, $month, $day) = ($1, $2, $3);
+    }
+    else {
+        # U.S. date style 3/20/2003 or 3/20/03
+        ($year, $month, $day) = ($3, $1, $2);
+    }
+
+    if ($opt->{undef}) {
+        # return nothing (undef, which DBI treats as SQL NULL) for an
+        # empty date (all zeroes or nothing at all)
+        return unless grep /[1-9]/, ($year, $month, $day);
+    }
+
+    # Y2K fun: Try to guess intent of year "03" as "2003"
+    if (length($year) < 4) {
+        $year = $year < 50 ? $year + 2000 : $year + 1900;
+    }
+
+    my ($date_format, $time_format);
+    if ($opt->{iso}) {
+        $date_format = '%04d-%02d-%02d';
+        $time_format = 'T%02d:%02d:%02d';
+    }
+    else {
+        $date_format = '%04d%02d%02d';
+        $time_format = '%02d%02d';
+    }
+
+    my $time;
+    if ($val =~ /:(\d{1,4})\s*$/) {
+        # accept traditional Interchange date_time widget times
+        # of format '0130', e.g. '20080201:0130'
+        $time = sprintf('%04d', $1);
+        $time = sprintf($time_format, substr($time, 0, 2), substr($time, 2, 2));
+    }
+    elsif (
+        # accept times of format '1:30', '1:30:05',
+        # to support PostgreSQL's timestamp with time zone format
+        # e.g. '2008-02-01 01:30:05-07'
+        my ($hours, $minutes, $seconds)
+            = ($val =~ /\s(\d\d?):(\d\d?)(?::(\d\d+))/)
+    ) {
+        $time = sprintf($time_format, $hours, $minutes, $seconds);
+    }
+
+    my $out = sprintf($date_format, $year, $month, $day);
+    $out .= $time if $time and not $opt->{no_time};
+    return $out;
 }
 EOR

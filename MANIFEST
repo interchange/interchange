@@ -14,7 +14,6 @@ code/Filter/crypt.filter
 code/Filter/currency.filter
 code/Filter/date2time.filter
 code/Filter/date_change.filter
-code/Filter/date_change_null.filter
 code/Filter/dbi_quote.filter
 code/Filter/decode_entities.filter
 code/Filter/digits.filter
