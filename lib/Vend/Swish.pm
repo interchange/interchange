@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.8 2006-04-10 20:27:37 racke Exp $
+# $Id: Swish.pm,v 1.9 2006-04-18 09:17:38 racke Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 use strict;
 
 sub array {
@@ -261,10 +261,16 @@ EOF
 			push @out, $return_sub->($_);
 		}
 	}
+	
+	if(scalar(@out) == 1 and $out[0][0] =~ s/^err:\s*(.*?)\s*$//)  {
+		# presumably search error signaled by Swish
+		@out = ();
 
-	if(scalar(@out) == 1 and $out[0][0] =~ s/^err\w*\W+//)  {
-		$s->{matches} = -1;
-		return $s->search_error($out[0][0]);
+		# don't consider missing matches as search error
+	    unless ($1 eq 'no results') {
+			$s->{matches} = -1;
+			return $s->search_error($1);
+		}
 	}
 
 	$s->{matches} = scalar(@out);
