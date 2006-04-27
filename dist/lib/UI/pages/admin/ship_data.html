@@ -1,7 +1,7 @@
 [set help_name]shipping.data[/set]
 [set ui_class]Admin[/set]
 [seti page_title]Shipping options: edit data for method [cgi ui_shipmode][/seti]
-[seti page_banner]Shipping options: edit data for method <I>[cgi ui_shipmode]</I>[/seti]
+[seti page_banner]Shipping options: edit data for method <i>[cgi ui_shipmode]</i>[/seti]
 [set page_perm]shipping[/set]
 [set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
@@ -68,17 +68,6 @@
 			{
 				my $m = $1;
 				$cost = "f [ups-query mode=$m weight=";
-				$cost .= '"@@TOTAL@'  . '@"';
-				$cost .= qq{ origin="$opt->{origin}"} if $opt->{origin};
-				$cost .= "]";
-			}
-			elsif(	!	$done_one_fed++
-				and $opt->{ui_ship_type}
-				and $opt->{ui_ship_type} =~ /^FEDE:(.*)/
-				)
-			{
-				my $m = $1;
-				$cost = "f [fedex-query cache=1 mode=$m weight=";
 				$cost .= '"@@TOTAL@'  . '@"';
 				$cost .= qq{ origin="$opt->{origin}"} if $opt->{origin};
 				$cost .= "]";
@@ -194,7 +183,7 @@ EOF
 		@types = (
 			''	=> 'Number',
 			f	=> 'Formula',
-			'!'	=> 'UPS/FedEx WWW Lookup',
+			'!'	=> 'UPS WWW Lookup',
 			x	=> 'Multiply by',
 			u	=> 'Internal UPS',
 			e	=> 'Message',
@@ -217,27 +206,6 @@ EOF
 						150,
 						9999999,
 						"e Too heavy for UPS",
-						'',
-						$opt,
-					];
-			}
-			elsif ($opt->{ui_ship_type} =~ /^FEDE:(.*)/) {
-				push @modes, 
-					[	$inmode,
-						$master->[1],
-						$master->[2],
-						0,
-						150,
-						"f [fedex-query mode=$1 cache=1 weight=" . '@@TOTAL' . '@@]', 
-						'',
-						$opt,
-					],
-					[	$inmode,
-						$master->[1],
-						$master->[2],
-						150,
-						9999999,
-						"e Too heavy for FedEx",
 						'',
 						$opt,
 					];
@@ -304,7 +272,7 @@ EOF
 			$ref->[5] =~ s/^\s*([A-Za-z])\s*//;
 			$selector = $1;
 			if($selector eq 'f') {
-				$selector = '!' if $ref->[5] =~ s/\[((?:ups|fedex).query)/&#91;$1/;
+				$selector = '!' if $ref->[5] =~ s/\[(ups.query)/&#91;$1/;
 			}
 			$ref->[5] =~ s/"/&quot;/g;
 			$ref->[5] =~ s/\[/&#91;/g;
@@ -370,3 +338,4 @@ ui_bounce_to=__UI_BASE__/ship
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
+[comment] $Id: ship_data.html,v 2.5 2006-04-27 21:00:09 jon Exp $ [/comment]
