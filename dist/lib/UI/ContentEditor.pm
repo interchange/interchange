@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.17 2005-11-08 18:14:44 jon Exp $
+# $Id: ContentEditor.pm,v 2.18 2006-05-04 20:07:32 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -646,6 +646,10 @@ sub parse_page {
         $scratches->{$2} = $1;
         $vals->{$2}      = $3;
     }
+
+	if($scratches->{not_editable} and $vals->{not_editable}) {
+		return death('controls', "Not editable page");
+	}
 
 	my $idx;
 	for($idx = 0; $idx <= $#slots; $idx++) {
@@ -2872,7 +2876,14 @@ sub page_editor {
 	}
 
 	save_store('page', $name, $pref);
-	parse_page($pref, $opt);
+
+	## If returns false then must be error or not editable
+	parse_page($pref, $opt)
+		or do {
+			Vend::Tags->error({ name => 'parse_page', set => "Error parsing page." });
+			return;
+		};
+
 	publish_page($pref, $opt) if $opt->{new};
 
 #::logDebug("found a template name=$pref->{ui_name} store=$name: " . uneval($pref));
