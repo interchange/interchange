@@ -47,7 +47,9 @@ Quan  Item No.    Description                            Price        Extension
 [/row][/if-item-data][/if-item-data]
 [if-item-param pay_cert_code]
 [row 120]
-	[column width=82]URL:[area href="pay_cert/redeem"
+	[column width=82]URL:[area
+						  no-session=1
+						  href="pay_cert/redeem"
 						  form="
 						  	pay_cert_code=[item-param pay_cert_code]
 						  	pay_cert_check=[item-param pay_cert_check]
@@ -97,7 +99,9 @@ products, please reply to this message and let us help.
 Always reference your order number when calling for a status.[if !session logged_in]
 Or you can check status via this URL:
 
-   [area form='
+   [area
+   		no-session=1
+   		form='
             [scratch mv_autocreate]
             mv_click=Login
             mv_todo=return
