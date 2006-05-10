@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.11 2005-04-30 15:09:58 mheins Exp $
+# $Id: Parser.pm,v 2.11.2.1 2006-05-10 22:49:51 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -69,7 +69,7 @@ no warnings qw(uninitialized numeric);
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.11.2.1 $, 10);
 
 
 sub new
@@ -246,21 +246,15 @@ sub parse
 				} elsif ($$buf =~ s|^([^\]\n]+\])||) {
 					$eaten .= $1;
 					$self->start($tag, {}, [], $eaten);
-				} elsif (length $$buf) {
+				} else {
 #::logDebug("eaten $eaten");
 					# Not a conforming start tag, regard it as normal text
 					$self->text($eaten);
-				} else {
-					$$buf = $eaten;  # need more data to know
-					return $self;
 				}
 
-			} elsif (length $$buf) {
+			} else {
 #::logDebug("eaten $eaten");
 				$self->text($eaten);
-			} else {
-				$$buf = $eaten;  # need more data to parse
-				return $self;
 			}
 		} elsif (length $$buf) {
 			::logDebug("remaining: $$buf");
