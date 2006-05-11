@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.21 2005-11-08 18:14:45 jon Exp $
+# $Id: Page.pm,v 2.21.2.1 2006-05-11 12:31:52 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.21.2.1 $, 10);
 
 my $wantref = 1;
 
@@ -274,7 +274,7 @@ sub templatize {
 #::logDebug("Templatizing, template length=" . length($template));
 	my $body = $template;
 
-	$body =~ s!\{\{\@([A-Z][A-Z_]*[A-Z])\}\}(.*?)\{\{/\@\1\}\}!
+	$body =~ s!\{\{\@([A-Z][A-Z_0-9]*[A-Z0-9])\}\}(.*?)\{\{/\@\1\}\}!
 					my $tag = lc $1;
 					my $ary;
 					return '' unless $ary = $Vend::OutPtr{$tag};
@@ -290,9 +290,9 @@ sub templatize {
 					}
 					$out;
 				!sge;
-	1 while $body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\?\}\}(.*?)\{\{/\1\?\}\}! output_test(lc $1) ? $2 : ''!egs;
-	1 while $body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\:\}\}(.*?)\{\{/\1\:\}\}! output_test(lc $1) ? '' : $2!egs;
-	$body =~ s!\{\{([A-Z][A-Z_]*[A-Z])\}\}!output_cat($1)!eg;
+	1 while $body =~ s!\{\{([A-Z][A-Z_0-9]*[A-Z0-9])\?\}\}(.*?)\{\{/\1\?\}\}! output_test(lc $1) ? $2 : ''!egs;
+	1 while $body =~ s!\{\{([A-Z][A-Z_0-9]*[A-Z0-9])\:\}\}(.*?)\{\{/\1\:\}\}! output_test(lc $1) ? '' : $2!egs;
+	$body =~ s!\{\{([A-Z][A-Z_0-9]*[A-Z0-9])\}\}!output_cat($1)!eg;
 	$body =~ s!\{\{:DEFAULT\}\}!output_cat('')!e;
 	$body =~ s!\{\{:REST\}\}!output_rest('')!e;
 	@Vend::Output = (\$body);
