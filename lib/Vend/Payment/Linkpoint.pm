@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.5 2005-11-08 18:14:46 jon Exp $
+# $Id: Linkpoint.pm,v 1.6 2006-05-15 16:46:20 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -251,7 +251,10 @@ sub linkpoint {
 	$actual->{mv_credit_card_exp_year} =~ s/\D//g;
 	$actual->{mv_credit_card_exp_year} =~ s/\d\d(\d\d)/$1/;
 	$actual->{mv_credit_card_number} =~ s/\D//g;
-	$actual->{b_zip} =~ s/\D//g;
+	if($actual->{b_country} eq 'US') {
+		$actual->{b_zip} =~ s/\D//g;
+		$actual->{b_zip} = substr($actual->{b_zip}, 0, 5);
+	}
 
 	my $exp = sprintf '%02d%02d', $actual->{mv_credit_card_exp_month},
 		$actual->{mv_credit_card_exp_year};
@@ -264,6 +267,7 @@ sub linkpoint {
 		mauthcapture 	=>	'SALE',
 		mauthonly		=>	'PREAUTH',
 		sale	 		=>	'SALE',
+		settle_prior	=>	'POSTAUTH',
 	);
 	
 	if (defined $type_map{$transtype}) {
@@ -293,6 +297,21 @@ sub linkpoint {
 	$scompany =~ s/\&/ /g;
 	$bcompany =~ s/\&/ /g;
 	
+	my %delmap = (
+		POSTAUTH => [ 
+					qw(
+						shipping
+						chargetotal
+						subtotal
+						tax
+						vattax
+						cardnumber
+						cardexpmonth
+						cardexpyear
+					)
+			],
+	);
+
 	my %varmap = ( qw /
 				   name b_name
 				   address1 b_address1
@@ -317,6 +336,7 @@ sub linkpoint {
 		 port => '1129',
 		 configfile => $user,
 		 keyfile => $keyfile,
+		 ordertype => $transtype,
 		 result => 'LIVE',
 		 terminaltype => 'UNSPECIFIED',
 		 shipping => $shipping,
@@ -331,11 +351,18 @@ sub linkpoint {
 		 debbugging => $opt->{debuglevel},
 		 company => $bcompany,
 		 scompany => $scompany, # API is broken for Shipping Company per Linkpoint support
+		 oid => $order_id,
 		);
 
     for (keys %varmap) {
         $query{$_} = $actual->{$varmap{$_}};
     }
+
+	if(my $map = $delmap{$transtype}) {
+		for(@$map) {
+			delete $query{$_};
+		}
+	}
     
     $query{saddress2} = $actual->{address1} . ' ' . $actual->{address2}; # API is broken for Shipping Address Line 1, put line 1 and line 2 in API line 2 per Linkpoint support
 	
@@ -368,10 +395,30 @@ sub linkpoint {
 			if defined $result{$result_map{$_}};
 	}
 
+	my $approve;
 	if ($result{'r_approved'} eq "APPROVED") {
+		if (my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')) {
+			my $check_sub = $Vend::Cfg->{Sub}{$check_sub_name}
+							|| $Global::GlobalSub->{$check_sub_name};
+
+			if (ref $check_sub eq 'CODE') {
+				$approve = $check_sub->(\%result);
+			}
+			else {
+				logError(__PACKAGE__ . ": non-existent check_sub routine %s.", $check_sub_name);
+			}
+		}
+		else {
+			$approve = 1;
+		}
+	}
+
+
+	if($approve) {
 		$result{'MStatus'} = 'success';
 		$result{'MErrMsg'} = $result{'r_code'};
-	} else {
+	}
+	else {
 		my $msg = errmsg("Charge error: %s Please call in your order or try again.",
 			$result{'r_error'},
 		);
@@ -388,3 +435,4 @@ sub linkpoint {
 package Vend::Payment::Linkpoint;
 
 1;
+
