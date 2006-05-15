@@ -98,12 +98,6 @@ echo GPGHOME=$RET >> $INITCFG
 # Additionally we place a variable to help Interchange
 # running on installations with threaded Perls.
 
-db_get interchange/debug
-if [ "$RET" = true ]; then
-	DEBUG=1
-else
-	DEBUG=0
-fi
 db_get interchange/full_url
 if [ "$RET" = true ]; then
 	FULL_URL=1
