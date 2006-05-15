@@ -1,3 +1,12 @@
+interchange (5.4.0-1.1) unstable; urgency=low
+
+  * fix reference to removed interchange/debug Debconf template
+  * fix outdated reference in POTFILES.in (Closes: #349816, thanks to
+    Thomas Huriaux <thomas.huriaux@gmail.com> for the patch)
+  * run debconf-updatepo from clean target
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 15 May 2006 18:39:11 +0200
+
 interchange (5.4.0-1) unstable; urgency=low
 
   * new upstream release fixing htmlarea widget bug (Closes: #340568)
