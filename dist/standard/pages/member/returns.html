@@ -36,7 +36,7 @@ ui_template_name: leftonly
 	my $uid = $Session->{username};
 
 	if (! $uid) {
-		$Document->write (qq{<H3><font __FFACE__>You are not logged in.</font></H3>});
+		$Document->write (qq{<h3><font __FFACE__>You are not logged in.</font></h3>});
 		return;
 	}
 
@@ -47,51 +47,54 @@ ui_template_name: leftonly
 		return;
 	}
 
-	HTML <<'EOF';
+	my $form_session_id = $Tag->form_session_id;
+    my $process_url = $Tag->process;
+
+	HTML <<EOF;
 [L]Please select an order below to continue with the return process.[/L]
 </p>
 				  
-<FORM ACTION="[process]" METHOD=POST>
-[form-session-id]
-<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="member/returns_processed">
+<form action="$process_url" method="POST">
+$form_session_id
+<input type="hidden" name="mv_todo" value="return">
+<input type="hidden" name="mv_nextpage" value="member/returns_processed">
 
-<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=450>
+<table cellspacing="0" cellpadding="0" border="1" width="450">
 EOF
 
 	my $header_template = <<'EOF';
 
-<TR>
-	<TD VALIGN=bottom>
+<tr>
+	<td valign="bottom">
 		[L]ORDER ID[/L]
-	</TD>
-	<TD VALIGN=bottom>
+	</td>
+	<td valign="bottom">
 		[L]DATE[/L]
-	</TD>
-	<TD VALIGN=bottom>
+	</td>
+	<td valign="bottom">
 		[L]TOTAL[/L]
-	</TD>
-	<TD VALIGN=bottom>
+	</td>
+	<td valign="bottom">
 		[L]STATUS[/L]
-	</TD>
-</TR>
+	</td>
+</tr>
 EOF
 
 		my $line_template = <<'EOF';
-<TR">
-	<TD VALIGN=TOP align="center">
-		<A HREF="$detail_url">$order_number</A>
-	</TD>
-	<TD VALIGN=TOP>
+<tr>
+	<td valign="top" align="center">
+		<a href="$detail_url">$order_number</a>
+	</td>
+	<td valign="top">
 		$order_date
-	</TD>
-	<TD ALIGN=right VALIGN=TOP>
+	</td>
+	<td align="right" valign="top">
 		$total_cost
-	</TD>
-	<TD VALIGN=TOP align="right">
+	</td>
+	<td valign="top" align="right">
 		$status
-	</TD>
-</TR>
+	</td>
+</tr>
 EOF
 
 	my %hash;
@@ -117,7 +120,7 @@ EOF
 			$hash{status} = '';
 			for(@ids) {
 				$hash{status} .= <<EOF;
-<A HREF="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1=$_&TypeOfInquiryNumber=T">UPS $_</A>
+<a href="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1=$_&TypeOfInquiryNumber=T">UPS $_</a>
 EOF
 			}
 		}
@@ -130,7 +133,7 @@ EOF
 			$hash{$_} = $Tag->currency ({ body=> $hash{$_} });
 		}
 		if($hash{handling}) {
-			$hash{handling} = "<BR>(handling "								.
+			$hash{handling} = "<br>(handling "								.
 							  $Tag->currency ({ body=> $hash{handling} })	.
 							  ")";
 		}
@@ -141,11 +144,11 @@ EOF
 		HTML $line;
 	}
 
-	HTML "</TABLE></FORM>";
+	HTML "</table></form>";
 %>
 [/mvasp]
 
-<BR CLEAR=ALL>
+<br clear="all">
 
 [seti export][tag export transactions transactions.txt][/tag][/seti]
 [seti export][tag export orderline orderline.txt][/tag][/seti]
