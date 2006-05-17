@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.57 2006-04-06 20:04:53 jon Exp $
+# $Id: Data.pm,v 2.58 2006-05-17 16:36:47 mheins Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -2050,7 +2050,7 @@ sub update_data {
 										}
 										)
 					or do {
-						 logError("%s is not a file.", $dref->[0]);
+						 logError("%s is not a file (does form allow file upload?).", $dref->[0]);
 						 next;
 					};
 				Vend::Interpolate::tag_value_extended(
