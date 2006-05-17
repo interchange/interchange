@@ -364,6 +364,7 @@ debian/po/de.po
 debian/po/fr.po
 debian/po/POTFILES.in
 debian/po/ru.po
+debian/po/sv.po
 debian/po/templates.pot
 debian/po/vi.po
 debian/robots.cfg

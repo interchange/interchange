@@ -1,34 +1,34 @@
+# translation of interchange_5.4.0-1_ru.po to Russian
 #
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
 #    this format, e.g. by running:
 #         info -n '(gettext)PO Files'
 #         info -n '(gettext)Header Entry'
-#
 #    Some information specific to po-debconf are available at
 #            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans#
 #    Developers do not need to manually edit POT or PO files.
+# Yuriy Talakan' <yt@amur.elektra.ru>, 2006.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: interchange_5.4.0-1_ru\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-02-28 20:38-0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-05-14 19:36+1000\n"
+"Last-Translator: Yuriy Talakan' <yt@amur.elektra.ru>\n"
+"Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=KOI8-R\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:4
 msgid "Create the Interchange demo catalog?"
-msgstr ""
+msgstr "Создать демонстрационный каталог Interchange?"
 
 #. Type: boolean
 #. Description
@@ -36,13 +36,13 @@ msgstr ""
 msgid ""
 "Whether to install the demo catalog from the foundation template or let you "
 "manually install it with makecat."
-msgstr ""
+msgstr "Устанавливать ли демонстрационный каталог из базового шаблона или позволить вам вручную установить его с помощью makecat."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:11
 msgid "Remove demo catalog on package purge?"
-msgstr ""
+msgstr "Удалить демонстрационный каталог при зачистке пакета?"
 
 #. Type: boolean
 #. Description
@@ -50,19 +50,19 @@ msgstr ""
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
-msgstr ""
+msgstr "Надо ли удалять все файлы, принадлежащие демонстрационному каталогу Interchange, когда вы зачищаете этот пакет , например, с помощью dpkg --purge или apt-get remove --purge ?"
 
 #. Type: select
 #. Choices
 #: ../interchange-cat-foundation.templates:17
 msgid "always, ask, never"
-msgstr ""
+msgstr "всегда, спросить, никогда"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:19
 msgid "Policy for replacing existing demo catalogs:"
-msgstr ""
+msgstr "Политика замены существующих демонстрационных каталогов:"
 
 #. Type: select
 #. Description
@@ -70,25 +70,25 @@ msgstr ""
 msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
-msgstr ""
+msgstr "Молча заменять существующую установку демонстрационного каталога, запрашивать подтверждение или никогда не трогать существующую установку."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:26
 msgid "Replace the Interchange demo catalog?"
-msgstr ""
+msgstr "Заменить демонстрационный каталог Interchange?"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:26
 msgid "There seems to already exist an Interchange demo catalog."
-msgstr ""
+msgstr "Похоже, что демонстрационный каталог Interchange уже существует."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-foundation.templates:32
 msgid "Username for this catalog's administration:"
-msgstr ""
+msgstr "Имя пользователя для администрирования этого каталога:"
 
 #. Type: string
 #. Description
@@ -97,13 +97,13 @@ msgid ""
 "Please provide an username for administering the demo catalog. The username "
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
-msgstr ""
+msgstr "Укажите имя пользователя для администрирования демонстрационного каталога. оно должно быть минимум 2 символа длиной и содержать только буквы, цифры, подчеркивание, @ или точку."
 
 #. Type: password
 #. Description
 #: ../interchange-cat-foundation.templates:40
 msgid "Password for this catalog's administration:"
-msgstr ""
+msgstr "Пароль для администрирования этого каталога:"
 
 #. Type: password
 #. Description
@@ -113,19 +113,19 @@ msgid ""
 "Choose one which can not be easily guessed. Default is pass. The password  "
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
-msgstr ""
+msgstr "Укажите пароль для администрирования базового демонстрационного каталога. Выберите такой, который нельзя легко угадать. Значение по умолчанию pass. Пароль должен быть минимум 4 символа длиной и содержать только буквы, цифры, подчеркивание, @ или точку."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:49
 msgid "Enable demo mode?"
-msgstr ""
+msgstr "Разрешить демонстрационный режим?"
 
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-foundation.templates:54
 msgid "Additional locales for the storefront:"
-msgstr ""
+msgstr "Дополнительные локали для витрины:"
 
 #. Type: multiselect
 #. Description
@@ -135,31 +135,31 @@ msgid ""
 "of different languages. Each selected locale will increase the memory "
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
-msgstr ""
+msgstr "Демонстрационный каталог Interchange может отображать витрину на различных языках. Каждая выбранная локаль увеличит память, занимаемую процессами серверна Interchange, так что рекомендуется выбрать только те локали, которые действительно необходимы."
 
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:64
 msgid "Default locale for the storefront:"
-msgstr ""
+msgstr "Локаль по умолчанию для витрины:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:64
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr ""
+msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:3
 msgid "unix mode, internet mode, both"
-msgstr ""
+msgstr "режим unix, режим internet, оба"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:5
 msgid "Start mode:"
-msgstr ""
+msgstr "Режим запуска:"
 
 #. Type: select
 #. Description
@@ -167,13 +167,13 @@ msgstr ""
 msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
-msgstr ""
+msgstr "Режим Unix это самый безопасный способ запуска Interchange, поскольку системы из интернета не смогут взаимодействовать с сервером Interchange."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:12
 msgid "Username to run the server as:"
-msgstr ""
+msgstr "Имя пользователя, под которым запускается сервер:"
 
 #. Type: string
 #. Description
@@ -183,13 +183,13 @@ msgid ""
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr ""
+msgstr "Здесь определяется пользователь-владелец сервера interchange и файлов. Запомните, что использование другого пользователя это серьезная угроза безопасности. Не выбирайте root, это не рекомендуется и будет отклонено в любом случае."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:21
 msgid "Create the user ${USER}?"
-msgstr ""
+msgstr "Создать пользователя ${USER}?"
 
 #. Type: note
 #. Description
@@ -197,13 +197,13 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr ""
+msgstr "Вас предупреждали. Либо выберите подходящего пользователя, либо оставте по умолчанию."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:32
 msgid "Group name to run the server as:"
-msgstr ""
+msgstr "Имя группы, под которым запускается сервер:"
 
 #. Type: string
 #. Description
@@ -213,13 +213,13 @@ msgid ""
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr ""
+msgstr "Здесь определяется группа-владелец сервера interchange и файлов. Запомните, что использование другого пользователя это серьезная угроза безопасности. Не выбирайте root, это не рекомендуется и будет отклонено в любом случае."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:40
 msgid "Impossible to run interchange as root !"
-msgstr ""
+msgstr "Невозможно запустить interchange под root !"
 
 #. Type: note
 #. Description
@@ -227,31 +227,31 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
-msgstr ""
+msgstr "Вас предупреждали. Либо выберите подходящую группу, либо оставте по умолчанию."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:47
 msgid "Create the group ${GROUP}?"
-msgstr ""
+msgstr "Создать группу ${GROUP}?"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:57
 msgid "Static HTML files location:"
-msgstr ""
+msgstr "Размещение статичных HTML файлов:"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:57
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr ""
+msgstr "Установки каталога требуют директорию, где можно разместить HTML файлы."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:63
 msgid "Enable debug mode?"
-msgstr ""
+msgstr "Разрешить режим отладки?"
 
 #. Type: boolean
 #. Description
@@ -259,13 +259,13 @@ msgstr ""
 msgid ""
 "Debug mode is only useful if you modified the Interchange sources "
 "accordingly."
-msgstr ""
+msgstr "Режим отладки полезен в случае, когда вы изменяете исходные тексты Interchange."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:70
 msgid "Directory for GnuPG public keyring:"
-msgstr ""
+msgstr "Директория для публичных ключей GnuPG:"
 
 #. Type: string
 #. Description
@@ -274,26 +274,25 @@ msgid ""
 "For enhanced security, credit card information retrieved from customers will "
 "be encrypted and mailed to the shop owner instead of storing it on the "
 "server."
-msgstr ""
+msgstr "Для повышения безопасности, информация с кредитной карты, полученная от посетителей, будет зашифрована и отправлена по почте владельцу магазина, а не сохранена на сервере."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:70
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Выберите директорию, используемую Interchange для хранения публичных ключей GnuPG:"
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:80
 msgid "low, high, rpc"
-msgstr ""
+msgstr "low, high, rpc"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:82
 msgid "Set of server parameters:"
-msgstr ""
+msgstr "Набор параметров сервера:"
 
 #. Type: select
 #. Description
@@ -302,13 +301,13 @@ msgid ""
 "You can choose different sets of server parameters. Any store based on the "
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
-msgstr ""
+msgstr "Вы можете выбрать различный набор серверных параметров. Любой магазин, основанный на базовой демонстрации, также изменит свое поведение. Если выбран rpc, сервер Interchange будет работать в режиме PreFork."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:90
 msgid "Enable the FullURL directive?"
-msgstr ""
+msgstr "Разрешить директиву FullURL?"
 
 #. Type: boolean
 #. Description
@@ -316,13 +315,13 @@ msgstr ""
 msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
-msgstr ""
+msgstr "Эта настройка определяет, будет ли изучаться весь URL во время проверки соответствующего каталога."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:96
 msgid "SOAP server not available"
-msgstr ""
+msgstr "Сервер SOAP недоступен"
 
 #. Type: note
 #. Description
@@ -331,25 +330,25 @@ msgid ""
 "Because the Perl module SOAP::Lite is not installed, you are unable to run "
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
-msgstr ""
+msgstr "Поскольку не установлен Perl-модуль SOAP::Lite, вы не сможете запустить Interchange SOAP сервер. Чтобы изменить это, установите пакет Debian libsoap-lite-perl и запустите interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:104
 msgid "Enable the SOAP server?"
-msgstr ""
+msgstr "Разрешить сервер SOAP?"
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:104
 msgid "This setting determines if the SOAP server is started or not."
-msgstr ""
+msgstr "Этот параметр определяет, запускать сервер SOAP или нет."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:110
 msgid "Enable robots settings?"
-msgstr ""
+msgstr "Разрешить настройки роботов?"
 
 #. Type: boolean
 #. Description
@@ -359,13 +358,13 @@ msgid ""
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
-msgstr ""
+msgstr "Пакет Debian Interchange использует отдельный файл настроек /etc/interchange/robots.cfg для директив  RobotUA, RobotIP и RobotHost. Рекомендуется подключить эти настройки, чтобы Interchange мог различать роботов и обычных пользователей."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:118
 msgid "Important Perl Incompatibility"
-msgstr ""
+msgstr "Важная несовместимость Perl"
 
 #. Type: note
 #. Description
@@ -377,26 +376,25 @@ msgid ""
 "Interchange servers. The development team asserts that the thread-safeness "
 "of Perl and the bunch of modules Interchange uses can hardly be relied upon. "
 "Please use this package only for testing and debugging purposes."
-msgstr ""
+msgstr "Авторы Interchange настройчиво не рекомендуют использовать их программу поверх Perl с поддержкой нитей. Похоже, это вызывает серьезные проблемы, особенно под высокой нагрузкой, и в целом не дает преимуществ для сервера Interchange. Команда разработчиков утверждает, что на ните-безопасный Perl и набор модулей, используемых Interchange, нельзя положиться. Пожалуйста, используйте этот пакет только для тестирования и отладки."
 
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:5
-#, fuzzy
 msgid "Default language for user interface:"
-msgstr "�������� ���� �� ��������� ��� UI"
+msgstr "Язык по умолчанию для интерфейса пользователя:"
 
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:5
-#, fuzzy
 msgid ""
 "The administration interface for Interchange catalogs, called UI, has been "
 "translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
 "and Swedish (sv_SE). You can choose the default language here. Any user may "
 "change this default at login time."
 msgstr ""
-"��������� �������������� ��� ��������� Interchange, ���������� UI, ��� "
-"��������� �� ������� (da_DK), ����������� (nl_NL), �������� (de_DE) � "
-"�������� (sv_SE) �����. �� ������ ������ ������� ���� �� ���������. ����� "
-"������������ ����� �������� ���� �� ��������� �� ����� �����."
+"Интерфейс администратора для каталогов Interchange, называемый UI, был "
+"переведен на датский (da_DK), голландский (nl_NL), немецкий (de_DE), итальянский (it_IT) "
+"и  шведский (sv_SE) языки. Вы можете сейчас выбрать язык по умолчанию. Любой "
+"пользователь может изменить язык по умолчанию во время входа."
+
