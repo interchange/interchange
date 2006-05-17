@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange 5.2.0-2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-28 20:38-0800\n"
+"POT-Creation-Date: 2006-05-17 13:41+0200\n"
 "PO-Revision-Date: 2005-06-04 23:19+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
@@ -15,352 +15,467 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:4
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:4
 msgid "Create the Interchange demo catalog?"
 msgstr "Tạo phân loại chứng minh Interchange (trao đổi lẫn nhau) không?"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:4
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:4
+#, fuzzy
 msgid ""
-"Whether to install the demo catalog from the foundation template or let you "
+"Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
-msgstr "Nên cài đặt phân loại chứng minh từ mẫu cơ bản, hoặc tự cài đặt nó dùng «makecat»?"
+msgstr ""
+"Nên cài đặt phân loại chứng minh từ mẫu cơ bản, hoặc tự cài đặt nó dùng "
+"«makecat»?"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:11
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:11
 msgid "Remove demo catalog on package purge?"
 msgstr "Loại bỏ phân loại chứng minh khi tẩy gói tin này không?"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:11
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:11
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
-msgstr "Nên loại bỏ mọi tập tin thuộc về phân loại chứng minh Interchange khi bạn tẩy gói tin này (v.d. dùng «dpkg --purge» «apt-get remove --purge») không?"
+msgstr ""
+"Nên loại bỏ mọi tập tin thuộc về phân loại chứng minh Interchange khi bạn "
+"tẩy gói tin này (v.d. dùng «dpkg --purge» «apt-get remove --purge») không?"
 
-#.Type: select
-#.Choices
-#:../interchange-cat-foundation.templates:17
+#. Type: select
+#. Choices
+#: ../interchange-cat-standard.templates:17
 msgid "always, ask, never"
 msgstr "luôn, xin hỏi, không bao giờ,"
 
-#.Type: select
-#.Description
-#:../interchange-cat-foundation.templates:19
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:19
 msgid "Policy for replacing existing demo catalogs:"
 msgstr "Chính thức về thay thế phân loại chứng minh đã có:"
 
-#.Type: select
-#.Description
-#:../interchange-cat-foundation.templates:19
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:19
 msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
-msgstr "Nên thay thế một bản cài đặt phân loại chứng minh đã có một cách im (không thông báo gì), xin hỏi bạn xác nhận, hoặc không bao giờ sửa đổi một bản cài đặt đã có?"
+msgstr ""
+"Nên thay thế một bản cài đặt phân loại chứng minh đã có một cách im (không "
+"thông báo gì), xin hỏi bạn xác nhận, hoặc không bao giờ sửa đổi một bản cài "
+"đặt đã có?"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:26
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:26
 msgid "Replace the Interchange demo catalog?"
 msgstr "Thay thế phân loại chứng minh Interchange không?"
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:26
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:26
 msgid "There seems to already exist an Interchange demo catalog."
 msgstr "Hình như có một phân loại chứng minh Interchange rồi."
 
-#.Type: string
-#.Description
-#:../interchange-cat-foundation.templates:32
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:32
+#, fuzzy
+msgid "Virtual host for the demo catalog ?"
+msgstr "Tạo phân loại chứng minh Interchange (trao đổi lẫn nhau) không?"
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:32
+msgid ""
+"You are running Interchange with \"FullURL\" enabled. Please specify the "
+"virtual host for the demo catalog."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:38
 msgid "Username for this catalog's administration:"
 msgstr "Tên người dùng để quản lý phân loại này:"
 
-#.Type: string
-#.Description
-#:../interchange-cat-foundation.templates:32
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:38
 msgid ""
 "Please provide an username for administering the demo catalog. The username "
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
-msgstr "Hãy cung cấp một tên người dùng để quản lý phân loại chứng minh ấy. Tên người dùng phải có ít nhất 2 ký tự và chỉ cho phép chứa chữ, số, dấu_gạch, dấu @-còng hay dấu.chấm là ký tự."
+msgstr ""
+"Hãy cung cấp một tên người dùng để quản lý phân loại chứng minh ấy. Tên "
+"người dùng phải có ít nhất 2 ký tự và chỉ cho phép chứa chữ, số, dấu_gạch, "
+"dấu @-còng hay dấu.chấm là ký tự."
 
-#.Type: password
-#.Description
-#:../interchange-cat-foundation.templates:40
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:46
 msgid "Password for this catalog's administration:"
 msgstr "Mật khẩu để quản lý phân loại này:"
 
-#.Type: password
-#.Description
-#:../interchange-cat-foundation.templates:40
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:46
+#, fuzzy
 msgid ""
-"Please provide a password for administering the foundation demo catalog. "
+"Please provide a password for administering the standard demo catalog. "
 "Choose one which can not be easily guessed. Default is pass. The password  "
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
-msgstr "Hãy cung cấp một mật khẩu để quản lý phân loại chứng minh cơ bản ấy. Hãy chọn một điều khó đoán. Mặc định là «pass». Mật khẩu ấy phải có ít nhất 4 ký tự và chỉ cho phép chứa chữ, số, dấu_gạch, dấu @-còng hay dấu.chấm là ký tự."
+msgstr ""
+"Hãy cung cấp một mật khẩu để quản lý phân loại chứng minh cơ bản ấy. Hãy "
+"chọn một điều khó đoán. Mặc định là «pass». Mật khẩu ấy phải có ít nhất 4 ký "
+"tự và chỉ cho phép chứa chữ, số, dấu_gạch, dấu @-còng hay dấu.chấm là ký tự."
 
-#.Type: boolean
-#.Description
-#:../interchange-cat-foundation.templates:49
+#. Type: boolean
+#. Description
+#: ../interchange-cat-standard.templates:55
 msgid "Enable demo mode?"
 msgstr "Bật chế độ chứng minh không?"
 
-#.Type: multiselect
-#.Description
-#:../interchange-cat-foundation.templates:54
+#. Type: multiselect
+#. Description
+#: ../interchange-cat-standard.templates:60
 msgid "Additional locales for the storefront:"
 msgstr "Miền địa phương thêm cho mặt hàng:"
 
-#.Type: multiselect
-#.Description
-#:../interchange-cat-foundation.templates:54
+#. Type: multiselect
+#. Description
+#: ../interchange-cat-standard.templates:60
 msgid ""
 "The Interchange demo catalog is able to display the storefront in a number "
 "of different languages. Each selected locale will increase the memory "
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
-msgstr "Phân loại chứng minh Interchange có thể hiển thị mặt hàng bằng một số ngôn ngữ khác. Mỗi miền địa phương đã chọn ở đây thì sẽ tăng cỡ dấu chân bộ nhớ của những tiến trình của trình phục vụ Interchange địa phương, vì vậy khuyến khích bạn chọn chỉ những miền địa phương cần đến."
+msgstr ""
+"Phân loại chứng minh Interchange có thể hiển thị mặt hàng bằng một số ngôn "
+"ngữ khác. Mỗi miền địa phương đã chọn ở đây thì sẽ tăng cỡ dấu chân bộ nhớ "
+"của những tiến trình của trình phục vụ Interchange địa phương, vì vậy khuyến "
+"khích bạn chọn chỉ những miền địa phương cần đến."
 
-#.Type: select
-#.Description
-#:../interchange-cat-foundation.templates:64
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:70
 msgid "Default locale for the storefront:"
 msgstr "Miền địa phương mặc định cho mặt hàng:"
 
-#.Type: select
-#.Description
-#:../interchange-cat-foundation.templates:64
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:70
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Hãy chọn miền địa phương mặc định cho phân loại chứng minh Interchannge."
+msgstr ""
+"Hãy chọn miền địa phương mặc định cho phân loại chứng minh Interchannge."
 
-#.Type: select
-#.Choices
-#:../interchange.templates:3
+#. Type: select
+#. Choices
+#: ../interchange-cat-standard.templates:75
+msgid "PostgreSQL"
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange-cat-standard.templates:75
+msgid "MySQL"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:77
+msgid "Which DBMS should be used for the demo catalog ?"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:77
+msgid "Please select the database type."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:83
+msgid "Database name"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:83
+#, fuzzy
+msgid "Please select the name of the database."
+msgstr ""
+"Hãy chọn miền địa phương mặc định cho phân loại chứng minh Interchannge."
+
+#. Type: select
+#. Choices
+#: ../interchange.templates:3
 msgid "unix mode, internet mode, both"
 msgstr "chế độ Unix, chế độ Mạng, cả hai điều"
 
-#.Type: select
-#.Description
-#:../interchange.templates:5
+#. Type: select
+#. Description
+#: ../interchange.templates:5
 msgid "Start mode:"
 msgstr "Chế độ bắt đầu:"
 
-#.Type: select
-#.Description
-#:../interchange.templates:5
+#. Type: select
+#. Description
+#: ../interchange.templates:5
 msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
-msgstr "Chế độ Unix là cách bảo mật nhất để chạy Interchange, vì không cho phép hệ thống trên Mạng cách nào tương tác với trình phục vụ Interchange. "
+msgstr ""
+"Chế độ Unix là cách bảo mật nhất để chạy Interchange, vì không cho phép hệ "
+"thống trên Mạng cách nào tương tác với trình phục vụ Interchange. "
 
-#.Type: string
-#.Description
-#:../interchange.templates:12
+#. Type: string
+#. Description
+#: ../interchange.templates:12
 msgid "Username to run the server as:"
 msgstr "Tên người dùng sẽ chạy trình phục vụ ấy:"
 
-#.Type: string
-#.Description
-#:../interchange.templates:12
+#. Type: string
+#. Description
+#: ../interchange.templates:12
 msgid ""
 "This determines the user for the interchange server and for file "
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr "Tùy chọn này quyết định người dùng cho trình phục vụ Interchange và cho quyền truy cập tập tin. Hãy ghi chú rằng sử dụng một người dùng khác ở đây thì rất rủi ro bảo mật. Đừng chọn người dùng chủ (root) vì không khuyên tùy chọn ấy và sẽ hủy nó bằng mọi giá."
+msgstr ""
+"Tùy chọn này quyết định người dùng cho trình phục vụ Interchange và cho "
+"quyền truy cập tập tin. Hãy ghi chú rằng sử dụng một người dùng khác ở đây "
+"thì rất rủi ro bảo mật. Đừng chọn người dùng chủ (root) vì không khuyên tùy "
+"chọn ấy và sẽ hủy nó bằng mọi giá."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:21
+#. Type: boolean
+#. Description
+#: ../interchange.templates:21
 msgid "Create the user ${USER}?"
 msgstr "Tạo người dùng ${USER} không?"
 
-#.Type: note
-#.Description
-#:../interchange.templates:25
+#. Type: note
+#. Description
+#: ../interchange.templates:25
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr "Bạn đã được cảnh báo rồi. Hoặc chọn một người dùng thích hợp, hoặc sử dụng mặc định."
+msgstr ""
+"Bạn đã được cảnh báo rồi. Hoặc chọn một người dùng thích hợp, hoặc sử dụng "
+"mặc định."
 
-#.Type: string
-#.Description
-#:../interchange.templates:32
+#. Type: string
+#. Description
+#: ../interchange.templates:32
 msgid "Group name to run the server as:"
 msgstr "Tên nhóm sẽ chạy trình phục vụ ấy:"
 
-#.Type: string
-#.Description
-#:../interchange.templates:32
+#. Type: string
+#. Description
+#: ../interchange.templates:32
 msgid ""
 "This determines the group for the interchange server and for file "
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr "Tùy chọn này quyết định nhóm cho trình phục vụ Interchange và cho quyền truy cập tập tin. Hãy ghi chú rằng sử dụng một người dùng khác ở đây thì rất rủi ro bảo mật. Đừng chọn người dùng chủ (root) vì không khuyên tùy chọn ấy và sẽ hủy nó bằng mọi giá."
+msgstr ""
+"Tùy chọn này quyết định nhóm cho trình phục vụ Interchange và cho quyền truy "
+"cập tập tin. Hãy ghi chú rằng sử dụng một người dùng khác ở đây thì rất rủi "
+"ro bảo mật. Đừng chọn người dùng chủ (root) vì không khuyên tùy chọn ấy và "
+"sẽ hủy nó bằng mọi giá."
 
-#.Type: note
-#.Description
-#:../interchange.templates:40
+#. Type: note
+#. Description
+#: ../interchange.templates:40
 msgid "Impossible to run interchange as root !"
 msgstr "••• Không cho phép chạy Interchange với tư cách người chủ. •••"
 
-#.Type: note
-#.Description
-#:../interchange.templates:40
+#. Type: note
+#. Description
+#: ../interchange.templates:40
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
-msgstr "Bạn đã được cảnh báo rồi. Hoặc chọn một nhóm thích hợp, hoặc sử dụng mặc định."
+msgstr ""
+"Bạn đã được cảnh báo rồi. Hoặc chọn một nhóm thích hợp, hoặc sử dụng mặc "
+"định."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:47
+#. Type: boolean
+#. Description
+#: ../interchange.templates:47
 msgid "Create the group ${GROUP}?"
 msgstr "Tạo nhóm ${GROUP} không?"
 
-#.Type: string
-#.Description
-#:../interchange.templates:57
+#. Type: select
+#. Choices
+#: ../interchange.templates:56
+msgid "Apache2"
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange.templates:56
+msgid "Apache"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange.templates:58
+msgid "Which webserver are you running ?"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange.templates:58
+msgid ""
+"This information is necessary for the makecat script. Please specify which "
+"webserver you want to use for your Interchange applications."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange.templates:65
 msgid "Static HTML files location:"
 msgstr "Ví trị của tập tin HTML tĩnh:"
 
-#.Type: string
-#.Description
-#:../interchange.templates:57
+#. Type: string
+#. Description
+#: ../interchange.templates:65
 msgid "Catalog installations need a directory where HTML files can be placed."
 msgstr "Bản cài đặt phân loại cần một thư mục nơi có thể để tập tin HTML."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:63
-msgid "Enable debug mode?"
-msgstr "Bật chế độ gỡ lỗi không?"
-
-#.Type: boolean
-#.Description
-#:../interchange.templates:63
-msgid ""
-"Debug mode is only useful if you modified the Interchange sources "
-"accordingly."
-msgstr "Chế độ gỡ lỗi chỉ hữu ích nếu bạn đã sửa đổi mã nguồn Interchange cho phù hợp rồi."
-
-#.Type: string
-#.Description
-#:../interchange.templates:70
+#. Type: string
+#. Description
+#: ../interchange.templates:71
 msgid "Directory for GnuPG public keyring:"
 msgstr "Thư mục cho vòng chìa khóa công GnuPG:"
 
-#.Type: string
-#.Description
-#:../interchange.templates:70
+#. Type: string
+#. Description
+#: ../interchange.templates:71
 msgid ""
 "For enhanced security, credit card information retrieved from customers will "
 "be encrypted and mailed to the shop owner instead of storing it on the "
 "server."
-msgstr "Để tăng cường bảo mật, mọi thông tin về thẻ tín dụng mà người khách đã cung cấp thì sẽ được mật mã hóa và gửi trong thư cho người chủ hàng, thay vào lưu nó trên máy phục vụ."
+msgstr ""
+"Để tăng cường bảo mật, mọi thông tin về thẻ tín dụng mà người khách đã cung "
+"cấp thì sẽ được mật mã hóa và gửi trong thư cho người chủ hàng, thay vào lưu "
+"nó trên máy phục vụ."
 
-#.Type: string
-#.Description
-#:../interchange.templates:70
+#. Type: string
+#. Description
+#: ../interchange.templates:71
 msgid ""
 "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Hãy chọn thư mục mà Interchange sẽ sử dụng cho vòng chìa khóa công GnuPG:"
+msgstr ""
+"Hãy chọn thư mục mà Interchange sẽ sử dụng cho vòng chìa khóa công GnuPG:"
 
-#.Type: select
-#.Choices
-#:../interchange.templates:80
+#. Type: select
+#. Choices
+#: ../interchange.templates:81
 msgid "low, high, rpc"
 msgstr "thấp, cao, RPC"
 
-#.Type: select
-#.Description
-#:../interchange.templates:82
+#. Type: select
+#. Description
+#: ../interchange.templates:83
 msgid "Set of server parameters:"
 msgstr "Bộ tham số máy phục vụ"
 
-#.Type: select
-#.Description
-#:../interchange.templates:82
+#. Type: select
+#. Description
+#: ../interchange.templates:83
 msgid ""
 "You can choose different sets of server parameters. Any store based on the "
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
-msgstr "Bạn có thể chọn một số bộ tham số khác cho máy phục vụ. Thì hàng nào đựa vào chứng minh cơ bản sẽ cũng thay đổi hành vi. Nếu chọn RPC thì máy phục vụ Interchange sẽ chạy trong chế độ PreFork."
+msgstr ""
+"Bạn có thể chọn một số bộ tham số khác cho máy phục vụ. Thì hàng nào đựa vào "
+"chứng minh cơ bản sẽ cũng thay đổi hành vi. Nếu chọn RPC thì máy phục vụ "
+"Interchange sẽ chạy trong chế độ PreFork."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:90
+#. Type: boolean
+#. Description
+#: ../interchange.templates:91
 msgid "Enable the FullURL directive?"
 msgstr "Bật chỉ thị FullURL không?"
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:90
+#. Type: boolean
+#. Description
+#: ../interchange.templates:91
 msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
-msgstr "Thiết lập này quyết định nếu sẽ tra cứu toàn địa chỉ Mạng khi kiểm tra phân loại tương ứng."
+msgstr ""
+"Thiết lập này quyết định nếu sẽ tra cứu toàn địa chỉ Mạng khi kiểm tra phân "
+"loại tương ứng."
 
-#.Type: note
-#.Description
-#:../interchange.templates:96
+#. Type: note
+#. Description
+#: ../interchange.templates:97
 msgid "SOAP server not available"
 msgstr "Máy phục vụ SOAP chưa sẵn sàng."
 
-#.Type: note
-#.Description
-#:../interchange.templates:96
+#. Type: note
+#. Description
+#: ../interchange.templates:97
 msgid ""
 "Because the Perl module SOAP::Lite is not installed, you are unable to run "
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
-msgstr "Vì chưa cài đặt mô-đun Perl SOAP::Lite, lúc này bạn không thể chạy máy phục vụ SOAP Interchange. Để sửa đổi trường hợp này, bạn có thể cài đặt gói tin «libsoap-lite-perl» rồi chạy «interchangeconfig SOAP=1»."
+msgstr ""
+"Vì chưa cài đặt mô-đun Perl SOAP::Lite, lúc này bạn không thể chạy máy phục "
+"vụ SOAP Interchange. Để sửa đổi trường hợp này, bạn có thể cài đặt gói tin "
+"«libsoap-lite-perl» rồi chạy «interchangeconfig SOAP=1»."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:104
+#. Type: boolean
+#. Description
+#: ../interchange.templates:105
 msgid "Enable the SOAP server?"
 msgstr "Bật máy phục vụ SOAP không?"
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:104
+#. Type: boolean
+#. Description
+#: ../interchange.templates:105
 msgid "This setting determines if the SOAP server is started or not."
 msgstr "Thiết lập quyết định nếu khởi động máy phục vụ SOAP hay không."
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:110
+#. Type: boolean
+#. Description
+#: ../interchange.templates:111
 msgid "Enable robots settings?"
 msgstr "Bật thiết lập rô-bốt không?"
 
-#.Type: boolean
-#.Description
-#:../interchange.templates:110
+#. Type: boolean
+#. Description
+#: ../interchange.templates:111
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
-msgstr "Gói tin Debian tên Interchange dùng một tập tin cấu hình riêng «/etc/interchange/robots.cfg» cho những chỉ thị «RobotUA», «RobotIP» và «RobotHost». Khuyên khích bạn bao gồm những thiết lập này, để cho phép Interchange phân biệt giữa rô-bốt và người dùng thường."
+msgstr ""
+"Gói tin Debian tên Interchange dùng một tập tin cấu hình riêng «/etc/"
+"interchange/robots.cfg» cho những chỉ thị «RobotUA», «RobotIP» và "
+"«RobotHost». Khuyên khích bạn bao gồm những thiết lập này, để cho phép "
+"Interchange phân biệt giữa rô-bốt và người dùng thường."
 
-#.Type: note
-#.Description
-#:../interchange.templates:118
+#. Type: note
+#. Description
+#: ../interchange.templates:119
 msgid "Important Perl Incompatibility"
 msgstr "Trường hợp không tương thích với Perl quan trọng"
 
-#.Type: note
-#.Description
-#:../interchange.templates:118
+#. Type: note
+#. Description
+#: ../interchange.templates:119
 msgid ""
 "The authors of Interchange strongly disencourage the use of their software "
 "on top of a thread enabled Perl. It is likely to cause serious problems, "
@@ -368,20 +483,40 @@ msgid ""
 "Interchange servers. The development team asserts that the thread-safeness "
 "of Perl and the bunch of modules Interchange uses can hardly be relied upon. "
 "Please use this package only for testing and debugging purposes."
-msgstr "Những tác giả của Interchange khuyến khích một cách mạnh mọi người dùng không sử dụng phần mềm họ trên một mạch có Perl bật. Nó rất có thể sẽ gây ra vấn đề lớn, và sẽ không có kết quả tốt nào cho máy phục vụ Interchange. Nhóm phát triển xác nhận rằng bạn không thể nhờ hành vi của Perl với mạch và những mô-đun mà Interchange dùng. Hãy sử dùng gói tin này •chỉ• cho mục đích gỡ lỗi và kiểm tra."
+msgstr ""
+"Những tác giả của Interchange khuyến khích một cách mạnh mọi người dùng "
+"không sử dụng phần mềm họ trên một mạch có Perl bật. Nó rất có thể sẽ gây ra "
+"vấn đề lớn, và sẽ không có kết quả tốt nào cho máy phục vụ Interchange. Nhóm "
+"phát triển xác nhận rằng bạn không thể nhờ hành vi của Perl với mạch và "
+"những mô-đun mà Interchange dùng. Hãy sử dùng gói tin này •chỉ• cho mục đích "
+"gỡ lỗi và kiểm tra."
 
-#.Type: select
-#.Description
-#:../interchange-ui.templates:5
+#. Type: select
+#. Description
+#: ../interchange-ui.templates:5
 msgid "Default language for user interface:"
 msgstr "Ngôn ngữ mặc định cho giao diện người dùng:"
 
-#.Type: select
-#.Description
-#:../interchange-ui.templates:5
+#. Type: select
+#. Description
+#: ../interchange-ui.templates:5
 msgid ""
 "The administration interface for Interchange catalogs, called UI, has been "
 "translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
 "and Swedish (sv_SE). You can choose the default language here. Any user may "
 "change this default at login time."
-msgstr "Giao diện quản lý cho phân loại Interchange, được gọi là UI, đã được dịch sang tiếng Đan-mạch (da-DK), tiếng Hoà-lan (nl-NL), tiếng Đức (de-DE), tiếng Ý (it-IT) và tiếng Thụy-điển (sv-SE). Ở đây thì bạn có thể chọn ngôn ngữ mặc định. Bất cứ người dùng có thể sửa đổi mặc định này khi đăng nhập."
+msgstr ""
+"Giao diện quản lý cho phân loại Interchange, được gọi là UI, đã được dịch "
+"sang tiếng Đan-mạch (da-DK), tiếng Hoà-lan (nl-NL), tiếng Đức (de-DE), tiếng "
+"Ý (it-IT) và tiếng Thụy-điển (sv-SE). Ở đây thì bạn có thể chọn ngôn ngữ mặc "
+"định. Bất cứ người dùng có thể sửa đổi mặc định này khi đăng nhập."
+
+#~ msgid "Enable debug mode?"
+#~ msgstr "Bật chế độ gỡ lỗi không?"
+
+#~ msgid ""
+#~ "Debug mode is only useful if you modified the Interchange sources "
+#~ "accordingly."
+#~ msgstr ""
+#~ "Chế độ gỡ lỗi chỉ hữu ích nếu bạn đã sửa đổi mã nguồn Interchange cho phù "
+#~ "hợp rồi."
