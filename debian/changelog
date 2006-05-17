@@ -1,6 +1,7 @@
-interchange (5.4.0-1.1) unstable; urgency=low
+interchange (5.4.0-1.2) unstable; urgency=low
 
-  * fix reference to removed interchange/debug Debconf template
+  * fix reference to removed interchange/debug Debconf template which
+    causes initial installs to fail (Closes: #367704) 
   * fix outdated reference in POTFILES.in (Closes: #349816, thanks to
     Thomas Huriaux <thomas.huriaux@gmail.com> for the patch)
   * run debconf-updatepo from clean target
