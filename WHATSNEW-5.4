@@ -1,0 +1,141 @@
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+                       (since the version 5.4 branch)
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.4.1 released on YYYY-MM-DD.
+
+
+Widgets
+-------
+
+* Fixed regression in htmlarea widget which kept it from working with MSIE or
+  browsers claiming to be compatible.
+
+Tags
+----
+
+* add-gpg-key: Made parsing of results message more tolerant.
+  Patch by Gert van der Spoel <ic@3edge.com>.
+
+* pay-cert-redeem: Fixed rounding error that could make total comparisons
+  wrong.
+
+Configuration
+-------------
+
+* Check for "GoogleBot", rather than just "Google", in the RobotUA list, to
+  prevent confusion with other UA values such as "GoogleToolbar" etc.
+
+* Removed never-used SOAP_Host directive.
+
+Profiles
+--------
+
+* Fixed a profile parsing bug:
+
+  When reading an OrderProfile from an external config file, for instance,
+  etc/profiles.login or similar if there is a comment line immediately
+  preceding the __NAME__ identifier then the first line of the profile is
+  commented out. Actually any line preceding the __NAME__ line will silently
+  be prepended to the first line of the profile; it just so happens a comment
+  would be the likely offender.
+
+  For example:
+
+  # following profile confirms user input
+  __NAME__ Login
+    username=required Username had better be filled in.
+    password=required Password is required.
+  __END__
+
+  Will result in a profile structure that looks like:
+
+  # following profile confirms user input   username=required ...
+
+  And the username check will never execute.
+
+  Fixed by Brian Miller <brian@endpoint.com>.
+
+Core
+----
+
+* Fixed bug in parser that can cause an infinite loop when malformed ITL
+  opening tags are encountered. Bug found and original patch supplied by
+  Dan Collis-Puro <dan@endpoint.com>.
+
+* In Vend::Ship:
+  - Fixed thread-safety problem with shipping adder (and potentially other
+    things).
+  - Made log message manageable with ErrorDestination.
+  - Allow a "quiet" shipmode that won't log missing areas.
+
+* Made timeout for menu blank in Vend::Menu settable. Patch by Greg Hanson
+  <greg@perusion.com>.
+
+* Allow numerals in all but first position in unpack output areas.
+
+* Improved Linkpoint payment module based on work provided by Josh Lavin.
+  - Add ability to do POSTAUTH (settle_prior) in Interchange Admin.
+  - Add check_sub capability ala Vend::Payment::Signio.
+
+* Fixed bug introduced in previous change to cert_path logic attempting
+  to allow relative paths. If the certs/ directory was not directly
+  in VENDROOT and no cert_path was defined, no search for a certs/
+  directory would happen.
+
+* Fixed typo in logging subroutine call in Vend::Data.
+
+Link
+----
+
+* Merged Interchange::Link changes from development branch, to add support for
+  mod_perl 2.
+
+Admin
+-----
+
+* In order_view page, display proper state and zip.
+
+* Fixed non-interpolating [process] and [form-session-id] tags, remove stray
+  double-quote from HTML tag, correct nonexistent cellmargin table attribute.
+  Thanks to Steve Graham <icdev@mrlock.com> for reporting problem.
+
+Standard demo
+-------------
+
+* Updated UPS Postal rates.
+
+* In etc/mail_receipt, don't expose admin's session ID when they enter an
+  order for a user.
+
+* In checkout new_browser_payment* fragments, fix unmatched [msg] tags.
+  Found by Steve Graham.
+
+* Fixed bad SKU in cart links. Thanks to Steve Graham.
+
+* Added closing font tag in search_box_small component. Thanks to Steve
+  Graham.
+
+Packaging
+---------
+
+* Made some minor corrections to the UPGRADING document.
+
+* Added Swedish debconf template translation, updated Russian and French one.
+
+* A number of other minor Debian package improvements.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.4.0 released on 2005-12-23.
+
+
+------------------------------------------------------------------------------
+
+(end)
