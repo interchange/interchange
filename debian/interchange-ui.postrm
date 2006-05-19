@@ -1,6 +1,6 @@
 #! /bin/sh -e
 #
-# Copyright 2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2006 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,11 @@ if [ "$1" = "remove" ]; then
 	# the server first
 
 	if [ -x /etc/init.d/interchange ]; then
-		/etc/init.d/interchange stop
+		if which invoke-rc.d >/dev/null 2>&1; then
+			invoke-rc.d interchange stop
+		else
+			/etc/init.d/interchange stop
+		fi
 	fi
 
 	if [ -x /usr/sbin/interchangeconfig ]; then
@@ -58,7 +62,11 @@ if [ "$1" = "remove" ]; then
 	fi
 
 	if [ -x /etc/init.d/interchange ]; then
-		/etc/init.d/interchange start
+		if which invoke-rc.d >/dev/null 2>&1; then
+			invoke-rc.d interchange start
+		else
+			/etc/init.d/interchange start
+		fi
 	fi
 
 	# Don't wait on Interchange to close file handles
