@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.6 2006-05-15 16:46:20 mheins Exp $
+# $Id: Linkpoint.pm,v 1.7 2006-05-19 14:05:13 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -107,6 +107,46 @@ The type of transaction to be run. Valid values are:
         sale            sale
 
 Default is C<sale>.
+
+=item check_sub
+
+Name of a Sub or GlobalSub to be called after the result hash has been 
+received from LinkPoint. A reference to the modifiable result hash is
+passed into the subroutine, and it should return true (in the Perl truth
+sense) if its checks were successful, or false if not.
+
+This can come in handy since LinkPoint has no option to decline a charge
+when AVS data come back negative. 
+
+If you want to fail based on a bad AVS check, make sure you're only
+doing an auth -- B<not a sale>, or your customers would get charged on
+orders that fail the AVS check and never get logged in your system!
+
+Add the parameters like this:
+    
+	Route  signio  check_sub  avs_check
+
+This is a matching sample subroutine you could put in interchange.cfg:
+			
+	GlobalSub <<EOR
+	sub link_avs_check {
+		my ($result) = @_;
+		my $avs = $result->{r_avs};
+		my ($addr, $zip) = split //, $avs;
+		return 1 if $addr eq 'Y' or $zip eq 'Y';
+		return 1 if $addr eq 'X' and $zip eq 'X';
+		$result->{MStatus} = 'failure';
+		$result->{r_error} = $result->{MErrMsg} = "The billing address you entered does not match the cardholder's billing address";
+		return 0; 
+	}   
+	EOR 
+
+That would work equally well as a Sub in catalog.cfg. It will succeed if
+either the address or zip is 'Y', or if both are unknown. If it fails,
+it sets the error message in the result hash.
+
+Of course you can use this sub to do any other post-processing you
+want as well.
 
 =back
 
@@ -301,13 +341,14 @@ sub linkpoint {
 		POSTAUTH => [ 
 					qw(
 						shipping
-						chargetotal
 						subtotal
 						tax
 						vattax
 						cardnumber
 						cardexpmonth
 						cardexpyear
+						addrnum
+						company
 					)
 			],
 	);
