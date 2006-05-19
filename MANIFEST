@@ -608,6 +608,7 @@ dist/src/mod_interchange/mod_interchange.c
 dist/src/mod_interchange/mod_interchange.html
 dist/src/mod_interchange/README
 dist/src/mod_perl2/Interchange/Link.pm
+dist/src/mod_perl2/Interchange/Link.pm.mod_perl-1.999_21_and_before
 dist/src/mod_perl2/README
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
@@ -927,6 +928,7 @@ dist/standard/products/ship/450ps.csv
 dist/standard/products/ship/Accessorials.csv
 dist/standard/products/ship/air_pp.txt
 dist/standard/products/ship/Book.txt
+dist/standard/products/ship/ems.txt
 dist/standard/products/ship/Expedited.csv
 dist/standard/products/ship/Express.csv
 dist/standard/products/ship/Ground.csv
@@ -1240,3 +1242,4 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
+WHATSNEW-5.4
