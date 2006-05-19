@@ -51,7 +51,7 @@ _Description: Password for this catalog's administration:
 
 Template: interchange-cat-standard/demomode
 Type: boolean
-Default: yes
+Default: true
 _Description: Enable demo mode?
 
 Template: interchange-cat-standard/locales
