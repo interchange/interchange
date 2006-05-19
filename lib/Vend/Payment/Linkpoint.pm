@@ -1,8 +1,8 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.5.2.2 2006-05-19 14:06:28 mheins Exp $
+# $Id: Linkpoint.pm,v 1.5.2.3 2006-05-19 14:48:48 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -123,13 +123,13 @@ doing an auth -- B<not a sale>, or your customers would get charged on
 orders that fail the AVS check and never get logged in your system!
 
 Add the parameters like this:
-    
-	Route  signio  check_sub  avs_check
+
+	Route  linkpoint  check_sub  avs_check
 
 This is a matching sample subroutine you could put in interchange.cfg:
 			
 	GlobalSub <<EOR
-	sub link_avs_check {
+	sub avs_check {
 		my ($result) = @_;
 		my $avs = $result->{r_avs};
 		my ($addr, $zip) = split //, $avs;
@@ -138,8 +138,8 @@ This is a matching sample subroutine you could put in interchange.cfg:
 		$result->{MStatus} = 'failure';
 		$result->{r_error} = $result->{MErrMsg} = "The billing address you entered does not match the cardholder's billing address";
 		return 0; 
-	}   
-	EOR 
+	}
+	EOR
 
 That would work equally well as a Sub in catalog.cfg. It will succeed if
 either the address or zip is 'Y', or if both are unknown. If it fails,
