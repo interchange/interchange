@@ -31,7 +31,7 @@ the Interchange user ID to write/create files.
 
 Sessions and temporary files: /var/cache/interchange.
 
-Documentation: /usr/share/doc/interchange-5.4.0.
+Documentation: /usr/share/doc/interchange-5.4.1.
 
 On a dedicated production server, it is wise to segregate as many of these
 directories as possible onto their own partitions, to prevent problems if
@@ -45,7 +45,7 @@ usually come supplied with your operating system, so you will need to
 install them yourself. It's best to locate RPMs for each of the needed
 Perl modules and install them. To get a complete list of dependencies, do:
 
-rpm -qp --requires interchange-5.4.0-1.i386.rpm
+rpm -qp --requires interchange-5.4.1-1.i386.rpm
 
 Note that some of the dependencies are not actually necessary. For example,
 the Cybercash modules (CCMck*) are only needed if you use the Cybercash
@@ -82,14 +82,14 @@ This is unfortunate but is considered the best workaround at the moment.
 
 INSTALL
 
-rpm -Uvh interchange-5.4.0-1.i386.rpm
-rpm -Uvh interchange-standard-5.4.0-1.i386.rpm
+rpm -Uvh interchange-5.4.1-1.i386.rpm
+rpm -Uvh interchange-standard-5.4.1-1.i386.rpm
 
 Your version of RPM may correctly recognize Perl modules even if they
 were not installed via RPM. But it may not. If not, you'll need to install
 the main interchange package without dependency checking:
 
-rpm -Uvh --nodeps interchange-5.4.0-1.i386.rpm
+rpm -Uvh --nodeps interchange-5.4.1-1.i386.rpm
 
 
 STARTING/RESTARTING INTERCHANGE
@@ -149,7 +149,7 @@ installation:
 
 INSTALL
 
-rpm -Uvh interchange-standard-demo-5.4.0-1.i386.rpm
+rpm -Uvh interchange-standard-demo-5.4.1-1.i386.rpm
 
 
 USING THE DEMO
