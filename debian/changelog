@@ -1,12 +1,14 @@
-interchange (5.4.0-1.2) unstable; urgency=low
+interchange (5.4.1-0.1) unstable; urgency=low
 
   * fix reference to removed interchange/debug Debconf template which
     causes initial installs to fail (Closes: #367704) 
+  * use invoke-rc.d to run init scripts if command is available
+    (Closes: #367724, thanks to Lars Wirzenius <liw@iki.fi> for the report
   * fix outdated reference in POTFILES.in (Closes: #349816, thanks to
     Thomas Huriaux <thomas.huriaux@gmail.com> for the patch)
   * run debconf-updatepo from clean target
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 15 May 2006 18:39:11 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 19 May 2006 15:51:08 +0200
 
 interchange (5.4.0-1) unstable; urgency=low
 

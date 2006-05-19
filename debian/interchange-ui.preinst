@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright 2001,2003 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2003,2006 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,11 @@
 # the server first
 
 if [ -x /etc/init.d/interchange ] ; then
-	/etc/init.d/interchange stop
+	if which invoke-rc.d >/dev/null 2>&1; then
+		invoke-rc.d interchange stop
+	else
+		/etc/init.d/interchange stop
+	fi
 fi
 
 # We use the file /var/run/interchange-install to record 
