@@ -1,4 +1,4 @@
-interchange (5.4.1-0.2) unstable; urgency=low
+interchange (5.4.1-1) unstable; urgency=low
 
   * fix reference to removed interchange/debug Debconf template which
     causes initial installs to fail (Closes: #367704) 
@@ -7,9 +7,15 @@ interchange (5.4.1-0.2) unstable; urgency=low
   * fix outdated reference in POTFILES.in (Closes: #349816, thanks to
     Thomas Huriaux <thomas.huriaux@gmail.com> for the patch)
   * run debconf-updatepo from clean target
+  * updated French translation of Debconf templates (Closes: #350858,
+    thanks to Christian Perrier <bubulle@debian.org>)
+  * added Swedish translation of Debconf templates (Closes: #351354,
+    thanks to Daniel Nylander <yeager@lidkoping.net>)
+  * updated Russian translation of Debconf templates (Closes: #367185,
+    thanks to Yuriy Talakan <yt@amur.elektra.ru>)
   * removed unused Debconf template interchange-cat-standard/demomode
-  
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 19 May 2006 22:30:10 +0200
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 22 May 2006 12:39:25 +0200
 
 interchange (5.4.0-1) unstable; urgency=low
 
