@@ -170,6 +170,8 @@ mv_field_names           fn
 mv_head_skip             hs
 mv_index_delim           ix
 mv_search_line_return    lr
+mv_like_field            lf
+mv_like_spec             ls
 mv_list_only             lo
 mv_matchlimit            ml
 mv_max_matches           mm
