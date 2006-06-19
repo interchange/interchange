@@ -1,7 +1,7 @@
 # Copyright 2002-2006 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: date_change.filter,v 1.6 2006-04-11 16:33:01 racke Exp $
+# $Id: date_change.filter,v 1.7 2006-06-19 20:21:33 racke Exp $
 
 CodeDef date_change Filter
 CodeDef date_change Description Date widget
@@ -14,12 +14,12 @@ sub {
 	HTML::Entities::decode_entities($val) if $val =~ /&/;
 	$val =~ s/\0+//g;
 	my $re = $opt->{undef}
-		? qr:(\d*)[-/]+(\d*)[-/]+(\d*):
-			: qr:(\d+)[-/]+(\d+)[-/]+(\d+):
+		? qr:^(\d*)[-/]+(\d*)[-/]+(\d*)(.*)$:
+			: qr:^(\d+)[-/]+(\d+)[-/]+(\d+)(.*)$:
 				;
 	return $val unless $val =~ /$re/;
 
-	my ($year, $month, $day);
+	my ($year, $month, $day, $timeval);
 
 	if (length($1) == 4) {
 		# ISO date style 2003-03-20
@@ -29,6 +29,8 @@ sub {
 		# U.S. date style 3/20/2003 or 3/20/03
 		($year, $month, $day) = ($3, $1, $2);
 	}
+
+	$timeval = $4;
 
 	if ($opt->{undef}) {
 		# return nothing (undef, which DBI treats as SQL NULL) for an
@@ -52,7 +54,7 @@ sub {
 	}
 
 	my $time;
-	if ($val =~ /:(\d{1,4})\s*$/) {
+	if ($timeval =~ /^:(\d{1,4})\s*$/) {
 		# accept traditional Interchange date_time widget times
 		# of format '0130', e.g. '20080201:0130'
 		$time = sprintf('%04d', $1);
@@ -63,7 +65,7 @@ sub {
 		# to support PostgreSQL's timestamp with time zone format
 		# e.g. '2008-02-01 01:30:05-07'
 		my ($hours, $minutes, $seconds)
-		   = ($val =~ /\s(\d\d?):(\d\d?)(?::(\d\d+))/)
+		   = ($timeval =~ /\s(\d\d?):(\d\d?)(?::(\d\d+))/)
 		  ) {
 		$time = sprintf($time_format, $hours, $minutes, $seconds);
 	}
