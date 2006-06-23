@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.1 2006-06-23 10:26:02 racke Exp $
+# $Id: Swish2.pm,v 1.2 2006-06-23 12:20:46 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 use strict;
 
 use lib qw( /usr/local/lib/swish-e/perl );
@@ -93,7 +93,7 @@ sub init {
 
     @{$s}{keys %Default} = (values %Default);
 
-    $s->{mv_base_directory}     =  undef,
+    $s->{mv_base_directory}     = $Vend::Cfg->{VendRoot},
     $s->{mv_begin_string}       = [];
     $s->{mv_all_chars}          = [1];
     $s->{mv_case}               = [];
@@ -124,7 +124,7 @@ sub init {
         $_ = Vend::Util::catfile($s->{mv_base_directory}, $_)
             unless Vend::Util::file_name_is_absolute($_);
     }
-    my $from_index = join ' ', @{ $s->{'mv_search_file'} };
+    my $from_index = join ' ', @searchfiles;
     $s->{'swish_index'} = $from_index;
 
     unless ($_swish->{$from_index}) {
