@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.205 2006-04-09 23:27:53 docelic Exp $
+# $Id: Config.pm,v 2.206 2006-06-23 20:17:58 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.205 $, 10);
+$VERSION = substr(q$Revision: 2.206 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2627,11 +2627,16 @@ sub parse_require {
 
 	my $carptype;
 	my $error_message;
+	my $pathinfo;
 
 	if($val =~ s/\s+"(.*)"//s) {
 		$error_message = "\a\n\n$1\n";
 	}
 
+	if($val =~ s%\s+((/[\w-]+)+)%%) {
+		$pathinfo = $1;
+	}
+	
 	if($cap) {
 		$carptype = sub { return; };
 	}
@@ -2689,7 +2694,13 @@ sub parse_require {
 			}
 			$module =~ /[^\w:]/ and return undef;
 			if(! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
+				if ($pathinfo) {
+					unshift(@INC, $pathinfo);
+				}
 				eval "require $module$oldtype;";
+				if ($pathinfo) {
+					shift(@INC);
+				}
 				::logGlobal("while eval'ing module %s got [%s]", $module, $@) if ($@);
 				return ! $@;
 			}
