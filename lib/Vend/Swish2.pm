@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.5 2006-06-23 14:34:42 racke Exp $
+# $Id: Swish2.pm,v 1.6 2006-06-23 14:41:40 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 use strict;
 
 use lib qw( /usr/local/lib/swish-e/perl );
@@ -228,8 +228,6 @@ sub search {
 
     my @out;
     while (my $result = $results->NextResult) {
-        my $out_ref = [ map { $result->Property( $fmap{$_} ) } @{ $s->{'mv_field_names'} } ];
-
         my $out_ref = [];
         foreach my $field (@{ $s->{'mv_field_names'} }) {
             if ($field =~ /context/) {
