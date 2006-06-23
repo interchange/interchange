@@ -1,8 +1,8 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.31 2005-11-08 18:14:45 jon Exp $
+# $Id: Scan.pm,v 2.32 2006-06-23 12:41:50 racke Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -540,9 +540,12 @@ sub perform_search {
 				$q = "$Global::Variable->{$options{mv_searchtype}}"->new(%options);
 			};
 			if ($@) {
+				::logError("Search initialization for search type %s failed: %s",
+						   $options{mv_searchtype}, $@);
+				
 				::display_special_page(
 					find_special_page('badsearch'),
-					errmsg("Bad search type %s: %s", $options{mv_searchtype}, $@ ),
+					errmsg('Search initialization failed')
 					);
 				return 0;
 			}
