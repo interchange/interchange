@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.6 2006-06-23 14:41:40 racke Exp $
+# $Id: Swish2.pm,v 1.7 2006-06-23 20:19:33 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,10 +26,9 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 use strict;
 
-use lib qw( /usr/local/lib/swish-e/perl );
 use SWISH::API;
 use SWISH::ParseQuery;
 use SWISH::PhraseHighlight;
