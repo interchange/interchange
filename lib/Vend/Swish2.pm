@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.3 2006-06-23 12:31:41 racke Exp $
+# $Id: Swish2.pm,v 1.4 2006-06-23 14:18:23 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 use strict;
 
 use lib qw( /usr/local/lib/swish-e/perl );
@@ -183,6 +183,35 @@ sub search {
     }
 
     my $engine = $_swish->{ $s->{'swish_index'} };
+
+	# check properties first
+	my @indexes = $engine->IndexNames();
+	my $index_num = @indexes;
+	my (%prop_avail, @plist, $prop);
+	
+	for my $index (@indexes) {
+		@plist = $engine->PropertyList($index);
+		for $prop (@plist) {
+			push (@{$prop_avail{$prop->Name()}}, $index);
+		}
+	}
+	
+	for (@{ $s->{'mv_field_names'} }) {
+		if (exists $fmap{$_}) {
+			$prop = $fmap{$_};
+		} else {
+			$prop = $_;
+		}
+		
+		unless (exists $prop_avail{$prop}) {
+			return $s->search_error("Unknown property '$prop'");
+		}
+
+		unless (@{$prop_avail{$prop}} == $index_num) {
+			return $s->search_error("Property '$prop' is missing from some index files");
+		}
+	}
+	
 
     my $results = $engine->Query( $search_string );
     if ($engine->Error) {
