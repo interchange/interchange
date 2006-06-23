@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.4 2006-06-23 14:18:23 racke Exp $
+# $Id: Swish2.pm,v 1.5 2006-06-23 14:34:42 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 use strict;
 
 use lib qw( /usr/local/lib/swish-e/perl );
@@ -57,6 +57,7 @@ my %fmap = ( code        => 'swishreccount',
              filesize    => 'swishdocsize',
              mod_date    => 'swishlastmodified',
              description => 'swishdescription',
+			 dbfile      => 'swishdbfile',
            );
 my %highlight_settings = ( show_words    => 8,
                            occurrences   => 5,
@@ -197,11 +198,11 @@ sub search {
 	}
 	
 	for (@{ $s->{'mv_field_names'} }) {
-		if (exists $fmap{$_}) {
-			$prop = $fmap{$_};
-		} else {
-			$prop = $_;
+		unless (exists $fmap{$_}) {
+			$fmap{$_} = $_;
 		}
+		
+		$prop = $fmap{$_};
 		
 		unless (exists $prop_avail{$prop}) {
 			return $s->search_error("Unknown property '$prop'");
