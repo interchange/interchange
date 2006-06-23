@@ -1,8 +1,8 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.70 2006-02-14 08:30:51 racke Exp $
+# $Id: DBI.pm,v 2.71 2006-06-23 08:43:57 racke Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1290,13 +1290,6 @@ sub set_row {
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
 		if $cfg->{FILTER_TO};
 
-	if ($cfg->{PREFER_NULL}) {
-		for (keys %{$cfg->{PREFER_NULL}}) {
-			my $i = $cfg->{COLUMN_INDEX}{$_};
-			undef $fields[$i] if $fields[$i] eq '';
-		}
-	}
-
 	my $val;
 
 	if(scalar @fields == 1) {
@@ -1349,6 +1342,13 @@ sub set_row {
 			return undef;
 		}
 		return $fields[0];
+	}
+	
+	if ($cfg->{PREFER_NULL}) {
+		for (keys %{$cfg->{PREFER_NULL}}) {
+			my $i = $cfg->{COLUMN_INDEX}{$_};
+			undef $fields[$i] if $fields[$i] eq '';
+		}
 	}
 
 	if(! length($fields[$ki]) ) {
