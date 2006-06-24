@@ -6,6 +6,37 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 5.4.2 released on YYYY-MM-DD.
+
+
+Core
+----
+
+* Fixed a DoS exploit. A carefully crafted HTTP POST request could cause
+  an Interchange page processor to hang until it's killed by Interchange's
+  periodic housekeeping routine. If several of these requests are received
+  in quick succession then it could be possible to disable all of the page
+  processors, rendering Interchange unresponsive for a while. Fixed by
+  Kevin Walsh; pointed out by Donald Alexander.
+
+Standard demo
+-------------
+
+* Updated Discover Card logo. Provided by Steve Graham.
+
+* Various special_pages/missing.html fixes:
+  - Fixed broken admin 404 error page (which came from Standard).
+  - Removed duplicate, sometimes-bogus MV_PREV_PAGE display.
+  - Eliminated double-interpolation of page comparison.
+
+* Increased compatibility with XHTML.
+
+* Cleaned up splash page and fixed broken links.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 5.4.1 released on 2006-05-27.
 
 
