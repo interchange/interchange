@@ -17,7 +17,7 @@ Core
   Vend::Util::string_to_ref for deserialization of carts and other 
   hashes.  
 
-* Remove odd formatting from --add entry in interchange manual page.
+* Removed odd formatting from --add entry in interchange manual page.
 
 * Fixed a DoS exploit. A carefully crafted HTTP POST request could cause
   an Interchange page processor to hang until it's killed by Interchange's
@@ -26,12 +26,36 @@ Core
   processors, rendering Interchange unresponsive for a while. Fixed by
   Kevin Walsh; pointed out by Donald Alexander.
 
+* In &Vend::Table::DBI::set_row, avoid unwanted expansion of array when we
+  have PREFER_NULL fields and number of fields passed is one. Thanks to
+  Peter Ajamian for the patch and investigation.
+
+* Added Vend::Swish2 module provided by Brian Miller <brian@endpoint.com>.
+  This is superior to Vend::Swish, because instead of the awkward way to
+  interface with Swish-e by running the binary it uses the Swish Perl API.
+
+  Note: This module will replace Vend::Swish after we ensure as much backward
+  compatibility as possible.
+
+* Allow specification of one additional include directory for specific
+  modules, specified like this:
+
+  Require module Vend::Swish /usr/lib/swish-e/perl
+
 UserTag
 -------
 
 * Make [save-cart] keep cart if userdb returns with an error. 
 
 * Make [formel] call [display] on unknown types.
+
+Filter
+------
+
+* Added "round" filter to round in floating-point-safe way, using the
+  Vend::Util routine.
+
+* Avoid ambiguity between two time formats in date_change filter.
 
 Jobs
 ----
@@ -45,3 +69,13 @@ Standard demo
 * Fixed minor security hole of admin's session ID being exposed when placing
   an order in the admin. Found by Mark Lipscombe <markl@gasupnow.com>.
 
+* Various special_pages/missing.html fixes:
+  - Fixed broken admin 404 error page (which came from Standard).
+  - Removed duplicate, sometimes-bogus MV_PREV_PAGE display.
+  - Eliminated double-interpolation of page comparison.
+
+* Updated Discover Card logo. Provided by Steve Graham.
+
+* Increased compatibility with XHTML.
+
+* Cleaned up splash page and fixed broken links.
