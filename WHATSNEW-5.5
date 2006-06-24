@@ -8,31 +8,40 @@
 
 Interchange 5.5.1 released on YYYY-MM-DD.
 
+See UPGRADE document for incompatible changes not listed here.
+
 Core
 ----
 
-* Fix UserDB login issues within embedded Perl by using
+* Fixed UserDB login issues within embedded Perl by using
   Vend::Util::string_to_ref for deserialization of carts and other 
   hashes.  
 
-* Remove odd formatting from --add entry in interchange manual page
+* Remove odd formatting from --add entry in interchange manual page.
+
+* Fixed a DoS exploit. A carefully crafted HTTP POST request could cause
+  an Interchange page processor to hang until it's killed by Interchange's
+  periodic housekeeping routine. If several of these requests are received
+  in quick succession then it could be possible to disable all of the page
+  processors, rendering Interchange unresponsive for a while. Fixed by
+  Kevin Walsh; pointed out by Donald Alexander.
 
 UserTag
 -------
 
-* [save-cart] keeps cart if userdb returns with an error. 
+* Make [save-cart] keep cart if userdb returns with an error. 
 
-* [formel] calls [display] on unknown types.
+* Make [formel] call [display] on unknown types.
 
 Jobs
 ----
 
-* new job group db with export job to export databases offline for backup
-  and version control purposes
+* Added new job group db with export job to export databases offline for
+  backup and version control purposes.
  
-Standard
----------
+Standard demo
+-------------
 
-* Fix minor security hole of admin's session ID being exposed when placing
+* Fixed minor security hole of admin's session ID being exposed when placing
   an order in the admin. Found by Mark Lipscombe <markl@gasupnow.com>.
 
