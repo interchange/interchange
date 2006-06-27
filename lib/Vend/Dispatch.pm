@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.67 2006-04-05 14:42:19 mheins Exp $
+# $Id: Dispatch.pm,v 1.68 2006-06-27 09:24:35 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.67 $, 10);
+$VERSION = substr(q$Revision: 1.68 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -724,7 +724,7 @@ sub run_in_catalog {
 
 	open_cat($cat);
 
-	logError("Run jobs group=%s", $job || 'INTERNAL');
+	logError("Run jobs group=%s pid=$$", $job || 'INTERNAL');
 
 	my $jobscfg = $Vend::Cfg->{Jobs};
 
@@ -826,7 +826,7 @@ sub run_in_catalog {
 	$out = Vend::Interpolate::filter_value($filter, $out);
 	$out .= full_dump() if $jobscfg->{add_session};
 
-	logError("Finished jobs group=%s", $job || 'INTERNAL');
+	logError("Finished jobs group=%s pid=$$", $job || 'INTERNAL');
 	
 	close_cat();
 
