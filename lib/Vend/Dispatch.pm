@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.68 2006-06-27 09:24:35 racke Exp $
+# $Id: Dispatch.pm,v 1.69 2006-06-27 14:24:42 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.68 $, 10);
+$VERSION = substr(q$Revision: 1.69 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -714,13 +714,6 @@ sub run_in_catalog {
 		logGlobal( "Can't find catalog '%s'" , $cat );
 		return undef;
 	}
-
-	#$Vend::Log_suppress = 1;
-
-	unless ($Vend::Quiet) {
-		logGlobal("Run catalog '%s' jobs group=%s", $cat, $job || 'INTERNAL');
-	}
-	#undef $Vend::Log_suppress;
 
 	open_cat($cat);
 
