@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.8 2006-06-28 12:07:24 racke Exp $
+# $Id: Swish2.pm,v 1.9 2006-06-28 14:59:46 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 use strict;
 
 use SWISH::API;
@@ -226,6 +226,8 @@ sub search {
     }
 
     my @out;
+	my $date_format = $Vend::Cfg->{Swish2}->{date_format} || '%Y-%m-%d %H:%M:%S';
+		
     while (my $result = $results->NextResult) {
         my $out_ref = [];
         foreach my $field (@{ $s->{'mv_field_names'} }) {
@@ -242,7 +244,7 @@ sub search {
                 push @$out_ref, $text;
             }
 			elsif ($field eq 'mod_date') {
-				push @$out_ref, POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime($result->Property( $fmap{$field} )));
+				push @$out_ref, POSIX::strftime($date_format, localtime($result->Property( $fmap{$field} )));
 			}
 			else {
                 push @$out_ref, $result->Property( $fmap{$field} );
