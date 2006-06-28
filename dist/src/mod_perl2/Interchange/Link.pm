@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.9 2006-03-28 17:02:47 mheins Exp $
+# $Id: Link.pm,v 1.10 2006-06-28 14:39:41 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.9 $
+$Revision: 1.10 $
 
 =head1 SYNOPSIS
 
@@ -483,7 +483,6 @@ sub send_environment {
 
 #warn("Connection=$c");
 
-    my (@tmp) = keys %ENV;
     my ($str);
     my $val = '';
     my $count = 0;
@@ -558,7 +557,6 @@ sub send_environment {
         my $val = $r->headers_in->{$_};
         my $k = uc $_;
         $k =~ s/-/_/g;
-        $k =~ s/-/_/g;
         $k = $header_map{$k} || "HTTP_$k";
         $header{$k} = $val;
 #warn "header $_/$k=$val\n";
@@ -572,11 +570,16 @@ sub send_environment {
         QUERY_STRING    => $query,
         REMOTE_ADDR     => $c->remote_ip,
         %header,
+        %ENV,
     );
+
+    my %seen;
 
     while (@pairs) {
         my $n = shift @pairs;
         my $v = shift @pairs;
+        next if $seen{$n}++;
+
         $count++;
         $str = "$n=$v";
         $val .= length($str);
