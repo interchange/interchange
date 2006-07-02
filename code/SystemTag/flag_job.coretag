@@ -1,0 +1,14 @@
+# Copyright 2006 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: flag_job.coretag,v 1.1 2006-07-02 17:35:11 racke Exp $
+
+UserTag flag_job Order   action token
+UserTag flag_job Version $Revision: 1.1 $
+UserTag flag_job Routine <<EOR
+sub {
+	my ($action, $token) = @_;
+
+	return Vend::Server::flag_job($$, $Vend::Cat, $action, $token);
+}
+EOR
+

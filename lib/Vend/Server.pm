@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.67 2006-06-06 18:03:55 kwalsh Exp $
+# $Id: Server.pm,v 2.68 2006-07-02 17:35:11 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,8 +26,9 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
+use Cwd;
 use POSIX qw(setsid strftime);
 use Vend::Util;
 use Fcntl;
@@ -1363,14 +1364,26 @@ EOF
 				$lifetime = $Global::PIDcheck;
 			}
             next if $runtime < $lifetime;
+			my $catname;
 			if ($isjob) {
-	            delete $Lifetime{$_};
-    	        $Job_servers--;
+				# determine catalog name from pid file
+				if (open (JOBPID, $fn)) {
+					$catname = <JOBPID>;
+					chomp($catname);
+					close (JOBPID);
+					delete $Lifetime{$_};
+					$Job_servers--;
+				}
 			}
-
+			
             if(kill 9, $_) {
                 unlink $fn and $Num_servers--;
-                ::logGlobal({ level => 'error' }, "hammered PID %s running %s seconds", $_, $runtime);
+				if ($catname) {
+					::logGlobal({ level => 'error' }, "hammered job PID %s for catalog $catname running %s seconds", $_, $runtime);
+					flag_job($_, $catname, 'furl');
+				} else {
+					::logGlobal({ level => 'error' }, "hammered PID %s running %s seconds", $_, $runtime);
+				}
             }
             elsif (! kill 0, $_) {
 				unlink $fn and $Num_servers--;
@@ -2472,16 +2485,81 @@ my $pretty_vector = unpack('b*', $rin);
 }
 
 sub touch_pid {
-	open(TEMPPID, ">>$Global::RunDir/pid.$$") 
+	my $temppid = gensym();
+	
+	open($temppid, ">>$Global::RunDir/pid.$$") 
 		or die "create PID file $$: $!\n";
-	lockfile(\*TEMPPID, 1, 0)
+	lockfile($temppid, 1, 0)
 		or die "PID $$ conflict: can't lock\n";
+	$temppid->autoflush(1);
+	
+	if (@_) {
+		print $temppid $_[0], "\n";
+	}
 }
 
 sub jobs_job {
 	my ($cat, @jobs) = @_;
 	for my $job (@jobs) {
 		Vend::Dispatch::run_in_catalog($cat, $job);
+	}
+}
+
+sub flag_job {
+	my ($pid, $cat, $action, $token) = @_;
+
+	if ($action eq 'raise') {
+		if ($token =~ /^(\d+)$/) {
+			my $file = "flag.$cat.$1";
+			my $cwd = getcwd();
+		   
+			unless (open(FLAG, ">>$Global::RunDir/$file")) {
+				die "unable to create flag file $Global::RunDir/$file: $!\n";
+			}
+
+			unless (lockfile(\*FLAG, 1, 0)) {
+				die "unable to lock file $Global::RunDir/$file: $!\n";
+			}
+
+			unless (chdir($Global::RunDir)) {
+				die "unable to enter directory $Global::RunDir: $!\n";
+			}
+
+			unless (symlink($file, "flag.$pid")) {
+				chdir($cwd);
+				die "unable to create symlink for $file: $!\n";
+			}
+
+			chdir($cwd);
+		} else {
+			return undef;
+		}
+	} elsif ($action eq 'check') {
+		return if $token !~ /^(\d+)$/;
+
+		if (-f "$Global::RunDir/flag.$cat.$1") {
+			return 1;
+		} else {
+			return 0;
+		}
+	} elsif ($action eq 'furl') {
+		my $flagfile = readlink("$Global::RunDir/flag.$pid");
+
+		if (defined ($flagfile)) {
+			if ($flagfile =~ /^flag\.$cat\.(\d+)$/) {
+				unless (unlink("$Global::RunDir/$flagfile")) {
+					die "failed to remove flag file: $Global::RunDir/$flagfile: $!\n";
+				}
+			} else {
+				die "invalid flag file $flagfile\n";
+			}
+
+			unless (unlink("$Global::RunDir/flag.$pid")) {
+				die "failed to remove link to flag file: $Global::RunDir/flag.$pid: $!\n";
+			}
+		} else {
+			logGlobal({level => 'notice'}, "Readlink failed: $!\n");
+		}
 	}
 }
 
@@ -2517,7 +2595,7 @@ sub run_jobs {
 			reset_per_fork();
 			$::Instance = {};
 			eval { 
-				touch_pid() if $Global::PIDcheck;
+				touch_pid($cat) if $Global::PIDcheck;
 				&$Sig_inc;
 				jobs_job($cat, @jobs);
 			};
