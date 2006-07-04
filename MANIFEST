@@ -127,6 +127,7 @@ code/SystemTag/field.coretag
 code/SystemTag/file.coretag
 code/SystemTag/filter.coretag
 code/SystemTag/flag.coretag
+code/SystemTag/flag_job.coretag
 code/SystemTag/fly_list.coretag
 code/SystemTag/fly_tax.coretag
 code/SystemTag/form_session_id.coretag
