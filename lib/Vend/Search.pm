@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.30 2005-04-30 15:09:58 mheins Exp $
+# $Id: Search.pm,v 2.31 2006-07-05 13:19:54 kwalsh Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -649,12 +649,18 @@ sub map_ops {
 		$c->[$i] =~ tr/ \t//;
 		my $o = $c->[$i];
 		$c->[$i] = $s->{mv_numeric}[$i]
-				? [ @{$numopmap{$o}} ]
-				: [ @{$stropmap{$o}} ];
-		if(! $c->[$i]) {
+				? $numopmap{$o}
+				: $stropmap{$o};
+		if (ref($c->[$i]) eq 'ARRAY') {
+			$c->[$i] = [ @{$c->[$i]} ];
+		}
+		elsif (!$c->[$i]) {
 			my $r;
 			$c->[$i] = [$r, $o], next
 				if  $r = Vend::Util::codedef_routine('SearchOp',$o);
+		}
+		if (!$c->[$i]) {
+		    $s->search_error("Unknown mv_column_op (%s)",$o);
 		}
 	}
 	@{$s->{mv_column_op}};
