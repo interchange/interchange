@@ -1,10 +1,10 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.22 2005-11-08 18:14:45 jon Exp $
+# $Id: DbSearch.pm,v 2.23 2006-07-07 13:14:20 racke Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use Search::Dict;
 use strict;
@@ -153,31 +153,6 @@ sub search {
 #::logDebug("specs=" . ::uneval($s->{mv_searchspec}));
 	@specs = @{$s->{mv_searchspec}};
 
-	@pats = $s->spec_check(@specs);
-#::logDebug("specs now=" . ::uneval(\@pats));
-
-	if ($s->{mv_coordinate}) {
-		undef $f;
-	}
-	elsif ($s->{mv_return_all}) {
-		$f = sub {1};
-	}
-	elsif ($s->{mv_orsearch}[0]) {
-		eval {$f = $s->create_search_or(
-									$s->get_scalar(
-											qw/mv_case mv_substring_match mv_negate/
-											),
-										@pats					)};
-	}
-	else  {	
-		eval {$f = $s->create_search_and(
-									$s->get_scalar(
-											qw/mv_case mv_substring_match mv_negate/
-											),
-										@pats					)};
-	}
-
-	$@  and  return $s->search_error("Function creation: $@");
 
 	if(ref $s->{mv_like_field} and ref $s->{mv_like_spec}) {
 		my $ary = [];
@@ -206,6 +181,48 @@ sub search {
 			push @{$s->{eq_specs_sql}}, @$ary;
 		}
 	}
+
+	# pass mv_min_string check if a valid pair of mv_like_field
+	# and mv_like_spec has been specified
+	
+	my $min_string = $s->{mv_min_string};
+
+	if ($s->{eq_specs_sql}) {
+		$s->{mv_min_string} = 0;
+	}
+	
+	@pats = $s->spec_check(@specs);
+
+	$s->{mv_min_string} = $min_string;
+	
+#::logDebug("specs now=" . ::uneval(\@pats));
+
+	if ($s->{mv_search_error}) {
+ 		return $s;
+ 	}
+	
+	if ($s->{mv_coordinate}) {
+		undef $f;
+	}
+	elsif ($s->{mv_return_all}) {
+		$f = sub {1};
+	}
+	elsif ($s->{mv_orsearch}[0]) {
+		eval {$f = $s->create_search_or(
+									$s->get_scalar(
+											qw/mv_case mv_substring_match mv_negate/
+											),
+										@pats					)};
+	}
+	else  {	
+		eval {$f = $s->create_search_and(
+									$s->get_scalar(
+											qw/mv_case mv_substring_match mv_negate/
+											),
+										@pats					)};
+	}
+
+	$@  and  return $s->search_error("Function creation: $@");
 
 	my $qual;
 	if($s->{eq_specs_sql}) {
