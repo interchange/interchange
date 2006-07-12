@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.68 2006-07-02 17:35:11 racke Exp $
+# $Id: Server.pm,v 2.69 2006-07-12 10:28:29 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.68 $, 10);
+$VERSION = substr(q$Revision: 2.69 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1463,7 +1463,7 @@ sub map_unix_socket {
 }
 
 sub map_inet_socket {
-	my ($vec, $vec_map, $fh_map, @ports) = @_;
+	my ($mode, $vec, $vec_map, $fh_map, @ports) = @_;
 
 	my $proto = getprotobyname('tcp');
 	my @made;
@@ -1514,7 +1514,8 @@ sub map_inet_socket {
 
 		if ($@) {
 		  ::logGlobal({ level => 'error' },
-					"INET mode server failed to start on port %s: %s",
+					"$mode mode server failed to start on IP address %s, port %s: %s",
+					$bind_ip,
 					$bind_port,
 					$@,
 				  );
@@ -2218,7 +2219,7 @@ sub server_both {
 			}
 			if(@inet_soap) {
 				push @made,
-					map_inet_socket(\$s_vector, \%s_vec_map, \%s_fh_map, @inet_soap);
+					map_inet_socket('SOAP', \$s_vector, \%s_vec_map, \%s_fh_map, @inet_soap);
 			}
 		}
 	}
@@ -2234,7 +2235,7 @@ sub server_both {
 				$Global::TcpHost,
 				);
 		my @made =
-			map_inet_socket(\$vector, \%vec_map, \%fh_map, keys %{$Global::TcpMap});
+			map_inet_socket('TCP', \$vector, \%vec_map, \%fh_map, keys %{$Global::TcpMap});
 		if (! scalar @made) {
 			my $msg;
 			if ($Global::Unix_Mode) {
