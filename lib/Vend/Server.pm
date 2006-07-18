@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.69 2006-07-12 10:28:29 racke Exp $
+# $Id: Server.pm,v 2.70 2006-07-18 21:49:28 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.69 $, 10);
+$VERSION = substr(q$Revision: 2.70 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -2492,9 +2492,9 @@ sub touch_pid {
 		or die "create PID file $$: $!\n";
 	lockfile($temppid, 1, 0)
 		or die "PID $$ conflict: can't lock\n";
-	$temppid->autoflush(1);
 	
 	if (@_) {
+		$temppid->autoflush(1);
 		print $temppid $_[0], "\n";
 	}
 }
