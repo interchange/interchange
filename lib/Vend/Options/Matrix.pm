@@ -1,8 +1,8 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.11 2005-11-08 18:14:46 jon Exp $
+# $Id: Matrix.pm,v 1.11.2.1 2006-07-21 13:38:42 racke Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
+# Copyright (C) 2002-2006 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.11.2.1 $, 10);
 
 =head1 NAME
 
@@ -244,7 +244,9 @@ sub display_options {
 		}
 		
 		$phony->{mv_sku} = $sku;
-		my $begin = Vend::Interpolate::tag_accessories(
+		my $begin = '';
+		unless ($opt->{report}) {
+			$begin = Vend::Interpolate::tag_accessories(
 							$sku,
 							'',
 							{ 
@@ -255,6 +257,8 @@ sub display_options {
 							},
 							$phony,
 						);
+		}
+		
 		if($opt->{td}) {
 			for(@out) {
 				$out .= "<td>$begin$_</td>";
