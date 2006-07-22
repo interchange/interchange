@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.69 2006-06-27 14:24:42 racke Exp $
+# $Id: Dispatch.pm,v 1.70 2006-07-22 17:04:28 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.69 $, 10);
+$VERSION = substr(q$Revision: 1.70 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1125,6 +1125,20 @@ EOF
 
 #show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
+
+	if (my $subname = $Vend::Cfg->{SpecialSub}{catalog_init}) {
+#::logDebug(errmsg("running subroutine '%s' for %s", $subname, 'catalog_init'));
+		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		my $status;
+		eval {
+			$status = $sub->();
+		};
+
+		if($@) {
+			::logError("Error running %s subroutine %s: %s", 'catalog_init', $subname, $@);
+		}
+	}
+
 #show_times("end open_database") if $Global::ShowTimes;
 	return 1;
 }
