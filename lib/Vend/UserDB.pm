@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.42 2005-12-09 17:39:26 racke Exp $
+# $Id: UserDB.pm,v 2.43 2006-07-24 17:06:59 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 use vars qw!
 	$VERSION
@@ -530,6 +530,10 @@ sub set_db {
 		$ignore{$_} = 1;
 	}
 
+	if($self->{OPTIONS}{username_email}) {
+		$ignore{$self->{OPTIONS}{username_email_field} || 'email'} = 1;
+	}
+
 	for(values %{$self->{LOCATION}}) {
 		$ignore{$_} = 1;
 	}
@@ -568,21 +572,51 @@ sub clear_values {
 
 	@fields = @{ $self->{DB_FIELDS} } unless @fields;
 
+	my %constant;
 	my %scratch;
+	my %session_hash;
+
+	if($self->{OPTIONS}->{constant}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{constant} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$constant{$k} = $v;
+		}
+	}
 
 	if($self->{OPTIONS}->{scratch}) {
-		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
-		@scratch{@s} = @s;
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{scratch} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$scratch{$k} = $v;
+		}
+	}
+
+	if($self->{OPTIONS}->{session_hash}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{session_hash} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$session_hash{$k} = $v;
+		}
 	}
 
 	for(@fields) {
-		if($scratch{$_}) {
-			if (exists $Vend::Cfg->{ScratchDefault}->{$_}) {
-				$::Scratch->{$_} = $Vend::Cfg->{ScratchDefault}->{$_};
+		if(my $s = $scratch{$_}) {
+			if (exists $Vend::Cfg->{ScratchDefault}->{$s}) {
+				$::Scratch->{$s} = $Vend::Cfg->{ScratchDefault}->{$s};
 			}
 			else {
-				delete $::Scratch->{$_};
+				delete $::Scratch->{$s};
 			}
+		}
+		elsif($constant{$_}) {
+			delete $Vend::Session->{constant}{$constant{$_}};
+		}
+		elsif($session_hash{$_}) {
+			delete $Vend::Session->{$session_hash{$_}};
 		}
 		else {
 			if (exists $Vend::Cfg->{ValuesDefault}->{$_}) {
@@ -599,10 +633,11 @@ sub clear_values {
 }
 
 sub get_values {
-	my($self, $valref, $scratchref) = @_;
+	my($self, $valref, $scratchref, $constref) = @_;
 
 	$valref = $::Values unless ref($valref);
 	$scratchref = $::Scratch unless ref($scratchref);
+	$constref = $Vend::Session->{constant}  unless ref($constref);
 
 	my @fields = @{ $self->{DB_FIELDS} };
 
@@ -616,6 +651,8 @@ sub get_values {
 
 	my %ignore;
 	my %scratch;
+	my %constant;
+	my %session_hash;
 
 	for(values %{$self->{LOCATION}}) {
 		$ignore{$_} = 1;
@@ -627,10 +664,34 @@ sub get_values {
 		push @fields, keys %outboard;
 	}
 
+	if($self->{OPTIONS}->{constant}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{constant} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$constant{$k} = $v;
+		}
+#::logDebug("constant ones: " . join " ", @s);
+	}
+
+	if($self->{OPTIONS}->{session_hash}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{session_hash} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$session_hash{$k} = $v;
+		}
+#::logDebug("session_hash ones: " . join " ", @s);
+	}
+
 	if($self->{OPTIONS}->{scratch}) {
-		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
-		@scratch{@s} = @s;
-#::logError("scratch ones: " . join " ", @s);
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{scratch} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$scratch{$k} = $v;
+		}
+#::logDebug("scratch ones: " . join " ", @s);
 	}
 
 	my @needed;
@@ -665,11 +726,20 @@ sub get_values {
 			$val = $row->{$_};
 		}
 
-		if($scratch{$_}) {
-			$::Scratch->{$_} = $val;
+		my $k;
+		if($k = $scratch{$_}) {
+			$scratchref->{$k} = $val;
 			next;
 		}
-		$::Values->{$_} = $val;
+		elsif($k = $constant{$_}) {
+			$constref->{$k} = $val;
+			next;
+		}
+		elsif($k = $session_hash{$_}) {
+			$Vend::Session->{$k} = string_to_ref($val) || {};
+			next;
+		}
+		$valref->{$_} = $val;
 
 	}
 
@@ -687,10 +757,11 @@ sub get_values {
 }
 
 sub set_values {
-	my($self, $valref, $scratchref) = @_;
+	my($self, $valref, $scratchref, $constref) = @_;
 
 	$valref = $::Values unless ref($valref);
 	$scratchref = $::Scratch unless ref($scratchref);
+	$constref = $Vend::Session->{constant}  unless ref($constref);
 
 	my $user = $self->{USERNAME};
 
@@ -703,10 +774,34 @@ sub set_values {
 		return undef;
 	}
 	my %scratch;
+	my %constant;
+	my %session_hash;
 
 	if($self->{OPTIONS}->{scratch}) {
-		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
-		@scratch{@s} = @s;
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{scratch} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$scratch{$k} = $v;
+		}
+	}
+
+	if($self->{OPTIONS}->{constant}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{constant} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$constant{$k} = $v;
+		}
+	}
+
+	if($self->{OPTIONS}->{session_hash}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{session_hash} ;
+		for(@s) {
+			my ($k, $v) = split /=/, $_;
+			$v ||= $k;
+			$session_hash{$k} = $v;
+		}
 	}
 
 	my $val;
@@ -742,9 +837,17 @@ sub set_values {
 	for( @fields ) {
 #::logDebug("set_values saving $_ as $valref->{$_}\n");
 		my $val;
-		if ($scratch{$_}) {
-			$val = $scratchref->{$_}
-				if defined $scratchref->{$_};	
+		my $k;
+		if ($k = $scratch{$_}) {
+			$val = $scratchref->{$k}
+				if defined $scratchref->{$k};	
+		}
+		elsif ($constant{$_}) {
+			# we never store constants
+			next;
+		}
+		elsif ($k = $session_hash{$_}) {
+			$val = uneval_it($Vend::Session->{$k});
 		}
 		else {
 			$val = $valref->{$_}
@@ -776,6 +879,8 @@ sub set_values {
 		push @bvals, shift @extra;
 	}
 
+#::logDebug("bfields=" . ::uneval(\@bfields));
+#::logDebug("bvals=" . ::uneval(\@bvals));
 	if(@bfields) {
 		$db->set_slice($user, \@bfields, \@bvals);
 	}
@@ -1499,6 +1604,9 @@ sub new_account {
 		die errmsg("Sorry, reserved user name.") . "\n"
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
+		die errmsg("Sorry, user name must be an email address.") . "\n"
+			if $self->{OPTIONS}{username_email} 
+				and $self->{USERNAME} !~ m!^[a-zA-Z]([.]?([[:alnum:]_-]+)*)?@([[:alnum:]\-_]+\.)+[a-zA-Z]{2,4}$!;
 		die errmsg("Must enter at least %s characters for password.",
 			$self->{PASSMINLEN}) . "\n"
 			if length($self->{PASSWORD}) < $self->{PASSMINLEN};
@@ -1574,7 +1682,19 @@ sub new_account {
 						$self->{LOCATION}{PASSWORD},
 						$pw,
 						);
+
 		die errmsg("Database access error.") . "\n" unless defined $pass;
+
+		if($self->{OPTIONS}{username_email}) {
+			my $field_name = $self->{OPTIONS}{username_email_field} || 'email';
+			$::Values->{$field_name} ||= $self->{USERNAME};
+			$udb->set_field(
+						$self->{USERNAME},
+						$field_name,
+						$self->{USERNAME},
+						)
+				 or die errmsg("Database access error: %s", $udb->errstr) . "\n";
+		}
 
 		if($options{no_login}) {
 			$Vend::Session->{auto_created_user} = $self->{USERNAME};
