@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.70 2006-07-22 17:04:28 mheins Exp $
+# $Id: Dispatch.pm,v 1.71 2006-07-26 15:24:49 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.70 $, 10);
+$VERSION = substr(q$Revision: 1.71 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1407,8 +1407,6 @@ EOF
 	}
 
 	$Vend::Session->{'user'} = $CGI::user;
-
-	undef $Vend::Cookie if 	$Vend::Session->{logged_in};
 
 	$CGI::pragma = 'no-cache'
 		if delete $::Scratch->{mv_no_cache};
