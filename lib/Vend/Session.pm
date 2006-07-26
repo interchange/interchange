@@ -1,8 +1,8 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.24 2006-04-05 14:42:19 mheins Exp $
+# $Id: Session.pm,v 2.25 2006-07-26 07:51:34 racke Exp $
 # 
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -199,7 +199,6 @@ sub count_ip {
 	my $ip = $CGI::remote_addr;
 	$ip =~ s/\W/_/g;
 	my $dir = "$Vend::Cfg->{ScratchDir}/addr_ctr";
-	mkdir $dir, 0777 unless -d $dir;
 	my $fn = Vend::Util::get_filename($ip, 2, 1, $dir);
 	if(-f $fn) {
 		my $grace = $::Limit->{robot_expire} || 1;
