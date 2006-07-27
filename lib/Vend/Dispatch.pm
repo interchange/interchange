@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.72 2006-07-27 10:34:26 racke Exp $
+# $Id: Dispatch.pm,v 1.73 2006-07-27 11:45:21 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.72 $, 10);
+$VERSION = substr(q$Revision: 1.73 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -811,9 +811,11 @@ sub run_in_catalog {
 		if ($@) {
 			# job terminated due to an error
 			$errors = 1;
+
+			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
+			
 			# remove flag for this job
 			Vend::Server::flag_job($$, $cat, 'furl');
-			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
 		}
 		
 		if ($trackid) {
