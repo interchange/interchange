@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.71 2006-07-26 15:24:49 jon Exp $
+# $Id: Dispatch.pm,v 1.72 2006-07-27 10:34:26 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.71 $, 10);
+$VERSION = substr(q$Revision: 1.72 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -764,7 +764,7 @@ sub run_in_catalog {
 		push @itl, ["Passed ITL", $itl];
 	}
 
-	my @out;
+	my (@out, $errors);
 
 	# remove bogus session created by logError
 	undef $Vend::Session;
@@ -782,30 +782,40 @@ sub run_in_catalog {
 				::logError ("Invalid jobs tracking database $jobscfg->{trackdb}");
 			}
 		}
+
+		eval {
+			# Run once at beginning
+			run_macro($jobscfg->{initialize});
+
+			# initialize or autoload can create session
+			# but must handle all aspects
+			unless ($Vend::Session) {
+				$CGI::values{mv_tmp_session} = 1;
+				init_session();
+			}
+
+			$CGI::remote_addr ||= 'none';
+			$CGI::useragent   ||= 'commandline';
+
+			for(@itl) {
+				# Run once at beginning of each job
+				run_macro($jobscfg->{autoload});
+
+				push @out, interpolate_html($_->[1]);
+
+				# Run once at end of each job
+				run_macro($jobscfg->{autoend});
+			}
+		};
+
+		if ($@) {
+			# job terminated due to an error
+			$errors = 1;
+			# remove flag for this job
+			Vend::Server::flag_job($$, $cat, 'furl');
+			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
+		}
 		
-		# Run once at beginning
-		run_macro($jobscfg->{initialize});
-
-		# initialize or autoload can create session
-		# but must handle all aspects
-		unless ($Vend::Session) {
-			$CGI::values{mv_tmp_session} = 1;
-			init_session();
-		}
-
-		$CGI::remote_addr ||= 'none';
-		$CGI::useragent   ||= 'commandline';
-
-		for(@itl) {
-			# Run once at beginning of each job
-			run_macro($jobscfg->{autoload});
-
-			push @out, interpolate_html($_->[1]);
-
-			# Run once at end of each job
-			run_macro($jobscfg->{autoend});
-		}
-
 		if ($trackid) {
 			$trackdb->set_field($trackid, 'end_run',
 								Vend::Interpolate::mvtime(undef, {}, '%Y-%m-%d %H:%M'));
