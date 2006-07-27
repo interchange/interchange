@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 4.1.16), libdigest-md5-perl, libmime-base64-perl, l
 
 Package: interchange-cat-standard
 Architecture: all
-Depends: libwww-perl, debconf | debconf-2.0, interchange (>=5.3.0), interchange-ui (>=5.3.0), libdbd-mysql-perl | libdbd-pg-perl
+Depends: libwww-perl, debconf | debconf-2.0, interchange (>=5.3.0), interchange-ui (>=5.3.0), libdbd-mysql-perl | libdbd-pg-perl, dbconfig-common
 Description: Standard store, a sample Interchange catalog
  The Standard store is a demo catalog which you can use to
  build your Interchange applications from. While the Standard store
