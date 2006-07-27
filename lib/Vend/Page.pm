@@ -1,8 +1,8 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.22 2006-05-11 12:31:22 mheins Exp $
+# $Id: Page.pm,v 2.23 2006-07-27 10:21:19 racke Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 my $wantref = 1;
 
@@ -73,7 +73,7 @@ sub display_special_page {
 	
 	$page = readfile($noname, $Global::NoAbsolute, 1) || readin($name);
 
-	die ::get_locale_message(412, "Missing special page: %s\n", $name)
+	die ::get_locale_message(412, qq{Missing special page "%s" for subject "%s"\n}, $name, $subject)
 		unless defined $page;
 	$page =~ s#\[subject\]#$subject#ig;
 	$Global::Variable->{MV_SUBJECT} = $subject;
