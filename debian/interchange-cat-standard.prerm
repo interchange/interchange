@@ -27,7 +27,7 @@ if [ "$RET" = "true" ]; then
 	if [ ! -f /var/run/interchange-install ]; then
 		# remove catalog from running server
 		/usr/sbin/interchange --remove=standard || true
-		rm /var/lib/interchange/catalog.d/interchange-cat-standard.cfg
+		rm -f /var/lib/interchange/catalog.d/interchange-cat-standard.cfg
 	fi
 fi
 
