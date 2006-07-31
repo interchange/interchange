@@ -1,13 +1,13 @@
-# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2005-2006 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email_only.oc,v 1.2 2005-11-29 20:30:13 racke Exp $
+# $Id: email_only.oc,v 1.3 2006-07-31 12:40:49 racke Exp $
 
 CodeDef email_only OrderCheck 1
 CodeDef email_only Description Email address
 CodeDef email_only Routine <<EOR
 sub {
 	my($ref, $var, $val) = @_;
-	if($val and $val =~ /^[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+$/) {
+	if($val and $val =~ /^[\040-\077\101-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+$/) {
 		return (1, $var, '');
 	}
 	else {
