@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.70 2006-07-18 21:49:28 racke Exp $
+# $Id: Server.pm,v 2.71 2006-08-02 12:19:15 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -280,12 +280,14 @@ EOF
 			$CGI::values{mv_tmp_session} = 1;
 		}
 	}
-	elsif ($Global::NotRobotUA and $CGI::useragent =~ $Global::NotRobotUA) {
-		# do nothing
-	}
-	elsif ($Global::RobotUA and $CGI::useragent =~ $Global::RobotUA) {
+	unless ($CGI::values{mv_tmp_session}) { 
+		if ($Global::NotRobotUA and $CGI::useragent =~ $Global::NotRobotUA) {
+			# do nothing
+		}
+		elsif ($Global::RobotUA and $CGI::useragent =~ $Global::RobotUA) {
 #::logDebug("It is a robot by UA!");
-		$CGI::values{mv_tmp_session} = 1;
+			$CGI::values{mv_tmp_session} = 1;
+		}
 	}
 }
 
