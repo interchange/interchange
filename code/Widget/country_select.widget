@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: country_select.widget,v 1.8 2005-09-11 23:46:39 docelic Exp $
+# $Id: country_select.widget,v 1.9 2006-08-02 18:10:29 mheins Exp $
 
 CodeDef state_select  Widget  1
 CodeDef state_select  Description State (needs country_select)
@@ -60,7 +60,7 @@ sub {
 
 	my $svar = $opt->{state_var} || $opt->{state_variable} || "${pre}state";
 	my $svar_in = $svar . '_cs_in';
-	my $size = $opt->{cols} || $opt->{width} || '16';
+	my $size = $opt->{state_size} || $opt->{cols} || $opt->{width} || '16';
 	my $ctab = $opt->{country_table} || 'country';
 	$opt->{state_style} ||= 'font-style: italic; font-size: smaller';
 
@@ -190,6 +190,9 @@ EOF
 
 	my $cvar = $opt->{name};
 	$cvar =~ s/\W+/_/g;
+
+	my $extra = $opt->{state_extra} ? " $opt->{state_extra}" : '';
+
 	push @pre, <<EOF;
 	function ${cvar}_widget_adjust_state (cel,sval) {
 		var sbox = document.getElementById('$sel');
@@ -214,7 +217,7 @@ EOF
 		var svary = $v_state_vary\[country];
 		if(! svary) {
 			var val = '';
-			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value">';
+			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value"$extra>';
 			$v_formv.$svar.value=sval;
 
 			return;
