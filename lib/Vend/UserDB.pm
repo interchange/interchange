@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.44 2006-07-26 15:24:49 jon Exp $
+# $Id: UserDB.pm,v 2.45 2006-08-03 15:57:14 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 use vars qw!
 	$VERSION
@@ -633,11 +633,11 @@ sub clear_values {
 }
 
 sub get_values {
-	my($self, $valref, $scratchref, $constref) = @_;
+	my($self, $valref, $scratchref) = @_;
 
 	$valref = $::Values unless ref($valref);
 	$scratchref = $::Scratch unless ref($scratchref);
-	$constref = $Vend::Session->{constant}  unless ref($constref);
+	my $constref = $Vend::Session->{constant} ||= {};
 
 	my @fields = @{ $self->{DB_FIELDS} };
 
@@ -757,11 +757,10 @@ sub get_values {
 }
 
 sub set_values {
-	my($self, $valref, $scratchref, $constref) = @_;
+	my($self, $valref, $scratchref) = @_;
 
 	$valref = $::Values unless ref($valref);
 	$scratchref = $::Scratch unless ref($scratchref);
-	$constref = $Vend::Session->{constant}  unless ref($constref);
 
 	my $user = $self->{USERNAME};
 
