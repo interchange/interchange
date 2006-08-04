@@ -12,7 +12,7 @@ Hit action for no-content
 [cgi name=qmenu_products set="[cgi qmenu_separate]" hide=1]
 [/if]
 [if cgi qmenu_name]
-[set page_banner][msg arg.0="<i>[cgi qmenu_name]</i>"]Edit the %s menu[/msg][/set]
+[seti page_banner][msg arg.0="<i>[cgi qmenu_name]</i>"]Edit the %s menu[/msg][/seti]
 [else]
 [set page_banner][L]Menu constructor: Make a quick menu[/L][/set]
 [/else]
