@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.47 2006-03-14 19:17:21 mheins Exp $
+# $Id: Menu.pm,v 2.48 2006-08-04 09:11:15 racke Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 use Vend::Util;
 use strict;
@@ -479,10 +479,7 @@ sub old_simple {
 			push @$fn, 'mv_last_row';
 			$list->[-1][$#$fn] = 1;
 		}
-		$main = '';
-		for(@$list) {
-			$main .= menu_link($template, $_, $opt);
-		}
+		$main = join($opt->{joiner}, map {menu_link($template, $_, $opt)} @$list);
 	}
 
 	# Prevent possibility of memory leak
