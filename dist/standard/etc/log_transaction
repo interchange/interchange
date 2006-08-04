@@ -250,24 +250,38 @@ Set order number in session: [calc]
 		[userdb function=logout clear=0 clear_cart=0]
 	[/if]
 	[tmp auto_create]1[/tmp]
-	[if type=explicit compare=|
-		[userdb
-			function=new_account
-				assign_username=1
-					password='[value zip]'
-						verify='[value zip]'
-		]
-		|]
-		[seti mv_autocreate]
-			mv_username=[data session username]
-			mv_password=[value zip]
-		[/seti]
-		Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
-	[else]
-	Auto-create of user failed. Reason: [data session failure]
-	[perl] die errmsg("Auto-create of user failed. Reason: %s", $Session->{failure}) [/perl]
-	[/else]
-	[/if]
+    [calcn]
+        $Tag->tmp('tmp_pass');
+        for(qw/ zip phone_day phone_night /) {
+            my $pass = $Values->{$_};
+            $pass =~ s/\s+//g;
+            next if length($pass) < 4;
+            $Scratch->{tmp_pass} = $pass;
+        }
+	
+		my @lets = ('A' .. 'Z', '0 .. 9', 'a' .. 'z');
+		$Scratch->{tmp_pass} .= $lets[ rand @lets ]
+			while length($Scratch->{tmp_pass}) < 5;
+        return;
+    [/calcn]
+    [if type=explicit compare=|
+        [userdb
+            function=new_account
+                assign_username=1
+                    password='[scratch tmp_pass]'
+                        verify='[scratch tmp_pass]'
+        ]
+        |]
+        [seti mv_autocreate]
+            mv_username=[data session username]
+            mv_password=[scratch tmp_pass]
+        [/seti]
+        Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
+    [else]
+    Auto-create of user failed.
+    [perl] die errmsg("Auto-create of user failed."); [/perl]
+    [/else]
+    [/if]
 [/try]
 [catch error-set="Customer record creation" error-scratch="mv_route_failed"]
 There was an error adding you to the customer table.
