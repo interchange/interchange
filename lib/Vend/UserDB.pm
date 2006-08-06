@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.45 2006-08-03 15:57:14 mheins Exp $
+# $Id: UserDB.pm,v 2.46 2006-08-06 19:51:38 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1643,6 +1643,12 @@ sub new_account {
 		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
 			if length($self->{USERNAME}) < $self->{USERMINLEN};
+
+		if($self->{OPTIONS}{captcha}) {
+			my $status = Vend::Tags->captcha( { function => 'check' });
+			die errmsg("Must input captcha code correctly.\n") 
+				unless $status;
+		}
 
 		# Here we put the username in a non-primary key field, checking
 		# for existence
