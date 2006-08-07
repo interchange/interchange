@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.273 2006-08-06 19:46:39 mheins Exp $
+# $Id: Interpolate.pm,v 2.274 2006-08-07 18:30:44 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.273 $, 10);
+$VERSION = substr(q$Revision: 2.274 $, 10);
 
 @EXPORT = qw (
 
@@ -1110,7 +1110,7 @@ sub conditional {
 		$status = Vend::Order::validate_whole_cc($term, $operator, $comp);
 	}
     elsif($base eq 'config') {
-		my @terms = split /::|->/, $term;
+		my @terms = split /::|->|\./, $term;
 		eval {
 			$op = $Vend::Cfg;
 			while(my $t = shift(@terms)) {
