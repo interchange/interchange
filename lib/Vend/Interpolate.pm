@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.274 2006-08-07 18:30:44 mheins Exp $
+# $Id: Interpolate.pm,v 2.275 2006-08-08 02:01:02 kwalsh Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.274 $, 10);
+$VERSION = substr(q$Revision: 2.275 $, 10);
 
 @EXPORT = qw (
 
@@ -5109,7 +5109,11 @@ sub timed_build {
     my $opt = shift;
 	my $abort;
 
-	if (defined $opt->{if}) {
+	if ($Vend::Cfg->{VendURL} eq 'http://127.0.0.1') {
+		$abort = 1;
+		delete $opt->{new};
+	}
+	elsif (defined $opt->{if}) {
 		$abort = 1 if ! $opt->{if}; 
 	}
 
