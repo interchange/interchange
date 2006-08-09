@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.58 2006-05-17 16:36:47 mheins Exp $
+# $Id: Data.pm,v 2.59 2006-08-09 13:56:16 racke Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1029,7 +1029,7 @@ sub index_database {
 	my $db;
 	$db = database_exists_ref($dbname)
 		or do {
-			logError("Vend::Data export: non-existent database %s", $db);
+			logError("Vend::Data export: non-existent database %s", $dbname);
 			return undef;
 		};
 
