@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.47 2006-08-10 07:31:33 racke Exp $
+# $Id: UserDB.pm,v 2.48 2006-08-10 13:24:25 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1640,7 +1640,7 @@ sub new_account {
 		}
 		die errmsg("Can't have '%s' as username; it contains illegal characters.",
 			$self->{USERNAME}) . "\n"
-			if $self->{USERNAME} !~ m{^$$self->{VALIDCHARS}+$};
+			if $self->{USERNAME} !~ m{^$self->{VALIDCHARS}+$};
 		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
 			if length($self->{USERNAME}) < $self->{USERMINLEN};
