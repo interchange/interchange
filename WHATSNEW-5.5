@@ -13,10 +13,6 @@ See UPGRADE document for incompatible changes not listed here.
 Core
 ----
 
-* Fixed UserDB login issues within embedded Perl by using
-  Vend::Util::string_to_ref for deserialization of carts and other 
-  hashes.  
-
 * Removed odd formatting from --add entry in interchange manual page.
 
 * Fixed a DoS exploit. A carefully crafted HTTP POST request could cause
@@ -45,6 +41,18 @@ Core
 * Terminate search if mv_min_string condition isn't met.
 
 * Make [sql-quote] list tag to work properly with multiple lines.
+
+UserDB
+------
+
+* Fixed UserDB login issues within embedded Perl by using
+  Vend::Util::string_to_ref for deserialization of carts and other 
+  hashes.  
+
+* New validchars option to customize valid characters for usernames, e.g.
+  adding the + character to the list of valid characters:
+
+  UserDB    default    validchars "-A-Za-z0-9_@.+"
 
 UserTag
 -------

@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.46 2006-08-06 19:51:38 mheins Exp $
+# $Id: UserDB.pm,v 2.47 2006-08-10 07:31:33 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 
 use vars qw!
 	$VERSION
@@ -272,6 +272,7 @@ sub new {
 			LAST   		=> '',
 			USERMINLEN	=> $options{userminlen}	|| 2,
 			PASSMINLEN	=> $options{passminlen}	|| 4,
+			VALIDCHARS	=> $options{validchars} ? ('[' . $options{validchars} . ']') : $USERNAME_GOOD_CHARS,
 			CRYPT  		=> defined $options{'crypt'}
 							? $options{'crypt'}
 							: ! $::Variable->{MV_NO_CRYPT},
@@ -1185,7 +1186,7 @@ sub login {
 		}
 
 		# Username must contain only valid characters
-		if ($self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$}) {
+		if ($self->{USERNAME} !~ m{^$self->{VALIDCHARS}+$}) {
 			$self->log_either(errmsg("Denied attempted login for user name '%s' with illegal characters",
 				$self->{USERNAME}));
 			die $stock_error, "\n";
@@ -1639,7 +1640,7 @@ sub new_account {
 		}
 		die errmsg("Can't have '%s' as username; it contains illegal characters.",
 			$self->{USERNAME}) . "\n"
-			if $self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$};
+			if $self->{USERNAME} !~ m{^$$self->{VALIDCHARS}+$};
 		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
 			if length($self->{USERNAME}) < $self->{USERMINLEN};
