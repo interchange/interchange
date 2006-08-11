@@ -32,15 +32,21 @@ sub {
 	my $subdir = $opt->{image_subdir}
 				 || $::Variable->{CAPTCHA_IMAGE_SUBDIR}
 				 || 'captcha';
-	my $tmpdir = $opt->{tmpdir}
-				 || "$Vend::Cfg->{ScratchDir}/$subdir";
+	my $tmpdir = "$Vend::Cfg->{ScratchDir}/$subdir";
 
-	mkdir($tmpdir) 
-		unless -d $tmpdir;
+	mkdir($tmpdir) unless -d $tmpdir;
 
-	my $imgdir = $opt->{image_location}
-				 || $::Variable->{CAPTCHA_IMAGE_LOCATION}
-				 || "$::Variable->{DOCROOT}$::Variable->{IMAGE_DIR}/$subdir";
+	my $imgdir = $opt->{image_location} || $::Variable->{CAPTCHA_IMAGE_LOCATION};
+
+	unless ($imgdir ) {
+		if(! $Global::NoAbsolute and $::Variable->{DOCROOT}) {
+			 $imgdir = "$::Variable->{DOCROOT}$::Variable->{IMAGE_DIR}/$subdir";
+		}
+		else {
+			 $imgdir = "images/$subdir";
+		}
+	}
+
 	my $imgpath = $opt->{image_path}
 				 || $::Variable->{CAPTCHA_IMAGE_PATH}
 				 || "$::Variable->{IMAGE_DIR}/$subdir";
@@ -95,6 +101,15 @@ sub {
 		}
 
 	   eval {
+
+		unless( Vend::File::allowed_file($imgdir, 1) ) {
+			my $msg = errmsg("No permission to write directory '%s'", $imgdir);
+			$Tag->error( { name => $en, set => $msg });
+			return 0;
+		}
+
+		mkdir($imgdir) unless -d $imgdir;
+
 		if(! $code) {
 			$code = $Vend::Session->{captcha} = $captcha->generate_code($opt->{length});
 			$Vend::Captcha = $code;
@@ -144,7 +159,7 @@ Interchange [captcha] tag
   [captcha  function="check|code|image|relative_image|image_tag"
             length="4"
             image-subdir="captcha"
-            image-location="/var/www/html/standard/images/captcha"
+            image-location="images/captcha"
             image-path="/standard/images/captcha"
             source="[cgi mv_captcha_source]"
             error-name="captcha"
@@ -217,6 +232,13 @@ When set, tells the image function to not generate an HTML IMG tag.
 
 When set, tells the image function (when in name-only mode) to
 return relative path.
+
+=item reset 
+
+Normally only one captcha code / image will be generated per page
+transaction. If this is set, you can generate another one -- though
+you would have to take care of saving the generated code yourself,
+as $Session->{captcha} is overwritten.
 
 =item source 
 
