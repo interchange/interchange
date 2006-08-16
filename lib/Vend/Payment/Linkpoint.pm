@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.8 2006-05-19 14:46:52 jon Exp $
+# $Id: Linkpoint.pm,v 1.9 2006-08-16 13:34:09 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -132,7 +132,7 @@ This is a matching sample subroutine you could put in interchange.cfg:
 	sub avs_check {
 		my ($result) = @_;
 		my $avs = $result->{r_avs};
-		my ($addr, $zip) = split //, $avs;
+		my ($addr, $zip) = split m{}, $avs;
 		return 1 if $addr eq 'Y' or $zip eq 'Y';
 		return 1 if $addr eq 'X' and $zip eq 'X';
 		$result->{MStatus} = 'failure';

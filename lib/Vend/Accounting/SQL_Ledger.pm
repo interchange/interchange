@@ -1,6 +1,6 @@
 #
 # Vend::Accounting::SQL_Ledger
-# $Id: SQL_Ledger.pm,v 1.12 2005-11-08 18:14:46 jon Exp $
+# $Id: SQL_Ledger.pm,v 1.13 2006-08-16 13:34:09 mheins Exp $
 #
 # SQL-Ledger Accounting Interface for Interchange
 #
@@ -1148,19 +1148,19 @@ sub format_amount {
     if ($myconfig->{numberformat} && ($myconfig->{numberformat} ne '1000.00')) {
       my ($whole, $dec) = split /\./, "$amount";
       $whole =~ s/-//;
-      $amount = join '', reverse split //, $whole;
+      $amount = join '', reverse split m{}, $whole;
       
       if ($myconfig->{numberformat} eq '1,000.00') {
 	$amount =~ s/\d{3,}?/$&,/g;
 	$amount =~ s/,$//;
-	$amount = join '', reverse split //, $amount;
+	$amount = join '', reverse split m{}, $amount;
 	$amount .= "\.$dec" if $dec;
       }
       
       if ($myconfig->{numberformat} eq '1.000,00') {
 	$amount =~ s/\d{3,}?/$&./g;
 	$amount =~ s/\.$//;
-	$amount = join '', reverse split //, $amount;
+	$amount = join '', reverse split m{}, $amount;
 	$amount .= ",$dec" if $dec;
       }
       

@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.31 2006-07-05 13:19:54 kwalsh Exp $
+# $Id: Search.pm,v 2.32 2006-08-16 13:34:09 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -424,7 +424,7 @@ sub more_alpha {
 	$last = 0;
 	for ($i = 0; $i < @$out; $i++) {
 		$sortkey = $out->[$i]->[$sfpos];
-		@letters = split(//, $sortkey, $alphachars + 1);
+		@letters = split(m{}, $sortkey, $alphachars + 1);
 		pop(@letters);
 		$changed = 0;
 

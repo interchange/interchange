@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.94 2006-04-05 15:31:38 mheins Exp $
+# $Id: Util.pm,v 2.95 2006-08-16 13:34:09 mheins Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.94 $, 10);
+$VERSION = substr(q$Revision: 2.95 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -162,7 +162,7 @@ sub escape_chars {
     my($c, $r);
 
     $r = '';
-    foreach $c (split(//, $in)) {
+    foreach $c (split(m{}, $in)) {
 		$r .= $ESCAPE_CHARS::translate[ord($c)];
     }
 
@@ -179,7 +179,7 @@ sub escape_chars_url {
     my($c, $r);
 
     $r = '';
-    foreach $c (split(//, $in)) {
+    foreach $c (split(m{}, $in)) {
 		$r .= $ESCAPE_CHARS::translate_url[ord($c)];
     }
 
@@ -264,7 +264,7 @@ sub round_to_frac_digits {
 	$num =~ /^(\d*)(?:\.(\d+))?$/
 		or return $num;
 	my $int = $1;
-	@frac = split(//, ($2 || 0));
+	@frac = split(m{}, ($2 || 0));
 	local($^W) = 0;
 	my $frac = join "", @frac[0 .. $digits - 1];
 	if($frac[$digits] > 4) {
@@ -350,7 +350,7 @@ sub picture_format {
 	my $len = length($1);
 	$amount = sprintf('%.' . $len . 'f', $amount);
 	$amount =~ tr/0-9//cd;
-	my (@dig) = split //, $amount;
+	my (@dig) = split m{}, $amount;
 	$pic =~ s/#/pop(@dig)/eg;
 	$pic =~ s/\Q$sep\E+(?!\d)//;
 	$pic =~ s/\d/*/g if @dig;
