@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.71 2006-06-23 08:43:57 racke Exp $
+# $Id: DBI.pm,v 2.72 2006-08-16 13:26:50 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.71 $, 10);
+$VERSION = substr(q$Revision: 2.72 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -175,6 +175,9 @@ my %known_capability = (
 		mysql => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 		Pg => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 		default => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
+	},
+	LIST_FIELDS_QUERY => { 
+		mysql => 'SELECT * FROM `_TABLE_` WHERE 2 = 1',
 	},
 	SEQUENCE_CREATE	 => { 
 		Oracle => "CREATE SEQUENCE _SEQUENCE_NAME_",
@@ -1743,7 +1746,8 @@ sub list_fields {
 	my($db, $name, $config) = @_;
 	my @fld;
 
-	my $q = "SELECT * FROM $name WHERE 2 = 1";
+	my $q = $config->{LIST_FIELDS_QUERY} || "SELECT * FROM _TABLE_ WHERE 2 = 1";
+	$q =~ s/\b_TABLE_\b/$name/g;
 
 	my $sth = $db->prepare($q)
 		or die ::errmsg("%s prepare on %s: %s", 'list_fields', $name, $DBI::errstr);
