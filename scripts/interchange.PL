@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.89 2006-02-01 15:42:04 jon Exp $
+# $Id: interchange.PL,v 2.90 2006-08-17 19:02:14 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1063,14 +1063,14 @@ portions from Vend 0.3; both were produced in 1995.
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Jason Kohles
-    Bill Carr                           Javier Martin
-    Bill Dawkins                        Jeff Carnahan
-    Bill Randle                         Jeff Nappi
-    Birgitt Funk                        Jochen Wiedmann
-    Bob Jordan                          Jon Jensen
-    Brev Patterson                      Jonathan Clark
-    Brian Bullen                        José Mª Revuelto
+    Andreas Koenig                      Javier Martin
+    Bill Carr                           Jeff Carnahan
+    Bill Dawkins                        Jeff Nappi
+    Bill Randle                         Jochen Wiedmann
+    Birgitt Funk                        Jon Jensen
+    Bob Jordan                          Jonathan Clark
+    Brev Patterson                      José Mª Revuelto
+    Brian Bullen                        Jure Kodzoman
     Brian Kosick                        Jurgen Botz
     Bruce Albrecht                      Keiko
     Cameron Prince                      Keith Oberlin
@@ -1099,6 +1099,7 @@ Contributions to Interchange have been made by:
     Ignacio Lizarán                     Troy Davis
     Jack Tsai                           Victor Nolton
     Jason Holt                          William Dan Terry
+	Jason Kohles
     and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
