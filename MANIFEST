@@ -690,6 +690,7 @@ dist/standard/etc/rma.number
 dist/standard/etc/ship_notice
 dist/standard/html/index.html
 dist/standard/images/affiliate/hardhat.gif
+dist/standard/images/amex_cvv.png
 dist/standard/images/bg.gif
 dist/standard/images/blank1.gif
 dist/standard/images/blank2.gif
@@ -806,6 +807,7 @@ dist/standard/images/thumb/os28113_b.gif
 dist/standard/images/thumb/os29000_b.gif
 dist/standard/images/title_tab_cross.gif
 dist/standard/images/title_tab_random.gif
+dist/standard/images/visa_cvv.png
 dist/standard/images/yourimage.gif
 dist/standard/include/checkout/billing_address
 dist/standard/include/checkout/initialization
@@ -887,6 +889,7 @@ dist/standard/pages/query/unsub.html
 dist/standard/pages/results.html
 dist/standard/pages/results_big.html
 dist/standard/pages/special/alpha_select.html
+dist/standard/pages/special/cvv_pop.html
 dist/standard/pages/splash.html
 dist/standard/pages/survey/graph.html
 dist/standard/pages/survey/graph.png.html
