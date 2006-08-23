@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.9 2006-06-28 14:59:46 racke Exp $
+# $Id: Swish2.pm,v 1.10 2006-08-23 12:22:50 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 use strict;
 
 use SWISH::API;
@@ -231,8 +231,8 @@ sub search {
     while (my $result = $results->NextResult) {
         my $out_ref = [];
         foreach my $field (@{ $s->{'mv_field_names'} }) {
+			my $text = $result->Property( $fmap{$field} );
             if ($field =~ /context/) {
-                my $text = $result->Property( $fmap{$field} );
                 if ($Vend::Cfg->{'Swish2'}{'highlight_context'} and defined $text and $text ne '') {
                     my $index = $result->Property('swishdbfile');
 
@@ -243,11 +243,11 @@ sub search {
                 }
                 push @$out_ref, $text;
             }
-			elsif ($field eq 'mod_date') {
-				push @$out_ref, POSIX::strftime($date_format, localtime($result->Property( $fmap{$field} )));
+			elsif ($field eq 'mod_date' && $text) {
+				push @$out_ref, POSIX::strftime($date_format, localtime($text));
 			}
 			else {
-                push @$out_ref, $result->Property( $fmap{$field} );
+                push @$out_ref, $text;
             }
         }
         
