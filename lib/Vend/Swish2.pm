@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.10 2006-08-23 12:22:50 racke Exp $
+# $Id: Swish2.pm,v 1.11 2006-08-24 08:25:28 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 use strict;
 
 use SWISH::API;
@@ -110,8 +110,8 @@ sub init {
     $s->{mv_searchspec}         = [];
     $s->{mv_sort_option}        = [];
     $s->{mv_substring_match}    = [];
-    $s->{mv_field_names}      = [qw/code score url title filesize mod_date description/];
-    $s->{mv_return_fields}    = [qw/code score url title filesize mod_date description/];
+    $s->{mv_field_names}      = [qw/code score url title filesize mod_date/];
+    $s->{mv_return_fields}    = [qw/code score url title filesize mod_date/];
 
     for (keys %$options) {
         $s->{$_} = $options->{$_};
