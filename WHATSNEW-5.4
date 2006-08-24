@@ -19,6 +19,13 @@ Core
   processors, rendering Interchange unresponsive for a while. Fixed by
   Kevin Walsh; pointed out by Donald Alexander.
 
+* Fix masking of unencrypted credit card numbers to work with a custom
+  MV_CREDIT_CARD_INFO_TEMPLATE that does not match the regexp.
+
+* Fix the above mentioned regexp so it removes the CVV2 value from the
+  unencrypted data as well.
+
+
 Options
 -------
 
