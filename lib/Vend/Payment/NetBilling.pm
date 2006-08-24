@@ -1,6 +1,6 @@
 # Vend::Payment::NetBilling - Interchange NetBilling support
 #
-# $Id: NetBilling.pm,v 1.2 2006-08-24 13:06:16 pajamian Exp $
+# $Id: NetBilling.pm,v 1.3 2006-08-24 14:12:09 pajamian Exp $
 #
 # Copyright (C) 2003-2006 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -44,7 +44,7 @@ package Vend::Payment::NetBilling;
 
 =head1 Interchange NetBilling Support
 
-Vend::Payment::NetBilling $Revision: 1.2 $
+Vend::Payment::NetBilling $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -432,11 +432,6 @@ ID must be assigned from NetBilling.  It should either be left blank or a
 guaranteed unused ID can be retrieved from NetBilling prior to issuing the
 transaction.  This module will overwrite any transaction ID supplied it with
 the one assigned by NetBilling.
-
-This module is not compatible with the NetBilling.pm payment module written by
-Christopher Wenham.  You should not attempt to "Require" both of the NetBilling
-payment modules for the same Interchange server.  Pick one or the other (pick
-this one ... it's better ;-).
 
 =head1 AUTHORS
 
