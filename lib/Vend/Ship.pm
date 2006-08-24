@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.18 2006-04-05 14:42:19 mheins Exp $
+# $Id: Ship.pm,v 2.19 2006-08-24 20:57:25 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -854,7 +854,7 @@ sub shipping {
 	SHIPFORMAT: {
 		$Vend::Session->{ship_message} .= $error_message . ($error_message =~ / $/ ? '' : ' ')
 			if defined $error_message;
-		undef $::Carts->{mv_shipping};
+		delete $::Carts->{mv_shipping};
 		$Vend::Items = $save;
 #::logDebug("Check FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
 		last SHIPFORMAT unless defined $final;
