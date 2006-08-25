@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.15 2005-11-08 18:14:45 jon Exp $
+# $Id: SOAP.pm,v 2.16 2006-08-25 11:33:26 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2000-2002 Red Hat, Inc.
@@ -35,7 +35,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -413,7 +413,10 @@ sub AUTOLOAD {
 	
 	my $error;
 	if($@) {
-		$error = errmsg("SOAP tag call failed: %s", $@);
+		::logError("SOAP call for $routine failed: %s", $@);
+		
+		$error = SOAP::Server->make_fault($SOAP::Constants::FAULT_SERVER,
+							   'Application error');
 	}
 #::logDebug("session " . ::full_dump() );
 
