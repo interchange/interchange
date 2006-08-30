@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.87.2.1 2005-12-23 15:47:52 kwalsh Exp $
+# $Id: Util.pm,v 2.87.2.2 2006-08-30 18:56:22 mheins Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.87.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.87.2.2 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -846,13 +846,14 @@ sub dotted_hash {
 sub get_option_hash {
 	my $string = shift;
 	my $merge = shift;
-	if (ref $string) {
-		return $string unless ref $merge;
+	if (ref $string eq 'HASH') {
+		my $ref = { %$string };
+		return $ref unless ref $merge;
 		for(keys %{$merge}) {
-			$string->{$_} = $merge->{$_}
-				unless defined $string->{$_};
+			$ref->{$_} = $merge->{$_}
+				unless defined $ref->{$_};
 		}
-		return $string;
+		return $ref;
 	}
 	return {} unless $string and $string =~ /\S/;
 	$string =~ s/^\s+//;
