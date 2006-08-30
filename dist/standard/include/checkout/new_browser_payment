@@ -199,10 +199,10 @@
         <td align=right width="30%" valign=top class="contentbar1">
             [comment] <b>[L]Security Code[/L]: </b><br> [/comment]
             <b>[error std_label="[L]Security Code:[/L]" name=mv_credit_card_cvv2]</b><br>
-            <a href="#" onclick="popWin('[area special/cvv_pop]');"><small>Where is it?</small></a>
+            <a href="[area special/cvv_pop]" target="package_info" onclick="popWin('[area special/cvv_pop]'); return false;"><small>Where is it?</small></a>
         </td>
         <td valign=top class="contentbar1">
-        <input type="text" name="mv_credit_card_cvv2" value="[value mv_credit_card_cvv2]" size="4" maxlength="4">
+        <input type="text" name="mv_credit_card_cvv2" size="4" maxlength="4">
         </td>
         <td class="contentbar1">
          <small>The security code should be printed on the back of your card, 
