@@ -1,6 +1,6 @@
 # Vend::Payment::NetBilling - Interchange NetBilling support
 #
-# $Id: NetBilling.pm,v 1.3 2006-08-24 14:12:09 pajamian Exp $
+# $Id: NetBilling.pm,v 1.4 2006-09-01 13:46:55 pajamian Exp $
 #
 # Copyright (C) 2003-2006 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -44,7 +44,7 @@ package Vend::Payment::NetBilling;
 
 =head1 Interchange NetBilling Support
 
-Vend::Payment::NetBilling $Revision: 1.3 $
+Vend::Payment::NetBilling $Revision: 1.4 $
 
 =head1 SYNOPSIS
 
@@ -81,11 +81,6 @@ This I<must> be in interchange.cfg or a file included from it.
 
 Make sure CreditCardAuto is off which is the default in the I<Standard>
 ecommerce demo.
-
-Also change the check_num CGI form variable to check_number in
-include/checkout/old_browser_payment and
-include/checkout/new_browser_payment and
-etc/profiles.order.
 
 The mode can be named anything, but the C<gateway> parameter must be set
 to C<netbilling>. To make it the default payment gateway for all credit
