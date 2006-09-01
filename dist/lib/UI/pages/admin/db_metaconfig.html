@@ -1,6 +1,6 @@
 [set table_perms]__UI_META_TABLE__[/set]
-[tmp page_title]
-	Configure table display: [cgi ui_table]
+[tmp page_title][msg arg.0="[cgi ui_table]"]Configure table display: %s[/msg][/tmp]
+[tmp page_banner][scratch page_title]
 	[if cgi ui_view]
 	[tmp tmp_dbcode][cgi ui_view]::[cgi ui_table][/tmp]
 		(view [cgi ui_view])
@@ -62,7 +62,7 @@
 
 	ui_data_fields="
 
-		=General
+		=[L]General[/L]
 
 		code
 		name
@@ -71,7 +71,7 @@
 		extended.restrict_allow
 		extended.filter_field
 
-		=Select page display
+		=[L]Select page display[/L]
 
 		height
 		extended.explicit_edit extended.number_list
@@ -88,7 +88,7 @@
 		extended.sql_query
 		fieldmeta
 
-		=Edit page
+		=[L]Edit page[/L]
 
 		extended.ui_data_fields
 		extended.bottom_buttons
@@ -97,7 +97,7 @@
 		extended.ui_profile
 		extended.display_type
 
-		=Form Linking
+		=[L]Form Linking[/L]
 
 		extended.link_table
 		extended.link_before
@@ -109,14 +109,14 @@
 		extended.link_rows_blank extended.link_blank_auto
 		extended.link_view extended.link_extra
 
-		=Included form
+		=[L]Included form[/L]
 
 		extended.include_before
 		extended.include_form
 		extended.include_form_expand
 		extended.include_form_interpolate
 
-		=Tabbed Display
+		=[L]Tabbed Display[/L]
 
 		extended.tab_width extended.panel_width
 		extended.tab_height extended.panel_height
@@ -407,4 +407,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.22 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.23 $ -->
