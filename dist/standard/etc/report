@@ -20,7 +20,7 @@ Credit Card Info:
 ----------------
 [value mv_credit_card_info]
 [/if][if value payment_method eq credit_card]  Account Number: [value mv_credit_card_reference]      Expiration: [value mv_credit_card_exp_month]/[value mv_credit_card_exp_year]
-[/if][if value payment_method eq online_check]  Account Number: [value check_account]  Routing Number: [value check_routing]    Check Number: [value check_num]
+[/if][if value payment_method eq online_check]  Account Number: [value check_account]  Routing Number: [value check_routing]    Check Number: [value check_number]
 [/if][if value payment_method eq po]  Company Name: [value po_company]  P.O. Number: [value po_number][/if]
 
  Shipping Method: [shipping-desc][if value mv_handling]

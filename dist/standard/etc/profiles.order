@@ -199,7 +199,7 @@ check_accttype=required You must supply an account type.
 check_bankname=required We need your bank's name.
 check_acctname=required We need the name on your bank account.
 [else]
-check_num=required You must supply a check number for us to use.
+check_number=required You must supply a check number for us to use.
 check_bank_phone=required We need your bank's phone number.
 [/else]
 [/if]

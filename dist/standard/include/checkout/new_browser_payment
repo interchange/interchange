@@ -321,11 +321,11 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
             </tr>
             <tr>
               <td align="right" class="contentbar1">
-                [error name=check_num std_label="[L]Check Number[/L]" required=1]
+                [error name=check_number std_label="[L]Check Number[/L]" required=1]
               </td>
               <td align="left" colspan="3" class="contentbar1">
                 <b>
-                <input type="text" name="check_num" size="22" value="[value check_num]">
+                <input type="text" name="check_number" size="22" value="[value check_number]">
                 </b>
               </td>
                 </tr>
