@@ -17,7 +17,11 @@
 	<tr>
 		<td style="font-size: larger">
 		<u style="font-size: larger; font-weight: bold">[L]Results[/L]</u><br>
-		[if cgi xmp]<xmp>[/if][filter op="entities" interpolate=1][calc] $Scratch->{itl_code} = $CGI->{itl_code}; [/calc][/filter][if cgi xmp]</xmp>[/if]
+		[if cgi xmp]
+			<pre>[filter op="entities" interpolate=1][calcn]$Scratch->{itl_code} = $CGI->{itl_code};[/calcn][/filter]</pre>
+		[else]
+			[calcn]$Scratch->{itl_code} = $CGI->{itl_code};[/calcn]
+		[/else][/if]
 		</td>
 	</tr>
 [/if]
