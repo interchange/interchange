@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.67 2006-03-08 18:22:08 jon Exp $
+# $Id: Form.pm,v 2.68 2006-09-19 18:48:43 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
 @EXPORT = qw (
 	display
@@ -506,7 +506,7 @@ sub date_widget {
 		if($ey < 100) {
 			$ey += $cy;
 		}
-		@Years = ($by .. $ey);
+		@Years = $by <= $ey ? ($by .. $ey) : reverse ($ey .. $by);
 	}
 	if ($opt->{blank}) {
 		$out .= qq{<option value="0000"$opt_extra>----</option>};
