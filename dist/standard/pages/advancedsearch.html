@@ -101,7 +101,7 @@ ui_template_name: leftright
 	</tr>
 	<tr>
 		<td>
-			Full words only
+			[L]Full words only[/L]
 		</td>
 		<td>
 			[display name=su type=noyes]
@@ -109,7 +109,7 @@ ui_template_name: leftright
 	</tr>
 	<tr>
 		<td>
-			Case sensitive
+			[L]Case sensitive[/L]
 		</td>
 		<td>
 			[display name=su type=yesno]
@@ -117,22 +117,22 @@ ui_template_name: leftright
 	</tr>
 	<tr>
 		<td>
-			Regular expression
+			[L]Regular expression[/L]
 		</td>
 		<td>
-			[display name=su type=yesno] (advanced)
+			[display name=su type=yesno] [L](advanced)[/L]
 		</td>
 	</tr>
 	<tr>
 		<td>
-			Only in category
+			[L]Only in category[/L]
 		</td>
 		<td>
 		[tmp cat_widget]
 			[display
 					name=se
 					type=select
-					options="=--all categories--"
+					options="=--[L]all categories[/L]--"
 					lookup_query="select distinct category from products order by category"
 			]
 		[/tmp]
@@ -186,7 +186,7 @@ ui_template_name: leftright
 	</tr>
 	<tr>
 		<td>
-			Only in category
+			[L]Only in category[/L]
 		</td>
 		<td>
 			[scratch cat_widget]

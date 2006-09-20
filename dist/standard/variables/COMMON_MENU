@@ -42,7 +42,7 @@
 [/menu]
 <td>
 [if session admin]
-<a href="[area href="admin/menu_editor" form="qmenu_name=[scratch menu_bar]"]" class=topmenu_soft style="font-size: 8pt; font-weight: normal">edit</a>
+<a href="[area href="admin/menu_editor" form="qmenu_name=[scratch menu_bar]"]" class=topmenu_soft style="font-size: 8pt; font-weight: normal">[L]edit[/L]</a>
 [/if]
 </td>
 </tr>

@@ -311,7 +311,7 @@ EOF
 	<table border="0" width="100%">
         <tr> 
 	  <td>
-	    <INPUT type="submit" value="Recalculate" class="button3">
+	    <INPUT type="submit" value="[L]Recalculate[/L]" class="button3">
 	  </td>
 	  <td align="center" valign="center"> 
     		[button
