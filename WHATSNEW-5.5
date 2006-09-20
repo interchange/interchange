@@ -23,8 +23,7 @@ Core
   Kevin Walsh; pointed out by Donald Alexander.
 
 * In &Vend::Table::DBI::set_row, avoid unwanted expansion of array when we
-  have PREFER_NULL fields and number of fields passed is one. Thanks to
-  Peter Ajamian for the patch and investigation.
+  have PREFER_NULL fields and number of fields passed is one.
 
 * Added Vend::Swish2 module provided by Brian Miller <brian@endpoint.com>.
   This is superior to Vend::Swish, because instead of the awkward way to
@@ -72,7 +71,7 @@ Filter
 Payment
 -------
 
-* New NetBilling module contributed by Peter Ajamian.
+* New NetBilling module.
 
 Jobs
 ----
@@ -89,10 +88,6 @@ UI
 --
 
 * Fix page banner in menu editor.
-
-* Use <pre> ... </pre> instead of the obsolete <xmp> ... </xmp> element in the
-  test_code admin UI page when displaying in SOURCE mode.  Don't filter
-  entities when displaying in HTML mode.
 
 Standard demo
 -------------
