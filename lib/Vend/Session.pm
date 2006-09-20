@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.25 2006-07-26 07:51:34 racke Exp $
+# $Id: Session.pm,v 2.26 2006-09-20 18:42:40 mheins Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -241,7 +241,7 @@ sub new_session {
 	open_session();
     for (;;) {
 		unless (defined $seed) {
-			$Vend::SessionID = random_string();
+			$Vend::SessionID = random_string($::Limit->{session_id_length});
 			undef $Vend::CookieID;
 		}
 		undef $seed;
