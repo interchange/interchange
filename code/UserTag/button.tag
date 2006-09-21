@@ -1,12 +1,12 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.16 2005-11-08 18:14:42 jon Exp $
+# $Id: button.tag,v 1.17 2006-09-21 16:35:01 jon Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.16 $
+UserTag button Version   $Revision: 1.17 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -119,9 +119,9 @@ sub {
 			$onclick .= qq{"};
 		}
 
-		my $out = $opt->{bold} ? "<B>" : '';
+		my $out = $opt->{bold} ? '<b>' : '';
 		$out .= qq{<input$opt->{extra} type="submit" name="$name" value="$text"$onclick>};
-		$out .= "</B>" if $opt->{bold};
+		$out .= '</b>' if $opt->{bold};
 		if(@js) {
 			$out =~ s/ /join "\n", '', @js, ''/e;
 		}
@@ -137,7 +137,7 @@ sub {
 	$wstatus =~ s/'/\\'/g;
 
 	my $clickname = $name;
-	$out .= "</b>" if $opt->{bold};
+	$out .= '</b>' if $opt->{bold};
 	my $clickvar = $name;
 	if($image and $name eq 'mv_click') {
 		$clickvar = $text;
