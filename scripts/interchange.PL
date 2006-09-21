@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.91 2006-09-21 14:52:49 jon Exp $
+# $Id: interchange.PL,v 2.92 2006-09-21 14:56:39 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -41,6 +41,8 @@ no Config;
 
 BEGIN {
 	require 5.008;
+
+	$ENV{PERL_SIGNALS} ||= 'unsafe';
 
 	$Global::Foreground = 1;
 	

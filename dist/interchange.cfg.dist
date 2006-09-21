@@ -65,14 +65,14 @@ endif
 ifdef TRAFFIC =~ /low/i
 Message Low traffic settings.
 HouseKeeping 3
-MaxServers   5
+MaxServers   0
 PIDcheck     300
 endif
 
 ifdef TRAFFIC =~ /high/i
 Message High traffic settings.
 HouseKeeping 2
-MaxServers   10
+MaxServers   0
 PIDcheck     120
 endif
 
