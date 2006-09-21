@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.90 2006-08-17 19:02:14 mheins Exp $
+# $Id: interchange.PL,v 2.91 2006-09-21 14:52:49 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -84,55 +84,54 @@ BEGIN {
 		$Global::Windows = 1;
 	}
 
-# Uncomment next line if you want to guarantee use of DB_File
-#$ENV{MINIVEND_DBFILE} = 1;
+	# Uncomment next line if you want to guarantee use of DB_File
+	#$ENV{MINIVEND_DBFILE} = 1;
 
-# Uncomment next line in the unlikely event you want to ignore
-# GDBM and DB_File and force use of SDBM.
-#$ENV{MINIVEND_SDBM} = 1;
+	# Uncomment next line in the unlikely event you want to ignore
+	# GDBM and DB_File and force use of SDBM.
+	#$ENV{MINIVEND_SDBM} = 1;
 
-# Uncomment next line if you want to guarantee use of GDBM and not DB_File
-#$ENV{MINIVEND_GDBM} = 1;
+	# Uncomment next line if you want to guarantee use of GDBM and not DB_File
+	#$ENV{MINIVEND_GDBM} = 1;
 
-# Uncomment next line if you want to use no DBM, sessions
-# stored in files and databases in memory (or SQL)
-#$ENV{MINIVEND_NODBM} = 1;
+	# Uncomment next line if you want to use no DBM, sessions
+	# stored in files and databases in memory (or SQL)
+	#$ENV{MINIVEND_NODBM} = 1;
 
-# Uncomment next line if you want the ability to use ALL DBM.
-# Otherwise we use only the first choice to save memory.
-#$ENV{MINIVEND_ALLDBM} = 1;
+	# Uncomment next line if you want the ability to use ALL DBM.
+	# Otherwise we use only the first choice to save memory.
+	#$ENV{MINIVEND_ALLDBM} = 1;
 
-# Uncomment next line if you DON'T want to use DBI, can
-# save a bit on code size
-#$ENV{MINIVEND_NO_DBI} = 1;
+	# Uncomment next line if you DON'T want to use DBI, can
+	# save a bit on code size
+	#$ENV{MINIVEND_NO_DBI} = 1;
 
-# Uncomment next line if you want to use the Storable
-# module for storing session data. It improves session performance
-# to a good degree. We will also do a bit of auto-detect below.
-#$ENV{MINIVEND_STORABLE} = 1;
+	# Uncomment next line if you want to use the Storable
+	# module for storing session data. It improves session performance
+	# to a good degree. We will also do a bit of auto-detect below.
+	#$ENV{MINIVEND_STORABLE} = 1;
 
-# Uncomment next line if you want to use the Storable
-# module for storing database data. It improves GBDM/DB_File performance
-# to a good degree. We will also do a bit of auto-detect below.
-#$ENV{MINIVEND_STORABLE_DB} = 1;
+	# Uncomment next line if you want to use the Storable
+	# module for storing database data. It improves GBDM/DB_File performance
+	# to a good degree. We will also do a bit of auto-detect below.
+	#$ENV{MINIVEND_STORABLE_DB} = 1;
 
-# Uncomment AND SET next line to set PGP path to somewhere besides
-# the Interchange user path
-#$ENV{PGPPATH} = '/usr/local/pgp';
+	# Uncomment AND SET next line to set PGP path to somewhere besides
+	# the Interchange user path
+	#$ENV{PGPPATH} = '/usr/local/pgp';
 
-# Use the Storable module for storing data in DBM files.
-if(-f "$Global::VendRoot/_session_storable") {
-	$ENV{MINIVEND_STORABLE} = 1;
-}
+	# Use the Storable module for storing data in DBM files.
+	if(-f "$Global::VendRoot/_session_storable") {
+		$ENV{MINIVEND_STORABLE} = 1;
+	}
 
-if(-f "$Global::VendRoot/_db_storable") {
-	$ENV{MINIVEND_STORABLE_DB} = 1;
-}
+	if(-f "$Global::VendRoot/_db_storable") {
+		$ENV{MINIVEND_STORABLE_DB} = 1;
+	}
 
-# Interchange can use syslog via the "logger" command
-# This prevents parsing of the value, default is syslog off
-$Global::SysLog		= '';
-
+	# Interchange can use syslog via the "logger" command
+	# This prevents parsing of the value, default is syslog off
+	$Global::SysLog		= '';
 }
 
 ### END CONFIGURATION VARIABLES
