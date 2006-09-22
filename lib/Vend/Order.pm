@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.88 2006-08-26 05:15:46 pajamian Exp $
+# $Id: Order.pm,v 2.89 2006-09-22 19:18:57 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.88 $, 10);
+$VERSION = substr(q$Revision: 2.89 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -572,6 +572,13 @@ sub encrypt_standard_cc {
 		return @return;
 	}
 
+	unless ($num) {
+		my $msg = errmsg("Missing credit card number");
+		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
+		push @return, $msg;
+		return @return;
+	}
+	
 	$type = guess_cc_type($num) unless $type;
 
 	if ($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
