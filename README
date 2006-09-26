@@ -10,27 +10,46 @@ Copyright (C) 1996-2002 Red Hat, Inc.
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
 This program is offered without warranty of any kind.
-See the file LICENSE for redistribution terms.
+See file LICENSE for redistribution terms.
 
 -----------------------------------------------------------------------------
 
-Interchange is a full-featured web application server with
-online ordering; real-time credit card processing hooks; high-end
-database access and retrieval with SQL support; product categorizing,
-merchandising, and discounting; basic customer relationship management;
-dynamic content presentation; content management; internationalization
-and localization support; real-time tax and shipping hooks; reporting;
-and web-based administration.
+Interchange is a web application server, electronic catalog and database
+display system. Features include:
 
-Interchange absolutely REQUIRES Perl 5.6.0 or later on a Unix-like operating
+  * online ordering
+  * real-time credit card processing hooks
+  * high-end database access and retrieval with SQL support
+  * product categorizing, merchandising, and discounting
+  * basic customer relationship management
+  * dynamic content presentation
+  * content management
+  * internationalization and localization support
+  * real-time tax and shipping hooks
+  * reporting
+  * possibility of web-based administration
+
+Interchange absolutely REQUIRES Perl 5.6.0 or later, on a Unix-like operating
 system.
+
+Interchange also requires some non-standard Perl modules to be installed on
+your system. Unless you are installing from distribution-specific packages
+(Red Hat, Debian, ...), the quick way to install the necessary support is to
+run:
+
+  perl -MCPAN -e 'install "Bundle::Interchange"'
+
+If you would like to use a specific version of Perl, simply invoke
+Perl with an absolute path to the Perl binary, such as
+
+  /usr/local/bin/perl -MCPAN -e 'install "Bundle::Interchange"'
 
 -----------------------------------------------------------------------------
 
 More information is in the following files and directories:
 
-LICENSE          The text of the GNU General Public License (GPL) under which
-                 Interchange is supplied.
+LICENSE          The text of the GNU General Public License (GPL), under which
+                 the Interchange software is distributed.
 
 README.rpm-dist  Notes on using Interchange when installed from RPM packages.
 
@@ -38,23 +57,24 @@ README.debian    Notes on using Interchange when installed from Debian packages.
 
 README.cvs       How to access the CVS repository to track ongoing development.
 
-WHATSNEW         Changes per version for this version family.
+WHATSNEW-*       Changes per specified version family.
 
 UPGRADE          Instructions on how to upgrade from an earlier Interchange
                  version.
 
 -----------------------------------------------------------------------------
 
-Major files/directories in the distribution:
+Major files and directories in the distribution:
 
 Makefile.PL    Script to create a Makefile, used for installation.
+               (run ./configure for usage instructions)
 
 dist/          The distribution files, exclusive of executable
                files and modules. Includes:
 
-               interchange.cfg.dist   Distribution interchange.cfg
+               interchange.cfg.dist   Distribution-default interchange.cfg
                standard/              Demo catalog skeleton, used by makecat
-               src/                   C and Perl code for CGI links
+               src/                   C and Perl code for CGI link programs
                lib/                   Back-end administrative interface
                code/                  Usertags and other customizable code
 
@@ -104,7 +124,7 @@ as described in the next section.
 
                                  D E M O
 
-There is a demo catalog skeleton included called 'standard'.
+There is a demo catalog skeleton (called 'standard') included.
 
 To build your own catalog from the demo, go to the directory where you
 installed Interchange (default is "interchange" in your home directory,
@@ -114,7 +134,7 @@ for RPM installations) and run:
     bin/makecat
 
 Follow the prompts and after restarting the Interchange server you
-should be able to access the demo catalog.
+should be able to access the new instance of the demo catalog.
 
 Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
@@ -130,7 +150,8 @@ A documentation package is available, with documentation in many different
 formats. This and other information is available at the Interchange home on
 the web:
 
-    http://www.icdevgroup.org/
+http://www.icdevgroup.org/
+http://www.icdevgroup.org/xmldocs/
 
 -----------------------------------------------------------------------------
 
@@ -138,8 +159,8 @@ the web:
 
 Interchange is regularly tested on various Linux distributions and FreeBSD.
 It has also been used on Mac OS X, Solaris, OpenBSD, Digital UNIX/Tru64, SCO,
-AIX, and other Unix variants. It should work on any Unix with Perl 5.6.0 or
-higher and the necessary Perl modules.
+AIX, and other Unix variants. It should work on any Unix with sufficiently
+high Perl version number and the necessary Perl modules.
 
 -----------------------------------------------------------------------------
 

@@ -37,8 +37,8 @@ WARNING: BACK UP EVERYTHING BEFORE YOU START!
        
         tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
-    2. Unpack the new version of the software and change
-       to that directory.
+    2. Unpack the new version of the software to a temporary directory,
+       and change to that directory.
 
         tar xzf interchange-5.x.x.tar.gz
         cd interchange-5.x.x

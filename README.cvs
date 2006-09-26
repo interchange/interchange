@@ -12,7 +12,14 @@ changes before incorporating. Better yet, don't use CVS changes for
 anything but fixing present bugs, and run the latest release.
 
 
-Check out a local copy
+Browse CVS tree online
+----------------------
+
+To browse Interchange CVS contents online, simply point your web
+browser to http://www.icdevgroup.org/cgi-bin/cvsweb/interchange/ .
+
+
+Check-out a local copy
 ----------------------
 
 You need to have CVS installed on your system, to begin with. It
@@ -79,14 +86,14 @@ If you want to see how your current working files compare to the versions
 you checked out from the repository, cd into your checked out CVS copy and
 do:
 
-	cvs diff | more
+	cvs diff -d | less
 
 
 Updating
 --------
 
 To update the distribution, change to your checked out CVS directory
-(e.g. src/interchange), then run:
+(e.g. src/interchange), and then run:
 
 	$ cvs update -Pd
 	U MANIFEST
@@ -142,17 +149,19 @@ It is highly recommended that you create a .cvsrc file in your home
 directory to automatically use common options such as these:
 
 	cvs -z3 -q
-	diff -u
+	diff -du
 	update -Pd
 	checkout -P
 
 This directs CVS to (1) automatically compress all data communicated
 between you and our server (saving bandwidth) and be quiet (printing
-out fewer diagnostic messages); (2) show context-sensitive diffs;
-(3) prune empty directories and create any new directories added to
-the repository since your checkout; and (4) prune empty directories
+out fewer diagnostic messages); (2) show context-sensitive, recursive
+diffs; (3) prune empty directories and create any new directories added
+to the repository since your checkout; and (4) prune empty directories
 during your checkouts.
 
 Please see the CVS website for complete documentation:
 
 	http://www.cvshome.org/
+
+
