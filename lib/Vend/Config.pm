@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.206 2006-06-23 20:17:58 racke Exp $
+# $Id: Config.pm,v 2.207 2006-10-08 22:51:22 kwalsh Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.206 $, 10);
+$VERSION = substr(q$Revision: 2.207 $, 10);
 
 my %CDname;
 my %CPname;
@@ -486,7 +486,6 @@ sub global_directives {
 	['CodeDef',			 'mapped_code',		 ''],
 	['HotDBI',			 'boolean',			 ''],
 	['AdminUser',		  undef,			 ''],
-	['AdminHost',		  undef,			 ''],
 	['HammerLock',		 'time',     	 30],
 	['DataTrace',		 'integer',     	 0],
 	['ShowTimes',		 'yesno',	     	 0],
