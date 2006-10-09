@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.96 2006-08-30 18:53:44 mheins Exp $
+# $Id: Util.pm,v 2.97 2006-10-09 22:09:52 kwalsh Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.96 $, 10);
+$VERSION = substr(q$Revision: 2.97 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1124,6 +1124,8 @@ sub readin {
 		my $field = $Vend::Cfg->{PageTableMap}{page_text};
 		foreach my $t (@{$Vend::Cfg->{PageTables}}) {
 			my $db = Vend::Data::database_exists_ref($t);
+			next unless $db;
+
 			if($teleport) {
 				$file = teleport_name($file, $teleport, $t);
 			}
