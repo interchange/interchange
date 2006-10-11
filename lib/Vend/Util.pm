@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.97 2006-10-09 22:09:52 kwalsh Exp $
+# $Id: Util.pm,v 2.98 2006-10-11 22:10:48 kwalsh Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.97 $, 10);
+$VERSION = substr(q$Revision: 2.98 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1972,7 +1972,7 @@ sub send_mail {
 #::logDebug("using $using");
 		undef $none;
 
-		my $smtp = Net::SMTP->new($mhost, Debug => $Global::Variable->{DEBUG}, Hello => $helo);
+		my $smtp = Net::SMTP->new($mhost, Debug => $Global::Variable->{DEBUG}, Hello => $helo) or last SMTP;
 #::logDebug("smtp object $smtp");
 
 		my $from = $::Variable->{MV_MAILFROM}
