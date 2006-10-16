@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.9 2006-08-16 13:34:09 mheins Exp $
+# $Id: Linkpoint.pm,v 1.10 2006-10-16 14:24:38 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -337,6 +337,8 @@ sub linkpoint {
 	$scompany =~ s/\&/ /g;
 	$bcompany =~ s/\&/ /g;
 	
+	my %check_transaction = ( PREAUTH => 1, SALE => 1 );
+
 	my %delmap = (
 		POSTAUTH => [ 
 					qw(
@@ -438,7 +440,9 @@ sub linkpoint {
 
 	my $approve;
 	if ($result{'r_approved'} eq "APPROVED") {
-		if (my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')) {
+		my $check_sub_name = $opt->{check_sub} || charge_param('check_sub');
+
+		if ($check_sub_name and $check_transaction{$transtype} ) {
 			my $check_sub = $Vend::Cfg->{Sub}{$check_sub_name}
 							|| $Global::GlobalSub->{$check_sub_name};
 
