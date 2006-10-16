@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.5.2.3 2006-05-19 14:48:48 jon Exp $
+# $Id: Linkpoint.pm,v 1.5.2.4 2006-10-16 14:26:47 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -132,7 +132,7 @@ This is a matching sample subroutine you could put in interchange.cfg:
 	sub avs_check {
 		my ($result) = @_;
 		my $avs = $result->{r_avs};
-		my ($addr, $zip) = split //, $avs;
+		my ($addr, $zip) = split m{}, $avs;
 		return 1 if $addr eq 'Y' or $zip eq 'Y';
 		return 1 if $addr eq 'X' and $zip eq 'X';
 		$result->{MStatus} = 'failure';
@@ -337,6 +337,8 @@ sub linkpoint {
 	$scompany =~ s/\&/ /g;
 	$bcompany =~ s/\&/ /g;
 	
+	my %check_transaction = ( PREAUTH => 1, SALE => 1 );
+
 	my %delmap = (
 		POSTAUTH => [ 
 					qw(
@@ -438,7 +440,9 @@ sub linkpoint {
 
 	my $approve;
 	if ($result{'r_approved'} eq "APPROVED") {
-		if (my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')) {
+		my $check_sub_name = $opt->{check_sub} || charge_param('check_sub');
+
+		if ($check_sub_name and $check_transaction{$transtype} ) {
 			my $check_sub = $Vend::Cfg->{Sub}{$check_sub_name}
 							|| $Global::GlobalSub->{$check_sub_name};
 
