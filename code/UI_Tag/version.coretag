@@ -1,13 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: version.coretag,v 1.12 2005-11-08 18:14:40 jon Exp $
+# $Id: version.coretag,v 1.12.2.1 2006-10-31 11:18:37 pajamian Exp $
 
 UserTag version Order      extended
 UserTag version attrAlias  module_test modtest
 UserTag version attrAlias  moduletest modtest
 UserTag version attrAlias  require modtest
 UserTag version addAttr
-UserTag version Version    $Revision: 1.12 $
+UserTag version Version    $Revision: 1.12.2.1 $
 UserTag version Routine    <<EOR
 sub {
 	return $::VERSION unless shift;
@@ -22,8 +22,11 @@ sub {
 	}
 
 	if($opt->{local_error}) {
-		my $fn = $Vend::Cfg->{ErrorFile};
-		push @out, $Tag->page("$::Variable->{UI_BASE}/do_view", $fn) . "$fn</a>";
+		my $dfn = my $fn = $Vend::Cfg->{ErrorFile};
+		my $pre = $Global::Catalog{$Vend::Cat}->{dir} . '/';
+		$fn =~ s:^\Q$pre\E::;
+		my $href = $Tag->area("$::Variable->{UI_BASE}/do_view", $fn);
+		push(@out, qq{<a href="$href">$dfn</a>});
 		$done_something = 1;
 	}
 
