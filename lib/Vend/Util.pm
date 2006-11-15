@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.98 2006-10-11 22:10:48 kwalsh Exp $
+# $Id: Util.pm,v 2.99 2006-11-15 15:39:41 kwalsh Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.98 $, 10);
+$VERSION = substr(q$Revision: 2.99 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -463,6 +463,7 @@ sub setlocale {
 sub currency {
 	my($amount, $noformat, $convert, $opt) = @_;
 	$opt = {} unless $opt;
+	$convert ||= $opt->{convert};
 
 	my $pd = $Vend::Cfg->{PriceDivide};
 	if($opt->{locale}) {
