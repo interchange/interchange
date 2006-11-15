@@ -1,13 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: price.coretag,v 1.8 2006-11-15 12:32:05 racke Exp $
+# $Id: price.coretag,v 1.9 2006-11-15 15:10:11 racke Exp $
 
 UserTag price               Order        code
 UserTag price               addAttr
 UserTag price               attrAlias    base mv_ib
 UserTag price               attrAlias    space discount_space
 UserTag price               PosNumber    1
-UserTag price               Version      $Revision: 1.8 $
+UserTag price               Version      $Revision: 1.9 $
 UserTag price               Routine      <<EOR
 sub {
 	my ($code, $ref) = @_;
@@ -21,7 +21,6 @@ sub {
 	$amount = discount_price($code, $amount, $ref->{quantity})
 			if $ref->{discount};
 	Vend::Interpolate::switch_discount_space($oldspace) if defined $oldspace;
-	return currency( $amount, $ref->{noformat}, $ref->{convert},
-					 {display => $ref->{display}} );
+	return currency( $amount, $ref->{noformat}, undef, $ref );
 }
 EOR
