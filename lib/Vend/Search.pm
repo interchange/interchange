@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.33 2006-09-28 14:18:39 docelic Exp $
+# $Id: Search.pm,v 2.34 2006-11-17 10:04:25 racke Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,10 +22,13 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
+
+use POSIX qw(LC_CTYPE);
+
 use vars qw($VERSION);
 
 sub new {
@@ -1022,6 +1025,9 @@ EOF
 	}
 #::logDebug("code is $code");
 	use locale;
+	if ($::Scratch->{mv_locale}) {
+	    POSIX::setlocale(LC_CTYPE, $::Scratch->{mv_locale});
+	}
 	$limit_sub = eval $code;
 	die "Bad code: $@" if $@;
 	return ($limit_sub, $f);
