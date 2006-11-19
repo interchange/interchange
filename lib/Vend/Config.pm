@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.207 2006-10-08 22:51:22 kwalsh Exp $
+# $Id: Config.pm,v 2.208 2006-11-19 20:51:51 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.207 $, 10);
+$VERSION = substr(q$Revision: 2.208 $, 10);
 
 my %CDname;
 my %CPname;
@@ -240,6 +240,7 @@ for( values %extmap ) {
 	hashcode		HashCode
 	coretag  		CoreTag
 	searchop 		SearchOp
+	localechange	LocaleChange
 	filter			Filter
 	formaction		FormAction
 	ordercheck		OrderCheck
@@ -308,6 +309,7 @@ my %valid_dest = qw/
 					formaction       FormAction
 					itemaction       ItemAction
 					ordercheck       OrderCheck
+					localechange     LocaleChange
 					usertag          UserTag
 					hashcode         HashCode
 					arraycode        ArrayCode
