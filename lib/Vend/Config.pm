@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.208 2006-11-19 20:51:51 racke Exp $
+# $Id: Config.pm,v 2.209 2006-11-19 20:59:56 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.208 $, 10);
+$VERSION = substr(q$Revision: 2.209 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4551,6 +4551,7 @@ sub parse_profile {
 	for($i = 0; $i < @$c; $i++) {
 		if($c->[$i] =~ s/(^|\n)__NAME__\s+([^\n\r]+)\r?\n/$1/) {
 			my $name = $2;
+			$name =~ s/\s+$//;
 			$ref->{$name} = $i;
 		}
 	}
