@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.209 2006-11-19 20:59:56 racke Exp $
+# $Id: Config.pm,v 2.210 2006-11-21 22:32:12 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.209 $, 10);
+$VERSION = substr(q$Revision: 2.210 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3438,6 +3438,16 @@ sub set_default_search {
 							}
 						}
 
+						# create currency repositories
+						for my $locale (keys %{$C->{Locale_repository}}) {
+							for my $key (@Locale_keys_currency) {
+								if ($C->{Locale_repository}->{$locale}->{$key}) {
+									$C->{Currency_repository}->{$locale}->{$key}
+										= $C->{Locale_repository}->{$locale}->{$key};
+								}
+							}
+						}
+						
 						push @Dispatches, 'Locale';
 						return 1;
 					},
