@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.72 2006-08-16 13:26:50 mheins Exp $
+# $Id: DBI.pm,v 2.73 2006-11-24 09:24:57 racke Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.72 $, 10);
+$VERSION = substr(q$Revision: 2.73 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -328,7 +328,7 @@ sub create {
 					|| $DBI::errstr
 					|| "unknown error. Driver '$dname' installed?";
 		}
-		die ::errmsg("connect failed (create) -- %s\n",$msg);
+		die ::errmsg("connect to %s failed (create) -- %s\n", $call[0], $msg);
 	}
 
 	# Allow multiple tables in different DBs to have same local name
