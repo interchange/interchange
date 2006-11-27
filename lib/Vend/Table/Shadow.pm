@@ -1,8 +1,8 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.51 2005-10-04 11:11:32 racke Exp $
+# $Id: Shadow.pm,v 1.52 2006-11-27 10:41:21 racke Exp $
 #
-# Copyright (C) 2002-2005 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2002-2006 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.51 $, 10);
+$VERSION = substr(q$Revision: 1.52 $, 10);
 
 # CREDITS
 #
@@ -169,8 +169,19 @@ sub column_exists {
 
 sub get_slice {
 	my ($s, $key, $fary) = @_;
+	my ($db, $col);
 
 	$s = $s->import_db() if ! defined $s->[$OBJ];
+	if (ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	for (my $i = 0; $i < @$fary; $i++) {
+		($db, $col) = $s->_map_field($fary->[$i]);
+		$fary->[$i] = $col;
+	}
+	
 	$s->[$OBJ]->get_slice($key, $fary);
 }
 
@@ -343,6 +354,19 @@ sub query {
 			$colref = $qref->{columns};
 			if (@$colref == 1 && $colref->[0] eq '*') {
 				$colref = [$s->columns()];
+			} else {
+				# SQL parser returns columns in lowercase, replace
+				# with correct case if needed
+				my $pos;
+				my @cols = $s->columns();
+
+				for (my $i = 0; $i < @$colref; $i++) {
+					if ($pos = $s->[$OBJ]->column_index($colref->[$i])) {
+						$colref->[$i] = $cols[$pos];
+					} elsif ($colref->[$i] eq lc($s->[$OBJ]->config('KEY'))) {
+						$colref->[$i] = $s->[$OBJ]->config('KEY');
+					}
+				}
 			}
 
 			unless (@map_matches = $s->_map_entries($colref, \@map_entries)) {
@@ -383,10 +407,20 @@ sub query {
 			} else {
 				$result = $s->[$OBJ]->query($opt, $text, @arg);
 			}
-			for $row (@$result) {
-				for $pos (@map_matches) {
-					($name, $map_entry) = @{$map_entries[$pos]};
-					$row->[$pos] = $s->_map_column($row->[$keypos], $name, 1, $row->[$pos], $map_entry);
+
+			if ($opt->{hashref}) {
+				for $row (@$result) {
+					for $pos (@map_matches) {
+						($name, $map_entry) = @{$map_entries[$pos]};
+						$row->{$colref->[$pos]} = $s->_map_column($row->{$colref->[$keypos]}, $name, 1, $row->{$colref->[$pos]}, $map_entry);
+					}
+				}
+			} else {
+				for $row (@$result) {
+					for $pos (@map_matches) {
+						($name, $map_entry) = @{$map_entries[$pos]};
+						$row->[$pos] = $s->_map_column($row->[$keypos], $name, 1, $row->[$pos], $map_entry);
+					}
 				}
 			}
 
