@@ -3,9 +3,9 @@ interchange (5.4.1-1.1) unstable; urgency=low
   * updated Swedish translation of Debconf templates (Closes: #375916,
     thanks to Daniel Nylander <yeager@lidkoping.net>)
   * updated Czech translation of Debconf templates (Closes: #391541, thanks
-    to Martin Sín <martin.sin@seznam.cz>)
+    to Martin SÃ­n <martin.sin@seznam.cz>)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun,  2 Jul 2006 17:14:47 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue,  5 Dec 2006 17:43:29 +0100
 
 interchange (5.4.1-1) unstable; urgency=low
 
