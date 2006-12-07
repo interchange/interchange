@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.60 2005-10-31 15:13:09 mheins Exp $
+# $Id: Dispatch.pm,v 1.60.2.1 2006-12-07 23:10:09 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.60 $, 10);
+$VERSION = substr(q$Revision: 1.60.2.1 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1114,7 +1114,7 @@ EOF
 	}
 
 	if($Vend::Cfg->{XHTML}) {
-		$Vend::Xtrailer = '/';
+		$Vend::Xtrailer = ' /';
 		$Vend::Xquote = '"';
 	}
 	else {
