@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.10 2006-06-28 14:39:41 kwalsh Exp $
+# $Id: Link.pm,v 1.11 2006-12-09 20:46:16 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.10 $
+$Revision: 1.11 $
 
 =head1 SYNOPSIS
 
@@ -425,13 +425,14 @@ sub die_page {
 
     $r->content_type ("text/html");
     $r->print (<<EOF);
-<HTML><HEAD><TITLE>Interrupted</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<H3>Someone pressed stop...</H3>
-<P>
+<html><head><title>Interrupted</title></head>
+<body bgcolor="#FFFFFF">
+<h3>Someone pressed stop...</h3>
+<p>
 We have aborted this request because someone terminated it.
 Please try again soon.
-</BODY></HTML>
+</p>
+</body></html>
 EOF
 
 }
@@ -445,21 +446,20 @@ sub server_not_running {
 
     $r->content_type ("text/html");
     $r->print (<<EOF);
-<HTML><HEAD><TITLE>Interchange server not running</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<H3>We're sorry, the Interchange server was not running...</H3>
-<P>
+<html><head><title>Interchange server not running</title></head>
+<body bgcolor="#FFFFFF">
+<h3>We're sorry, the Interchange server was not running...</h3>
+<p>
 We are out of service or may be experiencing high system demand.
 Please try again soon.
-
-<H3>This is it:</H3>
-<PRE>
+</p>
+<h3>This is it:</h3>
+<pre>
 $arg
 $env
 $ent
-</PRE>
-
-</BODY></HTML>
+</pre>
+</body></html>
 EOF
 
 }
