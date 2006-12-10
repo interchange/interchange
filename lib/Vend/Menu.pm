@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.48 2006-08-04 09:11:15 racke Exp $
+# $Id: Menu.pm,v 2.49 2006-12-10 18:16:35 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 use Vend::Util;
 use strict;
@@ -658,7 +658,9 @@ EOF
 		out += '>';
 		var tstyle = ${vpf}link_style;
 		var tclass = ${vpf}link_class;
-		var ttarget = ${vpf}link_target;
+		var ttarget = l[${vpf}TARGET];
+		if(! ttarget)
+			ttarget = ${vpf}link_target;
 		var tprepend = ${vpf}link_prepend;
 		if(l[${vpf}PAGE]) {
 			out = out + '<a href="' + tprepend + l[ ${vpf}PAGE ] + '"';
@@ -1230,7 +1232,9 @@ function ${vpf}tree_link (idx) {
 
 	var tstyle = ${vpf}link_style;
 	var tclass = ${vpf}link_class;
-	var ttarget = ${vpf}link_target;
+	var ttarget = l[${vpf}TARGET];
+	if(! ttarget)
+		ttarget = ${vpf}link_target;
 	var tprepend = ${vpf}link_prepend;
 	if(l[${vpf}MV_CHILDREN] > 0) {
 		if(l[${vpf}MV_LEVEL] && ${vpf}icon_by_type) {
@@ -1886,7 +1890,9 @@ sub tree_line {
 							description
 							img_up
 							img_dn
-							img_sel / ];
+							img_sel
+							target
+							/ ];
 		if($opt->{loopfields}) {
 			if(! ref($opt->{loopfields})) {
 				my $fstring = $opt->{loopfields};
