@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.11 2006-12-09 20:46:16 kwalsh Exp $
+# $Id: Link.pm,v 1.12 2006-12-10 01:00:58 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ use strict;
 use ModPerl::Registry;
 use ModPerl::Code;
 #use Apache::Const;
-use Apache2::Const;
+use Apache2::Const -compile => qw(DECLINED OK NOT_FOUND FORBIDDEN REDIRECT HTTP_MOVED_PERMANENTLY);
 use Apache2::ServerRec ();
 require Apache2::Connection;
 require Apache2::RequestRec;
@@ -48,7 +48,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.11 $
+$Revision: 1.12 $
 
 =head1 SYNOPSIS
 
@@ -741,6 +741,7 @@ sub handler {
 #warn "Doing redirect\n";
             $r->content_type($set_content);
             close (SOCK)                                or die "close: $!\n";
+            return Apache2::Const::HTTP_MOVED_PERMANENTLY if $set_status == 301;
             return Apache2::Const::REDIRECT;
         }
         elsif($set_status =~ /^404/) {
