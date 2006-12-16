@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.59 2006-08-09 13:56:16 racke Exp $
+# $Id: Data.pm,v 2.60 2006-12-16 15:59:05 mheins Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1439,6 +1439,10 @@ CHAIN:
 			my $mod = $1;
 			if($mod =~ s/^\$(\d|$)/$1/) {
 				$price = $item->{mv_price} || $mod;
+				if($price =~ /^\s*free\s*$/i) {
+					$final = 0;
+					last CHAIN;
+				}
 				redo CHAIN;
 			}
 			elsif($mod =~ /^(\w*):([^:]*)(?::(\S*))?$/) {
@@ -1560,7 +1564,7 @@ CHAIN:
 			elsif ($mod =~ s/^=([\d.]*)=([^=]+)//) {
 				$final += $1 if $1;
 				my ($attribute, $table, $field, $key) = split /:/, $2;
-				if($item->{$attribute}) {
+				if($attribute) {
 					$key = $field ? $item->{$attribute} : $item->{code}
 						unless $key;
 					$price = database_field( ( $table ||
@@ -2241,6 +2245,11 @@ sub update_data {
 #::logDebug("storing d=$d $field blob_only=$CGI::values{mv_blob_only}");
 					($d, $f) = set_db($base_db, $field);
 #::logDebug("storing table=$table d=$d f=$f key=$key");
+
+					if(! $value and ! length($value)) {
+						$value = $CGI::values{"mv_data_undef:$field"} ? undef : '';
+					}
+
 					if(! defined $qd->{$d}) {
 						$qd->{$d} = $d;
 						$qf->{$d} = [$f];
