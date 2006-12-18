@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: htmlarea.widget,v 1.10 2006-12-18 13:30:17 racke Exp $
+# $Id: htmlarea.widget,v 1.11 2006-12-18 14:31:46 racke Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -70,6 +70,21 @@ For the fckeditor flavour:
 	</script>
 	<script type="text/javascript" src="[scratch tmp_hpath]fckeditor.js"></script>
 
+Additionally for the fckeditor flavour, if "htmlarea_config" is set, upon
+loading it will call a javascript function by the name of its value:
+
+    [display type=htmlarea name=foo height=NN width=NNN htmlarea_config="bar"]
+
+    <script>
+    function bar (fckobj) {
+        fckobj.ToolbarSet = 'Basic';
+    }
+    </script>
+
+This is useful to pass fckeditor configuations, such as the above exmample "ToolbarSet".
+Note that you must supply the Javascript function of (in this case) "bar" as shown, somewhere
+on the same page for it to work. 
+
 The "en" is the language locale to use. If you use the output-style
 layout, this is automatically determined from the Interchange locale.
 You can also override this with the Variable HTMLAREA_LANG. This is not
@@ -109,6 +124,7 @@ window.onload = function()
 {
     var {NAME}FCKeditor = new FCKeditor( '{NAME}', '{WIDTH}', '{HEIGHT}' ) ;
     {NAME}FCKeditor.BasePath = _editor_url ;
+	{CONFIG?}{CONFIG}({NAME}FCKeditor);{/CONFIG?}
     {NAME}FCKeditor.ReplaceTextarea() ;
 }
 
@@ -187,8 +203,8 @@ EOF
     $opt->{height} =~ s/\D+//;
     $opt->{width} =~ s/\D+//;
 
-	$pre_scr .= $Tag->uc_attr_list({hash => {name => $pname, width => $opt->{width},
-height => $opt->{height}},
+	$pre_scr .= $Tag->uc_attr_list({hash => {name => $pname, width => $opt->{width}, height => $opt->{height},
+																	config => $flavour eq 'fckeditor' ? $opt->{htmlarea_config} : undef },
 									body => $flavours{$flavour}->{pre}});
 	
 	$opt->{anchor_style} ||= 'font-size: smaller';
