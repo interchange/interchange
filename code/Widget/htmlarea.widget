@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: htmlarea.widget,v 1.9 2006-01-04 19:17:43 racke Exp $
+# $Id: htmlarea.widget,v 1.10 2006-12-18 13:30:17 racke Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -107,7 +107,7 @@ sub {
 					pre => qq|<script>
 window.onload = function()
 {
-    var {NAME}FCKeditor = new FCKeditor( '{NAME}' ) ;
+    var {NAME}FCKeditor = new FCKeditor( '{NAME}', '{WIDTH}', '{HEIGHT}' ) ;
     {NAME}FCKeditor.BasePath = _editor_url ;
     {NAME}FCKeditor.ReplaceTextarea() ;
 }
@@ -184,11 +184,12 @@ EOF
 		}
 	}
 
-	$pre_scr .= $Tag->uc_attr_list({hash => {name => $pname},
-									body => $flavours{$flavour}->{pre}});
+    $opt->{height} =~ s/\D+//;
+    $opt->{width} =~ s/\D+//;
 
-	$opt->{height} =~ s/\D+//;
-	$opt->{width} =~ s/\D+//;
+	$pre_scr .= $Tag->uc_attr_list({hash => {name => $pname, width => $opt->{width},
+height => $opt->{height}},
+									body => $flavours{$flavour}->{pre}});
 	
 	$opt->{anchor_style} ||= 'font-size: smaller';
 
