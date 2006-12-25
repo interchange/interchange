@@ -1,5 +1,9 @@
 interchange (5.4.1-1.1) unstable; urgency=low
 
+  * fixed stupid typo in postinst script of interchange package which
+    caused creation of a directory named 775 (Closes: #404391, thanks to
+    Filippo Giunchedi <filippo@debian.org> for the report and the
+    investigation)
   * updated Swedish translation of Debconf templates (Closes: #375916,
     thanks to Daniel Nylander <yeager@lidkoping.net>)
   * updated Czech translation of Debconf templates (Closes: #391541, thanks
