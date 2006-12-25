@@ -131,7 +131,7 @@ chown -R $USER.$GROUP /etc/interchange
 db_get interchange/docroot
 DOCROOT="$RET"
 if [ "$DOCROOT" ]; then
-	mkdir -p 755 $DOCROOT
+	mkdir -p -m 755 $DOCROOT
 	chown $USER.$GROUP $DOCROOT
 fi
 
