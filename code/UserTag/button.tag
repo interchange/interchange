@@ -1,12 +1,12 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.19 2006-12-29 00:50:55 jon Exp $
+# $Id: button.tag,v 1.20 2006-12-29 00:57:01 jon Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.19 $
+UserTag button Version   $Revision: 1.20 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -213,7 +213,7 @@ EOJS
 	$out =~ s/(['\\])/\\$1/g;
 	$out =~ s/[\n\r]+/ /g;
 	$out = <<EOV;
-<script language="javascript1.2">
+<script language="javascript1.2" type="text/javascript">
 <!--$function
 document.write('$out');
 // -->
