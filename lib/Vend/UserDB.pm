@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.49 2006-08-25 17:14:59 mheins Exp $
+# $Id: UserDB.pm,v 2.50 2006-12-29 05:43:08 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1163,6 +1163,13 @@ sub login {
 				if ! $self->{USERNAME};
 			$self->{PASSWORD} = Vend::Util::read_cookie('MV_PASSWORD')
 				if ! $self->{PASSWORD};
+		}
+
+		if ($self->{VALIDCHARS} !~ / /) {
+			# If space isn't a valid character in usernames,
+			# be nice and strip leading and trailing whitespace.
+			$self->{USERNAME} =~ s/^\s+//;
+			$self->{USERNAME} =~ s/\s+$//;
 		}
 
 		if ($self->{OPTIONS}{ignore_case}) {
