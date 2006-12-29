@@ -1,12 +1,12 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.18 2006-09-21 16:59:07 jon Exp $
+# $Id: button.tag,v 1.19 2006-12-29 00:50:55 jon Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.18 $
+UserTag button Version   $Revision: 1.19 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -31,13 +31,13 @@ sub {
 		$id =~ s:/+$::;
 		$id =~ s:/~[^/]+::;
 		if(	$src =~ m{^https?:}i ) {
-				$image = $src;
+			$image = $src;
 		}
 		elsif( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
-				$image = $src;
+			$image = $src;
 		}
 		elsif( $dr and $src =~ m{^/} and -f "$dr/$src" ) {
-				$image = "$id/$src";
+			$image = "$id/$src";
 		}
 	}
 
