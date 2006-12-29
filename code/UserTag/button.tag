@@ -1,12 +1,12 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.20 2006-12-29 00:57:01 jon Exp $
+# $Id: button.tag,v 1.21 2006-12-29 05:17:59 jon Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.20 $
+UserTag button Version   $Revision: 1.21 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -42,6 +42,8 @@ sub {
 	}
 
 	my $onclick = '';
+	my $onmouseover = '';
+	my $onmouseout = '';
 	while($action =~ s! \[
 						(
 							j (?:ava)? s (?:cript)?
@@ -57,6 +59,18 @@ sub {
 		$script =~ s/^\s+//;
 		if($script =~ s/\bonclick\s*=\s*"(.*?)"//is) {
 			$onclick = $1;
+			next;
+		}
+		if ($script =~ s/\bonmouse(\w+)\s*=\s*"(.*?)"//is) {
+			if (lc($1) eq 'over') {
+				$onmouseover .= ($onmouseover ? ';' : '') . $2;
+			}
+			elsif (lc($1) eq 'out') {
+				$onmouseout .= ($onmouseout ? ';' : '') . $2;
+			}
+			else {
+				logError(q{Skipping 'onmouse%s', invalid JavaScript event}, $1);
+			}
 			next;
 		}
 		push @js, $script;
@@ -183,10 +197,18 @@ sub {
 	}
 
 	$opt->{link_href} ||= 'javascript: void 0';
+	if ($onclick =~ /^\s*onclick\s*=\s*"(.*?)"/i) {
+		$onclick = $1 . ' && ';
+	}
 	# QUOTING (fix here too?)
 	$out .= <<EOF;
-<a href="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
-	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
+<a href="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus';$onmouseover"
+EOF
+	$out .= <<EOF if $onmouseout;
+	onMouseOut="$onmouseout"
+EOF
+	$out .= <<EOF;
+	onClick="$confirm $onclick mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
 	alt="$wstatus"><img alt="$wstatus" src="$src" border='$opt->{border}'$position>$a_before$anchor$a_after
 EOF
 
