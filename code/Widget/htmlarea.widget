@@ -1,6 +1,6 @@
 # Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: htmlarea.widget,v 1.6.2.3 2006-01-04 15:50:30 racke Exp $
+# $Id: htmlarea.widget,v 1.6.2.4 2007-01-17 13:53:44 pajamian Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -81,6 +81,7 @@ A bug in MSIE doesn't allow initialization of a textarea until the
 complete document is loaded. This means that the editor toolbox will not
 show up until the mouse enters the C<TEXTAREA>.
 
+=cut
 EOD
 
 CodeDef htmlarea Routine <<EOR
