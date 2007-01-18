@@ -1,0 +1,10 @@
+CodeDef lspace2nbsp Filter
+CodeDef lspace2nbsp Description Leading SPACE to nbsp
+CodeDef lspace2nbsp Routine <<EOR
+sub {
+        my $str = shift;
+        $str =~ s/^( +)/'&nbsp;' x length($1)/emg;
+        return $str;
+}
+EOR
+
