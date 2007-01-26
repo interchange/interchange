@@ -1,13 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: error.coretag,v 1.5 2005-11-08 18:14:35 jon Exp $
+# $Id: error.coretag,v 1.6 2007-01-26 01:50:08 pajamian Exp $
 
 ### This is in package Vend::Interpolate, and may make reference
 ### to variables in that module
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.5 $
+UserTag error               Version      $Revision: 1.6 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -134,7 +134,8 @@ EOF
 	$text = '' unless defined $text;
 	$text .= '%s' unless $text =~ /\%s/;
 	$text = pull_else($text, $found_error);
-	return sprintf($text, $err);
+	$text =~ s/\%s/$err/;
+	return $text;
 }
 
 sub {
