@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.210 2006-11-21 22:32:12 racke Exp $
+# $Id: Config.pm,v 2.211 2007-01-29 19:29:45 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.210 $, 10);
+$VERSION = substr(q$Revision: 2.211 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2718,6 +2718,19 @@ sub parse_require {
 				return $found;
 			}
 		};
+	}
+	elsif ($val =~ s/^(?:perl)?include\s+//i) {
+		my $path = Vend::File::make_absolute_file($val, 1);
+		$require = {};
+		$name = 'Perl include path';
+		$testsub =
+			sub {
+				if (-d $path) {
+					unshift @INC, $path;
+					return 1;
+				}
+				return 0;
+			};
 	}
 	my @requires = grep /\S/, split /\s+/, $val;
 
