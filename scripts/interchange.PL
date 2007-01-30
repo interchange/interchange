@@ -3,9 +3,9 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.92 2006-09-21 14:56:39 jon Exp $
+# $Id: interchange.PL,v 2.93 2007-01-30 19:57:02 jon Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -29,12 +29,25 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-use lib '/usr/local/interchange/lib';
-#use lib '~_~INSTALLPRIVLIB~_~';
-use lib '/usr/local/interchange';
-#use lib '~_~INSTALLARCHLIB~_~';
-
 use strict;
+
+BEGIN {
+	if ($ENV{INTERCHANGE_INSTALLPRIVLIB}) {
+		unshift @INC, $ENV{INTERCHANGE_INSTALLPRIVLIB};
+	}
+	else {
+		unshift @INC, '/usr/local/interchange/lib';
+#		unshift @INC, '~_~INSTALLPRIVLIB~_~';
+	}
+
+	if ($ENV{INTERCHANGE_INSTALLARCHLIB}) {
+		unshift @INC, $ENV{INTERCHANGE_INSTALLARCHLIB};
+	}
+	else {
+		unshift @INC, '/usr/local/interchange';
+#		unshift @INC, '~_~INSTALLARCHLIB~_~';
+	}
+}
 
 use Config;
 no Config;
