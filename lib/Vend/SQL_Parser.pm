@@ -1,8 +1,8 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.12 2005-11-08 18:14:45 jon Exp $
+# $Id: SQL_Parser.pm,v 2.13 2007-01-30 11:29:51 racke Exp $
 #
-# Copyright (C) 2003-2005 Interchange Development Group
+# Copyright (C) 2003-2007 Interchange Development Group
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -18,7 +18,7 @@ be evaluated for an Interchange search spec.
 
 =head1 COPYRIGHT
 
-Copyright 2003-2004 Interchange Development Group
+Copyright 2003-2007 Interchange Development Group
 Original SQL::Statement module copyright 1998 Jochen Wiedman.
 
 This library is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
 no warnings qw(uninitialized numeric);
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 sub new {
 	my $class = shift;
@@ -72,7 +72,7 @@ sub new {
 		or die ::errmsg("improper SQL statement: %s", $statement);
 	$self->{command} = uc $1;
 
-	if($statement =~ s/\s+limit\s+(\d+(?:\s*,\s*(\d+))?)\s*$//) {
+	if($statement =~ s/\s+limit\s+(\d+(?:\s*,\s*(\d+))?)\s*$//i) {
 		$self->{limit_by} = $1;
 	}
 
