@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.22 2006-04-05 14:42:19 mheins Exp $
+# $Id: File.pm,v 2.23 2007-01-30 19:23:28 jon Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -55,7 +55,7 @@ use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -396,6 +396,17 @@ sub file_name_is_absolute {
 sub absolute_or_relative {
     my($file) = @_;
     $file =~ $abspat or $file =~ $relpat;
+}
+
+sub make_absolute_file {
+	my ($path, $global) = @_;
+	# empty string stays empty
+	return unless length($path);
+	# is file already an absolute path?
+	return $path if $path =~ $abspat;
+	# use global or catalog root?
+	my $prefix = ($global ? $Global::VendRoot : $Vend::Cfg->{VendRoot});
+	return catfile($prefix, $path);
 }
 
 sub win_catfile {
