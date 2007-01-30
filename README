@@ -2,9 +2,9 @@
 
                            I N T E R C H A N G E
 
-Interchange 5.4.1
+Interchange 5.4.2
 
-Copyright (C) 2002-2006 Interchange Development Group
+Copyright (C) 2002-2007 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
@@ -81,12 +81,12 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-5.4.1.tar.gz | tar xvf -
-cd interchange-5.4.1
-./configure
-
-The configure script asks where you'd like to install Interchange, and
-(against common practice) also install it.
+gzip -dc interchange-5.4.2.tar.gz | tar xvf -
+cd interchange-5.4.2
+perl Makefile.PL
+make
+make test
+make install
 
 The Interchange server doesn't do much if it isn't servicing one or more
 actual catalogs, so you next need to make your first Interchange catalog,
