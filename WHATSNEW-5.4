@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.4.2 released on YYYY-MM-DD.
+Interchange 5.4.2 released on 2006-02-06.
 
 
 Core
@@ -19,18 +19,36 @@ Core
   processors, rendering Interchange unresponsive for a while. Fixed by
   Kevin Walsh; pointed out by Donald Alexander.
 
-* Fix masking of unencrypted credit card numbers to work with a custom
-  MV_CREDIT_CARD_INFO_TEMPLATE that does not match the regexp.
+* Worked around apparent Perl bug that allowed code called by DispatchRoutines
+  to overwrite the routines arrays themselves. Found and fixed by Frederic
+  Steinfels <fredo@dvdupgrades.ch>.
 
-* Fix the above mentioned regexp so it removes the CVV2 value from the
-  unencrypted data as well.
+* Fixed [sql-quote] sub-tag (in the [query] tag), which didn't work properly
+  if the column data spanned multiple lines, as it may do with an INSERT or
+  UPDATE etc.
 
+* Fixed masking of unencrypted credit card numbers to work with a custom
+  MV_CREDIT_CARD_INFO_TEMPLATE that does not match the regexp. Also fixed the
+  regexp so it removes the CVV2 value from the unencrypted data.
+
+* Fixed shipping problem: The temporary mv_shipping cart was left undefined
+  instead of being removed in some cases, which caused problems in later cart
+  recalculations.
+
+* Fixed a problem where get_option_hash would return the reference itself
+  when passed one, instead of a copy. Thanks to Bruno Cantieni.
 
 Options
 -------
 
 * Fixed spurious hidden form element output for matrix options with separate
   widgets and report option set.
+
+Payments
+--------
+
+* When using Linkpoint, only run check_sub (usually AVS) on SALE and PREAUTH,
+  not POSTAUTH.
 
 UI
 --
@@ -42,19 +60,28 @@ UI
 * Use a path relative to the catroot instead of an absolute path to the
   catalog error.log file when displaying in the UI Administration/Info tab.
 
+* Fixed broken admin 404 error page (which comes from Standard demo).
+
+* Remove registration link to defunct icdevgroup.org page.
+
 Standard demo
 -------------
 
 * Updated Discover Card logo. Provided by Steve Graham.
 
 * Various special_pages/missing.html fixes:
-  - Fixed broken admin 404 error page (which came from Standard).
   - Removed duplicate, sometimes-bogus MV_PREV_PAGE display.
   - Eliminated double-interpolation of page comparison.
   - Return missing special_page if there's no prod_group and catalog match.
-  - Return results special_page if there is a match instead of results.html
+  - Return results special_page if there is a match instead of results.html.
 
-* Increased compatibility with XHTML.
+* If we don't match a prod_group and category in a missing page return the
+  missing SpecialPage, not results.html. If we do have a match, display it in
+  the results SpecialPage instead of hard coding it to results.html.
+
+* Fixed bug in order returns for more than one return.
+
+* Increased compatibility with XHTML and fixed some CSS.
 
 * Cleaned up splash page and fixed broken links.
 
