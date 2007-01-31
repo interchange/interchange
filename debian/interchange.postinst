@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright 2001,2002,2003,2004,2006 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2002,2003,2004,2006,2007 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ fi
 db_get interchange/traffic
 TRAFFIC="$RET"
 
-/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
+/usr/sbin/interchangeconfig FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange

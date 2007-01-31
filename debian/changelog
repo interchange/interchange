@@ -9,12 +9,13 @@ interchange (5.4.2-1) unstable; urgency=low
     caused creation of a directory named 775 (Closes: #404391, thanks to
     Filippo Giunchedi <filippo@debian.org> for the report and the
     investigation)
+  * preserve debug value in settings.cfg
   * updated Swedish translation of Debconf templates (Closes: #375916,
     thanks to Daniel Nylander <yeager@lidkoping.net>)
   * updated Czech translation of Debconf templates (Closes: #391541, thanks
     to Martin Sín <martin.sin@seznam.cz>)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 31 Jan 2007 10:53:25 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 31 Jan 2007 12:23:25 +0100
 
 interchange (5.4.1-1) unstable; urgency=low
 
