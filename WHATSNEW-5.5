@@ -45,14 +45,6 @@ Core
 
 * Fixed case-insensitive searches for different locales.
 
-* Fixed bug which prevented &and and &or profile commands from working
-  on a line by itself when used to join the previous and next profile
-  checks.  The following now works:
-
-  username=required You must enter a username.
-  &and
-  username=unique mytable Sorry, that username is already taken.
-
 * Fix the [error] tag so it does not attempt to replace format specifiers other
   than %s in the text or std_label attributes.
 
