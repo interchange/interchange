@@ -1,5 +1,10 @@
-interchange (5.4.1-1.1) unstable; urgency=low
+interchange (5.4.2-1) unstable; urgency=low
 
+  * new upstream release
+  * require versions of Perl and DBI which allow to run Interchange
+    without (known) crashes with threaded Perl (Closes: #339335, thanks to
+    Henrik Holmboe <henrik@holmboe.se>)
+  * removed notice about threaded Perl and no longer set MV_GETPPID_BROKEN
   * fixed stupid typo in postinst script of interchange package which
     caused creation of a directory named 775 (Closes: #404391, thanks to
     Filippo Giunchedi <filippo@debian.org> for the report and the
@@ -9,7 +14,7 @@ interchange (5.4.1-1.1) unstable; urgency=low
   * updated Czech translation of Debconf templates (Closes: #391541, thanks
     to Martin Sín <martin.sin@seznam.cz>)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue,  5 Dec 2006 17:43:29 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 31 Jan 2007 10:53:25 +0100
 
 interchange (5.4.1-1) unstable; urgency=low
 

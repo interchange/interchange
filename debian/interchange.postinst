@@ -20,9 +20,6 @@
 # Source debconf library
 . /usr/share/debconf/confmodule
 
-# Check for thread enabled Perl
-PERLTHREADS=`perl -MConfig -e 'print $Config{usethreads} || $Config{useithreads} || $Config{use5005threads}'`
-
 # Get interchange user and group
 db_get interchange/user
 USER=$RET
@@ -95,8 +92,6 @@ echo GPGHOME=$RET >> $INITCFG
 
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf
-# Additionally we place a variable to help Interchange
-# running on installations with threaded Perls.
 
 db_get interchange/full_url
 if [ "$RET" = true ]; then
@@ -115,13 +110,7 @@ fi
 db_get interchange/traffic
 TRAFFIC="$RET"
 
-if [ "$PERLTHREADS" ]; then
-	HASTHREADS=1
-else
-	HASTHREADS=0
-fi
-
-/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET MV_GETPPID_BROKEN=$HASTHREADS
+/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
