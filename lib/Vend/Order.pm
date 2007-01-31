@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.83.2.3 2006-08-26 05:24:22 pajamian Exp $
+# $Id: Order.pm,v 2.83.2.4 2007-01-31 00:13:36 pajamian Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.83.2.3 $, 10);
+$VERSION = substr(q$Revision: 2.83.2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1022,6 +1022,10 @@ sub check_order_each {
 		s/^\s+//;
 		s/\s+$//;
 		($val, $var, $message) = do_check($_, $vref);
+
+		# no actual check on this line, skip to next
+		next if /^&(?:and|or)\s*$/i;
+
 		if(defined $And) {
 			if($And) {
 				$val = ($last_one && $val);

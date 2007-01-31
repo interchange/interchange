@@ -38,6 +38,14 @@ Core
 * Fixed a problem where get_option_hash would return the reference itself
   when passed one, instead of a copy. Thanks to Bruno Cantieni.
 
+* Fixed bug which prevented &and and &or profile commands from working
+  on a line by itself when used to join the previous and next profile
+  checks.  The following now works:
+
+  username=required You must enter a username.
+  &and
+  username=unique mytable Sorry, that username is already taken.
+
 Options
 -------
 
