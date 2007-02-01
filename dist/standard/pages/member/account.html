@@ -46,12 +46,14 @@ ui_template_name: leftonly
 <FORM ACTION="[process secure=1]" METHOD="POST">
 [form-session-id]
 
+[if cgi mv_form_profile eq account_change]
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
 <P>
 <b>[L]There were errors in your last submission.[/L]</b>
 <br>
 [msg arg.0="<SPAN style='color:red;'>" arg.1="</SPAN>"]They are shown in %sthis color%s below.[/msg]
 </P>
+[/if]
 [/if]
 
 [comment] account_change profile in etc/profiles.order [/comment]
