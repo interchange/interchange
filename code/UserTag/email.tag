@@ -1,6 +1,6 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.12 2005-11-08 18:14:42 jon Exp $
+# $Id: email.tag,v 1.13 2007-02-01 09:27:27 ton Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -48,6 +48,8 @@ sub {
 		::logError("Invalid header given to email tag: %s", $_);
 	}
 	unshift @extra, "From: $from" if $from;
+
+	my $sent_with_attach = 0;
 
 	ATTACH: {
 #::logDebug("Checking for attachment");
@@ -159,11 +161,19 @@ sub {
 			return $body;
 		}
 		else {
-			return $Tag->email_raw({}, $body);
+			$body =~ s/^(.+?)(?:\r?\n){2}//s;
+			my $headers = $1;
+			last SEND unless $headers;
+			my @head = split(/\r?\n/,$headers);
+
+			$ok = send_mail(\@head,$body);
+
+			$sent_with_attach = 1;
 		}
 	}
 
-	$ok = send_mail($to, $subject, $body, $reply, 0, @extra);
+	$ok = send_mail($to, $subject, $body, $reply, 0, @extra)
+			unless $sent_with_attach;
 
     if (!$ok) {
         logError("Unable to send mail using $Vend::Cfg->{SendMailProgram}\n" .
