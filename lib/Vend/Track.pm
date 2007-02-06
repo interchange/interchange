@@ -1,8 +1,8 @@
 # Vend::Track - Interchange User Tracking
 #
-# $Id: Track.pm,v 2.2 2002-06-17 22:24:08 jon Exp $
+# $Id: Track.pm,v 2.3 2007-02-06 12:17:49 racke Exp $
 #
-# Copyright (C) 2000-2002 by Stefan Hornburg <racke@linuxia.de>
+# Copyright (C) 2000-2007 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -155,7 +155,10 @@ sub header {
 sub std_log {
 	my(@parm) = @_;
 	my $now = time();
-	my $date = POSIX::strftime('%Y%m%d', localtime($now));
+	my ($fmt, $date);
+
+	$fmt = $Vend::Cfg->{TrackDateFormat} || '%Y%m%d';
+	$date = POSIX::strftime($fmt, localtime($now));
 
 	::logData(
 		$Vend::Cfg->{TrackFile},

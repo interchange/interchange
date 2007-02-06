@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.211 2007-01-29 19:29:45 jon Exp $
+# $Id: Config.pm,v 2.212 2007-02-06 12:17:49 racke Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.211 $, 10);
+$VERSION = substr(q$Revision: 2.212 $, 10);
 
 my %CDname;
 my %CPname;
@@ -655,6 +655,7 @@ sub catalog_directives {
 	['AsciiTrack',	 	 undef,     	     ''],
 	['TrackFile',	 	 undef,              ''],
 	['TrackPageParam',	 'hash',     	     ''],
+	['TrackDateFormat',	 undef,     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
 	['StaticDir',		 undef,     	     ''],
