@@ -3,6 +3,11 @@
 [bounce page=admin/error]
 [else]
 
+[tag op=header]
+Status: 404 Not Found
+Content-type: text/html
+[/tag]
+
 [tmp page_title][msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg][/tmp]
 @_NOLEFT_TOP_@
 
