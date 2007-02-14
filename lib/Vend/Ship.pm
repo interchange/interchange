@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.19 2006-08-24 20:57:25 kwalsh Exp $
+# $Id: Ship.pm,v 2.20 2007-02-14 05:24:03 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -968,7 +968,7 @@ sub tag_shipping {
 	$Ship_its = 0;
 	if(! $mode) {
 		if($opt->{widget} || $opt->{label}) {
-			$mode = resolve_shipmode(undef, { possible => 1});
+			$mode = resolve_shipmode(undef, { no_set => $opt->{no_set}, possible => 1});
 		}
 		else {
 			$mode = $opt->{handling}
