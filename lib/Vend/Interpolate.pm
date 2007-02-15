@@ -1,8 +1,8 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.276 2006-08-08 07:20:42 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.277 2007-02-15 15:13:59 racke Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.276 $, 10);
+$VERSION = substr(q$Revision: 2.277 $, 10);
 
 @EXPORT = qw (
 
@@ -4728,8 +4728,14 @@ sub tag_loop_list {
 	## about passing embedded Perl objects to a list
 
 	# Can pass object.mv_results=$ary object.mv_field_names=$ary
-	return region($opt, $text) if $opt->{object};
-
+	if ($opt->{object}) {
+		my $obj = $opt->{object};
+		# ensure that number of matches is always set
+		# so [on-match] / [no-match] works
+		$obj->{matches} = scalar(@{$obj->{mv_results}});
+		return region($opt, $text);
+	}
+	
 	# Here we can take the direct results of an op like
 	# @set = $db->query() && return \@set;
 	# Called with
