@@ -1,11 +1,11 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.43 2005-11-02 19:52:01 jon Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.43.2.1 2007-02-16 16:15:50 kwalsh Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
 	# (Called separately to prevent bad user value in MV_DHTML_BROWSER
 	# from crashing init...)
 	my $regex = q{__MV_DHTML_BROWSER__}
-				|| 'MSIE.*5.5|MSIE.*6|Mozilla\W*5|Mozilla.*Gecko';
+				|| 'MSIE.*5.5|MSIE.*[6-9]|Mozilla\W*5|Mozilla.*Gecko';
 	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
 	return;
 [/calcn][calcn]
