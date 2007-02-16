@@ -1,0 +1,13 @@
+# Copyright 2002-2007 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: space2nbsp.filter,v 1.1 2007-02-16 22:29:20 docelic Exp $
+
+CodeDef space2nbsp Filter
+CodeDef space2nbsp Description All SPACE to nbsp
+CodeDef space2nbsp Routine <<EOR
+sub {
+        my $str = shift;
+        $str =~ s/( +)/'&nbsp;' x length($1)/emg;
+        return $str;
+}
+EOR
