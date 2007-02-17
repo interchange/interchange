@@ -1,13 +1,19 @@
 # Copyright 2002-2007 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: space_to_nbsp.filter,v 1.1 2007-02-17 12:39:18 docelic Exp $
+# $Id: space_to_nbsp.filter,v 1.2 2007-02-17 13:20:56 docelic Exp $
 
 CodeDef space_to_nbsp Filter
 CodeDef space_to_nbsp Description All SPACE to nbsp
 CodeDef space_to_nbsp Routine <<EOR
 sub {
-        my $str = shift;
-        $str =~ s/ /&nbsp;/g;
-        return $str;
+        my ($str, $tag, $opt) = @_;
+
+        if ( $opt ) {
+					$str =~ s/ +/&nbsp;/g;
+				} else {
+					$str =~ s/ /&nbsp;/g;
+				}
+
+        $str;
 }
 EOR
