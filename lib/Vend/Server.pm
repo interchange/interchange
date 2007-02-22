@@ -1,8 +1,8 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.66.2.1 2006-06-06 18:05:23 kwalsh Exp $
+# $Id: Server.pm,v 2.66.2.2 2007-02-22 20:23:12 jon Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.66.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.66.2.2 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -349,6 +349,7 @@ sub parse_post {
 
 #::logDebug("incoming --> $key");
 		$key = $::IV->{$key} if defined $::IV->{$key};
+		$key =~ tr/+/ /;
 		$key =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
 #::logDebug("mapping  --> $key");
 		$value =~ tr/+/ /;
