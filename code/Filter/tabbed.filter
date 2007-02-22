@@ -1,13 +1,15 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: tabbed.filter,v 1.3 2005-11-08 18:14:32 jon Exp $
+# $Id: tabbed.filter,v 1.4 2007-02-22 22:49:56 kwalsh Exp $
 
 CodeDef tabbed Filter
 CodeDef tabbed Description Newline to TAB
 CodeDef tabbed Routine <<EOR
 sub {
-	my @items = split /\r?\n/, shift;
-	return join "\t", @items;
+	my $val = shift;
+
+	$val =~ s/\r?\n/\t/g;
+	return $val;
 }
 EOR
