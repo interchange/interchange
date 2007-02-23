@@ -1,14 +1,13 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: duration.filter,v 1.4 2005-11-08 18:14:32 jon Exp $
+# $Id: duration.filter,v 1.5 2007-02-23 23:40:40 kwalsh Exp $
 
 CodeDef duration Filter
 CodeDef duration Description Duration
 CodeDef duration Routine <<EOR
 sub {
-	my $val = shift;
-	shift;
+	my ($val, undef, $startvar, $durvar, @extra) = @_;
 
 	## Accepts two parameters, the name of the CGI variables which
 	## hold the start date/time and the duration value. With this:
@@ -17,14 +16,21 @@ sub {
 	#  [cgi name=length set="12 hours"]
 	#  [filter op=duration.start_date.length /]
 	#
-	# The filter call will return 200502122000
+	# The filter call will return 20050212200000
 	#
-	my ($startvar, $durvar) = @_;
+	## Can also be used like this, with the same output:
+	#
+	#  [filter duration.-dummy.12.hours]200502120800[/filter]
+	#
 	use vars qw/$CGI/;
-	my $start = $CGI->{$startvar};
+	my $start = $CGI->{$startvar} || $val;
 	my $durstring = $CGI->{$durvar};
 	my $duration = 0;
 	use Time::Local;
+
+	if (!length($durstring) && $durvar =~ /^\d+$/) {
+		$durstring = join(' ', $durvar, @extra);
+	}
 
 	while($durstring =~ s/(\d+\s*[hmwd]\w*)\s*//) {
 		$duration += Vend::Config::time_to_seconds($1);
