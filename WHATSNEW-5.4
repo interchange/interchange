@@ -5,6 +5,25 @@
 
 ------------------------------------------------------------------------------
 
+Interchange 5.4.3 released on 2007-MM-DD.
+
+
+Core
+----
+
+* Correct Interchange's handling of incoming requests where a form element
+  has a space in the name. Before the fix, when it gets to values space
+  it still has the plus. However true '+' characters will have also been
+  decoded, so you can't distinguish the two. This change switches pluses
+  to spaces before %2B gets switched to '+'.
+
+UI
+--
+
+* Add support for MSIE 7.
+
+------------------------------------------------------------------------------
+
 
 Interchange 5.4.2 released on 2007-02-06.
 
