@@ -1,10 +1,11 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2007 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: date2time.filter,v 1.4 2005-11-08 18:14:32 jon Exp $
+# Licensed under the GNU GPL v2 and above. See file LICENSE for details.
+# $Id: date2time.filter,v 1.5 2007-02-24 01:22:41 kwalsh Exp $
 
 CodeDef date2time Filter
-CodeDef date2time Description Date to UNIX time
+CodeDef date2time Description Date to UNIX time (deprecated - use datetime2epoch instead)
+CodeDef date2time Visibility private
 CodeDef date2time Routine <<EOR
 sub {
 	my $val = shift;
