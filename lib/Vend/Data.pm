@@ -1,8 +1,8 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.61 2007-02-24 03:17:06 jon Exp $
+# $Id: Data.pm,v 2.62 2007-02-24 05:48:26 jon Exp $
 # 
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -1135,13 +1135,12 @@ EOF
 
 sub export_database {
 	my($db, $file, $type, $opt) = @_;
-	my(@data);
-	my ($field, $delete);
 	return undef unless defined $db;
+
+	my (@data, $field, $delete);
 
 	$field  = $opt->{field}         if $opt->{field};
 	$delete = $opt->{delete}		if $opt->{delete};
-
 
 	$db = database_exists_ref($db)
 		or do {
@@ -1150,6 +1149,18 @@ sub export_database {
 		};
 
 	$db = $db->ref();
+
+	if ($Vend::Cfg->{NoExportExternal}) {
+		# Skip export only for "external" tables (currently SQL and LDAP),
+		# just like NoImportExternal does
+		my $class = $db->config('Class');
+		my $class_config = $db_config{$class || $Global::Default_database};
+		return 1 if $class_config->{RestrictedImport};
+	}
+
+	my $table_name = $db->config('name');
+
+	return 1 if $Vend::Cfg->{NoExport}->{$table_name};
 
 	my $qual;
 	if($qual = $opt->{where}) {
@@ -1166,7 +1177,6 @@ sub export_database {
 		}
 	}
 
-	my $table_name = $db->config('name');
 	my $notes;
 	if("\U$type" eq 'NOTES') {
 		$type = 2;
