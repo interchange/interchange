@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.277 2007-02-15 15:13:59 racke Exp $
+# $Id: Interpolate.pm,v 2.278 2007-02-27 11:32:08 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.277 $, 10);
+$VERSION = substr(q$Revision: 2.278 $, 10);
 
 @EXPORT = qw (
 
@@ -4177,7 +4177,7 @@ my $once = 0;
 					(
 						$Vend::Cfg->{Sub}{$1} ||
 						$Global::GlobalSub->{$1} ||
-						sub { 'ERROR' }
+						sub { logOnce('error', "subroutine $1 missing for PREFIX-exec"); errmsg('ERROR') }
 					)->($2,$row,$oexec)
 				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
