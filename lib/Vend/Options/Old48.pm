@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.10 2005-11-08 18:14:46 jon Exp $
+# $Id: Old48.pm,v 1.10.2.1 2007-03-07 16:47:47 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.10.2.1 $, 10);
 
 =head1 NAME
 
@@ -436,5 +436,7 @@ sub display_options_simple {
 	}
 	return $out;
 }
+
+*display_options = \&display_options_simple;
 
 1;
