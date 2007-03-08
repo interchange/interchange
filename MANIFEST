@@ -367,7 +367,6 @@ debian/po/POTFILES.in
 debian/po/ru.po
 debian/po/templates.pot
 debian/po/vi.po
-debian/robots.cfg
 debian/rules
 debian/TODO
 dist/catalog_after.cfg
