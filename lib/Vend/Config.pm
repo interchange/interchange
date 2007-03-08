@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.213 2007-02-24 05:48:26 jon Exp $
+# $Id: Config.pm,v 2.214 2007-03-08 16:17:55 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.213 $, 10);
+$VERSION = substr(q$Revision: 2.214 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3177,25 +3177,29 @@ my @Cleanups;
 		}
 	},
 
-	Locale => sub {
+    Locale => sub {
 #::logDebug("Doing Locale dispatch...");
-		my $locale = $::Scratch->{mv_locale}
-			or return;
+        my $locale = $::Scratch->{mv_locale};
+        my $curr = $::Scratch->{mv_currency};
+        $locale || $curr    or return;
 
-		if(! $::Scratch->{mv_language}) {
-			$Global::Variable->{LANG}
-					= $::Variable->{LANG}
-					= $::Scratch->{mv_language}
-					= $locale;
-		}
+        if($locale and ! $::Scratch->{mv_language}) {
+            $Global::Variable->{LANG}
+                    = $::Variable->{LANG}
+                    = $::Scratch->{mv_language}
+                    = $locale;
+        }
 
-		return unless defined $Vend::Cfg->{Locale_repository}{$locale};
+        if($locale) {
+            return unless defined $Vend::Cfg->{Locale_repository}{$locale};
+        }
+        elsif($curr) {
+            return unless defined $Vend::Cfg->{Locale_repository}{$curr};
+        }
+#::logDebug("running locale dispatch, locale=$locale, currency=$curr");
 
-		Vend::Util::setlocale(  $locale,
-								($::Scratch->{mv_currency} || undef),
-								{ persist => 1 }
-							);
-	},
+        Vend::Util::setlocale( $locale, $curr, { persist => 1 } );
+    },
 
 	DiscountSpaces => sub {
 #::logDebug("Doing DiscountSpaces dispatch...");
