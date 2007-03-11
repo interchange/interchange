@@ -1,21 +1,22 @@
 # Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: either.coretag,v 1.4 2006-03-24 19:30:11 kwalsh Exp $
+# $Id: either.coretag,v 1.5 2007-03-11 15:44:38 kwalsh Exp $
 
 UserTag either              hasEndTag
 UserTag either              PosNumber    0
 UserTag either              NoReparse    1
-UserTag either              Version      $Revision: 1.4 $
+UserTag either              Version      $Revision: 1.5 $
 UserTag either              Routine      <<EOR
 sub {
 	my @ary = split /\[or\]/, shift;
 	my $result;
-	while(@ary) {
-		$result = interpolate_html(shift @ary);
+
+	foreach (@ary) {
+		$result = interpolate_html($_);
 		$result =~ s/^\s+//;
 		$result =~ s/\s+$//;
 		return $result if $result;
 	}
-	return;
+	return $result;
 }
 EOR
