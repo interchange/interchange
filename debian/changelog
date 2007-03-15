@@ -1,3 +1,10 @@
+interchange (5.4.2-1.1) unstable; urgency=low
+
+  * updated Russian translation of Debconf templates (Closes: #414080,
+    thanks to Yuriy Talakan <yt@drsk.ru>)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 15 Mar 2007 20:47:10 +0100
+
 interchange (5.4.2-1) unstable; urgency=low
 
   * new upstream release
