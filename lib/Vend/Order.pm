@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.91 2007-01-05 10:35:37 pajamian Exp $
+# $Id: Order.pm,v 2.92 2007-03-15 15:52:42 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.92 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -460,6 +460,8 @@ sub guess_cc_type {
 	my ($ccnum) = @_;
 	$ccnum =~ s/\D+//g;
 
+	my $country = $::Values->{$::Variable->{MV_COUNTRY_FIELD} || 'country'} || '';
+
 	if(my $subname = $Vend::Cfg->{SpecialSub}{guess_cc_type}) {
 		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
 		my $guess;
@@ -468,24 +470,50 @@ sub guess_cc_type {
 		}
 	}
 
-	# based on logic by Karl Moore from http://www.vb-world.net/tips/tip509.html
+	# based on logic from Business::CreditCard
 	if ($ccnum eq '')										{ '' }
-	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)				{ return 'visa' }
-	elsif ($ccnum =~ /^5[1-5]\d{14}$/)						{ return 'mc' }
-	elsif ($ccnum =~ /^6011\d{12}$/)						{ return 'discover' }
-	elsif ($ccnum =~ /^3[47]\d{10,13}$/)						{ return 'amex' }
-	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)			{ return 'dinersclub' }
-	elsif ($ccnum =~ /^38\d{12}$/)							{ return 'carteblanche' }
-	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)				{ return 'enroute' }
-	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)	{ return 'jcb' }
-    elsif ($ccnum =~ /^49(03(0[2-9]|3[5-9])|11(0[1-2]|7[4-9]|8[1-2])|36[0-9]{2})\d{10}(\d{2,3})?$/
+	elsif (
+		$ccnum =~ /^4(?:\d{12}|\d{15})$/
+	)			
+	{
+		return 'visa';
+	}
+	elsif (
+		$ccnum =~ /^5[1-5]\d{14}$/
+			or
+		( $ccnum =~ /^36\d{12}/ && $country =~ /^(US|CA)$/oi )
+	)
+	{ return 'mc' }
+	elsif (
+		$ccnum =~ /^6011\d{12}$/
+			or
+		$ccnum =~ /^65\d{14}$/o
+	    or
+		( $ccnum =~ /^622\d{13}$/o && $country !~ /^CN$/i )
+
+		)
+	{ return 'discover' }
+	elsif ($ccnum =~ /^3[47]\d{10,13}$/)
+	{ return 'amex' }
+	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)
+	{ return 'dinersclub' }
+	elsif ($ccnum =~ /^38\d{12}$/)
+	{ return 'carteblanche' }
+	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)
+	{ return 'enroute' }
+	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)
+	{ return 'jcb' }
+    elsif (
+		$ccnum =~ /^49(03(0[2-9]|3[5-9])|11(0[1-2]|7[4-9]|8[1-2])|36[0-9]{2})\d{10}(\d{2,3})?$/
       or $ccnum =~ /^564182\d{10}(\d{2,3})?$/
       or $ccnum =~ /^6(3(33[0-4][0-9])|759[0-9]{2})\d{10}(\d{2,3})?$/) 
-															{ return 'switch' }
-
-	elsif ($ccnum =~ /^56\d{14}$/)                          { return 'bankcard' }
+	{ return 'switch' }
+	elsif ($ccnum =~ /^56\d{14}$/)
+	{ return 'bankcard' }
     elsif ($ccnum =~ /^6(3(34[5-9][0-9])|767[0-9]{2})\d{10}(\d{2,3})?$/)
-		 { return 'solo' }
+	{ return 'solo' }
+    elsif ($ccnum =~ /^622\d{13}$/)
+	{ return 'chinaunionpay' }
 
 	else { return $::Variable->{MV_PAYMENT_OTHER_CARD} || 'other' }
 }
