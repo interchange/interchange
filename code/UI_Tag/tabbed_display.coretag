@@ -1,13 +1,18 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: tabbed_display.coretag,v 1.5 2005-11-08 18:14:40 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: tabbed_display.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag tabbed-display PosNumber     0
 UserTag tabbed-display addAttr 
 UserTag tabbed-display hasEndTag 
 UserTag tabbed-display Interpolate 
 UserTag tabbed-display NoReparse 
-UserTag tabbed-display Version       $Revision: 1.5 $
+UserTag tabbed-display Version       $Revision: 1.6 $
 UserTag tabbed-display Documentation <<EOD
 =head1 NAME
 

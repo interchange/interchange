@@ -1,10 +1,15 @@
-# Copyright 2003-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: capture_page.tag,v 1.8 2005-11-08 18:14:42 jon Exp $
+# Copyright 2003-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: capture_page.tag,v 1.9 2007-03-30 23:40:56 pajamian Exp $
 
 UserTag capture_page Order   page file
 UserTag capture_page addAttr
-UserTag capture_page Version $Revision: 1.8 $
+UserTag capture_page Version $Revision: 1.9 $
 UserTag capture_page Routine <<EOR
 sub {
 	my ($page, $file, $opt) = @_;

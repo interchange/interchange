@@ -1,11 +1,16 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002-2007 Interchange Development Group and others
 # Copyright 2002-2005 Stefan Hornburg (racke@linuxia.de)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: formel.tag,v 1.16 2006-03-27 22:21:13 docelic Exp $
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: formel.tag,v 1.17 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.16 $
+UserTag formel Version $Revision: 1.17 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;

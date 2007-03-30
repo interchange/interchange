@@ -1,13 +1,18 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: record.coretag,v 1.3 2005-11-08 18:14:36 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: record.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag record              addAttr
 UserTag record              attrAlias    column col
 UserTag record              attrAlias    code key
 UserTag record              attrAlias    field col
 UserTag record              PosNumber    0
-UserTag record              Version      $Revision: 1.3 $
+UserTag record              Version      $Revision: 1.4 $
 UserTag record              Routine      <<EOR
 sub {
 	my ($opt) = @_;

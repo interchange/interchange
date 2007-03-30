@@ -1,6 +1,11 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: data.coretag,v 1.3 2005-11-08 18:14:35 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: data.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag data                Order        table field key
 UserTag data                addAttr
@@ -13,5 +18,5 @@ UserTag data                attrAlias    row key
 UserTag data                attrAlias    name field
 UserTag data                Implicit     increment increment
 UserTag data                PosNumber    3
-UserTag data                Version      $Revision: 1.3 $
+UserTag data                Version      $Revision: 1.4 $
 UserTag data                MapRoutine   Vend::Interpolate::tag_data

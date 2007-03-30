@@ -1,12 +1,17 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: rand.tag,v 1.4 2005-11-08 18:14:42 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: rand.tag,v 1.5 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag rand Order     file
 UserTag rand posNumber 1
 UserTag rand addAttr
 UserTag rand hasEndTag
-UserTag rand Version   $Revision: 1.4 $
+UserTag rand Version   $Revision: 1.5 $
 UserTag rand Routine   <<EOR
 sub {
 	my ($file, $opt, $inline) = @_;

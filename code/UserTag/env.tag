@@ -1,12 +1,17 @@
-# Copyright 2004-2005 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2004-2007 Interchange Development Group and others
 # Copyright 2001 Ed LaFrance <edl@newmediaems.com>
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: env.tag,v 1.10 2005-11-08 18:14:42 jon Exp $
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: env.tag,v 1.11 2007-03-30 23:40:57 pajamian Exp $
 
 Usertag env Order      arg
 Usertag env PosNumber  1
 UserTag env attrAlias  name arg
-UserTag env Version    $Revision: 1.10 $
+UserTag env Version    $Revision: 1.11 $
 Usertag env Routine    <<EOR
 sub {
 	my $arg = shift;

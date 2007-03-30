@@ -1,6 +1,11 @@
-# Copyright 2002-2007 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: lspace2nbsp.filter,v 1.2 2007-02-16 22:29:20 docelic Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: lspace2nbsp.filter,v 1.3 2007-03-30 23:40:44 pajamian Exp $
 
 CodeDef lspace2nbsp Filter
 CodeDef lspace2nbsp Description Leading SPACE to nbsp

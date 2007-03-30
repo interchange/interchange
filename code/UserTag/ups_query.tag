@@ -1,10 +1,15 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: ups_query.tag,v 1.11 2005-11-08 18:14:43 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: ups_query.tag,v 1.12 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag  ups-query  Order    mode origin zip weight country
 UserTag  ups-query  addAttr
-UserTag  ups-query  Version  $Revision: 1.11 $
+UserTag  ups-query  Version  $Revision: 1.12 $
 UserTag  ups-query  Routine  <<EOR
 sub {
  	my( $mode, $origin, $zip, $weight, $country, $opt) = @_;

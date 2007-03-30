@@ -1,12 +1,17 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.21 2006-12-29 05:17:59 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: button.tag,v 1.22 2007-03-30 23:40:56 pajamian Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.21 $
+UserTag button Version   $Revision: 1.22 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;

@@ -1,6 +1,11 @@
-# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: country_select.widget,v 1.9 2006-08-02 18:10:29 mheins Exp $
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: country_select.widget,v 1.10 2007-03-30 23:40:58 pajamian Exp $
 
 CodeDef state_select  Widget  1
 CodeDef state_select  Description State (needs country_select)

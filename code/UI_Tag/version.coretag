@@ -1,13 +1,18 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: version.coretag,v 1.13 2006-10-31 11:17:28 pajamian Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: version.coretag,v 1.14 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag version Order      extended
 UserTag version attrAlias  module_test modtest
 UserTag version attrAlias  moduletest modtest
 UserTag version attrAlias  require modtest
 UserTag version addAttr
-UserTag version Version    $Revision: 1.13 $
+UserTag version Version    $Revision: 1.14 $
 UserTag version Routine    <<EOR
 sub {
 	return $::VERSION unless shift;
