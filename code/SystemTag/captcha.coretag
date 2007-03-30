@@ -1,8 +1,19 @@
-UserTag captcha Order function
-UserTag captcha attrAlias func function
+# Copyright 2006-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: captcha.coretag,v 1.4 2007-03-30 23:55:57 pajamian Exp $
+
+UserTag captcha Order		function
+UserTag captcha attrAlias	func function
 UserTag captcha addAttr
-UserTag captcha Description Generate captcha codes for authentication check
-UserTag captcha Routine <<EOR
+UserTag captcha Description	Generate captcha codes for authentication check
+UserTag captcha Version		$Revision: 1.4 $
+
+UserTag captcha Routine		<<EOR
 my $Have_Captcha;
 eval {
 	require Authen::Captcha;
