@@ -3,7 +3,7 @@
 #
 # findtags - Find ITL tags in Interchange catalogs and directories
 #
-# $Id: findtags.PL,v 1.6 2005-11-08 18:14:48 jon Exp $
+# $Id: findtags.PL,v 1.6.2.1 2007-03-30 12:15:51 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -20,8 +20,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 use lib '/work/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';

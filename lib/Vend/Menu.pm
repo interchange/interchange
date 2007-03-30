@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.46.2.1 2006-03-14 19:17:37 mheins Exp $
+# $Id: Menu.pm,v 2.46.2.2 2007-03-30 12:15:28 pajamian Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -16,12 +16,12 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.46.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.46.2.2 $, 10);
 
 use Vend::Util;
 use strict;

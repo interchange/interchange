@@ -3,7 +3,7 @@
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 2.5 2005-11-08 18:14:48 jon Exp $
+# $Id: offline.PL,v 2.5.2.1 2007-03-30 12:15:51 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,8 +23,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
@@ -248,7 +248,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 2.5 2005-11-08 18:14:48 jon Exp $
+# $Id: offline.PL,v 2.5.2.1 2007-03-30 12:15:51 pajamian Exp $
 
 =head1 DESCRIPTION
 

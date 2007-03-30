@@ -1,6 +1,6 @@
 # Vend::Track - Interchange User Tracking
 #
-# $Id: Track.pm,v 2.2 2002-06-17 22:24:08 jon Exp $
+# $Id: Track.pm,v 2.2.6.1 2007-03-30 12:15:29 pajamian Exp $
 #
 # Copyright (C) 2000-2002 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -16,8 +16,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 # TODO
 # configuration settings
@@ -35,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.2.6.1 $, 10);
 
 @ISA = qw(Exporter);
 

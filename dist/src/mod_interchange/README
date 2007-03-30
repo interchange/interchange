@@ -1,7 +1,7 @@
 mod_interchange
 ===============
 
-$Id: README,v 2.9 2005-11-02 03:08:51 kwalsh Exp $
+$Id: README,v 2.9.2.1 2007-03-30 12:15:25 pajamian Exp $
 
 Version: 1.33
 
@@ -193,5 +193,5 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+02110-1301 USA.

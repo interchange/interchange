@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.22 2005-11-08 18:14:45 jon Exp $
+# $Id: DbSearch.pm,v 2.22.2.1 2007-03-30 12:15:27 pajamian Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -19,15 +19,15 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::DbSearch;
 require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.22.2.1 $, 10);
 
 use Search::Dict;
 use strict;

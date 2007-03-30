@@ -1,6 +1,6 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.15 2005-11-08 18:14:45 jon Exp $
+# $Id: TextSearch.pm,v 2.15.2.1 2007-03-30 12:15:29 pajamian Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -19,8 +19,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::TextSearch;
 require Vend::Search;
@@ -29,7 +29,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.15.2.1 $, 10);
 
 use Search::Dict;
 use strict;
