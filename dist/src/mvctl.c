@@ -2,7 +2,7 @@
  * mvctl.c: runs as a command line or cgi program and starts up
  *			Interchange in various modes
  *
- * $Id: mvctl.c,v 2.2 2003-06-18 17:34:43 jon Exp $
+ * $Id: mvctl.c,v 2.3 2007-03-30 11:39:42 pajamian Exp $
  *
  * Copyright (C) 1997-2002 Red Hat, Inc.
  *
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public
  * License along with this program; if not, write to the Free
- * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA  02111-1307  USA.
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA  02110-1301  USA.
  */
 
 #define PERL      "/usr/bin/perl"

@@ -1,6 +1,6 @@
 # Vend::Payment::PRI - Interchange PRI support
 #
-# $Id: PRI.pm,v 1.4 2005-02-22 16:42:47 kwalsh Exp $
+# $Id: PRI.pm,v 1.5 2007-03-30 11:39:52 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -20,8 +20,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::Payment::PRI;
 

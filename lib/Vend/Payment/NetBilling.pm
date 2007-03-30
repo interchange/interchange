@@ -1,6 +1,6 @@
 # Vend::Payment::NetBilling - Interchange NetBilling support
 #
-# $Id: NetBilling.pm,v 1.4 2006-09-01 13:46:55 pajamian Exp $
+# $Id: NetBilling.pm,v 1.5 2007-03-30 11:39:52 pajamian Exp $
 #
 # Copyright (C) 2003-2006 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -28,8 +28,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 # Connection routine for NetBilling version 2.1 using the 'NetBilling Direct Mode'
 # method.
@@ -44,7 +44,7 @@ package Vend::Payment::NetBilling;
 
 =head1 Interchange NetBilling Support
 
-Vend::Payment::NetBilling $Revision: 1.4 $
+Vend::Payment::NetBilling $Revision: 1.5 $
 
 =head1 SYNOPSIS
 

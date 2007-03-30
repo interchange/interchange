@@ -1,6 +1,6 @@
 #define	MODULE_VERSION	"mod_interchange/1.33"
 /*
- *	$Id: mod_interchange.c,v 2.10 2005-11-02 03:08:51 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.11 2007-03-30 11:39:43 pajamian Exp $
  *
  *	Apache Module implementation of the Interchange application server's
  *	link programs.
@@ -28,8 +28,8 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *	02111-1307 USA.
+ *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *	02110-1301 USA.
  */
 #include "httpd.h"
 #include "http_config.h"

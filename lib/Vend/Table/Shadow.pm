@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.52 2006-11-27 10:41:21 racke Exp $
+# $Id: Shadow.pm,v 1.53 2007-03-30 11:39:54 pajamian Exp $
 #
 # Copyright (C) 2002-2006 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -16,11 +16,11 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.52 $, 10);
+$VERSION = substr(q$Revision: 1.53 $, 10);
 
 # CREDITS
 #

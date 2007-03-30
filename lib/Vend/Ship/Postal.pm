@@ -1,6 +1,6 @@
 # Vend::Ship::Postal - Interchange shipping code
 # 
-# $Id: Postal.pm,v 1.6 2005-12-27 18:16:56 jon Exp $
+# $Id: Postal.pm,v 1.7 2007-03-30 11:39:54 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -20,8 +20,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::Ship::Postal;
 

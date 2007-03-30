@@ -1,6 +1,6 @@
 # SOAP::Transport - Handle Interchange SOAP connections
 #
-# $Id: Transport.pm,v 2.2 2003-06-18 17:34:46 jon Exp $
+# $Id: Transport.pm,v 2.3 2007-03-30 11:39:54 pajamian Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -16,8 +16,8 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 # ======================================================================
 #
@@ -31,7 +31,7 @@ package Vend::SOAP::Transport;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 # ======================================================================
 
