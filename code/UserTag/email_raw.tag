@@ -1,11 +1,16 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email_raw.tag,v 1.6 2005-11-03 05:16:55 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: email_raw.tag,v 1.6.2.1 2007-03-31 00:20:18 pajamian Exp $
 
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
 UserTag email-raw Interpolate
-UserTag email-raw Version     $Revision: 1.6 $
+UserTag email-raw Version     $Revision: 1.6.2.1 $
 UserTag email-raw Routine     <<EOR
 sub {
     my($opt, $body) = @_;

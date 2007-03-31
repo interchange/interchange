@@ -1,6 +1,11 @@
-# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: exists.oc,v 1.1.2.1 2005-11-29 20:05:35 racke Exp $
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: exists.oc,v 1.1.2.2 2007-03-31 00:20:08 pajamian Exp $
 
 CodeDef exists OrderCheck 1
 CodeDef exists Description Existing record

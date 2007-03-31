@@ -1,6 +1,11 @@
-# Copyright 2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: dbi_quote.filter,v 1.2 2005-11-10 02:36:48 jon Exp $
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: dbi_quote.filter,v 1.2.2.1 2007-03-31 00:20:03 pajamian Exp $
 
 CodeDef dbi_quote Filter
 CodeDef dbi_quote Description SQL quoting using DBI

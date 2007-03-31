@@ -1,12 +1,17 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.17 2005-11-08 18:14:36 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: image.tag,v 1.17.2.1 2007-03-31 00:20:09 pajamian Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.17 $
+UserTag image Version   $Revision: 1.17.2.1 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;

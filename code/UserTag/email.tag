@@ -1,6 +1,11 @@
-# Copyright 2002-2005 Interchange Development Group (http://www.icdevgroup.org/)
-# Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: email.tag,v 1.12 2005-11-08 18:14:42 jon Exp $
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: email.tag,v 1.12.2.1 2007-03-31 00:20:18 pajamian Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
