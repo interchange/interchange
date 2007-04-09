@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
-#
-# $Id: Email.pm,v 1.1 2007-04-02 17:10:19 docelic Exp $
+# 
+# $Id: Email.pm,v 1.2 2007-04-09 21:39:49 docelic Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -19,12 +19,12 @@
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
-# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
-# MA  02110-1301  USA.
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
 
 package Vend::Email;
 
-use MIME::Lite        qw//;
+use MIME::Lite        qw//; # Main module
 use MIME::Types       qw//;
 use Mail::Address     qw//;
 use MIME::QuotedPrint qw//; # Used by default
@@ -44,170 +44,294 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
+
+my @accepted_headers = (qw/
+	to               cc              bcc
+	sender           from            subject       reply\-to
+	content\-[a-z-]+                 x\-[a-z-]+ 
+	approved         encrypted       received      
+	references       keywords        comments
+	message\-id      mime\-version   return\-path
+	date             organization  
+	resent\-[a-z-]+
+/);
 
 
 ###########################################################################
 # Direct functions
 #
 
-# Directly pass input as options to create MIME::Lite object,
-# fill it with data, and invoke send. Basically the majority of
-# work here is filling unspecified fields with defaults, nothing
-# more. We also honor Interchange's setting of SendmailProgram.
+# Pass input as options (data + headers) to create MIME::Lite object and send.
+# Work to do here is filling unspecified fields with defaults, and making
+# sure that all given options are valid.
 sub tag_mime_lite_email {
 	my ($opt, $body) = @_;
-#logDebug('mime_lite_email invoked with OPT=' .uneval($opt) . ' BODY=' . $body);
+	#logDebug('mime_lite_email invoked, OPT=' .uneval($opt) . ' BODY=' . $body);
 
-#
-# See if we'll be sending this email, don't waste time if not.
-#
+	local $_;
+
+	#
+	# See if we'll be sending this email, don't waste time if not.
+	#
 	my $using = $Vend::Cfg->{SendMailProgram};
-	if ($using =~ /^none/i ) {
-		logError('Unable to send email to "%s", SendMailProgram=none.',$opt->{to});
+	if ($using =~ /^none$/i ) {
+		logError('Unable to send email, config option SendMailProgram=none.');
 		return;
 	}
 
-#
-# Let's work on defaults and rough value verification
-#
-
-# Turn all options (which are mostly email header field names)
-# to Upper-Case. (for example, message_id into Message-Id).
-	while (my($k,$v) = each %$opt ) {
-		( my $nk = $k ) =~ s/_(\S)/'-'.ucfirst($1)/ge;
-		$nk = ucfirst $nk;
-
-		next if $k eq $nk;
-		$opt->{$nk} = $v;
-		delete $opt->{$k};
+	#
+	# Quickly make sure that all options and header names satisfy basic regex.
+	# (We need to do this in any case, so let's do it up-front.)
+	#
+	for my $key ( keys %$opt ) {
+		$key = lc $key; # MIME::Lite does proper uppercasing later
+		$key =~ /^[a-z-]+$/ or do {
+			logError('Header name passed that does not match /^[a-zA-Z_-]+$/');
+			return;
+		};
 	}
 
-	$opt->{Data} ||= $opt->{Body} || $body;
-	delete $opt->{Body};
+	#
+	# Deal with tag-specific options that are not to be understood as headers.
+	# (Save them to variables and delete them from $opt so that after this
+	# block, only headers are left in $opt).
+	#
 
-	if (! $opt->{To} ) {
+	my $intercept;
+	my $hdr_encoding;
+	my ($interpolate, $reparse);
+	my ($data, $encoding, $type);
+
+	# Intercept
+	if ( $_ = delete $opt->{intercept} ) {
+		$intercept = $_;
+	}
+
+	# All e-mail headers need to be Word-Encoded if they contain non-ASCII.
+	# Field names themselves must not be encoded, they're always in English.
+	# Header_encoding can be 1|y|none|q|b|a|s:
+	# - '1' and 'y' are our special synonyms for 'q'.
+	# - 'none' is our special value for no encoding
+	# - the rest are actual supported values by MIME::EncWords.
+	if ( $_ = delete $opt->{'header_encoding'} ) {
+		$hdr_encoding = $_;
+	}
+	if (! $hdr_encoding or $hdr_encoding =~ /1|y/i ) {
+		$hdr_encoding = 'q';
+	}
+	$hdr_encoding eq 'none' and $hdr_encoding = '';
+
+	# Interpolate/reparse
+	($interpolate, $reparse) = (
+		delete $opt->{interpolate},
+		delete $opt->{reparse},
+	);
+
+	# Data (msg body), encoding and type
+	($data, $encoding, $type) = (
+		delete $opt->{data},
+		delete $opt->{encoding},
+		delete $opt->{type},
+	);
+	$data     ||= $opt->{body} || $body;    delete $opt->{body};
+	$encoding ||= 'quoted-printable';
+	$type     ||= 'text/plain';
+
+	!(ref $data or ref $encoding or ref $type) or do {
+		logError('Only scalar value accepted for options '.
+				'data (body), encoding and type.');
+		return;
+	};
+
+	#
+	# Let's see specified headers, check them and/or associate defaults.
+	# Headers can be specified as array (to.0=person1, to.1=person2), or
+	# simply as to=person1. (Some can be multi-value, some can't. Sensible
+	# check is performed.)
+	#
+
+	# Convert scalars to array refs (to=person1 -> to.0=person1) where allowed.
+	for my $key (keys %$opt ) {
+
+		# For options or header names that can only be scalars, make
+		# sure they are scalars.
+		if ( $key =~ /^(subject|from)$/ ) {
+			! ref $opt->{$key} or do {
+				logError('Only scalar value accepted for option or '.
+					'header name "%s"', $key);
+				return;
+			};
+			next;
+		}
+
+		# While for others that can be arrays, make sure they are
+		# arrays by converting them from scalars if needed.
+		if ( ! ref $opt->{$key} ) {
+			$opt->{$key} = [ $opt->{$key} ];
+		} elsif (ref $opt->{$key} ne 'ARRAY' ) {
+			logError('Only scalars or array refs supported as options ' .
+				'to tag_mime_lite_email().');
+			return;
+		}
+	}
+
+	#
+	# Now check specific headers for specific values, and/or give defaults.
+
+	# TO
+	if (!( $opt->{to} and @{ $opt->{to} } )) {
 		logError('mime_lite_email called without the required to= option.');
 		return;
 	}
 
-	if (! $opt->{Type} ) {
-		$opt->{Type} = 'text/plain';
-	}
-
-	if (! $opt->{Encoding} ) {
-		$opt->{Encoding} = 'quoted-printable';
-	}
-
-	if (! $opt->{From} ) {
-		$opt->{From} = $::Variable->{MV_MAILFROM} ||
+	# FROM
+	if (! $opt->{from} ) {
+		$opt->{from} =
+			$::Variable->{MV_MAILFROM}       ||
 			$Global::Variable->{MV_MAILFROM} ||
 			$Vend::Cfg->{MailOrderTo};
 	}
+	$opt->{from} or do {
+		logError('Cannot find value for From: header. Make sure ' .
+			'that MailOrderTo config directive or MV_MAILFROM variable ' .
+			'is specified.');
+	};
 
-	if (! $opt->{Subject} ) {
-		$opt->{Subject} = '<no subject>';
+	# SUBJECT
+	if (! $opt->{subject} ) {
+		$opt->{subject} = '<no subject>';
 	}
 
-	if ($opt->{Reply} ) {
-		logError('Both reply and reply-to specified.') if $opt->{'Reply-To'};
-		$opt->{'Reply-To'} = $opt->{Reply};
-		delete $opt->{Reply};
+	# REPLY
+	if (!( $opt->{reply_to} and @{ $opt->{reply_to} } )) {
+		@{ $opt->{reply_to} } = 
+			( ref $opt->{reply} ? @{ $opt->{reply} } : $opt->{reply} ) ||
+			$::Values->{mv_email};
 	}
+	delete $opt->{reply};
 
-#
-# Support e-mail interception
-#
-
-	my $intercept = $::Variable->{MV_EMAIL_INTERCEPT} ||
+	#
+	# Support e-mail interception (re-writing to/cc/bcc to specified
+	# address(es)).
+	#
+	$intercept ||= $::Variable->{MV_EMAIL_INTERCEPT} ||
 		$Global::Variable->{MV_EMAIL_INTERCEPT};
-	
+
 	if ( $intercept ) {
-		local $_;
-		for my $field (qw/To Cc Bcc/) {
-			if ( $_ = $opt->{$field} ) {
-				logDebug("Intercepted $field: $_ in favor of $intercept.");
-				$opt->{$field} = $intercept;
-				$opt->{"X-Intercepted-$field"} = $_;
+		for my $field (qw/to cc bcc/) {
+			if ( $opt->{$field} ) {
+				for $_ ( @{ $opt->{$field} } ) {
+					logDebug('Intercepting outgoing email (%s: %s) ' .
+							'and instead sending to "%s"',
+							$field, $_, $intercept);
+
+					$opt->{$field} = $intercept;
+					push @{ $opt->{"x-intercepted-$field"} }, $_;
+				}
 			}
 		}
 	}
-	
-#
-# Now let's work on adjusting fields to adhere to e-mail standards.
-#
 
-# All e-mail headers need to be Word-Encoded if they contain
-# non-ASCII. Field names themselves must not be encoded, so put through
-# encoder only header data that does not include header names.
-# header_encoding can be 1|y|none|q|b|a|s . '1' and 'y' are our special
-# synonyms for 'q'. 'none' is our special value for no encoding, and
-# the rest are actual supported values by MIME::EncWords.
+	#
+	# Now let's work on adjusting fields to adhere to e-mail standards.
+	#
 
-	if (! $opt->{'Header-Encoding'} ) {
-		$opt->{'Header-Encoding'} = 'q';
+	#
+	# Deal with attachments
+	#
 
-	} elsif ( $opt->{'Header-Encoding'} ne /^none$/i ) {
-		if ($opt->{'Header-Encoding'}=~/1|y/i){$opt->{'Header-Encoding'}='q'}
+	#
+	# Prepare for sending the message
+	#
 
-	}
-
-	my $copt; # Will contain full data to pass to MIME::Lite->new
-		while (my($k,$v) = each %$opt ) {
-
-# List all hash keys that are not options for MIME::Lite
-			next if $k =~ /^(Header\-Encoding|Attachment|Interpolate|Reparse)$/i;
-
-# Encode-word everything except 'Data' which is message body and has its
-# own set of rules... (Disabled until I troubleshoot it).
-			#if ( $opt->{'Header-Encoding'} and $k ne 'Data' ) {
-			#	$v = MIME::EncWords::encode_mimewords($v,
-			#			Encoding => $opt->{'Header-Encoding'} );
-			#}
-
-			$copt->{$k} = $v;
-		}
-
-#
-# And finally, prepare for sending the message
-#
-
-# Configure Net::SMTP sending if that is requested..
+	# Configure Net::SMTP sending if that is requested..
 	if ( $using =~ /^Net::SMTP$/i ) {
-# Unlike in previous implementations in IC, MV_SMTPHOST is not
-# required any more.
+		# Unlike in previous implementations in IC, MV_SMTPHOST is not
+		# required any more.
 		my $smtphost = $::Variable->{MV_SMTPHOST} ||
 			$Global::Variable->{MV_SMTPHOST};
 
 		my $timeout = $::Variable->{MV_SMTP_TIMEOUT} ||
 			$Global::Variable->{MV_SMTP_TIMEOUT} || 60;
 
-		MIME::Lite->send('smtp', $smtphost ? ($smtphost, $timeout) : ($timeout) );
+		MIME::Lite->send('smtp', $smtphost ?
+				($smtphost, $timeout) :
+				($timeout) );
 
 	} else { # (We know we're sending using sendmail now).
 
-# (-t was implicitly added for sendmail in all variants of this function in IC,
-# so let's keep this behavior here too).
+		# (-t was implicitly added for sendmail in all variants of this function
+		# in IC, so let's keep this behavior here too).
 		MIME::Lite->send('sendmail', $using . ' -t');
 	}
 
-	#logDebug('mime_lite_email will invoke MIME::Lite with ' .uneval($copt));
+	#logDebug('mime_lite_email will invoke MIME::Lite with ' .uneval($opt));
 
-#
-# Finally, send.
-#
+	#
+	# Create message just with body, and add headers later.
+	my $msg = new MIME::Lite (
+		Data     => $data,
+		Encoding => $encoding,
+		Type     => $type,
+	  ) or do {
 
-	my $msg = new MIME::Lite ( %$copt ) or do {
 		logError("Can't create MIME::Lite mail ($!).");
 		return;
 	};
 
-	$msg->send or do {
-		logError("Created, but can't send MIME::Lite mail ($!).");
-		return;
+	#
+	# Fill in @headers with [ hdr_name, value ]
+	my @headers;
+	while (my($hdr,$values) = each %$opt ) {
+		if (! ref $values ) {
+			push @headers, [ $hdr, $values ];
+
+		} elsif ( ref $values eq 'ARRAY' ) {
+			for my $value (@$values ) { push @headers, [ $hdr, $value ] }
+
+		} else {
+			logError('Only scalars and array refs supported as header values.');
+			return;
+		}
 	}
 
+	#
+	# Sanitize headers and add them to $msg object
+	for my $hdr (@headers) {
+
+		# [0] is name, [1] is value. Let's first work on header names
+		$$hdr[0] =~ s/_/-/g;
+
+		for my $template ( @accepted_headers ) {
+			if ( $$hdr[0] =~ /^$template$/ ) {
+				goto HEADER_NAME_VERIFIED;
+			}
+		}
+
+		logError('Unknown email header name passed: ' . $$hdr[0]);
+		return;
+
+		# We jump here if header name is valid
+		HEADER_NAME_VERIFIED: 
+
+		# Now work on header value
+	
+		# Finally, header can go in.
+		$msg->add($$hdr[0], $$hdr[1]);
+	}
+
+	#
+	# Finally, send the whole message.
+	#
+
+	$msg->send;
+
+	1;
 }
+
+###########################################################################
+# Helper functions
 
 1; 
 
