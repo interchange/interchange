@@ -1,5 +1,7 @@
-interchange (5.4.2-1.1) unstable; urgency=low
+interchange (5.4.2-1.2) unstable; urgency=low
 
+  * removed Debconf dependency from interchange-ui postrm script 
+    (Closes: #416601, thanks to Michael Ablassmeier <abi@grinser.de>)
   * updated Russian translation of Debconf templates (Closes: #414080,
     thanks to Yuriy Talakan <yt@drsk.ru>)
 
