@@ -56,6 +56,10 @@ Core
 * Fix [on-match]/[no-match] for loop lists without matchlimit generated from
   embedded Perl objects
     
+* Fixed problem where both set_row() and set_slice would try to get the key
+  from last_sequence_value() for returning even if we already know the key and
+  even on an UPDATE which can cause problems.
+
 UserDB
 ------
 

@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.74 2007-03-30 11:39:54 pajamian Exp $
+# $Id: DBI.pm,v 2.75 2007-04-11 11:16:25 pajamian Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.74 $, 10);
+$VERSION = substr(q$Revision: 2.75 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1261,9 +1261,12 @@ sub set_slice {
 		my $rc = $sth->execute(@$vary)
 			or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
 
-		$val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
-				? $s->last_sequence_value($key)
-				: $key;
+		if (length $key) {
+		    $val = $key;
+		}
+		else {
+		    $val = $s->last_sequence_value;
+		}
 	};
 
 #::logDebug("set_slice key: $val");
@@ -1393,12 +1396,15 @@ sub set_row {
 #::logDebug("set_row fields='" . join(',', @fields) . "'" );
     $s->bind_entire_row($cfg->{_Insert_h}, @fields);
 
-	my $rc = $cfg->{_Insert_h}->execute()
-		or die $s->log_error("%s error on key '%s': $DBI::errstr", 'set_row', $fields[$ki], $DBI::errstr);
+    my $rc = $cfg->{_Insert_h}->execute()
+	or die $s->log_error("%s error on key '%s': $DBI::errstr", 'set_row', $fields[$ki], $DBI::errstr);
 
-	$val	= $cfg->{AUTO_SEQUENCE}
-			?  $s->last_sequence_value($fields[$ki])
-			: $fields[$ki];
+    if (length $fields[$ki]) {
+	$val = $fields[$ki];
+    }
+    else {
+	$val = $s->last_sequence_value;
+    }
 
 #::logDebug("set_row rc=$rc key=$val");
 	return $val;
