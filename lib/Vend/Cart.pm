@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.15 2007-03-30 11:39:43 pajamian Exp $
+# $Id: Cart.pm,v 2.16 2007-04-11 06:44:49 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use strict;
 
@@ -338,7 +338,7 @@ sub trigger_event {
 			$result = $sub->($s, $action, $new_row, $old_row, $cartname);
 		};
 		if ($@) {
-			::logError( "CartTrigger event handler '%' action '%' returned error:\n%",
+			::logError( "CartTrigger event handler '%s' action '%s' returned error:\n%s",
 				$Vend::Cfg->{CartTrigger},
 				$action,
 				$@ );
