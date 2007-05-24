@@ -111,6 +111,11 @@ Removed the [/page] and [/order] macros. The [page] and [order] tags have
 never been container tags; [/page] and [/order] were macros that were
 replaced with </a>. You should now just use </a> in HTML instead.
 
+The various *Robot* directives have been split from the interchange.cfg
+file into a new robots.cfg file.  If you are upgrading then you will
+need to remove any existing *Robot* directives from your interchange.cfg
+file and add "include robots.cfg" in their place.
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
