@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.279 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Interpolate.pm,v 2.280 2007-05-24 16:21:26 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.279 $, 10);
+$VERSION = substr(q$Revision: 2.280 $, 10);
 
 @EXPORT = qw (
 
@@ -480,8 +480,8 @@ my @th = (qw!
 	'_param'		=> qr((?:$T{_param}|$T{_modifier})$Mandf\]),
 	'_parent_if'	=> qr($T{_parent}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_parent'		=> qr($T{_parent}$Mandf\]),
-	'_pos_if'		=> qr($T{_pos}(\d*)$Spacef(!?)\s*(\d+)$Optr\]($Some)),
-	'_pos' 			=> qr($T{_pos}$Spacef(\d+)\]),
+	'_pos_if'		=> qr($T{_pos}(\d*)$Spacef(!?)\s*(-?\d+)$Optr\]($Some)),
+	'_pos' 			=> qr($T{_pos}$Spacef(-?\d+)\]),
 	'_price'		=> qr!$T{_price}(?:\s+(\d+))?$Optx\]!,
 	'_quantity'		=> qr($T{_quantity}\]),
 	'_subtotal'		=> qr($T{_subtotal}$Optx\]),
