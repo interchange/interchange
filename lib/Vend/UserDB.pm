@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.52 2007-03-26 22:00:55 mheins Exp $
+# $Id: UserDB.pm,v 2.53 2007-05-25 00:56:24 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.52 $, 10);
+$VERSION = substr(q$Revision: 2.53 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1613,7 +1613,7 @@ sub new_account {
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
 		die errmsg("Sorry, user name must be an email address.") . "\n"
 			if $self->{OPTIONS}{username_email} 
-				and $self->{USERNAME} !~ m!^[:alnum:]([.]?([[:alnum:]._-]+)*)?@([[:alnum:]\-_]+\.)+[a-zA-Z]{2,4}$!;
+				and $self->{USERNAME} !~ m!^[[:alnum:]]([.]?([[:alnum:]._-]+)*)?@([[:alnum:]\-_]+\.)+[a-zA-Z]{2,4}$!;
 		die errmsg("Must enter at least %s characters for password.",
 			$self->{PASSMINLEN}) . "\n"
 			if length($self->{PASSWORD}) < $self->{PASSMINLEN};
