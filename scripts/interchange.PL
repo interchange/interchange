@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.94 2007-03-30 11:39:56 pajamian Exp $
+# $Id: interchange.PL,v 2.95 2007-06-10 02:15:35 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -293,10 +293,6 @@ use autouse 'Vend::Control' => qw/
 #   								/;
 
 # END AUTOUSE
-
-# TRACK
-use Vend::Track;
-# END TRACK
 
 use Vend::Scan;
 use Vend::Data;
