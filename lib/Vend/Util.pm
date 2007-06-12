@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.102 2007-03-30 11:39:46 pajamian Exp $
+# $Id: Util.pm,v 2.103 2007-06-12 15:55:49 mheins Exp $
 # 
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -88,7 +88,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.102 $, 10);
+$VERSION = substr(q$Revision: 2.103 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1631,8 +1631,47 @@ sub find_special_page {
 # Log the error MSG to the error file.
 
 sub logDebug {
-	return unless $Global::DebugFile;
-	print caller() . ':debug: ', errmsg(@_), "\n";
+    return unless $Global::DebugFile;
+	if(my $re = $Vend::Cfg->{DebugHost}) {
+		return unless
+			 Net::IP::Match::Regexp::match_ip($CGI::remote_addr, $re);
+	}
+
+	if(my $sub = $Vend::Cfg->{SpecialSub}{debug_qualify}) {
+		return unless $sub->();
+	}
+
+    if(my $tpl = $Global::DebugTemplate) {
+        my %debug; 
+		$tpl = POSIX::strftime($tpl, localtime());
+		$tpl =~ s/\s*$/\n/;
+        if($tpl =~ /\{page\}/i) {
+            $debug{page} = $Global::Variable->{MV_PAGE};
+        }
+        if($tpl =~ /\{tag\}/i) {
+            $debug{tag} = $Vend::CurrentTag;
+        }
+        if($tpl =~ /\{host\}/i) {
+            $debug{host} = $CGI::host || $CGI::remote_addr;
+        }
+        if($tpl =~ /\{catalog\}/i) {
+            $debug{catalog} = $Vend::Catalog;
+        }
+        if($tpl =~ /\{remote_addr\}/i) {
+            $debug{host} = $CGI::host || $CGI::remote_addr;
+        }
+        if($tpl =~ /\{caller\d+\}/i) {
+            my @caller = caller();
+            for(my $i = 0; $i < @caller; $i++) {
+                $debug{"caller$i"} = $caller[$i];
+            }
+        }
+		$debug{message} = errmsg(@_);
+        print Vend::Interpolate::tag_attr_list($tpl, \%debug, 1);
+    }
+    else {
+        print caller() . ":debug: ", errmsg(@_), "\n";
+    }
 }
 
 sub errmsg {

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.216 2007-06-10 02:15:34 jon Exp $
+# $Id: Config.pm,v 2.217 2007-06-12 15:55:49 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.216 $, 10);
+$VERSION = substr(q$Revision: 2.217 $, 10);
 
 my %CDname;
 my %CPname;
@@ -467,6 +467,7 @@ sub global_directives {
 	['IpQuad',			 'integer',          '1'],
 	['TagDir',      	 'root_dir_array', 	 'code'],
 	['TemplateDir',      'root_dir_array', 	 ''],
+	['DebugTemplate',    undef, 	         ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
@@ -697,6 +698,7 @@ sub catalog_directives {
 	['CartTrigger',		 'routine_array',	 ''],
 	['CartTriggerQuantity',	'yesno',		 'no'],
     ['UserTrack',        'yesno',            'yes'],
+	['DebugHost',	     'ip_address_regexp',	''],
 
 	];
 
@@ -3725,6 +3727,21 @@ sub parse_regex {
 		config_error("Bad regular expression in $var.");
 	}
 	return $value;
+}
+
+sub parse_ip_address_regexp {
+
+	my ($var, $value) = @_;
+	return '' unless $value;
+
+	eval {
+		require Net::IP::Match::Regexp;
+	};
+	$@ and config_error("$var directive requires module: $@");
+
+	my $re = Net::IP::Match::Regexp::create_iprange_regexp($value)
+		or config_error("Improper IP address range for $var");
+    return $re;
 }
 
 # Prepend the Global::VendRoot pathname to the relative directory specified,
