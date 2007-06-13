@@ -1,4 +1,4 @@
-interchange (5.4.2-1.2) unstable; urgency=low
+interchange (5.4.2-2) unstable; urgency=low
 
   * removed Debconf dependency from interchange-ui postrm script 
     (Closes: #416601, thanks to Michael Ablassmeier <abi@grinser.de>)
@@ -7,7 +7,7 @@ interchange (5.4.2-1.2) unstable; urgency=low
   * added Portuguese translation of Debconf templates (Closes: #416781,
     thanks to Ricardo Silva <ardoric@gmail.com>)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 13 Apr 2007 10:32:09 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 13 Jun 2007 13:35:34 +0200
 
 interchange (5.4.2-1) unstable; urgency=low
 
