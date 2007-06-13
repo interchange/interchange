@@ -1,1 +1,0 @@
-code	store_id	order_number	session	username	shipmode	sku	quantity	price	subtotal	shipping	taxable	size	color	options	order_date	update_date	status	parent	affiliate	campaign	description

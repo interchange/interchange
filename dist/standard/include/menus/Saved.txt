@@ -1,2 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
-001		x001							Saved links		0								

@@ -1,5 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
-001	01	x001					admin/content		Content Edit		0							
-002	02	x002					admin/content_push		Clone component sets		0							
-003		x003					admin/survey/index		Surveys		0	Create feedback forms, polls, and surveys						
-004	03	x004					admin/file_transfer		File Transfer		0							

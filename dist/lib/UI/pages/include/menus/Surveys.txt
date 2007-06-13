@@ -1,3 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
-001		x001					admin/survey/index		List		0	List of surveys including access to data							
-002		x002				item_id	admin/survey/overall	item_id=%5Bcgi%20item_id%5D	Edit survey		0								

@@ -1,7 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
-001		x001					index		Go to catalog		0							
-002		x002					admin/genfunction	mv_click=save_link&mv_action=back&url=[filter op="mac urlencode" interpolate=1][history-scan count=0 no-session=1][/filter]&title=[filter op="mac urlencode" interpolate=1][scratch page_title][/filter]	Save link		0	Save this page in "Saved" menu						
-003		x003					javascript:window.name = 'mainwindow';window.open('[area admin/quicklinks]','Quicklinks','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0		Quicklinks		0	Window with quick links to commonly-used functions						
-004		x004				reconfig	admin/reconfig		Apply Changes		0	Apply changes made to configuration						
-005		x005					admin/login		Log out		0	Log out as an administrator						
-006		x006					javascript:open_help()		Help		0	Help on this screen						
