@@ -1,5 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	debug
-001	Commerce	x001					admin/tax		Tax		0								
-002	Commerce	x002					admin/ship		Shipping		0								
-003	Commerce	x003					admin/payment		Payment		0								
-004		x004					admin/gpg_key		GPG Key Add		0	Add a GPG or PGP key to keyring (if GPG is installed)							

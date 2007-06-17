@@ -1,9 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	debug
-013	Tables	x013			no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit		0								
-014	Tables	x014			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data		0								
-015	Tables	x015			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data		0								
-016	Tables	x016			no_dbmenu	mv_data_table	admin/spread	mv_data_table=%5Bcgi%20mv_data_table%5D&ui_text_qualification=%5Bcgi%20ui_text_qualification%5D&ui_meta_specific=%5Bcgi%20ui_meta_specific%5D	Spreadsheet		0								
-017	Tables	x017			no_dbmenu	mv_data_table	admin/search_replace	mv_data_table=[cgi mv_data_table]	Search/Replace		0								
-018	Tables	x018			no_dbmenu	mv_data_table	admin/direct_sql	mv_data_table=[cgi mv_data_table]	Direct SQL		0								
-019	Tables	x019			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry		0								
-020	Tables	x020			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table		0								

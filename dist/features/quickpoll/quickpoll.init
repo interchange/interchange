@@ -1,18 +1,0 @@
-[flag type=write table=mv_metadata]
-[write-relative-file file="tmp/poll_metadata.asc"]code	type	width	height	field	db	name	outboard	options	attribute	label	help	lookup	filter	help_url	pre_filter	lookup_exclude	prepend	append	display_filter	extended
-quickpoll::choices	textarea	30	5							Choices	Standard IC option format, i.e.:<blockquote>value1=Label which may be long<br>value2=Another label<br>value3=Yet another label<br>value4<br>value5=The above is just shown as value4</blockquote>		line2options		options2line					{}
-quickpoll::code	hidden_text									Question ID										{}
-quickpoll::colors	movecombo							green,red,blue,brown,yellow,cyan,chartreuse,gray		Colors	Colors for results, in order (highest value first color, next second, etc.)									{}
-quickpoll::num_answers	select							=--default is 4--,1,2,3,4,5,6,7,8,9,10		Answers to show	Answers after this number are added together and shown as "Other"									{}
-quickpoll::question	text_40									Question										{}
-quickpoll	table																			{'no_code_link' => "1",'restrict_allow' => "poll_answer cgi",'panel_shade' => "f",'include_form' => "<td class=clabel> Answers </td><td class=cdata>   [poll-answer code=\"[cgi item_id]\"]</td>",'include_form_interpolate' => "1",'display_type' => "image_meta",'ui_more_decade' => "10",'include_before' => "code",'explicit_edit' => "1",'ui_data_fields' => "codetitlequestionchoicescolorsnum_answers",}
-quickpoll::title	text_30									Title	Default is "Quick poll"									{}
-[/write-relative-file]
-[import-fields table=mv_metadata file="tmp/poll_metadata.asc" add=1]
-
-[flag type=write table=quickpoll]
-[write-relative-file file="tmp/quickpoll.asc"]code	poll_id	owner	title	question	choices	colors	num_answers
-1	0		A New Poll	Will this poll work?	Yes,No,Maybe,Sometimes,Always,Never,x=When it wants to it will&#44; you bet	cyan green red blue yellow chartreuse	4
-2			Another Poll	Do you like polls?	Yes,No,Sometimes,Always,Never,Anytime!	green red blue chartreuse	0
-[/write-relative-file]
-[import-fields table=quickpoll file="tmp/quickpoll.asc" add=1]

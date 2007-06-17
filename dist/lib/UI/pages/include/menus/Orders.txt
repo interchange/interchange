@@ -1,4 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
-001	Orders	x001		showpending			admin/order	showpending=1	Pending Orders		0							
-002	Orders	x002		showarchive			admin/order	showarchive=1	Archived Orders		0							
-003	Orders	x003					admin/entry		Enter Order		0							

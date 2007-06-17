@@ -1,1 +1,0 @@
-code	date_issued	check_value	order_number	amount	orig_amount	ip_addr	process_flag	date_expires

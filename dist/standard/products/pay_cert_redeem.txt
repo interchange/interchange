@@ -1,1 +1,0 @@
-code	pay_id	link_tid	trans_date	ip_addr	trans_type	voided	captured	username	amount	items
