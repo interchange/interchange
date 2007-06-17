@@ -4,6 +4,14 @@ interchange (5.5.0-0.0.1) experimental; urgency=low
 
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 19 Nov 2005 20:40:25 +0100
 
+interchange (5.4.2-3) unstable; urgency=low
+
+  * removed libapache-mod-interchange package as Apache 1.3 has been
+    removed from unstable (Closes: #428849, thanks to Bastian Blank
+    <waldi@debian.org>)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 17 Jun 2007 21:10:52 +0200
+
 interchange (5.4.2-2) unstable; urgency=low
 
   * removed Debconf dependency from interchange-ui postrm script 
