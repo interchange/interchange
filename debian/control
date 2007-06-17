@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Stefan Hornburg (Racke) <racke@linuxia.de>
 Standards-Version: 3.5.6.0
-Build-Depends: debhelper (>= 4.1.16), libdigest-md5-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, libhtml-parser-perl, apache-dev
+Build-Depends: debhelper (>= 4.1.16), libdigest-md5-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, libhtml-parser-perl
 
 Package: interchange-cat-standard
 Architecture: all
@@ -19,7 +19,7 @@ Description: Standard store, a sample Interchange catalog
 Package: interchange-ui
 Architecture: all
 Depends: ${perl:Depends}, debconf | debconf-2.0, interchange (>=4.8.1)
-Suggests: apache-ssl | libapache-mod-ssl, libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
+Suggests: libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
 Description: Interchange administration interface (UI)
  With the Interchange administration interface, called UI, you are able
  to perform several useful operations like page edit, user's administration
@@ -30,19 +30,8 @@ Architecture: any
 Depends: perl (>= 5.8.8), debconf | debconf-2.0, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl
 Conflicts: libdbi-perl (<< 1.53)
 Recommends: interchange-ui
-Suggests: apache-ssl | libapache-mod-ssl
 Description: e-commerce and general HTTP database display system
  Interchange is a database access and retrieval system focused on e-commerce.
  It allows customers to select items to buy from catalog pages. The program
  tracks user information in sessions and interacts with a HTTP server
  through sockets.
-
-Package: libapache-mod-interchange
-Architecture: any
-Depends: ${shlibs:Depends}, apache-common (>= ${THISDEV})
-Suggests: interchange (>=4.8.1)
-Description: Integration of the Interchange link protocol with Apache
- mod_interchange is designed to replace the vlink and tlink programs that
- come with Interchange. The Interchange link protocol is implemented via
- an Apache module which saves us the (small) overhead of the execution
- of a CGI program.
