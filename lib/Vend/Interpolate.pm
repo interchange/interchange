@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.280 2007-05-24 16:21:26 markj Exp $
+# $Id: Interpolate.pm,v 2.281 2007-06-20 16:02:28 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.280 $, 10);
+$VERSION = substr(q$Revision: 2.281 $, 10);
 
 @EXPORT = qw (
 
@@ -3190,6 +3190,11 @@ sub tag_more_list {
 		$opt,
 		$r,
 	) = @_;
+
+	if(my $name = $opt->{more_routine}) {
+		my $sub = $Vend::Cfg->{Sub}{$name} || $Global::GlobalSub->{$name};
+		return $sub->(@_) if $sub;
+	}
 #::logDebug("more_list: opt=$opt label=$opt->{label}");
 	return undef if ! $opt;
 	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
@@ -3198,8 +3203,9 @@ sub tag_more_list {
 	my($arg,$inc,$last,$m);
 	my($adder,$pages);
 	my($first_anchor,$last_anchor);
-	my $next_tag = '';
-	my $list = '';
+	my %hash;
+
+
 	$session = $q->{mv_cache_key};
 	my $first = $q->{mv_first_match} || 0;
 	$chunk = $q->{mv_matchlimit};
@@ -3220,6 +3226,8 @@ sub tag_more_list {
 	else {
 		$more_id = undef;
 	}
+
+	my $more_joiner = $opt->{more_link_joiner} || ' ';
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
 		$border = $1;
@@ -3262,7 +3270,7 @@ sub tag_more_list {
 			$arg .= ':0:';
 			$arg .= $chunk - 1;
 			$arg .= ":$chunk$perm";
-			$list .= more_link_template($first_anchor, $arg, $form_arg) . ' ';
+			$hash{first_link} = more_link_template($first_anchor, $arg, $form_arg);
 		}
 
 		unless ($prev_anchor) {
@@ -3283,7 +3291,7 @@ sub tag_more_list {
 			$arg .= ':';
 			$arg .= $first - 1;
 			$arg .= ":$chunk$perm";
-			$list .= more_link_template($prev_anchor, $arg, $form_arg) . ' ';
+			$hash{prev_link} = more_link_template($prev_anchor, $arg, $form_arg);
 		}
 
 	}
@@ -3307,7 +3315,7 @@ sub tag_more_list {
 		$last = $next + $chunk - 1;
 		$last = $last > ($total - 1) ? $total - 1 : $last;
 		$arg = "$session:$next:$last:$chunk$perm";
-		$next_tag .= more_link_template($next_anchor, $arg, $form_arg);
+		$hash{next_link} = more_link_template($next_anchor, $arg, $form_arg);
 
  		# Last link can appear when next link is valid
 		if($r =~ s:\[last[-_]anchor\]($All)\[/last[-_]anchor\]::i) {
@@ -3320,7 +3328,7 @@ sub tag_more_list {
 			$last = $total - 1;
 			my $last_beg_idx = $total - ($total % $chunk || $chunk);
 			$arg = "$session:$last_beg_idx:$last:$chunk$perm";
-			$next_tag .= ' ' . more_link_template($last_anchor, $arg, $form_arg);
+			$hash{last_link} = more_link_template($last_anchor, $arg, $form_arg);
 		}
 	}
 	else {
@@ -3359,52 +3367,72 @@ sub tag_more_list {
 	if(defined $decade_div and $pages > $decade_div) {
 		if($current > $decade_div) {
 			$begin = ( int ($current / $decade_div) * $decade_div ) + 1;
-			$list .= " ";
-			$list .= more_link($begin - $decade_div, $decade_prev);
+			$hash{decade_prev} = more_link($begin - $decade_div, $decade_prev);
 		}
 		else {
 			$begin = 1;
 		}
 		if($begin + $decade_div <= $pages) {
 			$end = $begin + $decade_div;
-			$decade_next = more_link($end, $decade_next);
+			$hash{decade_next} = more_link($end, $decade_next);
 			$end--;
 		}
 		else {
 			$end = $pages;
-			undef $decade_next;
+			delete $hash{$decade_next};
 		}
 #::logDebug("more_list: decade found pages=$pages current=$current begin=$begin end=$end next=$next last=$last decade_div=$decade_div");
 	}
 	else {
 		($begin, $end) = (1, $pages);
-		undef $decade_next;
+		delete $hash{$decade_next};
 	}
-#::logDebug("more_list: pages=$pages current=$current begin=$begin end=$end next=$next last=$last decade_div=$decade_div");
+#::logDebug("more_list: pages=$pages current=$current begin=$begin end=$end next=$next last=$last decade_div=$decade_div page_anchor=$page_anchor");
 
+	my @more_links;
 	if ($q->{mv_alpha_list}) {
 		for my $record (@{$q->{mv_alpha_list}}) {
 			$arg = "$session:$record->[2]:$record->[3]:" . ($record->[3] - $record->[2] + 1);
 			my $letters = substr($record->[0], 0, $record->[1]);
-			$list .= more_link_template($letters, $arg, $form_arg) . ' ';
+			push @more_links, more_link_template($letters, $arg, $form_arg);
 		}
-	} else {
+		$hash{more_alpha} = join $more_joiner, @more_links;
+	}
+	else {
 		foreach $inc ($begin .. $end) {
 			last if $page_anchor eq 'none';
-			$list .= more_link($inc, $page_anchor);
+			push @more_links, more_link($inc, $page_anchor);
 		}
+		$hash{more_numeric} = join $more_joiner, @more_links;
 	}
-	$list .= " $decade_next " if defined $decade_next;
-	$list .= $next_tag;
+
+	$hash{more_list} = join $more_joiner, @more_links;
+
 	$first = $first + 1;
 	$last = $first + $chunk - 1;
 	$last = $last > $total ? $total : $last;
 	$m = $first . '-' . $last;
-	$r =~ s,$QR{more},$list,g;
-	$r =~ s,$QR{matches},$m,g;
-	$r =~ s,$QR{match_count},$q->{matches},g;
+	$hash{matches} = $m;
+	$hash{first_match} = $first;
+	$hash{last_match} = $last;
+	$hash{decade_first} = $begin;
+	$hash{decade_last} = $end;
+	$hash{last_page} = $hash{total_pages} = $pages;
+	$hash{current_page} = $current;
+	$hash{match_count} = $q->{matches};
 
-	$r;
+	if($r =~ /{[A-Z][A-Z_]+[A-Z]}/ and $r !~ $QR{more}) {
+		return tag_attr_list($r, \%hash, 1);
+	}
+	else {
+		my $tpl = qq({FIRST_LINK?}{FIRST_LINK} {/FIRST_LINK?}{PREV_LINK?}{PREV_LINK} {/PREV_LINK?}{DECADE_PREV?}{DECADE_PREV} {/DECADE_PREV?}{MORE_LIST}{DECADE_NEXT?} {DECADE_NEXT}{/DECADE_NEXT?}{NEXT_LINK?} {NEXT_LINK}{/NEXT_LINK?}{LAST_LINK?} {LAST_LINK}{/LAST_LINK?});
+		$tpl =~ s/\s+$//;
+		my $list = tag_attr_list($opt->{more_template} || $tpl, \%hash, 1);
+		$r =~ s,$QR{more},$list,g;
+		$r =~ s,$QR{matches},$m,g;
+		$r =~ s,$QR{match_count},$q->{matches},g;
+		return $r;
+	}
 
 }
 
@@ -3670,14 +3698,15 @@ sub tag_attr_list {
 		return undef if ! ref $hash;
 	}
 	if($ucase) {
-		$body =~ s!\{([A-Z_][A-Z_]+)\}!$hash->{"\L$1"}!g;
-		$body =~ s!\{([A-Z_][A-Z_]+)\?([A-Z_][A-Z_]+)\:([A-Z_][A-Z_]+)\}!
+		my $Marker = '[A-Z_]\\w+';
+		$body =~ s!\{($Marker)\}!$hash->{"\L$1"}!g;
+		$body =~ s!\{($Marker)\?($Marker)\:($Marker)\}!
 					length($hash->{lc $1}) ? $hash->{lc $2} : $hash->{lc $3}
 				  !eg;
-		$body =~ s!\{([A-Z_][A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
-		$body =~ s!\{([A-Z_][A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{([A-Z_][A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{([A-Z_][A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+		$body =~ s!\{($Marker)\|($Some)\}!$hash->{lc $1} || $2!eg;
+		$body =~ s!\{($Marker)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{($Marker)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{($Marker)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 		$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
 	}
 	else {
