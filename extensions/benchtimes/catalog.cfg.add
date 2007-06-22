@@ -1,3 +1,0 @@
-## Add these to your catalog.cfg file to do benchtimes
-AutoLoad   benchtimes_start
-AutoEnd    benchtimes_end
