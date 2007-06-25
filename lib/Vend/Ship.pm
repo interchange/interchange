@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.21 2007-03-30 11:39:46 pajamian Exp $
+# $Id: Ship.pm,v 2.22 2007-06-25 16:26:43 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -97,6 +97,30 @@ use vars qw/%Ship_handler/;
 		,
 );
 
+sub process_new_beginning {
+	my ($record, $line) = @_;
+	my @new;
+
+	if($line =~ /^[^\s:]+\t/) {
+		@new = split /\t/, $line;
+	}
+	elsif($line =~ /^(\w+)\s*:\s*(.*)/s) {
+		@new = ($1, $2, 'quantity', 0, 99999999, 0);
+	}
+
+	$Vend::Cfg->{Shipping_desc}{$new[MODE]} ||= $new[DESC];
+
+	my $old_mode = $record->[MODE];
+	if ($old_mode and ! $Vend::Cfg->{Shipping_hash}{$old_mode}) {
+		if(! ref($record->[OPT]) ) {
+			$record->[OPT] = string_to_ref($record->[OPT]);
+		}
+		$record->[OPT]{description} ||= $Vend::Cfg->{Shipping_desc}{$old_mode};
+		$Vend::Cfg->{Shipping_hash}{$old_mode} = $record->[OPT];
+	}
+	return @new;
+}
+
 sub read_shipping {
 	my ($file, $opt) = @_;
 	$opt = {} unless $opt;
@@ -167,8 +191,8 @@ sub read_shipping {
 		}
 	}
 	
-	$Vend::Cfg->{Shipping_desc} = {}
-		if ! $Vend::Cfg->{Shipping_desc};
+	$Vend::Cfg->{Shipping_desc} ||= {};
+
 	my %seen;
 	my $append = '00000';
 	my @line;
@@ -211,20 +235,35 @@ sub read_shipping {
 
 		next if ! /\S/ or /^\s*#/;
 		s/\s+$//;
-		if(/^[^\s:]+\t/) {
+
+		if(/^[^\s:]+\t/ or /^\w+\s*:/s) {
+			## This along with process_new_beginning replaces
+			## two previous branches that had same code doing
+			## same thing.
+
+			my @new = process_new_beginning(\@line, $_);
 			push (@shipping, [@line]) if @line;
-			@line = split(/\t/, $_);
-			$Vend::Cfg->{Shipping_desc}->{$line[0]} = $line[1]
-				unless $seen{$line[0]}++;
-			push @shipping, [@line];
-			@line = ();
+			@line = @new;
 		}
 		elsif(/^(\w+)\s*:\s*(.*)/s) {
-			push (@shipping, [@line]) if @line;
-			@line = ($1, $2, 'quantity', 0, 999999999, 0);
+			my $id = $1;
+			my $desc = $2;
+			my ($opt, $former);
+
+			if(@line) {
+				push (@shipping, [@line]);
+				$opt = $line[OPT];
+				$former = $line[MODE];
+			}
+
+			@line = ($id, $desc, 'quantity', 0, 999999999, 0);
 			$first = 1;
-			$Vend::Cfg->{Shipping_desc}->{$line[0]} = $line[1]
-				unless $seen{$line[0]}++;
+			if( $seen{$line[MODE]}++ ) {
+				$Vend::Cfg->{Shipping_hash}{$former} ||= $opt;
+			}
+			else {
+				$Vend::Cfg->{Shipping_desc}->{$line[MODE]} = $line[DESC];
+			}
 			next;
 		}
 		elsif(/^\s+min(?:imum)?\s+(\S+)/i) {
@@ -1231,9 +1270,9 @@ sub tag_ups {
 
 sub tag_shipping_desc {
 	my $mode = 	shift;
+	my $key = shift || 'description';
 	$mode = $mode || $::Values->{mv_shipmode} || 'default';
-	return '' unless defined $Vend::Cfg->{Shipping_desc}{$mode};
-	return errmsg($Vend::Cfg->{Shipping_desc}{$mode});
+	return errmsg($Vend::Cfg->{Shipping_hash}{$mode}{$key});
 }
 
 =head1 NAME
