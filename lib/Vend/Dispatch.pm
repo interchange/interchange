@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.76 2007-06-10 02:15:34 jon Exp $
+# $Id: Dispatch.pm,v 1.77 2007-06-27 22:42:36 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.76 $, 10);
+$VERSION = substr(q$Revision: 1.77 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1409,13 +1409,39 @@ EOF
 
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 
+	my $new_source;
 	if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
-		$Vend::Session->{source} =	$CGI::values{mv_pc} eq 'RESET'
-										? ''
-										: $CGI::values{mv_pc};
+		$new_source = $Vend::Session->{source} = $CGI::values{mv_pc} eq 'RESET'
+											   ? ''
+											   : $CGI::values{mv_pc};
 	}
 	elsif($CGI::values{mv_source}) {
-		$Vend::Session->{source} =	$CGI::values{mv_source};
+		$new_source = $Vend::Session->{source} = $CGI::values{mv_source};
+	}
+	if ($new_source and $CGI::request_method eq 'GET' and $Vend::Cfg->{BounceReferrals}) {
+		my $path = $CGI::path_info;
+		$path =~ s:^/::;
+		my $form =
+			join '',
+			map { "$_=$CGI::values{$_}\n" }
+			sort keys %$CGI::values;
+		my $url = vendUrl($path, undef, undef, { form => $form, match_security => 1 });
+		my $msg = get_locale_message(
+			302,
+			"Redirected to %s.",
+			$url,
+		);
+		$Vend::StatusLine = <<EOF;
+Status: 302 Moved
+Location: $url
+Content-Type: text/plain
+
+Redirecting to $url
+EOF
+		response($msg);
+#::logDebug("bouncing to $url");
+		close_cat();
+		return;
 	}
 
 	$Vend::Session->{'user'} = $CGI::user;
