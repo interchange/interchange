@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.77 2007-06-27 22:42:36 jon Exp $
+# $Id: Dispatch.pm,v 1.78 2007-07-03 05:48:37 jon Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.77 $, 10);
+$VERSION = substr(q$Revision: 1.78 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1427,12 +1427,12 @@ EOF
 			sort keys %$CGI::values;
 		my $url = vendUrl($path, undef, undef, { form => $form, match_security => 1 });
 		my $msg = get_locale_message(
-			302,
+			301,
 			"Redirected to %s.",
 			$url,
 		);
 		$Vend::StatusLine = <<EOF;
-Status: 302 Moved
+Status: 301 Moved
 Location: $url
 Content-Type: text/plain
 
