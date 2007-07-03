@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.12 2007-03-30 11:39:46 pajamian Exp $
+# $Id: Swish2.pm,v 1.13 2007-07-03 10:43:41 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,13 +26,19 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 use strict;
 
 use SWISH::API;
-use SWISH::ParseQuery;
-use SWISH::PhraseHighlight;
 
+BEGIN {
+	eval {
+		require SWISH::ParseQuery;
+		require SWISH::PhraseHighlight;
+		$Vend::Swish2::Highlighting = 1;
+	};
+}
+		
 # singleton to hold initialization object, 
 # search objects are then retrieved through it
 # this should improve performance through caching
@@ -130,7 +136,7 @@ sub init {
     unless ($_swish->{$from_index}) {
         $_swish->{$from_index} = new SWISH::API ( $from_index );
         if ($_swish->{$from_index}->Error) {
-            die "Can't create swish engine: " . $_swish->{$from_index}->ErrorString;
+            die "Can't create swish engine on searchfile(s) @searchfiles: " . $_swish->{$from_index}->ErrorString . "\n";
         }
     }
 
@@ -195,6 +201,14 @@ sub search {
 			push (@{$prop_avail{$prop->Name()}}, $index);
 		}
 	}
+
+	my @sf =  @{ $s->{mv_search_field} };
+	
+	for my $search_field (@{ $s->{mv_search_field} }) {
+		if (exists $prop_avail{$search_field}) {
+			$search_string = join (' or ', map {"$search_field=$_"} @pats);
+		}
+	}
 	
 	for (@{ $s->{'mv_field_names'} }) {
 		unless (exists $fmap{$_}) {
@@ -212,7 +226,9 @@ sub search {
 		}
 	}
 	
-
+	$search_string = $s->build_search(\@pats);
+	#::logDebug("Swish search string is $search_string within " . join(', ', @sf));
+	
     my $results = $engine->Query( $search_string );
     if ($engine->Error) {
         $s->{matches} = -1;
@@ -227,7 +243,7 @@ sub search {
 
     my @out;
 	my $date_format = $Vend::Cfg->{Swish2}->{date_format} || '%Y-%m-%d %H:%M:%S';
-		
+	
     while (my $result = $results->NextResult) {
         my $out_ref = [];
         foreach my $field (@{ $s->{'mv_field_names'} }) {
@@ -317,6 +333,71 @@ sub search {
 
     #::logDebug("returning search: " . Vend::Util::uneval($s));
     return $s;
+}
+
+sub build_search {
+	my ($s, $pats) = @_;
+	my ($search_string);
+
+	my ($field_count, @ops, @group, @sf);
+	
+	$field_count =  @{$s->{mv_searchspec}};
+	@ops = $s->map_ops($field_count);
+	@group = @{$s->{mv_search_group}};
+	@sf = @{$s->{mv_search_field}};
+	my @su = @{$s->{mv_substring_match}};
+	
+	my (@specs_by_group, @joiner);
+	
+	for (my $i = 0; $i < $field_count; $i++) {
+		
+		# validate $group first
+		if (@sf) {
+			push (@{$specs_by_group[$group[$i]]}, ["$sf[$i] = $pats->[$i]", $s->{mv_orsearch}->[$i]]);
+		} else {
+#			if ($su[$i]) {
+#				push (@{$specs_by_group[$group[$i]]}, ["*$pats->[$i]", $s->{mv_orsearch}->[$i]]);
+#			} else {
+				push (@{$specs_by_group[$group[$i]]}, [$pats->[$i], $s->{mv_orsearch}->[$i]]);
+#			}
+		}
+		# record joiner, last one prevails
+		$joiner[$group[$i]] = $s->{mv_orsearch}->[$i] ? 'OR' : 'AND';
+	}
+
+	my @gall;
+	
+	for (my $i = 0; $i < @specs_by_group; $i++) {
+		my $gsp = $specs_by_group[$i];
+		my @gout;
+		
+		for (my $j = 0; $j < @$gsp; $j++) {
+			push (@gout, $gsp->[$j][0]);
+			if ($gsp->[$j][1]) {
+				push (@gout, 'OR');
+			} else {
+				push (@gout, 'AND');
+			}
+		}
+
+		# remove last operator
+		pop (@gout);
+
+		$gall[$i] = join (' ', @gout);
+	}
+
+	if (@gall > 1) {
+		my $i;
+		for ($i = 0; $i < @gall - 1; $i++) {
+			$search_string .= "($gall[$i]) $joiner[$i] ";
+		}
+		$search_string .= $gall[$i];
+	} else {
+		$search_string = $gall[0];
+	}
+
+	::logError ("Search string is: $search_string");
+	return $search_string;
 }
 
 # Unfortunate hack need for Safe searches
