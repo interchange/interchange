@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.22 2007-06-25 16:26:43 mheins Exp $
+# $Id: Ship.pm,v 2.23 2007-07-04 16:40:51 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -105,7 +105,7 @@ sub process_new_beginning {
 		@new = split /\t/, $line;
 	}
 	elsif($line =~ /^(\w+)\s*:\s*(.*)/s) {
-		@new = ($1, $2, 'quantity', 0, 99999999, 0);
+		@new = ($1, $2, '_newmode', 0, 99999999, 0);
 	}
 
 	$Vend::Cfg->{Shipping_desc}{$new[MODE]} ||= $new[DESC];
@@ -242,7 +242,12 @@ sub read_shipping {
 			## same thing.
 
 			my @new = process_new_beginning(\@line, $_);
-			push (@shipping, [@line]) if @line;
+			if($new[CRIT] eq '_newmode') {
+				$first = 1;
+			}
+			else {
+				push @shipping, [@new];
+			}
 			@line = @new;
 		}
 		elsif(/^(\w+)\s*:\s*(.*)/s) {
@@ -713,7 +718,8 @@ sub shipping {
 		my $value;
 		if ($use_modifier && defined $item->{$field}){
 		    $value = $item->{$field};
-		}else{
+		}
+		else{
 		    unless ($col_checked++ || column_exists $field){
 			logError("Custom shipping field '$field' doesn't exist. Returning 0");
 			$total = 0;
