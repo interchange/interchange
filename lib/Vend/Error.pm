@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.13 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Error.pm,v 2.14 2007-07-05 11:48:38 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -172,7 +172,7 @@ sub do_lockout {
 			::logError("Error running lockout subroutine %s: %s", $subname, $@);
 		}
 
-		return if $status;
+		return $status if $status;
 	}
 
 	# Now we log the error after custom lockout routine gets chance
@@ -197,6 +197,7 @@ sub do_lockout {
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
 	$Vend::LockedOut = 1;
 	logError($msg) if $msg;
+	return;
 }
 
 1;
