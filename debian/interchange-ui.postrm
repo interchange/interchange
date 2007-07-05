@@ -65,9 +65,6 @@ if [ "$1" = "remove" ]; then
 			/etc/init.d/interchange start
 		fi
 	fi
-
-	# Don't wait on Interchange to close file handles
-	db_stop
 fi
 
 #DEBHELPER#
