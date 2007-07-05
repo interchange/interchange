@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.28 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Session.pm,v 2.29 2007-07-05 11:19:42 pajamian Exp $
 # 
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -195,22 +195,68 @@ sub open_session {
 }
 
 sub count_ip {
-	my $inc = shift;
-	my $ip = $CGI::remote_addr;
-	$ip =~ s/\W/_/g;
-	my $dir = "$Vend::Cfg->{ScratchDir}/addr_ctr";
-	my $fn = Vend::Util::get_filename($ip, 2, 1, $dir);
-	if(-f $fn) {
-		my $grace = $::Limit->{robot_expire} || 1;
-		my @st = stat(_);
-		my $mtime = (time() - $st[9]) / 86400;
-		if($mtime > $grace) {
-			::logDebug("ip $ip allowed back in due to '$mtime' > '$grace' days");
-			unlink $fn;
-		}
-	}
-	return Vend::CounterFile->new($fn)->inc() if $inc;
-	return Vend::CounterFile->new($fn)->value();
+        my ($inc) = @_;
+
+        # Immediate return if RobotLimit is not defined
+	my $index = $Vend::Cfg->{RobotLimit} or return 0;
+	$index *= -1;
+
+
+        my $ip = $CGI::remote_addr;
+        $ip =~ s/\W/_/g;
+
+        my $dir = "$Vend::Cfg->{ScratchDir}/addr_ctr";
+        my $fn = Vend::Util::get_filename($ip, 2, 1, $dir);
+
+
+        # Unlink the "counter" file if applicable.
+
+        if(-f $fn) {
+                my $grace = $::Limit->{ip_session_expire} || 60;
+                my @st = stat(_);
+                my $mtime = (time() - $st[9]) / 60;
+                if($mtime > $grace) {
+#::logDebug("ip $ip session limit expired due to '$mtime' > '$grace' minutes");
+                    unlink $fn;
+                }
+        }
+
+        my $lfn = $fn . '.lockout';
+
+
+        # Unlink the lockout file if applicable, otherwise lock.
+
+        if(-f $lfn) {
+                my $grace = $::Limit->{robot_expire} || 1;
+                my @st = stat(_);
+                my $mtime = (time() - $st[9]) / 86400;
+                if($mtime > $grace) {
+#::logDebug("ip $ip allowed back in due to '$mtime' > '$grace' days");
+                        unlink $lfn;
+                } else {
+                        return 1;
+                }
+        }
+
+
+        # Append a new timestamp to the counter file (if applicable)
+
+	timecard_stamp($fn) if $inc;
+
+
+	# Get timestamp from timecard file and see if it's expired yet.
+
+	my $rtime;
+	return 0 unless $rtime = timecard_read($fn, $index);
+	my $grace = $::Limit->{ip_session_expire} || 60;
+	return 0 if time - $rtime > $grace * 60;
+
+#::logDebug("ip $ip locked out due to too many new sessions in the last $grace minutes");
+	# Create the lockout file
+	open(FH, '>', $lfn) or die "Can't create $lfn: $!";
+	close FH;
+
+	return 1;
 }
 
 sub is_retired {

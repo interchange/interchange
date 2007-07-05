@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.105 2007-07-05 10:01:25 racke Exp $
+# $Id: Util.pm,v 2.106 2007-07-05 11:19:42 pajamian Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -69,6 +69,8 @@ require Exporter;
 	show_times
 	string_to_ref
 	tag_nitems
+	timecard_stamp
+	timecard_read
 	uneval
 	uneval_it
 	uneval_fast
@@ -88,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.105 $, 10);
+$VERSION = substr(q$Revision: 2.106 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -2193,6 +2195,56 @@ sub codedef_options {
 	}
 	return \@out;
 }
+
+
+# Adds a timestamp to the end of a binary timecard file. You can specify the timestamp
+# as the second arg (unixtime) or just leave it out (or undefined) and it will be set
+# to the current time.
+sub timecard_stamp {
+	my ($filename,$timestamp) = @_;
+	$timestamp ||= time;
+
+	open(FH, '>>', $filename) or die "Can't open $filename for append: $!";
+	lockfile(\*FH, 1, 1);
+	binmode FH;
+	print FH pack('N',time);
+	unlockfile(\*FH);
+	close FH;
+}
+
+
+# Reads a timestamp from a binary timecard file.  If $index is negative indexes back from
+# the end of the file, otherwise indexes from the front of the file so that 0 is the first
+# (oldest) timestamp and -1 the last (most recent). Returns the timestamp or undefined if
+# the file doesn't exist or the index falls outside of the bounds of the timecard file.
+sub timecard_read {
+	my ($filename,$index) = @_;
+	$index *= 4;
+	my $limit = $index >= 0 ? $index + 4 : $index * -1;
+
+	if (-f $filename && (stat(_))[7] % 4) {
+	    # The file is corrupt, delete it and start over.
+	    ::logError("Counter file $filename found to be corrupt, deleting.");
+	    unlink($filename);
+	    return;
+	}
+	return unless (-f _ && (stat(_))[7] > $limit);
+
+	# The file exists and is big enough to cover the $index. Seek to the $index
+	# and return the timestamp from that position.
+
+	open (FH, '<', $filename) or die "Can't open $filename for read: $!";
+	lockfile(\*FH, 0, 1);
+	binmode FH;
+	seek(FH, $index, $index >= 0 ? 0 : 2) or die "Can't seek $filename to $index: $!";
+	my $rtime;
+	read(FH,$rtime,4) or die "Can't read from $filename: $!";
+	unlockfile(\*FH);
+	close FH;
+
+	return unpack('N',$rtime);
+}
+
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File
 *canonpath = \&Vend::File::canonpath;

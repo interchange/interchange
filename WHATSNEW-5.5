@@ -60,6 +60,11 @@ Core
   from last_sequence_value() for returning even if we already know the key and
   even on an UPDATE which can cause problems.
 
+* New "timecard" round-robin style counters added with the timecard_stamp and
+  timecard_read subs in Util.pm.  These are now used for better control of the
+  session per IP lockouts (when RobotLimit is set).  See CVS log for more
+  details.
+
 UserDB
 ------
 

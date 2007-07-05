@@ -116,6 +116,13 @@ file into a new robots.cfg file.  If you are upgrading then you will
 need to remove any existing *Robot* directives from your interchange.cfg
 file and add "include robots.cfg" in their place.
 
+The session per IP counters have been changed to the new "timecard" round-robin
+style counters.  You will need to delete the old counter files from the
+tmp/addr_ctr directory with a command similar to the following:
+	rm -rf catroot/tmp/addr_ctr/*
+...be careful with the above command, if mistyped it can seriously mess up
+your filesystem.
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 

@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.78 2007-07-03 05:48:37 jon Exp $
+# $Id: Dispatch.pm,v 1.79 2007-07-05 11:19:42 pajamian Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.78 $, 10);
+$VERSION = substr(q$Revision: 1.79 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1368,34 +1368,32 @@ RESOLVEID: {
 				}
 			}
 		}
-    }
-	else {
-		if($Vend::Cfg->{RobotLimit}) {
-			if (Vend::Session::count_ip() > $Vend::Cfg->{RobotLimit}) {
-				my $msg;
-				# Here they can get it back if they pass expiration time
-				my $wait = $::Limit->{robot_expire} || 1;
-				$wait *= 24;
-				$msg = errmsg(<<EOF, $wait); 
+	} else {
+	    if (Vend::Session::count_ip()) {
+		my $msg;
+		# Here they can get it back if they pass expiration time
+		my $wait = $::Limit->{robot_expire} || 1;
+		$wait *= 24;
+		$msg = errmsg(<<EOF, $wait); 
 Too many new ID assignments for this IP address. Please wait at least %d hours
 before trying again. Only waiting that period will allow access. Terminating.
 EOF
-				$msg = get_locale_message(403, $msg);
-				do_lockout();
+		$msg = get_locale_message(403, $msg);
+		do_lockout();
 
-				::logError('Too many IDs, %d hour wait enforced.', $wait);
+		::logError('Too many IDs, %d hour wait enforced.', $wait);
 
-				$Vend::StatusLine = <<EOF;
+		$Vend::StatusLine = <<EOF;
 Status: 403 Forbidden
 Content-Type: text/plain
 EOF
-					response($msg);
-					close_cat();
-					return;
-			}
-		}
-		new_session();
-    }
+		response($msg);
+		close_cat();
+		return;
+	    }
+	    new_session();
+	}
+
 }
 
 #::logDebug("session name='$Vend::SessionName'\n");
