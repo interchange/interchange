@@ -67,6 +67,11 @@ if ($Config->{AsciiTrack}) {
 	$frags{AsciiTrack} = $generate_logrotate->('AsciiTrack', $Config->{AsciiTrack});
 }
 
+# jobs log file
+if ($Config->{Jobs}->{log}) {
+	$frags{Jobs} = $generate_logrotate->('Jobs', $Config->{Jobs}->{log});
+}
+
 # pick up log files from the routes
 my $routelog;
 
