@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.38 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Parse.pm,v 2.39 2007-07-05 12:58:48 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -816,7 +816,9 @@ EOF
 #::logDebug("FOUND end for $tag\nBuf " . length($$buf) . ":\n" . $$buf . "\nTmpbuf:\n$tmpbuf\n");
 		if ($attr->{interpolate} and !$empty_container) {
 			my $p = new Vend::Parse;
+			my $tagsave = $Vend::CurrentTag;
 			$p->parse($tmpbuf);
+			$Vend::CurrentTag = $tagsave;
 			$tmpbuf = $p->{ABORT} ? '' : ${$p->{OUT}};
 		}
 		if($attr->{reparse} ) {

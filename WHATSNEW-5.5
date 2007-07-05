@@ -63,9 +63,12 @@ Core
 * New "timecard" round-robin style counters added with the timecard_stamp and
   timecard_read subs in Util.pm.  These are now used for better control of the
   session per IP lockouts (when RobotLimit is set).  See CVS log for more
-  details.
+  details (#2).
 
-* lockout specialsubs will now override session per IP lockouts properly.
+* lockout specialsubs will now override session per IP lockouts properly (#3).
+
+* Fixed error where the wrong tag name can sometimes appear in [calc] error
+  messages (#7).
 
 UserDB
 ------
