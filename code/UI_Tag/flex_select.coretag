@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: flex_select.coretag,v 1.16 2007-03-30 23:40:54 pajamian Exp $
+# $Id: flex_select.coretag,v 1.17 2007-07-06 08:54:20 racke Exp $
 
 UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.16 $
+UserTag flex-select Version    $Revision: 1.17 $
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/
@@ -1252,8 +1252,8 @@ EOF
 		}
 
 		unless(@rows) {
-			my $nomsg = errmsg('No records.');
-			push @rows, qq{<tr><td colspan=$ncols><blockquote>$nomsg</blockquote></td></tr>};
+			my $nomsg = errmsg('No records');
+			push @rows, qq{<tr><td colspan=$ncols><blockquote>$nomsg.</blockquote></td></tr>};
 		}
 		else {
 			my $mmsg = errmsg($opt->{more_message} ||= 'More rows');
