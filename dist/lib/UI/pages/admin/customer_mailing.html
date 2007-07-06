@@ -369,11 +369,6 @@ mail to this list again. And it be on your head...
 
 		return if ! @messages;
 		if($CGI->{direct_send}) {
-			my $max = $Variable->{MAIL_MAX_DIRECT} || 5;
-			if( scalar(@out) > $max ) {
-				my $msg = errmsg("Too many addresses for direct send, max %s!", $max);
-				return "<blockquote class=cerror>$max</blockquote>";
-			}
 			my $s = $Scratch->{sent_ids} ||= {};
 			for(@messages) {
 				my ($u, $b) = @$_;
@@ -441,4 +436,4 @@ mail to this list again. And it be on your head...
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.10 2005-04-23 18:10:07 pvinci Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.11 2007-07-06 11:48:19 pajamian Exp $ -->
