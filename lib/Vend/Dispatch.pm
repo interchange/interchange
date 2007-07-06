@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.81 2007-07-05 22:52:19 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.82 2007-07-06 00:35:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.81 $, 10);
+$VERSION = substr(q$Revision: 1.82 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -830,7 +830,7 @@ sub run_in_catalog {
 	my $out = join "", @out;
 	my $filter = $jobscfg->{filter} || 'strip';
 	$out = Vend::Interpolate::filter_value($filter, $out);
-	$out .= full_dump() if if_yes($jobscfg->{add_session});
+	$out .= full_dump() if is_yes($jobscfg->{add_session});
 
 	logError("Finished jobs group=%s pid=$$", $job || 'INTERNAL');
 	
