@@ -1,11 +1,11 @@
 interchange (5.5.1-0.1) unstable; urgency=low
 
-  * new upstream release (Closes: #397750)
+  * new upstream release (Closes: #397750, #429690)
   * removed db_stop call from interchange-ui's postrm script
     (Closes: #431580, thanks to Michael Ablassmeier <abi@grinser.de> for the
     report)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  5 Jul 2007 23:00:28 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Jul 2007 12:12:12 +0200
 
 interchange (5.4.2-4) unstable; urgency=low
 
