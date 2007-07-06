@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.281 2007-06-20 16:02:28 mheins Exp $
+# $Id: Interpolate.pm,v 2.282 2007-07-06 10:08:58 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.281 $, 10);
+$VERSION = substr(q$Revision: 2.282 $, 10);
 
 @EXPORT = qw (
 
@@ -77,8 +77,6 @@ This is not only for clarity of the regular expression, but for speed.
 # SQL
 push @EXPORT, 'tag_sql_list';
 # END SQL
-
-@EXPORT_OK = qw( sort_cart );
 
 use Safe;
 
@@ -3436,26 +3434,6 @@ sub tag_more_list {
 
 }
 
-}
-
-sub sort_cart {
-	my($options, $cart) = @_;
-	my ($item,$code);
-	my %order; my @codes; my @out;
-	my $sort_order;
-	foreach $item  (@$cart) {
-		$code = $item->{code};
-		$order{$code} = [] unless defined $order{$code};
-		push @{$order{$code}}, $item;
-		push @codes, $code;
-	}
-
-	$sort_order = tag_sort_hash($options, \@codes);
-
-	foreach $code (@$sort_order) {
-		push @out, @{$order{$code}};
-	}
-	return \@out;
 }
 
 # Naming convention
