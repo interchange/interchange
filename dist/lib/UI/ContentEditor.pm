@@ -1,8 +1,6 @@
-#!/usr/bin/perl
-#
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.19 2007-03-30 11:39:41 pajamian Exp $
+# $Id: ContentEditor.pm,v 2.20 2007-07-11 22:50:43 kwalsh Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +22,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
