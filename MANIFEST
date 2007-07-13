@@ -31,6 +31,7 @@ code/Filter/italics.filter
 code/Filter/large.filter
 code/Filter/last_non_null.filter
 code/Filter/lc.filter
+code/Filter/lcfirst.filter
 code/Filter/line.filter
 code/Filter/line2options.filter
 code/Filter/linkdecode.filter
@@ -73,6 +74,7 @@ code/Filter/textarea_get.filter
 code/Filter/textarea_put.filter
 code/Filter/tt.filter
 code/Filter/uc.filter
+code/Filter/ucfirst.filter
 code/Filter/unix.filter
 code/Filter/upload.filter
 code/Filter/urldecode.filter
