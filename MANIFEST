@@ -13,6 +13,7 @@ code/Filter/crypt.filter
 code/Filter/currency.filter
 code/Filter/date2time.filter
 code/Filter/date_change.filter
+code/Filter/datetime2epoch.filter
 code/Filter/dbi_quote.filter
 code/Filter/decode_entities.filter
 code/Filter/digits.filter
@@ -38,6 +39,7 @@ code/Filter/linkdecode.filter
 code/Filter/liven_urls.filter
 code/Filter/loc.filter
 code/Filter/lookup.filter
+code/Filter/lspace_to_nbsp.filter
 code/Filter/mac.filter
 code/Filter/mailto.filter
 code/Filter/md5.filter
@@ -63,6 +65,7 @@ code/Filter/roman.filter
 code/Filter/round.filter
 code/Filter/show_null.filter
 code/Filter/small.filter
+code/Filter/space_to_nbsp.filter
 code/Filter/space_to_null.filter
 code/Filter/sql.filter
 code/Filter/strftime.filter
@@ -92,6 +95,7 @@ code/OrderCheck/exists.oc
 code/OrderCheck/filter.oc
 code/OrderCheck/future.oc
 code/OrderCheck/length.oc
+code/OrderCheck/match.oc
 code/OrderCheck/natural.oc
 code/OrderCheck/regex.oc
 code/OrderCheck/relative_filename.oc
@@ -104,6 +108,7 @@ code/SystemTag/attr_list.coretag
 code/SystemTag/banner.coretag
 code/SystemTag/calc.coretag
 code/SystemTag/calcn.coretag
+code/SystemTag/captcha.coretag
 code/SystemTag/cart.coretag
 code/SystemTag/catch.coretag
 code/SystemTag/cgi.coretag
@@ -144,6 +149,7 @@ code/SystemTag/input_filter.coretag
 code/SystemTag/item_list.coretag
 code/SystemTag/levies.coretag
 code/SystemTag/levy_list.coretag
+code/SystemTag/local.coretag
 code/SystemTag/log.coretag
 code/SystemTag/loop.coretag
 code/SystemTag/mail.coretag
@@ -362,6 +368,7 @@ debian/po/cs.po
 debian/po/de.po
 debian/po/fr.po
 debian/po/POTFILES.in
+debian/po/pt.po
 debian/po/ru.po
 debian/po/templates.pot
 debian/po/vi.po
@@ -372,6 +379,7 @@ dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
 dist/etc/jobs/db/export
+dist/etc/jobs/maintenance/logrotate
 dist/etc/jobs/merchandising/topsellers
 dist/features/quickpoll/doc/quickpoll/README
 dist/features/quickpoll/quickpoll.catalog.cfg
@@ -385,6 +393,7 @@ dist/lib/UI/ichelp.txt
 dist/lib/UI/locales/da_DK.cfg
 dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
+dist/lib/UI/locales/en_GB.cfg
 dist/lib/UI/locales/en_US.cfg
 dist/lib/UI/locales/es_ES.cfg
 dist/lib/UI/locales/gr_GR.cfg
@@ -607,6 +616,7 @@ dist/src/mod_interchange/mod_interchange.c
 dist/src/mod_interchange/mod_interchange.html
 dist/src/mod_interchange/README
 dist/src/mod_perl2/Interchange/Link.pm
+dist/src/mod_perl2/Interchange/Link.pm.mod_perl-1.999_21_and_before
 dist/src/mod_perl2/README
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
@@ -988,6 +998,7 @@ dist/standard/variables/LINE_MENU
 dist/standard/variables/PAGE_INIT
 dist/standard/variables/THEME_CSS
 eg/compact
+eg/cvv2.svg
 eg/filter/calculated.filter
 eg/gpg_display
 eg/ifdef
