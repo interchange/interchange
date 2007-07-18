@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: tree.coretag,v 1.11 2007-03-30 23:40:49 pajamian Exp $
+# $Id: tree.coretag,v 1.12 2007-07-18 00:16:26 jon Exp $
 
 UserTag tree                Order        table master subordinate start
 UserTag tree                addAttr
 UserTag tree                attrAlias    sub subordinate
 UserTag tree                hasEndTag
-UserTag tree                Version      $Revision: 1.11 $
+UserTag tree                Version      $Revision: 1.12 $
 UserTag tree                Routine      <<EOR
 sub {
 	my($table, $parent, $sub, $start_item, $opt, $text) = @_;
@@ -102,7 +102,7 @@ sub {
 	my $where = '';
 	unless($nodb) {
 		if( my $f = $db->config('HIDE_FIELD')) {
-			$where .= " AND $f != 1";
+			$where .= " AND $f <> 1";
 		}
 	}
 

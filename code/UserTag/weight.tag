@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: weight.tag,v 1.8 2007-03-30 23:40:57 pajamian Exp $
+# $Id: weight.tag,v 1.9 2007-07-18 00:16:26 jon Exp $
 
 UserTag weight Order   attribute
 UserTag weight addAttr
-UserTag weight Version $Revision: 1.8 $
+UserTag weight Version $Revision: 1.9 $
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;
@@ -40,7 +40,7 @@ sub {
 		 			SELECT o_group, weight FROM $otab
 					WHERE  sku = ?
 					AND    weight is not null
-					AND    weight != ''
+					AND    weight <> ''
 					};
 		 my $sth = $odb->dbh()->prepare($q)
 		 	or last BUILDO;

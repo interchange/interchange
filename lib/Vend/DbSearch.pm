@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.24 2007-03-30 11:39:44 pajamian Exp $
+# $Id: DbSearch.pm,v 2.25 2007-07-18 00:16:26 jon Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -27,7 +27,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use Search::Dict;
 use strict;
@@ -250,8 +250,8 @@ sub search {
 
 		if(! $s->{mv_no_hide} and my $hf = $dbref->config('HIDE_FIELD')) {
 #::logDebug("found hide_field $hf");
-			$lqual =~ s/^\s*WHERE\s+/ WHERE $hf != 1 AND /
-				or $lqual = " WHERE $hf != 1";
+			$lqual =~ s/^\s*WHERE\s+/ WHERE $hf <> 1 AND /
+				or $lqual = " WHERE $hf <> 1";
 #::logDebug("lqual now '$lqual'");
 		}
 		$s->hash_fields(\@fn);

@@ -75,7 +75,7 @@ ui_template_name: noleft
 		  		type=select
 				default=__SHIP_DEFAULT_COUNTRY__
 				value=`$Values->{country}`
-				lookup_query="select code,name from country where shipmodes != '' order by name"
+				lookup_query="select code,name from country where shipmodes <> '' order by name"
 		  ]
 		</td>
 	  </tr>
