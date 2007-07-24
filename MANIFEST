@@ -63,6 +63,7 @@ code/Filter/qb_safe.filter
 code/Filter/restrict_html.filter
 code/Filter/roman.filter
 code/Filter/round.filter
+code/Filter/sha1.filter
 code/Filter/show_null.filter
 code/Filter/small.filter
 code/Filter/space_to_nbsp.filter
