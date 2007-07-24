@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.106 2007-07-05 11:19:42 pajamian Exp $
+# $Id: Util.pm,v 2.107 2007-07-24 02:50:38 mheins Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -90,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.106 $, 10);
+$VERSION = substr(q$Revision: 2.107 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -117,7 +117,7 @@ $ESCAPE_CHARS::ok_in_url =
 	;
 
 ## This is a character class for HTML::Entities
-$ESCAPE_CHARS::std = q{^\n\t\X !\#\$%\'-;=?-Z\\\]-~};
+$ESCAPE_CHARS::std = qq{^\n\t\X !\#\$%\'-;=?-Z\\\]-~};
 
 ## Some standard error templates
 
