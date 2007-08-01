@@ -123,6 +123,13 @@ tmp/addr_ctr directory with a command similar to the following:
 ...be careful with the above command, if mistyped it can seriously mess up
 your filesystem.
 
+The [error] and [formel] tags now make use of the following CSS class,
+that will need to be added to your CSS file:
+
+    .contrast {
+	color: #FF0000;
+    }
+
 
 KNOWN ISSUES UPGRADING FROM 5.2.x
 
