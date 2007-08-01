@@ -17,6 +17,7 @@ COD_ACCEPTED	0	Payment
 ENTRY_COD_ACCEPTED	0	Payment
 COMPANY	__MVC_COMPANY__	Company
 CONTRAST	RED	Template
+CSS_CONTRAST	mv_contrast	Template
 CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
 ENTRY_CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
 DECREMENT_INVENTORY	1	Order

@@ -126,9 +126,12 @@ your filesystem.
 The [error] and [formel] tags now make use of the following CSS class,
 that will need to be added to your CSS file:
 
-    .contrast {
+    .mv_contrast {
 	color: #FF0000;
     }
+
+The name of the class can be specified using the CSS_CONTRAST Variable,
+or will default to "mv_contrast".
 
 
 KNOWN ISSUES UPGRADING FROM 5.2.x

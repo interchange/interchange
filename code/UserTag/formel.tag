@@ -6,11 +6,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: formel.tag,v 1.18 2007-08-01 06:35:02 kwalsh Exp $
+# $Id: formel.tag,v 1.19 2007-08-01 10:52:44 kwalsh Exp $
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.18 $
+UserTag formel Version $Revision: 1.19 $
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;
@@ -38,7 +38,8 @@ sub {
 				sprintf($opt->{signal}, $label);
 			}
 			else {
-				qq{<span class="$::Variable->{CONTRAST}">$label</span>};
+				my $contrast = $::Variable->{CSS_CONTRAST} || 'mv_contrast';
+				qq{<span class="$contrast">$label</span>};
 			}	
 		}
 		else {      

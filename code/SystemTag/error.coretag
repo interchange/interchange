@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: error.coretag,v 1.8 2007-08-01 05:42:29 kwalsh Exp $
+# $Id: error.coretag,v 1.9 2007-08-01 10:52:45 kwalsh Exp $
 
 ### This is in package Vend::Interpolate, and may make reference
 ### to variables in that module
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.8 $
+UserTag error               Version      $Revision: 1.9 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -127,8 +127,9 @@ sub tag_error {
 			$text = $::Variable->{MV_ERROR_STD_LABEL};
 		}
 		else {
+			my $contrast = $::Variable->{CSS_CONTRAST} || 'mv_contrast';
 			$text = <<EOF;
-<span class="contrast">{LABEL} <small><i>(%s)</i></small></span>
+<span class="$contrast">{LABEL} <small><i>(%s)</i></small></span>
 [else]{REQUIRED <b>}{LABEL}{REQUIRED </b>}[/else]
 EOF
 		}
