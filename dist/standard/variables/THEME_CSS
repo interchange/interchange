@@ -535,5 +535,9 @@ A.resultslink:hover {
 
 /**********End results_ component classes*/
 
+.contrast {
+	color: [either][var CONTRAST][or]#FF0000[/either];
+}
+
 </style>
 
