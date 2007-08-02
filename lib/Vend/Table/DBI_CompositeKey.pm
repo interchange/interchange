@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.9 2007-03-30 11:39:54 pajamian Exp $
+# $Id: DBI_CompositeKey.pm,v 1.10 2007-08-02 10:37:02 racke Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 use strict;
 
@@ -404,6 +404,10 @@ sub set_slice {
     }
 
 	if ( $exists ) {
+		unless (@$fary) {
+			# as there are no data columns, we can safely skip the update
+			return $key;
+		}
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring $s->[$CONFIG]{_Key_where}";
 	}
