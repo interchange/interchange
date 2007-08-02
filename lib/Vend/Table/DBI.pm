@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.77 2007-06-11 08:27:55 racke Exp $
+# $Id: DBI.pm,v 2.78 2007-08-02 10:43:05 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.77 $, 10);
+$VERSION = substr(q$Revision: 2.78 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1230,6 +1230,10 @@ sub set_slice {
 
 
 	if ( defined $tkey and $s->record_exists($key) ) {
+		unless (@$fary) {
+			# as there are no data columns, we can safely skip the update
+			return $key;
+		}
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 	}
