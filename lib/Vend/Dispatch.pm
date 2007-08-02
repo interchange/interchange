@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.82 2007-07-06 00:35:18 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.83 2007-08-02 15:15:52 mheins Exp $
 #
 # Copyright (C) 2002-2006 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.82 $, 10);
+$VERSION = substr(q$Revision: 1.83 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1400,6 +1400,18 @@ EOF
 
 	$Vend::Calc_initialized = 0;
 	$CGI::values{mv_session_id} = $Vend::Session->{id} = $Vend::SessionID;
+
+	if($Vend::admin and my $subname = $Vend::Cfg->{SpecialSub}{admin_init}) {
+		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		eval {
+			$sub->();
+		};
+
+		if($@) {
+			::logError("Error running %s subroutine %s: %s", 'admin_init', $subname, $@);
+		}
+	}
+
 	if(my $vspace = $CGI::values{mv_values_space}) {
 		$::Values = $Vend::Session->{values_repository}{$vspace} ||= {};
 		$Vend::ValuesSpace = $vspace;
