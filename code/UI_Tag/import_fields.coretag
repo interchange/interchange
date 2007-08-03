@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: import_fields.coretag,v 1.14 2007-03-30 23:40:54 pajamian Exp $
+# $Id: import_fields.coretag,v 1.15 2007-08-03 18:17:24 racke Exp $
 
 UserTag import_fields Order   table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.14 $
+UserTag import_fields Version $Revision: 1.15 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -265,11 +265,14 @@ EOF
 	# We skip the whole table if bad field is found
 	my $skipping;
 
+	my @keycols;
+
 	if($multikey) {
 		my %fmap;
 		@fmap{$key,@names} = ($key,@names);
 		my $not_all_there;
 		for(@{$db->config('_Key_columns')}) {
+			push(@keycols, $_);
 			next if $fmap{$_};	
 			$not_all_there = 1;
 		}
@@ -334,8 +337,14 @@ EOF
 	my %keys;
 	if ($opt->{cleanse}) {
 		# record existing columns
-		my $recs = $db->query("select $key from $table");
-		$keys{$_->[0]} = 1 for @$recs;
+		my $recs;
+		if ($multikey) {
+			$recs = $db->query("select " . join(',', @keycols) . " from $table");
+			$keys{join("\0", @$_)} = 1 for @$recs;
+		} else {
+			$recs = $db->query("select $key from $table");
+			$keys{$_->[0]} = 1 for @$recs;
+		}
 	}
 	my $count = 0;
 	my $totcount = 0;
@@ -389,9 +398,7 @@ EOF
 					next;
 				}
 			}
-			$db->set_slice(undef, \%hash);
-			$count++;
-			next;
+			$k = undef;
 		}
 		elsif ( ! length($k) or ! $db->record_exists($k)) {
 			if ($opt->{add}) {
@@ -410,7 +417,11 @@ EOF
 		}
 
 		if ($opt->{cleanse}) {
-			delete $keys{$k};
+			if ($multikey) {
+				delete $keys{join("\0", map{$hash{$_}} @keycols)};
+			} else {
+				delete $keys{$k};
+			}
 		}
 
 		$db->set_slice($k, \%hash) if @names;
