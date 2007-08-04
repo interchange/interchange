@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: image.tag,v 1.19 2007-08-04 00:32:41 kwalsh Exp $
+# $Id: image.tag,v 1.20 2007-08-04 01:00:11 kwalsh Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.19 $
+UserTag image Version   $Revision: 1.20 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -19,7 +19,7 @@ sub {
 	my ($imagedircurrent, $imagedir, $imagedirsecure);
 
 	my @descriptionfields = grep /\S/, split /\s+/,
-		$opt->{descriptionfields} || $::Variable->{DESCRIPTIONFIELDS};
+		$opt->{descriptionfields} || $::Variable->{DESCRIPTIONFIELDS} || $Vend::Cfg->{DescriptionField};
 	@descriptionfields = qw( description ) if ! @descriptionfields;
 
 	my @imagefields = qw( image );
