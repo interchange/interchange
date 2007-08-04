@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: image.tag,v 1.18 2007-03-30 23:40:49 pajamian Exp $
+# $Id: image.tag,v 1.19 2007-08-04 00:32:41 kwalsh Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.18 $
+UserTag image Version   $Revision: 1.19 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -25,7 +25,7 @@ sub {
 	my @imagefields = qw( image );
 	my @imagesuffixes = qw( jpg gif png jpeg );
 	my $filere = qr/\.\w{2,4}$/;
-	my $absurlre = qr/^(?i:https?)/;
+	my $absurlre = qr!^(?i:https?)://!;
 
 	if ($opt->{ui}) {
 		# unless no image dir specified, add locale string

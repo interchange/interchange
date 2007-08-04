@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: button.tag,v 1.22 2007-03-30 23:40:56 pajamian Exp $
+# $Id: button.tag,v 1.23 2007-08-04 00:32:41 kwalsh Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.22 $
+UserTag button Version   $Revision: 1.23 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -35,7 +35,7 @@ sub {
 		my $id = $Tag->image( { dir_only => 1 } );
 		$id =~ s:/+$::;
 		$id =~ s:/~[^/]+::;
-		if(	$src =~ m{^https?:}i ) {
+		if(	$src =~ m{^https?://}i ) {
 			$image = $src;
 		}
 		elsif( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
