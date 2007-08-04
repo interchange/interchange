@@ -75,6 +75,18 @@ Core
 * set_slice now skips updates on existing records when we have only key
   columns (#98).
 
+* Change [shipping-desc] to allow access to arbitrary keys in the shipping
+  configuration.
+
+* Fixed problem where only the last shipping policy will get stored if the
+  multi-line format is used in shipping.asc.
+
+* Fixed problem where options are not converted and stored properly on all
+  shipping policies.
+
+* Moved more code into the new process_new_beginning sub and cleaned up other
+  code in Ship.pm.
+
 UserDB
 ------
 
