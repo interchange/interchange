@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.24 2007-08-04 12:40:31 pajamian Exp $
+# $Id: Ship.pm,v 2.25 2007-08-05 12:57:48 pajamian Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -257,22 +257,6 @@ sub read_shipping {
 
 			$first = process_new_beginning(\@shipping, \@line, $_);
 		}
-		elsif(/^\s+min(?:imum)?\s+(\S+)/i) {
-			my $min = $1;
-			if ($first) {
-				undef $first;
-				$line[MIN] = $min;
-			}
-			else {
-				push @shipping, [ @line ];
-				$line[MIN] = $min;
-				if(ref $line[OPT]) {
-					my $ref = $line[OPT];
-					$line[OPT] = { %$ref };
-				}
-
-			}
-		}
 		else {
 			no strict 'refs';
 			s/^\s+//;
@@ -281,6 +265,19 @@ sub read_shipping {
 			$k = uc $k;
 			$k = $Ship_remap{$k}
 				if defined $Ship_remap{$k};
+
+			if ($k eq 'MIN') {
+				# Special case handling for minimum line.
+				if ($first) {
+					undef $first;
+				}
+				else {
+					# Push the record we have to this point.
+					my @lcopy = @line;
+					process_new_beginning(\@shipping, \@lcopy);
+				}
+			}
+
 			$Ship_handler{$k}->(\$v, \$k, \@line)
 				if defined $Ship_handler{$k};
 			eval {
