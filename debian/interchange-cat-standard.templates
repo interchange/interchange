@@ -82,3 +82,14 @@ Type: string
 Default: standard
 _Description: Database name
  Please select the name of the database.
+
+Template: interchange-cat-standard/dbuser
+Type: string
+Default: interchange
+_Description: Database user
+ Please specify the username for connecting to the database.
+
+Template: interchange-cat-standard/dbpass
+Type: password
+_Description: Database password
+ Please specify the password for connecting to the database.

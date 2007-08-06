@@ -20,9 +20,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatability version to use.
-export DH_COMPAT=2
-
 ifndef PERL
 	PERL = /usr/bin/perl
 endif
@@ -104,7 +101,6 @@ install: build
 # UI images and stuff
 	mkdir -p $(TMP)/var/www/interchange-5
 	for dir in $(TMP)/usr/lib/interchange/share/interchange-5/*; do mv $$dir $(TMP)/var/www/interchange-5; done
-	chmod -x -R $(TMP)/var/www/interchange-5
 	rm -r $(TMP)/usr/lib/interchange/share/interchange-5
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
@@ -124,7 +120,6 @@ install: build
 # make VERSION file
 	echo 'Variable MAJOR_VERSION $(IC_MAJOR_VERSION)' > $(TMP)/usr/lib/interchange/VERSION
 	echo 'Variable VERSION $(IC_VERSION)' >> $(TMP)/usr/lib/interchange/VERSION
-	dh_movefiles
 	touch install-stamp
 
 # Build architecture-independent files here.
@@ -136,6 +131,7 @@ binary-indep: build install
 # no init.d script
 # no cron scripts
 	dh_installchangelogs -i
+	dh_install -i --sourcedir=debian/tmp
 	dh_compress -i
 	dh_fixperms -i
 	dh_installdeb -i
@@ -156,6 +152,7 @@ binary-arch: build install
 # install cron script
 	dh_installcron -a
 	dh_installchangelogs -a
+	dh_install -a -p interchange --sourcedir=debian/tmp --exclude=UI --exclude=standard
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a
