@@ -1063,7 +1063,6 @@ extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
 install_lsb.pl
-Interpolate.pm
 lib/Vend/Accounting.pm
 lib/Vend/Accounting/SQL_Ledger.pm
 lib/Vend/Cart.pm
