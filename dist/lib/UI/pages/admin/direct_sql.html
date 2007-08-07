@@ -146,30 +146,31 @@ Base table <select name=mv_data_table>
 	</blockquote>
 	<table border=1>
 [if cgi download]
-	
-	[deliver interpolate=1][query
-		table="[cgi mv_data_table]"
-		st=db
-		list=1
-		sql=`$sql`
-		ml="[cgi limit]"
-	][sql-sub line_proc]
-		shift;
-		my $row = shift;
-		my $out = '';
-		if(! $t_header_done++) {
-			my $o = shift;
-			$out .= join "\t", @{$o->{mv_return_fields}};
-			$out .= "\n";
-		}
+	[perl tables="[cgi mv_data_table]"]
+	my ($db, @set, $records, $i, $out);
+
+	$db = $Db{$CGI->{mv_data_table}};
+	@set = $db->query({sql => $sql});
+
+	$out .= join ("\t", @{$set[2]}) . "\n";
+
+	$records = $set[0];
+
+	for ($i = 0; $i < @$records; $i++) {
+		last if $CGI->{limit} && $i == $CGI->{limit};
+		
+		$row = $records->[$i];
+		
 		for(@$row) {
 			s/\r?\n/\r/g;
 			s/\t/ /g;
 		}
 		$out .= join "\t", @$row;
 		$out .= "\n";
-	[/sql-sub][sql-exec line_proc][/sql-exec][/query][/deliver]
+	}
 
+	$Tag->deliver({body => \$out});
+	[/perl]
 [elsif cgi html]
 	[query
 		table="[cgi mv_data_table]"
