@@ -306,6 +306,7 @@ code/Widget/country_select.widget
 code/Widget/date.widget
 code/Widget/default.widget
 code/Widget/display.widget
+code/Widget/form_fill.widget
 code/Widget/gpg_keys.widget
 code/Widget/htmlarea.widget
 code/Widget/imagedir.widget
@@ -331,17 +332,18 @@ configure
 debian/400mod_interchange.info
 debian/catalogs.cfg
 debian/changelog
+debian/compat
 debian/control
 debian/copyright
 debian/CREDITS.debian
 debian/interchange-cat-standard.config
-debian/interchange-cat-standard.files
+debian/interchange-cat-standard.install
 debian/interchange-cat-standard.postinst
 debian/interchange-cat-standard.postrm
 debian/interchange-cat-standard.prerm
 debian/interchange-cat-standard.templates
 debian/interchange-ui.config
-debian/interchange-ui.files
+debian/interchange-ui.install
 debian/interchange-ui.postinst
 debian/interchange-ui.postrm
 debian/interchange-ui.preinst
@@ -353,8 +355,8 @@ debian/interchange.config
 debian/interchange.cron.daily
 debian/interchange.dirs
 debian/interchange.docs
-debian/interchange.files
 debian/interchange.init
+debian/interchange.install
 debian/interchange.logrotate
 debian/interchange.postinst
 debian/interchange.postrm
@@ -1062,6 +1064,7 @@ extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
 install_lsb.pl
+Interpolate.pm
 lib/Vend/Accounting.pm
 lib/Vend/Accounting/SQL_Ledger.pm
 lib/Vend/Cart.pm
