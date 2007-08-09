@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.76 2007-08-09 13:20:01 mheins Exp $
+# $Id: Server.pm,v 2.77 2007-08-09 15:10:10 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.77 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -2209,12 +2209,16 @@ sub server_both {
 		};
 		if($@) {
 			::logGlobal( {
-				level => 'warn' },
-				"SOAP enabled, but Vend::SOAP will not load: %s",
+				level => 'info' },
 				$@,
 			);
-		}
-		else {
+			::logGlobal( {
+				level => 'warn' },
+				"SOAP enabled, but Vend::SOAP failed to load."
+			);
+			print "SOAP enabled, but Vend::SOAP failed to load.\n";
+			$Global::SOAP = 0;
+		} else {
 			my @made;
 			my @unix_soap = grep m{/}, @{$Global::SOAP_Socket};
 			my @inet_soap = grep $_ !~ m{/}, @{$Global::SOAP_Socket};
@@ -2270,6 +2274,11 @@ sub server_both {
 	}
 
 	::logGlobal({ level => 'info' }, server_start_message() );
+
+	print server_start_message(
+		"Interchange server started in %s mode(s) (process id %s)\n",
+		1,
+	) unless $Vend::Quiet;
 
 	my $no_fork;
 	if($Global::Windows or $Global::DEBUG ) {
@@ -2813,10 +2822,6 @@ sub run_server {
 						);
                     exit 1;
                 }
-                print server_start_message(
-						"Interchange server started in %s mode(s) (process id %s)\n",
-						1,
-					 ) unless $Vend::Quiet;
 
                 setsid();
 
