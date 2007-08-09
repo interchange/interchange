@@ -2,7 +2,7 @@
 #
 # interchange.init - Interchange start-stop script
 #
-# Copyright (C) 2000,2001,2002,2003 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2000,2001,2002,2003,2007 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ case "$1" in
 	#
 
 	echo -n "Restarting $DESC: "
-	start-stop-daemon --stop --pidfile /var/run/interchange/$NAME.pid
+	start-stop-daemon --stop --pidfile /var/run/interchange/$NAME.pid --oknodo
 	echo "$NAME."
     sleep 1
 
