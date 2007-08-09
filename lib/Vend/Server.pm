@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.74 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Server.pm,v 2.75 2007-08-09 11:08:36 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.74 $, 10);
+$VERSION = substr(q$Revision: 2.75 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1236,7 +1236,7 @@ EOF
 			while(<Vend::Server::JOBS>) {
 				chomp;
 				my ($directive,$value) = split /\s+/, $_, 2;
-				my ($cat, $delay, @jobs) = grep /\S/, split /[\s,\0]+/, $value;
+				my ($cat, $delay, $jobname, @params) = grep /\S/, split /[\s,\0]+/, $value;
 				if ($delay && $delay < time()) {
 					# job expired
 #::logDebug ("Jobs @jobs expired ($delay vs $now)\n");
@@ -1247,7 +1247,12 @@ EOF
                         push(@queued_jobs, "$directive $value");
                 } else {
 #::logDebug ("Scheduled job @jobs for running");
-					push (@scheduled_jobs, [$cat, @jobs]);
+					my %p;
+					for (@params) {
+					    my ($name, $value) = split /\=/, $_, 2;
+						$p{$name} = $value;
+					}
+					push (@scheduled_jobs, [$cat, $jobname, \%p]);
 				}
                 if (@queued_jobs > 20) {
 					::logGlobal({ level => 'notice' }, "Excessive size of job queue, stopping");
@@ -2504,8 +2509,14 @@ sub touch_pid {
 
 sub jobs_job {
 	my ($cat, @jobs) = @_;
+	my $parms;
+
+	if (ref($jobs[$#jobs]) eq 'HASH') {
+		$parms = pop(@jobs);
+	}
+	
 	for my $job (@jobs) {
-		Vend::Dispatch::run_in_catalog($cat, $job);
+		Vend::Dispatch::run_in_catalog($cat, $job, '', $parms);
 	}
 }
 
@@ -2570,7 +2581,7 @@ sub flag_job {
 sub run_jobs {
 	my ($cat, @jobs) = @_;
 
-#::logGlobal("Vend::Server::run_jobs: run jobs cat=cat jobs=@jobs");
+#::logGlobal("Vend::Server::run_jobs: run jobs cat=$cat job=@jobs");
 	my $pid;
 	if($Global::Foreground) {
 		$::Instance = {};

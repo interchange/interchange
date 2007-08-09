@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.83 2007-08-02 15:15:52 mheins Exp $
+# $Id: Dispatch.pm,v 1.84 2007-08-09 11:08:36 racke Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.83 $, 10);
+$VERSION = substr(q$Revision: 1.84 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -705,10 +705,12 @@ EOF
 }
 
 sub run_in_catalog {
-	my ($cat, $job, $itl) = @_;
+	my ($cat, $job, $itl, $parms) = @_;
 	my ($g,$c);
 
 #::logGlobal("running job in cat=$cat");
+	$parms ||= {};
+	
 	$g = $Global::Catalog{$cat};
 	unless (defined $g) {
 		logGlobal( "Can't find catalog '%s'" , $cat );
@@ -840,7 +842,7 @@ sub run_in_catalog {
 	# no output (in spirit of the cron daemon)
 	return unless $out;
 	
-	if(my $addr = $Vend::JobsEmail || $jobscfg->{email}) {
+	if(my $addr = $parms->{email} || $jobscfg->{email}) {
 		my $subject = $jobscfg->{subject} || 'Interchange results for job: %s';
 		$subject = errmsg($subject, $job);
 		my $from = $jobscfg->{from} || $Vend::Cfg->{MailOrderTo};
