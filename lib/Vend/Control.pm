@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.13 2007-03-30 11:39:44 pajamian Exp $
+# $Id: Control.pm,v 2.14 2007-08-09 13:20:01 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -156,16 +156,27 @@ sub remove_catalog {
 		@aliases = @{$g->{alias}};
 	}
 
+	my $c = delete $Global::Selector{$g->{script}};
+	delete $Global::Catalog{$name};
+
 	for(@aliases) {
 		delete $Global::Selector{$_};
 		delete $Global::SelectorAlias{$_};
 	}
+
+	if($c) {
+		my $sfile = "status.$name";
+		my $status_dir = -f "$c->{RunDir}/$sfile"
+					   ? $c->{RunDir} 
+					   : $c->{ConfDir};
+		for( "$Global::RunDir/$sfile", "$status_dir/$sfile") {
+			unlink $_ 
+				or ::logGlobal("Error removing status file %s: %s", $_, $!);
+		}
+	}
 	
-	delete $Global::Selector{$g->{script}};
-	delete $Global::Catalog{$name};
 	logGlobal("Removed catalog %s (%s)", $name, $g->{script});
 }
-
 
 sub add_catalog {
 	my($line) = @_;
