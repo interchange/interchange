@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: process.coretag,v 1.8 2007-03-30 23:40:49 pajamian Exp $
+# $Id: process.coretag,v 1.9 2007-08-09 03:02:30 kwalsh Exp $
 
 UserTag process             Order     target secure
 UserTag process             addAttr
-UserTag process             Version   $Revision: 1.8 $
+UserTag process             Version   $Revision: 1.9 $
 UserTag process             Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {
@@ -32,11 +32,11 @@ sub {
 	$url .= $page;
 	if($Global::TolerateGet and ! $opt->{no_session}) {
 		my @args;
-		push @args, "?$::VN->{mv_session_id}=$Vend::SessionID"
+		push @args, "$::VN->{mv_session_id}=$Vend::SessionID"
 			unless  $::Scratch->{no_session_id};
-		push @args, "?$::VN->{mv_pc}=" . ++$Vend::Session->{pageCount}
+		push @args, "$::VN->{mv_pc}=" . ++$Vend::Session->{pageCount}
 			unless  $::Scratch->{no_count};
-		push @args, "?$::VN->{mv_cat}=" . ++$Vend::Cat
+		push @args, "$::VN->{mv_cat}=" . ++$Vend::Cat
 			if  $Vend::VirtualCat;
 		if(@args) {
 			$url .= '?';
@@ -44,6 +44,6 @@ sub {
 		}
 	}
 	return $url unless $target;
-	return qq{$url" TARGET="$target};
+	return qq{$url" target="$target};
 }
 EOR
