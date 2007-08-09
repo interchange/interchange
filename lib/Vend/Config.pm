@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.219 2007-08-09 07:32:44 kwalsh Exp $
+# $Id: Config.pm,v 2.220 2007-08-09 09:42:46 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.219 $, 10);
+$VERSION = substr(q$Revision: 2.220 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2688,8 +2688,20 @@ sub parse_require {
 		$val = join " ", @needed;
 	}
 	elsif($val =~ s/^usertag\s+//i) {
-		$require = $Global::UserTag->{Routine};
+		$require = {};
 		$name = 'UserTag';
+
+		$testsub = sub {
+			my $name = shift;
+
+			my @tries = ($Global::UserTag->{Routine});
+			push(@tries,$C->{UserTag}->{Routine}) if $C;
+
+			foreach (@tries) {
+				return 1 if defined $_->{$name};
+			}
+			return 0;
+		};
 	}
 	elsif($val =~ s/^(?:perl)?module\s+//i) {
 		$require = {};
