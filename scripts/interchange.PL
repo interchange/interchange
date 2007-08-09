@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.95 2007-06-10 02:15:35 jon Exp $
+# $Id: interchange.PL,v 2.96 2007-08-09 13:40:57 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -348,7 +348,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2006 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2007 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -1018,7 +1018,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2006 Interchange Development Group
+Copyright (C) 2002-2007 Interchange Development Group
 Copyright (C) 1995-2002 Red Hat, Inc.
 All rights reserved except those granted in the license.
 

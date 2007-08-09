@@ -1,3 +1,12 @@
+# Copyright 2004-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: breadcrumbs.tag,v 1.5 2007-08-09 13:40:53 pajamian Exp $
+
 UserTag breadcrumbs Order number
 UserTag breadcrumbs addAttr
 UserTag breadcrumbs Routine <<EOR

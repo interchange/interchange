@@ -1,8 +1,8 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.13 2007-03-30 11:39:51 pajamian Exp $
+# $Id: Old48.pm,v 1.14 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group <interchange@icdevgroup.org>
+# Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 =head1 NAME
 

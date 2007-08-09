@@ -1,8 +1,8 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.11 2007-03-30 11:39:52 pajamian Exp $
+# $Id: Linkpoint.pm,v 1.12 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify

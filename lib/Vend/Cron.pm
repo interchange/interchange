@@ -1,8 +1,8 @@
 # Vend::Cron - Determine tasks to run based on time
 #
-# $Id: Cron.pm,v 2.5 2007-03-30 11:39:44 pajamian Exp $
+# $Id: Cron.pm,v 2.6 2007-08-09 13:40:53 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 package Vend::Cron;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;

@@ -1,8 +1,8 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.29 2007-07-05 11:19:42 pajamian Exp $
+# $Id: Session.pm,v 2.30 2007-08-09 13:40:54 pajamian Exp $
 # 
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 @ISA = qw(Exporter);
 

@@ -1,3 +1,5 @@
+
+
 Interchange + QuickBooks HOWTO
 ==============================
 
@@ -509,6 +511,5 @@ o    What are the IIF File Headers?
 o    Also see the Quickbooks Help item, "Reference guide to import
      files"
 
-Copyright 2002-2006 ICDEVGROUP. Freely redistributable under terms of
-the GNU General Public License.
-
+Copyright 2002-2007 Interchange Development Group. Freely redistributable under
+the terms of the GNU General Public License.

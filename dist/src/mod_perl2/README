@@ -7,7 +7,7 @@ NAME
        change
 
 VERSION
-       $Revision: 1.3 $
+       $Revision: 1.4 $
 
 SYNOPSIS
 	 <Location /foundation>
@@ -276,7 +276,7 @@ BUGS
 
 COPYRIGHT AND LICENSE
 	Copyright (C) 1996-2002 Red Hat, Inc.
-	Copyright (C) 2002-2005 Interchange Development Group
+	Copyright (C) 2002-2007 Interchange Development Group
 
        This program is free software.  You can redistribute it and/or modify
        it under the terms of the GNU General Public License as published by

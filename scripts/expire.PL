@@ -3,9 +3,9 @@
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.10 2007-03-30 11:39:56 pajamian Exp $
+# $Id: expire.PL,v 2.11 2007-08-09 13:40:57 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

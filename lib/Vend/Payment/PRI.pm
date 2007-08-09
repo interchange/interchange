@@ -1,8 +1,8 @@
 # Vend::Payment::PRI - Interchange PRI support
 #
-# $Id: PRI.pm,v 1.5 2007-03-30 11:39:52 pajamian Exp $
+# $Id: PRI.pm,v 1.6 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Written by Marty Tennison, Based on code by Cameron Prince and Mark Johnson,

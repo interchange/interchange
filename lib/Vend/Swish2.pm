@@ -1,10 +1,10 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.13 2007-07-03 10:43:41 racke Exp $
+# $Id: Swish2.pm,v 1.14 2007-08-09 13:40:54 pajamian Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
-# Copyright (C) 2005-2006 Interchange Development Group
+# Copyright (C) 2005-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 use strict;
 
 use SWISH::API;

@@ -1,10 +1,10 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.15 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Glimpse.pm,v 2.16 2007-08-09 13:40:53 pajamian Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 use strict;
 use Vend::File;
 use Vend::Util;

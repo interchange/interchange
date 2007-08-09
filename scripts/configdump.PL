@@ -3,9 +3,9 @@
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 2.5 2007-03-30 11:39:56 pajamian Exp $
+# $Id: configdump.PL,v 2.6 2007-08-09 13:40:56 pajamian Exp $
 #
-# Copyright 2002-2005 Interchange Development Group
+# Copyright 2002-2007 Interchange Development Group
 # Copyright 1999-2002 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify

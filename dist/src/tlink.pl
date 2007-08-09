@@ -3,9 +3,10 @@
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #           via a TCP socket
 #
-# $Id: tlink.pl,v 2.4 2007-03-30 11:39:42 pajamian Exp $
+# $Id: tlink.pl,v 2.5 2007-08-09 13:40:52 pajamian Exp $
 #
-# Copyright (C) 2005 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2005-2007 Interchange Development Group,
+# http://www.icdevgroup.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or

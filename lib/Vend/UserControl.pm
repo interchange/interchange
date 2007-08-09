@@ -1,8 +1,8 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# $Id: UserControl.pm,v 2.5 2005-11-07 22:37:02 mheins Exp $
+# $Id: UserControl.pm,v 2.6 2007-08-09 13:40:54 pajamian Exp $
 #
-# Copyright (C) 2003 Interchange Development Group
+# Copyright (C) 2003-2007 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 package Vend::UserControl;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 require Vend::UserDB;
 use Vend::Data;

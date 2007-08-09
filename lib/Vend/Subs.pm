@@ -1,8 +1,8 @@
 # Vend::Subs - Run Interchange Subs as object methods
 # 
-# $Id: Subs.pm,v 2.2 2007-03-30 11:39:46 pajamian Exp $
+# $Id: Subs.pm,v 2.3 2007-08-09 13:40:54 pajamian Exp $
 #
-# Copyright (C) 2005 Interchange Development Group
+# Copyright (C) 2005-2007 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

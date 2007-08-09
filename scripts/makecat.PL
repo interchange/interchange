@@ -3,9 +3,9 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.26 2007-03-30 11:39:56 pajamian Exp $
+# $Id: makecat.PL,v 2.27 2007-08-09 13:40:57 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2303,7 +2303,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.26 2007-03-30 11:39:56 pajamian Exp $
+# $Id: makecat.PL,v 2.27 2007-08-09 13:40:57 pajamian Exp $
 
 =head1 INTRODUCTION
 
@@ -2690,7 +2690,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 2002-2005 Interchange Development Group.
+Copyright 2002-2007 Interchange Development Group.
 Copyright 1995-2002, Red Hat, Inc.
 All rights reserved except as in the license.
 

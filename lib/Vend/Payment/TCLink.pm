@@ -1,8 +1,8 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.8 2007-03-30 11:39:52 pajamian Exp $
+# $Id: TCLink.pm,v 1.9 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2005 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
 # by Dan Helfman <dan@trustcommerce.com> with code reused and inspired by

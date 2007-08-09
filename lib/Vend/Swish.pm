@@ -1,10 +1,10 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.10 2007-03-30 11:39:46 pajamian Exp $
+# $Id: Swish.pm,v 1.11 2007-08-09 13:40:54 pajamian Exp $
 #
 # Adapted from Vend::Glimpse
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 use strict;
 
 sub array {

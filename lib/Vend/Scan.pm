@@ -1,8 +1,8 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.33 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Scan.pm,v 2.34 2007-08-09 13:40:54 pajamian Exp $
 #
-# Copyright (C) 2002-2006 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);

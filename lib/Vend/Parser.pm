@@ -1,8 +1,8 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.12 2006-05-10 22:47:31 jon Exp $
+# $Id: Parser.pm,v 2.13 2007-08-09 13:40:53 pajamian Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
 #
 # Based on HTML::Parser
@@ -48,7 +48,7 @@ expanded.
 
 =head1 COPYRIGHT
 
-Copyright 2002-2003 Interchange Development Group
+Copyright 2002-2007 Interchange Development Group
 Copyright 1997-2002 Red Hat, Inc.  
 Original HTML::Parser module copyright 1996 Gisle Aas.
 
@@ -69,7 +69,7 @@ no warnings qw(uninitialized numeric);
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 
 sub new
