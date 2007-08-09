@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.78 2007-08-02 10:43:05 racke Exp $
+# $Id: DBI.pm,v 2.79 2007-08-09 17:43:28 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.78 $, 10);
+$VERSION = substr(q$Revision: 2.79 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -186,6 +186,9 @@ my %known_capability = (
 	HAS_TABLE_TYPE	 => { 
 		mysql => 1,
 	},
+	HAS_TABLE_COMMENT => { 
+		mysql => 1,
+	},
 	SEQUENCE_QUERY	 => { 
 		Oracle => "SELECT _SEQUENCE_NAME_.nextval FROM dual",
 		Pg => "SELECT nextval('_SEQUENCE_NAME_')",
@@ -296,7 +299,13 @@ sub create_sql {
 	$query .= join ",\n", @cols;
 	$query .= "\n)\n";
 	if($config->{HAS_TABLE_TYPE} and $config->{TABLE_TYPE} ) {
-		$query =~ s/\s*$/ type=$config->{TABLE_TYPE}\n/;
+		$query =~ s/\s*$/ TYPE=$config->{TABLE_TYPE}\n/;
+	}
+	if($config->{HAS_TABLE_COMMENT} and $config->{TABLE_COMMENT} ) {
+		my $comment = $config->{TABLE_COMMENT};
+		$comment =~ s/^['"]+// && $comment =~ s/['"]+$//;
+		$comment =~ s/'/''/g;
+		$query =~ s/\s*$/ COMMENT='$comment'\n/;
 	}
 	return $query;
 }
