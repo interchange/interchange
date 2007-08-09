@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.218 2007-06-27 22:42:36 jon Exp $
+# $Id: Config.pm,v 2.219 2007-08-09 07:32:44 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.218 $, 10);
+$VERSION = substr(q$Revision: 2.219 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2641,7 +2641,7 @@ sub parse_require {
 		$error_message = "\a\n\n$1\n";
 	}
 
-	if($val =~ s%\s+((/[\w-]+)+)%%) {
+	if($val =~ s%\s+((/[\w.-]+)+)%%) {
 		$pathinfo = $1;
 	}
 	
@@ -2738,6 +2738,32 @@ sub parse_require {
 				}
 				return 0;
 			};
+	}
+	elsif ($val =~ s/^file\s*//i) {
+		$require = {};
+		$name = 'Readable file';
+		$val = $pathinfo unless $val;
+
+		$testsub = sub {
+			my $path = Vend::File::make_absolute_file(shift, $C ? 0 : 1);
+			if ($C && $path =~ s:^/+::) {
+				$path = "$C->{VendRoot}/$path";
+			}
+			return -r $path;
+		};
+	}
+	elsif ($val =~ s/^executable\s*//i) {
+		$require = {};
+		$name = 'Executable file';
+		$val = $pathinfo unless $val;
+
+		$testsub = sub {
+			my $path = Vend::File::make_absolute_file(shift, $C ? 0 : 1);
+			if ($C && $path =~ s:^/+::) {
+				$path = "$C->{VendRoot}/$path";
+			}
+			return -x $path;
+		};
 	}
 	my @requires = grep /\S/, split /\s+/, $val;
 
