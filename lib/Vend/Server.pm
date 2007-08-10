@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.78 2007-08-10 08:42:09 pajamian Exp $
+# $Id: Server.pm,v 2.79 2007-08-10 16:59:25 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.78 $, 10);
+$VERSION = substr(q$Revision: 2.79 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1108,7 +1108,7 @@ sub housekeeping {
 			for my $pid (@starting_pids) {
 				my $time_taken = $check_time - $Starting_pids{$pid};
 				if ($time_taken > $start_max_time) {
-	::logDebug("pid $pid took $time_taken seconds to start ($start_max_time allowed); scheduling for death");
+					::logDebug("pid $pid took $time_taken seconds to start ($start_max_time allowed); scheduling for death");
 					$bad_pids{$pid} = undef;
 					delete $Starting_pids{$pid};
 					--$starting_count;
@@ -1116,16 +1116,16 @@ sub housekeeping {
 			}
 
 			while ($active_count > ($Global::StartServers + 1) ) {
-::logDebug("too many pids ($active_count)");
+#::logDebug("too many pids ($active_count)");
 				my $bad = shift @active_pids;
-::logDebug("scheduling %s for death", $bad);
+#::logDebug("scheduling %s for death", $bad);
 				$bad_pids{$bad} = undef;
 				--$active_count;
 			}
 
 			foreach my $pid (@active_pids) {
 				kill(0, $pid) and next;
-::logDebug("Non-existent server at PID %s", $pid);
+#::logDebug("Non-existent server at PID %s", $pid);
 				delete $Page_pids{$pid};
 				--$active_count;
 			}
@@ -1134,10 +1134,10 @@ sub housekeeping {
 				for my $pid (keys %Page_pids) {
 					my $last_use = $check_time - $Page_pids{$pid};
 					next unless $last_use > $Global::PIDcheck;
-::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
+#::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
 					$bad_pids{$pid} = undef;
 					delete $Page_pids{$pid};
-::logDebug('scheduling %s for death', $pid);
+#::logDebug('scheduling %s for death', $pid);
 					--$active_count;
 				}
 			}
@@ -1160,7 +1160,7 @@ sub housekeeping {
 			@Termed_pids = ();
 
 			if (%bad_pids) {
-::logDebug("Killing excess, old, or unresponsive servers");
+#::logDebug("Killing excess, old, or unresponsive servers");
 				delete @Page_pids{ keys %bad_pids };
 
 				for my $pid
@@ -2241,7 +2241,7 @@ sub send_ipc {
 	} while ( ! defined $ok and ! $!{EINTR});
 
 	print SOCK $msg;
-::logDebug("pid $$: sent ipc $msg");
+#::logDebug("pid $$: sent ipc $msg");
 	close SOCK;
 }
 
