@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.282 2007-07-06 10:08:58 racke Exp $
+# $Id: Interpolate.pm,v 2.283 2007-08-10 08:41:22 thunder Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.282 $, 10);
+$VERSION = substr(q$Revision: 2.283 $, 10);
 
 @EXPORT = qw (
 
@@ -4967,7 +4967,7 @@ sub fly_page {
 	list_compat($opt->{prefix}, \$page) if $page;
 # END LEGACY
 
-	return labeled_list( {}, $page, $listref);
+	return labeled_list( $opt, $page, $listref);
 }
 
 sub item_difference {
