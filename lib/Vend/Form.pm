@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.70 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Form.pm,v 2.71 2007-08-10 12:05:34 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1035,7 +1035,6 @@ sub options_to_array {
 		for(@$passed) {
 			push @out, [split /\s*=\s*/, HTML::Entities::decode($_), 2];
 		}
-		return \@out;
 	}
 	elsif (ref $passed eq 'HASH') {
 		my @keys;
@@ -1060,11 +1059,18 @@ sub options_to_array {
 		for(@keys) {
 			push @out, [$_, $passed->{$_}];
 		}
-		return \@out;
 	}
 	else {
 		die "bad data type to options_to_array";
 	}
+
+	if ($opt->{applylocale}) {
+		for (@out) {
+			$_->[1] = errmsg($_->[1]);
+		}
+	}
+
+	return \@out;
 }
 
 sub display {
