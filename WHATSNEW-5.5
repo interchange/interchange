@@ -103,6 +103,17 @@ Core
 * Fixed problem where RPC mode would fork too many processes at startup due to
   race condition (#107).
 
+* Set $0 throughout the server and dispatch process to reflect current
+  conditions (#107).
+
+* Set up more aggressive management in response to INT or TERM to propagate the
+  request down to the children. Prior to this arrangement, a restart or kill
+  would leave many of the children running. This cleaned up Interchange stops
+  to remove all preforked daemons (#107).
+
+* Adjusted housekeeping to cull out old pids so that PIDcheck was enforced in
+  PreFork (#107).
+
 * Pass $opt to labeled_list fixing behaviour of fly-list to be matching other 
   x-list tags (#89).
 
