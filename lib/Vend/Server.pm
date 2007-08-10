@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.77 2007-08-09 15:10:10 racke Exp $
+# $Id: Server.pm,v 2.78 2007-08-10 08:42:09 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.77 $, 10);
+$VERSION = substr(q$Revision: 2.78 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -872,6 +872,10 @@ sub read_cgi_data {
 sub connection {
     my (%env, $entity);
 
+	my $show_in_ps = shift;
+
+	$0 = 'interchange: connection';
+
   ### This resets all $Vend::variable settings so we start
   ### completely initialized. It only affects the Vend package,
   ### not any Vend::XXX packages.
@@ -890,11 +894,18 @@ sub connection {
 	# Can log all CGI inputs
 	log_http_data($http) if $Global::Logging;
 
+	$0 = 'interchange: dispatch';
+
 	show_times("begin dispatch") if $Global::ShowTimes;
     ::dispatch($http) if $http;
 	show_times("end connection") if $Global::ShowTimes;
 	close $http->{rfh} if $http->{rfh};
 	undef $Vend::Cfg;
+
+	my $display = 'interchange: done';
+	$display .= "($show_in_ps)" if $show_in_ps;
+
+	$0 = $display;
 }
 
 ## Signals
@@ -921,6 +932,9 @@ use vars qw(
 			$Num_servers
 			$Page_servers
 			%Page_pids
+			%Starting_pids
+			$Starting_pids
+			@Termed_pids
 			$SOAP_servers
 			%SOAP_pids
 			$Job_servers
@@ -933,6 +947,7 @@ use vars qw(
 BEGIN {
 	$s_vector = '';
 }
+$Starting_pids = 0;
 $Num_servers = 0;
 $SOAP_servers = 0;
 $Job_servers = 0;
@@ -942,6 +957,38 @@ $Job_servers = 0;
 
 my ($Routine_USR1, $Routine_USR2, $Routine_HUP, $Routine_TERM, $Routine_INT);
 my ($Sig_inc, $Sig_dec, $Counter);
+
+sub sig_int_or_term {
+	$Signal_Terminate = 1;
+
+	my $term_count = 0;
+	TERM: {
+		my %seen;
+		my @pids =
+			grep { !$seen{$_}++ }
+				(keys %Page_pids, keys %Starting_pids);
+
+		last TERM unless @pids;
+
+		kill TERM => $_ for @pids;
+		sleep 1;
+
+		redo TERM unless ++$term_count > 3;
+	}
+
+	KILL: {
+		my %seen;
+		my @pids =
+			grep { !$seen{$_}++ }
+				(keys %Page_pids, keys %Starting_pids);
+
+		last KILL unless @pids;
+
+		kill KILL => $_ for @pids;
+	}
+
+	return;
+}
 
 unless ($Global::Windows) {
 	push @trapped_signals, qw(HUP USR1 USR2);
@@ -983,18 +1030,20 @@ sub clean_up_after_fork {
 }
 
 sub setup_signals {
-    @orig_signal{@trapped_signals} =
-        map(defined $_ ? $_ : 'DEFAULT', @SIG{@trapped_signals});
-    $Signal_Terminate = '';
-    $SIG{PIPE} = 'IGNORE';
+	@orig_signal{@trapped_signals} =
+		map(defined $_ ? $_ : 'DEFAULT', @SIG{@trapped_signals});
+	$Signal_Terminate = '';
+	$SIG{PIPE} = 'IGNORE';
+	$SIG{CHLD} = 'IGNORE'
+		if $Global::PreFork && $Global::PreForkSingleFork;
 
 	if ($Global::Windows) {
-		$SIG{INT}  = sub { $Signal_Terminate = 1; };
-		$SIG{TERM} = sub { $Signal_Terminate = 1; };
+		$SIG{INT}  = \&sig_int_or_term;
+		$SIG{TERM} = \&sig_int_or_term;
 	}
 	else  {
-		$SIG{INT}  = sub { $Signal_Terminate = 1; };
-		$SIG{TERM} = sub { $Signal_Terminate = 1; };
+		$SIG{INT}  = \&sig_int_or_term;
+		$SIG{TERM} = \&sig_int_or_term;
 		$SIG{HUP}  = sub { $Signal_Restart = 1; };
 		$SIG{USR1} = sub { $Num_servers++; };
 		$SIG{USR2} = sub { $Num_servers--; };
@@ -1045,45 +1094,84 @@ sub housekeeping {
 	rand();
 	$Last_housekeeping = $now;
 
-	my ($c, $num,$reconfig, $restart, $jobs, @files);
-	my @pids;
+	my ($c, $num,$reconfig, $restart, $jobs, @files, @pidcheck_pids);
 
 		if($Global::PreFork) {
-			my @bad_pids;
-			my (@pids) = sort keys %Page_pids;
-			my $count = scalar @pids;
-			while ($count > ($Global::StartServers + 1) ) {
-#::logDebug("too many pids");
-				my ($bad) = shift(@pids);
-#::logDebug("scheduling %s for death", $bad);
-				push @bad_pids, $bad;
-				$count--;
+			my @starting_pids = keys %Starting_pids;
+			my $starting_count = starting_pids('count');
+			my %bad_pids;
+			my @active_pids = keys %Page_pids;
+			my $active_count = scalar @active_pids;
+			my $check_time = time();
+			my $start_max_time = 30;
+
+			for my $pid (@starting_pids) {
+				my $time_taken = $check_time - $Starting_pids{$pid};
+				if ($time_taken > $start_max_time) {
+	::logDebug("pid $pid took $time_taken seconds to start ($start_max_time allowed); scheduling for death");
+					$bad_pids{$pid} = undef;
+					delete $Starting_pids{$pid};
+					--$starting_count;
+				}
 			}
 
-			foreach my $pid (@pids) {
+			while ($active_count > ($Global::StartServers + 1) ) {
+::logDebug("too many pids ($active_count)");
+				my $bad = shift @active_pids;
+::logDebug("scheduling %s for death", $bad);
+				$bad_pids{$bad} = undef;
+				--$active_count;
+			}
+
+			foreach my $pid (@active_pids) {
 				kill(0, $pid) and next;
-#::logDebug("Non-existent server at PID %s", $pid);
-				push @bad_pids, $pid;
+::logDebug("Non-existent server at PID %s", $pid);
 				delete $Page_pids{$pid};
+				--$active_count;
 			}
 
-			while($count < $Global::StartServers) {
-#::logDebug("Spawning page server to reach StartServers");
-				start_page(undef,$Global::PreFork,1);
-				$count++;
+			if ($Global::PIDcheck) {
+				for my $pid (keys %Page_pids) {
+					my $last_use = $check_time - $Page_pids{$pid};
+					next unless $last_use > $Global::PIDcheck;
+::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
+					$bad_pids{$pid} = undef;
+					delete $Page_pids{$pid};
+::logDebug('scheduling %s for death', $pid);
+					--$active_count;
+				}
 			}
-			for my $pid (@bad_pids) {
-#::logDebug("Killing excess or unresponsive server at PID %s", $pid);
-				next unless delete $Page_pids{$pid};
-				if(kill 'TERM', $pid) {
-#::logDebug("Server at PID %s terminated OK", $pid);
-					# This is OK
-				}
-				elsif (kill 'KILL', $pid) {
-					::logGlobal("page server pid %s required KILL", $pid);
-				}
-				else {
-					::logGlobal("page server pid %s won't die!", $pid);
+
+			if ($active_count + $starting_count < $Global::StartServers) {
+				my $server_deficit =
+					$Global::StartServers
+					- $active_count
+					- $starting_count;
+				::logGlobal("Spawning %d page server%s to reach %s StartServers", $server_deficit, $server_deficit == 1 ? '' : 's', $Global::StartServers);
+				start_page(undef, $Global::PreFork, $server_deficit);
+			}
+
+			for my $pid (@Termed_pids) {
+				kill (KILL => $pid)
+					and ::logDebug("Sent $pid a KILL");
+			}
+			::logGlobal("page server pid %s won't die!", $_)
+					for grep { kill (0, $_) } @Termed_pids;
+			@Termed_pids = ();
+
+			if (%bad_pids) {
+::logDebug("Killing excess, old, or unresponsive servers");
+				delete @Page_pids{ keys %bad_pids };
+
+				for my $pid
+					( grep
+						{ kill (0, $_) or delete $bad_pids{$_} }
+						keys %bad_pids
+					)
+				{
+					kill (TERM => $pid);
+					::logDebug("Sent $pid a TERM");
+					push (@Termed_pids, $pid);
 				}
 			}
 		}
@@ -1114,7 +1202,7 @@ sub housekeeping {
 
 		if($Global::PIDcheck) {
 			$Num_servers = 0;
-			@pids = grep /^pid\.\d+$/, @files;
+			@pidcheck_pids = grep /^pid\.\d+$/, @files;
 		}
 
 		my $respawn;
@@ -1335,8 +1423,8 @@ EOF
 								$_,
 								$!,
 							);
-					start_page(undef,$Global::PreFork,1);
 				}
+				start_page(undef, $Global::PreFork, scalar @pids);
 			}
 			if($Global::SOAP) {
 				# We need to respawn all the SOAP servers to pick up the new config
@@ -1358,7 +1446,7 @@ EOF
 			}
 		}
 
-        for (@pids) {
+        for (@pidcheck_pids) {
             $Num_servers++;
             my $fn = "$Global::RunDir/$_";
             ($Num_servers--, next) if ! -f $fn;
@@ -1588,33 +1676,58 @@ sub unlink_sockets {
 sub start_page {
 
 	my ($do_message, $no_fork, $number) = @_;
-#::logDebug("starting soap");
+#::logDebug("entering start_page");
 
-	$number = $Global::StartServers if ! $number; 
-	if ($number > 50) {
+	my $current_servers =
+		starting_pids('count')
+		+ scalar (keys %Page_pids);
+
+	my $server_deficit = $Global::StartServers - $current_servers;
+
+	# Bail immediately if we already have a slate of
+	# StartServers servers either pending or serving
+	return 1 if $server_deficit < 1;
+
+	# Shave number down to server_deficit if it's greater
+	$number = $server_deficit if $server_deficit < $number;
+
+	if ($number > 150) {
 		  die ::errmsg(
 		   "Ridiculously large number of StartServers: %s",
 		   $number,
 		   );
 	}
-	for (1 .. $number) {
-		my $pid;
-		if(! defined ($pid = fork) ) {
-			my $msg = ::errmsg("Can't fork: %s", $!);
-			::logGlobal({ level => 'crit' },  $msg );
-			die ("$msg\n");
-		}
-		elsif (! $pid) {
-			unless( $pid = fork ) {
+	my $dbl_fork_pid;
+
+	if (
+			$Global::PreForkSingleFork
+			or ! ($dbl_fork_pid = fork)
+		)
+	{
+
+		for (1 .. $number) {
+			my $pid;
+			if(! defined ($pid = fork) ) {
+				my $msg = ::errmsg("Can't fork: %s", $!);
+				::logGlobal({ level => 'crit' },  $msg );
+				die ("$msg\n");
+			}
+			elsif (! $pid) {
 				$Global::Foreground = 1 if $no_fork;
 
-				if($do_message) {
+				local $SIG{CHLD} = 'DEFAULT'
+					if $Global::PreForkSingleFork;
+
+				local $SIG{INT} = $Routine_INT;
+				local $SIG{TERM} = $Routine_TERM;
+
+				if ($do_message and ! $Vend::Quiet) {
 					::logGlobal(
 						{ level => 'info'},
 						server_start_message(
 							"Interchange page server started (process id %s)",
-						 ),
-					 ) unless $Vend::Quiet;
+						),
+					);
 				}
 
 				send_ipc("register page $$");
@@ -1630,20 +1743,27 @@ sub start_page {
 				if ($@) {
 					my $msg = ::errmsg("Server spawn error: %s", $@);
 					::logGlobal({ level => 'error' }, $msg);
-					logError($msg)
+					::logError($msg)
 						if defined $Vend::Cfg->{ErrorFile};
 				}
 
 				clean_up_after_fork();
-				send_ipc("respawn page $$")		if $next;
+				send_ipc("respawn page $$") if $next;
 				
 				undef $::Instance;
 				exit(0);
 			}
-			exit(0);
+			starting_pids('add',$pid)
+				if $Global::PreForkSingleFork;
 		}
+		$Global::PreForkSingleFork or exit(0);
+	}
+
+	if ($dbl_fork_pid) {
+		starting_pids('add',undef,$number);
 		wait;
 	}
+
 	return 1;
 }
 
@@ -1708,6 +1828,32 @@ sub start_soap {
 		wait;
 	}
 	return 1;
+}
+
+sub starting_pids {
+	my ($action,$pid,$n) = @_;
+
+	$n ||= 1;
+
+	if ( $action eq 'count' ) {
+		return $Global::PreForkSingleFork
+			? scalar keys %Starting_pids
+			: $Starting_pids
+		;
+	}
+	elsif ( $action eq 'add' ) {
+		$Global::PreForkSingleFork
+			? ($Starting_pids{$pid} = time)
+			: ($Starting_pids += $n)
+		;
+	}
+	elsif ( $action eq 'del' ) {
+		$Global::PreForkSingleFork
+			? delete ($Starting_pids{$pid})
+			: ($Starting_pids -= $n)
+		;
+	}
+	return;
 }
 
 sub server_page {
@@ -1812,9 +1958,12 @@ my $pretty_vector = unpack('b*', $rin);
 			if($no_fork) {
 				### Careful, returns after MaxRequests or terminate signal
 				$::Instance = {};
-				$handled++;
 #::logDebug("begin non-forked ::connection()");
-				connection();
+				send_ipc(sprintf ('lastused %s %s',$$,time))
+					if $Global::PIDcheck;
+				connection(++$handled);
+				send_ipc(sprintf ('lastused %s %s',$$,time))
+					if $Global::PIDcheck;
 #::logDebug("end non-forked ::connection()");
 				undef $::Instance;
 			}
@@ -1922,8 +2071,6 @@ my $pretty_vector = unpack('b*', $s_vector);
 				$ok = accept(MESSAGE, $s_fh_map{$p});
 				last;
 			}
-
-
 
 	  };
 
@@ -2040,8 +2187,13 @@ sub process_ipc {
 		close $fh;
 		$Num_servers--;
 	}
+	elsif ($thing =~ /^lastused (\d+) (\d+)/) {
+#::logDebug("Page pid $1 last used at $2");
+		$Page_pids{$1} = $2;
+	}
 	elsif ($thing =~ /^register page (\d+)/) {
-		$Page_pids{$1} = 1;
+		$Page_pids{$1} = time;
+		starting_pids('del',$1);
 #::logDebug("registered Page pid $1");
 		$Page_servers++;
 	}
@@ -2089,7 +2241,7 @@ sub send_ipc {
 	} while ( ! defined $ok and ! $!{EINTR});
 
 	print SOCK $msg;
-#::logDebug("pid $$: sent ipc $msg");
+::logDebug("pid $$: sent ipc $msg");
 	close SOCK;
 }
 
@@ -2298,7 +2450,7 @@ sub server_both {
 	if($Global::StartServers) {
 		$master_ipc = 1;
 		$p_vector = $vector ^ $ipc_vector;
-		start_page(1,$Global::PreFork);
+		start_page(1, $Global::PreFork, $Global::StartServers);
 	}
 
 	my $c = 0;
@@ -2839,6 +2991,7 @@ sub run_server {
         }
     }
 }
+
 
 1;
 __END__

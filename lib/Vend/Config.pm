@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.220 2007-08-09 09:42:46 kwalsh Exp $
+# $Id: Config.pm,v 2.221 2007-08-10 08:42:09 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.220 $, 10);
+$VERSION = substr(q$Revision: 2.221 $, 10);
 
 my %CDname;
 my %CPname;
@@ -443,6 +443,7 @@ sub global_directives {
 	['ChildLife',         'time',             0],
 	['StartServers',      'integer',          0],
 	['PreFork',		      'yesno',            0],
+	['PreForkSingleFork', 'yesno',            0],
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Control',     'action',           ''],

@@ -100,6 +100,9 @@ Core
 * Remove catalog status files when removing catalog. Also call remove_catalog at
   server stop -- would be nice for cleanup anyway (#95).
 
+* Fixed problem where RPC mode would fork too many processes at startup due to
+  race condition (#107).
+
 UserDB
 ------
 
