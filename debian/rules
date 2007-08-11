@@ -89,6 +89,7 @@ install: build
 # build Interchange control program(s)
 	mkdir -p $(TMP)/usr/lib/cgi-bin/ic
 	$(PERL) scripts/compile_link \
+		--nostrip \
 		--socket=/var/run/interchange/interchange.sock \
 		--port=7786 \
 		--host=127.0.0.1 \

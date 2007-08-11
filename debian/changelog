@@ -1,13 +1,16 @@
-interchange (5.5.1-0.1) unstable; urgency=low
+interchange (5.5.1-1) unstable; urgency=low
 
   * new upstream release (Closes: #397750, #429690)
   * removed db_stop call from interchange-ui's postrm script
     (Closes: #431580, thanks to Michael Ablassmeier <abi@grinser.de> for the
     report)
   * added --oknodo option to start-stop-daemon for restart action (Closes: #267616)
+  * create link programs with --nostrip option to support nostrip build
+    option (Closes: #437211, thanks to Julien Danjou <acid@debian.org> for
+    the report)
   * switched from dh_movefiles to dh_install
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  9 Aug 2007 13:14:54 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 12 Aug 2007 00:19:43 +0200
 
 interchange (5.4.2-4) unstable; urgency=low
 
