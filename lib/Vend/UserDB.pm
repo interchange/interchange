@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.54 2007-08-09 13:40:54 pajamian Exp $
+# $Id: UserDB.pm,v 2.55 2007-08-11 13:54:14 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 use vars qw!
 	$VERSION
@@ -641,6 +641,10 @@ sub get_values {
 	my $constref = $Vend::Session->{constant} ||= {};
 
 	my @fields = @{ $self->{DB_FIELDS} };
+
+	if($self->{OPTIONS}{username_email}) {
+		push @fields, $self->{OPTIONS}{username_email_field} || 'email';
+	}
 
 	my $db = $self->{DB}
 		or die errmsg("No user database found.");
