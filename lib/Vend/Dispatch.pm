@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.85 2007-08-10 08:42:09 pajamian Exp $
+# $Id: Dispatch.pm,v 1.86 2007-08-12 07:00:43 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.85 $, 10);
+$VERSION = substr(q$Revision: 1.86 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1215,12 +1215,12 @@ sub dispatch {
 	## If returns false then was a 404 no catalog or a delivered image
 	open_cat() or return 1;
 
-	$0 = "interchange: $Vend::Cat $CGI::host";
+	Vend::Server::set_process_name("$Vend::Cat $CGI::host");
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
 
-    my($sessionid, $seed);
+	my($sessionid, $seed);
 
 	$sessionid = $CGI::values{mv_session_id} || undef
 		and $sessionid =~ s/\0.*//s;
@@ -1262,7 +1262,7 @@ sub dispatch {
 		$Vend::CookieID = $Vend::Cookie = 1;
     }
 
-	$0 = "interchange: $Vend::Cat $CGI::host $sessionid";
+	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid");
 
 	$::Instance->{CookieName} = 'MV_SESSION_ID' if ! $::Instance->{CookieName};
 
@@ -1462,7 +1462,7 @@ EOF
 
 	$Vend::Session->{'user'} = $CGI::user;
 
-	$0 = "interchange: $Vend::Cat $CGI::host $sessionid " . $Vend::Session->{username} || '-'; 
+	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid " . $Vend::Session->{username} || '-');
 
 	$CGI::pragma = 'no-cache'
 		if delete $::Scratch->{mv_no_cache};
@@ -1478,12 +1478,12 @@ EOF
 			if delete $Vend::Session->{one_time_path_alias}{$Vend::FinalPath};
 	}
 
-    url_history($Vend::FinalPath) if $Vend::Cfg->{History};
+	url_history($Vend::FinalPath) if $Vend::Cfg->{History};
 
-	$0 = "interchange: $Vend::Cat $CGI::host $sessionid " . ($Vend::Session->{username} || '-') . " $Vend::FinalPath";
+	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid " . ($Vend::Session->{username} || '-') . " $Vend::FinalPath");
 
 # TRACK
-    $Vend::Track = new Vend::Track
+	$Vend::Track = new Vend::Track
 		if $Vend::Cfg->{UserTrack} and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
 # END TRACK
 
@@ -1712,7 +1712,7 @@ EOF
 
 	close_cat();
 
-	$0 = 'interchange: done';
+	Vend::Server::set_process_name('done');
 
 	undef $H;
 

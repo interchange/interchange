@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.79 2007-08-10 16:59:25 jon Exp $
+# $Id: Server.pm,v 2.80 2007-08-12 07:00:43 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.79 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -872,40 +872,40 @@ sub read_cgi_data {
 sub connection {
     my (%env, $entity);
 
-	my $show_in_ps = shift;
+    my $show_in_ps = shift;
 
-	$0 = 'interchange: connection';
+    set_process_name('connection');
 
-  ### This resets all $Vend::variable settings so we start
-  ### completely initialized. It only affects the Vend package,
-  ### not any Vend::XXX packages.
-	reset_vars();
+    ### This resets all $Vend::variable settings so we start
+    ### completely initialized. It only affects the Vend package,
+    ### not any Vend::XXX packages.
+    reset_vars();
 
-	if($Global::ShowTimes) {
-		@Vend::Times = times();
-		::logDebug ("begin connection. Summary time set to zero");
-	}
+    if($Global::ShowTimes) {
+	@Vend::Times = times();
+	::logDebug ("begin connection. Summary time set to zero");
+    }
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
     show_times('end cgi read') if $Global::ShowTimes;
 
     my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 
-	# Can log all CGI inputs
-	log_http_data($http) if $Global::Logging;
+    # Can log all CGI inputs
+    log_http_data($http) if $Global::Logging;
 
-	$0 = 'interchange: dispatch';
+    set_process_name('dispatch');
 
-	show_times("begin dispatch") if $Global::ShowTimes;
+    show_times("begin dispatch") if $Global::ShowTimes;
     ::dispatch($http) if $http;
-	show_times("end connection") if $Global::ShowTimes;
-	close $http->{rfh} if $http->{rfh};
-	undef $Vend::Cfg;
+    show_times("end connection") if $Global::ShowTimes;
+    close $http->{rfh} if $http->{rfh};
+    undef $Vend::Cfg;
 
-	my $display = 'interchange: done';
-	$display .= "($show_in_ps)" if $show_in_ps;
+    my $display = 'done';
+    $display .= "($show_in_ps)" if $show_in_ps;
 
-	$0 = $display;
+    set_process_name($display);
 }
 
 ## Signals
@@ -2990,6 +2990,29 @@ sub run_server {
             }
         }
     }
+}
+
+# Set the process name ($0) according to MV_DOLLAR_ZERO and a status indicator.
+sub set_process_name {
+    my $status = shift;
+    my $base = $Global::Variable->{MV_DOLLAR_ZERO};
+
+    # BSD hack which allows us to set MV_DOLLAR_ZERO to '0' to prevent Interchange
+    # from changing it (and dumping core on FreeBSD 4 stock perl).
+    return if defined $base && $base eq '0';
+
+    # Setting MV_DOLLAR_ZERO to 1 should do the same thing as not setting it for
+    # backwards compatibility.
+    $base = 'interchange' if !$base or $base eq '1';
+
+    if (defined $status) {
+	$0 = "$base: $status";
+    }
+    else {
+	$0 = $base;
+    }
+
+    return;
 }
 
 

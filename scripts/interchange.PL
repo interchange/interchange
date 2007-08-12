@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.0
 #
-# $Id: interchange.PL,v 2.96 2007-08-09 13:40:57 pajamian Exp $
+# $Id: interchange.PL,v 2.97 2007-08-12 07:00:43 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -957,30 +957,18 @@ EOF
 		# Set $0 to something pretty for ps(1).
 		# Won't work on Solaris and IRIX among possibly others.
 		# Dumps core on FreeBSD 4 stock Perl build.
-		if (defined $Global::Variable->{MV_DOLLAR_ZERO}) {
-			if ($Global::Variable->{MV_DOLLAR_ZERO}) {
-				if (length($Global::Variable->{MV_DOLLAR_ZERO}) > 1) {
-					$0 = $Global::Variable->{MV_DOLLAR_ZERO};
-				}
-				else {
-					$0 = "interchange --> $Global::VendRoot";
-				}
-			}
-			# do nothing if MV_DOLLAR_ZERO is defined but false
-		}
-		else {
-			$0 = 'interchange';
-		}
+		# This is all done in Vend::Server::set_process_name now.
+		Vend::Server::set_process_name($Global::VendRoot);
 
 		# We won't have much output on any of this, but if we get some
 		# we want it immediately
-        select STDERR; 
-        $| = 1;
-        select STDOUT;
-        $| = 1;
+		select STDERR; 
+		$| = 1;
+		select STDOUT;
+		$| = 1;
 
 		# This should never return unless killed or a catastrophic error
-        Vend::Server::run_server();
+		Vend::Server::run_server();
 	}
 	elsif($Vend::mode eq 'test') {
 		# Blank by design, this option only tests config files
