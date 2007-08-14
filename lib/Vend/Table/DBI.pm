@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.79 2007-08-09 17:43:28 kwalsh Exp $
+# $Id: DBI.pm,v 2.80 2007-08-14 13:42:08 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.79 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -186,7 +186,12 @@ my %known_capability = (
 	HAS_TABLE_TYPE	 => { 
 		mysql => 1,
 	},
-	HAS_TABLE_COMMENT => { 
+	TABLE_COMMENT_SQL => { 
+		mysql  => 'COMMENT=_COMMENT_',
+		Pg     => 'COMMENT ON _TABLE_ IS _COMMENT_',
+		Oracle => 'COMMENT ON _TABLE_ IS _COMMENT_',
+	},
+	TABLE_COMMENT_DURING_CREATE => { 
 		mysql => 1,
 	},
 	SEQUENCE_QUERY	 => { 
@@ -298,14 +303,28 @@ sub create_sql {
 	my $query = "create table $tablename ( \n";
 	$query .= join ",\n", @cols;
 	$query .= "\n)\n";
-	if($config->{HAS_TABLE_TYPE} and $config->{TABLE_TYPE} ) {
+
+	if ($config->{TABLE_TYPE} && $config->{HAS_TABLE_TYPE} ) {
 		$query =~ s/\s*$/ TYPE=$config->{TABLE_TYPE}\n/;
 	}
-	if($config->{HAS_TABLE_COMMENT} and $config->{TABLE_COMMENT} ) {
+
+	if ($config->{TABLE_COMMENT} && $config->{TABLE_COMMENT_SQL}) {
 		my $comment = $config->{TABLE_COMMENT};
-		$comment =~ s/^['"]+// && $comment =~ s/['"]+$//;
+		$comment =~ s/^\s*(["'])\s*(.*?)\s*\1\s*$/$2/;
 		$comment =~ s/'/''/g;
-		$query =~ s/\s*$/ COMMENT='$comment'\n/;
+
+		my $template = $config->{TABLE_COMMENT_SQL};
+		$template =~ s/\b_COMMENT_\b/'$comment'/;
+
+		if ($config->{TABLE_COMMENT_DURING_CREATE}) {
+			$query =~ s/\s*$/ $template\n/;
+		}
+		else {
+			$template =~ s/\b_TABLE_\b/$tablename/;
+
+			$config->{POSTCREATE} ||= [];
+			push(@{$config->{POSTCREATE}},$template);
+		}
 	}
 	return $query;
 }
