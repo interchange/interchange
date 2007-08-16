@@ -14,7 +14,7 @@ members_only:
 
 [/comment]
 [set page_title][/set]
-[set members_only][/set]
+[tmpn members_only][/tmpn]
 
 <!-- BEGIN PAGE_PICTURE -->
 <b>Representation</b><br>
