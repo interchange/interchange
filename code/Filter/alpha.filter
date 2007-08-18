@@ -6,11 +6,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: alpha.filter,v 1.5 2007-03-30 23:40:44 pajamian Exp $
+# $Id: alpha.filter,v 1.6 2007-08-18 19:02:19 racke Exp $
 
 CodeDef alpha Filter
 CodeDef alpha Description A-Za-z only
-CodeDef alpha Help  Returns only alpha charactors (i.e. ISO 8859-1)
+CodeDef alpha Help  Returns only alpha characters (i.e. ISO 8859-1)
 CodeDef alpha Routine <<EOR
 sub {
 	my $val = shift;
