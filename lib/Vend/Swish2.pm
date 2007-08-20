@@ -1,6 +1,6 @@
 # Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish2.pm,v 1.14 2007-08-09 13:40:54 pajamian Exp $
+# $Id: Swish2.pm,v 1.15 2007-08-20 19:41:10 kwalsh Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 use strict;
 
 use SWISH::API;
@@ -226,7 +226,16 @@ sub search {
 		}
 	}
 	
-	$search_string = $s->build_search(\@pats);
+	#
+	#	bug alert (make your own klaxon sound here)
+	#	-------------------------------------------.
+	#	uncommenting the following line causes the [on-match] and
+	#	[no-match] blocks to reverse their meaning.  This has something
+	#	to do with the resulting "matches" count, but I haven't looked
+	#	into it properly
+	#
+	# $search_string = $s->build_search(\@pats);
+
 	#::logDebug("Swish search string is $search_string within " . join(', ', @sf));
 	
     my $results = $engine->Query( $search_string );
