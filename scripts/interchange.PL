@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.1
 #
-# $Id: interchange.PL,v 2.98 2007-08-20 10:46:17 racke Exp $
+# $Id: interchange.PL,v 2.99 2007-08-20 21:42:21 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -957,8 +957,6 @@ EOF
 		# Here we prepare enter the daemon mode.
 
 		# Set $0 to something pretty for ps(1).
-		# Won't work on Solaris and IRIX among possibly others.
-		# Dumps core on FreeBSD 4 stock Perl build.
 		# This is all done in Vend::Server::set_process_name now.
 		Vend::Server::set_process_name($Global::VendRoot);
 

@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.80 2007-08-12 07:00:43 pajamian Exp $
+# $Id: Server.pm,v 2.81 2007-08-20 21:42:21 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.80 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -2996,10 +2996,6 @@ sub run_server {
 sub set_process_name {
     my $status = shift;
     my $base = $Global::Variable->{MV_DOLLAR_ZERO};
-
-    # BSD hack which allows us to set MV_DOLLAR_ZERO to '0' to prevent Interchange
-    # from changing it (and dumping core on FreeBSD 4 stock perl).
-    return if defined $base && $base eq '0';
 
     # Setting MV_DOLLAR_ZERO to 1 should do the same thing as not setting it for
     # backwards compatibility.

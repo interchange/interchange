@@ -107,12 +107,6 @@ endif
 ## sendmail or clones
 Variable MV_SMTPHOST smtp
 
-# FreeBSD's stock Perl build dumps core if you set $0, so let's not touch it
-ifdef DOLLAR_ZERO_BUG or $^O =~ /freebsd/
-Message Running FreeBSD; disabling $0 set
-Variable MV_DOLLAR_ZERO 0
-endif
-
 # Include individual usertags.
 include usertag/*.tag
 
