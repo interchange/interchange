@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
-# Interchange version 5.5.0
+# Interchange version 5.5.1
 #
-# $Id: interchange.PL,v 2.97 2007-08-12 07:00:43 pajamian Exp $
+# $Id: interchange.PL,v 2.98 2007-08-20 10:46:17 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -155,7 +155,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '5.5.0';
+	$VERSION = '5.5.1';
 }
 
 use Fcntl;
@@ -361,7 +361,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.5.0
+5.5.1
 
 =head1 DESCRIPTION
 
@@ -648,7 +648,8 @@ sub parse_options {
 		version         => sub { version(); exit 0 },
 		stop			=> \&control_interchange,
 		add				=> \&signal_add,
-		email			=> \$Vend::JobsEmail,
+		email 			=> \$Vend::JobsEmail,
+		flag			=> \$Vend::JobsFlag,
 		jobgroup		=> \$Vend::JobsJob,
 		runjobs			=> \&signal_jobs,
 		remove			=> \&signal_remove,
@@ -713,7 +714,8 @@ sub parse_options {
         dir|vendroot|d=s
         email=s
         exclude|e=s
-        help|h
+        flag=i
+		help|h
 		globalconfig
         inetmode|inet|i
         jobgroup=s
