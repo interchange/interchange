@@ -349,7 +349,6 @@ debian/interchange-ui.preinst
 debian/interchange-ui.prerm
 debian/interchange-ui.templates
 debian/interchange.cfg
-debian/interchange.conffiles
 debian/interchange.config
 debian/interchange.cron.daily
 debian/interchange.dirs
