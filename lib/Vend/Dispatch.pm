@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.89 2007-08-30 23:47:16 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.90 2007-08-30 23:57:53 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.89 $, 10);
+$VERSION = substr(q$Revision: 1.90 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -884,7 +884,7 @@ sub adjust_cgi {
     $CGI::ip   = $CGI::remote_addr;
 
 	if($Global::DomainTail and $host) {
-		my $level = ($host =~ m{(?:\.
+		my $level = ($host =~ m{\.(?:
 		    (?:com|edu|gov|net|org)\.al |
 		    (?:ac|gov|mil|name|net|org|pro|sch)\.ae |
 		    (?:bank|com|edu|gov|hotel|law|music|net|org|tv)\.af |
