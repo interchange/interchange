@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.86 2007-08-12 07:00:43 pajamian Exp $
+# $Id: Dispatch.pm,v 1.87 2007-08-30 19:06:23 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.86 $, 10);
+$VERSION = substr(q$Revision: 1.87 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -884,7 +884,30 @@ sub adjust_cgi {
     $CGI::ip   = $CGI::remote_addr;
 
 	if($Global::DomainTail and $host) {
-		$host =~ s/.*?([-A-Za-z0-9]+\.[A-Za-z]+)$/$1/;
+		my $level = ($host =~ m{(?:\.
+		    (?:com|edu|gov|net|org)\.al |
+		    (?:ac|gv|or|co|priv)\.at |
+		    (?:com|net|org|edu|gov|csiro|asn|id|act|nsw|nt|qld|sa|tas|vic|wa)\.au |
+		    (?:adm|adv|agr|am|arq|art|ato|bio|blog|bmd|cim|cng|cnt|com|coop|ecn|edu|eng|esp|etc|eti|far|flog|fm|fnd|fot|fst|g12|ggf|gov|imb|ind|inf|jor|lel|mat|med|mil|mus|net|nom|not|ntr|odo|org|ppg|pro|psc|psi|qsl|rec|slg|srv|tmp|trd|tur|tv|vet|vlog|wiki|zlg)\.br |
+		    (?:com|eun|gov|mil|net|org|sci)\.eg |
+		    (?:com|edu|gov|idv|net|org)\.hk |
+		    (?:ac|co|go|mil|net|or|sch|web)\.id |
+		    (?:ac|co|gov|idf|k12|muni|net|org)\.il |
+		    (?:ac|co|edu|ernet|firm|gen|gov|ind|mil|net|org|res)\.in |
+		    (?:ac|co|es|go|hs|kg|mil|ms|ne|oe|or|re|sc|busan|chungbuk|chungnam|daegu|daejeon|gangwon|gwangju|gyeongbuk|gyeonggi|gyeongnam|incheon|jeju|jeonbuk|jeonnam|seoul|ulsan)\.kr |
+		    (?:com|edu|gob|net|org)\.mx |
+		    (?:ac|co|cri|geek|gen|govt|iwi|maori|mil|net|org|parliament|school)\.nz |
+		    (?:com|edu|gob|mil|net|nom|org)\.pe |
+		    (?:com|edu|gov|mil|net|org)\.py |
+		    (?:com|edu|gov|med|net|org|pub|sch)\.sa |
+		    (?:com|edu|gob|org|red)\.sv |
+		    (?:ac|co|go|in|mi|net|or)\.th |
+		    (?:club|com|ebiz|edu|game|gov|idv|mil|net|org)\.tw |
+		    (?:ac|co|gov|ltd|me|mod|net|nic|nhs|org|plc|police|sch)\.uk |
+		    (?:ac|agric|alt|co|edu|gov|law|mil|net|ngo|nis|nom|org|school|tm|web)\.za
+		)$}ix) ? 2 : 1;
+
+		$host =~ s/.*?((?:[-A-Za-z0-9]+\.){$level}[A-Za-z]+)$/$1/;
 	}
 	elsif($Global::IpHead) {
 		$host = $Global::IpQuad == 0 ? 'nobody' : '';
