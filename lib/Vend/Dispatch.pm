@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.88 2007-08-30 20:40:12 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.89 2007-08-30 23:47:16 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.88 $, 10);
+$VERSION = substr(q$Revision: 1.89 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -887,12 +887,14 @@ sub adjust_cgi {
 		my $level = ($host =~ m{(?:\.
 		    (?:com|edu|gov|net|org)\.al |
 		    (?:ac|gov|mil|name|net|org|pro|sch)\.ae |
-		    (?:bank|com|edu|gov|hotel|law|music|net|org|tv)\.ae |
+		    (?:bank|com|edu|gov|hotel|law|music|net|org|tv)\.af |
 		    (?:co|com|org|net|nom)\.ag |
+		    (?:com|edu|gov|int|mil|net|org)\.ar |
 		    (?:ac|gv|or|co|priv)\.at |
 		    (?:com|net|org|edu|gov|csiro|asn|id|act|nsw|nt|qld|sa|tas|vic|wa)\.au |
 		    (?:adm|adv|agr|am|arq|art|ato|bio|blog|bmd|cim|cng|cnt|com|coop|ecn|edu|eng|esp|etc|eti|far|flog|fm|fnd|fot|fst|g12|ggf|gov|imb|ind|inf|jor|lel|mat|med|mil|mus|net|nom|not|ntr|odo|org|ppg|pro|psc|psi|qsl|rec|slg|srv|tmp|trd|tur|tv|vet|vlog|wiki|zlg)\.br |
 		    (?:ab|bc|mb|nb|nf|ns|nt|nu|on|pe|qc|sk|yk)\.ca |
+		    (?:com|edu|gov|mil|net|nom|org)\.co |
 		    (?:ac|biz|com|ekloges|gov|ltd|name|net|org|parliament|press|pro|tm)\.cy |
 		    (?:com|eun|gov|mil|net|org|sci)\.eg |
 		    (?:com|edu|gob|nom|org)\.es |
