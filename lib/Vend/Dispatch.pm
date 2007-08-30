@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.87 2007-08-30 19:06:23 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.88 2007-08-30 20:40:12 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.87 $, 10);
+$VERSION = substr(q$Revision: 1.88 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -886,24 +886,45 @@ sub adjust_cgi {
 	if($Global::DomainTail and $host) {
 		my $level = ($host =~ m{(?:\.
 		    (?:com|edu|gov|net|org)\.al |
+		    (?:ac|gov|mil|name|net|org|pro|sch)\.ae |
+		    (?:bank|com|edu|gov|hotel|law|music|net|org|tv)\.ae |
+		    (?:co|com|org|net|nom)\.ag |
 		    (?:ac|gv|or|co|priv)\.at |
 		    (?:com|net|org|edu|gov|csiro|asn|id|act|nsw|nt|qld|sa|tas|vic|wa)\.au |
 		    (?:adm|adv|agr|am|arq|art|ato|bio|blog|bmd|cim|cng|cnt|com|coop|ecn|edu|eng|esp|etc|eti|far|flog|fm|fnd|fot|fst|g12|ggf|gov|imb|ind|inf|jor|lel|mat|med|mil|mus|net|nom|not|ntr|odo|org|ppg|pro|psc|psi|qsl|rec|slg|srv|tmp|trd|tur|tv|vet|vlog|wiki|zlg)\.br |
+		    (?:ab|bc|mb|nb|nf|ns|nt|nu|on|pe|qc|sk|yk)\.ca |
+		    (?:ac|biz|com|ekloges|gov|ltd|name|net|org|parliament|press|pro|tm)\.cy |
 		    (?:com|eun|gov|mil|net|org|sci)\.eg |
+		    (?:com|edu|gob|nom|org)\.es |
+		    (?:asso|com|gouv|nom|prd|presse|tm)\.fr |
+		    (?:co|gov|net|org|sch)\.gg |
 		    (?:com|edu|gov|idv|net|org)\.hk |
+		    (?:iz|from|com)\.hr |
 		    (?:ac|co|go|mil|net|or|sch|web)\.id |
 		    (?:ac|co|gov|idf|k12|muni|net|org)\.il |
 		    (?:ac|co|edu|ernet|firm|gen|gov|ind|mil|net|org|res)\.in |
+		    (?:edu|gov)\.it |
+		    (?:ac|ad|co|ed|go|gr|lg|ne|or)\.jp |
 		    (?:ac|co|es|go|hs|kg|mil|ms|ne|oe|or|re|sc|busan|chungbuk|chungnam|daegu|daejeon|gangwon|gwangju|gyeongbuk|gyeonggi|gyeongnam|incheon|jeju|jeonbuk|jeonnam|seoul|ulsan)\.kr |
+		    (?:com|edu|gov|id|med|net|org|plc|sch)\.ly |
+		    (?:com|edu|gov|net|org)\.mt |
 		    (?:com|edu|gob|net|org)\.mx |
 		    (?:ac|co|cri|geek|gen|govt|iwi|maori|mil|net|org|parliament|school)\.nz |
 		    (?:com|edu|gob|mil|net|nom|org)\.pe |
+		    (?:art|biz|com|edu|gov|info|mil|net|ngo|org|bialystok|gda|gdansk|katowice|krakow|lodz|lublin|olsztyn|poznan|slupsk|szczecin|torun|warszawa|waw|wroc|wroclaw|zgora)\.pl |
+		    (?:com|edu|gov|int|net|nome|org|publ)\.pt |
 		    (?:com|edu|gov|mil|net|org)\.py |
+		    (?:asso|com|nom)\.re |
+		    (?:com|net|org|pp)\.ru |
 		    (?:com|edu|gov|med|net|org|pub|sch)\.sa |
+		    (?:mil|org|parti|pp|press|tm|a|ac|bd|c|d|e|f|g|h|i|k|m|n|o|s|t|u|w|x|y|z)\.se |
 		    (?:com|edu|gob|org|red)\.sv |
 		    (?:ac|co|go|in|mi|net|or)\.th |
+		    (?:com|co|edu|gov|mil|net|nom|org)\.tm |
 		    (?:club|com|ebiz|edu|game|gov|idv|mil|net|org)\.tw |
+		    (?:com|edu|gov|in|net|org)\.ua |
 		    (?:ac|co|gov|ltd|me|mod|net|nic|nhs|org|plc|police|sch)\.uk |
+		    (?:ak|al|ar|az|ca|co|ct|dc|de|fl|ga|hi|ia|id|il|in|ks|ky|la|ma|md|me|mi|mn|mo|ms|mt|nc|nd|ne|nh|nj|nm|nv|ny|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|va|vt|wa|wi|wv|wy|as|gu|pr|vi|dni|fed|isa|kids|nsn)\.us |
 		    (?:ac|agric|alt|co|edu|gov|law|mil|net|ngo|nis|nom|org|school|tm|web)\.za
 		)$}ix) ? 2 : 1;
 
