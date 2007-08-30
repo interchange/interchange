@@ -5,10 +5,19 @@
 
 ------------------------------------------------------------------------------
 
+See UPGRADE document for incompatible changes not listed here.
+
+Interchange 5.5.2 (unreleased).
+
+Core
+----
+
+* Altered the DomainTail directive to take subdomains of various ccTLDs
+  into account.  For example, if "foo.example.co.uk" pays a visit then
+  "example.co.uk" as the domain tail will be used instead of just "co.uk".
+
 
 Interchange 5.5.1 released on 2007-08-21.
-
-See UPGRADE document for incompatible changes not listed here.
 
 Core
 ----
