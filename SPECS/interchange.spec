@@ -1,4 +1,4 @@
-# $Id: interchange.spec,v 2.29 2005-11-10 16:11:48 jon Exp $
+# $Id: interchange.spec,v 2.30 2007-08-31 00:23:43 kwalsh Exp $
 
 # use Perl installation in /usr/local custom built from source?
 %define localperl 1
@@ -16,7 +16,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.3.2
+Version: 5.5.2
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
