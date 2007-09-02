@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.222 2007-09-02 19:21:04 kwalsh Exp $
+# $Id: Config.pm,v 2.223 2007-09-02 21:42:36 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.222 $, 10);
+$VERSION = substr(q$Revision: 2.223 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3574,7 +3574,7 @@ sub global_directive_postprocess {
 		$val =~ s/[\s,]+$//;
 		next unless $val;
 
-		$val = '(?:' . join('|',split('[\s,]+',$val)) . ")\\.$key";
+		$val = '\.(?:' . join('|',split('[\s,]+',$val)) . ")\\.$key";
 		$Global::CountrySubdomains->{$key} = qr/$val/i;
 	}
 }
