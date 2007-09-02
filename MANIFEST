@@ -608,6 +608,7 @@ dist/lib/UI/vars/UI_STD_FOOTER
 dist/lib/UI/vars/UI_STD_HEAD
 dist/locale.error
 dist/robots.cfg
+dist/subdomains.cfg
 dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure

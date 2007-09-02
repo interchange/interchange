@@ -116,6 +116,11 @@ file into a new robots.cfg file.  If you are upgrading then you will
 need to remove any existing *Robot* directives from your interchange.cfg
 file and add "include robots.cfg" in their place.
 
+A new subdomains.cfg file has been created, and should be included into
+your interchange.cfg file with "include subdomains.cfg".  This file defines
+a list of country-specific standardised subdomains that should be taken
+into account when the DomainTail directive is in effect.
+
 The session per IP counters have been changed to the new "timecard" round-robin
 style counters.  You will need to delete the old counter files from the
 tmp/addr_ctr directory with a command similar to the following:

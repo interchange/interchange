@@ -115,3 +115,6 @@ include usertag/*.tag
 
 # Include the robot recognition lists
 include robots.cfg
+
+# Include the list of country-specific standardised subdomains
+include subdomains.cfg

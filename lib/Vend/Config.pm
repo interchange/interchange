@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.221 2007-08-10 08:42:09 pajamian Exp $
+# $Id: Config.pm,v 2.222 2007-09-02 19:21:04 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.221 $, 10);
+$VERSION = substr(q$Revision: 2.222 $, 10);
 
 my %CDname;
 my %CPname;
@@ -470,6 +470,7 @@ sub global_directives {
 	['TemplateDir',      'root_dir_array', 	 ''],
 	['DebugTemplate',    undef, 	         ''],
 	['DomainTail',		 'yesno',            'Yes'],
+	['CountrySubdomains','hash',             ''],
 	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
     ['DNSBL',            'array',            ''],
@@ -1914,6 +1915,9 @@ GLOBLOOP:
 	# In case no user-supplied config has been given...returns
 	# with no effect if that has been done already.
 	get_system_code() unless defined $SystemCodeDone;
+
+	# Directive post-processing
+	global_directive_postprocess();
 
 	# Do some cleanup
 	set_global_defaults();
@@ -3562,6 +3566,18 @@ sub set_default_search {
 			chmod 0644, $Global::ExternalFile;
 		},
 );
+
+sub global_directive_postprocess {
+	$Global::CountrySubdomains ||= {};
+
+	while (my ($key,$val) = each(%$Global::CountrySubdomains)) {
+		$val =~ s/[\s,]+$//;
+		next unless $val;
+
+		$val = '(?:' . join('|',split('[\s,]+',$val)) . ")\\.$key";
+		$Global::CountrySubdomains->{$key} = qr/$val/i;
+	}
+}
 
 sub set_global_defaults {
 	## Nothing here currently
