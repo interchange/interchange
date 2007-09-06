@@ -1,9 +1,10 @@
-interchange (5.5.1-2) unstable; urgency=low
+interchange (5.5.2-0.0.1) unstable; urgency=low
 
   * updated French translation of Debconf templates (Closes: #440784,
     thanks to Christian Perrier <bubulle@debian.org>)
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  6 Sep 2007 16:57:12 +0200
+  * fix error in German translation of Debconf templates
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  6 Sep 2007 22:12:06 +0200
 
 interchange (5.5.1-1) unstable; urgency=low
 
