@@ -4,8 +4,9 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
     thanks to Christian Perrier <bubulle@debian.org>)
   * fix error in German translation of Debconf templates
   * dependency on adduser added
+  * use type error for wrong Debconf input
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  6 Sep 2007 22:14:50 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  6 Sep 2007 22:25:23 +0200
 
 interchange (5.5.1-1) unstable; urgency=low
 

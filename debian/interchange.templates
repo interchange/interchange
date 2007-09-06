@@ -21,7 +21,7 @@ Default: true
 _Description: Create the user ${USER}?
 
 Template: interchange/usernoroot
-Type: note
+Type: error
 _Description: Impossible to run interchange as root !
  You have been warned. Either choose an appropriate user or stay with the
  default.
@@ -36,7 +36,7 @@ _Description: Group name to run the server as:
  discarded anyway.
 
 Template: interchange/groupnoroot
-Type: note
+Type: error
 _Description: Impossible to run interchange as root !
  You have been warned. Either choose an appropriate group or stay with the
  default.
