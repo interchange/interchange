@@ -1,3 +1,10 @@
+interchange (5.5.1-2) unstable; urgency=low
+
+  * updated French translation of Debconf templates (Closes: #440784,
+    thanks to Christian Perrier <bubulle@debian.org>)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  6 Sep 2007 16:57:12 +0200
+
 interchange (5.5.1-1) unstable; urgency=low
 
   * new upstream release (Closes: #397750, #429690)
