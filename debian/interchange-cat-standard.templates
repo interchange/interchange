@@ -29,7 +29,7 @@ _Description: Replace the Interchange demo catalog?
 Template: interchange-cat-standard/vhost
 Type: string
 Default: 
-_Description: Virtual host for the demo catalog ?
+_Description: Virtual host for the demo catalog:
  You are running Interchange with "FullURL" enabled. Please specify the virtual host for the demo catalog.
 
 Template: interchange-cat-standard/username
@@ -74,22 +74,22 @@ Template: interchange-cat-standard/dbtype
 Type: select
 __Choices: PostgreSQL, MySQL
 Default: MySQL
-_Description: Which DBMS should be used for the demo catalog ?
- Please select the database type.
+_Description: DBMS for the demo catalog:
+ Please select the database type used for the demo catalog.
 
 Template: interchange-cat-standard/dbname
 Type: string
 Default: standard
-_Description: Database name
+_Description: Database name:
  Please select the name of the database.
 
 Template: interchange-cat-standard/dbuser
 Type: string
 Default: interchange
-_Description: Database user
+_Description: Database user:
  Please specify the username for connecting to the database.
 
 Template: interchange-cat-standard/dbpass
 Type: password
-_Description: Database password
+_Description: Database password:
  Please specify the password for connecting to the database.

@@ -55,7 +55,7 @@ Template: interchange/webserver
 Type: select
 __Choices: Apache2, Apache
 Default: Apache2
-_Description: Which webserver are you running ?
+_Description: Webserver for your Interchange applications:
  This information is necessary for the makecat script. Please specify
  which webserver you want to use for your Interchange applications.
 
