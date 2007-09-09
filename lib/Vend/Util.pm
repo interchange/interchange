@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.107 2007-07-24 02:50:38 mheins Exp $
+# $Id: Util.pm,v 2.108 2007-09-09 23:04:21 kwalsh Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -90,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.107 $, 10);
+$VERSION = substr(q$Revision: 2.108 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1665,6 +1665,7 @@ sub logDebug {
     else {
         print caller() . ":debug: ", errmsg(@_), "\n";
     }
+    undef;
 }
 
 sub errmsg {
