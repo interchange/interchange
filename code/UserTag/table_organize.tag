@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: table_organize.tag,v 1.9 2007-03-30 23:40:57 pajamian Exp $
+# $Id: table_organize.tag,v 1.10 2007-09-11 20:08:26 racke Exp $
 
 UserTag table-organize Order         cols
 UserTag table-organize attrAlias     columns cols
 UserTag table-organize Interpolate
 UserTag table-organize addAttr
 UserTag table-organize hasEndTag
-UserTag table-organize Version       $Revision: 1.9 $
+UserTag table-organize Version       $Revision: 1.10 $
 UserTag table-organize Documentation <<EOD
 
 =head1 table-organize
@@ -304,7 +304,7 @@ sub {
 				my $idx = $tmod % scalar(@{$attr{caption}});
 				#$out .= "<!-- caption index $idx -->";
 				$out .= "\n" if $pretty;
-				$out .= "<CAPTION>" . $attr{caption}[$idx] . "</CAPTION>";
+				$out .= "<caption>" . $attr{caption}[$idx] . "</caption>";
 				$out .= "\n" if $pretty;
 			}
 		}
