@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.111 2007-09-11 16:52:14 kwalsh Exp $
+# $Id: Util.pm,v 2.112 2007-09-11 16:56:56 kwalsh Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -90,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.111 $, 10);
+$VERSION = substr(q$Revision: 2.112 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1143,7 +1143,7 @@ sub readin {
 	my @dirs = ($Vend::Cfg->{PreviewDir},
 				$Vend::Cfg->{PageDir},
 				@{$Vend::Cfg->{TemplateDir} || []},
-				@{$Global::TemplateDir || []};
+				@{$Global::TemplateDir || []});
 
 	foreach $try (@dirs) {
 		next unless $try;
