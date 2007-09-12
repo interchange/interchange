@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.112 2007-09-11 16:56:56 kwalsh Exp $
+# $Id: Util.pm,v 2.113 2007-09-12 15:01:39 kwalsh Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -90,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.112 $, 10);
+$VERSION = substr(q$Revision: 2.113 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -323,6 +323,7 @@ my %safe_locale = (
 						C     => 1,
 						en_US => 1,
 						en_UK => 1,
+						en_GB => 1,
 					);
 
 sub safe_sprintf {
