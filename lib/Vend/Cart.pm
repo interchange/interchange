@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.17 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Cart.pm,v 2.18 2007-09-14 13:02:11 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 use strict;
 
@@ -240,12 +240,18 @@ sub toss_cart {
 			}
 
 			if($Vend::Cfg->{MaxQuantityField}) {
-				my ($tab, $col) = split /:+/, $Vend::Cfg->{MaxQuantityField};
-				if(! length $col) {
-					$col = $tab;
-					$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+				$item->{mv_max_quantity} = 0;
+
+				foreach my $fieldspec (split('[, ]+', $Vend::Cfg->{MaxQuantityField})) {
+					next unless $fieldspec;
+
+					my ($tab, $col) = split /:+/, $fieldspec;
+					if(! length $col) {
+						$col = $tab;
+						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+					}
+					$item->{mv_max_quantity} += ::tag_data($tab, $col, $item->{code});
 				}
-				$item->{mv_max_quantity} = ::tag_data($tab, $col, $item->{code});
 
 				if(
 					length $item->{mv_max_quantity}
