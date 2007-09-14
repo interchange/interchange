@@ -20,6 +20,13 @@ Core
   of country subdomains is listed in a new subdomains.cfg file, which
   should be "included" into the interchange.cfg file.
 
+* Modified MaxQuantityField to support more than one quantity "[table:]column"
+  specification.  The column values get added together to create the maximum
+  quantity value.
+
+  The idea is that you might have an "on hand" quantity and an "on order"
+  quantity that you want to consider when allowing orders.
+
 
 Interchange 5.5.1 released on 2007-08-21.
 
