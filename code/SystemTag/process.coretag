@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: process.coretag,v 1.9 2007-08-09 03:02:30 kwalsh Exp $
+# $Id: process.coretag,v 1.10 2007-09-15 18:03:32 kwalsh Exp $
 
 UserTag process             Order     target secure
 UserTag process             addAttr
-UserTag process             Version   $Revision: 1.9 $
+UserTag process             Version   $Revision: 1.10 $
 UserTag process             Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {
@@ -21,6 +21,10 @@ sub {
 	if($opt->{download_name}) {
 		$page .= "/$opt->{download_name}";
 	}
+	elsif ($::Scratch->{mv_add_dot_html} || $opt->{add_dot_html}) {
+		$page .= '.html' unless $page =~ m{(?:/|\.html?)$};
+	}
+::logGlobal("DEBUG: page=$page");
 	my $url;
 	if($secure) {
 		$url = $Vend::Cfg->{SecurePostURL} || $Vend::Cfg->{SecureURL};
