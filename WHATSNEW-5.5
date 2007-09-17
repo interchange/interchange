@@ -27,6 +27,15 @@ Core
   The idea is that you might have an "on hand" quantity and an "on order"
   quantity that you want to consider when allowing orders.
 
+* Created a new [PREFIX-include] loop sub-tag.  This works just like the
+  [include] tag, except that it allows other [PREFIX-*] sub-tags to be
+  parsed from within the included file.
+  
+  Note: Files included with [PREFIX-include] cannot contain further
+  [PREFIX-include] sub-tags.  This could be easily created (respecting
+  the "include_depth" Limit etc.) but I felt that that was an unnecessary
+  overhead.
+
 
 Interchange 5.5.1 released on 2007-08-21.
 

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.284 2007-08-20 23:57:34 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.285 2007-09-17 05:37:31 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.284 $, 10);
+$VERSION = substr(q$Revision: 2.285 $, 10);
 
 @EXPORT = qw (
 
@@ -307,6 +307,7 @@ my $All = '[\000-\377]*';
 my $Some = '[\000-\377]*?';
 my $Codere = '[-\w#/.]+';
 my $Coderex = '[-\w:#=/.%]+';
+my $Filef = '(?:%20|\s)+([^]]+)';
 my $Mandx = '\s+([-\w:#=/.%]+)';
 my $Mandf = '(?:%20|\s)+([-\w#/.]+)';
 my $Spacef = '(?:%20|\s)+';
@@ -373,6 +374,7 @@ my @th = (qw!
 		_field
 		_filter
 		_header_param
+		_include
 		_increment
 		_last
 		_line
@@ -467,6 +469,7 @@ my @th = (qw!
 	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere$Optr)\]),
 	'_field'		=> qr($T{_field}$Mandf\]),
 	'_common'		=> qr($T{_common}$Mandf\]),
+	'_include'		=> qr($T{_include}$Filef\]),
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
 	'_line'			=> qr($T{_line}$Opt\]),
@@ -4064,6 +4067,18 @@ sub iterate_array_list {
 	my ($run, $row, $code, $return);
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . uneval($ary));
+
+	$text =~ s{
+		$B$QR{_include}
+	}{
+		my $filename = $1;
+
+		$Data_cache{"/$filename"} or do {
+		    my $content = Vend::Util::readfile($filename);
+		    vars_and_comments(\$content);
+		    $Data_cache{"/$filename"} = $content;
+		};
+	}igex;
 
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
