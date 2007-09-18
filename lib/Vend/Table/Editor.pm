@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.88 2007-08-13 11:30:47 pajamian Exp $
+# $Id: Editor.pm,v 1.89 2007-09-18 18:51:19 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.88 $, 10);
+$VERSION = substr(q$Revision: 1.89 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2514,7 +2514,8 @@ EOP
 EOF
 		$opt->{blabel} = '<span style="font-weight: normal">';
 		$opt->{elabel} = '</span>';
-		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<b>Bold</b> fields are required');
+		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;'
+. errmsg('<b>Bold</b> fields are required'));
 		$have_errors = $Tag->error( {
 									all => 1,
 									show_var => $error_show_var,
