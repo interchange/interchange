@@ -83,6 +83,7 @@ TAXFIELD	state	Tax
 TAXRATE	IN=6.0	Tax
 TAXSHIPPING		Tax
 TOLLFREE	(888) 555-1212	Company
+UI_LOCALE	en_US	Admin Control
 UI_ABOUT_LOGIN_URL	http://www.icdevgroup.org/	Admin Control
 UI_ABOUT_NORMAL_URL	http://www.icdevgroup.org/	Admin Control
 UI_ADMIN_TABLES	2ndDayAir 2ndDayAirAM 3DaySelect access Accessorials air_pp Book dict Expedited Express Ground ichelp locale mv_metadata NextDayAir NextDayAirSaver Priority surf_pp ups_cache usps variable Xarea Zone	Admin Control
