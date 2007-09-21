@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.40 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Parse.pm,v 2.41 2007-09-21 16:15:48 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -248,28 +248,14 @@ my %attrAlias = (
 						},
 );
 
-my %attrDefault;
+my %attrDefault = ();
 
 my %Alias = (
+	getlocale	=> 'setlocale get=1',
+	process_search	=> 'area href=search',
+);
 
-				qw(
-						url				urldecode
-						urld			urldecode
-						href			area
-						warning			warnings
-						shipping_description	shipping_desc
-						process_target	process
-						process_order	process
-				),
-					getlocale		=> 'setlocale get=1',
-					process_search		=> 'area href=search',
-			);
-
-my %Interpolate = (
-
-				qw(
-				)
-			);
+my %Interpolate = ();
 
 my %NoReparse = ( qw/
 					restrict		1

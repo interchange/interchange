@@ -5,12 +5,15 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: process.coretag,v 1.11 2007-09-15 18:09:21 kwalsh Exp $
+# $Id: process.coretag,v 1.12 2007-09-21 16:15:48 kwalsh Exp $
 
-UserTag process             Order     target secure
-UserTag process             addAttr
-UserTag process             Version   $Revision: 1.11 $
-UserTag process             Routine   <<EOR
+UserTag process-target Alias     process
+UserTag process-order  Alias     process
+
+UserTag process        Order     target secure
+UserTag process        addAttr
+UserTag process        Version   $Revision: 1.12 $
+UserTag process        Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {
 	my($target,$secure,$opt) = @_;
