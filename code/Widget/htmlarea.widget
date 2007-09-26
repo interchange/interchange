@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: htmlarea.widget,v 1.15 2007-09-26 19:00:49 racke Exp $
+# $Id: htmlarea.widget,v 1.16 2007-09-26 19:56:56 racke Exp $
 
 CodeDef htmlarea Widget 1
 CodeDef htmlarea Description Rich text editor
@@ -86,7 +86,7 @@ loading it will call a javascript function by the name of its value:
     }
     </script>
 
-This is useful to pass fckeditor configuations, such as the above example "ToolbarSet".
+This is useful to pass fckeditor configurations, such as the above example "ToolbarSet".
 Note that you must supply the Javascript function of (in this case) "bar" as shown, somewhere
 on the same page for it to work. 
 
