@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.223 2007-09-02 21:42:36 kwalsh Exp $
+# $Id: Config.pm,v 2.224 2007-09-27 21:43:30 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.223 $, 10);
+$VERSION = substr(q$Revision: 2.224 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1994,6 +1994,7 @@ sub watch {
 sub get_wildcard_list {
 	my($var, $value, $base) = @_;
 
+	$value =~ s/\s*#.*?$//mg;
 	$value =~ s/^\s+//;
 	$value =~ s/\s+$//;
 	return '' if ! $value;
