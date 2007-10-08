@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.81 2007-08-20 21:42:21 racke Exp $
+# $Id: Server.pm,v 2.82 2007-10-08 16:54:42 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.81 $, 10);
+$VERSION = substr(q$Revision: 2.82 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1132,13 +1132,19 @@ sub housekeeping {
 
 			if ($Global::PIDcheck) {
 				for my $pid (keys %Page_pids) {
-					my $last_use = $check_time - $Page_pids{$pid};
+					my $pid_stats = $Page_pids{$pid};
+					my $last_use = $check_time - $pid_stats->[0];
 					next unless $last_use > $Global::PIDcheck;
 #::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
-					$bad_pids{$pid} = undef;
-					delete $Page_pids{$pid};
+					if ($pid_stats->[1]) {
+						$bad_pids{$pid} = undef;
+						delete $Page_pids{$pid};
 #::logDebug('scheduling %s for death', $pid);
-					--$active_count;
+						--$active_count;
+					}
+					else {
+						$pid_stats->[0] = time;
+					}
 				}
 			}
 
@@ -1959,10 +1965,10 @@ my $pretty_vector = unpack('b*', $rin);
 				### Careful, returns after MaxRequests or terminate signal
 				$::Instance = {};
 #::logDebug("begin non-forked ::connection()");
-				send_ipc(sprintf ('lastused %s %s',$$,time))
+				send_ipc(sprintf ('lastused %s %s 1',$$,time))
 					if $Global::PIDcheck;
 				connection(++$handled);
-				send_ipc(sprintf ('lastused %s %s',$$,time))
+				send_ipc(sprintf ('lastused %s %s 0',$$,time))
 					if $Global::PIDcheck;
 #::logDebug("end non-forked ::connection()");
 				undef $::Instance;
@@ -2187,12 +2193,12 @@ sub process_ipc {
 		close $fh;
 		$Num_servers--;
 	}
-	elsif ($thing =~ /^lastused (\d+) (\d+)/) {
+	elsif ($thing =~ /^lastused (\d+) (\d+) ([01])/) {
 #::logDebug("Page pid $1 last used at $2");
-		$Page_pids{$1} = $2;
+		@{ $Page_pids{$1} } = ($2, $3);
 	}
 	elsif ($thing =~ /^register page (\d+)/) {
-		$Page_pids{$1} = time;
+		$Page_pids{$1} = [ time, 0 ];
 		starting_pids('del',$1);
 #::logDebug("registered Page pid $1");
 		$Page_servers++;
