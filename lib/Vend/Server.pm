@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.82 2007-10-08 16:54:42 jon Exp $
+# $Id: Server.pm,v 2.83 2007-10-08 16:55:22 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -870,9 +870,9 @@ sub read_cgi_data {
 
 
 sub connection {
-    my (%env, $entity);
-
     my $show_in_ps = shift;
+
+    my (%env, $entity);
 
     set_process_name('connection');
 
@@ -882,8 +882,8 @@ sub connection {
     reset_vars();
 
     if($Global::ShowTimes) {
-	@Vend::Times = times();
-	::logDebug ("begin connection. Summary time set to zero");
+        @Vend::Times = times();
+        ::logDebug ("begin connection. Summary time set to zero");
     }
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
@@ -1882,20 +1882,18 @@ sub server_page {
     for (;;) {
 
 	  my $n;
-	  $c++;
 	  my ($ok, $p, $v);
 	  my $i = 0;
 	  $c++;
 	  eval {
 		$rin = $p_vector;
 		
-my $pretty_vector = unpack('b*', $rin);
-
 		undef $spawn;
 		do {
 			$n = select($rout = $rin, undef, undef, $tick);
 		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
 
+#my $pretty_vector = unpack('b*', $rin);
 #::logDebug("pid=$$ cycle=$c handled=$handled tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
 			last if $Signal_Terminate;
@@ -2046,7 +2044,7 @@ sub server_soap {
 
 	my $c = 0;
 	my $handled = 0;
-my $pretty_vector = unpack('b*', $s_vector);
+#my $pretty_vector = unpack('b*', $s_vector);
 #::logDebug("SOAP server $$ begun, vector=$pretty_vector servers=$SOAP_servers");
     for (;;) {
 
@@ -2479,7 +2477,6 @@ sub server_both {
 			$rin = $vector;
 			$cycle = $tick;
 		}
-my $pretty_vector = unpack('b*', $rin);
 		undef $spawn;
 		undef $checked_soap;
 		do {
@@ -2488,6 +2485,7 @@ my $pretty_vector = unpack('b*', $rin);
 
 		undef $Vend::Cfg;
 
+#my $pretty_vector = unpack('b*', $rin);
 #::logDebug("cycle=$c tick=$cycle vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
 			last if $Signal_Terminate;
