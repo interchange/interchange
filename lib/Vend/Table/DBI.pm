@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.80 2007-08-14 13:42:08 kwalsh Exp $
+# $Id: DBI.pm,v 2.81 2007-10-08 15:37:49 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.80 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -74,10 +74,10 @@ my @Dattr = keys %Dattr;
 
 sub find_dsn {
 	my ($config) = @_;
-	my($param, $value, $cattr, $dattr, @out);
-	my($user,$pass,$dsn,$driver);
+	my ($cattr, $dattr, @out);
+
 	my $i = 0;
-	foreach $param (qw! DSN USER PASS !) {
+	for my $param (qw! DSN USER PASS !) {
 		$out[$i++] = $config->{ $param } || undef;
 	}
 
