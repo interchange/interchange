@@ -1,6 +1,6 @@
 # Vend::SessionDB - Stores Interchange session information in a database table
 #
-# $Id: SessionDB.pm,v 2.10 2007-10-08 15:37:13 jon Exp $
+# $Id: SessionDB.pm,v 2.11 2007-10-09 13:56:46 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -14,6 +14,11 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
 
 package Vend::SessionDB;
 require Tie::Hash;
@@ -23,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 sub TIEHASH {
 	my($class, $db) = @_;
