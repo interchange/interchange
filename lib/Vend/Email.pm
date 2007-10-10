@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.3 2007-05-04 09:43:26 docelic Exp $
+# $Id: Email.pm,v 1.4 2007-10-10 17:29:41 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -39,12 +39,9 @@
 package Vend::Email;
 
 use MIME::Lite        qw//; # Main module
-use MIME::Types       qw//;
 use Mail::Address     qw//;
 use MIME::QuotedPrint qw//; # Used by default
 use MIME::Base64      qw//; # For user-specified encodings
-#use MIME::EncWords    qw//; # Word-encode mail headers when non-ascii
-#use MIME::Charset     qw//; # Needed for EncWords
 
 use Vend::Util        qw/logError logDebug uneval/;
 
@@ -58,7 +55,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 
 ###########################################################################
