@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.285 2007-09-17 05:37:31 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.286 2007-10-11 01:37:16 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.285 $, 10);
+$VERSION = substr(q$Revision: 2.286 $, 10);
 
 @EXPORT = qw (
 
@@ -2279,10 +2279,12 @@ sub tag_value_extended {
 		my $file = $opt->{outfile};
 		$file =~ s/^\s+//;
 		$file =~ s/\s+$//;
-		if($file =~ m{^([A-Za-z]:)?[\\/.]}) {
-			logError("attempt to write absolute file $file");
+
+		unless (Vend::File::allowed_file($file)) {
+			Vend::File::log_file_violation($file, 'value-extended');
 			return '';
 		}
+
 		if($opt->{ascii}) {
 			my $replace = $^O =~ /win32/i ? "\r\n" : "\n";
 			if($CGI::file{$var} !~ /\n/) {
