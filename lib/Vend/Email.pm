@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.4 2007-10-10 17:29:41 racke Exp $
+# $Id: Email.pm,v 1.5 2007-10-18 19:33:25 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -55,7 +55,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 
 ###########################################################################
@@ -81,7 +81,9 @@ $VERSION = substr(q$Revision: 1.4 $, 10);
 #   $opt->{data} || $opt->{body} || $_[1] (arg 2)
 #
 sub tag_mime_lite_email {
-	my ($opt, $body) = @_;
+	my ($optin, $body) = @_;
+	my ($opt);
+	
 	#::logDebug('mime_lite_email invoked, OPT=' .uneval($opt) . ' BODY=' . $body);
 
 	local $_;
@@ -94,6 +96,11 @@ sub tag_mime_lite_email {
 		::logError('Unable to send email, config option SendMailProgram=none.');
 		return;
 	}
+	#
+	# Copy option hash to avoid messing with caller's data
+	#
+
+	%$opt = %$optin;
 
 	#
 	# Quickly make sure that all options and header names satisfy basic rules.
@@ -280,9 +287,13 @@ sub tag_mime_lite_email {
 
 	# REPLY
 	if (!( $opt->{reply_to} and @{ $opt->{reply_to} } )) {
-		@{ $opt->{reply_to} } = 
-			( ref $opt->{reply} ? @{ $opt->{reply} } : $opt->{reply} ) ||
-			$::Values->{mv_email};
+		$opt->{reply_to} = [$::Values->{email}];
+		
+		if (ref($opt->{reply})) {
+			$opt->{reply_to} = $opt->{reply};
+		} elsif ($opt->{reply}) {
+			$opt->{reply_to} = [$opt->{reply}];
+		}
 	}
 	delete $opt->{reply};
 
