@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.286 2007-10-11 01:37:16 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.287 2007-10-30 16:23:32 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.286 $, 10);
+$VERSION = substr(q$Revision: 2.287 $, 10);
 
 @EXPORT = qw (
 
@@ -5564,6 +5564,7 @@ sub tax_vat {
 		}
 
 	}
+
 	return $total;
 }
 
@@ -5611,11 +5612,10 @@ sub salestax {
 	if(defined $cost) {
 		$Vend::Items = $save if $save;
 		switch_discount_space($oldspace) if defined $oldspace;
+		if($cost < 0 and ! $::Pragma->{allow_negative_tax}) {
+			$cost = 0;
+		}
 		return Vend::Util::round_to_frac_digits($cost);
-	}
-
-	if(! $tax_hash) {
-		$cost = fly_tax();
 	}
 
 #::logDebug("got to tax function: " . uneval($tax_hash));
@@ -5668,6 +5668,10 @@ sub salestax {
 	}
 
 	$Vend::Items = $save if defined $save;
+
+	if($r < 0 and ! $::Pragma->{allow_negative_tax}) {
+		$r = 0;
+	}
 
 	return Vend::Util::round_to_frac_digits($r);
 }
