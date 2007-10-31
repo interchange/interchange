@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.41 2007-09-21 16:15:48 kwalsh Exp $
+# $Id: Parse.pm,v 2.42 2007-10-31 11:29:09 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -647,6 +647,7 @@ sub start {
 		if(defined $Alias{$tag}) {
 			$aliasname = $tag;
 			my $alias = $Alias{$tag};
+			$alias =~ tr/-/_/;
 			$tag =~ s/_/[-_]/g;
 #::logDebug("origtext: $origtext tag=$tag alias=$alias");
 			$origtext =~ s/$tag/$alias/i
