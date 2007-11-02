@@ -5,12 +5,12 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: get_url.tag,v 1.10 2007-03-30 23:40:57 pajamian Exp $
+# $Id: get_url.tag,v 1.11 2007-11-02 20:26:00 racke Exp $
 
 UserTag get-url Order        url
 UserTag get-url AddAttr
 UserTag get-url Interpolate
-UserTag get-url Version      $Revision: 1.10 $
+UserTag get-url Version      $Revision: 1.11 $
 UserTag get-url Routine      <<EOR
 require LWP::UserAgent;
 sub {
@@ -78,6 +78,12 @@ sub {
 		$html =~ s/.*<body[^>]*>//si;
 		$html =~ s:</body>.*::si;
 	}
+
+	if ($opt->{scratch}) {
+		$::Scratch->{$opt->{scratch}} = $html;
+		return;
+	}
+
 	return $html;
 }
 EOR
