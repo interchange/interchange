@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.2
 #
-# $Id: interchange.PL,v 2.100 2007-08-31 00:10:12 kwalsh Exp $
+# $Id: interchange.PL,v 2.101 2007-11-05 13:50:34 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -562,7 +562,7 @@ Command line options (first letter will usually work):
      -q, --quiet           suppress informational messages on startup
      --reconfig=catalog    reconfig a particular catalog on the server
      --remove=catalog      remove a catalog from operation
-     --restart             restart server
+     -r, --restart         restart server
      --runjobs=catalog[=job]  run jobs for a particular catalog
                            (can use --jobgroup and -email)
      --serve               start server (default) (-start is alias)
