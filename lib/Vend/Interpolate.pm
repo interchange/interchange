@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.289 2007-11-06 10:20:38 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.290 2007-11-06 10:58:26 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.289 $, 10);
+$VERSION = substr(q$Revision: 2.290 $, 10);
 
 @EXPORT = qw (
 
@@ -3520,8 +3520,10 @@ sub tag_labeled_data_row {
 
 sub random_elements {
 	my($ary, $wanted) = @_;
-	$wanted = 1 if ! $wanted || $wanted =~ /\D/;
+	return (0 .. $#$ary) unless $wanted > 0;
+	$wanted = 1 if $wanted =~ /\D/;
 	return undef unless ref $ary;
+
 	my %seen;
 	my ($j, @out);
 	my $count = scalar @$ary;
@@ -3582,8 +3584,8 @@ sub labeled_list {
 	if (defined $obj->{more_in_progress} and $obj->{mv_first_match}) {
 		$i = $obj->{mv_first_match};
 	}
-	elsif (defined $opt->{random} && $opt->{random} !~ /^[nf]/i) {
-		$opt->{random} = scalar(@$ary) if $opt->{random} =~ /^[yt]/i;
+	elsif (defined $opt->{random} && !is_no($opt->{random})) {
+		$opt->{random} = scalar(@$ary) if $opt->{random} =~ /^[yYtT]/;
 		@$ary = @$ary[random_elements($ary, $opt->{random})];
 		$i = 0; $end = $#$ary;
 		undef $obj->{mv_matchlimit};

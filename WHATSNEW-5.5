@@ -14,15 +14,13 @@ Core
 
 * Fix to the "random" parameter used by looping tags.
 
-	-- If set to "no" or "false" then do nothing (previously returned
-	   one random result).
+	-- If set to "no" or "false" or "0" then return all of the results
+	   their original order (previously returned one random result).
 
 	-- If set to "yes" or "true" then then return all results in a
 	   random order (again, previously returned one random result).
 	   
 	-- If set to a numeric > 0 then return that many random results.
-
-	-- If set to 0 then return 1 random result (as before).
 
 	-- If set to a numeric > the available results then return all
 	   results in a random order (previously returned the original
