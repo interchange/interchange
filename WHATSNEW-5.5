@@ -12,6 +12,25 @@ Interchange 5.5.2 (unreleased).
 Core
 ----
 
+* Fix to the "random" parameter used by looping tags.
+
+	-- If set to "no" or "false" then do nothing (previously returned
+	   one random result).
+
+	-- If set to "yes" or "true" then then return all results in a
+	   random order (again, previously returned one random result).
+	   
+	-- If set to a numeric > 0 then return that many random results.
+
+	-- If set to 0 then return 1 random result (as before).
+
+	-- If set to a numeric > the available results then return all
+	   results in a random order (previously returned the original
+	   results in the original order).
+	
+  If you're using "random=yes" to request one random result then you
+  will need to change your code to use random=1 instead.
+
 * Altered the DomainTail directive to take subdomains of various ccTLDs
   into account.  For example, if "foo.example.co.uk" pays a visit then
   "example.co.uk" as the domain tail will be used instead of just "co.uk".

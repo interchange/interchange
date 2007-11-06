@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.288 2007-10-30 16:27:43 mheins Exp $
+# $Id: Interpolate.pm,v 2.289 2007-11-06 10:20:38 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.288 $, 10);
+$VERSION = substr(q$Revision: 2.289 $, 10);
 
 @EXPORT = qw (
 
@@ -3525,7 +3525,7 @@ sub random_elements {
 	my %seen;
 	my ($j, @out);
 	my $count = scalar @$ary;
-	return (0 .. $#$ary) if $count <= $wanted;
+	$wanted = $count if $wanted > $count;
 	for($j = 0; $j < $wanted; $j++) {
 		my $cand = int rand($count);
 		redo if $seen{$cand}++;
@@ -3582,7 +3582,8 @@ sub labeled_list {
 	if (defined $obj->{more_in_progress} and $obj->{mv_first_match}) {
 		$i = $obj->{mv_first_match};
 	}
-	elsif (defined $opt->{random}) {
+	elsif (defined $opt->{random} && $opt->{random} !~ /^[nf]/i) {
+		$opt->{random} = scalar(@$ary) if $opt->{random} =~ /^[yt]/i;
 		@$ary = @$ary[random_elements($ary, $opt->{random})];
 		$i = 0; $end = $#$ary;
 		undef $obj->{mv_matchlimit};
