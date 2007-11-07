@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.83 2007-10-08 16:55:22 jon Exp $
+# $Id: Server.pm,v 2.84 2007-11-07 11:51:19 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.83 $, 10);
+$VERSION = substr(q$Revision: 2.84 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1704,9 +1704,11 @@ sub start_page {
 		   );
 	}
 	my $dbl_fork_pid;
+	my $in_single_fork =
+		$no_fork && $Global::PreForkSingleFork;
 
 	if (
-			$Global::PreForkSingleFork
+			$in_single_fork
 			or ! ($dbl_fork_pid = fork)
 		)
 	{
@@ -1722,7 +1724,7 @@ sub start_page {
 				$Global::Foreground = 1 if $no_fork;
 
 				local $SIG{CHLD} = 'DEFAULT'
-					if $Global::PreForkSingleFork;
+					if $in_single_fork;
 
 				local $SIG{INT} = $Routine_INT;
 				local $SIG{TERM} = $Routine_TERM;
@@ -1760,9 +1762,9 @@ sub start_page {
 				exit(0);
 			}
 			starting_pids('add',$pid)
-				if $Global::PreForkSingleFork;
+				if $in_single_fork;
 		}
-		$Global::PreForkSingleFork or exit(0);
+		$in_single_fork or exit(0);
 	}
 
 	if ($dbl_fork_pid) {
@@ -1840,21 +1842,23 @@ sub starting_pids {
 	my ($action,$pid,$n) = @_;
 
 	$n ||= 1;
+	my $in_single_fork =
+		$Global::PreFork && $Global::PreForkSingleFork;
 
 	if ( $action eq 'count' ) {
-		return $Global::PreForkSingleFork
+		return $in_single_fork
 			? scalar keys %Starting_pids
 			: $Starting_pids
 		;
 	}
 	elsif ( $action eq 'add' ) {
-		$Global::PreForkSingleFork
+		$in_single_fork
 			? ($Starting_pids{$pid} = time)
 			: ($Starting_pids += $n)
 		;
 	}
 	elsif ( $action eq 'del' ) {
-		$Global::PreForkSingleFork
+		$in_single_fork
 			? delete ($Starting_pids{$pid})
 			: ($Starting_pids -= $n)
 		;
@@ -2451,7 +2455,7 @@ sub server_both {
 	}
 
 	my $master_ipc = 0;
-	if($Global::StartServers) {
+	if($Global::PreFork && $Global::StartServers) {
 		$master_ipc = 1;
 		$p_vector = $vector ^ $ipc_vector;
 		start_page(1, $Global::PreFork, $Global::StartServers);
