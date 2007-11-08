@@ -20,7 +20,7 @@
 [/set]
 [set file]etc/logrotate[/set]
 [perl]
-my %frags;
+my (%frags, %files);
 
 my $generate_logrotate = sub {
 	my ($token, $location) = @_;
@@ -34,6 +34,10 @@ my $generate_logrotate = sub {
 		$hash{filename} = "$Config->{VendRoot}/$location";
 	}
 	
+	# avoid duplicate entries
+	return if $files{$hash{filename}};
+	$files{$hash{filename}} = $token;
+
 	for (qw(rotate weekly monthly size compress delaycompress)) {
 		if (exists $Scratch->{"${token}_$_"}) {
 			$hash{$_} = $Scratch->{"${token}_$_"};
@@ -45,31 +49,31 @@ my $generate_logrotate = sub {
 		}
 	}
 	
-	$entry = $Tag->uc_attr_list({hash => \%hash, body => $Scratch->{template}});
-	return $entry;
+	$frags{$token} = $Tag->uc_attr_list({hash => \%hash, body => $Scratch->{template}});
+	return 1;
 };
 
 my $out;
 
 # default log file for [log]
-$frags{ErrorFile} = $generate_logrotate->('ErrorFile', $Config->{ErrorFile});
+$generate_logrotate->('ErrorFile', $Config->{ErrorFile});
 
 # error log file
-$frags{LogFile} = $generate_logrotate->('LogFile', $Config->{LogFile});
+$generate_logrotate->('LogFile', $Config->{LogFile});
 
 # user tracking
 if ($Config->{TrackFile}) {
-	$frags{TrackFile} = $generate_logrotate->('TrackFile', $Config->{TrackFile});
+	$generate_logrotate->('TrackFile', $Config->{TrackFile});
 }
 
 # file for formatted orders
 if ($Config->{AsciiTrack}) {
-	$frags{AsciiTrack} = $generate_logrotate->('AsciiTrack', $Config->{AsciiTrack});
+	$generate_logrotate->('AsciiTrack', $Config->{AsciiTrack});
 }
 
 # jobs log file
 if ($Config->{Jobs}->{log}) {
-	$frags{Jobs} = $generate_logrotate->('Jobs', $Config->{Jobs}->{log});
+	$generate_logrotate->('Jobs', $Config->{Jobs}->{log});
 }
 
 # pick up log files from the routes
@@ -77,7 +81,7 @@ my $routelog;
 
 for (keys %{$Config->{Route_repository}}) {
 	if ($routelog = $Config->{Route_repository}->{$_}->{track}) {
-		$frags{"Route_$_"} = $generate_logrotate->("Route_$_", $routelog);
+		$generate_logrotate->("Route_$_", $routelog);
 	}
 }
 
