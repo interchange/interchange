@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.15 2007-08-09 13:40:55 pajamian Exp $
+# $Id: Matrix.pm,v 1.16 2007-11-09 08:17:27 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 =head1 NAME
 
@@ -109,16 +109,8 @@ sub display_options {
 				return undef;
 			};
 
-	my $record;
-	if($db->record_exists($sku)) {
-		$record = $db->row_hash($sku)
-	}
-	else {
-		$record = {};
-		for(qw/display_type/) {
-			$record->{$_} = $loc->{$_};
-		}
-	}
+	my $record = $db->row_hash($sku) || {};
+	$record->{display_type} ||= $loc->{display_type};
 
 	my $tname = $db->name();
 
