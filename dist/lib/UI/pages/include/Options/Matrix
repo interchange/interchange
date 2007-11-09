@@ -228,8 +228,15 @@ Display type:
 <TH ALIGN=RIGHT>[L]Price[/L]</TH>
 <TH ALIGN=CENTER>&nbsp;</TH>
 </tr>
-[loop prefix=variant
-		search="
+[loop 
+	more=1
+	form=|
+		item_id=[cgi item_id]
+		ui_sequence_edit=[cgi ui_sequence_edit]
+		item_id_left=[cgi item_id_left]
+	|
+	prefix=variant
+	search="
 				fi=[cgi mv_variant_table]
 				st=db
 				co=yes
@@ -239,7 +246,7 @@ Display type:
 				op=eq
 
 				rf=code,sku,description,price
-				"]
+	"]
 [list]
 <TR [variant-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/variant-alternate]>
 
@@ -288,6 +295,7 @@ HREF="[area
 </td>
 </tr>
 [/no-match]
+<tr><td colspan="3">[more-list][more][/more-list]</td></tr>
 <tr>
 <td colspan=3>
 	<form action="[area @@MV_PAGE@@]">
