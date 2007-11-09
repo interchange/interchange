@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.71 2007-08-10 12:05:34 racke Exp $
+# $Id: Form.pm,v 2.72 2007-11-09 03:08:31 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.71 $, 10);
+$VERSION = substr(q$Revision: 2.72 $, 10);
 
 @EXPORT = qw (
 	display
@@ -299,7 +299,7 @@ sub current_label {
 		$default = $label if $label =~ s/\*$//;
 		return ($label || $setting) if $val eq $setting;
 	}
-	return $default;
+	return $val || $default;
 }
 
 sub links {
