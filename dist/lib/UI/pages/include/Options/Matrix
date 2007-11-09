@@ -79,8 +79,7 @@ Display type:
 					op=eq
 					ac=0
 
-					tf=o_sort
-					tf=o_group
+					tf=[calcn]$Config->{Options_repository}{$Scratch->{setting}}{o_sort}[/calcn]
 
 					rf=o_group,o_value,price
 		"][loop-param o_group]	[loop-param o_value]	[loop-param price]
