@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.16 2007-11-09 08:17:27 pajamian Exp $
+# $Id: Matrix.pm,v 1.17 2007-11-10 07:02:18 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 =head1 NAME
 
@@ -158,13 +158,27 @@ sub display_options {
 	use constant SEP_WIDGET		=> 4;
 	use constant SEP_PRICE		=> 5;
 	use constant SEP_WHOLE		=> 6;
+	use constant SEP_HEIGHT         => 7;
+	use constant SEP_WIDTH          => 8;
+	use constant SEP_SIMPLE         => 9;
 	use constant CODE			=> 0;
 	use constant DESCRIPTION	=> 1;
 	use constant PRICE			=> 2;
 
 #::logDebug("ready to query options");
 	if($opt->{display_type} eq 'separate') {
-		for(qw/code o_group o_value o_label o_widget price wholesale/) {
+		for(qw/
+			code
+			o_group
+			o_value
+			o_label
+			o_widget
+			price
+			wholesale
+			o_height
+			o_width
+			o_simple
+		/) {
 			push @rf, ($map->{$_} || $_);
 		}
 		my @def;
@@ -181,6 +195,7 @@ sub display_options {
 #::logDebug("tag_options matrix query: $q");
 		my $ary = $db->query($q); 
 #::logDebug("tag_options matrix ary: " . ::uneval($ary));
+		my $ishash = defined $item->{mv_ip} ? 1 : 0;
 		my $ref;
 		my $i = 0;
 		my $phony = { %{$item || { }} };
@@ -218,21 +233,49 @@ sub display_options {
 				}
 			}
 
-			push @out, Vend::Interpolate::tag_accessories(
-							$sku,
-							'',
-							{ 
-								passed => $ary,
-								type => $opt->{type} || $ref->[SEP_WIDGET] || 'select',
-								attribute => 'mv_sku',
-								price_data => $ref->[SEP_PRICE],
-								price => $opt->{price},
-								extra => $opt->{extra},
-								js => $opt->{js},
-								item => $phony,
-							},
-							$phony || undef,
-						);
+			my $precursor = '';
+			$precursor = "$ref->[SEP_GROUP]$opt->{separator}" if $opt->{report};
+			$precursor = qq{<input type="hidden" name="mv_item_option" value="$ref->[SEP_GROUP]">} if $ref->[SEP_SIMPLE];
+
+			if ($ref->[SEP_SIMPLE]) {
+			    push @out, $precursor . Vend::Interpolate::tag_accessories(
+				$sku,
+				'',
+				{
+				    attribute => $ref->[SEP_GROUP],
+				    default => undef,
+				    extra => qq/id="$ref->[SEP_GROUP]" $opt->{extra}/,
+				    item => $item,
+				    js => $opt->{js},
+				    name => $ishash ? undef : "mv_order_$ref->[SEP_GROUP]",
+				    option_template => $opt->{option_template},
+				    passed => $ary,
+				    price => $opt->{price},
+				    price_data => $ref->[SEP_PRICE],
+				    height => $opt->{height} || $ref->[SEP_HEIGHT],
+				    width  => $opt->{width} || $ref->[SEP_WIDTH],
+				    type => $opt->{type} || $ref->[SEP_WIDGET] || 'select',
+				},
+				$item || undef,
+				);
+
+			} else {
+			    push @out, $precursor . Vend::Interpolate::tag_accessories(
+				$sku,
+				'',
+				{ 
+				    passed => $ary,
+				    type => $opt->{type} || $ref->[SEP_WIDGET] || 'select',
+				    attribute => 'mv_sku',
+				    price_data => $ref->[SEP_PRICE],
+				    price => $opt->{price},
+				    extra => qq/id="$ref->[SEP_GROUP]" $opt->{extra}/,
+				    js => $opt->{js},
+				    item => $phony,
+				},
+				$phony || undef,
+				);
+			}
 		}
 		
 		$phony->{mv_sku} = $sku;
