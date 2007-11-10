@@ -79,6 +79,10 @@ Display type:
 					op=eq
 					ac=0
 
+					se=1
+					sf=o_simple
+					op=ne
+
 					tf=[calcn]$Config->{Options_repository}{$Scratch->{setting}}{o_sort}[/calcn]
 
 					rf=o_group,o_value,price
