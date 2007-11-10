@@ -82,6 +82,8 @@ extra/         Some not-always-needed Perl libraries.
 
 hints.pl       OS-specific configuration settings. None currently used.
 
+eg/            Various helper scripts and addons.
+
 lib/           The library modules needed to run Interchange.
 
 scripts/       The executable files, relocated to bin/ in the install
