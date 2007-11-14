@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.224 2007-09-27 21:43:30 kwalsh Exp $
+# $Id: Config.pm,v 2.225 2007-11-14 04:50:19 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.224 $, 10);
+$VERSION = substr(q$Revision: 2.225 $, 10);
 
 my %CDname;
 my %CPname;
@@ -265,6 +265,7 @@ for( values %extmap ) {
 	interpolate		Interpolate
 	invalidatecache	InvalidateCache
 	isendanchor		isEndAnchor
+	multiple		Multiple
 	norearrange		noRearrange
 	order			Order
 	posnumber		PosNumber
@@ -294,9 +295,10 @@ my %tagBool = ( qw!
                 Interpolate 1
                 isEndAnchor 1
                 isOperator  1
+		Multiple    1
                 ItemAction  1
-				noRearrange	1
-				NoReparse   1
+		noRearrange 1
+		NoReparse   1
                 OrderCheck  1
                 UserTag     1
 				! );

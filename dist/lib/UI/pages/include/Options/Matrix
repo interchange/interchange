@@ -85,8 +85,8 @@ Display type:
 
 					tf=[calcn]$Config->{Options_repository}{$Scratch->{setting}}{o_sort}[/calcn]
 
-					rf=o_group,o_value,price
-		"][loop-param o_group]	[loop-param o_value]	[loop-param price]
+					rf=o_group,o_value,price,o_widget
+		"][loop-param o_group]	[loop-param o_value]	[loop-param price]	[loop-param o_widget]
 [/loop][/tmp]
 
 [tmp tmp_price][price noformat=1 code="[cgi item_id]"][/tmp]
@@ -111,12 +111,13 @@ Display type:
 
 	my @dimensions;
 	for(@opts) {
-		my($g, $o, $p) = split /\t/, $_;
+		my($g, $o, $p, $w) = split /\t/, $_;
 		push @optnames, $g;
 		my @ary;
 		my (@o) = grep /\S/, split /\s*,\s*/, $o;
 		my (@p) = grep /\S/, split /\s*,\s*/, $p;
 		my %p;
+		my $multi = $Tag->widget_info($w, 'Multiple');
 		for(@p) {
 			my ($k, $v) = split /\s*=\s*/, $_;
 			next unless $k;
@@ -134,9 +135,14 @@ Display type:
 			my ($k, $v) = split /\s*=\s*/, $_;
 			$k = '__MV_VARIANT_JOINER__' || '0' if ! length($k);
 			$v =~ s/\*$//;
-			push @ary, [ $k, $v, $p{$k} ];
+			if ($multi) {
+				push @dimensions, [[undef, undef, 0], [$k, $v, $p{$k}]];
+			}
+			else {
+				push @ary, [ $k, $v, $p{$k} ];
+			}
 		}
-		push @dimensions, \@ary;
+		push @dimensions, \@ary unless $multi;
 	}
 
 #Debug( "dimensions: " . $Tag->uneval( { ref => \@dimensions } ) );
@@ -163,14 +169,13 @@ Display type:
 				$pointers[$dim] = $_;
 				if ($dim == $#dimensions) {
 
+					my $o = join( '-',
+	grep { defined $_ } map { $dimensions[$_]->[$pointers[$_]]->[0] } (0..$#dimensions));
+					next unless length $o;
+					push @options, $o;
 					push @descriptions,
 					join( ', ',
-	map { $dimensions[$_]->[$pointers[$_]]->[1] } (0..$#dimensions)
-						)
-					;
-					push @options,
-					join( '-',
-	map { $dimensions[$_]->[$pointers[$_]]->[0] } (0..$#dimensions)
+	grep { defined $_ } map { $dimensions[$_]->[$pointers[$_]]->[1] } (0..$#dimensions)
 						)
 					;
 					push @prices,
@@ -186,7 +191,8 @@ Display type:
 					}
 					push @hashes, \%opthash;
 
-				} else {
+				}
+				else {
 					recurse_dim($dim + 1);
 				}
 			}

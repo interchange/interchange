@@ -61,6 +61,13 @@ Core
   in catalog.cfg like this:
 	Options Matrix display_type separate
 
+* New Multiple CodeDef flag to indicate that a widget can return multiple
+  selections.  Usage example:
+	CodeDef checkbox Multiple 1
+
+* Set new Multiple flag for checkbox, movecombo, check_nbsp and multiple
+  widgets.
+
 UI
 --
 
@@ -76,6 +83,11 @@ UI
   want to use a text or textarea widget (which is not possible with matrix
   options).  Requires the addition of an o_simple column to the options table
   for existing catalogs.
+
+* New [widget-info] UI tag.
+
+* Option editor will now correctly generate variants for options that use
+  widgets capable of multiple selections (ie, multiple or checkout widgets).
 
 
 Interchange 5.5.1 released on 2007-08-21.
