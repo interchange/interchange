@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.290 2007-11-06 10:58:26 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.291 2007-11-15 00:29:39 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.290 $, 10);
+$VERSION = substr(q$Revision: 2.291 $, 10);
 
 @EXPORT = qw (
 
@@ -2305,12 +2305,12 @@ sub tag_value_extended {
 				length($CGI::file{$var}),
 				$opt->{maxsize},
 			);
-			return $opt->{no} || '';
+			return $no;
 		}
 #::logDebug(">$file \$CGI::file{$var}" . uneval($opt)); 
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
-			and return $opt->{yes} || '';
-		return $opt->{'no'} || '';
+			and return $yes;
+		return $no;
 	}
 
 	my $joiner;
