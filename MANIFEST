@@ -1113,7 +1113,6 @@ lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
 lib/Vend/Payment/TestPayment.pm
-lib/Vend/Payment/WellsFargo.pm
 lib/Vend/RefSearch.pm
 lib/Vend/Scan.pm
 lib/Vend/Search.pm
