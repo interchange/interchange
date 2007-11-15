@@ -6,10 +6,10 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: round.filter,v 1.3 2007-11-15 00:58:26 kwalsh Exp $
+# $Id: round.filter,v 1.4 2007-11-15 01:14:14 jon Exp $
 
 CodeDef round Filter
-CodeDef round Description Round numeric value to the spcified number of decimal places (or 2)
+CodeDef round Description Round numeric value to the specified number of decimal places (default 2)
 CodeDef round Routine <<EOR
 sub {
 	my ($val, undef, $digits) = @_;
