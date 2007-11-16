@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.94 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Order.pm,v 2.95 2007-11-16 13:52:58 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.94 $, 10);
+$VERSION = substr(q$Revision: 2.95 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1780,11 +1780,13 @@ sub route_order {
 			$pagefile = $route->{'report'} || $main->{'report'};
 			$page = readfile($pagefile);
 		}
-		die errmsg(
-			"No order report %s or %s found.",
-			$route->{'report'},
-			$main->{'report'},
-			) unless defined $page;
+		unless (defined $page) {
+			my $msg = errmsg("No order report %s or %s found.",
+							 $route->{'report'},
+							 $main->{'report'});
+			::logError("$msg\n");
+			die("$msg\n");
+		}
 
 		my $use_mime;
 		undef $::Instance->{MIME};
