@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.291 2007-11-15 00:29:39 jon Exp $
+# $Id: Interpolate.pm,v 2.292 2007-11-17 23:30:33 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.291 $, 10);
+$VERSION = substr(q$Revision: 2.292 $, 10);
 
 @EXPORT = qw (
 
@@ -2162,6 +2162,13 @@ sub tag_counter {
 						$opt->{sql},
 					);
 			} 
+			elsif($seq =~ /\(/) {
+#::logDebug("found custom SQL function for sequence: $seq");
+				my $sql = "SELECT $seq";
+				my $sth = $dbh->prepare($sql) or die $diemsg;
+				$sth->execute or die $diemsg;
+				($val) = $sth->fetchrow_array;
+			}
 			elsif($dsn =~ /^dbi:mysql:/i) {
 				$seq ||= $tab;
 				$dbh->do("INSERT INTO $seq VALUES (0)")		or die $diemsg;
