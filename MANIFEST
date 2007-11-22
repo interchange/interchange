@@ -607,7 +607,6 @@ dist/lib/UI/vars/UI_JSLIB
 dist/lib/UI/vars/UI_STD_FILE_NAV
 dist/lib/UI/vars/UI_STD_FOOTER
 dist/lib/UI/vars/UI_STD_HEAD
-dist/locale.error
 dist/robots.cfg
 dist/subdomains.cfg
 dist/src/compile.pl

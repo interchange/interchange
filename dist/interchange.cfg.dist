@@ -110,9 +110,6 @@ Variable MV_SMTPHOST smtp
 # Include individual usertags.
 include usertag/*.tag
 
-# Include if you want non-English error messages. Not complete.
-# include locale.error
-
 # Include the robot recognition lists
 include robots.cfg
 
