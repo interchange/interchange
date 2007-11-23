@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.91 2007-09-02 19:21:04 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.92 2007-11-23 12:58:19 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.91 $, 10);
+$VERSION = substr(q$Revision: 1.92 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -767,7 +767,7 @@ sub run_in_catalog {
 		push @itl, ["Passed ITL", $itl];
 	}
 
-	my (@out, $errors);
+	my (@out, $errors, $failure);
 
 	# remove bogus session created by logError
 	undef $Vend::Session;
@@ -815,6 +815,7 @@ sub run_in_catalog {
 			# job terminated due to an error
 			$errors = 1;
 
+			$failure = errmsg('Job terminated with an error: %s', $@);
 			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
 			
 			# remove flag for this job
@@ -832,6 +833,9 @@ sub run_in_catalog {
 	my $out = join "", @out;
 	my $filter = $jobscfg->{filter} || 'strip';
 	$out = Vend::Interpolate::filter_value($filter, $out);
+	if ($errors && is_no($jobscfg->{ignore_errors})) {
+		$out = join("\n\n", $failure, $out);
+	}
 	$out .= full_dump() if is_yes($jobscfg->{add_session});
 
 	logError("Finished jobs group=%s pid=$$", $job || 'INTERNAL');
