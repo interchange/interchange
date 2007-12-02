@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.225 2007-11-14 04:50:19 pajamian Exp $
+# $Id: Config.pm,v 2.226 2007-12-02 13:40:32 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.225 $, 10);
+$VERSION = substr(q$Revision: 2.226 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4130,10 +4130,13 @@ sub parse_catalog {
 	return ++$num;
 }
 
+my %Explode_ref = (  qw!
+							COLUMN_DEF    COLUMN_DEF
+!);
+
 my %Hash_ref = (  qw!
 							FILTER_FROM   FILTER_FROM
 							FILTER_TO     FILTER_TO 
-							COLUMN_DEF    COLUMN_DEF
 							LENGTH_EXCEPTION LENGTH_EXCEPTION
 							DEFAULT       DEFAULT
 							DEFAULT_SESSION       DEFAULT_SESSION
@@ -4225,13 +4228,44 @@ sub parse_config_db {
 		my($p, $val) = split /\s+/, $remain, 2;
 		$p = uc $p;
 
-		if(defined $Hash_ref{$p}) {
+		if(defined $Explode_ref{$p}) {
+			my($ak, $v);
+			my(@v) = Vend::Util::quoted_comma_string($val);
+			@v = grep defined $_, @v;
+			$d->{$p} = {} unless defined $d->{$p};
+			for(@v) {
+				my ($sk,$v) = split /\s*=\s*/, $_;
+				my (@k) = grep /\w/, split /\s*,\s*/, $sk;
+				for my $k (@k) {
+					if($d->{$p}->{$k}) {
+						config_warn(
+							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
+							$d->{name},
+							$p,
+							$v,
+							$d->{$p}->{$k},
+						);
+					}
+					$d->{$p}->{$k} = $v;
+				}
+			}
+		}
+		elsif(defined $Hash_ref{$p}) {
 			my($k, $v);
 			my(@v) = Vend::Util::quoted_comma_string($val);
 			@v = grep defined $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
 				($k,$v) = split /\s*=\s*/, $_;
+				if($d->{$p}->{$k}) {
+					config_warn(
+						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
+						$d->{name},
+						$p,
+						$v,
+						$d->{$p}->{$k},
+					);
+				}
 				$d->{$p}->{$k} = $v;
 			}
 		}
@@ -4244,7 +4278,7 @@ sub parse_config_db {
 			defined $d->{$p}
 			and ! defined $C->{DatabaseDefault}{$p}
 				and config_warn(
-						"ConfigDatabase %s scalar parameter %s redefined to '%s', was %s.",
+						qq{Database %s scalar parameter %s redefined to "%s", was "%s".},
 						$d->{name},
 						$p,
 						$val,
@@ -4382,13 +4416,44 @@ sub parse_database {
 		$p = uc $p;
 #::logDebug("parse_database: parameter $p = $val");
 
-		if(defined $Hash_ref{$p}) {
+		if(defined $Explode_ref{$p}) {
+			my($ak, $v);
+			my(@v) = Vend::Util::quoted_comma_string($val);
+			@v = grep defined $_, @v;
+			$d->{$p} = {} unless defined $d->{$p};
+			for(@v) {
+				my ($sk,$v) = split /\s*=\s*/, $_;
+				my (@k) = grep /\w/, split /\s*,\s*/, $sk;
+				for my $k (@k) {
+					if($d->{$p}->{$k}) {
+						config_warn(
+							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
+							$d->{name},
+							$p,
+							$v,
+							$d->{$p}->{$k},
+						);
+					}
+					$d->{$p}->{$k} = $v;
+				}
+			}
+		}
+		elsif(defined $Hash_ref{$p}) {
 			my($k, $v);
 			my(@v) = Vend::Util::quoted_comma_string($val);
 			@v = grep defined $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
 				($k,$v) = split /\s*=\s*/, $_;
+				if($d->{$p}->{$k}) {
+					config_warn(
+						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
+						$d->{name},
+						$p,
+						$v,
+						$d->{$p}->{$k},
+					);
+				}
 				$d->{$p}->{$k} = $v;
 			}
 		}
@@ -4433,7 +4498,7 @@ sub parse_database {
 			and ! defined $C->{DatabaseDefault}{$p}
 				and
 				config_warn(
-					"Database %s scalar parameter %s redefined to '%s', was %s.",
+					qq{Database %s scalar parameter %s redefined to "%s", was "%s".},
 					$d->{name},
 					$p,
 					$val,
