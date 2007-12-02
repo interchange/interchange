@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.226 2007-12-02 13:40:32 mheins Exp $
+# $Id: Config.pm,v 2.227 2007-12-02 15:45:04 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.226 $, 10);
+$VERSION = substr(q$Revision: 2.227 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4768,9 +4768,9 @@ sub save_variable {
 }
 
 sub map_widgets {
-	my $ref;
-	my $return	= ($ref = $Vend::Cfg->{CodeDef}{Widget})
-						? $ref->{Routine}
+	my $gref;
+	my $return	= ($gref = $Vend::Cfg->{CodeDef}{Widget})
+						? $gref->{Routine}
 						: {};
 	if(my $ref = $Global::CodeDef->{Widget}{Routine}) {
 		while ( my ($k, $v) = each %$ref) {
@@ -4783,6 +4783,27 @@ sub map_widgets {
 		while ( my ($k, $v) = each %$ref) {
 			next if $return->{$k};
 			$return->{$k} = \&{"$v"};
+		}
+	}
+	if(my $ref = $Global::CodeDef->{Widget}{attrDefault}) {
+		no strict 'refs';
+		while ( my ($k, $v) = each %$ref) {
+			next if $return->{$k};
+			$return->{$k} = \&{"$v"};
+		}
+	}
+	return $return;
+}
+
+sub map_widget_defaults {
+	my $gref;
+	my $return	= ($gref = $Vend::Cfg->{CodeDef}{Widget})
+						? $gref->{attrDefault}
+						: {};
+	if(my $ref = $Global::CodeDef->{Widget}{attrDefault}) {
+		while ( my ($k, $v) = each %$ref) {
+			next if $return->{$k};
+			$return->{$k} = $v;
 		}
 	}
 	return $return;
@@ -4860,6 +4881,7 @@ my %MappedInit = (
 	Widget		=> sub {
 						return unless $Vend::Cfg;
 						$Vend::UserWidget = map_widgets();
+						$Vend::UserWidgetDefault = map_widget_defaults();
 					},
 	UserTag		=> sub {
 						return if $C;

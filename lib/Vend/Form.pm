@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.72 2007-11-09 03:08:31 pajamian Exp $
+# $Id: Form.pm,v 2.73 2007-12-02 15:45:04 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.72 $, 10);
+$VERSION = substr(q$Revision: 2.73 $, 10);
 
 @EXPORT = qw (
 	display
@@ -863,15 +863,19 @@ If you want another behavior the same widget can be constructed with:
 sub yesno {
 	my $opt = shift;
 	$opt->{value} = is_yes($opt->{value});
+	my $yes = defined $opt->{yes_value} ? $opt->{yes_value} : 1;
+	my $no  = defined $opt->{no_value} ? $opt->{no_value} : '';
+	my $yes_title = defined $opt->{yes_title} ? $opt->{yes_title} : errmsg('Yes');
+	my $no_title  = defined $opt->{no_title} ? $opt->{no_title} : errmsg('No');
 	my @opts;
 	my $routine = $opt->{subwidget} || \&dropdown;
 	if($opt->{variant} eq 'checkbox') {
-		@opts = [1, ' '];
+		@opts = [$yes, ' '];
 	}
 	else {
 		@opts = (
-					['', errmsg('No')],
-					['1', errmsg('Yes')],
+					[$no, $no_title],
+					[$yes, $yes_title],
 				);
 	}
 	return $routine->($opt, \@opts);
@@ -1338,6 +1342,7 @@ if($opt->{debug}) {
 
 	# Optimization for large lists, we cache the widgets
 	$Vend::UserWidget ||= Vend::Config::map_widgets();
+	$Vend::UserWidgetDefault ||= Vend::Config::map_widget_defaults();
 
 	my $sub =  $Vend::UserWidget->{$type};
 	if(! $sub and $Global::AccumulateCode) {
@@ -1347,6 +1352,13 @@ if($opt->{debug}) {
 
 	# Last in case "default" widget is removed
 	$sub ||= $Vend::UserWidget->{default} || \&template_sub;
+
+	if(my $attr = $Vend::UserWidgetDefault->{$type}) {
+		while (my ($k, $v) = each %$attr) {
+			next if defined $opt->{$k};
+			$opt->{$k} = $v;
+		}
+	}
 
 	if($opt->{variant}) {
 #::logDebug("variant='$opt->{variant}'");
