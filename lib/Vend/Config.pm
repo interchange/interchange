@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.227 2007-12-02 15:45:04 mheins Exp $
+# $Id: Config.pm,v 2.228 2007-12-03 14:34:25 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.227 $, 10);
+$VERSION = substr(q$Revision: 2.228 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4230,7 +4230,7 @@ sub parse_config_db {
 
 		if(defined $Explode_ref{$p}) {
 			my($ak, $v);
-			my(@v) = Vend::Util::quoted_comma_string($val);
+			my(@v) = Text::ParseWords::shellwords($val);
 			@v = grep defined $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
@@ -4241,7 +4241,7 @@ sub parse_config_db {
 						config_warn(
 							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
 							$d->{name},
-							$p,
+							"$p --> $k",
 							$v,
 							$d->{$p}->{$k},
 						);
@@ -4261,7 +4261,7 @@ sub parse_config_db {
 					config_warn(
 						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
 						$d->{name},
-						$p,
+						"$p --> $k",
 						$v,
 						$d->{$p}->{$k},
 					);
@@ -4418,8 +4418,8 @@ sub parse_database {
 
 		if(defined $Explode_ref{$p}) {
 			my($ak, $v);
-			my(@v) = Vend::Util::quoted_comma_string($val);
-			@v = grep defined $_, @v;
+			my(@v) = Text::ParseWords::shellwords($val);
+			@v = grep length $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
 				my ($sk,$v) = split /\s*=\s*/, $_;
@@ -4429,7 +4429,7 @@ sub parse_database {
 						config_warn(
 							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
 							$d->{name},
-							$p,
+							"$p --> $k",
 							$v,
 							$d->{$p}->{$k},
 						);
@@ -4449,7 +4449,7 @@ sub parse_database {
 					config_warn(
 						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
 						$d->{name},
-						$p,
+						"$p --> $k",
 						$v,
 						$d->{$p}->{$k},
 					);
