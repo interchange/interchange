@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.228 2007-12-03 14:34:25 mheins Exp $
+# $Id: Config.pm,v 2.229 2007-12-03 15:14:16 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.228 $, 10);
+$VERSION = substr(q$Revision: 2.229 $, 10);
 
 my %CDname;
 my %CPname;
@@ -4418,6 +4418,8 @@ sub parse_database {
 
 		if(defined $Explode_ref{$p}) {
 			my($ak, $v);
+			$val =~ s/,+$//;
+			$val =~ s/^,+//;
 			my(@v) = Text::ParseWords::shellwords($val);
 			@v = grep length $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
