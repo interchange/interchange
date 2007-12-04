@@ -1,6 +1,6 @@
 # Vend::SessionFile - Stores Interchange session information in files
 #
-# $Id: SessionFile.pm,v 2.6 2007-08-09 13:40:54 pajamian Exp $
+# $Id: SessionFile.pm,v 2.7 2007-12-04 01:57:44 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 my $SessionDir;
 my $CommDir;
@@ -121,7 +121,6 @@ sub STORE {
 #::logDebug("store $key");
 	$SessionFile = keyname($key);
 	$SessionLock = $SessionFile . ".lock";
-	unlink $SessionFile;
 #::logDebug("store session=$key HaveLock=$HaveLock{$SessionFile}");
 	unless ($HaveLock{$SessionFile}) {
 		$Lh = gensym();
