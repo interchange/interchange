@@ -70,6 +70,12 @@ Core
 
 * Log missing order reports.
 
+* Unlinking the existing session file before re-writing it causes a race
+  condition in the FETCH method, where if it checks with a concurrent request
+  on the same session while the file is missing, the failure causes Interchange
+  to create a new session for the user. As long as the file exists continuously,
+  the lock kicks in and concurrent requests serialize appropriately.
+
 UserTag
 -------
 
