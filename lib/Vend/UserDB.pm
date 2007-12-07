@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.55 2007-08-11 13:54:14 mheins Exp $
+# $Id: UserDB.pm,v 2.56 2007-12-07 03:38:46 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 use vars qw!
 	$VERSION
@@ -970,6 +970,13 @@ sub get_shipping_names {
 	return '';
 }
 
+sub get_shipping_hashref {
+	my $self = shift;
+	my $ref = $self->get_hash('SHIPPING');
+	return $ref if ref($ref) eq 'HASH';
+	return undef;
+}
+
 sub get_billing_names {
 	my $self = shift;
 	my $ref = $self->get_hash('BILLING');
@@ -977,6 +984,13 @@ sub get_billing_names {
 	$::Values->{$self->{LOCATION}{BILLING}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{BILLING}} if $self->{OPTIONS}{show};
 	return '';
+}
+
+sub get_billing_hashref {
+	my $self = shift;
+	my $ref = $self->get_hash('BILLING');
+	return $ref if ref($ref) eq 'HASH';
+	return undef;
 }
 
 sub get_preferences_names {
