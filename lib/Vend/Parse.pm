@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.42 2007-10-31 11:29:09 kwalsh Exp $
+# $Id: Parse.pm,v 2.43 2007-12-07 22:38:30 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -765,7 +765,7 @@ EOF
 			$$buf = '';
 			$Initialized->{_buf} = '';
 			
-            my $body = qq{Redirecting to <A href="%s">%s</a>.};
+            my $body = qq{Redirecting to <a href="%s">%s</a>.};
             $body = errmsg($body, $attr->{href}, $attr->{href});
 #::logDebug("bouncing...body=$body");
 			$::Pragma->{download} = 1;
