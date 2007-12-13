@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.7 2007-12-13 22:24:32 racke Exp $
+# $Id: Email.pm,v 1.8 2007-12-13 23:54:18 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -55,7 +55,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 
 ###########################################################################
@@ -141,7 +141,7 @@ sub tag_mime_lite_email {
 	my $intercept;
 	my $hdr_encoding;
 	my ($interpolate, $reparse, $hide);
-	my ($data, $encoding, $type);
+	my ($data, $encoding, $type, $charset);
 	my @extra_headers;
 
 	# Intercept
@@ -172,15 +172,20 @@ sub tag_mime_lite_email {
 	);
 
 	# Data (msg body), encoding and type
-	($data, $encoding, $type) = (
+	($data, $encoding, $type, $charset) = (
 		delete $opt->{data},
 		delete $opt->{encoding},
 		delete $opt->{type},
+		delete $opt->{charset},
 	);
 	$data     ||= $opt->{body} || $body;    delete $opt->{body};
 	$encoding ||= 'quoted-printable';
 	$type     ||= 'text/plain';
 
+	if ($charset) {
+		$type .= "; charset=$charset";
+	}
+	
 	!(ref $data or ref $encoding or ref $type) or do {
 		::logError('Only scalar value accepted for options '.
 				'"data" ("body"), "encoding" and "type".');
@@ -849,7 +854,7 @@ sub tag_email {
 	
 		ATTACH: {
 		#::logDebug("Checking for attachment");
-		last ATTACH unless $opt->{attach} || $opt->{html} || ($opt->{charset} && $body =~ /\S/);
+		last ATTACH unless $opt->{attach} || $opt->{html};
 
 		if($opt->{html}) {
 			$opt->{mimetype} ||= 'multipart/alternative';
@@ -873,17 +878,9 @@ sub tag_email {
 				$att = [ { path => $opt->{attach} } ];
 			}
 		}
-		
+
 		$att ||= [];
 
-		if ($opt->{charset} && $body =~ /\S/) {
-			unshift @$att, {
-				type => "text/plain; charset=$opt->{charset}",
-				data => $body
-			};
-			$body = '';
-		}
-		
 		if($opt->{html}) {
 			unshift @$att, {
 				type => 'text/html',
@@ -900,6 +897,7 @@ sub tag_email {
 		cc => $opt->{cc} || '',
 		reply => $reply || '',
 		type => $opt->{body_mime} || 'text/plain',
+		charset => $opt->{charset},
 		extra_headers => \@extra || [],
 		encoding => $opt->{body_encoding} || '8bit',
 		attach => $att || ''
