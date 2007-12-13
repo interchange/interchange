@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.6 2007-12-13 15:38:12 racke Exp $
+# $Id: Email.pm,v 1.7 2007-12-13 22:24:32 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -55,7 +55,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 
 ###########################################################################
@@ -434,6 +434,8 @@ sub tag_mime_lite_email {
 	# @extra_headers
 	my @headers;
 	while (my($hdr,$values) = each %$opt ) {
+		next if $hdr eq 'attach';
+		
 		if (! ref $values ) {
 			push @headers, [ $hdr, $values ];
 
