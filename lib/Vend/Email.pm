@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.5 2007-10-18 19:33:25 racke Exp $
+# $Id: Email.pm,v 1.6 2007-12-13 15:38:12 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -55,7 +55,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 
 ###########################################################################
@@ -841,17 +841,13 @@ sub tag_email {
 	my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
 	my $ok = 0;
 	my @extra;
-
+	my $att;
+	
 	use vars qw/ $Tag /;
-
-
-	my $att = $opt->{attach};
-	ATTACH: {
-		
-		my %att_hash;
-
+	
+		ATTACH: {
 		#::logDebug("Checking for attachment");
-		last ATTACH unless $opt->{attach} || $opt->{html};
+		last ATTACH unless $opt->{attach} || $opt->{html} || ($opt->{charset} && $body =~ /\S/);
 
 		if($opt->{html}) {
 			$opt->{mimetype} ||= 'multipart/alternative';
@@ -860,16 +856,32 @@ sub tag_email {
 			$opt->{mimetype} ||= 'multipart/mixed';
 		}
 
-		if(! ref($att) ) {
-			my $fn = $att;
-			$att = [ { path => $fn } ];
-		}
-		elsif(ref($att) eq 'HASH') {
-			$att = [ $att ];
-		}
+		my $vtype = ref($opt->{attach});
 
+		if ($vtype) {
+			if ($vtype eq 'HASH') {
+				$att = [ $opt->{attach} ];
+			}
+			elsif ($vtype eq 'ARRAY') {
+				$att = $opt->{attach};
+			}
+		}
+		else {
+			if ($opt->{attach}) {
+				$att = [ { path => $opt->{attach} } ];
+			}
+		}
+		
 		$att ||= [];
 
+		if ($opt->{charset} && $body =~ /\S/) {
+			unshift @$att, {
+				type => "text/plain; charset=$opt->{charset}",
+				data => $body
+			};
+			$body = '';
+		}
+		
 		if($opt->{html}) {
 			unshift @$att, {
 				type => 'text/html',
