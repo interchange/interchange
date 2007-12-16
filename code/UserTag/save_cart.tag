@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: save_cart.tag,v 1.6 2007-03-30 23:40:57 pajamian Exp $
+# $Id: save_cart.tag,v 1.7 2007-12-16 10:15:09 kwalsh Exp $
 
-UserTag save_cart Order     nickname recurring
+UserTag save_cart Order     nickname recurring keep
 UserTag save_cart AttrAlias name nickname
-UserTag save_cart Version   $Revision: 1.6 $
+UserTag save_cart Version   $Revision: 1.7 $
 UserTag save_cart Routine   <<EOR
 sub {
-	my($nickname,$recurring) = @_;
+	my($nickname,$recurring,$keep) = @_;
 
 	my $add = 0;
 	my %names = ();
@@ -43,7 +43,7 @@ sub {
 		return '';
 	}
 
-	$Carts->{main} = [];
+	$Carts->{main} = [] unless is_yes($keep);
 
 	return '';
 }
