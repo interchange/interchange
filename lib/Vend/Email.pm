@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.9 2007-12-14 10:24:21 racke Exp $
+# $Id: Email.pm,v 1.10 2007-12-18 09:53:19 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -38,7 +38,15 @@
 
 package Vend::Email;
 
-use MIME::Lite        qw//; # Main module
+my $Have_MIME_Lite;
+
+BEGIN {
+	eval {
+		require MIME::Lite;
+		$Have_MIME_Lite = 1;
+	};
+}
+
 use Mail::Address     qw//;
 use MIME::QuotedPrint qw//; # Used by default
 use MIME::Base64      qw//; # For user-specified encodings
@@ -55,7 +63,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 
 ###########################################################################
@@ -327,7 +335,7 @@ sub tag_mime_lite_email {
 	$intercept ||= $::Variable->{MV_EMAIL_INTERCEPT} ||
 		$Global::Variable->{MV_EMAIL_INTERCEPT};
 
-	if ( $intercept ) {
+	if ( $intercept && $Have_MIME_Lite) {
 		for my $field (qw/to cc bcc/) {
 			if ( $opt->{$field} ) {
 				for $_ ( @{ $opt->{$field} } ) {
@@ -396,6 +404,31 @@ sub tag_mime_lite_email {
 		}
 	}
 
+	unless ($Have_MIME_Lite) {
+		my ($to, $subject, $reply_to, @extra, $header);
+
+		$to = delete $opt->{to};
+		$subject = delete $opt->{subject};
+		$reply_to = delete $opt->{reply_to};
+		
+		for (keys %$opt) {
+			$header = ucfirst($_);
+			
+			if (ref($opt->{$_}) eq 'ARRAY') {
+				push(@extra, "$header: " . join(',', @{$opt->{$_}}));
+			} else {
+				push(@extra, "$header: $opt->{$_}");
+			}
+		}
+
+		return send_mail_legacy(join(',', @$to),
+								$subject,
+								$data,
+								join(',', @$reply_to),
+								0,
+								@extra);		
+	}
+	
 	#
 	# Prepare for sending the message
 	#
@@ -853,9 +886,14 @@ sub tag_email {
 	
 	use vars qw/ $Tag /;
 	
-		ATTACH: {
+	ATTACH: {
 		#::logDebug("Checking for attachment");
 		last ATTACH unless $opt->{attach} || $opt->{html};
+
+		unless ($Have_MIME_Lite) {
+			::logError("email tag: attachment without MIME::Lite installed.");
+			last ATTACH;
+		}
 
 		if($opt->{html}) {
 			$opt->{mimetype} ||= 'multipart/alternative';
