@@ -76,6 +76,10 @@ Core
   to create a new session for the user. As long as the file exists continuously,
   the lock kicks in and concurrent requests serialize appropriately.
 
+* New universal "hide" attribute.  You can now set the attribute hide=1 for any
+  tag to supress its output.  For example [calcn hide=1]$foo='bar'[/calcn] will
+  still set $foo to bar, but won't output bar from the tag itself.
+
 UserTag
 -------
 

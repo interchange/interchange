@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.43 2007-12-07 22:38:30 kwalsh Exp $
+# $Id: Parse.pm,v 2.44 2007-12-19 12:33:44 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -808,18 +808,24 @@ EOF
 			$Vend::CurrentTag = $tagsave;
 			$tmpbuf = $p->{ABORT} ? '' : ${$p->{OUT}};
 		}
-		if($attr->{reparse} ) {
+		if ($attr->{'hide'}) {
+			$routine->(@args,$tmpbuf);
+		}
+		elsif($attr->{reparse} ) {
 			$$buf = ($routine->(@args,$tmpbuf)) . $$buf;
 		}
 		else {
-			${$self->{OUT}} .= &{$routine}(@args,$tmpbuf);
+			${$self->{OUT}} .= $routine->(@args,$tmpbuf);
 		}
 	}
-	elsif(! $attr->{interpolate}) {
-		${$self->{OUT}} .= &$routine( @args );
+	elsif ($attr->{'hide'}) {
+		$routine->(@args);
+	}
+	elsif($attr->{interpolate}) {
+		$$buf = $routine->(@args) . $$buf;
 	}
 	else {
-		$$buf = &$routine( @args ) . $$buf;
+		${$self->{OUT}} .= $routine->(@args);
 	}
 
 	$self->{SEND} = $attr->{'send'} || undef;
