@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.96 2007-12-27 08:49:23 racke Exp $
+# $Id: Order.pm,v 2.97 2007-12-27 09:18:53 racke Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.96 $, 10);
+$VERSION = substr(q$Revision: 2.97 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1829,7 +1829,7 @@ sub route_order {
 			my $ary = [$to, $subject, $page, $reply, $use_mime];
 			for (qw/from bcc cc/) {
 				if ($route->{$_}) {
-					push @$ary, ucfirst($_) . " $route->{$_}";
+					push @$ary, ucfirst($_) . ": $route->{$_}";
 				}
 			}
 			push @out, $ary;
