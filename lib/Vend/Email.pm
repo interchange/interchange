@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.10 2007-12-18 09:53:19 racke Exp $
+# $Id: Email.pm,v 1.11 2007-12-28 11:47:51 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -63,7 +63,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 
 ###########################################################################
@@ -92,7 +92,7 @@ sub tag_mime_lite_email {
 	my ($optin, $body) = @_;
 	my ($opt);
 	
-	#::logDebug('mime_lite_email invoked, OPT=' .uneval($opt) . ' BODY=' . $body);
+	#::logDebug('mime_lite_email invoked, OPT=' .uneval($optin) . ' BODY=' . $body);
 
 	local $_;
 
