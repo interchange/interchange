@@ -298,7 +298,6 @@ sub initialize {
 		config_prog
 		configdump
 		crontab
-		dump
 		expire
 		expireall
 		findtags
@@ -887,7 +886,7 @@ WriteMakefile(
 	NAME     => "Interchange",
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
+				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {
