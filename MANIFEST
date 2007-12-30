@@ -307,6 +307,7 @@ code/Widget/country_select.widget
 code/Widget/date.widget
 code/Widget/default.widget
 code/Widget/display.widget
+code/Widget/form_fill.widget
 code/Widget/gpg_keys.widget
 code/Widget/htmlarea.widget
 code/Widget/imagedir.widget
@@ -608,7 +609,6 @@ dist/lib/UI/vars/UI_STD_FILE_NAV
 dist/lib/UI/vars/UI_STD_FOOTER
 dist/lib/UI/vars/UI_STD_HEAD
 dist/robots.cfg
-dist/subdomains.cfg
 dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure
@@ -999,6 +999,7 @@ dist/standard/variables/COPYRIGHT
 dist/standard/variables/LINE_MENU
 dist/standard/variables/PAGE_INIT
 dist/standard/variables/THEME_CSS
+dist/subdomains.cfg
 eg/compact
 eg/cvv2.svg
 eg/filter/calculated.filter
@@ -1157,7 +1158,6 @@ scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL
 scripts/crontab.PL
-scripts/dump.PL
 scripts/expire.PL
 scripts/expireall.PL
 scripts/findtags.PL
