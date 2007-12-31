@@ -307,7 +307,6 @@ code/Widget/country_select.widget
 code/Widget/date.widget
 code/Widget/default.widget
 code/Widget/display.widget
-code/Widget/form_fill.widget
 code/Widget/gpg_keys.widget
 code/Widget/htmlarea.widget
 code/Widget/imagedir.widget
