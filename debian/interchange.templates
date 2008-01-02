@@ -51,14 +51,6 @@ Type: string
 Default: ""
 Description: 
 
-Template: interchange/webserver
-Type: select
-__Choices: Apache2, Apache
-Default: Apache2
-_Description: Webserver for your Interchange applications:
- This information is necessary for the makecat script. Please specify
- which webserver you want to use for your Interchange applications.
-
 Template: interchange/docroot
 Type: string
 Default: /var/www/shops
