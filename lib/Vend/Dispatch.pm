@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.92 2007-11-23 12:58:19 racke Exp $
+# $Id: Dispatch.pm,v 1.93 2008-01-09 09:51:05 racke Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.92 $, 10);
+$VERSION = substr(q$Revision: 1.93 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -721,6 +721,8 @@ sub run_in_catalog {
 
 	logError("Run jobs group=%s pid=$$", $job || 'INTERNAL');
 
+	Vend::Server::set_process_name("job $cat $job");
+	
 	my $jobscfg = $Vend::Cfg->{Jobs};
 
 	my $dir;
