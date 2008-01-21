@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: user_merge.tag,v 1.2 2007-03-30 23:40:54 pajamian Exp $
+# $Id: user_merge.tag,v 1.3 2008-01-21 19:22:55 mheins Exp $
 
 UserTag user-merge Order from to
 UserTag user-merge addAttr
@@ -124,6 +124,8 @@ sub {
 		$from_user{$_}++;
 	}
 
+	my $cart_hash = string_to_ref($urec->{carts});
+	my $carts_changed;
 
 	my @users = sort keys %from_user;
 
@@ -146,6 +148,18 @@ sub {
 		}
 
 		my $urec = $udb->row_hash($user);
+		my $chash = string_to_ref($urec->{carts});
+		if(ref $chash) {
+			for(keys %$chash) {
+				if($cart_hash->{$_}) {
+					$Tag->log({ type => 'text', file => $logfile, body => "unable to merge cart=$_ (already exists). Contents=$urec->{carts}\n"} );
+				}
+				else {
+					$cart_hash->{$_} = $chash->{$_};
+					$carts_changed++;
+				}
+			}
+		}
 		my $ustring = ::uneval($urec);
 		$Tag->log({ type => 'text', file => $logfile, body => "delete user $user=$ustring\n"} );
 		$udb->delete_record($user)
@@ -153,6 +167,9 @@ sub {
 		push @record, "delete user $user" unless $opt->{no_delete};
 	}
 
+	if($carts_changed) {
+		$udb->set_field($to, 'carts', ::uneval($cart_hash));
+	}
 	push @record, '';
 
 	$Tag->log({ type => 'text', file => $logfile, body => join("\n", @record)} );
