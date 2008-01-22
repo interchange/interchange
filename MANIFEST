@@ -1057,7 +1057,6 @@ extra/File/Spec/OS2.pm
 extra/File/Spec/Unix.pm
 extra/File/Spec/VMS.pm
 extra/File/Spec/Win32.pm
-extra/HTML/Entities.pm
 extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
