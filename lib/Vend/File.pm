@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.25 2007-08-09 13:40:53 pajamian Exp $
+# $Id: File.pm,v 2.26 2008-01-24 22:11:13 kwalsh Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -55,7 +55,7 @@ use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -160,9 +160,6 @@ sub readfile_db {
 # Careful, needs the full path, or will be read relative to
 # VendRoot..and will return binary. Should be tested by
 # the user.
-
-# Will also look in the *global* TemplateDir. (No need for the
-# extra overhead of local TemplateDir, probably also insecure.)
 #
 # To ensure security in multiple catalog setups, leading /
 # is not allowed if $Global::NoAbsolute) is true and the file
@@ -188,7 +185,7 @@ sub readfile {
 		$file = $ifile;
 	}
 	else {
-		for( ".", @{$Global::TemplateDir} ) {
+		for( ".", @{$Vend::Cfg->{TemplateDir} || []}, @{$Global::TemplateDir || []}) {
 			next if ! -f "$_/$ifile";
 			$file = "$_/$ifile";
 			last;
