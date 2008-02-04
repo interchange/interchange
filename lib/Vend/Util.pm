@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.113 2007-09-12 15:01:39 kwalsh Exp $
+# $Id: Util.pm,v 2.114 2008-02-04 21:36:58 kwalsh Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -71,6 +71,7 @@ require Exporter;
 	tag_nitems
 	timecard_stamp
 	timecard_read
+	backtrace
 	uneval
 	uneval_it
 	uneval_fast
@@ -90,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.113 $, 10);
+$VERSION = substr(q$Revision: 2.114 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -2247,6 +2248,38 @@ sub timecard_read {
 	return unpack('N',$rtime);
 }
 
+sub backtrace {
+    my $msg = "Backtrace:\n\n";
+    my $frame = 1;
+
+    my $assertfile = '';
+    my $assertline = 0;
+
+    while (my ($package, $filename, $line, $subroutine, $hasargs, $wantarray, $evaltext, $is_require) = caller($frame++) ) {
+	$msg .= sprintf("   frame %d: $subroutine ($filename line $line)\n", $frame - 2);
+	if ($subroutine =~ /assert$/) {
+	    $assertfile = $filename;
+	    $assertline = $line;
+	}
+    }
+    if ($assertfile) {
+	open(SRC, $assertfile) and do {
+	    my $line;
+	    my $line_n = 0;
+
+	    $msg .= "\nProblem in $assertfile line $assertline:\n\n";
+
+	    while ($line = <SRC>) {
+		$line_n++;
+		$msg .= "$line_n\t$line" if (abs($assertline - $line_n) <= 10);
+	    }
+	    close(SRC);
+	};
+    }
+
+    ::logGlobal($msg);
+    undef;
+}
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File
 *canonpath = \&Vend::File::canonpath;
