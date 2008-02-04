@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.85 2008-01-02 15:33:49 racke Exp $
+# $Id: Server.pm,v 2.86 2008-02-04 21:42:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.85 $, 10);
+$VERSION = substr(q$Revision: 2.86 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -655,9 +655,10 @@ sub _read {
 
     do {
 	if (($r = select($rin, undef, undef, 1)) > 0) {
-	    $r = sysread($fh, $$in, 512, length($$in));
+	    $r = sysread($fh, $$in, $r, length($$in));
 	}
-    } while (!defined $r and $!{eintr});
+    } while ((!defined($r) || $r == -1) && ($!{eintr} || $!{eagain}));
+
     die "read: $!" unless defined $r;
     die "read: closed" unless $r > 0;
 }
