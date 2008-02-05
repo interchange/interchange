@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.229 2007-12-03 15:14:16 mheins Exp $
+# $Id: Config.pm,v 2.230 2008-02-05 16:44:51 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.229 $, 10);
+$VERSION = substr(q$Revision: 2.230 $, 10);
 
 my %CDname;
 my %CPname;
@@ -438,6 +438,7 @@ sub global_directives {
 	['PIDfile',     	 'root_dir',         "etc/$Global::ExeName.pid"],
 	['SocketFile',     	 'root_dir_array',   ''],
 	['SocketPerms',      'integer',          0600],
+	['SocketReadTimeout','integer',          1],
 	['SOAP',     	     'yesno',            'No'],
 	['SOAP_Socket',       'array',            ''],
 	['SOAP_Perms',        'integer',          0600],
