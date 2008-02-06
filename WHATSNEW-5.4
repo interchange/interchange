@@ -31,6 +31,14 @@ Packaging
 
 * Remove debconf dependency from interchange-ui postrm script.
 
+Standard demo
+-------------
+
+* Fixed a security bug where an attacker could craft a URI that tricks
+  Interchange into executing arbitrary Perl code.  The Perl code would be
+  subject to the Safe constraints of course, but could still be devistating
+  to the security of the target website.
+
 Other
 -----
 
