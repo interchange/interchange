@@ -73,6 +73,16 @@ That's it. Verify your catalog's operation, and you are live.
 
 KNOWN ISSUES UPGRADING FROM 5.4.x
 
+Check the "special_pages/missing.html" file, in all of your Interchange-driven
+websites, for a line that looks like the following:
+
+    [if type=explicit compare="q{[subject]} =~ m{^admin/}"]
+
+If found then replace with the following two lines:
+
+    [tmpn missing_subject][subject][/tmpn]
+    [if scratch missing_subject =~ /^admin/]
+
 Perl 5.8.0 or newer is now required. Running with threads is still not
 recommended for production installations, but is allowed under Perl 5.8.5
 or newer.
