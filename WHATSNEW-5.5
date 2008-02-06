@@ -12,6 +12,12 @@ Interchange 5.5.2 (unreleased).
 Core
 ----
 
+* New SocketReadTimeout global configuration parameter that controls
+  the amount of time (in seconds) that Interchange will wait for incoming
+  request data to arrive on an open socket.  This was previously hard-coded
+  to one second, but that value was found to be too slow for some dial-up
+  Internet users.
+
 * Fix to the "random" parameter used by looping tags.
 
 	-- If set to "no" or "false" or "0" then return all of the results
@@ -103,6 +109,14 @@ Jobs
 
 * Force email notification of errors, can be prevented with ignore_errors
   setting.
+
+Standard demo
+-------------
+
+* Fixed a security bug where an attacker could craft a URI that tricks
+  Interchange into executing arbitrary Perl code.  The Perl code would be 
+  subject to the Safe constraints of course, but could still be devistating 
+  to the security of the target website.
 
 UI
 --
