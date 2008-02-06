@@ -1,4 +1,5 @@
-[if type=explicit compare="q{[subject]} =~ m{^admin/}"]
+[tmpn missing_subject][subject][/tmpn]
+[if scratch missing_subject =~ /^admin/]
 [seti ui_error]<h2>[msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg]</h2>[/seti]
 [bounce page=admin/error]
 [else]
