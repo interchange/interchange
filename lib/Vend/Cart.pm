@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.19 2007-09-14 16:36:56 kwalsh Exp $
+# $Id: Cart.pm,v 2.20 2008-02-08 09:47:09 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use strict;
 
@@ -174,6 +174,10 @@ sub DESTROY { }
 
 # If the user has put in "0" for any quantity, delete that item
 # from the order list.
+#
+# Also adjust the cart to take minimum and maximum order quantities
+# into account.
+#
 sub toss_cart {
 	my($s, $cartname) = @_;
 	my $i;
@@ -185,7 +189,10 @@ sub toss_cart {
 	$quantity_raise_event = $raise_event && $quantity_raise_event;
 	my $event_cartname = $cartname || $Vend::CurrentCart;
 	my $old_item;
+
 	DELETE: for (;;) {
+		my %total_quantity = ();
+
 		foreach $i (0 .. $#$s) {
 			my $item = $s->[$i];
 			if ($sub = $Vend::Cfg->{ItemAction}{$s->[$i]{code}}) {
@@ -224,7 +231,7 @@ sub toss_cart {
 				if(
 					length $item->{mv_min_quantity}
 					and 
-					$item->{quantity} < $item->{mv_min_quantity}
+					$item->{quantity} + $total_quantity{$item->{code}} < $item->{mv_min_quantity}
 					)
 				{
 					$old_item = { %$item } if $quantity_raise_event;
@@ -252,6 +259,8 @@ sub toss_cart {
 					}
 					$item->{mv_max_quantity} += ::tag_data($tab, $col, $item->{code});
 				}
+				$item->{mv_max_quantity} -= $total_quantity{$item->{code}};
+				$item->{mv_max_quantity} = 0 if $item->{mv_max_quantity} < 0;
 
 				if(
 					length $item->{mv_max_quantity}
@@ -262,6 +271,7 @@ sub toss_cart {
 					$old_item = { %$item } if $quantity_raise_event;
 					$item->{quantity} = $item->{mv_max_quantity};
 					$item->{mv_max_over} = 1;
+					delete $item->{mv_min_under};
 					trigger_update(
 							$s,
 							$item,
@@ -270,6 +280,8 @@ sub toss_cart {
 						) if $quantity_raise_event;
 				}
 			}
+
+			$total_quantity{$item->{code}} += $item->{quantity};
 
 			next unless $::Limit->{cart_quantity_per_line}
 				and $item->{quantity} > $::Limit->{cart_quantity_per_line};
