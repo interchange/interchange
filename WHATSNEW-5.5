@@ -12,6 +12,9 @@ Interchange 5.5.2 (unreleased).
 Core
 ----
 
+* Fixed the MinQuantityField and MaxQuantityField enforcement code so that
+  it takes the entire cart into account when SeparateItems is in use.
+
 * New SocketReadTimeout global configuration parameter that controls
   the amount of time (in seconds) that Interchange will wait for incoming
   request data to arrive on an open socket.  This was previously hard-coded
