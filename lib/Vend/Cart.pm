@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.20 2008-02-08 09:47:09 kwalsh Exp $
+# $Id: Cart.pm,v 2.21 2008-02-11 01:04:12 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use strict;
 
@@ -189,6 +189,7 @@ sub toss_cart {
 	$quantity_raise_event = $raise_event && $quantity_raise_event;
 	my $event_cartname = $cartname || $Vend::CurrentCart;
 	my $old_item;
+	my %quantity_cache;
 
 	DELETE: for (;;) {
 		my %total_quantity = ();
@@ -224,7 +225,7 @@ sub toss_cart {
 						$col = $tab;
 						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 					}
-					$item->{mv_min_quantity} = ::tag_data($tab, $col, $item->{code})
+					$item->{mv_min_quantity} = $quantity_cache{"$tab.$col.$item->{code}"} || ::tag_data($tab, $col, $item->{code})
 											 || '';
 				}
 
@@ -257,7 +258,7 @@ sub toss_cart {
 						$col = $tab;
 						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 					}
-					$item->{mv_max_quantity} += ::tag_data($tab, $col, $item->{code});
+					$item->{mv_max_quantity} += $quantity_cache{"$tab.$col.$item->{code}"} || ::tag_data($tab, $col, $item->{code});
 				}
 				$item->{mv_max_quantity} -= $total_quantity{$item->{code}};
 				$item->{mv_max_quantity} = 0 if $item->{mv_max_quantity} < 0;
