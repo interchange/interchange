@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.58 2008-02-14 14:15:27 kwalsh Exp $
+# $Id: UserDB.pm,v 2.59 2008-02-14 14:46:11 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.58 $, 10);
+$VERSION = substr(q$Revision: 2.59 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1349,7 +1349,7 @@ sub login {
 			my $login_time;
 			unless($self->{OPTIONS}{null_time}) {
 				$login_time = $self->{OPTIONS}{iso_time}
-						? POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($now))
+						? POSIX::strftime("%Y-%m-%dT%H:%M:%S", localtime($now))
 						: $now;
 			}
 			eval {
