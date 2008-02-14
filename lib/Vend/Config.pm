@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.231 2008-02-14 16:11:39 racke Exp $
+# $Id: Config.pm,v 2.232 2008-02-14 16:29:48 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.231 $, 10);
+$VERSION = substr(q$Revision: 2.232 $, 10);
 
 my %CDname;
 my %CPname;
@@ -337,12 +337,15 @@ sub config_error {
 	}
 
 	local($^W);
-	$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
+	if ($configfile) {
+		$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 			$msg,
 			$.,
 			$configfile,
 			$Vend::config_line,
-	);
+		);
+	}
+	
 	if ($Vend::ExternalProgram) {
 		warn "$msg\n" unless $Vend::Quiet;
 	}
