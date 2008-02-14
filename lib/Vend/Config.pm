@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.230 2008-02-05 16:44:51 kwalsh Exp $
+# $Id: Config.pm,v 2.231 2008-02-14 16:11:39 racke Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.230 $, 10);
+$VERSION = substr(q$Revision: 2.231 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3494,7 +3494,12 @@ sub set_default_search {
 							or return 1;
 						if ($C->{DefaultLocale}) {
 							my $def = $C->{DefaultLocale};
-							$C->{Locale} = $repos->{$def};
+							if (exists($repos->{$def})) {
+								$C->{Locale} = $repos->{$def};
+							}
+							else {
+								return (0, errmsg('Default locale %s missing', $def));
+							}
 						}
 						else {
 							for(keys %$repos) {
