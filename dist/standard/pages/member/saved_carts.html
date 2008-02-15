@@ -60,6 +60,8 @@ ui_template_name: leftonly
             ",
         });
 
+		$last_update = $Tag->time({time => $last_update, format => '%B %e, %Y %H:%M'});
+		
 my $row = <<"END";
 <tr>
 <td valign=top>
