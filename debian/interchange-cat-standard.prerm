@@ -1,6 +1,6 @@
 #! /bin/sh -e
 #
-# Copyright 2001,2004,2005 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2004,2005,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 
 # Source debconf library
 . /usr/share/debconf/confmodule
+
+# Call dbconfig-common hook
+. /usr/share/dbconfig-common/dpkg/prerm
+dbc_go interchange-cat-standard $@
 
 /usr/sbin/interchangeconfig USE_STANDARD=
 

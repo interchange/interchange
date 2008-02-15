@@ -3,6 +3,9 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
   * new upstream release
     - display modified date on Saved Carts / Recurring Order page in a
       human readable format (Closes: #430338)
+  * demo catalog installation
+    - added missing dbconfig-common hooks (Closes: #465993)
+    - added defaults for database name and database user 
   * updated French translation of Debconf templates (Closes: #440784,
     thanks to Christian Perrier <bubulle@debian.org>)
   * don't care about Apache 1 anymore 
@@ -11,7 +14,7 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
   * use type error for wrong Debconf input
   * use colon style for Debconf questions
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 15 Feb 2008 21:51:46 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 15 Feb 2008 22:22:06 +0100
 
 interchange (5.5.1-1) unstable; urgency=low
 
