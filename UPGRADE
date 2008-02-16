@@ -70,6 +70,9 @@ That's it. Verify your catalog's operation, and you are live.
 
                          K N O W N   I S S U E S
 
+KNOWN ISSUES UPGRADING FROM 5.5.1
+
+SpecialSub catalog_init has been renamed to request_init.
 
 KNOWN ISSUES UPGRADING FROM 5.4.x
 
