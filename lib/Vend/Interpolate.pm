@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.295 2008-02-11 21:37:47 mheins Exp $
+# $Id: Interpolate.pm,v 2.296 2008-02-16 06:47:00 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.295 $, 10);
+$VERSION = substr(q$Revision: 2.296 $, 10);
 
 @EXPORT = qw (
 
@@ -4947,6 +4947,7 @@ sub fly_page {
 	if ($subname = $Vend::Cfg->{SpecialSub}{flypage}) {
 		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname}; 
 		$listref = $sub->($code);
+		$listref = { mv_results => [[$listref]] } unless ref($listref);
 		$base = $listref;
 	}
 	else {
