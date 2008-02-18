@@ -12,6 +12,11 @@ Interchange 5.5.2 (unreleased).
 Core
 ----
 
+* Allow box-based widgets access to VALUE from option template (in addition
+  to LABEL). With VALUE added, the following template becomes possible:
+
+	option_template => "<img src='/images/{VALUE}.gif'>&nbsp;{LABEL}"
+
 * Fixed the MinQuantityField and MaxQuantityField enforcement code so that
   it takes the entire cart into account when SeparateItems is in use.
 

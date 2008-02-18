@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.73 2007-12-02 15:45:04 mheins Exp $
+# $Id: Form.pm,v 2.74 2008-02-18 19:21:21 docelic Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.73 $, 10);
+$VERSION = substr(q$Revision: 2.74 $, 10);
 
 @EXPORT = qw (
 	display
@@ -969,7 +969,7 @@ sub box {
 		$opt->{selected} = '' if defined $opt->{value};
 
 		my $extra;
-		my $attr = { label => $label };
+		my $attr = { label => $label, value => $value };
 		if(my $p = $price->{$value}) {
 			$attr->{negative} = $p < 0 ? 1 : 0;
 			$attr->{price_noformat} = $p;
