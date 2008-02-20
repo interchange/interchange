@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.98 2008-02-20 09:42:26 kwalsh Exp $
+# $Id: Order.pm,v 2.99 2008-02-20 19:44:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.98 $, 10);
+$VERSION = substr(q$Revision: 2.99 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -594,7 +594,7 @@ sub encrypt_standard_cc {
 	}
 
 	if(! valid_exp_date($all) ) {
-		my $msg = errmsg("Card has expired.");
+		my $msg = errmsg("Card is expired.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
 		return @return;
