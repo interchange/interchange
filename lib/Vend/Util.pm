@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.114 2008-02-04 21:36:58 kwalsh Exp $
+# $Id: Util.pm,v 2.115 2008-02-25 17:17:35 mheins Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.114 $, 10);
+$VERSION = substr(q$Revision: 2.115 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1236,7 +1236,7 @@ sub vendUrl {
 
 	if($opt->{auto_format}) {
 		return $path if $path =~ m{^/};
-		$path =~ s:#([^/.])+$::
+		$path =~ s:#([^/.]+)$::
             and $opt->{anchor} = $1;
 		$path =~ s/\.html?$//i
 			and $opt->{add_dot_html} = 1;
