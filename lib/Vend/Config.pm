@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.232 2008-02-14 16:29:48 racke Exp $
+# $Id: Config.pm,v 2.233 2008-02-25 10:02:30 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.232 $, 10);
+$VERSION = substr(q$Revision: 2.233 $, 10);
 
 my %CDname;
 my %CPname;
@@ -453,7 +453,7 @@ sub global_directives {
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Control',     'action',           ''],
-	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1'],
+	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1 UseGlobal 0'],
 	['IPCsocket',		 'root_dir',	     'etc/socket.ipc'],
 	['HouseKeeping',     'time',          60],
 	['HouseKeepingCron', 'cron',          ''],
