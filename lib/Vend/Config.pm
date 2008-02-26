@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.233 2008-02-25 10:02:30 racke Exp $
+# $Id: Config.pm,v 2.234 2008-02-26 13:55:47 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.233 $, 10);
+$VERSION = substr(q$Revision: 2.234 $, 10);
 
 my %CDname;
 my %CPname;
@@ -5065,11 +5065,8 @@ sub parse_tag {
 		my $fail = '';
 		{
 			local $SIG{'__WARN__'} = sub {$fail .= "$_[0]\n";};
-			eval {
-				package Vend::Interpolate;
-				$sub = eval $val;
-				warn $@ if $@;
-			};
+			package Vend::Interpolate;
+			$sub = eval $val;
 		}
 		if($@) {
 			config_warn(
