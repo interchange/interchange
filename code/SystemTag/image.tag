@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: image.tag,v 1.21 2007-08-05 04:44:09 kwalsh Exp $
+# $Id: image.tag,v 1.22 2008-03-04 16:27:04 kwalsh Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.21 $
+UserTag image Version   $Revision: 1.22 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -219,7 +219,7 @@ sub {
 					}
 				}
 				last MOGIT unless $exec;
-				system "$exec -geometry $siz $newpath";
+				system "$exec -geometry $siz '$newpath'";
 				if($?) {
 					logError("%s: Unable to mogrify image '%s'", 'image tag', $newpath);
 					last MOGIT;
