@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.63 2007-03-30 11:39:44 pajamian Exp $
+# $Id: Data.pm,v 2.64 2008-03-08 20:57:21 jon Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1835,8 +1835,6 @@ sub update_data {
 	my $prikey		= $CGI::values{mv_data_key};
 	my $decode		= is_yes($CGI::values{mv_data_decode});
 
-	my %skip_for_now;
-
 	my $en_col;
 #::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
 	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/s) {
@@ -2010,9 +2008,6 @@ sub update_data {
 				if($file_oldfiles[$i]) {
 					$dref->[0] = $file_oldfiles[$i];
 				}
-				else {
-					$skip_for_now{$nm} = 1;
-				}
 				next;
 			}
 
@@ -2172,8 +2167,6 @@ sub update_data {
 #::logDebug("iteration of update_data:db=$base_db key=$prikey data=" . ::uneval(\%data));
 		@k = (); @v = ();
 		for(keys %data) {
-
-			next if $skip_for_now{$_};
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
@@ -2299,8 +2292,6 @@ sub update_data {
 				if $CGI::values{mv_data_email};
 		}
 	}
-
-	%skip_for_now = ();
 
 	if(my $new = shift(@multis)) {
 		last SETDATA unless length $CGI::values{"${new}_$multiqual"};
