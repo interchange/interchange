@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.64 2008-03-08 20:57:21 jon Exp $
+# $Id: Data.pm,v 2.65 2008-03-12 20:13:31 jon Exp $
 # 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -817,6 +817,10 @@ sub import_database {
 	$obj->{ObjectType} = $class_config->{Class};
 
 	my $dot = $obj->{HIDE_AUTO_FILES} ? '.' : '';
+
+	$obj->{AUTO_NUMBER_FILE} = Vend::File::make_absolute_file(
+		$obj->{AUTO_NUMBER_FILE} || "$dir/$dot$obj->{name}.autonumber"
+	);
 
 	if($class_config->{Extension}) {
 		$database_dbm = Vend::Util::catfile(

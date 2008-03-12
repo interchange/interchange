@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.45 2007-08-09 13:40:56 pajamian Exp $
+# $Id: Common.pm,v 2.46 2008-03-12 20:13:31 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -185,9 +185,8 @@ sub autonumber {
 	local($/) = "\n";
 	my $c = $s->[$CONFIG];
 	if(! defined $c->{AutoNumberCounter}) {
-		my $dot = $c->{HIDE_AUTO_FILES} ? '.' : '';
 		$c->{AutoNumberCounter} = new Vend::CounterFile
-									"$c->{DIR}/$dot$c->{name}.autonumber",
+									$cfg->{AUTO_NUMBER_FILE},
 									$start,
 									$c->{AUTO_NUMBER_DATE},
 									;
