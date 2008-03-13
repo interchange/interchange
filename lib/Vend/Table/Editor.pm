@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.89 2007-09-18 18:51:19 racke Exp $
+# $Id: Editor.pm,v 1.90 2008-03-13 14:17:28 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.89 $, 10);
+$VERSION = substr(q$Revision: 1.90 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -940,6 +940,14 @@ sub display {
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
 		}
 
+		if($opt->{opts}) {
+			my $r = get_option_hash(delete $opt->{opts});
+			for my $k (keys %$r) {
+				$record->{$k} = $r->{$k};
+			}
+		}
+
+
 #::logDebug("overriding defaults");
 #::logDebug("passed=$record->{passed}") if $record->{debug};
 		my %things = (
@@ -957,7 +965,7 @@ sub display {
 			$record->{$k} = $v;
 		}
 
-#::logDebug("calling Vend::Form");
+#::logDebug("calling Vend::Form with record=" . ::uneval($record));
 		if($record->{save_defaults}) {
 			my $sd = $Vend::Session->{meta_defaults} ||= {};
 			$sd = $sd->{"${table}::$column"} ||= {}; 
@@ -2336,6 +2344,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $meta         = $opt->{meta};
 	my $js_check     = $opt->{js_check};
 	my $maxlength    = $opt->{maxlength};
+	my $opts         = $opt->{opts};
 	my $options      = $opt->{options};
 	my $outboard     = $opt->{outboard};
 	my $override     = $opt->{override};
@@ -3966,6 +3975,7 @@ EOF
 							options				=> $options->{$c},
 							outboard			=> $outboard->{$c},
 							override			=> $overridden,
+							opts				=> $opts->{$c},
 							passed				=> $passed->{$c},
 							pre_filter			=> $pre_filter->{$c},
 							prepend				=> $prepend->{$c},
