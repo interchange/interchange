@@ -2,7 +2,7 @@
 #
 # interchange.init - Interchange start-stop script
 #
-# Copyright (C) 2000,2001,2002,2003,2007 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2000,2001,2002,2003,2007,2008 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,16 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
+#
+### BEGIN INIT INFO
+# Provides:          interchange
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Should-Start:      mysql postgresql
+# Should-Stop:       mysql postgresql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/interchange
