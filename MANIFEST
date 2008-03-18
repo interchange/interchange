@@ -1107,6 +1107,7 @@ lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/NetBilling.pm
 lib/Vend/Payment/PRI.pm
 lib/Vend/Payment/PSiGate.pm
+lib/Vend/Payment/Sage.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
