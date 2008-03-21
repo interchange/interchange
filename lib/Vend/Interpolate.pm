@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.296 2008-02-16 06:47:00 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.297 2008-03-21 18:56:12 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.296 $, 10);
+$VERSION = substr(q$Revision: 2.297 $, 10);
 
 @EXPORT = qw (
 
@@ -1009,7 +1009,7 @@ sub conditional {
 		undef $noop;
 		$status = $ready_safe->reval($comp);
 	}
-	elsif($base eq 'variable') {
+	elsif($base =~ /^var(?:iable)?$/) {
 		$op =	qq%$::Variable->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
