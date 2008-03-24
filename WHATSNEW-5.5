@@ -309,6 +309,34 @@ UserDB
 
   UserDB    default    validchars "-A-Za-z0-9_@.+"
 
+* Add new options for determining date of events in the userdb:
+
+	UserDB <profile> created_date_iso   <field_name>
+	UserDB <profile> created_date_epoch <field_name>
+	UserDB <profile> updated_date_iso   <field_name>
+	UserDB <profile> updated_date_epoch <field_name>
+
+	created_date_iso
+		Place a string ISO date in this field when user created.
+	created_date_epoch
+		Place a string epoch date in this field when user created.
+		Only works if no iso date defined.
+	updated_date_iso
+		Place a string ISO date in this field when user updated via
+		[userdb save] (i.e. set_values()).
+	updated_date_epoch
+		Place a string epoch date in this field when user updated via
+		[userdb save] (i.e. set_values()).
+		Only works if no iso date defined.
+
+   Default is not to use this feature, though this is now in
+   the standard template:
+
+		UserDB    default    created_date_epoch created
+		UserDB    default    updated_date_epoch updated
+	
+   along with the appropriate fields.
+   
 UserTag
 -------
 

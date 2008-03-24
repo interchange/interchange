@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.59 2008-02-14 14:46:11 kwalsh Exp $
+# $Id: UserDB.pm,v 2.60 2008-03-24 15:30:10 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 use vars qw!
 	$VERSION
@@ -299,6 +299,10 @@ sub new {
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
 						DB_ACL		=> $options{db_acl}		|| 'db_acl',
+						CREATED_DATE_ISO		=> $options{created_date_iso},
+						CREATED_DATE_UNIX		=> $options{created_date_epoch},
+						UPDATED_DATE_ISO		=> $options{updated_date_iso},
+						UPDATED_DATE_UNIX		=> $options{updated_date_epoch},
 							},
 			STATUS		=>		0,
 			ERROR		=>		'',
@@ -877,6 +881,34 @@ sub set_values {
 					);
 		}
 	}
+
+	my $dfield;
+	my $dstring;
+	if($dfield = $self->{OPTIONS}{updated_date_iso}) {
+		if($self->{OPTIONS}{updated_date_gmtime}) {
+			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%SZ', gmtime());
+		}
+		elsif($self->{OPTIONS}{updated_date_showzone}) {
+			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S %z', localtime());
+		}
+		else {
+			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime());
+		}
+	}
+	elsif($dfield = $self->{OPTIONS}{updated_date_epoch}) {
+		$dstring = time;
+	}
+
+	if($dfield and $dstring) {
+		if($db->test_column($dfield)) {
+			push @bfields, $dfield;
+			push @bvals, $dstring;
+		}
+		else {
+			my $msg = errmsg("updated field %s doesn't exist", $dfield);
+			Vend::Tags->warnings($msg);
+		}
+	}
 	
 	while(@extra) {
 		push @bfields, shift @extra;
@@ -1349,7 +1381,7 @@ sub login {
 			my $login_time;
 			unless($self->{OPTIONS}{null_time}) {
 				$login_time = $self->{OPTIONS}{iso_time}
-						? POSIX::strftime("%Y-%m-%dT%H:%M:%S", localtime($now))
+						? POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($now))
 						: $now;
 			}
 			eval {
@@ -1725,6 +1757,35 @@ sub new_account {
 						$self->{USERNAME},
 						)
 				 or die errmsg("Database access error: %s", $udb->errstr) . "\n";
+		}
+
+		my $dfield;
+		my $dstring;
+		if($dfield = $self->{OPTIONS}{created_date_iso}) {
+			if($self->{OPTIONS}{created_date_gmtime}) {
+				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%SZ', gmtime());
+			}
+			elsif($self->{OPTIONS}{created_date_showzone}) {
+				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S %z', localtime());
+			}
+			else {
+				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime());
+			}
+		}
+		elsif($dfield = $self->{OPTIONS}{created_date_epoch}) {
+			$dstring = time;
+		}
+
+		if($dfield and $dstring) {
+			$udb->set_field(
+						$self->{USERNAME},
+						$dfield,
+						$dstring,
+						)
+				or do { 
+					my $msg = errmsg('Failed to set new account creation date: %s', $udb->errstr);
+					Vend::Tags->warnings($msg);
+				};
 		}
 
 		if($options{no_login}) {
