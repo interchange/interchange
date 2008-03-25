@@ -1,17 +1,17 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2008 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: button.tag,v 1.23 2007-08-04 00:32:41 kwalsh Exp $
+# $Id: button.tag,v 1.24 2008-03-25 15:23:10 racke Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.23 $
+UserTag button Version   $Revision: 1.24 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -108,9 +108,6 @@ sub {
 	# for JavaScript-challenged browsers.
 	$text =~ s/"/&quot;/g;
 	$name =~ s/"/&quot;/g;
-	if(! $onclick and $confirm) {
-		$onclick = qq{ onclick="return $confirm"};
-	}
 	$out = qq{<input type="submit" name="$name" value="$text"$onclick$Vend::Xtrailer>};
 	if (@js) {
 		$out =~ s/ /join "\n", '', @js, ''/e;
