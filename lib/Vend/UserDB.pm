@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.61 2008-03-25 17:13:21 jon Exp $
+# $Id: UserDB.pm,v 2.62 2008-03-25 18:58:32 greg Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.61 $, 10);
+$VERSION = substr(q$Revision: 2.62 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1950,7 +1950,7 @@ sub set_cart {
 		die errmsg('%s field not present to set %s', $field_name, $from) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
-		$d = $ready->reval( $self->{DB}->field( $self->{USERNAME}, $field_name) );
+		$d = string_to_ref( $self->{DB}->field( $self->{USERNAME}, $field_name) );
 
 		$d = {} unless $d;
 
