@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.87 2008-02-05 16:44:51 kwalsh Exp $
+# $Id: Server.pm,v 2.88 2008-03-25 10:17:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,11 +26,12 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.87 $, 10);
+$VERSION = substr(q$Revision: 2.88 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
 use Vend::Util;
+use Vend::CharSet;
 use Fcntl;
 use Errno qw/:POSIX/;
 use Config;
@@ -247,9 +248,28 @@ EOF
 #::logDebug("entity=" . ${$h->{entity}});
 
 	if ("\U$CGI::request_method" eq 'POST') {
-		parse_post(\$CGI::query_string)
-			if $Global::TolerateGet;
-		parse_post($h->{entity});
+#::logDebug("content type header: " . $CGI::content_type);
+		## check for valid content type
+		if (   $CGI::content_type =~ m|^multipart/form-data|
+			|| $CGI::content_type =~ m|^application/x-www-form-urlencoded|) {
+			parse_post(\$CGI::query_string)
+				if $Global::TolerateGet;
+			parse_post($h->{entity});
+		}
+		else {
+			## invalid content type for POST
+			## XXX we may want to be a little more forgiving here
+			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST Method");
+			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
+			my $len = length($msg);
+			$Vend::StatusLine = <<EOF;
+Status: 415 Unsupported Media Type
+Content-Type: $content_type
+Content-Length: $len
+EOF
+			respond('', \$msg);
+			die($msg);
+		}
 	}
 	elsif ("\U$CGI::request_method" eq 'PUT') {
 #::logDebug("Put operation.");
@@ -308,8 +328,20 @@ sub store_cgi_kv {
 
 sub parse_post {
 	my $sref = shift;
-	my(@pairs, $pair, $key, $value);
 	return unless length $$sref;
+
+	my(@pairs, $pair, $key, $value);
+	my $charset;
+
+	if ($CGI::content_type =~ m/charset=(["']?)([-a-zA-Z0-9]+)\1/) {
+		$charset = $2; 
+	}
+	else {
+		$charset = Vend::CharSet->default_charset();
+	}
+
+	$CGI::values{mv_form_charset} = $charset;
+
 	if ($CGI::content_type =~ /^multipart/i) {
 		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
@@ -352,19 +384,19 @@ sub parse_post {
 
 #::logDebug("incoming --> $key");
 		$key = $::IV->{$key} if defined $::IV->{$key};
-		$key =~ tr/+/ /;
-		$key =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+		$key = Vend::CharSet->decode_urlencode($key, $charset);
 #::logDebug("mapping  --> $key");
-		$value =~ tr/+/ /;
-		$value =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
-		# Handle multiple keys
-		if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
-			$CGI::values{$key} = "$CGI::values{$key}\0$value";
-			push ( @{$CGI::values_array{$key}}, $value)
-		}
-		else {
-			$CGI::values{$key} = $value;
-			$CGI::values_array{$key} = [$value];
+		if ($key) {
+			$value = Vend::CharSet->decode_urlencode($value, $charset);
+			# Handle multiple keys
+			if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
+				$CGI::values{$key} = "$CGI::values{$key}\0$value";
+				push ( @{$CGI::values_array{$key}}, $value);
+			}
+			else {
+				$CGI::values{$key} = $value;
+				$CGI::values_array{$key} = [$value];
+			}
 		}
 	}
 	if (! $redo and "\U$CGI::request_method" eq 'POST') {
@@ -427,6 +459,16 @@ sub parse_multipart {
 				next;
 			}
 
+			my ($content_type) = $header{'Content-Type'} =~ /^([^\s;]+)/;
+			my ($charset) = $header{'Content-Type'} =~ / charset="?([-a-zA-Z0-9]+)"?/;
+
+			$content_type ||= 'text/plain';
+			$charset ||= Vend::CharSet->default_charset();
+
+			if ($content_type =~ /text/) {
+				$data = Vend::CharSet->to_internal($charset, $data);
+			}
+
 			if($filename) {
 				$CGI::file{$param} = $data;
 				$data = $filename;
@@ -439,6 +481,7 @@ sub parse_multipart {
 	}
 	return 1;
 }
+
 
 sub create_cookie {
 	my($domain,$path) = @_;
@@ -496,6 +539,8 @@ sub respond {
 	# $body is now a reference
     my ($s, $body) = @_;
 #show_times("begin response send") if $Global::ShowTimes;
+	my $response_charset = Vend::CharSet->default_charset();
+
 	my $status;
 	return if $Vend::Sent;
 	if($Vend::StatusLine) {
@@ -516,7 +561,8 @@ sub respond {
 
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
-							? '' : "\r\nContent-Type: text/html\r\n";
+							? '' : "\r\nContent-Type: text/html; charset=$response_charset\r\n";
+
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track;
@@ -630,7 +676,7 @@ sub respond {
 		print $fh canon_status($Vend::StatusLine);
 	}
 	elsif(! $Vend::ResponseMade) {        
-		print $fh canon_status("Content-Type: text/html");
+		print $fh canon_status("Content-Type: text/html; charset=$response_charset");
 # TRACK        
         print $fh canon_status("X-Track: " . $Vend::Track->header())
 			if $Vend::Track;
@@ -894,6 +940,8 @@ sub connection {
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
     show_times('end cgi read') if $Global::ShowTimes;
+
+	binmode(MESSAGE, ":utf8") if $::Variable->{MV_UTF8};
 
     my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 

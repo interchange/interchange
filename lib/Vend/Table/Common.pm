@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.46 2008-03-12 20:13:31 jon Exp $
+# $Id: Common.pm,v 2.47 2008-03-25 10:17:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -486,7 +486,9 @@ sub stuff_row {
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->lock_table();
+
     $s->[$TIE_HASH]{"k$key"} = join("\t", map(stuff($_), @fields));
+
 	$s->unlock_table();
 	return $key;
 }
@@ -1040,6 +1042,8 @@ sub import_ascii_delimited {
 			or die errmsg("%s %s: %s\n", errmsg("open"), $infile, $!);
 	}
 
+	new_filehandle(\*IN);
+
 	my $field_hash;
 	my $para_sep;
 	my $codere = '[\w-_#/.]+';
@@ -1211,6 +1215,9 @@ EndOfExcel
 				$fh = new IO::File "> $infile.$i[$i]";
 				die errmsg("%s %s: %s\n", errmsg("create"), "$infile.$i[$i]",
 				$!) unless defined $fh;
+
+				new_filehandle($fh);
+
 				eval {
 					unlink "$infile.$n[$i]" if -l "$infile.$n[$i]";
 					symlink "$infile.$i[$i]", "$infile.$n[$i]";
@@ -1384,11 +1391,12 @@ EndOfRoutine
 					errmsg("%s %s: %s\n", errmsg("open read/write"), $realfile, $!);
 			lockfile(\*IN, 1, 1)
 				or die errmsg("%s %s: %s\n", errmsg("lock"), $realfile, $!);
+			new_filehandle(\*IN);
 			<IN>;
 			eval $format{$format};
 			die errmsg("%s %s: %s\n", errmsg("import"), $options->{name}, $!) if $@;
 		}
-		elsif (! open(IN, ">$realfile") ) {
+		elsif (! open(IN, ">$realfile") && new_filehandle(\*IN) ) {
 				die errmsg("%s %s: %s\n", errmsg("create"), $realfile, $!);
 		} 
 		else {
@@ -1416,11 +1424,13 @@ EndOfRoutine
 			}
 			else {
 				$fh = new IO::File "$infile.$i[$i]";
+				new_filehandle($fh);
 				my (@lines) = <$fh>;
 				close $fh or die "close: $!";
 				my $option = $o[$i] || 'none';
 				@lines = sort { &{$Sort{$option}} } @lines;
 				$fh = new IO::File ">$infile.$i[$i]";
+				new_filehandle($fh);
 				print $fh @lines;
 				close $fh or die "close: $!";
 			}
@@ -1596,6 +1606,12 @@ sub log_error {
 	}
 	die $msg if $cfg->{DIE_ERROR};
 	return $cfg->{last_error} = $msg;
+}
+
+sub new_filehandle {
+	my $fh = shift;
+	binmode($fh, ":utf8") if $::Variable->{MV_UTF8};
+	return $fh;
 }
 
 1;

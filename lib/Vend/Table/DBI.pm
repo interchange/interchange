@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.82 2008-03-12 20:13:31 jon Exp $
+# $Id: DBI.pm,v 2.83 2008-03-25 10:17:18 kwalsh Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -69,6 +69,8 @@ my %Dattr = ( qw(
 					AUTOCOMMIT     	AutoCommit
 					LONGTRUNCOK    	LongTruncOk
 					LONGREADLEN    	LongReadLen
+                    PG_ENABLE_UTF8  pg_enable_utf8
+				    MYSQL_ENABLE_UTF8 mysql_enable_utf8
 				) );
 my @Dattr = keys %Dattr;
 
