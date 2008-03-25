@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.2
 #
-# $Id: interchange.PL,v 2.102 2008-03-25 16:26:17 racke Exp $
+# $Id: interchange.PL,v 2.103 2008-03-25 22:26:06 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -867,7 +867,7 @@ EOF
 
 	THREADCHECK: {
 		last THREADCHECK unless $Global::TryingThreads;
-		require 5.8.8 and last THREADCHECK;
+		$] >= 5.008_008 and last THREADCHECK;
 		
 		my $msg = <<EOF;
 ***************************************************************
