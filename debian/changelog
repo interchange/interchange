@@ -9,7 +9,7 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
   * updated French translation of Debconf templates (Closes: #440784,
     thanks to Christian Perrier <bubulle@debian.org>)
   * added Finnish translation of Debconf templates (Closes: #471687,
-    thanks to Esko Araj‰rvi <edu@iki.fi>)
+    thanks to Esko Araj√§rvi <edu@iki.fi>)
   * added LSB dependency info to init scripts (Closes: #469718, thanks to
     Petter Reinholdtsen <pere@hungry.com> for the patch)
   * don't care about Apache 1 anymore 
