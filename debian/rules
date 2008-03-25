@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 #
-# Copyright 2000,2001,2002,2003,2005,2006,2007 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002,2003,2005,2006,2007,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ build-stamp:
 	dh_testdir
 
 # Compile main stuff
-	touch _allow_threads
 	env $(PERL) Makefile.PL force=1 \
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
@@ -61,7 +60,7 @@ install: build
 	dh_installdirs
 
 # Add here commands to install the package into debian/tmp.
-	env MINIVEND_FORCE_THREADS=1 $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man3 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1 INTERCHANGE_USER=interchange
+	env $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man3 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1 INTERCHANGE_USER=interchange
 
 # Sample configuration file not needed (code in interchange.PL
 # to determine configuration file location will stop to work too)
