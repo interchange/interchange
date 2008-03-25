@@ -154,7 +154,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2007 Interchange Development Group.
+ Copyright (C) 2002-2008 Interchange Development Group.
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
@@ -352,7 +352,7 @@ sub initialize {
 							|| $Config{useithreads}
 							|| $Config{use5005threads};
 
-	if($Global::TryingThreads and ! -f '_allow_threads') {
+	if($Global::TryingThreads and $] < 5.008_008 and ! -f '_allow_threads') {
 		print <<EOF;
 It is not recommended that you run Interchange with a thread-enabled perl,
 which you have called this installer with. Either rerun with 
