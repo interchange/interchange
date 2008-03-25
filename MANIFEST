@@ -1065,6 +1065,7 @@ install_lsb.pl
 lib/Vend/Accounting.pm
 lib/Vend/Accounting/SQL_Ledger.pm
 lib/Vend/Cart.pm
+lib/Vend/CharSet.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
 lib/Vend/CounterFile.pm
