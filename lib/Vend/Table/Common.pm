@@ -1,8 +1,8 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.47 2008-03-25 10:17:18 kwalsh Exp $
+# $Id: Common.pm,v 2.48 2008-03-25 17:13:21 jon Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 use strict;
 
 package Vend::Table::Common;

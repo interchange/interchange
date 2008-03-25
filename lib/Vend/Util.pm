@@ -1,8 +1,8 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.116 2008-03-25 10:17:18 kwalsh Exp $
+# $Id: Util.pm,v 2.117 2008-03-25 17:13:21 jon Exp $
 # 
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.116 $, 10);
+$VERSION = substr(q$Revision: 2.117 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;

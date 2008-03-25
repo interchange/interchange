@@ -1,8 +1,8 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.65 2008-03-12 20:13:31 jon Exp $
+# $Id: Data.pm,v 2.66 2008-03-25 17:13:21 jon Exp $
 # 
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

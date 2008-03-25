@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.88 2008-03-25 10:17:18 kwalsh Exp $
+# $Id: Server.pm,v 2.89 2008-03-25 17:13:21 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.88 $, 10);
+$VERSION = substr(q$Revision: 2.89 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -247,11 +247,11 @@ EOF
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
 
-	if ("\U$CGI::request_method" eq 'POST') {
+	my $request_method = "\U$CGI::request_method";
+	if ($request_method eq 'POST') {
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
-		if (   $CGI::content_type =~ m|^multipart/form-data|
-			|| $CGI::content_type =~ m|^application/x-www-form-urlencoded|) {
+		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded)$}) {
 			parse_post(\$CGI::query_string)
 				if $Global::TolerateGet;
 			parse_post($h->{entity});
@@ -259,7 +259,7 @@ EOF
 		else {
 			## invalid content type for POST
 			## XXX we may want to be a little more forgiving here
-			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST Method");
+			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
 			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
 			my $len = length($msg);
 			$Vend::StatusLine = <<EOF;
@@ -271,7 +271,7 @@ EOF
 			die($msg);
 		}
 	}
-	elsif ("\U$CGI::request_method" eq 'PUT') {
+	elsif ($request_method eq 'PUT') {
 #::logDebug("Put operation.");
 		parse_post(\$CGI::query_string);
 		$CGI::put_ref = $h->{entity};
@@ -330,11 +330,10 @@ sub parse_post {
 	my $sref = shift;
 	return unless length $$sref;
 
-	my(@pairs, $pair, $key, $value);
-	my $charset;
+	my (@pairs, $pair, $key, $value, $charset);
 
 	if ($CGI::content_type =~ m/charset=(["']?)([-a-zA-Z0-9]+)\1/) {
-		$charset = $2; 
+		$charset = $2;
 	}
 	else {
 		$charset = Vend::CharSet->default_charset();
@@ -364,6 +363,7 @@ sub parse_post {
 		$CGI::values_array{ISINDEX} =  [ split /\+/, $pairs[0] ];
 		@pairs = ();
 	}
+	my $request_method = "\U$CGI::request_method";
 	my $redo;
   CGIVAL: {
   	# This loop semi-duplicated in store_cgi_kv
@@ -374,7 +374,7 @@ sub parse_post {
 					$key = $pair;
 					$value = undef;
 				}
-				elsif($CGI::request_method =~ /^post$/i) {
+				elsif ($request_method eq 'POST') {
 					die ::errmsg("Syntax error in POST input: %s\n%s", $pair, $$sref);
 				}
 				else {
@@ -391,7 +391,7 @@ sub parse_post {
 			# Handle multiple keys
 			if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
 				$CGI::values{$key} = "$CGI::values{$key}\0$value";
-				push ( @{$CGI::values_array{$key}}, $value);
+				push @{$CGI::values_array{$key}}, $value;
 			}
 			else {
 				$CGI::values{$key} = $value;
@@ -399,7 +399,7 @@ sub parse_post {
 			}
 		}
 	}
-	if (! $redo and "\U$CGI::request_method" eq 'POST') {
+	if (! $redo and $request_method eq 'POST') {
 		@pairs = split $Global::UrlSplittor, $CGI::query_string;
 		if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32}) ; /x)  {
 			my (@old) = split /;/, $pairs[0], 3;
@@ -465,7 +465,7 @@ sub parse_multipart {
 			$content_type ||= 'text/plain';
 			$charset ||= Vend::CharSet->default_charset();
 
-			if ($content_type =~ /text/) {
+			if ($content_type =~ m{^text/}) {
 				$data = Vend::CharSet->to_internal($charset, $data);
 			}
 
@@ -941,7 +941,7 @@ sub connection {
     	or return 0;
     show_times('end cgi read') if $Global::ShowTimes;
 
-	binmode(MESSAGE, ":utf8") if $::Variable->{MV_UTF8};
+    binmode(MESSAGE, ':utf8') if $::Variable->{MV_UTF8};
 
     my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 
