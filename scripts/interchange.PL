@@ -3,9 +3,9 @@
 #
 # Interchange version 5.5.2
 #
-# $Id: interchange.PL,v 2.101 2007-11-05 13:50:34 racke Exp $
+# $Id: interchange.PL,v 2.102 2008-03-25 16:26:17 racke Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -348,7 +348,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2007 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2008 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -867,7 +867,8 @@ EOF
 
 	THREADCHECK: {
 		last THREADCHECK unless $Global::TryingThreads;
-
+		require 5.8.8 and last THREADCHECK;
+		
 		my $msg = <<EOF;
 ***************************************************************
 ***************************************************************
@@ -1006,7 +1007,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2007 Interchange Development Group
+Copyright (C) 2002-2008 Interchange Development Group
 Copyright (C) 1995-2002 Red Hat, Inc.
 All rights reserved except those granted in the license.
 
