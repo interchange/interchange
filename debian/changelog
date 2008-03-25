@@ -8,6 +8,8 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
     - added defaults for database name and database user 
   * updated French translation of Debconf templates (Closes: #440784,
     thanks to Christian Perrier <bubulle@debian.org>)
+  * added Finnish translation of Debconf templates (Closes: #471687,
+    thanks to Esko Arajärvi <edu@iki.fi>)
   * added LSB dependency info to init scripts (Closes: #469718, thanks to
     Petter Reinholdtsen <pere@hungry.com> for the patch)
   * don't care about Apache 1 anymore 
@@ -16,7 +18,7 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
   * use type error for wrong Debconf input
   * use colon style for Debconf questions
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 18 Mar 2008 00:28:40 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 25 Mar 2008 17:29:40 +0100
 
 interchange (5.5.1-1) unstable; urgency=low
 
