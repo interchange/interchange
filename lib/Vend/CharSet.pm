@@ -1,9 +1,8 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.2 2008-03-25 10:42:20 kwalsh Exp $
+# $Id: CharSet.pm,v 2.3 2008-03-25 10:53:38 kwalsh Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
-# Copyright (C) 1996-2002 Red Hat, Inc.
+# Copyright (C) 2008 Interchange Development Group
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
