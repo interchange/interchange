@@ -37,8 +37,8 @@ build-stamp:
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
-	pod2man	debian/interchangeconfig > blib/man1/interchangeconfig.1p
-	pod2man eg/te > blib/man1/te.1p
+	pod2man	--section=1p debian/interchangeconfig > blib/man1/interchangeconfig.1p
+	pod2man --section=1p eg/te > blib/man1/te.1p
 
 	touch build-stamp
 
