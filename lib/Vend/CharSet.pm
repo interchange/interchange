@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.4 2008-03-25 17:13:21 jon Exp $
+# $Id: CharSet.pm,v 2.5 2008-03-26 10:29:06 racke Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 #
@@ -27,27 +27,6 @@ use warnings;
 use Encode qw( decode resolve_alias is_utf8 );
 
 use constant DEFAULT_ENCODING => 'utf-8';
-
-=pod
-
-=head1 NAME
-
-Vend::CharSet
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-This modules contains some utility methods for handling character
-encoding in general and UTF-8 in particular.
-
-=head1 METHODS
-
-=over 
-
-=item B<decode_urlendcode>( $octets, $encoding )
-
-=cut
 
 sub decode_urlencode {
 	my ($class, $octets, $encoding) = (@_);
