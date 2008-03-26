@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.89 2008-03-25 17:13:21 jon Exp $
+# $Id: Server.pm,v 2.90 2008-03-26 14:19:35 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.89 $, 10);
+$VERSION = substr(q$Revision: 2.90 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -251,7 +251,7 @@ EOF
 	if ($request_method eq 'POST') {
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
-		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded)$}) {
+		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded)\b}i) {
 			parse_post(\$CGI::query_string)
 				if $Global::TolerateGet;
 			parse_post($h->{entity});
@@ -332,7 +332,7 @@ sub parse_post {
 
 	my (@pairs, $pair, $key, $value, $charset);
 
-	if ($CGI::content_type =~ m/charset=(["']?)([-a-zA-Z0-9]+)\1/) {
+	if ($CGI::content_type =~ m/\bcharset=(["']?)([-a-zA-Z0-9]+)\1/i) {
 		$charset = $2;
 	}
 	else {
@@ -341,13 +341,13 @@ sub parse_post {
 
 	$CGI::values{mv_form_charset} = $charset;
 
-	if ($CGI::content_type =~ /^multipart/i) {
+	if ($CGI::content_type =~ m{^multipart/}i) {
 		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
 		# even though it's sent as non-multipart data
 		# Contributed by Bill Randle
-		my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
+		my ($boundary) = $CGI::content_type =~ /\bboundary="?([^";]+)"?/i;
 		$boundary = '--' . quotemeta $boundary;
 		return parse_multipart($sref) if $$sref =~ /^\s*$boundary\s+/;
 	}
@@ -465,7 +465,7 @@ sub parse_multipart {
 			$content_type ||= 'text/plain';
 			$charset ||= Vend::CharSet->default_charset();
 
-			if ($content_type =~ m{^text/}) {
+			if ($content_type =~ m{^text/}i) {
 				$data = Vend::CharSet->to_internal($charset, $data);
 			}
 
