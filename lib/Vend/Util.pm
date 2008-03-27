@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.117 2008-03-25 17:13:21 jon Exp $
+# $Id: Util.pm,v 2.118 2008-03-27 15:56:49 ton Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.117 $, 10);
+$VERSION = substr(q$Revision: 2.118 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -264,10 +264,11 @@ sub round_to_frac_digits {
 		$digits = 2;
 	}
 	my @frac;
-	$num =~ /^(\d*)(?:\.(\d+))?$/
+	$num =~ /^(-?)(\d*)(?:\.(\d+))?$/
 		or return $num;
-	my $int = $1;
-	@frac = split(m{}, ($2 || 0));
+	my $sign = $1 || '';
+	my $int = $2;
+	@frac = split(m{}, ($3 || 0));
 	local($^W) = 0;
 	my $frac = join "", @frac[0 .. $digits - 1];
 	if($frac[$digits] > 4) {
@@ -278,7 +279,7 @@ sub round_to_frac_digits {
 		$frac = 0 x $digits;
 	}
 	$frac .= '0' while length($frac) < $digits;
-	return "$int.$frac";
+	return "$sign$int.$frac";
 }
 
 use vars qw/%MIME_type/;
