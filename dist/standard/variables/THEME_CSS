@@ -29,11 +29,11 @@ td { font-size: 10pt }
 	font-weight: normal;
 	margin: 0;
 	padding: 0;
-	border: solid #BB720A 1px
+	border: solid #BB720A 1px;
 	letter-spacing: 0px;
-	align: center;
+	text-align: center;
 	cursor: pointer;
-	vertical-align: center;
+	vertical-align: middle;
 	text-decoration: none;
 	color: black;
 }
@@ -46,11 +46,11 @@ td { font-size: 10pt }
 	font-weight: normal;
 	margin: 0;
 	padding: 0;
-	border: solid black 1px
+	border: solid black 1px;
 	letter-spacing: 0px;
-	align: center;
+	text-align: center;
 	cursor: pointer;
-	vertical-align: center;
+	vertical-align: middle;
 	text-decoration: none;
 	color: black;
 }
@@ -96,7 +96,7 @@ td { font-size: 10pt }
 	padding: 5px;
 	margin: 3px;
 	background: #ffffff;
-	align: center;
+	text-align: center;
 	color: #f00;
 	font-weight: bold; 
 }
@@ -292,11 +292,11 @@ A.barlink:hover {
 	font-weight: normal;
 	margin: 0;
 	padding: 0;
-	border: solid black 1px
+	border: solid black 1px;
 	letter-spacing: 0px;
-	align: center;
+	text-align: center;
 	cursor: pointer;
-	vertical-align: center;
+	vertical-align: middle;
 	text-decoration: none;
 	color: black;
 }
@@ -451,7 +451,7 @@ A.cartlink:hover {
   	font-size: 9pt;
   	width:95%;
   	height:20px;
-  	vertical-align: center;
+  	vertical-align: middle;
   	border: solid #218CBD 1px
 }
 
