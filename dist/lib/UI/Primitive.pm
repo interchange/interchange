@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.26 2007-08-09 13:40:52 pajamian Exp $
+# $Id: Primitive.pm,v 2.27 2008-04-10 17:52:14 docelic Exp $
 
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1998-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 $DEBUG = 0;
 
@@ -426,7 +426,7 @@ sub list_images {
 					$n =~ s:^$base/?::;
 					push(@names, $n);
 				};
-	find($wanted, $base);
+	find($wanted, $base . '/');
 	return sort @names;
 }
 
