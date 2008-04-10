@@ -148,6 +148,13 @@ Standard demo
 UI
 --
 
+* Function UI::Primitive::list_images(), used by imagehelper, now works
+  correctly with directory paths whose last component is a directory symlink
+  (such as "path/to/symlink/*.jpg")
+
+* It is now possible to have multiple imagehelper widgets that use different
+  suffix filter on the same page. (such as 'images/*.jpg' and 'images/*.gif')
+
 * Matrix options editor can now display more than 50 variants via the use of a
   more-list.
 
