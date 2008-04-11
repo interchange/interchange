@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.50 2007-03-30 11:39:45 pajamian Exp $
+# $Id: Menu.pm,v 2.51 2008-04-11 09:04:16 jon Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 use Vend::Util;
 use strict;
@@ -937,7 +937,6 @@ EOF
 	push @out, <<EOF;
 
 <div id="${vpf}treebox" style="visibility: Visible">
-Test.
 </div>
 <script language="JavaScript1.3">
 var ${vpf}lines = new Array;
@@ -1459,7 +1458,6 @@ EOF
 	push @out, <<EOF;
 
 <div id="${vpf}treebox" style="visibility: Visible">
-Test.
 </div>
 <script language="JavaScript1.3">
 var ${vpf}lines = new Array;
