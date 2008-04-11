@@ -28,6 +28,7 @@ April		April	Avril	April
 August		August	Aout	Augustus
 Available credit	Available credit			Beschikbaar krediet
 BACK	BACK			TERUG
+BUY NOW		JETZT KAUFEN		
 Bad search specification	Bad search specification			Verkeerde zoekspecificatie
 Bank Phone	Bank Phone			Telefoon bank
 Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
@@ -40,7 +41,6 @@ Buy	Buy	Kaufen		Kopen
 Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
-BUY NOW		JETZT KAUFEN		
 C.O.D.	C.O.D.			Rembours
 CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.			
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
@@ -232,6 +232,7 @@ Please use your browser's back to enter a more appropriate value.	Please use you
 Please verify the information below and click the <b>'Place Order'</b> button to process your order.	Please verify the information below and click the <b>'Place Order'</b> button to process your order.			Controleert U alstublieft onderstaande gegevens en klik vervolgens de <b>"Plaats Order"</b> knop om uw bestelling te verwerken.
 Post Anonymously	Post Anonymously			Anoniem verzenden
 Postal Billing	Postal Billing			
+Posted on	Posted on			
 Powered by Interchange	Powered by Interchange			
 Preview	Preview			
 Previous	Previous			Vorige
@@ -253,6 +254,7 @@ Quan	Quan			Aantal
 Quantity	Quantity	Anzahl		Aantal
 Quantity Discounts	Quantity Discounts			Kwantumkortingen
 RMA Number	RMA Number			RMA nummer
+Read more	Read more			
 Recurring Orders	Recurring Orders			Herhalingsorders
 Regular price	Regular price			Normale prijs
 Remove	Remove	Löschen		Verwijder
@@ -447,5 +449,3 @@ products		de_products	produits
 test number	test number			testnummer
 will update display	will update display			Ververst het scherm
 will work to start it.	will work to start it.			zal werken om het te starten.
-Posted on	Posted on			
-Read more	Read more			
