@@ -1,8 +1,8 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.26 2007-08-09 13:40:54 pajamian Exp $
+# $Id: Ship.pm,v 2.27 2008-04-11 07:47:16 danb Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -908,6 +908,16 @@ sub shipping {
 				$::Values->{mv_handling} = $mode;
 			}
 			undef $opt->{default};
+		}
+		if (my $callout_name = $Vend::Cfg->{SpecialSub}{shipping_callout}) {
+#::logDebug("Execute shipping callout '$callout_name(...)'");
+			my $sub = $Vend::Cfg->{Sub}{$callout_name} 
+				|| $Global::GlobalSub->{$callout_name};
+			eval {
+				my $callout_result = $sub->($final, $mode, $opt, $o);
+				$final = $callout_result if defined $callout_result;
+			};
+			::logError("Shipping callout '$callout_name' died: $@") if $@;
 		}
 		return $final unless $opt->{label};
 		my $number;
