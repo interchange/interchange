@@ -1,0 +1,45 @@
+#!/usr/local/bin/perl
+
+# merge-tab-files
+# by Jon Jensen <jon@endpoint.com>
+# 2008-04-11
+#
+# A tool for merging multiple tab-delimited files.
+# Each tab-delimited file's first line is expected to contain the column names.
+#
+# Usage: merge-tab-files $file1 [$file2 ...]
+
+use strict;
+use warnings;
+use List::MoreUtils qw( uniq );
+#use Data::Dumper;
+
+my %data;
+my @all_cols;
+
+for my $file (@ARGV) {
+    open my $in, '<', $file or die "Couldn't open file $file: $!\n";
+    $_ = <$in>;
+    chomp;
+    my @cols = split /\t/, $_, -1;
+    push @all_cols, @cols;
+    while (<$in>) {
+        chomp;
+        my @row = split /\t/, $_, -1;
+        my $key = $row[0];
+        # Don't want to clobber duplicate column definitions if the new one is empty
+        $data{$key}{$cols[$_]} ||= $row[$_] for 1..$#cols;
+    }
+    close $in;
+}
+
+@all_cols = uniq @all_cols;
+print join("\t", @all_cols), "\n";
+
+#print Dumper(\%data);
+
+no warnings 'uninitialized';
+
+for my $key (sort keys %data) {
+    print join("\t", $key, map { $data{$key}{$_} } @all_cols[1..$#all_cols]), "\n";
+}
