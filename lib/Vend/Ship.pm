@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.27 2008-04-11 07:47:16 danb Exp $
+# $Id: Ship.pm,v 2.28 2008-04-11 08:44:20 danb Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -714,6 +714,18 @@ sub shipping {
 	    }
 	}
 
+	if ($field eq 'weight') {
+		if (my $callout_name = $Vend::Cfg->{SpecialSub}{weight_callout}) {
+#::logDebug("Execute weight callout '$callout_name(...)'");
+			my $weight_callout_sub = $Vend::Cfg->{Sub}{$callout_name} 
+				|| $Global::GlobalSub->{$callout_name};
+			eval {
+				$total = $weight_callout_sub->($total) || 0;
+			};
+			::logError("Weight callout '$callout_name' died: $@") if $@;
+		}
+	}
+	
 	# We will LAST this loop and go to SHIPFORMAT if a match is found
 	SHIPIT: 
 	foreach $row (@lines) {
