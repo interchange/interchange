@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: error.coretag,v 1.9 2007-08-01 10:52:45 kwalsh Exp $
+# $Id: error.coretag,v 1.10 2008-04-11 06:30:46 danb Exp $
 
 ### This is in package Vend::Interpolate, and may make reference
 ### to variables in that module
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.9 $
+UserTag error               Version      $Revision: 1.10 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -89,7 +89,10 @@ sub tag_error {
 					$string .= " ($_)" if $opt->{show_var};
 					$string .= ": ";
 				} else {
-					$string .= "($_): ";
+					# Use the variable name unless Locale has a default label.
+					my $label = errmsg("error_label_${_}");
+					$label = $_ if $label eq "error_label_${_}";
+					$string .= "($label): ";
 				}
 			} else {
 				$string .= "$_: " if $opt->{show_var};
