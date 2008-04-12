@@ -5,7 +5,7 @@
 =head1 NAME
 
 te (table editor) - front-end that simplifies editing tab-delimited
-ASCII tables
+text tables
 
 =head1 SYNOPSIS
 
@@ -49,7 +49,7 @@ columns will be written.
 
 =item o
 
-To delete a column, delete it's line in the first record.
+To delete a column, delete its line in the first record.
 
 =item o
 
@@ -101,19 +101,14 @@ neither of those is set, my favorite editor, B<vi>(1) is used.
 Options will also be read from environment variable TE_OPTIONS if it is
 set.
 
-=head1 LIMITATIONS
-
-There is currently no way to add or delete entire columns from the
-file. I recommend using B<cut>(1) for this.
-
 =head1 AUTHOR
 
-Jon Jensen <jon@icdevgroup.org>
+Jon Jensen <jon@endpoint.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2005 Jon Jensen and Mike Heins
-Copyright (C) 2001-2002 Red Hat, Inc.
+    Copyright (C) 2002-2008 Jon Jensen and others
+    Copyright (C) 2001-2002 Red Hat, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -127,7 +122,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.12 2005-12-27 18:15:33 jon Exp $
+$Id: te,v 2.13 2008-04-12 02:33:40 jon Exp $
 
 =head1 CHANGELOG
 
@@ -171,6 +166,9 @@ them in the first record.
 2005-11-15. Added support for extended columns containing Perl
 serialized hashes with the -e option.
 
+2008-04-11. Added option -o to write output to a file and exit, never
+invoking an editor. By Greg Sabino Mullane.
+
 =cut
 
 use strict;
@@ -189,10 +187,11 @@ Edit tab-delimited file with easy field name delineation.
 
 Options:
     -i       Ignores case on vim jump search.
-    -s TEXT  Jumps to first line where TEXT is. Only for vim.
+    -s TEXT  Jumps to first line where TEXT is. Only for vi.
     -f       Do not look for field names on first line of file.
     -n       Number rows in comments
     -e field Extra fields in this field, a stringified hash
+    -o FILE  Convert to the named output file and exit
 
 See 'man te' or 'perldoc $0' for more information.
 
@@ -201,8 +200,8 @@ EOF
 unshift @ARGV, Text::ParseWords::shellwords($ENV{TE_OPTIONS})
 	if defined $ENV{TE_OPTIONS};
 
-use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e/;
-getopts('is:fne:') or die "$@\n$USAGE";
+use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e $opt_o/;
+getopts('is:fne:o:') or die "$@\n$USAGE";
 
 die $USAGE unless @ARGV;
 
@@ -261,6 +260,17 @@ for my $filename (@ARGV) {
 	# was a 12 MB products.txt table for Interchange.)
 
 	$tmpfile = "$path.$name.tmp.$$";
+	if ($opt_o) {
+		if (-e $opt_o) {
+			print "Overwrite $opt_o? ";
+			my $ans = <STDIN>;
+			if ($ans !~ /^Y/i) {
+				print "\nFile not overwritten, exiting.\n";
+				exit;
+			}
+		}
+		$tmpfile = $opt_o;
+	}
 	open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
 	print STDERR "Prettifying $filename\n";
 	print OUT <<EOF;
@@ -329,13 +339,17 @@ EOF
 #
 EOF
 	close OUT or die "Error closing '$tmpfile' after writing: $!\n";
+	if ($opt_o) {
+		print "Wrote $opt_o\n";
+		exit;
+	}
+
 	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
 	binmode IN;
 	$digest1 = Digest::MD5->new->addfile(*IN)->digest;
 	close IN;
 	system (@ED, $tmpfile) == 0
 		or do {
-			@ED = ('gvim', '-f', 'some quotes " "', "some space");
 			for(@ED) {
 				next unless /\s/;
 				s/"/\\"/g;
