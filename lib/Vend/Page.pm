@@ -1,8 +1,8 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.25 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Page.pm,v 2.26 2008-04-15 19:37:57 racke Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 my $wantref = 1;
 
@@ -181,10 +181,14 @@ sub do_search {
 	$c->{mv_cache_key} = generate_key($Vend::Session->{last_search})
 			unless defined $c->{mv_cache_key};
 
-	$::Instance->{SearchObject}{''} = perform_search($c);
-	$CGI::values{mv_nextpage}	= $::Instance->{SearchObject}{''}->{mv_search_page}
-							 	|| find_special_page('search')
-		if ! $CGI::values{mv_nextpage};
+	my $retval = perform_search($c);
+	
+	if (ref($retval)) {
+		$::Instance->{SearchObject}{''} = $retval;
+		$CGI::values{mv_nextpage}	= $retval->{mv_search_page}
+			|| find_special_page('search')
+				if ! $CGI::values{mv_nextpage};
+	}
 	return 1;
 }
 
