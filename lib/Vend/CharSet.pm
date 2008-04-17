@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.5 2008-03-26 10:29:06 racke Exp $
+# $Id: CharSet.pm,v 2.6 2008-04-17 10:52:37 racke Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 #
@@ -26,17 +26,18 @@ use warnings;
 
 use Encode qw( decode resolve_alias is_utf8 );
 
-use constant DEFAULT_ENCODING => 'utf-8';
-
 sub decode_urlencode {
 	my ($class, $octets, $encoding) = (@_);
-	$encoding ||= DEFAULT_ENCODING;
-#::logDebug("decode_urlencode--octets: $octets, encoding: $encoding");
 
-	return undef unless $class->validate_encoding($encoding);
+#::logDebug("decode_urlencode--octets: $octets, encoding: $encoding");
 
 	$octets =~ tr/+/ /;
 	$octets =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+
+	unless ($encoding || $class->validate_encoding($encoding)) {
+		return $octets;
+	}
+	
 	my $string = $class->to_internal($encoding, $octets);
 
 #::logDebug("decoded string: " . display_chars($string)) if $string;
@@ -46,14 +47,14 @@ sub decode_urlencode {
 sub to_internal {
 	my ($class, $encoding, $octets) = @_;
 #::logDebug("to_internal - converting octets from $encoding to internal");
-	if (is_utf8($octets)) {
+	if (!$encoding || is_utf8($octets)) {
 #::logDebug("to_internal - octets are already utf-8 flagged");
 		return $octets;
 	}
 
 	my $string = eval {	decode($encoding, $octets, Encode::FB_CROAK) };
 	if ($@) {
-		::logError("Unable to properly decode <%s> with encoding %s", display_chars($octets), $encoding);
+		::logError("Unable to properly decode <%s> with encoding %s: %s", display_chars($octets), $encoding, $@);
 		return;
 	}
 	return $string;
