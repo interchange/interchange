@@ -1,8 +1,9 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.6 2008-04-17 10:52:37 racke Exp $
+# $Id: CharSet.pm,v 2.7 2008-04-17 22:50:33 jon Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
+# Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +49,7 @@ sub to_internal {
 	my ($class, $encoding, $octets) = @_;
 #::logDebug("to_internal - converting octets from $encoding to internal");
 	if (!$encoding || is_utf8($octets)) {
-#::logDebug("to_internal - octets are already utf-8 flagged");
+#::logDebug("to_internal - octets are already UTF-8 flagged");
 		return $octets;
 	}
 
@@ -70,6 +71,27 @@ sub default_charset {
 	return $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET};
 }
 
+# This is a workaround for the problem with UTF-8 regular expressions
+# implicitly trying to require UTF-8
+sub utf8_safe_regex_workaround {
+    my ($class, $compartment) = @_;
+
+    $_ = 'workaround for the workaround';
+    s/\p{SpacePerl}+$//;
+
+#::logDebug("Attempting to set UTF-8 safe regex workaround");
+
+    $compartment->untrap(qw/require caller dofile sort entereval/);
+    $compartment->reval('$_ = "\x{30AE}"; s/[abc]/x/ig');
+    $@ and ::logError("Part of UTF-8 safe regex workaround failed (this may not be a bug): %s", $@);
+    $compartment->trap(qw/require caller dofile sort entereval/);
+
+    # check and see if it worked, if not, then we might have problems later
+    $compartment->reval('$_ = "\x{30AE}"; s/[abc]/x/ig');
+
+    $@ and ::logError("UTF-8 regular expressions in a Safe compartment are not working properly. This may affect code in perl or calc blocks in your pages if you are processing UTF-8 strings in them. Error: %s", $@);
+}
+
 # this sub taken from the perluniintro man page, for diagnostic purposes
 sub display_chars {
 	return unless $_[0];
@@ -84,6 +106,4 @@ sub display_chars {
 }
 
 
-
 1;
-
