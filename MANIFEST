@@ -1101,6 +1101,7 @@ lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
+lib/Vend/Payment/Getitcard.pm
 lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
