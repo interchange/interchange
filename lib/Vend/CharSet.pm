@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.7 2008-04-17 22:50:33 jon Exp $
+# $Id: CharSet.pm,v 2.8 2008-04-19 14:37:27 jon Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
@@ -47,12 +47,13 @@ sub decode_urlencode {
 
 sub to_internal {
 	my ($class, $encoding, $octets) = @_;
-#::logDebug("to_internal - converting octets from $encoding to internal");
-	if (!$encoding || is_utf8($octets)) {
-#::logDebug("to_internal - octets are already UTF-8 flagged");
-		return $octets;
-	}
 
+#::logDebug("to_internal - no encoding specified"),
+    return $octets unless $encoding;
+#::logDebug("to_internal - octets are already UTF-8 flagged"),
+    return $octets if is_utf8($octets);
+
+#::logDebug("to_internal - converting octets from $encoding to internal");
 	my $string = eval {	decode($encoding, $octets, Encode::FB_CROAK) };
 	if ($@) {
 		::logError("Unable to properly decode <%s> with encoding %s: %s", display_chars($octets), $encoding, $@);
@@ -83,7 +84,7 @@ sub utf8_safe_regex_workaround {
 
     $compartment->untrap(qw/require caller dofile sort entereval/);
     $compartment->reval('$_ = "\x{30AE}"; s/[abc]/x/ig');
-    $@ and ::logError("Part of UTF-8 safe regex workaround failed (this may not be a bug): %s", $@);
+    $@ and ::logError("Part of UTF-8 safe regex workaround failed (this may not be a problem): %s", $@);
     $compartment->trap(qw/require caller dofile sort entereval/);
 
     # check and see if it worked, if not, then we might have problems later
