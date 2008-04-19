@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.18 2008-03-25 17:13:21 jon Exp $
+# $Id: GDBM.pm,v 2.19 2008-04-19 14:38:14 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,9 +28,10 @@ use strict;
 use vars qw($VERSION @ISA);
 use GDBM_File;
 use Vend::Table::Common;
+use Encode qw(encode decode);
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -56,6 +57,8 @@ sub create {
 	$flags |= GDBM_FAST if $Fast_write;
 	my $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, $File_permission_mode)
 		or die ::errmsg("%s %s: %s\n", ::errmsg("create"), $filename, $!);
+
+	apply_utf8_filters($dbm) if $config->{GDBM_ENABLE_UTF8};
 
 	$tie->{'c'} = join("\t", @$columns);
 
@@ -113,6 +116,8 @@ sub open_table {
 	die ::errmsg("%s could not tie to '%s': %s", 'GDBM', $filename, $!)
 		unless $dbm;
 
+	apply_utf8_filters($dbm) if $config->{GDBM_ENABLE_UTF8};
+
 	my $columns = [split(/\t/, $tie->{'c'})];
 
 	$config->{VERBATIM_FIELDS} = 1 unless defined $config->{VERBATIM_FIELDS};
@@ -129,6 +134,22 @@ sub open_table {
 				$dbm
 			];
 	bless $s, $class;
+}
+
+sub apply_utf8_filters {
+	my ($handle) = shift;
+
+#::logDebug("applying UTF-8 filters to GDBM handle");
+
+	my $out_filter = sub { $_ = encode('utf-8', $_) };
+	my $in_filter  = sub { $_ = decode('utf-8', $_) };
+
+	$handle->filter_store_key($out_filter);
+	$handle->filter_store_value($out_filter);
+	$handle->filter_fetch_key($in_filter);
+	$handle->filter_fetch_value($in_filter);
+
+	return $handle;
 }
 
 # Unfortunate hack need for Safe searches
