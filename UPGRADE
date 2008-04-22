@@ -5,6 +5,10 @@
 
 Interchange is designed to be drop-in compatible in its major version.
 
+ 5.6.x -- A number of incompatible changes were made. Most of them will be
+          simple to deal with, but please consult the list below in the
+          "Known Issues" section.
+
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
           "Known Issues" section.
@@ -34,7 +38,7 @@ NOTE:    All below procedures assume you have installed in
 WARNING: BACK UP EVERYTHING BEFORE YOU START!
 
     1. Make a tar backup of your Interchange software directory, e.g.
-       
+
         tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
     2. Unpack the new version of the software to a temporary directory,
@@ -73,6 +77,9 @@ That's it. Verify your catalog's operation, and you are live.
 KNOWN ISSUES UPGRADING FROM 5.5.1
 
 SpecialSub catalog_init has been renamed to request_init.
+
+UserTrack now defaults to "no", so if you want the X-Track HTTP response header
+to be output, add "UserTrack yes" to your catalog.cfg.
 
 KNOWN ISSUES UPGRADING FROM 5.4.x
 
@@ -137,7 +144,7 @@ into account when the DomainTail directive is in effect.
 The session per IP counters have been changed to the new "timecard" round-robin
 style counters.  You will need to delete the old counter files from the
 tmp/addr_ctr directory with a command similar to the following:
-	rm -rf catroot/tmp/addr_ctr/*
+    rm -rf catroot/tmp/addr_ctr/*
 ...be careful with the above command, if mistyped it can seriously mess up
 your filesystem.
 
@@ -145,7 +152,7 @@ The [error] and [formel] tags now make use of the following CSS class,
 that will need to be added to your CSS file:
 
     .mv_contrast {
-	color: #FF0000;
+        color: #FF0000;
     }
 
 The name of the class can be specified using the CSS_CONTRAST Variable,
@@ -193,7 +200,7 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
 * You will probably receive a message about "history-scan tag overrides global
   definition". See the section "PROBLEMS WITH USERTAGS" below.
-  
+
 * The static-page build capability is no longer supported in
   Interchange 5. You will receive warnings about "Directive StaticPath
   no longer supported at line XXX". 
@@ -233,7 +240,7 @@ existing one should work if you just copy it.
 
     cd /usr/lib/interchange-5
     bin/compile_link -p 7787
-    
+
 NOTE: If you use the INET mode linking method, you have to run the
       test server on a different port. Assuming you use the standard
       7786 on your live catalog, you would add to interchange.cfg:
@@ -351,14 +358,14 @@ If you have this line in interchange.cfg:
           include usertag/my_tag
 
        See the "problems with UserTags" section, below.
-  
+
 If you use CyberCash, you should replace these lines in catalog.cfg
-        
+
         Variable CYBER_MODE       mauthonly
         Variable CYBER_CONFIGFILE /path/to/your/merchant_conf
 
     with
-        
+
         Variable MV_PAYMENT_MODE        cybercash
         Variable MV_PAYMENT_CONFIGFILE  /path/to/your/merchant_conf
 
