@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.97 2008-04-22 05:18:56 jon Exp $
+# $Id: Dispatch.pm,v 1.98 2008-04-22 05:28:54 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.97 $, 10);
+$VERSION = substr(q$Revision: 1.98 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1227,6 +1227,8 @@ sub dispatch {
 	open_cat() or return 1;
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host");
+
+	run_macro($Vend::Cfg->{AutoloadEarliest});
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
