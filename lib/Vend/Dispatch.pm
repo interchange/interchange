@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.98 2008-04-22 05:28:54 jon Exp $
+# $Id: Dispatch.pm,v 1.99 2008-04-22 07:00:01 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.98 $, 10);
+$VERSION = substr(q$Revision: 1.99 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1655,7 +1655,6 @@ EOF
 #::logDebug("path=$Vend::FinalPath mv_action=$CGI::values{mv_action}");
 
   DOACTION: {
-    my @path = split('/', $Vend::FinalPath, 2);
 	if (defined $CGI::values{mv_action}) {
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
 			if ! defined $CGI::values{mv_todo}
@@ -1665,7 +1664,7 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 	}
 	else {
-		$Vend::Action = shift @path;
+		($Vend::Action) = $Vend::FinalPath =~ m{\A([^/]*)};
 	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
@@ -1676,15 +1675,15 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 		new Vend::Parse;
 	}
-	elsif ( defined ($sub = $action{$Vend::Action}) )  {
-		$Vend::FinalPath = join "", @path;
+	else {
+		$sub = $action{$Vend::Action};
 	}
 
 #show_times("end path/action resolve") if $Global::ShowTimes;
 
 	eval {
 		if(defined $sub) {
-				$status = $sub->($Vend::FinalPath);
+			$status = $sub->($Vend::FinalPath);
 #show_times("end action") if $Global::ShowTimes;
 		}
 		else {

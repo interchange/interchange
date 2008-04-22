@@ -4,14 +4,13 @@
 
 
 Interchange is designed to be drop-in compatible in its major version.
-
- 5.6.x -- A number of incompatible changes were made. Most of them will be
-          simple to deal with, but please consult the list below in the
-          "Known Issues" section.
+Briefly summarized, here's what you can expect when upgrading from the
+following versions:
 
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
-          "Known Issues" section.
+          "Known Issues" section. Your code will almost certainly fail to
+          work properly until you make the necessary changes described!
 
  5.2.x -- There should be few to no compatibility issues in
           upgrading from Interchange 5.2.x.
@@ -81,6 +80,10 @@ SpecialSub catalog_init has been renamed to request_init.
 UserTrack now defaults to "no", so if you want the X-Track HTTP response header
 to be output, add "UserTrack yes" to your catalog.cfg.
 
+UserTrack also no longer affects TrackFile, so if you don't want TrackFile
+output, you should not have a TrackFile directive in catalog.cfg.
+
+
 KNOWN ISSUES UPGRADING FROM 5.4.x
 
 Check the "special_pages/missing.html" file, in all of your Interchange-driven
@@ -106,9 +109,24 @@ no configuration file line beginning with # will be parsed, including
 #ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
 must now be used.
 
-Removed RequiredFields, HTMLmirror and UseCode directives.
+Global ActionMaps: Previously, the path passed to a global ActionMap
+did not include the action itself, but the path passed to a catalog
+ActionMap did include the action. This discrepancy was annoying to keep
+track of. Now both kinds of ActionMaps receive a path that includes
+the action. This means that all global ActionMap code will need to be
+updated to deal with the action. Most simply, you can strip off the
+action at the beginning of the sub something like this:
 
-Removed unused SOAP_Host directive.
+    ActionMap your_action <<EOR
+    sub {
+        my ($path) = @_;
+        # remove action
+        $path =~ s:^[^/]+/::;
+        # your code here
+    }
+    EOR
+
+Removed SOAP_Host, RequiredFields, HTMLmirror and UseCode directives.
 
 All previously deprecated configuration directives have been removed.
 
@@ -144,8 +162,10 @@ into account when the DomainTail directive is in effect.
 The session per IP counters have been changed to the new "timecard" round-robin
 style counters.  You will need to delete the old counter files from the
 tmp/addr_ctr directory with a command similar to the following:
+
     rm -rf catroot/tmp/addr_ctr/*
-...be careful with the above command, if mistyped it can seriously mess up
+
+...be careful with the above command. If mistyped it can seriously mess up
 your filesystem.
 
 The [error] and [formel] tags now make use of the following CSS class,
