@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.90 2008-03-26 14:19:35 jon Exp $
+# $Id: Server.pm,v 2.91 2008-04-22 05:09:44 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.90 $, 10);
+$VERSION = substr(q$Revision: 2.91 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -565,7 +565,7 @@ sub respond {
 
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
-			if $Vend::Track;
+			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK        
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
@@ -615,7 +615,7 @@ sub respond {
 		$| = 1;
 		select $save;
         $Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
-			if $Vend::Track;
+			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK                            
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
@@ -679,7 +679,7 @@ sub respond {
 		print $fh canon_status("Content-Type: text/html; charset=$response_charset");
 # TRACK        
         print $fh canon_status("X-Track: " . $Vend::Track->header())
-			if $Vend::Track;
+			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
 	}
 	print $fh canon_status("Pragma: no-cache")

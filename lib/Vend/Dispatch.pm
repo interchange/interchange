@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.95 2008-02-25 10:02:30 racke Exp $
+# $Id: Dispatch.pm,v 1.96 2008-04-22 05:09:44 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.95 $, 10);
+$VERSION = substr(q$Revision: 1.96 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1494,8 +1494,9 @@ EOF
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid " . ($Vend::Session->{username} || '-') . " $Vend::FinalPath");
 
 # TRACK
-	$Vend::Track = new Vend::Track
-		if $Vend::Cfg->{UserTrack} and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
+	$Vend::Track = Vend::Track->new
+		if ($Vend::Cfg->{UserTrack} or $Vend::Cfg->{TrackFile})
+            and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
 # END TRACK
 
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
