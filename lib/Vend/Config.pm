@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.237 2008-04-22 18:54:09 jon Exp $
+# $Id: Config.pm,v 2.238 2008-04-22 18:54:24 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.237 $, 10);
+$VERSION = substr(q$Revision: 2.238 $, 10);
 
 my %CDname;
 my %CPname;
@@ -82,10 +82,10 @@ my %CPname;
 );
 
 my %DirectiveAlias = qw(
-	URL	           VendURL
+	URL            VendURL
 	DataDir        ProductDir
-	DefaultTables  ProductFiles 
-	Profiles       OrderProfile 
+	DefaultTables  ProductFiles
+	Profiles       OrderProfile
 );
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
@@ -127,21 +127,21 @@ qw/
 @Locale_directives_scalar = (
 qw/
 		AutoEnd
-        Autoload
+		Autoload
 		CategoryField
-        CommonAdjust
+		CommonAdjust
 		DescriptionField
-        HTMLsuffix
+		HTMLsuffix
 		ImageDir
 		ImageDirSecure
 		PageDir
 		Preload
 		PriceCommas
 		PriceDefault
-        PriceDivide
-        PriceField
+		PriceDivide
+		PriceField
 		SalesTax
-        SpecialPageDir
+		SpecialPageDir
 		TaxShipping
 		TaxInclusive
 /   );
@@ -282,26 +282,26 @@ for( values %extmap ) {
 
 my %tagAry 	= ( qw! Order 1 Required 1 ! );
 my %tagHash	= ( qw!
-                attrAlias   1
-                Implicit    1
+				attrAlias   1
+				Implicit    1
 				attrDefault	1
 				! );
 my %tagBool = ( qw!
-                ActionMap   1
-                addAttr     1
-                canNest     1
-                Filter      1
-                FormAction  1
-                hasEndTag   1
-                Interpolate 1
-                isEndAnchor 1
-                isOperator  1
-		Multiple    1
-                ItemAction  1
-		noRearrange 1
-		NoReparse   1
-                OrderCheck  1
-                UserTag     1
+				ActionMap   1
+				addAttr     1
+				canNest     1
+				Filter      1
+				FormAction  1
+				hasEndTag   1
+				Interpolate 1
+				isEndAnchor 1
+				isOperator  1
+				Multiple    1
+				ItemAction  1
+				noRearrange 1
+				NoReparse   1
+				OrderCheck  1
+				UserTag     1
 				! );
 
 my %current_dest;
