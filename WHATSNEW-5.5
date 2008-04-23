@@ -5,7 +5,7 @@
 
 ------------------------------------------------------------------------------
 
-See UPGRADE document for incompatible changes not listed here.
+See UPGRADE document for a list of incompatible changes.
 
 Interchange 5.5.2 (unreleased).
 
@@ -15,7 +15,7 @@ Core
 * Allow box-based widgets access to VALUE from option template (in addition
   to LABEL). With VALUE added, the following template becomes possible:
 
-	option_template => "<img src='/images/{VALUE}.gif'>&nbsp;{LABEL}"
+    option_template => "<img src='/images/{VALUE}.gif'>&nbsp;{LABEL}"
 
 * Fixed the MinQuantityField and MaxQuantityField enforcement code so that
   it takes the entire cart into account when SeparateItems is in use.
@@ -28,18 +28,18 @@ Core
 
 * Fix to the "random" parameter used by looping tags.
 
-	-- If set to "no" or "false" or "0" then return all of the results
-	   their original order (previously returned one random result).
+    -- If set to "no" or "false" or "0" then return all of the results
+       their original order (previously returned one random result).
 
-	-- If set to "yes" or "true" then then return all results in a
-	   random order (again, previously returned one random result).
-	   
-	-- If set to a numeric > 0 then return that many random results.
+    -- If set to "yes" or "true" then then return all results in a
+       random order (again, previously returned one random result).
+    
+    -- If set to a numeric > 0 then return that many random results.
 
-	-- If set to a numeric > the available results then return all
-	   results in a random order (previously returned the original
-	   results in the original order).
-	
+    -- If set to a numeric > the available results then return all
+       results in a random order (previously returned the original
+       results in the original order).
+
   If you're using "random=yes" to request one random result then you
   will need to change your code to use random=1 instead.
 
@@ -61,7 +61,7 @@ Core
 * Created a new [PREFIX-include] loop sub-tag.  This works just like the
   [include] tag, except that it allows other [PREFIX-*] sub-tags to be
   parsed from within the included file.
-  
+
   Note: Files included with [PREFIX-include] cannot contain further
   [PREFIX-include] sub-tags.  This could be easily created (respecting
   the "include_depth" Limit etc.) but I felt that that was an unnecessary
@@ -73,11 +73,14 @@ Core
 * You can now change the default display type for Matrix widgets (ie if you
   want the default to be seperate widgets instead of single widget) with a line
   in catalog.cfg like this:
-	Options Matrix display_type separate
+    Options Matrix display_type separate
 
 * New Multiple CodeDef flag to indicate that a widget can return multiple
   selections.  Usage example:
-	CodeDef checkbox Multiple 1
+    CodeDef checkbox Multiple 1
+
+* Added some simple options code to Matrix.pm so that it can support mixed
+  Matrix/Simple option products.
 
 * Set new Multiple flag for checkbox, movecombo, check_nbsp and multiple
   widgets.
@@ -94,7 +97,7 @@ Core
   tag to suppress its output.  For example [calcn hide=1]$foo='bar'[/calcn] will
   still set $foo to bar, but won't output bar from the tag itself.
 
-* Recognize "cc" and "bcc" headers in Route settings for emails generated 
+* Recognize "cc" and "bcc" headers in Route settings for emails generated
   directly by the routes.
 
 * Avoid multiple identical cookies (#150).
@@ -107,22 +110,156 @@ Core
 * Allow specifying alternate location of counter files in the Database directive
   with AUTO_NUMBER_FILE setting.
 
+* Add option to use a custom SQL function as a counter.
+
+  This allows something other than a plain database sequence to be used to
+  replace counter files, for example to allow character prefixes or suffixes
+  with sequences, or to avoid writing files locally when in a cluster
+  environment.
+
+  For example, if you create a function called "custom_counter" in PostgreSQL,
+  you would set up catalog.cfg like this:
+
+  UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
+  Route   default   sql_counter  "transactions:custom_counter('order_number_seq')"
+
+  And whatever the custom_counter function returns will be used by Interchange.
+
 * Allow [if var ...] as shorthand for [if variable ...].
 
 * Quell threaded perl warning for 5.8.8 and above.
 
 * Fail gracefully on bad searches (#164).
 
-* Fix bug where previous rows values were left in $Row if [loop] was iterated
-  with [PREFIX-next].
+* Make global ActionMap input consistent with catalog ActionMaps (RT #48), such
+  that they all have the action at the beginning of the path.
 
-UserTag
--------
+* Add new Preload catalog directive. This is just like Autoload but runs at the
+  earliest possible stage of page processing, which allows tweaking the session,
+  path, robot status, cookie handling, authorization, cookie handling, etc.
+
+* Add new UserTrack boolean catalog directive, which enables or disables
+  sending the X-Track HTTP response header. Off by default, but formerly was on.
+
+* Allow the shipping.asc weight to be modified with weight_callout SpecialSub.
+
+  This SpecialSub modifies the 'weight' criteria in shipping.asc. It does not
+  affect other calculations, such as the [weight] usertag. In the following
+  example, it is used to exclude items that are part of a free shipping
+  promotion from the calculation of the shipping cost. That is, if two out of
+  three items qualify for free shipping, then only the weight of the third
+  item would be used for weight-based shipping methods.
+
+  # Override the normal shipping.asc weight calculations to take the free
+  # shipping promotion into consideration. Uses custom is_free_shipping and
+  # weight Item Modifiers. Only non-free-shipping items have their weight
+  # included.
+  Sub custom_weight <<EOF
+  sub {
+      my ($normal_weight) = @_;
+
+      my $new_weight = 0;
+      for my $item (@$Items) {
+          $new_weight += $item->{weight} * $item->{quantity}
+              unless $item->{is_free_shipping};
+      }
+      return $new_weight;
+  }
+  EOF
+  SpecialSub weight_callout custom_weight
+
+* Allow default error labels to be set in the Locale.
+
+  The previous behavior was to use the variable name when no label was given.
+  This change causes it to first check for a default label in the form of an
+  error_label_${variable name} entry in the Locale configuration before
+  falling back on just the variable name. As such, it is fully backwards
+  compatible.
+
+  This is useful if you use Locale to override the error messages in core
+  modules and also want to override the display of the label without setting
+  up or modifying the profile everywhere the error may be displayed (with
+  labels) on the site. For example:
+
+  Locale en_US <<EOF
+  {
+    # Override an error in Order.pm with one specific to this catalog.
+    "'%s' for item %s is not numeric/integer",
+    "We do not offer fractions of a product. (The quantity you entered was '%s'.)",
+
+    # Also override the error label.
+    "error_label_mv_order_quantity",
+    "Quantity",
+  }
+  EOF
+
+* Allow rounding of negative numbers by round_to_frac_digits routine.
+
+* Allow empty field changes to stick, fixing "(none)" image selections.
+
+* Give the "flypage" SpecialSub the choice of returning a plain SKU value
+  rather than the overly-complicated { mv_results => [[$sku]] } hashref.
+
+* Added a cache to save on lookups in the min/max quantity enforcement code.
+
+* Stop including an old version of HTML::Entities with Interchange.
+  Use the current CPAN version instead.
+
+* Remove never-used dump command, which is only for the DBM sessions that
+  no one uses any more.
+
+* Fix problems caused by prototype mismatch in Perl 5.10.
+
+* UserDB: Allow saved shipping and billing addresses to be returned as a raw
+  hashref for use in Perl.
+
+* Add ability to set attrDefault for the Widget codedef type, which then
+  transmits that to the opt hash prior to widget routine call.
+
+* Add ability to define multiple columns in the same Database COLUMN_DEF line.
+
+* Make explicit the various implicit dependencies between PreFork,
+  PreForkSingleFork, and StartServers.
+    
+  PreForkSingleFork should only ever affect behavior in conjunction with
+  PreFork true, ensuring the prefork code path is entirely controllable by
+  the value of PreFork.
+  
+  Fixed condition on StartServers where a positive value for that parameter
+  when not in PreFork mode spawned a StartServers number of superfluous
+  daemons that were never used. Now, StartServers is effectively ignored
+  unless PreFork is also true.
+
+* UserTag aliases now allow names tags to be specified using hyphens or
+  underscores. Previously, only underscores were allowed.
+
+ITL
+---
 
 * Added scratch option to [get-url] for saving binary content into a scratch
   variable instead of returning it.
 
 * Fixed invalid JavaScript generated by the button tag (#135).
+
+* Allow [include] et al. to scan the local TemplateDir as well as the global
+  version.
+
+* [save-cart]: Don't delete the cart after saving if the new "keep" parameter
+  is set true.
+
+* Respect new "charset" parameter for [email] to allow sending UTF-8 emails.
+
+* Correct output of value-extended after successful file write.
+
+  The docs here:
+
+  http://www.icdevgroup.org/interchange-doc-5.2.0/frames/ictags_121.html
+
+  state, and it makes intuitive sense, that Perly true should be returned when
+  a file is successfully written. This was not the case before.
+
+* Fix bug where previous rows values were left in $Row if [loop] was iterated
+  with [PREFIX-next].
 
 Payment
 -------
@@ -132,6 +269,11 @@ Payment
 * Added Sage payment gateway. http://www.sagepayments.com/
 
 * Added Getitcard payment module.
+
+* Added Protx2 payment module.
+
+* Authorize.net: Support auto-cleared mv_credit_card_cvv2 if cvv2 isn't set,
+  and send customer IP.
 
 Jobs
 ----
@@ -147,12 +289,14 @@ Standard demo
 * Fixed a bug which caused overwriting a forum post.
 
 * Fixed a security bug where an attacker could craft a URI that tricks
-  Interchange into executing arbitrary Perl code.  The Perl code would be 
-  subject to the Safe constraints of course, but could still be devastating 
+  Interchange into executing arbitrary Perl code.  The Perl code would be
+  subject to the Safe constraints of course, but could still be devastating
   to the security of the target website.
 
 * Display modified date on Saved Carts / Recurring Order page in a human
   readable format (#37).
+
+* Add Croatian & Slovenian localization (RT #4).
 
 UI
 --
@@ -182,6 +326,14 @@ UI
 * Option editor will now correctly generate variants for options that use
   widgets capable of multiple selections (ie, multiple or checkbox widgets).
 
+* Add new ynzero widget, which does a 1/0 yes/no for integer type field.
+
+Linking
+-------
+
+* Improvements to Interchange::Link: Return an HTTP 404 response code when
+  appropriate. Avoid segmentation faults on broken pipe.
+
 Packaging
 ---------
 
@@ -189,6 +341,10 @@ Packaging
 
 * Added missing dbconfig-common hooks and set defaults for database name and
   database user to interchange-cat-standard Debian package.
+
+
+------------------------------------------------------------------------------
+
 
 Interchange 5.5.1 released on 2007-08-21.
 
@@ -237,7 +393,7 @@ Core
 
 * Fix [on-match]/[no-match] for loop lists without matchlimit generated from
   embedded Perl objects
-    
+
 * Fixed problem where both set_row() and set_slice() would try to get the key
   from last_sequence_value() for returning even if we already know the key and
   even on an UPDATE which can cause problems.
@@ -296,7 +452,7 @@ Core
 * Adjusted housekeeping to cull out old pids so that PIDcheck was enforced in
   PreFork (#107).
 
-* Pass $opt to labeled_list fixing behaviour of fly-list to be matching other 
+* Pass $opt to labeled_list fixing behaviour of fly-list to be matching other
   x-list tags (#89).
 
 * Pass applylocale option into Vend::Form::options_to_array in order to
@@ -329,8 +485,8 @@ UserDB
 ------
 
 * Fixed UserDB login issues within embedded Perl by using
-  Vend::Util::string_to_ref for deserialization of carts and other 
-  hashes.  
+  Vend::Util::string_to_ref for deserialization of carts and other
+  hashes.
 
 * New validchars option to customize valid characters for usernames, e.g.
   adding the + character to the list of valid characters:
@@ -339,36 +495,36 @@ UserDB
 
 * Add new options for determining date of events in the userdb:
 
-	UserDB <profile> created_date_iso   <field_name>
-	UserDB <profile> created_date_epoch <field_name>
-	UserDB <profile> updated_date_iso   <field_name>
-	UserDB <profile> updated_date_epoch <field_name>
+    UserDB <profile> created_date_iso   <field_name>
+    UserDB <profile> created_date_epoch <field_name>
+    UserDB <profile> updated_date_iso   <field_name>
+    UserDB <profile> updated_date_epoch <field_name>
 
-	created_date_iso
-		Place a string ISO date in this field when user created.
-	created_date_epoch
-		Place a string epoch date in this field when user created.
-		Only works if no iso date defined.
-	updated_date_iso
-		Place a string ISO date in this field when user updated via
-		[userdb save] (i.e. set_values()).
-	updated_date_epoch
-		Place a string epoch date in this field when user updated via
-		[userdb save] (i.e. set_values()).
-		Only works if no iso date defined.
+    created_date_iso
+        Place a string ISO date in this field when user created.
+    created_date_epoch
+        Place a string epoch date in this field when user created.
+        Only works if no iso date defined.
+    updated_date_iso
+        Place a string ISO date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+    updated_date_epoch
+        Place a string epoch date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+        Only works if no iso date defined.
 
    Default is not to use this feature, though this is now in
    the standard template:
 
-		UserDB    default    created_date_epoch created
-		UserDB    default    updated_date_epoch updated
-	
+        UserDB    default    created_date_epoch created
+        UserDB    default    updated_date_epoch updated
+
    along with the appropriate fields.
-   
+
 UserTag
 -------
 
-* Make [save-cart] keep cart if userdb returns with an error. 
+* Make [save-cart] keep cart if userdb returns with an error.
 
 * Make [formel] call [display] on unknown types.
 
@@ -410,7 +566,7 @@ Jobs
 
 * Allow parameters passed to jobs, acknowledges --email commandline option
   now (#103).
- 
+
 UI
 --
 
@@ -418,7 +574,7 @@ UI
 
 * Tidied up some code in customer_mailing.html
 
-* Fixed test to see if sku exists on creation of new item 
+* Fixed test to see if sku exists on creation of new item
   in quick_question.html (#17)
 
 * Avoid crashes on table export if data contains Interchange tags (#100).
