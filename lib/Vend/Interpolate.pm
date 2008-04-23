@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.299 2008-04-17 22:50:33 jon Exp $
+# $Id: Interpolate.pm,v 2.300 2008-04-23 03:16:23 pajamian Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.299 $, 10);
+$VERSION = substr(q$Revision: 2.300 $, 10);
 
 @EXPORT = qw (
 
@@ -4240,7 +4240,7 @@ my $once = 0;
                     }
                     '' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    $Ary_code{next}->($1) != 0 ? next : '' #ixge;
+                    $Ary_code{next}->($1) != 0 ? (undef $Row, next) : '' #ixge;
 		$run =~ s/<option\s*/<option SELECTED /i
 			if $opt_select and $opt_select->($code);
 		undef $Row;
