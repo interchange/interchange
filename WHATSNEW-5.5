@@ -317,6 +317,14 @@ Core
 * Added a new "scratchd" test type.  This is the same as "scratch" except
   that it deletes the variable from the scratchpad after testing.
 
+* New BounceReferrals catalog directive. When enabled, GET requests to URLs
+  with mv_pc or mv_source set to an affiliate code are redirected to the
+  same URL minus the affiliate code.
+
+  This keeps search engines that respect redirects from storing the affiliate
+  code-salted URL in their indexes, and helps them focus on the real resource
+  with a single URL instead of a multitude of salted links.
+
 UserDB
 ------
 
