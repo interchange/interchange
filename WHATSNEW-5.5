@@ -59,13 +59,9 @@ Core
   quantity that you want to consider when allowing orders.
 
 * Created a new [PREFIX-include] loop sub-tag.  This works just like the
-  [include] tag, except that it allows other [PREFIX-*] sub-tags to be
-  parsed from within the included file.
-
-  Note: Files included with [PREFIX-include] cannot contain further
-  [PREFIX-include] sub-tags.  This could be easily created (respecting
-  the "include_depth" Limit etc.) but I felt that that was an unnecessary
-  overhead.
+  [include] tag, except that it allows other [PREFIX-*] sub-tags to be parsed
+  from within the included file. Files included with [PREFIX-include] cannot
+  contain further [PREFIX-include] sub-tags.
 
 * Allow for the proper display of product options that use text or textarea
   widgets by showing the actual value if a label doesn't exist for the value.
@@ -73,10 +69,12 @@ Core
 * You can now change the default display type for Matrix widgets (ie if you
   want the default to be seperate widgets instead of single widget) with a line
   in catalog.cfg like this:
+
     Options Matrix display_type separate
 
 * New Multiple CodeDef flag to indicate that a widget can return multiple
   selections.  Usage example:
+
     CodeDef checkbox Multiple 1
 
 * Added some simple options code to Matrix.pm so that it can support mixed
@@ -233,8 +231,44 @@ Core
 * UserTag aliases now allow names tags to be specified using hyphens or
   underscores. Previously, only underscores were allowed.
 
-ITL
----
+* Disallow negative tax in salestax() routine if no_negative_tax pragma is set.
+
+* Allow comments (starting with "#" and ending with EOL) in the Robot*
+  directive lists, and added more robots to the list.
+
+* Add new options for determining date of events in the userdb:
+
+    UserDB <profile> created_date_iso   <field_name>
+    UserDB <profile> created_date_epoch <field_name>
+    UserDB <profile> updated_date_iso   <field_name>
+    UserDB <profile> updated_date_epoch <field_name>
+
+    created_date_iso
+        Place a string ISO date in this field when user created.
+    created_date_epoch
+        Place a string epoch date in this field when user created.
+        Only works if no iso date defined.
+    updated_date_iso
+        Place a string ISO date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+    updated_date_epoch
+        Place a string epoch date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+        Only works if no iso date defined.
+
+   Default is not to use this feature, though this is now in
+   the standard template:
+
+        UserDB    default    created_date_epoch created
+        UserDB    default    updated_date_epoch updated
+
+   along with the appropriate fields.
+
+* During compilation of custom routines, keep warnings and errors separated
+  from valid Perl that doesn't resolve to a sub ref.
+
+Tags
+----
 
 * Added scratch option to [get-url] for saving binary content into a scratch
   variable instead of returning it.
@@ -260,6 +294,13 @@ ITL
 
 * Fix bug where previous rows values were left in $Row if [loop] was iterated
   with [PREFIX-next].
+
+* Don't add a ".html" suffix to the "process" page URI if
+  [process add_dot_html=no] is specified. If the "add_dot_html" parameter is
+  not specified then the "mv_add_dot_html" scratchpad variable will be in
+  control of the suffix.
+
+* In [image] tag, quote filename when shelling out in case it contains spaces.
 
 Payment
 -------
@@ -452,6 +493,12 @@ Core
 * Adjusted housekeeping to cull out old pids so that PIDcheck was enforced in
   PreFork (#107).
 
+* Make PreFork handle idle children more intelligently.
+
+  If a child is idle, then don't needlessly respawn it at PIDcheck seconds.
+  To make sure we still catch child processes that have spun out of control,
+  track idle vs. active state.
+
 * Pass $opt to labeled_list fixing behaviour of fly-list to be matching other
   x-list tags (#89).
 
@@ -492,34 +539,6 @@ UserDB
   adding the + character to the list of valid characters:
 
   UserDB    default    validchars "-A-Za-z0-9_@.+"
-
-* Add new options for determining date of events in the userdb:
-
-    UserDB <profile> created_date_iso   <field_name>
-    UserDB <profile> created_date_epoch <field_name>
-    UserDB <profile> updated_date_iso   <field_name>
-    UserDB <profile> updated_date_epoch <field_name>
-
-    created_date_iso
-        Place a string ISO date in this field when user created.
-    created_date_epoch
-        Place a string epoch date in this field when user created.
-        Only works if no iso date defined.
-    updated_date_iso
-        Place a string ISO date in this field when user updated via
-        [userdb save] (i.e. set_values()).
-    updated_date_epoch
-        Place a string epoch date in this field when user updated via
-        [userdb save] (i.e. set_values()).
-        Only works if no iso date defined.
-
-   Default is not to use this feature, though this is now in
-   the standard template:
-
-        UserDB    default    created_date_epoch created
-        UserDB    default    updated_date_epoch updated
-
-   along with the appropriate fields.
 
 UserTag
 -------
