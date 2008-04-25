@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.100 2008-04-22 18:54:09 jon Exp $
+# $Id: Dispatch.pm,v 1.101 2008-04-25 09:08:03 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.100 $, 10);
+$VERSION = substr(q$Revision: 1.101 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1545,6 +1545,7 @@ EOF
 		next unless $macro;
 		if (ref($macro) ne 'HASH') {
 			logError("Bad CGI filter '%s'", $macro);
+			next;
 		}
 		for(keys %$macro) {
 			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} } );
