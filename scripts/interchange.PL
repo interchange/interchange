@@ -3,7 +3,7 @@
 #
 # Interchange version 5.5.2
 #
-# $Id: interchange.PL,v 2.103 2008-03-25 22:26:06 racke Exp $
+# $Id: interchange.PL,v 2.104 2008-04-28 20:10:29 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1007,9 +1007,9 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2008 Interchange Development Group
-Copyright (C) 1995-2002 Red Hat, Inc.
-All rights reserved except those granted in the license.
+    Copyright (C) 2002-2008 Interchange Development Group
+    Copyright (C) 1995-2002 Red Hat, Inc.
+    All rights reserved except those granted in the license.
 
 =cut
 
@@ -1019,19 +1019,25 @@ Mike Heins is the primary author of Interchange.
 
 The Interchange Development Group is:
 
-Brev Patterson
 Dan Browning
+David Kelly
 Davor Ocelic
-Ed LaFrance
 Ethan Rowe
-Jonathan Clark
+Gert van der Spoel
+Greg Hanson
 Jon Jensen
+Jonathan Clark
 Kevin Walsh
+Mark Johnson
 Mike Heins
+Paul Vinciguerra
+Peter Ajamian
 Stefan Hornburg (aka Racke), captain
+Randy Moore
+Ron Phipps
 Ton Verhagen
 
-Please do not contact the authors for direct help with the system.
+Please do not contact the authors directly for help with the system.
 Use the Interchange mail list:
 
     interchange-users@icdevgroup.org
@@ -1041,64 +1047,53 @@ documentation for Interchange is at:
 
     http://www.icdevgroup.org/
 
-=head1 SPECIAL ACKNOWLEDGEMENTS
-
-The original author of Vend was Andrew Wilcox. Interchange could never
-have come into being without him.
-
-Stefan Hornburg has had his hand in many parts of Interchange, and is by
-far the most prolific bug-finder. He also was primarily responsible for
-bringing MiniMate, precursor to the Interchange store administration UI,
-to being as a supported facility. He continues to make valuable
-contributions.
-
 =head1 ACKNOWLEDGEMENTS
 
-Original author of Vend, ancestor to Minivend and Interchange, was Andrew
-Wilcox <amw@wilcoxsolutions.com>. Interchange was based on Vend 0.2, with
+Original author of Vend, ancestor to Minivend and Interchange, was
+Andrew Wilcox <amw@wilcoxsolutions.com>. Interchange could never have
+come into being without him. Interchange was based on Vend 0.2, with
 portions from Vend 0.3; both were produced in 1995.
-
-# columnize with "sort -u | pr -t -2 | expand -8 | sed 's/^/    /'"
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Javier Martin
-    Bill Carr                           Jeff Carnahan
-    Bill Dawkins                        Jeff Nappi
-    Bill Randle                         Jochen Wiedmann
-    Birgitt Funk                        Jon Jensen
-    Bob Jordan                          Jonathan Clark
-    Brev Patterson                      José Mª Revuelto
-    Brian Bullen                        Jure Kodzoman
-    Brian Kosick                        Jurgen Botz
-    Bruce Albrecht                      Keiko
-    Cameron Prince                      Keith Oberlin
-    Chen Naor                           Kevin Walsh
-    Christian Mueller                   Kim Lauritz Christensen
-    Christopher Miller                  Larry Leszczynski
-    Christopher Thompson                Marc Austin
-    Dan Browning                        Mark Johnson
-    Dan Busarow                         Mark Stosberg
-    Dan Helfman                         Massimiliano Ciancio
-    Daniel Thompson                     Matthew Schick
-    Dave Wingate                        Michael McCune
-    David Adams                         Michael Wilk
-    David Kelly                         Mike Frager
-    Dennis Cronin                       Neil Evans
-    Don Grodecki                        Nelson Ferrari
-    Ed LaFrance                         Raj Goel
-    Frank Bonita                        Ray Desjardins
-    Frederic Steinfels                  Ron Phipps
-    Greg Hanson                         Shozo Murahashi
-    Gunnar Hellekson                    Sonny Cook
-    Hamish Bradick                      Tim Baverstock
-    Hans-Joachim Leidinger              Tom Friedel
-    Heinz Wittenbecher                  Tommi Laberno
-    Hiroyuki Cozy Kojima                Ton Verhagen
-    Ignacio Lizarán                     Troy Davis
-    Jack Tsai                           Victor Nolton
-    Jason Holt                          William Dan Terry
-	Jason Kohles
+=cut
+
+# columnize with "sort -u | pr -t -2 | expand -8 | sed 's/^/    /'"
+
+=pod
+
+    Andreas Koenig           Jason Holt
+    Bill Carr                Jason Kohles
+    Bill Dawkins             Javier Martin
+    Bill Randle              Jeff Carnahan
+    Birgitt Funk             Jeff Nappi
+    Bob Jordan               Jochen Wiedmann
+    Brev Patterson           José Mª Revuelto
+    Brian Bullen             Jure Kodzoman
+    Brian Kosick             Jurgen Botz
+    Bruce Albrecht           Keiko
+    Cameron Prince           Keith Oberlin
+    Chen Naor                Kim Lauritz Christensen
+    Christian Mueller        Larry Leszczynski
+    Christopher Miller       Marc Austin
+    Christopher Thompson     Mark Stosberg
+    Dan Busarow              Massimiliano Ciancio
+    Dan Helfman              Matthew Schick
+    Daniel Thompson          Michael McCune
+    Dave Wingate             Michael Wilk
+    David Adams              Mike Frager
+    Dennis Cronin            Neil Evans
+    Don Grodecki             Nelson Ferrari
+    Ed LaFrance              Raj Goel
+    Frank Bonita             Ray Desjardins
+    Frederic Steinfels       Shozo Murahashi
+    Gunnar Hellekson         Sonny Cook
+    Hamish Bradick           Tim Baverstock
+    Hans-Joachim Leidinger   Tom Friedel
+    Heinz Wittenbecher       Tommi Laberno
+    Hiroyuki Cozy Kojima     Troy Davis
+    Ignacio Lizarán          Victor Nolton
+    Jack Tsai                William Dan Terry
     and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.

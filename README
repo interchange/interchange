@@ -4,7 +4,7 @@
 
 Interchange 5.5.2
 
-Copyright (C) 2002-2007 Interchange Development Group
+Copyright (C) 2002-2008 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
@@ -29,7 +29,7 @@ display system. Features include:
   * reporting
   * possibility of web-based administration
 
-Interchange absolutely REQUIRES Perl 5.6.0 or later, on a Unix-like operating
+Interchange absolutely REQUIRES Perl 5.8.0 or later, on a Unix-like operating
 system.
 
 Interchange also requires some non-standard Perl modules to be installed on
@@ -37,12 +37,12 @@ your system. Unless you are installing from distribution-specific packages
 (Red Hat, Debian, ...), the quick way to install the necessary support is to
 run:
 
-  perl -MCPAN -e 'install "Bundle::Interchange"'
+  perl -MCPAN -e 'install Bundle::Interchange'
 
 If you would like to use a specific version of Perl, simply invoke
 Perl with an absolute path to the Perl binary, such as
 
-  /usr/local/bin/perl -MCPAN -e 'install "Bundle::Interchange"'
+  /usr/local/bin/perl -MCPAN -e 'install Bundle::Interchange'
 
 -----------------------------------------------------------------------------
 
