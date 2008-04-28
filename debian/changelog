@@ -25,6 +25,7 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
     - added missing dependency on libc
     - don't ignore errors on make clean
     - fix section in interchangeconfig/te manual pages
+    - build dependency on po-debconf added
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Apr 2008 12:21:41 +0200
 
