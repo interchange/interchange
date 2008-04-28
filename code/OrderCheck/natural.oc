@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: natural.oc,v 1.3 2007-03-30 23:40:48 pajamian Exp $
+# $Id: natural.oc,v 1.4 2008-04-28 12:08:38 docelic Exp $
 
 CodeDef natural OrderCheck
 CodeDef natural Description Natural number
@@ -13,7 +13,7 @@ CodeDef natural Routine <<EOR
 sub {
 	my ($ref, $name, $value, $code) = @_;
 
-	if ($value  && $value eq int($value)) {
+	if ($value and $value > 0 and "$value" eq int($value)) {
 		return (1, $name, '');
 	}
 
