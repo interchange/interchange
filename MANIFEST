@@ -17,6 +17,7 @@ code/Filter/datetime2epoch.filter
 code/Filter/dbi_quote.filter
 code/Filter/decode_entities.filter
 code/Filter/digits.filter
+code/Filter/digits_dash.filter
 code/Filter/digits_dot.filter
 code/Filter/dos.filter
 code/Filter/duration.filter
@@ -293,6 +294,7 @@ code/UserTag/report_table.tag
 code/UserTag/save_cart.tag
 code/UserTag/summary.tag
 code/UserTag/table_organize.tag
+code/UserTag/timed_display.tag
 code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
@@ -328,6 +330,7 @@ code/Widget/uploadblob.widget
 code/Widget/uploadhelper.widget
 code/Widget/value.widget
 code/Widget/yesno.widget
+code/Widget/ynzero.widget
 configure
 debian/400mod_interchange.info
 debian/catalogs.cfg
@@ -368,7 +371,9 @@ debian/makecat.cfg
 debian/makecat.wrapper
 debian/po/cs.po
 debian/po/de.po
+debian/po/fi.po
 debian/po/fr.po
+debian/po/nl.po
 debian/po/POTFILES.in
 debian/po/pt.po
 debian/po/ru.po
@@ -999,11 +1004,13 @@ dist/standard/variables/LINE_MENU
 dist/standard/variables/PAGE_INIT
 dist/standard/variables/THEME_CSS
 dist/subdomains.cfg
+eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
 eg/filter/calculated.filter
 eg/gpg_display
 eg/ifdef
+eg/merge-tab-files
 eg/news_feature/dbconf/default_db/news.dbm
 eg/news_feature/dbconf/mysql/news.mysql
 eg/news_feature/dbconf/oracle/news.ora
@@ -1108,6 +1115,7 @@ lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/NetBilling.pm
 lib/Vend/Payment/PRI.pm
+lib/Vend/Payment/Protx2.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Sage.pm
 lib/Vend/Payment/Signio.pm
