@@ -6,7 +6,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: html2text.filter,v 1.7 2007-03-30 23:40:44 pajamian Exp $
+# $Id: html2text.filter,v 1.8 2008-04-30 16:50:09 docelic Exp $
 
 CodeDef html2text Filter
 CodeDef html2text Description Simple html2text
@@ -14,6 +14,7 @@ CodeDef html2text Routine <<EOR
 sub {
 	my $val = shift;
 
+	$val =~ s%</?(b|i|u)>%%gi;
 	$val =~ s%\s*<(?:br\s*/?|/?p)>\s*%\n%gi;
 	return $val;
 }
