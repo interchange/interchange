@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-our $VERSION = '1.1.1';
+our $VERSION = '1.1.2';
 
 @ARGV or show_help();
 
@@ -155,7 +155,7 @@ $Variable
     my $errors = qx{perl -c $tempfile 2>&1};
     unlink $tempfile unless $opt->{keeptempfile};
 
-    if ($errors !~ /had compilation errors/) {
+    if ($errors !~ /had compilation errors/ and $errors !~ /too many errors/) {
         print qq{File "$file" had no Perl problems\n} unless $opt->{quiet};
         return;
     }
