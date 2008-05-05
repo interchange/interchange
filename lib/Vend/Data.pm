@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.66 2008-03-25 17:13:21 jon Exp $
+# $Id: Data.pm,v 2.67 2008-05-05 15:14:00 markj Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -2274,13 +2274,18 @@ sub update_data {
 				$brec->{$f} = $value if $brec;
 			}
 
+			my $dml = { dml => 'upsert' };
+			$dml->{dml} = $function
+				if $::Pragma->{dml} eq 'strict'
+					|| $function eq 'insert' && $::Pragma->{dml} eq 'preserve';
+
 			for(keys %$qd) {
 #::logDebug("update_data: Getting ready to set_slice");
 				my $k = $multikey ? undef : $key;
-				$qret = $qd->{$_}->set_slice($k, $qf->{$_}, $qv->{$_});
+				$qret = $qd->{$_}->set_slice([$dml, $k], $qf->{$_}, $qv->{$_});
 				$rows_set[$i] = $qret unless $rows_set[$i];
 			}
-			if($blob) {
+			if($blob && $rows_set[$i]) {
 				$brec->{mv_data_fields} = join " ", @fields;
 				my $string =  uneval_it($blob);
 #::logDebug("update_data: blob saving string=$string");

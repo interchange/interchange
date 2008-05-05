@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.84 2008-03-25 17:13:21 jon Exp $
+# $Id: DBI.pm,v 2.85 2008-05-05 15:14:00 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.84 $, 10);
+$VERSION = substr(q$Revision: 2.85 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1213,6 +1213,17 @@ sub set_slice {
 		return undef;
 	}
 
+	my $opt;
+	if (ref ($key) eq 'ARRAY') {
+		$opt = shift @$key;
+		$key = shift @$key;
+	}
+	$opt = {}
+		unless ref ($opt) eq 'HASH';
+
+	$opt->{dml} = 'upsert'
+		unless defined $opt->{dml};
+
 	my $tkey;
 	my $sql;
 
@@ -1257,8 +1268,15 @@ sub set_slice {
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
+	my $force_insert =
+		$opt->{dml} eq 'insert';
+	my $force_update =
+		$opt->{dml} eq 'update';
 
-	if ( defined $tkey and $s->record_exists($key) ) {
+	if (
+		$force_update or
+		!$force_insert and defined $tkey and $s->record_exists($key)
+	) {
 		unless (@$fary) {
 			# as there are no data columns, we can safely skip the update
 			return $key;

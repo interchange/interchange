@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.11 2007-08-09 13:40:56 pajamian Exp $
+# $Id: DBI_CompositeKey.pm,v 1.12 2008-05-05 15:14:00 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 use strict;
 
@@ -317,6 +317,16 @@ sub set_slice {
 		return undef;
 	}
 
+	my $opt;
+	if (ref ($key) eq 'ARRAY' && ref ($key->[0]) eq 'HASH') {
+		$opt = shift @$key;
+		$key = shift @$key;
+	}
+	$opt ||= {};
+
+	$opt->{dml} = 'upsert'
+		unless defined $opt->{dml};
+
 	my @key;
 	my $exists;
 	if($key) {
@@ -403,7 +413,12 @@ sub set_slice {
 		}
     }
 
-	if ( $exists ) {
+	my $force_insert =
+		$opt->{dml} eq 'insert';
+	my $force_update =
+		$opt->{dml} eq 'update';
+
+	if ( $force_update or !$force_insert and $exists ) {
 		unless (@$fary) {
 			# as there are no data columns, we can safely skip the update
 			return $key;

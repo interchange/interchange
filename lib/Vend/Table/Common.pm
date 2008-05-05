@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.48 2008-03-25 17:13:21 jon Exp $
+# $Id: Common.pm,v 2.49 2008-05-05 15:14:00 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -391,7 +391,7 @@ sub get_slice {
 }
 
 sub set_slice {
-    my ($s, $key, $fary, $vary) = @_;
+	my ($s, $key, $fary, $vary) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 
     if($s->[$CONFIG]{Read_only}) {
@@ -402,6 +402,17 @@ sub set_slice {
 		);
 		return undef;
 	}
+
+	my $opt;
+	if (ref ($key) eq 'ARRAY') {
+		$opt = shift @$key;
+		$key = shift @$key;
+	}
+	$opt = {}
+		unless ref ($opt) eq 'HASH';
+
+	$opt->{dml} = 'upsert'
+		unless defined $opt->{dml};
 
 	if(ref $fary ne 'ARRAY') {
 		my $href = $fary;
@@ -423,8 +434,23 @@ sub set_slice {
 
 	my @current;
 
-	@current = $s->row($key)
-		if $s->record_exists($key);
+	if ($s->record_exists($key)) {
+		if ($opt->{dml} eq 'insert') {
+			$s->log_error(
+				"Duplicate key on set_slice insert for key '$key' on table %s",
+				$s->[$CONFIG]{name},
+			);
+			return undef;
+		}
+		@current = $s->row($key);
+	}
+	elsif ($opt->{dml} eq 'update') {
+		$s->log_error(
+			"No record to update set_slice for key '$key' on table %s",
+			$s->[$CONFIG]{name},
+		);
+		return undef;
+	}
 
 	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
 
