@@ -155,7 +155,7 @@ $Variable
     my $errors = qx{perl -c $tempfile 2>&1};
     unlink $tempfile unless $opt->{keeptempfile};
 
-    if ($errors !~ /had compilation errors/ and $errors !~ /too many errors/) {
+    if ($errors =~ /$tempfile syntax OK$/) {
         print qq{File "$file" had no Perl problems\n} unless $opt->{quiet};
         return;
     }
