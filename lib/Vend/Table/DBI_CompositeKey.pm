@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.12 2008-05-05 15:14:00 markj Exp $
+# $Id: DBI_CompositeKey.pm,v 1.13 2008-05-06 20:42:59 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 use strict;
 
@@ -341,25 +341,18 @@ sub set_slice {
 		$vary = [@$vin];
 	}
 	else {
-		my $href = $fin;
-		if(ref $href eq 'HASH') {
-			$href = { %$href };
-		}
-		else {
-			$href = { splice (@_, 2) };
-		}
 
 		if(! $key) {
 			@key = ();
 			for( @{$s->[$CONFIG]{_Key_columns}} ) {
-				push @key, delete $href->{$_};
+				push @key, delete $fin->{$_};
 			}
 			$key = \@key;
 			$exists = $s->record_exists(\@key);
 		}
 
-		$vary = [ values %$href ];
-		$fary = [ keys   %$href ];
+		$vary = [ values %$fin ];
+		$fary = [ keys   %$fin ];
 	}
 
 	if(! $key) {

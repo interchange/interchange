@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.49 2008-05-05 15:14:00 markj Exp $
+# $Id: Common.pm,v 2.50 2008-05-06 20:42:59 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -416,9 +416,6 @@ sub set_slice {
 
 	if(ref $fary ne 'ARRAY') {
 		my $href = $fary;
-		if(ref $href ne 'HASH') {
-			$href = { $fary, $vary, @_ }
-		}
 		$vary = [ values %$href ];
 		$fary = [ keys   %$href ];
 	}

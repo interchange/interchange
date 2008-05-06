@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.85 2008-05-05 15:14:00 markj Exp $
+# $Id: DBI.pm,v 2.86 2008-05-06 20:42:59 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.85 $, 10);
+$VERSION = substr(q$Revision: 2.86 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1232,12 +1232,8 @@ sub set_slice {
 		$vary = [@$vin];
 	}
 	else {
-		my $href = $fin;
-		if(ref $href ne 'HASH') {
-			$href = { splice (@_, 2) };
-		}
-		$vary = [ values %$href ];
-		$fary = [ keys   %$href ];
+		$vary = [ values %$fin ];
+		$fary = [ keys   %$fin ];
 	}
 
 	if ($s->[$CONFIG]->{PREFER_NULL}) {
