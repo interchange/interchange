@@ -78,8 +78,6 @@ dist/          The distribution files, exclusive of executable
                lib/                   Back-end administrative interface
                code/                  Usertags and other customizable code
 
-extra/         Some not-always-needed Perl libraries.
-
 hints.pl       OS-specific configuration settings. None currently used.
 
 eg/            Various helper scripts and addons.

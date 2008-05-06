@@ -179,43 +179,7 @@ sub my_prompt {
 
 
 sub extra_libs {
-
 	my ($realdir) = @_;
-	# Do the extra library checks
-
-	my @extra_lib_dirs;
-	my @extra_lib_files;
-
-	eval {
-		require IniConf;
-	};
-	if ($@) {
-		push @extra_lib_files, 'IniConf.pm';
-	}
-
-	eval {
-		require HTML::Entities;
-	};
-	if ($@) {
-		push @extra_lib_dirs, 'HTML';
-		push @extra_lib_files, 'HTML/Entities.pm';
-	}
-
-	eval {
-		require Business::UPS;
-	};
-	if ($@) {
-		push @extra_lib_dirs, 'Business';
-		push @extra_lib_files, 'Business/UPS.pm';
-	}
-
-	eval {
-		require Tie::ShadowHash;
-	};
-	if ($@) {
-		push @extra_lib_dirs, 'Tie';
-		push @extra_lib_files, 'Tie/ShadowHash.pm';
-	}
 
 	eval {
 		require Storable;
@@ -263,20 +227,7 @@ EOF
 			close TSTORABLE;
 		}
 	}
-
-	COPYEXTRA: {
-		my $cpdir = '.';
-		mkdir $cpdir, 0777 unless -d $cpdir;
-		mkdir "$cpdir/lib", 0777 unless -d "$cpdir/lib";
-		for(@extra_lib_dirs) {
-			next if -d "$cpdir/lib/$_";
-			mkdir "$cpdir/lib/$_", 0777 or die "mkdir $cpdir/lib/$_: $!\n";
-		}
-		for(@extra_lib_files) {
-			File::Copy::copy ("extra/$_", "lib/$_")
-				or die "Couldn't copy $_: $!\n";
-		}
-	}
+	return;
 }
 
 sub mk_initp {

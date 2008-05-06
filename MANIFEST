@@ -1058,15 +1058,6 @@ extensions/quickbooks/usertag/export_quicken_items.tag
 extensions/quickbooks/usertag/get_quicken_orders.tag
 extensions/quickbooks/usertag/import_quicken_items.tag
 extensions/quickbooks/vars/TRANS_QUICKBOOKS
-extra/Business/UPS.pm
-extra/File/Spec.pm
-extra/File/Spec/OS2.pm
-extra/File/Spec/Unix.pm
-extra/File/Spec/VMS.pm
-extra/File/Spec/Win32.pm
-extra/IniConf.pm
-extra/Tie/ShadowHash.pm
-extra/URI/URL.pm
 hints.pl
 install_lsb.pl
 lib/Vend/Accounting.pm
