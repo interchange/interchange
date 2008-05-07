@@ -1010,6 +1010,7 @@ eg/compact
 eg/cvv2.svg
 eg/filter/calculated.filter
 eg/gpg_display
+eg/iclint
 eg/ifdef
 eg/merge-tab-files
 eg/news_feature/dbconf/default_db/news.dbm
