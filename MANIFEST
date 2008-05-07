@@ -395,6 +395,7 @@ dist/features/quickpoll/quickpoll.init
 dist/features/quickpoll/quickpoll.uninstall
 dist/features/quickpoll/templates/components/quickpoll
 dist/interchange.cfg.dist
+dist/lib/IniConf.pm
 dist/lib/UI/ContentEditor.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/locales/da_DK.cfg
