@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.91 2008-03-25 17:13:21 jon Exp $
+# $Id: Editor.pm,v 1.92 2008-05-10 14:07:40 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.91 $, 10);
+$VERSION = substr(q$Revision: 1.92 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -843,6 +843,7 @@ sub display {
 								prepend
 								table
 								type
+								type_empty
 								width
 								/;
 			for(@override) {
@@ -852,7 +853,12 @@ sub display {
 			}
 		}
 
-		$record->{type} ||= $opt->{default_widget};
+		if($record->{type_empty} and length($opt->{value}) == 0) {
+			$record->{type} = $record->{type_empty};
+		}
+		else {
+			$record->{type} ||= $opt->{default_widget};
+		}
 
 		$record->{name} ||= $column;
 #::logDebug("record now=" . ::uneval($record));
