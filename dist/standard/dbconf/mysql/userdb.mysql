@@ -47,3 +47,4 @@ Database  userdb  COLUMN_DEF   "s_nickname=text"
 Database  userdb  COLUMN_DEF   "state=varchar(20)"
 Database  userdb  COLUMN_DEF   "updated=varchar(32)"
 Database  userdb  COLUMN_DEF   "zip=varchar(10)"
+Database  userdb  PREFER_NULL   mod_time
