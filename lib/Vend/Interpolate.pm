@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.300 2008-04-23 03:16:23 pajamian Exp $
+# $Id: Interpolate.pm,v 2.301 2008-05-12 16:08:43 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.300 $, 10);
+$VERSION = substr(q$Revision: 2.301 $, 10);
 
 @EXPORT = qw (
 
@@ -4878,7 +4878,7 @@ sub tag_loop_list {
 			}
 
 			eval {
-				@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
+				@rows = map { [ split /\Q$delim/, $_ ] } split /\Q$splittor/, $list;
 			};
 		}
 	}
