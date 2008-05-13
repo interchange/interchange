@@ -73,6 +73,39 @@ That's it. Verify your catalog's operation, and you are live.
 
                          K N O W N   I S S U E S
 
+
+PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
+
+In PostgreSQL 8.3 many implicit casts were removed, some of which Interchange
+relied on. By default, the Standard demo and some Interchange core SQL does
+not work with PostgreSQL 8.3.
+
+We expect to work around this in a future version of Interchange, but at the
+moment the easiest way to get things working is to manually put back the
+removed casts, as Peter Eisentraut describes here:
+
+    http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html
+
+Running his pg83-implicit-casts.sql script fixes the known problems with the
+Standard demo.
+
+This issue does not affect earlier versions of PostgreSQL.
+
+
+KNOWN ISSUES UPGRADING FROM 5.5.2
+
+The syntax of the custom SQL function for counters has changed. At the time
+of the feature's introduction on 2007-11-17, the syntax was e.g.:
+
+    UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
+
+That conflicted with MySQL pseudo-sequence functionality that used the same
+syntax. The new syntax does not conflict and has the benefit of being more
+generic, allowing any SELECT statement:
+
+    UserDB  default   sql_counter  "userdb:SELECT custom_counter('userdb_username_seq')"
+
+
 KNOWN ISSUES UPGRADING FROM 5.5.1
 
 SpecialSub catalog_init has been renamed to request_init.
