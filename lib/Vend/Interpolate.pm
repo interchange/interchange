@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.301 2008-05-12 16:08:43 mheins Exp $
+# $Id: Interpolate.pm,v 2.302 2008-05-13 02:53:13 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.301 $, 10);
+$VERSION = substr(q$Revision: 2.302 $, 10);
 
 @EXPORT = qw (
 
@@ -1656,7 +1656,16 @@ sub tag_perl {
 		};
 	}
 
-	#$hole->wrap($Tag);
+	$Items = $Vend::Items;
+
+	$body = readfile($opt->{file}) . $body
+		if $opt->{file};
+
+	# Skip costly eval of code entirely if perl tag was called with no code,
+	# likely used only for the side-effect of opening database handles
+	return if $body !~ /\S/;
+
+	$body =~ tr/\r//d if $Global::Windows;
 
 	$MVSAFE::Safe = 1;
 	if (
@@ -1667,13 +1676,6 @@ sub tag_perl {
 	{
 		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
 	}
-
-	$body = readfile($opt->{file}) . $body
-		if $opt->{file};
-
-	$body =~ tr/\r//d if $Global::Windows;
-
-	$Items = $Vend::Items;
 
 	if(! $MVSAFE::Safe) {
 		$result = eval($body);
