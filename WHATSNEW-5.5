@@ -10,6 +10,24 @@ See UPGRADE document for a list of incompatible changes.
 
 Interchange 5.5.3 not yet released.
 
+Core
+----
+
+* Change syntax for option to use custom SQL as a counter.
+
+  This allows something other than a plain database sequence to be used to
+  replace counter files, for example to allow character prefixes or suffixes
+  with sequences, or to avoid writing files locally when in a cluster
+  environment.
+
+  For example, if you create a function called "custom_counter" in PostgreSQL,
+  you could set up catalog.cfg like this:
+
+  UserDB  default   sql_counter  "userdb:SELECT custom_counter('users')"
+  Route   default   sql_counter  "transactions:SELECT custom_counter('orders')"
+
+  And whatever the custom_counter function returns will be used by Interchange.
+
 Packaging
 ---------
 
@@ -134,14 +152,6 @@ Core
   replace counter files, for example to allow character prefixes or suffixes
   with sequences, or to avoid writing files locally when in a cluster
   environment.
-
-  For example, if you create a function called "custom_counter" in PostgreSQL,
-  you would set up catalog.cfg like this:
-
-  UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
-  Route   default   sql_counter  "transactions:custom_counter('order_number_seq')"
-
-  And whatever the custom_counter function returns will be used by Interchange.
 
 * Allow [if var ...] as shorthand for [if variable ...].
 
