@@ -13,7 +13,84 @@ Interchange 5.5.3 not yet released.
 Core
 ----
 
-* Change syntax for option to use custom SQL as a counter.
+* Extended set_slice() to allow control of upsert behavior:
+
+  Calls to set_slice() have to date been forced to use the upsert model of
+  data manipulation. This can be a highly desirable editing model, but it
+  also has disadvantages, particularly in the context of the 'set' and
+  'autoset' form actions, which imply--but don't enforce--a distinction
+  between insert and update at the data-storage level.
+
+  The effects on insert can be particularly insidious, where one faces
+  having the assumed behavior on duplicate primary keys thwarted by a
+  surreptitious conversion to a SQL update. In such an instance, instead of
+  existing data being protected by a duplicate primary key error, the
+  extant record is silently replaced by the data from the insert. Detecting
+  this condition, particularly on a large table, is virtually impossible.
+
+  While the results of an update-to-insert adjustment are more benign, it
+  still presents a nuisance if a strict update is intended. To correct it,
+  one merely needs to delete the newly created, unanticipated row, and such
+  behavior does not destroy existing data.
+
+  To enforce update or insert, set_slice()'s $key arg can be optionally
+  passed as an array ref, essentially replacing the existing call:
+
+    set_slice($key, $fary, $vary)
+
+  with
+
+    set_slice([$opt, $key], $fary, $vary)
+
+  where $opt->{dml} is set to the desired value. $opt as a hash ref is
+  used so that any possible future opt-style params can simply be loaded
+  into the existing calling structure.
+
+  Change details:
+
+  * Default behavior for set_slice() is 'upsert'. If you do nothing to
+    your code or catalog, the behavior remains unchanged.
+
+  * $opt->{dml} can be 'insert', 'update', or anything else. If it's
+    anything else, it has no specific behavior currently. It defaults the
+    value 'upsert' just to be somewhat self-documenting and open up the
+    possibility of behaviors based on that value in the future.
+
+  * Despite the decision to key it off of 'dml', this has no effect on
+    deletes. Deletes have no ambiguous behavior, reflected in the fact that
+    deletes have their own dedicated method.
+
+  * Change only has core impact when processing requests through
+    Vend::Data::update_data(). However, any direct calls to set_slice() may
+    avail themselves of the new feature simply by overloading the $key arg
+    in the same fashion.
+
+  * Behavior of Vend::Data::update_data() can be in three modes,
+    controllable by the new 'dml' pragma.
+
+    + No pragma setting works in historic mode, with upsert behavior.
+
+    + "Pragma dml=preserve" restricts inserts to insert-only, but allows
+      the fall-through behavior from update to insert. As the name preserve
+      implies, it means no existing data can be clobbered.
+
+      The advantage to preserve is the easy use of set_slice() as a
+      record-cloning operation. In the table editor, one can clone a
+      record by simply changing the PK. Without this behavior, one must
+      completely re-enter existing data to the new key's name to clone.
+
+    + "Pragma dml=strict" forces update or insert to only perform the
+      requested action.
+
+  Removed the option available in some polymorphs of set_slice that allowed
+  key/value pairs to be passed in as a simple array.
+
+* Fixed bug that caused change of delimiter for all loops on a page.
+
+* Skip eval in [perl] blocks if there is no code to eval, which speeds up
+  [perl] blocks used only for the side-effect of opening database handles.
+
+* Changed syntax for option to use custom SQL as a counter.
 
   This allows something other than a plain database sequence to be used to
   replace counter files, for example to allow character prefixes or suffixes
@@ -28,11 +105,50 @@ Core
 
   And whatever the custom_counter function returns will be used by Interchange.
 
+Filters
+-------
+
+* Made html2text filter also strip <b>, <i>, and <u> start & end tags.
+
+Widgets
+-------
+
+* Add type_empty parameter to table editor. This allows the selection of a
+  different widget type if the length of the data is zero. Found on the
+  extended page of the meta editor for the field.
+
+  An example of use would be a "created" field in a table, which is a
+  DATETIME type. If the value of the field is the empty string or NULL,
+  set type_empty to "datetime" to put a date widget in. Make the normal
+  widget type be "value", which allows you to just display the data when
+  the value is already set.
+
+* Made date widget formatting shorthand apply to time widget as well. User
+  widgets called time* are unaffected if they don't use a non-word character
+  in the callout. Examples:
+
+  time.ampm    { type => 'time', ampm => 1 }
+  time.blank   { type => 'time', blank => 1 }
+  time.8-23    { type => 'time', start_hour => 8, end_hour => 23 }
+  time.half    { type => 'time', minutes => 'half_hourly' }
+
+Standard demo
+-------------
+
+* Cleaned up spurious meta_header scratch variable set on two pages.
+
+* Make MySQL do right thing with mod_time by setting to PREFER_NULL and making
+  the widget in the table editor be 'value'.
+
 Packaging
 ---------
 
 * Removed copied CPAN modules in extra/ and associated code. Commonly needed
   CPAN modules are in Bundle::Interchange or Bundle::InterchangeKitchenSink.
+
+* Moved IniConf.pm (used by makecat) into dist/lib. On CPAN it is marked as
+  deprecated, so make sure a copy is available here until we switch to a
+  different module.
 
 Extra tools
 -----------
@@ -71,7 +187,7 @@ Core
 
     -- If set to "yes" or "true" then then return all results in a
        random order (again, previously returned one random result).
-    
+
     -- If set to a numeric > 0 then return that many random results.
 
     -- If set to a numeric > the available results then return all
@@ -248,11 +364,11 @@ Core
 
 * Make explicit the various implicit dependencies between PreFork,
   PreForkSingleFork, and StartServers.
-    
+
   PreForkSingleFork should only ever affect behavior in conjunction with
   PreFork true, ensuring the prefork code path is entirely controllable by
   the value of PreFork.
-  
+
   Fixed condition on StartServers where a positive value for that parameter
   when not in PreFork mode spawned a StartServers number of superfluous
   daemons that were never used. Now, StartServers is effectively ignored
