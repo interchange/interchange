@@ -1,8 +1,10 @@
-interchange (5.5.2-0.0.1) unstable; urgency=low
+interchange (5.5.3-1) unstable; urgency=low
 
   * new upstream release
     - display modified date on Saved Carts / Recurring Order page in a
       human readable format (Closes: #430338)
+  * fixed bashisms in wrapper scripts (Closes: #480600, thanks to Raphael
+    Geissert <atomo64@gmail.com>)
   * demo catalog installation
     - added missing dbconfig-common hooks (Closes: #465993)
     - added defaults for database name and database user 
@@ -27,7 +29,7 @@ interchange (5.5.2-0.0.1) unstable; urgency=low
     - fix section in interchangeconfig/te manual pages
     - build dependency on po-debconf added
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Apr 2008 12:21:41 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 15 May 2008 23:12:56 +0200
 
 interchange (5.5.1-1) unstable; urgency=low
 
