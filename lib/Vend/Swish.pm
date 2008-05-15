@@ -1,10 +1,10 @@
-# Vend::Swish - Search indexes with Swish-e
+# Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish.pm,v 1.11 2007-08-09 13:40:54 pajamian Exp $
+# $Id: Swish.pm,v 1.12 2008-05-15 21:42:40 racke Exp $
 #
-# Adapted from Vend::Glimpse
+# Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2005-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,334 +22,417 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-package Vend::Swish;
+package Vend::Swish2;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 use strict;
 
+use SWISH::API;
+
+BEGIN {
+	eval {
+		require SWISH::ParseQuery;
+		require SWISH::PhraseHighlight;
+		$Vend::Swish2::Highlighting = 1;
+	};
+}
+		
+# singleton to hold initialization object, 
+# search objects are then retrieved through it
+# this should improve performance through caching
+my $_swish = {};
+my $_swish_highlighters = {};
+
+my %Default = (
+    matches                 => 0,
+    mv_head_skip            => 0,
+    mv_index_delim          => "\t",
+    mv_record_delim         => "\n",
+    mv_matchlimit           => 50,
+    mv_max_matches          => 2000,
+    mv_min_string           => 1,
+);
+
+my %fmap = ( code        => 'swishreccount',
+             score       => 'swishrank',
+             url         => 'swishdocpath',
+             title       => 'swishtitle',
+             filesize    => 'swishdocsize',
+             mod_date    => 'swishlastmodified',
+             description => 'swishdescription',
+			 dbfile      => 'swishdbfile',
+           );
+my %highlight_settings = ( show_words    => 8,
+                           occurrences   => 5,
+                           max_words     => 100,
+                           highlight_on  => '<span class="highlight">',
+                           highlight_off => '</span>',
+                         );
+
 sub array {
-	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1; # makes perform_search only return results array
-	return Vend::Scan::perform_search($opt, undef, $s);
+    my ($s, $opt) = @_;
+    $s->{mv_list_only} = 1; # makes perform_search only return results array
+    return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub hash {
-	my ($s, $opt) = @_;
-	$s->{mv_return_reference} = 'HASH';
-	$s->{mv_list_only} = 1; # makes perform_search only return results array
-	return Vend::Scan::perform_search($opt, undef, $s);
+    my ($s, $opt) = @_;
+    $s->{mv_return_reference} = 'HASH';
+    $s->{mv_list_only} = 1; # makes perform_search only return results array
+    return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub list {
-	my ($s, $opt) = @_;
-	$s->{mv_return_reference} = 'LIST';
-	$s->{mv_list_only} = 1; # makes perform_search only return results array
-	return Vend::Scan::perform_search($opt, undef, $s);
+    my ($s, $opt) = @_;
+    $s->{mv_return_reference} = 'LIST';
+    $s->{mv_list_only} = 1; # makes perform_search only return results array
+    return Vend::Scan::perform_search($opt, undef, $s);
 }
 
-my %Default = (
-		matches                 => 0,
-		mv_head_skip            => 0,
-		mv_index_delim          => "\t",
-		mv_record_delim         => "\n",
-		mv_matchlimit           => 50,
-		mv_max_matches          => 2000,
-		mv_min_string           => 4,
-);
-
-
 sub init {
-	my ($s, $options) = @_;
+    my ($s, $options) = @_;
 
-#::logDebug("initting Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish}));
-	$Vend::Cfg->{Swish} ||= {};
-	@{$s}{keys %Default} = (values %Default);
-	$s->{mv_base_directory}     = undef,
-	$s->{mv_begin_string}       = [];
-	$s->{mv_all_chars}	        = [1];
-	$s->{mv_case}               = [];
-	$s->{mv_column_op}          = [];
-	$s->{mv_negate}             = [];
-	$s->{mv_numeric}            = [];
-	$s->{mv_orsearch}           = [];
-	$s->{mv_searchspec}	        = [];
-	$s->{mv_search_group}       = [];
-	$s->{mv_search_field}       = [];
-	$s->{mv_search_file}        = [];
-	push @{$s->{mv_search_file}}, $Vend::Cfg->{Swish}{index}
-		if $Vend::Cfg->{Swish}{index};
-	$s->{mv_searchspec}         = [];
-	$s->{mv_sort_option}        = [];
-	$s->{mv_substring_match}    = [];
-	$s->{mv_field_names}      = [qw/code score url title filesize mod_date/];
-	$s->{mv_return_fields}    = [qw/code score url title filesize mod_date/];
-	$s->{swish_cmd} = $Vend::Cfg->{Swish}{command} || '/usr/local/bin/swish-e';
-#::logDebug("initting Swish search, swish command=$s->{swish_cmd}");
+    #::logDebug("initing Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish2}));
+    $Vend::Cfg->{Swish2} ||= {};
 
-	for(keys %$options) {
-		$s->{$_} = $options->{$_};
-	}
+    @{$s}{keys %Default} = (values %Default);
 
-	return;
+    $s->{mv_base_directory}     = $Vend::Cfg->{VendRoot},
+    $s->{mv_begin_string}       = [];
+    $s->{mv_all_chars}          = [1];
+    $s->{mv_case}               = [];
+    $s->{mv_column_op}          = [];
+    $s->{mv_negate}             = [];
+    $s->{mv_numeric}            = [];
+    $s->{mv_orsearch}           = [];
+    $s->{mv_searchspec}         = [];
+    $s->{mv_search_group}       = [];
+    $s->{mv_search_field}       = [];
+    $s->{mv_search_file}        = [];
+    push @{$s->{mv_search_file}}, $Vend::Cfg->{Swish2}{index}
+        if $Vend::Cfg->{Swish2}{index};
+    $s->{mv_searchspec}         = [];
+    $s->{mv_sort_option}        = [];
+    $s->{mv_substring_match}    = [];
+    $s->{mv_field_names}      = [qw/code score url title filesize mod_date/];
+    $s->{mv_return_fields}    = [qw/code score url title filesize mod_date/];
+
+    for (keys %$options) {
+        $s->{$_} = $options->{$_};
+    }
+
+    # can create the base Swish object once and run
+    # multiple queries off of it
+    my @searchfiles = @{$s->{mv_search_file}};
+    for (@searchfiles) {
+        $_ = Vend::Util::catfile($s->{mv_base_directory}, $_)
+            unless Vend::Util::file_name_is_absolute($_);
+    }
+    my $from_index = join ' ', @searchfiles;
+    $s->{'swish_index'} = $from_index;
+
+    unless ($_swish->{$from_index}) {
+        $_swish->{$from_index} = new SWISH::API ( $from_index );
+        if ($_swish->{$from_index}->Error) {
+            die "Can't create swish engine on searchfile(s) @searchfiles: " . $_swish->{$from_index}->ErrorString . "\n";
+        }
+    }
+
+    if ($Vend::Cfg->{Swish2}{highlight_context}) {
+        push @{ $s->{mv_field_names} }, 'context';
+        push @{ $s->{mv_return_fields} }, 'context';
+        $fmap{'context'} = 'swishdescription';
+
+        foreach my $index (@{ $s->{'mv_search_file'} }) {
+            my $swish = $_swish->{$from_index};
+            my %headers = map { lc $_ => ($swish->HeaderValue( $index, $_ ) || '') } $swish->HeaderNames;
+
+            $_swish_highlighters->{$index} = new SWISH::PhraseHighlight ( \%highlight_settings, \%headers, { swish => $swish } );
+        }
+    }
+
+    return;
 }
 
 sub new {
-	my ($class, %options) = @_;
-	my $s = new Vend::Search;
-	bless $s, $class;
-	$s->init(\%options);
-	return $s;
+    my ($class, %options) = @_;
+    my $s = new Vend::Search;
+    bless $s, $class;
+    $s->init(\%options);
+    return $s;
 }
 
 sub search {
+    my ($s, %options) = @_;
 
-	my($s,%options) = @_;
+    while (my ($key,$val) = each %options) {
+        $s->{$key} = $val;
+    }
+    $s->{mv_return_delim} = $s->{mv_index_delim}
+        unless defined $s->{mv_return_delim};
 
-	my(@out);
-	my($limit_sub,$return_sub,$delayed_return);
-	my($dict_limit,$f,$key,$val);
-	my($searchfile, @searchfiles);
-	my(@specs);
-	my(@pats);
+    my @specs = @{$s->{mv_searchspec}};
+    my @pats = $s->spec_check(@specs);
 
-	# map Swish-e auto properties to field names
-	my %fmap = qw/
-					code	swishreccount
-					description swishdescription
-					dbfile    swishdbfile
-					score	swishrank
-					url		swishdocpath
-					title	swishtitle
-					filesize	swishdocsize
-					mod_date	swishlastmodified
-				/;
-	while (($key,$val) = each %options) {
-		$s->{$key} = $val;
-	}
+    $s->save_specs();
 
-	@searchfiles = @{$s->{mv_search_file}};
+    my $search_string = join ' ', @pats;
+    if (length $search_string < $s->{mv_min_string}) {
+        my $msg = ::errmsg(
+                    "Swish search string less than minimum %s characters: %s",
+                    $s->{mv_min_string},
+                    $search_string,
+                );
+        return $s->search_error($msg);
+    }
 
-	for(@searchfiles) {
-		$_ = Vend::Util::catfile($s->{mv_base_directory}, $_)
-			unless Vend::Util::file_name_is_absolute($_);
-	}
+    my $engine = $_swish->{ $s->{'swish_index'} };
 
-#::logDebug("gsearch: self=" . ::Vend::Util::uneval_it({%$s}));
-	$s->{mv_return_delim} = $s->{mv_index_delim}
-		unless defined $s->{mv_return_delim};
-
-	unless ($s->{swish_cmd} && -x $s->{swish_cmd}) {
-		return $s->search_error("Invalid swish command $s->{swish_cmd}");
-	}
-
-	@specs = @{$s->{mv_searchspec}};
-
-	@pats = $s->spec_check(@specs);
-
-	my @f;
-
-	for(@{$s->{mv_field_names}}) {
-		my $name = $fmap{$_} || $_;
-		$name = "<$name>";
-		push @f, $name;
-	}
+	# check properties first
+	my @indexes = $engine->IndexNames();
+	my $index_num = @indexes;
+	my (%prop_avail, @plist, $prop);
 	
-	my $fmt_string = join $s->{mv_return_delim}, @f;
-	
-	$fmt_string .= $s->{mv_record_delim} eq "\n" ? '\n' : $s->{mv_record_delim};
-
-	return undef if $s->{matches} == -1;
-
-	# Build swish line
-	my @cmd;
-	push @cmd, $s->{swish_cmd};
-	push @cmd, qq{-x '$fmt_string'};
-	push @cmd, "-c $s->{mv_base_directory}"
-			if $s->{mv_base_directory};
-
-	if (@searchfiles) {
-		push @cmd, "-f " . join(" ", @searchfiles);
-	}
-	
-	push @cmd, "-m $s->{mv_max_matches}" if $s->{mv_max_matches};
-	
-	local($/) = $s->{mv_record_delim} || "\n";
-
-	$s->save_specs();
-	
-	my $spec = join ' ', @pats;
-
-	$spec =~ s/[^-\w()"\s\*]+//g
-		and $CGI::values{debug}
-		and ::logError("Removed unsafe characters from search string");
-
-	if(length($spec) < $s->{mv_min_string}) {
-		my $msg = ::errmsg(
-					"Swish search string less than minimum %s characters: %s",
-					$s->{mv_min_string},
-					$spec,
-				);
-		return $s->search_error($msg);
-	}
-
-	push @cmd, qq{-w $spec};
-
-	if(length($spec) < $s->{mv_min_string}) {
-		my $msg = ::errmsg (<<EOF, $s->{mv_min_string}, $spec);
-Search strings must be at least %s characters.
-You had '%s' as the operative characters  of your search strings.
-EOF
-		return $s->search_error($msg);
-	}
-
-	my $cmd = join ' ', @cmd;
-
-	my $cwd = `pwd`;
-	chomp($cwd);
-#::logDebug("Swish command '$cmd' cwd=$cwd");
-
-	open(SEARCH, "$cmd |")
-		or ::logError( "Couldn't fork swish search '$cmd': $!"), next;
-	#$s->adjust_delimiter(\*SEARCH) if $s->{mv_delimiter_auto};
-	my $line;
-	my $field_names;
-
-#::logDebug("search after getting fields: self=" . ::uneval({%$s}));
-	my $prospect;
-
-	my $f = sub { 1 };
-
-	eval {
-		($limit_sub, $prospect) = $s->get_limit($f, 1);
-	};
-
-	$@  and  return $s->search_error("Limit subroutine creation: $@");
-
-	$f = $prospect if $prospect;
-
-	eval {($return_sub, $delayed_return) = $s->get_return(undef, 1)};
-
-	$return_sub = sub { return [ split $s->{mv_index_delim}, shift(@_) ] };
-
-	$@  and  return $s->search_error("Return subroutine creation: $@");
-
-	my $field_names = join "\t", @{$s->{mv_field_names}};
-	$field_names =~ s/^\s+//;
-	my @laundry = (qw/mv_search_field mv_range_look mv_return_fields/);
-	$s->hash_fields(
-				[ split /\Q$s->{mv_index_delim}/, $field_names ],
-				@laundry,
-	);
-	undef $field_names;
-
-	if($limit_sub) {
-		while(<SEARCH>) {
-#::logDebug("swish line, limit_sub: $_");
-			next if /^#/;
-			last if $_ eq ".\n";
-			$limit_sub->($_);
-			push @out, $return_sub->($_);
-		}
-	}
-	else {
-		while(<SEARCH>) {
-#::logDebug("swish line: $_");
-			next if /^#/;
-			last if $_ eq ".\n";
-			push @out, $return_sub->($_);
-		}
-	}
-	
-	if(scalar(@out) == 1 and $out[0][0] =~ s/^err:\s*(.*?)\s*$//)  {
-		# presumably search error signaled by Swish
-		@out = ();
-
-		# don't consider missing matches as search error
-	    unless ($1 eq 'no results') {
-			$s->{matches} = -1;
-			return $s->search_error($1);
+	for my $index (@indexes) {
+		@plist = $engine->PropertyList($index);
+		for $prop (@plist) {
+			push (@{$prop_avail{$prop->Name()}}, $index);
 		}
 	}
 
-	$s->{matches} = scalar(@out);
-
-#::logDebug("gsearch before delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
-	if($s->{mv_sort_field} and  @{$s->{mv_sort_field}}) {
-		$s->hash_fields($s->{mv_field_names}, qw/mv_sort_field/);
-		@out = $s->sort_search_return(\@out);
-	}
-#::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
-
-	if($s->{mv_unique}) {
-		my %seen;
-		@out = grep ! $seen{$_->[0]}++, @out;
-		$s->{matches} = scalar(@out);
-	}
-
-	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
-		$s->save_more(\@out)
-			or ::logError("Error saving matches: $!");
-		if ($s->{mv_first_match}) {
-			splice(@out,0,$s->{mv_first_match});
-			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
-			$s->{mv_next_pointer} = 0
-				if $s->{mv_next_pointer} > $s->{matches};
+	my @sf =  @{ $s->{mv_search_field} };
+	
+	for my $search_field (@{ $s->{mv_search_field} }) {
+		if (exists $prop_avail{$search_field}) {
+			$search_string = join (' or ', map {"$search_field=$_"} @pats);
 		}
-		$#out = $s->{mv_matchlimit} - 1;
+	}
+	
+	for (@{ $s->{'mv_field_names'} }) {
+		unless (exists $fmap{$_}) {
+			$fmap{$_} = $_;
+		}
+		
+		$prop = $fmap{$_};
+		
+		unless (exists $prop_avail{$prop}) {
+			return $s->search_error("Unknown property '$prop'");
+		}
+
+		unless (@{$prop_avail{$prop}} == $index_num) {
+			return $s->search_error("Property '$prop' is missing from some index files");
+		}
+	}
+	
+	#
+	#	bug alert (make your own klaxon sound here)
+	#	-------------------------------------------.
+	#	uncommenting the following line causes the [on-match] and
+	#	[no-match] blocks to reverse their meaning.  This has something
+	#	to do with the resulting "matches" count, but I haven't looked
+	#	into it properly
+	#
+	# $search_string = $s->build_search(\@pats);
+
+	#::logDebug("Swish search string is $search_string within " . join(', ', @sf));
+	
+    my $results = $engine->Query( $search_string );
+    if ($engine->Error) {
+        $s->{matches} = -1;
+        return $s->search_error("Can't run swish query: " . $engine->ErrorString);
+    }
+
+    # no matches, can return now
+    unless ($results->Hits) {
+        $s->{matches} = 0;
+        return;
+    }
+
+    my @out;
+	my $date_format = $Vend::Cfg->{Swish2}->{date_format} || '%Y-%m-%d %H:%M:%S';
+	
+    while (my $result = $results->NextResult) {
+        my $out_ref = [];
+        foreach my $field (@{ $s->{'mv_field_names'} }) {
+			my $text = $result->Property( $fmap{$field} );
+            if ($field =~ /context/) {
+                if ($Vend::Cfg->{'Swish2'}{'highlight_context'} and defined $text and $text ne '') {
+                    my $index = $result->Property('swishdbfile');
+
+                    my $parsed_query = parse_query( join ' ', $results->ParsedWords( $index ) );
+                    #::logDebug("parsed query: " . Vend::Util::uneval($parsed_query));
+        
+                    $_swish_highlighters->{$index}->highlight( \$text, $parsed_query->{'swishdefault'}, undef, $result );
+                }
+                push @$out_ref, $text;
+            }
+			elsif ($field eq 'mod_date' && $text) {
+				push @$out_ref, POSIX::strftime($date_format, localtime($text));
+			}
+			else {
+                push @$out_ref, $text;
+            }
+        }
+        
+        push @out, $out_ref;
+    }
+
+    {
+        my $field_names = join "\t", @{$s->{mv_field_names}};
+        $field_names =~ s/^\s+//;
+        my @laundry = (qw/mv_search_field mv_range_look mv_return_fields/);
+        $s->hash_fields(
+                    [ split /\Q$s->{mv_index_delim}/, $field_names ],
+                    @laundry,       
+        );
+    }
+
+    if ($s->{mv_unique}) {
+        my %seen;
+        @out = grep ! $seen{$_->[0]}++, @out;
+    }
+
+    if ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
+        $s->hash_fields( $s->{mv_field_names}, qw/mv_sort_field/ );
+        @out = $s->sort_search_return(\@out);
+    }
+
+    $s->{matches} = @out;
+
+    if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
+        $s->save_more(\@out)
+            or ::logError("Error saving matches: $!");
+
+        if ($s->{mv_first_match}) {
+            splice @out, 0, $s->{mv_first_match};
+            $s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
+            $s->{mv_next_pointer} = 0
+                if $s->{mv_next_pointer} > $s->{matches};
+        }
+        $#out = $s->{mv_matchlimit} - 1;
+    }
+
+    if (! $s->{mv_return_reference}) {
+        $s->{mv_results} = \@out;
+        #::logDebug("returning search: " . Vend::Util::uneval($s));
+        return $s;
+    }
+    elsif ($s->{mv_return_reference} eq 'LIST') {
+        my $col = @{ $s->{mv_return_fields} };
+        @out = map { join $s->{mv_return_delim}, @$_ } @out;
+        $s->{mv_results} = join $s->{mv_record_delim}, @out;
+    }
+    else {
+        my $col = @{ $s->{mv_return_fields} };
+
+        my @names = @{ $s->{mv_field_names} };
+        $names[0] eq '0' and $names[0] = 'code';
+
+        my %hash;
+        for (@out) {
+            my @col = split /$s->{mv_return_delim}/, $_, $col;
+
+            $hash{ $col[0] } = {};
+            @{ $hash{$col[0]} } {@names} = @col;
+        }
+        $s->{mv_results} = \%hash;
+    }
+
+    #::logDebug("returning search: " . Vend::Util::uneval($s));
+    return $s;
+}
+
+sub build_search {
+	my ($s, $pats) = @_;
+	my ($search_string);
+
+	my ($field_count, @ops, @group, @sf);
+	
+	$field_count =  @{$s->{mv_searchspec}};
+	@ops = $s->map_ops($field_count);
+	@group = @{$s->{mv_search_group}};
+	@sf = @{$s->{mv_search_field}};
+	my @su = @{$s->{mv_substring_match}};
+	
+	my (@specs_by_group, @joiner);
+	
+	for (my $i = 0; $i < $field_count; $i++) {
+		
+		# validate $group first
+		if (@sf) {
+			push (@{$specs_by_group[$group[$i]]}, ["$sf[$i] = $pats->[$i]", $s->{mv_orsearch}->[$i]]);
+		} else {
+#			if ($su[$i]) {
+#				push (@{$specs_by_group[$group[$i]]}, ["*$pats->[$i]", $s->{mv_orsearch}->[$i]]);
+#			} else {
+				push (@{$specs_by_group[$group[$i]]}, [$pats->[$i], $s->{mv_orsearch}->[$i]]);
+#			}
+		}
+		# record joiner, last one prevails
+		$joiner[$group[$i]] = $s->{mv_orsearch}->[$i] ? 'OR' : 'AND';
 	}
 
-	if(! $s->{mv_return_reference}) {
-		$s->{mv_results} = \@out;
-#::logDebug("returning search: " . Vend::Util::uneval($s));
-		return $s;
-	}
-	elsif($s->{mv_return_reference} eq 'LIST') {
-		my $col = scalar @{$s->{mv_return_fields}};
-		@out = map { join $s->{mv_return_delim}, @$_ } @out;
-		$s->{mv_results} = join $s->{mv_record_delim}, @out;
-	}
-	else {
-		my $col = scalar @{$s->{mv_return_fields}};
-		my @col;
-		my @names;
-		@names = @{$s->{mv_field_names}};
-		$names[0] eq '0' and $names[0] = 'code';
-		my %hash;
-		my $key;
-		for (@out) {
-			@col = split /$s->{mv_return_delim}/, $_, $col;
-			$hash{$col[0]} = {};
-			@{ $hash{$col[0]} } {@names} = @col;
+	my @gall;
+	
+	for (my $i = 0; $i < @specs_by_group; $i++) {
+		my $gsp = $specs_by_group[$i];
+		my @gout;
+		
+		for (my $j = 0; $j < @$gsp; $j++) {
+			push (@gout, $gsp->[$j][0]);
+			if ($gsp->[$j][1]) {
+				push (@gout, 'OR');
+			} else {
+				push (@gout, 'AND');
+			}
 		}
-		$s->{mv_results} = \%hash;
+
+		# remove last operator
+		pop (@gout);
+
+		$gall[$i] = join (' ', @gout);
 	}
-#::logDebug("returning search: " . Vend::Util::uneval($s));
-	return $s;
+
+	if (@gall > 1) {
+		my $i;
+		for ($i = 0; $i < @gall - 1; $i++) {
+			$search_string .= "($gall[$i]) $joiner[$i] ";
+		}
+		$search_string .= $gall[$i];
+	} else {
+		$search_string = $gall[0];
+	}
+
+	::logError ("Search string is: $search_string");
+	return $search_string;
 }
 
 # Unfortunate hack need for Safe searches
+*escape             = \&Vend::Search::escape;
+*spec_check         = \&Vend::Search::spec_check;
+*get_scalar         = \&Vend::Search::get_scalar;
+*more_matches       = \&Vend::Search::more_matches;
+*get_return         = \&Vend::Search::get_return;
+*map_ops            = \&Vend::Search::map_ops;
+*get_limit          = \&Vend::Search::get_limit;
+*saved_params       = \&Vend::Search::saved_params;
+*range_check        = \&Vend::Search::range_check;
 *create_search_and  = \&Vend::Search::create_search_and;
 *create_search_or   = \&Vend::Search::create_search_or;
+*save_context       = \&Vend::Search::save_context;
 *dump_options       = \&Vend::Search::dump_options;
-*escape             = \&Vend::Search::escape;
-*get_limit          = \&Vend::Search::get_limit;
-*get_return         = \&Vend::Search::get_return;
+*save_more          = \&Vend::Search::save_more;
+*sort_search_return = \&Vend::Search::sort_search_return;
 *get_scalar         = \&Vend::Search::get_scalar;
 *hash_fields        = \&Vend::Search::hash_fields;
-*map_ops            = \&Vend::Search::map_ops;
-*more_matches       = \&Vend::Search::more_matches;
-*range_check        = \&Vend::Search::range_check;
-*restore_specs      = \&Vend::Search::restore_specs;
-*save_context       = \&Vend::Search::save_context;
-*save_more          = \&Vend::Search::save_more;
 *save_specs         = \&Vend::Search::save_specs;
-*saved_params       = \&Vend::Search::saved_params;
-*search_error       = \&Vend::Search::search_error;
-*sort_search_return = \&Vend::Search::sort_search_return;
-*spec_check         = \&Vend::Search::spec_check;
+*restore_specs      = \&Vend::Search::restore_specs;
 *splice_specs       = \&Vend::Search::splice_specs;
+*search_error       = \&Vend::Search::search_error;
+*save_more          = \&Vend::Search::save_more;
+*sort_search_return = \&Vend::Search::sort_search_return;
 
 1;
 __END__
