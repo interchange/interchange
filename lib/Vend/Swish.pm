@@ -1,10 +1,10 @@
-# Vend::Swish2 - Search indexes with Swish-e's new SWISH::API
+# Vend::Swish - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish.pm,v 1.12 2008-05-15 21:42:40 racke Exp $
+# $Id: Swish.pm,v 1.13 2008-05-15 21:49:25 racke Exp $
 #
 # Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
 #
-# Copyright (C) 2005-2007 Interchange Development Group
+# Copyright (C) 2005-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,11 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-package Vend::Swish2;
+package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 use strict;
 
 use SWISH::API;
@@ -35,7 +35,7 @@ BEGIN {
 	eval {
 		require SWISH::ParseQuery;
 		require SWISH::PhraseHighlight;
-		$Vend::Swish2::Highlighting = 1;
+		$Vend::Swish::Highlighting = 1;
 	};
 }
 		
@@ -94,8 +94,8 @@ sub list {
 sub init {
     my ($s, $options) = @_;
 
-    #::logDebug("initing Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish2}));
-    $Vend::Cfg->{Swish2} ||= {};
+    #::logDebug("initing Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish}));
+    $Vend::Cfg->{Swish} ||= {};
 
     @{$s}{keys %Default} = (values %Default);
 
@@ -111,8 +111,8 @@ sub init {
     $s->{mv_search_group}       = [];
     $s->{mv_search_field}       = [];
     $s->{mv_search_file}        = [];
-    push @{$s->{mv_search_file}}, $Vend::Cfg->{Swish2}{index}
-        if $Vend::Cfg->{Swish2}{index};
+    push @{$s->{mv_search_file}}, $Vend::Cfg->{Swish}{index}
+        if $Vend::Cfg->{Swish}{index};
     $s->{mv_searchspec}         = [];
     $s->{mv_sort_option}        = [];
     $s->{mv_substring_match}    = [];
@@ -140,7 +140,7 @@ sub init {
         }
     }
 
-    if ($Vend::Cfg->{Swish2}{highlight_context}) {
+    if ($Vend::Cfg->{Swish}{highlight_context}) {
         push @{ $s->{mv_field_names} }, 'context';
         push @{ $s->{mv_return_fields} }, 'context';
         $fmap{'context'} = 'swishdescription';
@@ -251,14 +251,14 @@ sub search {
     }
 
     my @out;
-	my $date_format = $Vend::Cfg->{Swish2}->{date_format} || '%Y-%m-%d %H:%M:%S';
+	my $date_format = $Vend::Cfg->{Swish}->{date_format} || '%Y-%m-%d %H:%M:%S';
 	
     while (my $result = $results->NextResult) {
         my $out_ref = [];
         foreach my $field (@{ $s->{'mv_field_names'} }) {
 			my $text = $result->Property( $fmap{$field} );
             if ($field =~ /context/) {
-                if ($Vend::Cfg->{'Swish2'}{'highlight_context'} and defined $text and $text ne '') {
+                if ($Vend::Cfg->{'Swish'}{'highlight_context'} and defined $text and $text ne '') {
                     my $index = $result->Property('swishdbfile');
 
                     my $parsed_query = parse_query( join ' ', $results->ParsedWords( $index ) );
