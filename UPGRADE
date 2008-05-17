@@ -94,6 +94,17 @@ This issue does not affect earlier versions of PostgreSQL.
 
 KNOWN ISSUES UPGRADING FROM 5.5.2
 
+Several old versions of CPAN modules were distributed in the extra/ directory
+but have been removed:
+
+    Business::UPS - part of Bundle::InterchangeKitchenSink
+    File::Spec - now distributed with Perl itself
+    Tie::ShadowHash - part of Bundle::Interchange
+    URI::URL - part of Bundle::Interchange
+
+If you find Interchange won't start up, check to make sure you have all the
+necessary Perl modules.
+
 The syntax of the custom SQL function for counters has changed. At the time
 of the feature's introduction on 2007-11-17, the syntax was e.g.:
 

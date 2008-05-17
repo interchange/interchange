@@ -8,7 +8,7 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.5.3 not yet released.
+Interchange 5.5.3 released on 2008-05-17.
 
 Core
 ----
@@ -104,6 +104,10 @@ Core
   Route   default   sql_counter  "transactions:SELECT custom_counter('orders')"
 
   And whatever the custom_counter function returns will be used by Interchange.
+
+* Removed original Vend::Swish, and renamed prior Vend::Swish2 to Vend::Swish.
+  This module uses the Swish Perl API instead of calling a Swish subprocess
+  and dealing with shell escapes.
 
 Filters
 -------
