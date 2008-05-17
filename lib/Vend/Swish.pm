@@ -1,8 +1,8 @@
 # Vend::Swish - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish.pm,v 1.13 2008-05-15 21:49:25 racke Exp $
+# $Id: Swish.pm,v 1.14 2008-05-17 14:34:42 jon Exp $
 #
-# Adapted from Vend::Swish by Brian Miller <brian@endpoint.com>
+# Adapted from earlier Vend::Swish by Brian Miller <brian@endpoint.com>
 #
 # Copyright (C) 2005-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mikeh@perusion.net>
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 use strict;
 
 use SWISH::API;
@@ -94,7 +94,7 @@ sub list {
 sub init {
     my ($s, $options) = @_;
 
-    #::logDebug("initing Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish}));
+#::logDebug("initing Swish search, Swish=" . Vend::Util::uneval($Vend::Cfg->{Swish}));
     $Vend::Cfg->{Swish} ||= {};
 
     @{$s}{keys %Default} = (values %Default);
@@ -236,7 +236,7 @@ sub search {
 	#
 	# $search_string = $s->build_search(\@pats);
 
-	#::logDebug("Swish search string is $search_string within " . join(', ', @sf));
+#::logDebug("Swish search string is $search_string within " . join(', ', @sf));
 	
     my $results = $engine->Query( $search_string );
     if ($engine->Error) {
@@ -262,7 +262,7 @@ sub search {
                     my $index = $result->Property('swishdbfile');
 
                     my $parsed_query = parse_query( join ' ', $results->ParsedWords( $index ) );
-                    #::logDebug("parsed query: " . Vend::Util::uneval($parsed_query));
+#::logDebug("parsed query: " . Vend::Util::uneval($parsed_query));
         
                     $_swish_highlighters->{$index}->highlight( \$text, $parsed_query->{'swishdefault'}, undef, $result );
                 }
@@ -316,7 +316,7 @@ sub search {
 
     if (! $s->{mv_return_reference}) {
         $s->{mv_results} = \@out;
-        #::logDebug("returning search: " . Vend::Util::uneval($s));
+#::logDebug("returning search: " . Vend::Util::uneval($s));
         return $s;
     }
     elsif ($s->{mv_return_reference} eq 'LIST') {
@@ -340,7 +340,7 @@ sub search {
         $s->{mv_results} = \%hash;
     }
 
-    #::logDebug("returning search: " . Vend::Util::uneval($s));
+#::logDebug("returning search: " . Vend::Util::uneval($s));
     return $s;
 }
 
@@ -405,7 +405,7 @@ sub build_search {
 		$search_string = $gall[0];
 	}
 
-	::logError ("Search string is: $search_string");
+	#::logError ("Search string is: $search_string");
 	return $search_string;
 }
 
