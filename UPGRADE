@@ -94,8 +94,8 @@ This issue does not affect earlier versions of PostgreSQL.
 
 KNOWN ISSUES UPGRADING FROM 5.5.2
 
-Several old versions of CPAN modules were distributed in the extra/ directory
-but have been removed:
+1. Several old versions of CPAN modules were distributed in the extra/
+directory but have been removed:
 
     Business::UPS - part of Bundle::InterchangeKitchenSink
     File::Spec - now distributed with Perl itself
@@ -105,7 +105,18 @@ but have been removed:
 If you find Interchange won't start up, check to make sure you have all the
 necessary Perl modules.
 
-The syntax of the custom SQL function for counters has changed. At the time
+2. We have removed the option available in some polymorphs of the
+database abstraction layer's set_slice() routine that allowed key/value
+pairs to be passed in as a simple array. For example, this will no longer
+work:
+
+    $db->set_slice($key, $field1, $value1)
+
+But it can be rewritten as this, which has long worked:
+
+    $db->set_slice($key, [$field1], [$value1])
+
+3. The syntax of the custom SQL function for counters has changed. At the time
 of the feature's introduction on 2007-11-17, the syntax was e.g.:
 
     UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
