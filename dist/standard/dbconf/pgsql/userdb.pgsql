@@ -3,7 +3,7 @@ Database  userdb  LENGTH_EXCEPTION_DEFAULT  truncate_log
 Database  userdb  DEFAULT_TYPE  varchar(255)
 
 Database  userdb  COLUMN_DEF   "username=varchar(64) NOT NULL PRIMARY KEY"
-Database  userdb  COLUMN_DEF   "password=varchar(64)"
+Database  userdb  COLUMN_DEF   "password=varchar(64) NOT NULL"
 Database  userdb  COLUMN_DEF   "accounts=text"
 Database  userdb  COLUMN_DEF   "acl=text"
 Database  userdb  COLUMN_DEF   "address1=varchar(64)"
