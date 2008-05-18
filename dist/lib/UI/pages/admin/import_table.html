@@ -1,0 +1,233 @@
+[if-mm super][flag type=write table="ichelp"][/if-mm]
+[flag type=write table="[cgi mv_data_table]"]
+[set page_title][L]Table Import[/L][/set]
+[set table_perm]=i[/set]
+[set help_name]import.main[/set]
+[set ui_class]Admin[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[if cgi ui_import_convert]
+	[calc]
+		my @tables = grep /\S/, split /[\s,\0]+/, q{[list-databases extended="i"]};
+		for(@tables) {
+			#Log("tagging write $_");
+			$Tag->flag( { type => 'write', table => $_ } );
+		}
+		return;
+	[/calc]
+[/if]
+
+
+[if type=explicit compare="[value-extended
+							name=upload_file
+							test=isfile]"]
+	[title-bar]
+	[if cgi ui_import_convert]
+		[L]Importing multiple tables:[/L]
+	[else]
+		[msg arg.0="[cgi mv_data_table]"]Import of table %s:[/msg]
+	[/else]
+	[/if]
+	[calc]
+		if(! $CGI->{ui_import_convert}) {
+				$CGI->{ui_allow_multiple} = 0;
+			$CGI->{ui_upload_filename} = "$Session->{id}.$CGI->{mv_data_table}.$CGI->{ui_upload_ext}";
+		}
+		else {
+			$CGI->{ui_upload_filename} = $CGI->{upload_file};
+			$CGI->{ui_upload_filename} =~ s:.*[/\\]::;
+			$CGI->{ui_upload_filename} = $Tag->filter(
+											'filesafe',
+											"$Session->{id}.$CGI->{ui_upload_filename}",
+											);
+			if($CGI->{ui_import_convert} == 1) {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'txt';
+			}
+			elsif($CGI->{ui_import_convert} == 2) {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'xls';
+			}
+			elsif($CGI->{ui_import_convert} eq 'auto') {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'auto';
+			}
+		}
+		return;
+	[/calc]
+		
+	[value-extended
+		name=upload_file
+		outfile="upload/[cgi ui_upload_filename]"
+		yes="[L]Upload succeeded[/L]"
+		no="[L]Upload FAILED[/L]"
+		]
+	<P>
+	[if type=!file term="upload/[cgi ui_upload_filename]"]
+		<B>[msg arg.0="[cgi ui_upload_filename]"]Import file %s not found!!![/msg]</B>
+	[elsif cgi ui_upload_ext eq add]
+	[import-fields
+					add=1
+					autonumber="[cgi ui_autonumber]"
+					convert="[cgi ui_import_convert]"
+					delete="[cgi ui_allow_delete]"
+					filter_field="[cgi ui_filter_field]"
+					dir=backup
+					ignore_fields="[cgi ui_ignore_fields]"
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
+					quiet="[cgi ui_import_quiet]"
+					table="[cgi mv_data_table]"
+	]
+	[/elsif]
+	[elsif cgi ui_upload_ext eq update]
+	[import-fields
+					convert="[cgi ui_import_convert]"
+					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
+					quiet="[cgi ui_import_quiet]"
+					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
+	]
+	[/elsif]
+	[elsif cgi ui_upload_ext eq cleanse]
+	[import-fields
+	                add=1
+					convert="[cgi ui_import_convert]"
+					cleanse=1
+					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
+					quiet="[cgi ui_import_quiet]"
+					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
+	]
+	[/elsif]
+	[/if]
+[/if]
+
+[calc]
+	return if ! $CGI->{mv_data_table};
+	$Values->{mv_data_table} = $CGI->{mv_data_table};
+	return;
+[/calc]
+<form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action     VALUE=return>
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/gentable">
+<table __UI_T_PROPERTIES__>
+<tr>
+	<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td class=clabel>[L]Table Name[/L]</td>
+	<td class=cdata>
+		
+		<select name="mv_data_table">
+		[loop
+			list="[list-databases extended=i]"
+			option=mv_data_table
+		]<option value="[loop-code]">[loop-code][/loop]
+		</select>
+	</td>
+</tr>
+<tr class=rnorm>
+    <td class=clabel>[msg arg.0="<i>" arg.1="</i>"]Fields to be %signored%s[/msg]</td>
+	<td class=cdata>
+[perl tables="[cgi mv_data_table]"]
+my $chklist;
+my @cols = $Tag->db_columns($CGI->{mv_data_table});
+for (my $i = 1; $i < @cols; $i++) {
+    $chklist .= sprintf(q{<input type=checkbox name=ui_ignore_fields value="%s"%s>&nbsp;%s}, $cols[$i], $Tag->checked({name=>'ui_ignore_fields', value=>$cols[$i], multiple=>1}), $cols[$i]);
+}
+delete $Values->{ui_ignore_fields};
+$chklist;
+[/perl]
+    </td>
+</tr>
+<tr class=rnorm>
+	<td class=clabel>[L]Import from File[/L]</td>
+	<td class=cdata>
+	<input type=file name=upload_file>
+	<BR>
+	<input type="submit" value="[L]Import[/L]">
+</tr>
+<tr>
+	<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td colspan=2 valign=top>
+<br>
+<SELECT NAME=ui_upload_ext>
+	<OPTION VALUE=add> [L]Add new items if present[/L]
+	<OPTION VALUE=cleanse> [L]Replace existing items[/L]
+	<OPTION VALUE=update> [L]Ignore new items[/L]
+</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> [L]Allow delete[/L]
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]
+<INPUT TYPE=checkbox NAME=ui_import_transactions VALUE=1> [L]Use transactions[/L]</SMALL>
+<BR><select NAME=ui_import_convert>
+		<OPTION VALUE=0> [L]Single table[/L]
+		<OPTION VALUE=1> [L]Gnumeric simple tex[/L]
+		[if type=explicit compare="[version modtest='Spreadsheet::ParseExcel' extended=1]"]
+		<OPTION VALUE=2> [L]XLS Spreadsheet[/L]
+		[/if]
+		</select>
+
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> [L]Show summary/add record/delete record messages[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> [L]Show summary messages only[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> [L]Show *no* messages[/L]
+</td>
+	
+	<td valign=top>
+		<b>[L]Field filters[/L]</b><br>
+		<textarea name=ui_filter_field cols=30 rows=3>[data
+												table="mv_metadata"
+												field="extended.filter_field"
+												serial=1
+												key="[cgi mv_data_table]"]</textarea>
+		<br>
+		<i>
+			[L]Specified one per line:[/L]
+			<blockquote>
+<pre>
+	fieldname1=filter
+	fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+			[L]If multiple tables, must specify table as well:[/L]
+			<blockquote>
+<pre>
+	table1:fieldname1=filter
+	table2:fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+		</i>
+	</td>
+
+</tr>
+
+<tr>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@

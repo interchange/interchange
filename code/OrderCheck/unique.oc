@@ -1,0 +1,52 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: unique.oc,v 1.3 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef unique OrderCheck 1
+CodeDef unique Description Unique record
+CodeDef unique Routine <<EOR
+sub {
+	my ($ref, $name, $value, $code) = @_;
+
+	$code =~ s/(\w+)(:+(\w+))?\s*//;
+	my $tab = $1
+		or return (0, $name, errmsg("no table specified"));
+	my $col = $3;
+	my $msg = $code;
+
+	my $db = database_exists_ref($tab)
+		or do {
+			$msg = errmsg(
+						  "Table %s doesn't exist",
+						  $tab,
+						 );
+			return(0, $name, $msg);
+		};
+	my $used;
+	if(! $col) {
+		$used = $db->record_exists($value);
+	}
+	else {
+		#::logDebug("Doing foreign key check, tab=$tab col=$col value=$value");
+		$used = $db->foreign($value, $col);
+	}
+
+	#::logDebug("Checking unique, tab=$tab col=$col, used=$used");
+	if(! $used) {
+		return (1, $name, '');
+	}
+	else {
+		$msg = errmsg(
+					  "Key %s already exists in %s, try again.",
+					  $value,
+					  $tab,
+					 ) unless $msg;
+		return(0, $name, $msg);
+	}
+}
+EOR

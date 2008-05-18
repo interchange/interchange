@@ -1,0 +1,82 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: date_change.filter,v 1.8 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef date_change Filter
+CodeDef date_change Description Date widget
+CodeDef date_change Routine <<EOR
+sub {
+	my $val = shift; 
+	shift;  # discard tag
+	my $opt = { map { $_ => 1 } @_ };
+
+	HTML::Entities::decode_entities($val) if $val =~ /&/;
+	$val =~ s/\0+//g;
+	my $re = $opt->{undef}
+		? qr:^(\d*)[-/]+(\d*)[-/]+(\d*)(.*)$:
+			: qr:^(\d+)[-/]+(\d+)[-/]+(\d+)(.*)$:
+				;
+	return $val unless $val =~ /$re/;
+
+	my ($year, $month, $day, $timeval);
+
+	if (length($1) == 4) {
+		# ISO date style 2003-03-20
+		($year, $month, $day) = ($1, $2, $3);
+	}
+	else {
+		# U.S. date style 3/20/2003 or 3/20/03
+		($year, $month, $day) = ($3, $1, $2);
+	}
+
+	$timeval = $4;
+
+	if ($opt->{undef}) {
+		# return nothing (undef, which DBI treats as SQL NULL) for an
+		# empty date (all zeroes or nothing at all)
+		return unless grep /[1-9]/, ($year, $month, $day);
+	}
+
+	# Y2K fun: Try to guess intent of year "03" as "2003"
+	if (length($year) < 4) {
+		$year = $year < 50 ? $year + 2000 : $year + 1900;
+	}
+
+	my ($date_format, $time_format);
+	if ($opt->{iso}) {
+		$date_format = '%04d-%02d-%02d';
+		$time_format = 'T%02d:%02d:%02d';
+	}
+	else {
+		$date_format = '%04d%02d%02d';
+		$time_format = '%02d%02d';
+	}
+
+	my $time;
+	if ($timeval =~ /^:(\d{1,4})\s*$/) {
+		# accept traditional Interchange date_time widget times
+		# of format '0130', e.g. '20080201:0130'
+		$time = sprintf('%04d', $1);
+		$time = sprintf($time_format, substr($time, 0, 2), substr($time, 2, 2));
+	}
+	elsif (
+		# accept times of format '1:30', '1:30:05',
+		# to support PostgreSQL's timestamp with time zone format
+		# e.g. '2008-02-01 01:30:05-07'
+		my ($hours, $minutes, $seconds)
+		   = ($timeval =~ /\s(\d\d?):(\d\d?)(?::(\d\d+))/)
+		  ) {
+		$time = sprintf($time_format, $hours, $minutes, $seconds);
+	}
+
+	my $out = sprintf($date_format, $year, $month, $day);
+	$out .= $time if $time and not $opt->{no_time};
+	return $out;
+}
+EOR

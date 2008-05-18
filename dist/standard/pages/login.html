@@ -1,0 +1,173 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Log In[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="95%">
+<tr>
+<td>
+<h1>[L]Please Log In[/L]</h1>
+
+[if session failure]
+	<div align="center">
+		<span class="errorbox" align="center">
+			[calc] delete $Session->{failure}[/calc]
+		</span>
+	</div>	
+[/if]
+
+[set [L]Log In[/L]]
+[userdb login]
+mv_nextpage=[either][scratchd mv_successpage][or]member/service[/either]
+[/set]
+
+[tmp cookie_username][read-cookie MV_USERNAME][/tmp]
+
+[if !session logged_in]
+
+		<form action="[process secure=1]" method="POST">
+		<input type="hidden" name="mv_todo"  value="return">
+		<input type="hidden" name="mv_nextpage" value="login">
+		[form-session-id]
+
+    <table border="0" cellspacing="0" align="center" width="400">
+		<tr>
+			<td colspan="2" class="titletab_small">
+				[L]Existing account holders[/L]:
+			</td>
+		</tr>
+		<tr>
+			<td class="shadowbox">
+				<p>[L LOGIN_EXISTING]If you already have an account with us, please log in here.[/L]</p>
+				<table border="0" cellspacing="0" width="100%">
+				<tr> 
+				  <td align="right" class="contentbar1">
+				    [L]Username[/L]:
+				  </td>
+				  <td class="">
+				    <input name="mv_username" value="[scratch cookie_username]">
+				  </td>
+				</tr>
+				<tr>
+				  <td align="right" class="contentbar1">
+				    [L]Password[/L]:
+				  </td>
+				  <td class="">
+				    <input type="password" name="mv_password" value="">
+				  </td>
+				</tr>
+				[if config CookieLogin]
+				<tr>
+				  <td align="right" class="contentbar1">
+				    [L]Remember me[/L]:
+				  </td>
+				  <td class="contentbar1"> 
+				    <input type="hidden" name="mv_cookie_password" value="0">
+				    <input type="checkbox" name="mv_cookie_password" value="1" [if scratch cookie_username]CHECKED[/if]>
+				  </td>
+				</tr>
+				[/if]
+				<tr>
+				  <td>&nbsp;</td>
+				  <td>
+				    <input class="button3" type="submit" name="mv_click" value="[L]Log In[/L]">
+				  </td>
+				</tr>
+				</table>
+				<p align="center">
+					[page lost_password][L]Lost your password?[/L]</a>
+				</p>
+			</td>
+		</tr>
+		</table>
+		</form>
+
+[set mv_no_cache]1[/set]
+[set [L]New Account[/L]]
+mv_nextpage=new_account
+[set new]1[/set]
+[/set]
+
+	  <form action="[process secure=1]" method="POST">
+    <input type="hidden" name="mv_todo"  value="return">
+    <input type="hidden" name="mv_nextpage" value="new_account">
+    [form-session-id]
+
+    <table border="0" cellspacing="0" align="center" width="400">
+		<tr>
+			<td colspan="2" class="titletab_small">
+				[L]Create new account[/L]:
+			</td>
+		</tr>
+		<tr>
+			<td class="shadowbox">
+			<p>[L LOGIN_NEW]Creating a new account will allow you to
+				place orders with us faster, as well as being able to check your
+				order status and look at your previous orders.[/L]</p>
+				<center>
+					<input class="button3" type="submit" name="mv_click" value="[L]New Account[/L]">
+				</center>
+  		</td>
+  	</tr>
+  	</table>
+
+
+[else]
+
+    <form action="[process]" method="POST">
+    [form-session-id]
+    <input type="hidden" name="mv_todo" value="return">
+    <input type="hidden" name="mv_click" value="Logout_choice">
+    <input type="hidden" name="mv_nextpage" value="login">
+    
+    <table border="0" cellspacing="0" align="center" width="400">
+		<tr>
+			<td colspan="2" class="titletab_small">
+				[L]You are already logged in.[/L]
+			</td>
+		</tr>
+		<tr>
+			<td class="shadowbox">
+			<table align="center">
+			<tr>
+				<td class="contentbar1" align="center"> 
+					<input class="button3" type="submit" value="[L]Log Out[/L]">
+					<input type="checkbox" name="clear_values" checked value="1">&nbsp;[L]Clear&nbsp;name/address[/L][if items]&nbsp;&nbsp;<input type="checkbox" name="clear_cart" checked value="1">&nbsp;[L]Clear&nbsp;cart[/L][/if]<BR>
+			  	<p>
+			  		[msg arg.0="<a href='[area new_account]'>" arg.1="</a>"]Or you can create a %snew account%s.[/msg]
+			  	</p>
+				</td>
+			</tr>
+			</table>
+      </td>
+    </tr>
+    </table>
+    </form>
+[/else]
+[/if]
+
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

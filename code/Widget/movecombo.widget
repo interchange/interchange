@@ -1,0 +1,17 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: movecombo.widget,v 1.4 2007-11-14 04:50:19 pajamian Exp $
+
+CodeDef movecombo Widget 1
+CodeDef movecombo Description Combo move
+CodeDef movecombo Help Selects any/all of many options, puts in text box
+CodeDef movecombo Multiple 1
+CodeDef movecombo MapRoutine Vend::Form::movecombo
+CodeDef movecombo_replace Widget 1
+CodeDef movecombo_replace Description Combo move (one value)
+CodeDef movecombo_replace Help Selects one of many options, puts in text box

@@ -1,0 +1,28 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: strftime.filter,v 1.4 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef strftime Filter
+CodeDef strftime Description Date from UNIX time
+CodeDef strftime Routine <<EOR
+sub {
+	my $time = shift(@_);
+	shift(@_);
+	my $fmt = shift(@_);
+	while(my $add = shift(@_)) {
+		$fmt .= " $add";
+	}
+	if($fmt) {
+		return POSIX::strftime($fmt, localtime($time));
+	}
+	else {
+		return scalar localtime($time);
+	}
+}
+EOR

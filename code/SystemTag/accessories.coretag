@@ -1,0 +1,21 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: accessories.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag accessories         Order        code arg
+UserTag accessories         addAttr
+UserTag accessories         attrAlias    db table
+UserTag accessories         attrAlias    base table
+UserTag accessories         attrAlias    database table
+UserTag accessories         attrAlias    col column
+UserTag accessories         attrAlias    row code
+UserTag accessories         attrAlias    field column
+UserTag accessories         attrAlias    key code
+UserTag accessories         PosNumber    2
+UserTag accessories         Version      $Revision: 1.4 $
+UserTag accessories         MapRoutine   Vend::Interpolate::tag_accessories

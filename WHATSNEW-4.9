@@ -1,0 +1,3714 @@
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+                       (since the version 4.8 branch)
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.0.1 released 2004-03-29.
+
+Security
+--------
+
+* Plug a security hole which allows an attacker to expose arbitrary variable
+  contents by using an URL like
+  http://shop.example.com/cgi-bin/store/__SQLUSER__.
+
+  All Interchange applications using the standard "missing" special page
+  from the demo catalog or a similar one are vulnerable to this attack.
+  The attacker may learn the SQL access information for your Interchange
+  application and use this information to read and manipulate sensitive
+  data.
+
+* Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
+  variables.
+
+* Prevent login information from getting re-saved on a session cancel.
+
+* Define a set of CGI keys that we don't want to save to disk, as
+  @Global::HideCGI.
+
+* Don't show sensitive (i.e. @Global::HideCGI) CGI variables in a dump.
+  This allows saving a session to disk for diagnositic purposes in case
+  of order failure.
+
+Core
+----
+
+* Allow [dump no-cgi=1 no-session=1 no-env=1] to finetune dump.
+
+* Tolerate leading whitespace in query in Vend::Form.
+
+Admin
+-----
+
+* Fix bug where affiliate reports don't filter based on that.
+
+* Make reports with no specified end_date work.
+
+* Fix missing relocation variables in Vend::Table::Editor found by Paul
+  Vinciguerra.
+
+Usertags
+--------
+
+* history-scan: Make pageonly=1 option work correctly when there's no
+  History saved in the user's session.
+
+Foundation
+----------
+
+* Remove unmatched </FORM> from cart_display component.
+
+Debian
+------
+
+* Add libhtml-parser-perl to Build-Depends to keep HTML::Entities
+  module out of the package (Closes: #224435, thanks to Henrik Holmboe
+  <elements@hack.se> for the bug report)
+
+* Switch to gettext-based debconf templates (Closes: #235494, thanks to
+  Martin Quinson <Martin.Quinson@tuxfamily.org> for the patch)
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.0.0 released 2003-12-15.
+
+Core
+----
+
+* Make grouping of items work again.
+
+* Fixed Vend::Table::Common bug which prevented Database property HIDE_FIELD
+  from working properly.
+
+* On 2002-10-21 Canada Post changed symbol NF to NL to reflect the province of
+  Newfoundland changing its name to "Newfoundland and Labrador". For details
+  see:
+
+  http://www.canadapost.ca/personal/corporate/about/announcements/newpcode-e.asp
+
+  The "province" profile check will now accept both NF and NL, but NF is now
+  deprecated and will be removed in a future release.
+
+* Limit data part of Vend::File:writefile error message to 120 characters in
+  order to avoid disk abuse, resolve scalar references.
+
+* Add filter option to [scratch], the same as with [value] and [cgi].
+
+* Tolerate empty CGI key/value pairs to avoid unfriendly 500 errors. We
+  already tolerated one at the beginning and one or more at the end of the
+  query parameters:
+
+  http://www.icdevgroup.org/i/dev/index?&id=abcd
+  http://www.icdevgroup.org/i/dev/index?id=abcd&&&&&&
+
+  Now these are handled gracefully too:
+
+  http://www.icdevgroup.org/i/dev/index?&&id=abcd
+  http://www.icdevgroup.org/i/dev/index?id=abcd&&&xyz=123
+
+* Don't track admin pages.
+
+* Allow multiline values for [scratch mv_data_enable].
+
+UI
+--
+
+* Force user to enter name of new page/template/component name to avoid
+  server crashes.
+
+* Fix content editor to actually use the selected template for new pages.
+
+* inactive/HIDE_FIELD are always ignored for record display in UI.
+
+* Add table= parameter to [query] calls if table is different from products.
+  This fixes a rare problem that only occurs when using multiple external
+  databases in one catalog.
+
+* Improve [flex-select] so that key column can have formatting options
+  via mv_metadata just like all other columns in a table. The value
+  that is passed to the flex_editor is unadulterated in all cases.
+
+* Make description and icon of menu item 'Tables' a bit more appropriate.
+
+* Add "-" spacer between items in top menu.
+
+* Remove "Accounting" from menus and replace with "Reports". Not active
+  by default.
+
+* Remove unused code in item select page.
+
+* Add [traffic-report] tag and modified admin/reports/traffic/ByAffiliate
+  page which calls it. Now reports on large files without crashing the
+  system. Probably can handle up to 500 MB files with on any kind of a
+  reasonable server.
+
+Usertags and Filters
+--------------------
+
+* New Usertag [report-table] generates an HTML table based on
+  the results of a query, with bells and whistles. Can do horizontal
+  (colspan) and vertical (rowspan) subheaders, apply any Interchange
+  filter or widget to any column, add a CSS class to any column, link
+  cell contents (and add parameters to the link based on any column in
+  the query results), add virtual columns based on internal variables
+  (such as the line number), and skip rows based on an array of toggles
+  you specify.
+  
+  Good for making quick tables, sophisticated reports, and easy forms.
+  Written by Christopher Wenham <cwenham@synesmedia.com>.
+
+* [formel] fetches the label for the display type from the metadata 
+  if not passed with the parameters.
+
+* Removed unfinished [find] usertag.
+
+* Allow customization of [warnings auto=1] with class, style, extra as in
+  many IC tags.
+
+* Added new "md5" filter that calls Digest::MD5::md5_hex.
+
+* Let [image] handle maddening new ImageMagick behavior that won't operate on
+  the file named.
+
+Foundation
+----------
+
+* Error handling on account maintenance form works better.
+
+* Fixed issue with checkout page payment forms and Mozilla which
+  might cause Place Order button to be obscured in some cases.
+
+* Separate shipping addresses now appear in customer email
+  copy and are logged to the orderline table. Also appear
+  in UI order view and on ship notice emails when appropriate.
+
+* Fixed a few bugs with RMA demo and added line-item details.
+
+* Change Newfoundland from NF to NL in "state" table.
+
+* Added simple demo of contact form.
+
+* Changes to search form(s) now that HIDE_FIELD works.
+
+* Fix ordering of THEME_CSS so it will be set in high-traffic and
+  PreFork mode.
+
+Menu
+----
+
+* Add code which tells you which is the last row in the menu. Improves
+  ability to add spacers and other HTML formatting.
+
+Options
+-------
+
+* Add inventory function back in. Mysteriously removed during the
+  Options rewrite.
+
+Payment
+-------
+
+* Add Linkpoint payment module.
+
+Jobs
+----
+
+* Remove update_locales job, as a consequence of the removal of the
+  [find] usertag.
+
+Shadow
+------
+
+* Add stubs for commit and rollback methods, thanks to Thomas Weiss 
+  <pater.noster@gmx.net> for report.
+
+* Use $Vend::Cfg->{DefaultLocale} as fallback locale. The UI destroys
+  the $Scratch->{mv_locale} setting and the catalog translation
+  became inconsistent.
+
+i18n
+----
+
+* Add and improve foundation and UI translations.
+
+* localize script is now able to detect backtick quoting in [msg].
+  
+Debian
+------
+
+* Add Interchange variable MV_GETPPID_BROKEN to
+  /etc/interchange/features.cfg in order to start Interchange 
+  properly on systems with threaded Perl (Closes: #221939).
+
+* Revive USE_FOUNDATION handling in interchange-ui postinst to
+  keep 4.8.x interchange-cat-foundation catalogs running.
+
+Miscellaneous
+-------------
+
+* Add filter to strip trailing slash on the CGI directory to makecat.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.9 released 2003-10-31.
+
+Core
+----
+
+* Remove long-deprecated %Safe hash. Use $CGI, $Carts, $Items, $Config,
+  $Scratch, and $Values instead of $Safe{cgi} etc.
+
+* Fix locking of NFS sessions.
+
+* Make [bounce ...] more reliable with respect to terminating output
+  and future parsing.
+
+* Send Content-Size header with downloads.
+
+* Add MD5 password support to UserDB. 
+  To activate, use UserDB "md5" option, i.e.:
+
+	UserDB   ui   md5   1
+
+* Make $Tag object be rebuilt every time a new page is done.
+
+* Fix bug in [PREFIX-discount-subtotal] where quantity was greater
+  than one. We were overloading the discount_price() routine, which
+  was dumb, so a new discount_subtotal() routine takes over.
+
+* Add iso_time and null_time options for updating UserDB time_field:
+
+	UserDB  default  null_time    1
+	UserDB  default  iso_time     1
+
+* Add stubs for log_error and errstr routines in the database
+  modules.
+
+* Fix for broken getppid() on Linux systems with threads enabled.
+  To implement, use
+
+        Variable   MV_GETPPID_BROKEN   1
+
+  in interchange.cfg. It substitutes a syscall(64) for the getppid
+  call.
+
+  This should only be necessary on systems with threads enabled,
+  which is NOT recommended for IC.
+
+* Allow overriding LENGTH_EXCEPTION_DEFAULT with individual LENGTH_EXCEPTION.
+  This just makes LENGTH_EXCEPTION accept values like:
+
+  	Database transactions LENGTH_EXCEPTION_DEFAULT  truncate_log
+  	Database transactions LENGTH_EXCEPTION          update_date=ignore
+
+* Don't run set_defaults at all for a subcatalog, as they should be set
+  for the base catalog.
+
+* Allow for SELECT statements in parentheses or other non-word characters.
+
+* Enable [order] tag to specify a variant, not just a base product, when
+  options are in use, e.g.:
+
+  [order code="ABCD" variant="ABCD-XYZ"]Buy now</a>
+
+* Fix a problem where the following worked:
+
+		$Tag->price({ code => $sku });
+
+  but the following failed:
+
+		$Tag->price($sku);
+
+  The problem was highlighted by Paul Vinciguerra, in IRC.
+
+* Add date-based counter capability to Vend::CounterFile.
+
+  -- In a database, you just add
+
+	   Database tablename AUTO_NUMBER_DATE 1
+
+     To have real autonumbering, you still must define AUTO_NUMBER.
+     This of course does not work with AUTO_SEQUENCE.
+
+     You must make sure your key field type is at least 12 chars.
+
+  -- In a counter tag, you do:
+
+	   [counter file=filename.ctr date=local]
+
+         or
+
+  	   $Tag->counter({ file => $fn, date => 'local'});
+
+     To define GMT as being used for the numbering, you do:
+
+	   [counter file=filename.ctr date=gmt]
+
+* Fix problems that GDBM and some other types would not honor HIDE_AUTO_FILES.
+
+* Allow an ActionMap, Autoload, or profile to generate a completely
+  virtual page and avoid readin() of anything.
+
+* Fix bug that prevented [loop-change foo] from working when the range of
+  conditions was only 0 and 1.
+
+* Add no_set boolean option to [userdb], which prevents userdb row from
+  being set with values.
+
+* Don't throw away UseModifier cart modifiers on every cart update.
+  They can still be updated via CGI mv_item_option if it's set.
+
+* Remove insurance of trailing null fields being included in arrays.
+  Any traversing of the arrays should be keyed on code/sku anyway,
+  and that is the only one that needs to be fully populated.
+
+  Fix provided by Brian Rogers of Groxis -- caused problems for one
+  of his custom ordering routines.
+
+* Allow return of page from readin (or readfile in locale mode) without
+  the locale language substitutions done. This allows proper edits of
+  pages.
+
+* Allow set of status header even when not doing redirect.
+
+* Fix double-setting of Content-Type header, use proper header
+  setting routine.
+
+* Never set a cookie when mv_tmp_session in effect.
+
+* Add DeliverImage directive that enables fast IC delivery of
+  images requested from it.
+
+  To enable, do in catalog.cfg:
+
+  	DeliverImage  Yes
+
+  If the file extension is present and the MimeType for that extension
+  begins with "image/", the path will be adjusted to add ImageDir
+  or ImageDirSecure, and a 302 issued.
+
+  This happens before database or session opens, and is quite fast.
+
+  Sets $Vend::tmp_session so no cookie is issued.
+
+* Make frequently-used HTML::Entities encode_entities routine available
+  to embedded Perl.
+
+* Allow timed_build to autocreate directory path when filename with path
+  component is specified. This makes it easier to do dynamic directories
+  based on CGI parameters etc. when there are thousands of timed build
+  files. E.g.:
+
+  [timed-build file="timed/@@MV_PAGE@@/[item-code]" minutes=86400] ...
+
+* Avoid cluttering of global logs with 
+  'Attempt to call perl from within Safe'.
+
+* Fix prefork problem that might be biting someone, could cause missing
+  filters.
+
+* Add ability to access and test the $opt hash for any search
+  loop.
+
+  [loop prefix=top list="a b c"]
+	[loop list="1 2 3" foo-opt="[top-code]"]
+		[if-loop-header-param foo_opt]
+			Foo is there! It is: [loop-header-param foo_opt]
+		[/if-loop-header-param]
+
+		[if-loop-header-param !foo_opt]
+			Foo is NOT there! It is: [loop-header-param foo_opt]
+		[/if-loop-header-param]
+
+		[if-loop-header-param foo_opt eq a]
+			Foo is equal to a.
+		[else]
+			Foo is NOT equal to a.
+		[/else]
+		[/if-loop-header-param]
+		<br>
+    [/loop]
+	<p>
+  [/loop]
+
+* Add module-version intrinsic test:
+
+	<input	name=mv_column_op
+			type=hidden
+			value="[if module-version Text::Query]aq[else]rm[/else][/if]"
+			>
+
+* Enhance [PREFIX-alternate] to support
+
+	[PREFIX-alternate]              Defaults to [value mv_item_alternate] or 2 (same)
+	[PREFIX-alternate N]            Alternate every N items (same)
+	[PREFIX-alternate except_last]  Every time except last in list
+	[PREFIX-alternate except_first] Every time except last in list
+	[PREFIX-alternate first_only]   Only on the first item
+	[PREFIX-alternate last_only]    Only on the last item
+	[PREFIX-alternate 0]            Alias for first_only
+	[PREFIX-alternate -1]           Alias for except_last
+
+* Move handling of anchor option from tag_area to vendURL.
+
+* Add new facility for storing address books in outboard address table,
+  instead of an in-record hash, and start framework for adding different
+  personalities to UserDB.
+
+* Move UserDB's "logout" function to a subroutine so that it can be inherited.
+
+* Add RedirectCache directive which allows redirected page requests to
+  be set to mv_tmp_session then written to the target from which it was
+  redirected. This allows a complete web site to be mirrored to static
+  HTML as it is requested, accompanied with the proper setting of
+  AcceptRedirect in Interchange and ErrorDocument in the Apache server.
+
+  To use:
+
+  	   * Set ErrorDocument 404 to the Interchange URL in Apache.
+
+	   * Set "AcceptRedirect Yes" in interchange.cfg.
+
+	   * Set "RedirectCache /var/www/html" in interchange.cfg (use
+	     your document root in place of /var/www/html).
+
+  When a page http://yourdomain.tld/subdir/page.html is not found,
+  Interchange gets a redirect which causes it to set mv_tmp_session=1.
+  If Interchange doesn't find the page, then it returns "missing" and
+  no writing is done. If IC does find the page, it is written to
+  /var/www/html/subdir/page.html and the page will be found on next
+  access.
+
+  Exclude on HTTP server side can be done with permissions -- don't set
+  it writable by IC daemon if you don't want it written.
+
+* Fix problem where defining blank GlobalSub would kill *all* globalsubs.
+
+* Never issue a session ID on timed-build URL.
+
+* Remove conditional for caching history on Pragma: no-cache -- this is
+  all wrong. The directive is to this page transaction of Interchange,
+  i.e. timed-build and such. It should not be used to prevent building
+  of history, partly because browsers may send it for their own reason.
+
+* Prevent autovivification of $CGI::values{mv_username}, and make CookieLogin
+  slightly more efficient when already logged in.
+
+* Allow custom increment and decrement routines with inc-routine and
+  dec-routine options. They can be an inline code reference:
+
+	[counter
+		file=testcount
+		inc-routine=`sub { shift(@_) + 2 }`
+	]
+	[counter
+		file=testcount
+		decrement=1
+		dec-routine=`sub { shift(@_) - 2 }`
+	]
+
+  or a Sub or GlobalSub:
+
+	catalog.cfg:
+  	Sub three_steps_forward <<EOR
+	sub {
+		my $val = shift; $val += 3; return $val;
+	}
+	EOR
+
+  	Sub two_steps_back <<EOR
+	sub {
+		my $val = shift; $val -= 2; return $val;
+	}
+	EOR
+
+	[counter file=testcount inc-routine=three_steps_forward]
+	[counter file=testcount dec-routine=two_steps_back decrement=1]
+
+* Add [error auto=1] similar to [warnings auto=1].
+
+* Fix nested [elsif] problem.
+
+* Fix problem with alphabetic sorting of more lists where search results
+  appeared in the wrong group.
+
+* Add delimiter option to checked/selected tags. Patch provided by
+  Mat Jones <mat@thinkopensource.com>.
+
+* Implement Paul Vinciguerra's suggestion to not save mv_password in
+  the History hash.
+
+  You can also set up a different NoHistory set via
+
+  	@Vend::Dispatch::NoHistory = qw/ foo bar mv_credit_card_number /;
+
+Tables
+------
+
+* Set up error reporting to be able to catch database errors
+  and display in session, catalog error.log, or global error.log
+
+    1. Logging levels are on a per-table basis, with
+       defaults that can be set with DatabaseDefault:
+
+        DatabaseDefault  LOG_ERROR_CATALOG  1
+        DatabaseDefault  LOG_ERROR_SESSION  1
+        DatabaseDefault  LOG_ERROR_GLOBAL   0
+        DatabaseDefault  DIE_ERROR          0
+
+    2. Log errors to the catalog error.log by default.
+
+        Database  inventory LOG_ERROR_CATALOG  0|1*
+
+    3. Log errors to the session always if an admin, and
+       controlled by configuration if not.
+
+        Database  inventory LOG_ERROR_SESSION  0|1*
+
+       This has the effect of giving a big red error message when such
+       an event as failing to create a record occured. In most cases,
+       you would be able to use the <-Back button and fix the error
+       and resubmit.
+
+       The error tag is "table foo", where foo is the table.
+
+    4. Die at the page level (500 error) only if that is explicit
+       request in config for that table:
+
+        Database  inventory  DIE_ERROR  0*|1
+
+    5. Log errors globally only on explicit request:
+
+        Database  inventory LOG_ERROR_GLOBAL   0*|1
+
+    6. LENGTH_EXCEPTION errors go into warnings if they are handled
+       with truncate.
+
+      * default
+
+* Fix numeric sorting in SQL statements if a field is NUMERIC.
+
+* Allow limits from SQL statement to flow through even if ml="" is set
+  and let direct_sql.html admin page honor them.
+
+* Fix table names so that we don't have the funky .txt problems
+  where a SQL query would not work on a DBM database unless
+  the file name base matched the table name.
+
+* Attempt to regularize error messages so that they can be
+  more easily translated. Now should have about 50% less
+  variations.
+
+* Prevent internal server error when $db->row($key) fetches no results
+  within DBI module.
+
+* Fix bug in DBI module that caused arbitrary column to get set 
+  to primary key instead of to the intended new value.
+
+* Add internal Interchange locking routines and support for GDBM. (Should
+  work on others as well but is not tested.)
+
+  To set internal locking, just put in the config:
+
+  	Database access IC_LOCKING 1
+
+  On GDBM, employs the GDBM_NOLOCK parameter.
+
+  It should prevent the errors in access.gdbm when multiple admins are
+  logged in. It might also serve to make userdb in GDBM somewhat usable.
+
+Search
+------
+
+* Add Altavista-style search operator with Text::Query (CPAN) module.
+  Calls Text::Query::*AdvancedString with op=aq, calls
+  Text::Query::*SimpleString with op=tq.
+
+  Examples:
+
+    [loop search="
+                se=hammer -framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=tq
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+    [loop search="
+                se=hammer NEAR framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=aq
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+  Honors mv_case (-case option), mv_all_chars (-regexp option),
+  mv_substring_match (-whole option) and mv_exact_match
+  (-litspace option).
+
+* Add ability to map in custom search routines. In interchange.cfg:
+
+    CodeDef find_hammer SearchOp find_hammer
+    CodeDef find_hammer Routine <<EOR
+    sub {
+        my($self, $i, $string, $opname);
+    #::logDebug("Calling fake SearchOp");
+        return sub {
+    #::logDebug("testing with fake SearchOp");
+            my $string = shift;
+            $string =~ /hammer/i;
+        };
+    }
+    EOR
+
+   Now you can do:
+
+    [loop search="
+                se=hammer NOT framing
+                sf=description
+                fi=products
+                st=db
+                co=yes
+                rf=*
+                op=find_hammer
+            "]
+    [loop-code] [loop-param description]<br>
+    [/loop]
+
+   The passed parameters are:
+
+        - The search object ($self)
+        - The index into coordinated search array ($i)
+        - The pattern to match
+        - The name of the op (find_hammer in this case)
+
+    Must return a sub which receives the data to match and returns
+    1 if it matches. DOES NOT HONOR mv_negate UNLESS you tell it to.
+
+    See Vend::Search::create_text_query for an example of how to
+    return a proper routine and look in search object for the
+    associated params.
+
+Payment
+-------
+
+* CCVS payment module removed.
+
+* Add support for Canadian PSiGate gateway. Thanks to Gary Benson for his
+  work and testing.
+
+* Fix potential PreFork problems in AuthorizeNet module.
+
+* Add a "x_ADC_Delim_Character" (set to \037, which is ASCII US)
+  to replace the default field separator (,). A comma isn't a
+  very useful default, as people tend to use them in their address.
+  Problem reported, and fix tested, by John Young in IRC.
+
+Shipping
+--------
+
+* Don't cache zero UPS shipping cost.
+
+* UPS no longer accepts UK as a country code for shipments to
+  Great Britain.
+
+   -- did an exception remap for UK --> GB
+
+   -- Added UPS_COUNTRY_REMAP code so that this type of thing
+      can be done elsewhere.
+
+        # Remap Monaco to France for UPS
+        Variable  UPS_COUNTRY_REMAP   MC=FR
+
+* Add ability to build weight adjustments based on Simple options
+  settings. Requires a "weight" field in the options table.
+
+* Add hide_error option to suppress error message when no shipping methods
+  are found.
+
+* Allow comment lines in shipping.asc, with leading # mark.
+
+UI
+--
+
+* Add missing user and password to SQL DUMP COMMAND in xfer_catalog
+  UserTag.
+
+* Remove the Term modules from checks -- they have nothing to do with
+  IC operation and Term::ReadKey can cause core dumps.
+
+* Remove extra <html> from templates.
+
+* Force name to text variable, so numerical-only names will not cause
+  crash when a string function is done.
+
+* Minor improvements in backup setup.
+
+	-- Let backup tables be explicitly specified in
+       UI_BACKUP_TABLES.
+
+    -- If no UI_BACKUP_TABLES, honor first "backup" then
+       "!display_filter" in table metadata.
+
+    -- Display size of downloadable file.
+
+	-- Prevent spurious .html extension on download link.
+
+* Add meta_editor support for MAXLENGTH and JavaScript checks.
+
+* Made default metadata (for merge) match foundation.
+
+* Fix inability to set and retain multiple user groups with fix
+  provided by Sonny Cook.
+
+* Prevent display of meta database when relocated from meta editor.
+
+* Write the selected PGP/GPG key to the Variable table setting.
+
+* Missing session id added to form in various admin pages
+  (thanks to Paul Vinciguerra <pvinci@vinciguerra.com> for the patch).
+
+* Add check to disallow invalid option names.
+
+* Old-style simple option updates were ineffective because the
+  "Commit Changes" button's mv_nextpage was set to "admin/item"
+  instead of @@MV_PAGE@@.
+
+* Allow tracking number to be updated on ship. 
+  Fix contributed by Sebastian Braun.
+
+* Get rid of strange extra loop for billing information in customer_view
+  pages that just caused extra queries for [bill-data userdb ...] calls.
+
+* Check whether userdb is LARGE instead of transactions on customer page.
+
+* Ensure that secure mode is forced before we bounce to login.
+
+* Fix the long-standing problem that sorts and groupings would not
+  work on query-by-example search returns.
+
+* Fix problem with creating new option when no prior options exist.
+  Fix found by Reid Sutherland (reid-ic@thirddimension.net).
+
+* Add ability to edit pages using Mozilla composer, or any HTML editor
+  that can publish with an HTTP put. Includes ability to upload images
+  with the files, create new files, and more.
+
+* ONLY operates on the area between <!-- BEGIN CONTENT --> and
+  <!-- END CONTENT -->.
+
+* Pulls the page title from the <title></title> of the PUT page.
+
+* If a new page is PUT, it is wrapped with the template used in
+  the nearest DirectoryIndex ("index" by default). If a new file
+  "trucks/chevy/mom.html" is created and does not exist, the following
+  files will be used as the template in this order if they exist:
+
+    trucks/chevy/index
+    trucks/index
+    index
+
+* Update [if-mm ...] to have a "pagematch" and "filematch" function
+  that allows security checks based on the files and pages fields
+  in the access table. This allows certain users to have publish
+  permission only on certain image and page directories. For
+  instance, if the user "bubba" is only to edit files in the
+  "trucks" hierarchy, you would want in access:
+
+    username:bubba
+    files:images/trucks/
+    pages:trucks/
+
+* Add action "admin_publish" that handles the PUT process. Requires
+  user be logged in as an admin, and requires
+
+* Automatic RCS versioning if PUBLISH_DO_RCS variable is set. Can
+  stop publish if RCS error when PUBLISH_QUIT_ON_RCS_ERROR Variable
+  is set.
+
+* Adding "ui_mozilla_edit=1" to the URL keeps ITL tags from being
+  interpolated within the BEGIN CONTENT/END CONTENT area. This
+  allows
+
+* Automatically adjusts image paths in the uploaded file to be
+  relative to the directory the page is in. This allows individual
+  directories to use different sets of images and Mozilla won't
+  willy-nilly overwrite things in other directories.
+
+* Can prevent any publishing to the pages root if PUBLISH_NO_PAGE_ROOT
+  is set.
+
+* Allow component modification via Mozilla editor.
+
+  If you follow the "show tags" link (i.e. add ui_mozilla_edit=1 to
+  the param list), it will output the current component set
+  in meta headers:
+
+  <meta name="component" content="1;component;search_box_small">
+  <meta name="component" content="2;component;cart_tiny">
+  <meta name="component" content="3;component;product_tree">
+  <meta name="component" content="4;component;">
+  <meta name="component" content="5;component;cross">
+  <meta name="component" content="5;banner;Specials">
+  <meta name="component" content="5;cols;2">
+  <meta name="component" content="5;size;2">
+  <meta name="component" content="6;component;random">
+  <meta name="component" content="6;banner;See also...">
+  <meta name="component" content="6;cols;1">
+  <meta name="component" content="6;size;3">
+  <meta name="component" content="7;component;">
+  <meta name="component" content="8;component;">
+
+  For instance, component 5 above is exactly equivalent to:
+
+  	[control-set]
+		[component]cross[/component]
+		[banner][L]Specials[/component]
+		[cols]2[/cols]
+		[size]2[/size]
+	[/control-set]
+
+* Also turn on no_locale_parse in ui_mozilla_edit mode, so that
+  locale-based information won't be lost.
+
+* Add ability to manipulate any [set setting]value[/set] (tmpn?, seti also)
+  via meta header edit on Mozilla.
+
+  Same procedure, just add a meta_header:
+
+  	<meta name=setting content="tmpn;setting_name;The setting value">
+
+  and that setting will be modified accordingly.
+
+  Does not remove settings, only sets the ones found in headers.
+
+* Prevent linked forms et al from coming in from table metadata.
+
+* Add [flex-select] tag, complete replacement for and enhancement to
+  the admin/flex_select.html page in the UI.
+
+* Each colunn can have individual sort settings, and can individually
+  be specified to use alphabetic more lists when it is the sorting
+  column. (ui_more_alpha, ui_sort_option)
+
+* Group "magnifying glass" can be turned off in metadata. (fs_no_group)
+
+* Filters can be specified in metadata instead of just ui_data_fields.
+  (fs_display_filter)
+
+* Links to other pages specifying the field value can be done
+  easily. For example, to add a per-sku link on the products
+  table to the item_options page, put in ui_data_fields
+
+  	sku
+	sku-options
+	price
+	description
+
+  In the metadata for products::sku-options, do:
+
+		'extended.fs_link_page' => 'admin/item_options',
+		'extended.fs_link_parm' => 'item_id',
+		'extended.fs_link_anchor' => 'Edit Options',
+
+  That will produce:
+
+   <a href="__CGI_URL__/admin/item_options?item_id=SKU">Edit Options</a>
+
+  Can be shorthand-set in ui_data_fields with:
+
+  	sku
+	sku-admin/item_options:item_id:Edit Options
+	price
+	description
+
+* Columns can be calculated values by putting embedded perl code in
+  fs_data_calc. The current row hash (with all values in the select colums)
+  is put in $Vend::Interpolate::item. You can set tables to be pre-opened
+  in fs_data_tables.
+
+  This code in products::prod_group::extended.fs_data_calc:
+
+	if($item->{prod_group} eq $prev) {
+		return "''";
+	}
+	else {
+		return $prev = $item->{prod_group};
+	}
+
+  will produce ditto marks if a prod_group is duplicated.
+
+* An explicit "edit record" link can be enabled. (explicit_edit)
+
+* The edit link on the key column can be disabled. (no_code_link)
+
+* Checkboxes can be disabled. (no_checkbox)
+
+* Check All/Uncheck All JavaScript links can be automatically inserted.
+  (check_uncheck_all)
+
+* The lines can be numbered. (number_list)
+
+* Header cell and data cell CSS is completely settable in metadata on a
+  per-column basis.
+
+		'extended.header_link_class' => 'Header row link CSS class',
+		'extended.header_cell_class' => 'Header cell CSS class',
+		'extended.header_cell_style' => 'Header cell CSS style',
+		'extended.data_cell_class' => 'Data cell CSS class',
+		'extended.data_cell_style' => 'Data cell CSS style',
+
+  While no metadata edit is provided for data_cell_width, data_cell_height,
+  data_cell_align, they would be honored if set.
+
+  The header rows and data rows can be set in the table metadata:
+
+		'extended.header_row_class' => 'Header row CSS class',
+		'extended.header_row_style' => 'Header row CSS style',
+		'extended.data_row_class_odd' => 'Data row CSS class, odd numbers',
+		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
+
+* No longer check for Term::Readline and Term::ReadKey.
+
+* Explicitly set filters to avoid mangling of promotions
+
+* Don't allow user to change order number through order status page.
+
+* Ensure that you don't leave secure server through metaconfig link.
+
+* Remove obsolete wizard pages.
+
+Form
+----
+
+* Honor flag telling we already have data.
+
+* Honor "db" passed parameter in lookup_query.
+
+* Add display type "labels" that is like "options" except it displays the
+  labels instead of their codes.
+
+* option_format widget now uses passed filter.
+
+Menu
+----
+
+* Add cheesy auto_format page/URL detection facility to try and
+  tolerate user-built menus a bit better. In particular, this will
+  recognize a non http: anchored absolute URL and will tolerate
+  anchors in the page name.
+
+  Called with auto-format=1 as a param.
+
+* Remove IE-specific bounding box code in flyout menus. Turns out that
+  caused absolute positioning problems when the page was scrolled, and
+  that the DOM standard code I developed for Mozilla works just fine
+  on MSIE 6.
+
+Table Editor
+------------
+
+* Fix sequential edit.
+
+* Modified passing of {table} parameter in display for table editor,
+  setting flag to prevent getting table data twice.
+
+* Make lookup_query honor {db} parameter for selecting base table
+  for lookup
+
+* Lookup should now work internally to the table if no {db} spec'd
+
+* Mozilla screwed up their CSS size passing like MSIE, so
+  remove special things that made item editor/table editor automatically
+  look better on Mozilla (without setting *_height and *_width explicitly).
+
+* Added MAXLENGTH to things you can set in meta_editor
+
+* Added MAXLENGTH to parameters honored by [display ...]/Vend::Form,
+  without having to manipulate extra=" maxlength=22" stuff.
+
+* Put hooks in for auto-JS checks in table editor / [display]
+
+* Allow default opening of a particular tab by adding * to the end of the
+  tab label.
+
+	Overridden by explicit "start_at" option given in options/args.
+
+* Further allow focus of editor to start at a particular field if
+  it is marked with a *.
+
+   ui_data_fields => q{
+
+   			=General
+
+			foo
+			bar
+
+			=Specific*
+
+			buz
+			baz*
+		},
+
+	The "Specific" tab will be presented open when the record is edited.
+	The form focus will be at the "baz" field.
+
+* Substitute placeholders in lookup_query (just like with prepend and append):
+
+  _UI_TABLE_
+  _UI_COLUMN_
+  _UI_KEY_
+
+  This allows foreign table lookup queries to be tailored for the record
+  currently being edited in the table editor.
+
+* Allow hidden fields to come from all_opts again (was disrupting
+  surveys).
+
+* Add new link_blank_auto setting for table linking. This has the
+  effect of:
+
+  -- Automatically using auto-numbering
+  -- setting the foreign key column to match the key of the
+     edited record (as you would have to do to return the row
+     once entered)
+  -- Making both those fields hidden and non-changeable.
+
+* Make tabbed-display relative now that Mozilla supports this. Should make
+  setting html-width and table-width in metadata moot.
+
+* Don't focus on meta links when tabbing through form.
+
+* Allow cancel_text to be set when in database edit mode.
+
+Foundation
+----------
+
+* Add missing table variable in db lookup for pref_group to metadata.
+
+* Remove test data from inventory::stock_message metadata.
+
+* Update Oracle configuration files for new options.
+  Supplied by Jason <ic@santabarbara.org>.
+
+* Add HIDE_FIELD to products database definition, so products marked
+  inactive will not be found in search.
+
+* Add --[L]select state[/L]-- blank option to shipping address form.
+
+* Add support for all IC-recognized credit card types.
+
+* Removed obsolete log_entry route and etc/log_entry file.
+
+* Remove inadvertent filter for variants::weight from
+  metadata, resolving bug #534.
+
+* Bring MV_DEFAULT_SEARCH_{TABLE,FILE} into catalog.cfg so it is easier
+  to hunt down. We can't unset it in catalog_before.cfg because it will
+  break just about every catalog out there.
+
+* Add handling to mail receipt if applicable.
+
+* Remove the "view_from" parameter undoubtedly messing up many product edits
+  and add ui_more_alpha definition to metadata.
+
+Usertags
+--------
+
+* New Usertag [debug].
+
+* Add new makesize=NNxNN parameter to image Usertag which uses ImageMagick 
+  mogrify command to build custom thumbnails on the fly.
+
+  Used mogrify executable because of constant difficulty building and
+  installing Image::Magick perl modules.
+
+  Example on the foundation demo:
+
+     [image src="items/os28004.gif" makesize=50x50]
+
+  This will create __IMAGE_DIR__/items/50x50/os28004.gif and return:
+
+     <img src="items/50x50/os28004.gif" height=50 width=50>
+
+  The size is still determined by Image::Size.
+
+* New Usertag [capture-page] to interpolate pages and dump to disk,
+  usually called from Interchange jobs. Examples:
+
+  [capture-page page=index file=static/index.html umask=022]
+
+  [loop list="Levels,Rulers,Squares"]
+  [capture-page page="[loop-code]" file="static/cats/[loop-code].html"
+    scan="fi=products/st=db/co=yes/sf=category/se=[loop-code]" 
+    auto_create_dir=1]
+  [/loop]
+
+* Allow database text files in subsidiary directories of products
+  for [xfer-catalog] Usertag.
+
+* Add form parameter to [history-scan] Usertag to avoid invalid
+  and error-prone constructs like [history-scan]&collapseall=1.
+
+* Add "no-computer" option to [fortune] Usertag in order to make the 
+  fortune more palatable to non-geek sites.
+
+  This is highly dependent on the fortune setup; this will work with
+  fortune on RHL 7.x and 8.x.
+
+* Add [css VARNAME] tag that automatically generates a varname.css file
+  for use by <link rel=stylesheet href="/foundation/images/theme_css.css">.
+
+* [history-scan] -- there should never be a leading / on page names sent
+  to $Tag->area(), and they are removed all the time now.
+
+* Add src_only option to [image] tag  to return just the image location 
+  that normally goes in the src="..." attribute of the <img> tag.
+
+Filters
+-------
+
+* new alpha filter to keep only alphabetics A-Z and a-z
+
+* new filter pgbool which munges any value into a valid PostgreSQL boolean 
+  to be used in a quotable string environment, with a hybrid of 
+  Perl/Interchange/PostgreSQL truth rules:
+
+	undef, '', F, f, false, 0 -> f
+	everything else -> t
+
+* new filter pgbooln which is the same as pgbool, except assume that undefs 
+  will pass through as NULLs to whatever does the query:
+
+	undef -> NULL
+	'', F, f, false, 0 -> f
+	everything else -> t
+
+Jobs
+----
+
+* Set $CGI->{mv_tmp_session} to signal that a "robot" is in charge.
+
+* filter option added for Job output
+
+* Jobs are now listed and queued in $Global::RunDir/jobs instead
+  of $Global::RunDir/reconfig
+
+* Add global Jobs configuration directive:
+ 
+  Jobs MaxLifetime 3600
+  Jobs MaxServers  3
+
+  After a job has been running for MaxLifetime seconds, it will be
+  removed by next housekeeping run. The default MaxLifetime is 10
+  minutes. This setting is only available if PIDcheck has been set.
+
+  MaxServers is the number of jobs allowed to be run simulatenously,
+  which should be significantly smaller than the value in the
+  MaxServers directive to avoid unaccessibility of Interchange for
+  users. The default for MaxServers is 1.
+
+* Add job to automatically calculate topsellers.
+
+SQL Parsing
+-----------
+
+* Add Vend::SQL_Parser module, eliminating need for SQL::Statement.
+
+* Improved tolerance for re-routing queries with table-only option.
+
+* Parses more SQL -- now can use IN and BETWEEN and translate those
+  to IC search specs.
+
+* Handles complex parenthesized queries properly.
+
+* Reads LIMIT N and translates to mv_matchlimit.
+
+* Tests added to regression tests to check parser.
+
+* Fix several deficiencies in SQL parsing.
+
+  -- Recognize IS [NOT] NULL and map to a search for the
+     empty string.
+
+  -- Allow verbatim passing of field names for GDBM types, allowing
+     "select Variable from variable where Variable = ''" which
+	 would not work before.
+
+  -- Add VERBATIM_FIELDS definition to database types which need it.
+
+  -- Add support for "select sometable as foo, othertable bar where ..."
+     so that queries using it can be rerouted properly.
+
+  -- Always set mv_min_string = 0, so we don't have to do anything
+     special for "where column = ''" and such.
+
+i18n
+----
+
+* Update Italian UI translation.
+
+SOAP
+----
+
+* Fix tree option in soap_entity tag.
+
+* Enable calling of catalog usertags in SOAP actions.
+
+Debian
+------
+
+* Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
+  apache-dev already has the proper dependency (Closes: #198136)
+
+* Fix hang of build process caused by non-existant user interchange
+  (Closes: #202063, thanks to Adrian Bunk <bunk@fs.tum.de> for his
+  bugreport and help to trace down the problem) 
+
+* Install manual pages in the correct location.
+  
+* Avoid lintian warning in interchange-ui package.
+
+* Mark update_locales job as conffile.
+
+* Fix bashisms in interchange-cat-foundation's config script.
+
+* Don't throw an error if removal of the file 
+  /usr/lib/interchange/auto/Interchange/.packlist fails
+  (Closes: #215003, thanks to Daniel Schepler
+  <schepler@math.berkeley.edu> for the bug report)
+
+* Add versioned dependency on debconf to interchange-cat-foundation
+  (Closes: #215633).
+
+Miscellaneous
+-------------
+
+* Allow wildchar(*) in Swish search.
+
+* Various minor cleanup, prevents warnings on startup.
+
+* Call tracking functions only if Vend::Track object exists.
+
+* Label first section of the POD documentations in the modules
+  as NAME, this is common, looks nicer in man and helps to
+  fix Debian Bug #203926.
+
+* Add POD documentation to findtags.PL.
+
+* Search for literal strings in bar_link, rather than treating them as
+  regexes. Fix from Paul Vinciguerra. 
+
+* Use 127.0.0.1 instead of localhost for default INET host values to avoid
+  DNS lookup, as per bug #516.
+
+* Remove abandoned "newcat" script from distribution.
+
+* Convert nonstandard != to standard SQL <> (which also avoids a parse
+  error in the new Vend::SQL_Parser) within options stuff.
+
+* Add option to RPM spec file for /usr/local/bin/perl to work around threaded 
+  vendor perls.
+
+Extensions
+----------
+
+* Quickbooks updates:
+
+  - Updated documentation.
+  
+  - Installation fixes.
+  
+  - Rewrite of the IIF generation query page:
+    - Can query by order number range, date range, or "since last generation"
+    - Allow specification of QuickBooks invoice number to be used 
+      and incremented during IIF generation.
+    - Filters out deleted orders.
+  
+  - IIF Generation changes:
+    - Use the country name instead of the country code.
+    - Some filter updates (the period is not as dangerous as it looks).
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.8 released 2003-06-19.
+
+
+Core
+----
+
+* Allow [PREFIX-more-list] ... [/PREFIX-more-list] for nested loops.
+
+* Support sparsely-populated quantity pricing tables.
+
+* Fix bug in field name ranges in CommonAdjust where q99..q101 was handled
+  as a Perl alphanumeric range q99, r00, r01, r02, etc. instead of
+  q99, q100, q101.
+
+* Remove wrong default for DatabaseDefault, could cause error when a
+  DatabaseDefault value had not been previously set.
+
+* Renamed Cron configuration directive to Jobs because that is a more
+  appropriate. Commandline options --job and --cron renamed as well
+  to --jobgroup and --runjobs.
+
+* Have NonTaxableField check all ProductFiles tables for the field if
+  needed, instead of just the one in mv_ib or the first ProductFiles
+  table. This allows NonTaxableField to work with options when the base
+  product has a nontaxable field, but the options table has no nontaxable
+  field (as in Foundation). This should have no effect on people using
+  NonTaxableField the standard way.
+
+* Add option to product_common and item_common that allows an empty
+  field to be returned. In effect this option means "give me the value
+  of this field from the first ProductFiles table that has the field
+  at all" instead of "give me the first non-empty value from a ProductFiles
+  table that has the field".
+
+* Optimize item_common a bit by looking at each table only once.
+
+* Allow systems with broken locks to not destroy the pidfile lock
+  by reading the file. Alleviates inability to use "interchange -stop".
+  Requires setting
+
+	Variable MV_BAD_LOCK 1
+
+  in interchange.cfg.
+
+  Thanks to Daniel Hutchinson for finding the problem!
+
+* Add no_requery option to Vend::Table::DBI::query method to ensure that
+  SQL::Statement will not be called. Use it when you are sure your table is
+  in the database referenced....avoids errors on multiple key inserts that
+  might return undef.
+
+* Fixed the row_count (0E0) problem in Vend::Table::DBI.
+
+* Compile errors on ActionMap/FormAction are passed through now.
+
+* Use fix base directory for global jobs.
+
+* Let Vend::Util::unhexify mangle only representations of hex chars instead
+  of any three-letter-string starting with the percent sign.
+
+* Add database filename in question to the fatal error in the
+  Vend::Table::Common::column_index method.
+
+* Fix auto_create_dir option in Vend::Util:writefile which didn't work.
+
+* Fix round_to_frac_digits() so it handles numbers that don't have a
+  pre-existing decimal point.
+
+* Prevent internal server error if quantity pricing row cannot be found
+  for whatever reason.
+
+* Add Australian BankCard to Vend::Order::guess_cc_type 
+  (contributed by Howard Lowndes).
+
+* Make aliased UserTag respect EndTag setting.
+
+* Vend::Util::string_to_ref no longer looks at $Vend::Cfg->{ExtraSecure},
+  which really contradicts the documentation.
+
+* Allow $Session->{mv_order_number} to be set anywhere.
+
+* Allow multiple start points for a tree query.
+
+* Prevent NOT NULL errors for data that is actually supposed to be defined
+  during a data update.
+
+* Add container values for config files.
+
+	<Variable FOOBAR>
+		Something in the FOOBAR variable.
+	</Variable>
+
+  This is exactly equivalent to:
+
+  	Variable FOOBAR <<EOV
+		Something in the FOOBAR variable.
+	EOV
+
+   except that the end marker can have leading/trailing whitespace
+   and capitalization is not important.
+
+* Allows trigger response to end container; currently only "yesno"
+  directives are defined. The "yesno" behavior allows:
+
+  <ParseVariables Yes>
+  	Static __CATALOG_STATIC__
+  	StaticLogged __LOGGED_STATIC__
+  </ParseVariables>
+
+  This will set ParseVariables to Yes
+
+* Directives of the same type cannot be nested (though I might do that
+  shortly). Directives of different types can be nested, so you can
+  do:
+
+  	<ParseVariables Yes>
+		<Route log>
+			foo   __BAR__
+		</route>
+	</Parsevariables>
+
+  (Note that capitalization doesn't matter.)
+
+* You can add triggers for directives by setting the ContainerSpecial
+  variable in package Vend::Config. This would allow:
+
+  	 <DirectiveUniverse foo>
+	 	Foobar   yes
+	 </DirectiveUnivers>
+
+  	 <DirectiveUniverse bar>
+	 	Foobar   yes
+	 </DirectiveUnivers>
+
+  Perhaps more importantly, it might allow:
+
+  <Catalog found /var/lib/interchange/found /c/found>
+  	  Variable  INITTED   This catalog has an initted value already.
+  </catalog>
+
+  Note that this is not yet implemented!
+
+* Update pgp_encrypt to accept multiple encryption keys.  Keys should be
+  passed as a space or comma separated list.
+
+* Change behavior of UserDB _check_acl routine so that undefined value
+  is returned if location is not present at all. This allows a check
+  both on the file location and the parent directory location without
+  affecting true/false status.
+
+* Fix LENGTH_EXCEPTION_DEFAULT logging, which did not work and clean up
+  the code a bit in DBI module.
+
+* Remove attempt to unimport Config (to save a small amount of memory)
+  because it causes Perl 5.6.0 to die.
+
+* Allow setting of table type in MySQL (or others if HAS_TABLE_TYPE
+  is put in capabilities). This allows setting the table type to
+  something besides the default -- in particular allows InnoDB type
+  setting for userdb/transactions/orderline.
+
+* Patch slight security hole where user password can be saved in session.
+
+* Keep copy of CGI values at time of history save, not reference to them
+  (which can be changed in subsequent code).
+
+* Make mv_return_fields available to iterate_array_list.
+
+* Change processing of [PREFIX-line] to use that value instead of
+  rebuilding from scratch.
+
+* Make multi-output play nice with download via [deliver ...].
+
+File
+----
+
+* Add new Vend::File module with minimal functions, changed UserTags
+  to support it.
+
+* Relocate following routines (and their subsidiaries) from Vend::Util:
+
+	canonpath
+	catdir
+	catfile
+	exists_filename
+	file_modification_time
+	file_name_is_absolute
+	get_filename
+	lockfile
+	path
+	readfile
+	readfile_db
+	set_lock_type
+	unlockfile
+	writefile
+
+  Added stubs so that package-based calls to those routines will not
+  break software.
+
+* Added CatalogUser directive that allows setting in interchange.cfg
+  of allowed username that is used for access to absolute-path names.
+
+  	CatalogUser  foundation  joe
+  	CatalogUser  reports     jane
+
+  This sets the user for allowed_file() for further read/write checks
+  based on username.
+
+* Created allowed_file() routine and replaced all current inline checks
+  for NoAbsolute with call to that routine. It behaves as:
+
+  NoAbsolute is No: all files are accessible, always
+
+  Allowed for read/write:
+  	Path name is relative with no ..
+  	Path name is absolute but in the catalog directory
+  	Path name is absolute but in a TemplateDir
+
+  Allowed for read:
+	CatalogUser set to a valid username and file is readable by that user
+	CatalogUser set to a valid username and file is readable by a group
+	 containing that user
+
+  Allowed for write:
+	CatalogUser set to a valid username and file is writable by that user
+	CatalogUser set to a valid username and file is writable by a group
+	 containing that user
+
+* Changed display_special_page so that special page entries with ../
+  will not break things.
+
+* Created $Vend::File::errstr which is set to get the error message,
+  otherwise defaults to the standard one.
+
+* Add both global- and catalog-level FileControl directive that allows
+  mapping subroutines (or named pre-existing subroutines) to a path.
+  Does a depth-first search starting with the file name.
+
+* In either interchange.cfg (takes priority) or catalog.cfg put:
+
+	FileControl include/junk  <<EOR
+	sub {
+		my ($fn, $checkpath, $write, @caller) = @_;
+
+		## Allow write to files containing "foo"
+		if($write) {
+			return $fn =~ /foo/;
+		}
+
+		## Allow read if file doesn't contain "bar"
+		return $fn !~ /bar/;
+	}
+	EOR
+
+* In either interchange.cfg (takes priority) or catalog.cfg put:
+
+	FileControl  include/junk  some_sub
+
+  This uses either Sub or GlobalSub
+
+* Only in interchange.cfg, you can put a mapped routine name:
+
+	FileControl  include/junk  Vend::SomeModule::file_control
+
+* Intrinsic FileControl checks.
+
+	# Is a catalog superuser
+    FileControl foo/bar ic_super
+
+	# Is a catalog admin
+	FileControl foo/bar ic_admin
+
+	# Is logged in at all
+	FileControl foo/bar ic_logged
+
+	# Is logged in at userdb table of "userdb"
+	FileControl foo/bar ic_logged:userdb
+
+	# Is logged in at userdb table of "affiliate"
+	FileControl foo/bar ic_logged:affiliate
+
+	# Run check on userdb file_acl
+	FileControl foo/bar ic_userdb
+
+	# Run check on userdb file_acl
+	FileControl foo/bar ic_userdb:file_acl
+
+	# Run check on userdb db_acl
+	FileControl foo/bar ic_userdb:db_acl
+
+	# Check for $Scratch->{dealer} set
+    FileControl foo/bar ic_scratch:dealer
+
+	# Check for $Scratch->{dealer} NOT set
+    FileControl foo/bar ic_scratch_deny:dealer
+
+	# Check for $Session->{secure} set
+    FileControl foo/bar ic_session:secure
+
+	# Check for $Session->{secure} NOT set
+    FileControl foo/bar ic_session_deny:secure
+
+  These don't override the NoAbsolute checks.
+
+* If no FileControl is not set, the checks are not done for performance
+  reasons.
+
+Options
+-------
+
+* Major update to product options.
+
+* Options are now modular in much the same way as Vend::Payment is.
+  You can add an unlimited number of option types simply by dropping
+  a module into Vend::Options.
+
+* By default, the old 4.8 style options are in force, implemented
+  with Vend::Options::Old48.
+
+  If you add this to catalog.cfg (in etc/after.cfg in foundation):
+
+  	OptionsEnable   option_type
+
+  The "option_type" names a field in the products file which controls
+  the option type. This enables new-style options.
+
+  It can also be in a specific table and field, ala AutoModifier:
+
+  	OptionsEnable   table:field
+
+  Indeed, this is added to AutoModifer after catalog.cfg.
+
+* There are two new-style options included:
+
+	Vend::Options::Matrix
+	Vend::Options::Simple
+
+  These are equivalent to the current matrix and simple options.
+
+* Options behavior is controlled in catalog.cfg by a locale-style
+  multiple hash (ala UserDb or Route):
+
+  	Options   Matrix   sort            o_sort,o_group
+  	Options   Matrix   variant_table   my_variants
+
+* To find and add a new option type, simply set something in
+  catalog.cfg:
+
+  	Options  MyOptions  table  my_options
+
+  That will cause a require of Vend::Options::MyOptions.
+
+* The matrix products have been moved to the "variants" table.
+
+* The options table contains options for both Matrix and Simple types,
+  but only fields for building those simple-type options (which are
+  used to generate variants for Matrix). The following fields
+  have been removed from options:
+
+	differential
+	mv_shipmode
+	o_enable
+	o_exclude
+	o_footer
+	o_header
+	o_include
+	o_master
+	o_matrix
+	o_modular
+	phantom
+	volume
+	weight
+
+* The variants table is a subset of the fields in products.
+
+* The admin page for each option style is defined in its
+  admin_page routine, usually an include from inclued/Options/OptionType.
+
+* Size and color fields removed from products table, option_type added.
+
+Menu
+----
+
+* Add category-specific image links and toggles for the tree menu.
+
+  To enable this for toggles, do:
+
+  	  [menu
+	  		menu-type=tree
+			...
+			specific-image-toggle=N
+			]
+
+  Where N is the level (1 == 0) to which you wish to do this.
+
+  The image for a non-toggled category comes from the tree database field
+  img_up, for a toggled category from img_dn.
+
+  You can set the base URL for the images with:
+
+  		specific-image-base="__IMAGE_DIR__";
+
+  A trailing / is added if not already present.
+
+  If you wish to allow image anchors for links as well, put the image
+  name in the img_up field and add the parameter:
+
+  	       specific-image-link=1
+
+  If the image name is not present, the normal "name" field is used.
+
+  To enable all of this for the example product_tree component, you would
+  have a call of:
+
+	[menu tree-selector="[control tree_selector Products]"
+			link-class="[control link_class barlink]"
+			link-style="[control link_style]"
+			link-class-open="[control link_class_open]"
+			link-style-open="[control link_style_open font-size: larger;]"
+			link-class-closed="[control link_class_closed]"
+			link-style-closed="[control link_style_closed font-size: larger;]"
+			no-image="[control no_image]"
+			menu-type=tree
+			specific-image-toggle=1
+			specific-image-base="__IMAGE_DIR__/tree"
+			specific-image-link=1
+			reparse=0]
+
+* Add ability to load tree-based menus where items inhabit more than
+  one category. To wit:
+
+    code    sku       prod_group        category
+    1       os28003   Tools             Brushes
+    2       os28003   Painting Supplies Brushes
+
+  The tree will allow search and find of these items in more than
+  one category.
+
+* Add "items" check to menu to allow showing an entry only if items are
+  in the cart. Works for current cart ($Vend::Items) only.
+
+* Optimization for tree-based menus, allow reliable build with
+  [timed-build]. Example:
+
+	[timed-build file=tmp/the_tree minutes=10 force=1]
+	[menu	name=the_tree
+			menu-type=tree
+			js-prefix=the_tree_
+			timed=1
+	][/menu]
+	[/timed-build]
+	[menu open-script=1 js-prefix="the_tree_"/]
+
+  This allows the tree to retain its opened status without having to
+  build a different timed-build file for every combination.
+
+  Now tree and flyout menus should be easily usable in a catalog without
+  worrying about processor power.
+
+* Add configurability for the open/collapse/explode variable. Before this,
+  you could only have one tree per page and have it keep the open status. Now:
+
+  	[menu name=foo menu-type=tree js_prefix=foo open_variable=foo_open][/menu]
+
+  	[menu name=bar menu-type=tree js_prefix=bar open_variable=bar_open][/menu]
+
+  will work for the appropriate menu. (The other will collapse.)
+
+* Don't add .html extension if file already has extension.
+
+Form
+----
+
+* Fix "double March" bug in date widget.
+
+* Allow templated options in select, radio, checkbox, etc. Enabled
+  by passing option_template="ATTR Template".
+
+  Uses same attr_list methodology as in most IC secondary templating.
+
+  Active keys:
+
+  	  LABEL           The normal label value
+  	  VALUE           The normal value
+	  PRICE           The formatted price, converted for locale
+	  PRICE_NOFORMAT  The raw price data
+	  ABSOLUTE        The formatted price, absolute (no negative)
+	  NEGATIVE        Set true if price data is negative
+
+  The default is equivalent to (though it doesn't use formatting):
+
+  		{LABEL} {PRICE?}({PRICE}){/PRICE?}
+
+  This example:
+
+	{LABEL}
+		{PRICE?}
+			{NEGATIVE?}(subtract {ABSOLUTE}){/NEGATIVE?}
+			{NEGATIVE:}(add {PRICE}){/NEGATIVE:}
+		{/PRICE?}
+
+	Would turn:
+
+		Ebony handle ($20.00)
+		Wood handle
+		Plastic handle ($-5.00)
+
+    into:
+
+		Ebony handle (add $20.00)
+		Wood handle
+		Plastic handle (subtract $5.00)
+
+* Add widget "filetext" to allow direct upload of a file to a database
+  field. Useful for content/article bodies that you want to edit in a
+  file but that are inconvenient to clip-past into a textarea.
+
+  The "filetext" widget is an <input type=file> followed
+  by a textarea. It shows the contents of the field in the textarea
+  and you can edit it. If you want to replace it with a file upload,
+  you just Browse to the file and upload it; it negates what is in
+  the textarea. If no file is uploaded, the textarea pertains (I guess
+  that statement is redundant).
+
+  The type=filetext widget should always be used in combination with two
+  filters, "nullselect upload".
+
+* Remove extra closing HTML tag '>' character from password widget.
+
+* Allow table conglomerations of checkboxes and radio boxes with more
+  than 9 columns (i.e. radio_right_10). Thanks to Bill Carr for finding.
+
+* Allow multiple semi-colon-separated queries to populate options via
+  lookup_query.
+
+* Added a =None to the file list of the imagedir widget so one has
+  the opportunity to choose an 'empty' value if no input is required.
+
+Editor
+------
+
+* Allow override of checking for incomplete forms.
+
+* Get rid of excess space which causes "unparsed and temporary" page
+  controls to fail.
+
+UI
+--
+
+* Fix dependency of page editor on certain [if ...] conditions in page code.
+
+* Add "send help edit to ICDEVGROUP" function in the online help editor.
+
+* Change name of "Bottom" menu (which was on top) to "Fixed". 
+
+* Check for SQL::Statement version (with hooks for testing any version,
+  lower or higher) at admin index load time, and provide warning that
+  things won't work properly.
+
+* Allow multiple help window destinations.
+
+* Remove preferred payment method from customer view and change primitive
+  used to display username.
+
+* Fix "admin/bg.gif not found" error.
+
+* Allow pass of nodelete and mv_auto_export options in URL.
+
+* Add "Decrypt Credit Card" back in order view.
+
+* Add mv_more_alpha and mv_more_decade options to flex_selector. Make
+  locale and country tables use them by default.
+
+* Fix link_rows_blank setting in table editor for form linking.
+
+* Restore capability to show only part of session.
+
+* Solve annoying problem where you edit a view-specific field display
+  and have to re-enter custom view information that is already
+  present in a modified base meta display.
+
+* Add check for existence of the extended/default columns
+  and display of merge errors to merge_meta page.
+
+* Add Levies to the 'show only' list of the show_session page.
+
+* Use sane default while merging metadata to avoid breakage of perl code 
+  if no ui-version record exists.
+
+* Allow the "Next order" button in the admin order_view to jump over a few
+  (20, by default) missing order numbers in the order sequence so that
+  deleted order numbers here and there don't throw the user back to the
+  order list view. Maximum number to skip settable by variable
+  UI_ORDER_VIEWNEXT_MAX_SKIP, now in Foundation "Admin control" section.
+
+* Add option to replace all occurences to Search & Replace page.
+
+* Make spreadsheet search not word-boundary dependent.
+
+* Allow exclusion of fields for database imports.
+
+* Fixed typo in file_navigator tag.
+
+* Fix extra parameter passing in wizard.
+
+* Display size, color and options on "Order view" page again.
+
+* Fix Query-By-Example forms for LARGE tables.
+
+* Remove hard-coded "Pending" status and put real info on "Order view" page.
+
+* More metadata tools. New tag [meta-info table=foo col=bar key=label] returns
+  "label" metadata item. Can access any key in meta record including extended.
+  Has localize=1 flag to localize returned labels.
+
+  Small example of how to use this in pages/admin/customer.html -- allows
+  you to change "Company" to "Affilation" or "Organization" and have a hope
+  of having it show up everywhere.
+
+* Continued preparation for translation.
+
+* Fix HTML problem in order entry page found by 
+  Nicholas Cook <ncook@foxmillpets.com>.
+
+* Add "Download slice" functionality to table export page. Allows you to
+  select arbitrary columns to directly download.
+
+* Add ability to download TAB-delimited results of an arbitrary SQL
+  query. You can do:
+
+		SELECT   sku, count(code) as times_ordered, sum(quantity) as qty
+		FROM     orderline
+		GROUP BY sku
+
+  and get downloaded to a file:
+
+			sku                 times_ordered       total
+			0738417912          1                   2
+			0972355901          1                   1
+			0972355936          1                   4
+			V4081300077         1                   1
+			V4081300116         1                   1
+			V4081300218         4                   5
+			V4081300218cd       3                   3
+			V4081300222cd       1                   1
+			V4081300233         11                  17
+			V4081300376         3                   3
+			V4081300469         1                   1
+			V4081300493         1                   1
+			V4081300498         1                   1
+
+* Add shipmethod to display in order_view page, make some display 
+  fields conditional.
+
+* Fix bug in address display in customer_view page.
+
+* Message for free shipping added to entry page.
+
+Payment
+-------
+
+* Add support for Verisign's PFProAPI.pm Perl module, which implements
+  Payflow Pro gateway communication without needing any external binary,
+  and thus no forking or temporary files for communication. Use PFProAPI
+  automatically if it is found at IC startup time, but fall back to pfpro
+  or pfpro-file if not. Upgrades should be transparent.
+
+* Add COMMENT1 and COMMENT2 to Verisign queries. These map to values
+  comment1 and comment2 by default in Payment.pm, but can be remapped.
+
+  Also put SHIPTOZIP in the varmap for simplicity, but same function.
+
+* Minor data filtering modifications to BoA module.
+
+* Map company and b_company for payment use.
+
+* Authorize.Net:
+  
+  - Send to Authorize.Net customer shipping address information and company
+    where available.
+
+  - Add Card Security Code (AKA CVV2, CVC2, CSC, CID) verification support
+    (uses Authorize.Net protocol version 3.1). (Chaim Klar <c_klar@c-cs.com>).
+
+  - Added the whole list of response codes (Chaim Klar <c_klar@c-cs.com>).
+
+* Add new Verisign route parameter, "check_sub", which allows a Sub or
+  GlobalSub to be called after a successful charge for a check of some
+  sort. 
+
+Shipping
+--------
+
+* Allow redirection of shipping modes.
+
+  Basically, you can do:
+
+  upsg_or_free	UPS Ground	[subtotal noformat=1]	0	99.99	>>upsg
+  upsg_or_free	UPS Ground	price	100	99999	0		{ free => 'Free!' }
+
+  upsg	UPS Ground	weight	0	150	u Ground
+
+  The first mode redirects to the second one if the order total is
+  less that $100; if it is more, it gives free shipping.
+
+  Add [shipping widget="Vend::Form widget" mode="mode1 mode2"] to
+  automatically build widget with Vend::Form. Works just like
+  [shipping label=1 ...] but produces a complete widget.
+
+* Support Canadian and 2003 US UPS Zone files.
+
+* Add mv_ship_residential with automatic lookup of residential charge in
+  properly formatted rate tables.
+
+  Requires residential => 1 option in shipping definition.
+
+* Add EAS surcharge via different means than EAS capability. Allows lookup
+  of exception zip codes in surcharge_table => 'tablename' option.
+  surcharge_field => 'fieldname' defaults to "surcharge".
+
+* Allow aggregation of weights over a number of pounds.
+
+  If aggregate => 1, that is 150 pounds. Breaks it up into 150-pound
+  packages and then a final package at the remainder.
+
+  If aggregate > 10, breaks it up into that many pound packages.
+
+* Break out shipping stuff from Vend::Interpolate. Add stubs so
+  custom code doesn't break.
+
+* Add ability to put custom shipping modules in, called with
+  "cost" field of "s Module".
+
+* Improve [ups-query ...] to aggregate shipments and cache prior
+  lookups.
+
+* Document [ups-query].
+
+* Add some tweezy scripts that help make US Postal zone charts and
+  tables. Use at your own risk.
+
+Levies
+------
+
+* Fix bugs preventing the usage of the customer defined routine and
+  calling it with the wrong parameters.
+
+* New Levy add_to key allows consolidation of levies under one
+  heading.
+
+	Levies  salestax  foo
+
+	Levy    salestax    description    "Sales Tax (%s)"
+	Levy    salestax    keep_if_zero   1
+	Levy    salestax    type           salestax
+	Levy    salestax    sort           002
+	Levy    salestax    label_value    state
+
+	Levy    foo    keep_if_zero   0
+	Levy    foo    add_to         salestax
+	Levy    foo    type           shipping
+	Levy    foo    mode           PERD
+
+  This will calculate the foo levy, but add its cost to the salestax
+  levy for display purposes.
+
+* Remove sprintf() function and replace with round_to_frac_digits,
+  prevent worries about rounding errors.
+
+* Allow label_value for all levy types, means you can do
+  something like:
+
+	Levy    shipping    description       Shipping (%s)
+	Levy    shipping    keep_if_zero      0
+	Levy    shipping    type              shipping
+	Levy    shipping    mode_from_values  mv_shipmode
+	Levy    shipping    label_value       zip
+
+  which will display
+
+    Shipping (45056)
+
+i18n
+----
+
+* Add alias [L] => [loc] in order to resolve [L] tags in variables
+  independent of the configuration.
+
+* Localize script now groks new menu database files.
+
+* Add Italian UI translation from Marco Mescoli <m.mescoli@omnibit.nu>.
+
+Foundation
+----------
+
+* Support for SQLite added.
+
+* Make metadata correspond to current UI version.
+
+* Fix orderline import deficiency in etc/log_entry found by Karen Gold
+  (KarenG@LOADUP.com). 
+
+* Change [discount-price] to [item-discount-price] to make it compatible
+  with editor components.
+
+* Preparation of pages for translation.
+
+* Typo in state database fixed (Bugzilla #499).
+
+* Modified include_form code on General Tab of item_edit page
+  in such a way that item images and thumb images with
+  extensions other that .gif can be displayed as well.
+
+  Replaced <img ...> by:
+	[image 	src="[var IMAGE_DIR]/items/[cgi item_id]" extra="border=0 id=item_img"]
+
+* Remove straggling Red Hat/IC logo and URLs, update foundation logos to match
+  Interchange 4.8's latest.
+
+* Added ALT attribute to Home links.
+
+* All of the order profiles had common information. Made a
+  Variable called COMMON_ORDER_PROFILE to hold that info
+  to remove duplication.
+
+* Add proper autonumber initialization to affiliate database so
+  it will generate affiliate codes that are valid. Thanks to
+  Kevin Old for reporting.
+
+* Use LENGTH_EXCEPTION_DEFAULT for Postgres userdb, transactions,
+  orderline tables in foundation.
+
+* Remove unused ship address pages and unused large gift certificate image.
+
+* Use the common placeholder for the email address in survey database.
+
+* Set more reasonable default types for each SQL DB.
+
+* Use mv_form_profile instead of mv_order_profile on account page in
+  order to check user's input.
+
+Debian
+------
+
+* Default traffic setting is low now.
+
+* Allow selection of traffic setting with debconf and interchangeconfig.
+
+* Specify unix and inet modes explicitly if user selects both. 
+
+* Check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are 
+  executable in interchange-ui maintainer scripts.
+
+* UPGRADE and README.cvs added to interchange.docs
+  
+* avoid installation error by checking installation state before
+  invoking interchange --add/--remove from interchange-cat-foundation
+  postinst script (thanks to Doug Alcorn <doug@lathi.net> for reporting
+  the problem)
+
+* remove configuration files handled by interchangeconfig on purge
+
+* protect against scripts ending up in /usr/lib/interchange
+
+* get_url UserTag forces dependency on libwww-perl
+
+UserTags
+--------
+
+* history-scan - Added new option called 'pageonly' that causes history-scan 
+  to return only the name of the previous page rather than a full "area" link.
+  Can be used to set mv_successpage for a form.
+
+* Removed some code that caused table-organize to write the td.x attributes
+  twice. 
+
+* find - New usertag in spirit of the Unix command with the same name.
+
+* Add [button wait-text="-- Please Wait --" text="Place Order" ...] so
+  button has indication of press beyond normal browser indication.
+
+  Allow direct setting of id, class, and style HTML characteristics without
+  having to shoehorn them in extra=" style='...'" etc.
+
+* Fix typo in auto-wizard UserTag so it works with ITL conditionals.
+
+* weight  - New usertag to set and determine shipping weight easily.
+
+Filters
+-------
+
+* Add "upload" filter. Checks to see if the submitted variable
+  is a file upload, if it is it reads the file and places it in
+  $CGI->{$varname}. Otherwise uses the value of the variable.
+
+* Add "line" filter which rips off the first line of a longer text.
+
+* Change "date_change" field in order to handle MySQL DATE resp.
+  DATETIME fields.
+
+Jobs
+----
+
+* update_locales job added.
+
+* Remove bogus session created by logging function.
+
+SOAP
+----
+
+* Ensure that SOAP server adds a blank line between HTTP header
+  and HTTP body.
+
+* Log errors in soap tag to catalog log file instead of the global one.
+
+* SOAP_Action introduced, which is intended to used as a
+  way to provide webservices from an Interchange catalog.
+
+* Allow tracing in SOAP calls in order to get a handle on SOAP request
+  resp. response.
+
+* Error handling revised.
+
+* Add SOAP_Control configuration directive and soap_gate access
+  check routine to control requests to the SOAP server.
+
+* Change to the catalog directory so that log messages end up
+  in the correct file etc.
+
+Shadow Database
+---------------
+
+* Add stub for sort_each method.
+
+* column_exists method calls now method of underlying class instead of a
+  lookup in the database structure which didn't work properly
+
+* each_nokey is now properly replacing the shadowed fields.
+
+* Moved configuration code to the module itself.
+
+* Add name method.
+
+* Map autonumber method to Vend::Table::Common.
+
+* Introduce mv_shadowpass scratch variable which instructs
+  the Shadow database code to return the original database record.
+
+* Add stub for inc_field method.
+
+* Add stub for delete_record method.
+
+* Non-select queries are passed to underlying database immediately.
+
+* Fix queries with list type.
+
+* Fix errmsg calls.
+
+Static Page Generation
+----------------------
+
+* Remove this feature completely from Interchange:
+
+  -- remove configuration directives ClearCache (not in use),
+     StaticIndex, StaticSessionDefault, StaticTrack (introduced in 4.9.x)
+  -- deprecate configuration directives NoCache, Static, StaticAll,
+     StaticDBM, StaticDepth, StaticFly, StaticLogged, StaticPage,
+     StaticPath, StaticPattern, StaticSuffix
+  -- remove UI tag regenerate
+  -- remove InvalidateCache attribute from distributed usertags
+  -- remove build flag from [tag] usertag
+  -- remove UI pages (regen and regenerate)
+  -- remove support from foundation and test catalog
+  -- remove path_adjust Pragma which is only useful in conjunction with
+     StaticPath configuration directive
+  -- remove Vend::Interpolate::cache_html, Vend::Interpolate::resolve_static, 
+     Vend::Interpolate::static_url and Vend::Session::tie_static_dbm routines
+  -- remove variables $Vend::AccumulatingLinks, @Vend::Links, 
+     %Vend::LinkFound, $Vend::ForceBuild, $Vend::CachePage.
+  
+Miscellaneous
+-------------
+
+* Fix a bug that prevented the cgi-bin link program from being associated 
+  with the chosen owner and group. The patch was created and tested by Carl
+  Bailey.
+  
+Extensions
+----------
+
+* Quickbooks updates:
+
+  - Documentation built from updated Interchange + Quickbooks HOWTO.
+
+  - Major change to IIF generation routine:
+    - IIF files are generated on-demand via the Admin UI
+	- In-route method still available
+	- New "Generate new IIF files" and "download IIF files"
+	
+  - New "qb_safe" filter, to cater to Quickbooks sensative side.
+  
+  - New default values (like defaulting to cash receipt instead of invoice)
+  
+  - Payment and Shipping methods are recorded in corresponding Quickbooks fields.
+  
+  - Allow customization of the transaction account (new default is "Checking")
+  
+  - Optionally set the transaction class (e.g., to track online sales in a
+    separate class from walk-in sales, and report on them differently). 
+  
+  - Optional Item Prefixes (e.g. if all items are accounting in Quickbooks under
+    a given category.
+	
+  - Optionally get the tax agency from the "state" table, falling back to the
+    configured default tax agency.
+ 
+  - Bug fixes
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.7 released only via nightly builds.
+
+  
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.6 released 2003-01-08.
+
+
+Core
+----
+
+* Perl version 5.6.0 or newer is now a requirement to run Interchange.
+
+* Add new global directive TrustProxy, which allows the administrator to
+  designate certain IP addresses or hostnames as trusted proxies, whose
+  claims (via the HTTP_X_FORWARDED_FOR environment variable) about the
+  original requesting host will be believed.
+
+  When using a front-end proxy for Interchange, all requests appear to come
+  from that proxy, say 127.0.0.1 if on the same machine, which is effectively
+  the same as running WideOpen because sessions can be easily hijacked. This
+  offers a way to bring back a little discernment about what host we're
+  really dealing with.
+
+  Usage is identical to the RobotIP directive's, for example:
+
+  TrustProxy 127.0.0.1, 10.0.0.*
+
+  I'm not sure why anyone would want to do this, but it could also be used
+  with external HTTP proxies in general (which hopefully aren't lying), with
+  a simple 'TrustProxy *'.
+
+* Fix whitespace transform and tolerate leading whitespace on HTTP
+  header lines.
+
+* Avoid persistent storage to make [summary] safe in prefork mode.
+
+* Allow a database to spring into existence without a .txt file. TO
+  do this, you define the field names in the NAME paramter.
+
+      Database will_be_there  will_be_there.txt  __SQLDSN__
+      Database will_be_there  NAME   code  field1 field2
+      Database will_be_there  CREATE_EMPTY_TXT  1
+
+  All it does is create the .txt file (or whatever the name is) from
+  the value of NAME array. It does take delimiters into account.
+
+  You must be just a bit careful, since if you then remove the .txt
+  file it will of course recreate the table. Of course you should
+  take that into account when setting this non-default parameter.
+
+  This will allow some one-file configurations to be added to the
+  system.
+
+* Allow autonumber for the linked-table behavior of update_data. Before,
+  you couldn't autonumber because the determination of whether the data
+  would be set was whether the key value is present. This allows
+  you to set mv_data_qual=fieldname and have a non-empty value in
+  that field determine whether to insert or not.
+
+* Minor cleanup in Data.pm, including ensuring $obj->{DELIMITER} 
+  and $obj->{delimiter} match.
+
+* Avoid infinite loops in catalog configuration caused by includes.
+
+* Compile warnings in catalog usertags now show up in the logs instead
+  of "UserTag 'ugly_hack' code is not a subroutine reference".
+
+* Add new database configuration option PREFER_NULL. It accepts a list of
+  field names which should be set to NULL instead of an empty string
+  whenever possible:
+
+  Database  people  PREFER_NULL  age height
+
+  Probably most useful with numeric or date fields that are nullable, to
+  prevent import errors when trying to store '' into a numeric field. Also
+  for character fields that you'd rather have contain a NULL than '' to
+  comply with a CHECK or foreign key constraint.
+
+UserTags
+--------
+
+* Obsolete usertags dbinfo, e, if-key-exists, if_sql, reconfig_wait, 
+  rotate_file, with and write_page removed.
+
+Filters
+-------
+
+* Allow % in filter arguments. This could conceivably be a problem for
+  someone who had a filter ".%s" or something.
+
+Content Management
+------------------
+
+* Get restrict_allow settings right -- the default was not allowing the "var"
+  to be expanded in the image preview path. Should probably look at this
+  concept on a per-field basis, and set the default to "".
+
+Payment
+-------
+
+* Patch to display errors from payment modules in credit card header
+  on checkout page.
+
+Foundation
+----------
+
+* Multi-language support, configured by the LOCALES and DEFAULTLOCALE
+  variables.
+
+* Updated region templates.
+
+* New PayflowPro control variables MV_PAYMENT_PARTNER and MV_PAYMENT_VENDOR.
+
+* Payment routes use now generic MV_PAYMENT_* variables.
+
+* Test order page added.
+
+Shadow Database
+---------------
+
+* lookup_table option added
+
+* foreign method implemented
+
+* test_record calls underlying database now
+
+Installation
+------------
+
+* Debian packages support the selection of the GnuPG home directory 
+  during installation now.
+
+mod_interchange
+---------------
+
+* Fixed a weird bug where empty HTTP variables were being passed
+  under certain circumstances.
+
+* Fixed a bug reported by Jeff Dafoe.  The request information
+  enabled Interchange to show the correct page but prevented it
+  from storing the request in the session's history.  The problem
+  only showed itself when Interchange's [history-scan] tag was used.
+  As almost no page history was saved, [history-scan] sent the user
+  to the default page (usually index) most of the time. 
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.5 released 2002-12-13 (minor bugfix release).
+
+
+Foundation
+----------
+
+* Add component files for new selectable results-list done by Ton.
+
+* Make proper patches to history-scan and barlink() to work with Randy
+  Moore's category_vert_toggle component.
+
+* Minor updates to category_vert_toggle component for HTML cleanup and 
+  performance improvement.
+
+Core
+----
+
+* Fixed problem with PreFork and mod_perl modes where Interchange children
+  kept order profile state between runs.
+
+* Make sure STDERR is selected in mod_perl mode in case some other mod_perl 
+  code uses select. 
+
+* Change default for MaxServers in "rpc" profile to zero. This is probably
+  best for the vast majority of servers running in PreFork mode.
+
+* Tolerate missing configdb database, issue warning only.
+
+* Tolerate people forgetting and putting , on the end of a parameter
+  when using line2options. A comma should never be the last character, I
+  would think, but you can choose to not use the filter if by some
+  bizarre chance it is needed.
+
+* A number of refinements and fixes to Menu module.
+
+	- Passing timed=1 to [menu ...] tag prevents putting session ID and
+	  count in URL, allowing timed-build to work well.
+
+	- first_line and last_line transforms allow you to specify a field
+	  to set to trigger the first line or the last line of the menu.
+	  This allows the current IC menu structures to work well with
+	  menus separated by space.
+
+	- logical_page feature allows a tab "up" indication in another
+	  menu, based on the page of the entry. This allows multi-level
+	  tabs to have an "up" indication on different menus.
+
+	- expand_values_form allows setting of ITL tag values even
+	  on multiple form values.  Honors [cgi ..], [value ..], and [var ..].
+
+    - Fix ordering of open parameter for trees -- it was broken by the new
+	  Vend::Util::vendUrl routine.
+
+* Simplify field_settor subroutines with prepared query and placeholders.
+  Prevents infamous DBD::Pg::do errors.
+
+* Form module -- add intrinsic "file" type, and allow setting of a
+  widget class directly without using "extra".
+
+* Other minor bugfixes too insignificant to mention.
+
+UserTags
+--------
+
+* min-rows option added to table-organize tag. Allows building small
+  result sets in one column (or however many columns needed to reach
+  min-rows).
+
+* Reworked [tree ...] tag to use DBI placeholders if supported.
+  While this doesn't seem to save too much CPU on a machine that
+  has the database and IC on the same machine, it should relieve
+  some network bandwidth on distributed setups.
+
+Installation
+------------
+
+* Various debian build patches.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.4 released 2002-12-02.
+
+* Fix problem with PreFork and mod_perl modes where Interchange children
+  kept order profile state between runs.
+
+* Tolerate people forgetting and putting , on the end of a parameter
+  when using line2options.
+
+Core
+----
+
+* The interchange script is now only used for configuration and
+  options. All code that previously resided there (notably the
+  dispatch(), respond(), update_data(), and do_order() routines)
+  has been relocated. Code that calls ::update_data, etc. should
+  NOT break, because we still use the modules in the script.
+  This caused the addition of Vend::Dispatch to hold many of
+  the routines.
+
+* Added new [deliver ....] tag that allows you to deliver some content
+  without worrying about [tag op=header] and page spacing issues. Adds 
+  new global variable $Vend::Sent which is authoritative notification
+  that all content is sent and that all further parsing of ITL
+  should stop.
+
+* Add mv_source parameter which sets an affiliate program source
+  and can be carried around in URLs when $Scratch->{mv_add_source}
+  is set. This solves the problem of AOL caching the page with
+  the source embedded, then forwarding the next request sans source.
+
+  From a suggestion by Dan <ic@concolor.org>.
+
+* Add new [menu ...] tag which can build simple, tree, and flyout
+  menus from a menu specification. See the UI.
+
+* Add robot tolerance facility, where mv_tmp_session is set when either
+  a RobotUA, RobotIP or RobotHost wildcard matches.
+
+  In interchange.cfg:
+
+      RobotUA   Inktomi, Scooter, Site*Sucker
+      RobotIP   209.135.65, 64.172.5.*
+      RobotHost *.googlebot.com
+
+  After that, it is all automatic. mv_tmp_session gets set to one, the
+  Scratch values mv_no_session_id and mv_no_count are set to one, and
+  normal pages don't get IDs put out by area.
+
+  What this will do for the user:
+
+        1. Allow those UAs to follow a URL.
+        2. Prevent useless session files from cluttering disk
+        3. Prevent session writes from inhibiting disk performance.
+
+* Added a (global) HostnameLookups directive to specify whether Interchange
+  should perform a DNS lookup to resolve the remote user's hostname from
+  their IP address.  The default is 'No'.  Hostnames are required for
+  facilities such as the RobotHost check to work.  If the web server is
+  configured to perform hostname resolution then this directive should remain
+  set to 'No'.
+
+* Add the oft-requested DirectoryIndex feature. 
+
+* Add new content management features. This allows Interchange to:
+
+    -- Accept Apache error redirects, i.e. handle 404 errors
+    -- Initially process page, process page after variables, and
+       process page before image substitution with configurable subroutines
+    -- Take puts for DAV-style publishing
+
+*   New "AcceptRedirect" directive. If "Yes", will look for REDIRECT_URL,
+    REDIRECT_QUERY_STRING, etc. and use those to provide the request.
+
+    This allows:
+
+        ErrorDocument 404 /cgi-bin/foundation
+
+    At that point, a request for /index.html that is not found will
+    be equivalent to /cgi-bin/foundation/index.html and will be
+    indistinguishable from the real page by the client.
+
+*   New Pragmas init_page, pre_page, post_page, which specify
+    Sub/GlobalSub routines to run at various points in page build.
+
+    init_page     Run before Variable substitution
+    pre_page      Run after Variable substitution, before interpolation
+    post_page     Run before Image substitution
+
+* Allow PUT operations. Add
+
+    [value-extended test=isput]       Check for a PUT
+    [value-extended put_contents=1]   Return PUT string
+    [value-extended put_ref=1]        Return ref to PUT string (scalar)
+
+  Some more DAV-type features can be done, I think, but they are not yet
+  scoped.
+
+* Remove min_string test from Search.pm, where it never really was used
+  or called due to mv_min_string default being 0.
+
+* Place mv_min_string check back in Glimpse where it was intended in the first
+  place.
+
+* Convert Mac line endings to Unix (as well as DOS).
+
+* Finally discovered what is going on with GPG and errors.
+
+  -- If PGP fails due to a system problem, like out of memory or
+     bad file permissions, it fails with a status that will cause
+     a real error which is in the lower 8 bits.
+
+  -- If PGP fails due to an internal problem like "key not found",
+     or no secret key ring, it will fail with system status set to
+     zero but the upper level status indicating its problem.
+
+     So a failed key will turn up as "File not found" in the
+     upper order bits, while a key *ring* not found will fail
+     with the same error in the lower status bits.
+
+  This patch is temporary, and at least tells you what $! is. I will
+  examine GPG's error messages and provide some simple ones like "key
+  not on keyring" and catch them to provide a better error.
+
+* Add general multiple-table update feature to Vend::Data::update_data.
+
+* Allow authoritative table name for constructed queries. Usage:
+
+    my $db = database_exists_ref($table);
+    my $tname = $db->name();
+
+    my $query = "select * from $tname";
+    $db->query($query);
+
+  This should allow REAL_NAME many more places.
+
+* New mv_cleanup operates like mv_click and mv_check, but operates
+  after a form processing action is done.
+
+* Added debug type to [log].
+
+* [userdb function=logout clear=1] will now restore the appropriate
+  ScratchDefault and ValuesDefault values instead of simply
+  deleting the scratches and values under its control.
+
+* Added check for no_increment so that mv_order_number can be set in
+  a route.
+
+* Fix bug where bad [nitems compare=...] could cause server error. Now
+  just silently causes bad compare.
+
+* Allow alternate values spaces with $CGI->{mv_values_space}. This allows
+  fill-in wizards, surveys, and such to not pollute the user's normal
+  values.
+
+  Use with caution -- if someone is in the practice of using $Values
+  to set catalog behavior (usually a poor idea) then it can cause
+  anomalies.
+
+* Clean up a few references to $Vend::Session->{values} which should
+  never be done anymore -- we had handled almost all of this previously.
+  It should always reference $::Values.
+
+Installation
+------------
+
+* "you are now ready to run makecat" is no longer displayed on upgrades.
+
+* Prevent test from failing on upgrades.
+
+Payment
+-------
+
+* Patch from Mark Johnson to Vend::Payment::Signio module whose explanation
+  we quote: 
+  If you send a garbage ORIGID, as IC does by default, it will attempt to
+  use that as the key for the transaction, without falling back on the data
+  you sent with it. Thus, it must explicitly not be used unless you have a
+  valid one which you want to use. This was why no credits were succeeding;
+  even though we were sending explicit new data, it ignored it and cried 
+  with the ever useful error "Not signed up for this tender type".
+
+* Added a Vend::Payment::TestPayment module to allow developers to test
+  their site's interaction with the Interchange Payment system, without
+  actually being connected to a real Payment Services Provider. 
+
+* Change AuthorizeNet.pm to more easily enable settlement of orders
+  done via AUTH_ONLY.
+
+* Prevent automatic try at credit card encryption if no EncryptKey
+  is present.
+
+Filters
+-------
+
+* Add new filter, "next_sequential". Allows selection of a next-sequential
+  value based on a field (and qualified by a field).   
+
+  [filter op="next_sequential.survey_q.sort"][cgi sort][/filter]
+
+  will:   
+
+    1. Return the existing value if present.
+    2. If existing value is blank, return max + 1 in the sort field,
+       i.e. equivalent to: 
+
+           SELECT sort FROM survey_q
+       ORDER BY sort DESC
+       LIMIT 1   
+
+  If another argument of a field name is passed, i.e. 
+
+    filter => 'next_sequential.survey_q.sort.sel',   
+
+  then you get: 
+
+       SELECT sort FROM survey_q
+       WHERE sel = '[cgi sel]'
+       ORDER BY sort DESC
+       LIMIT 1   
+
+  This allows a next-sequential numbering for things that need it.
+  Developed to support general-purpose survey UI for Ton's excellent
+  product rating system.
+
+* Fix bugs in option_format filter. It would turn commas into new options;
+  and alternate delimiters had no hope of working.
+
+* Add options2line and line2options filters, allowing you to specify
+  options in a textarea without comma separators and instead with one
+  option per line.
+
+Profiles
+--------
+
+* Add "future" profile comparator so that you can do:
+
+    appointment_date=future 1 day "Sorry, we need some lead time."
+
+  That allows you to check that a date value (ala the date widget) is
+  in the future.
+
+* Added "luhn" profile check for "LUHN-10"-encoded numbers.
+
+* Enhance unique profile check to allow specification of a foreign key
+  for uniqueness check.
+
+Foundation
+----------
+
+* Add several different color schemes instead of only the Foundation Red.
+  "blueyellow" is the new default.
+
+* Change logos and such to reflect ICDEVGROUP instead of Red Hat.
+
+* Add product_tree and product_flyout components to work with new
+  menu editor.
+
+* Change checkout display to work easier for DHTML browsers, old
+  browsers should see much the same thing.
+
+* Change order profiles and etc/log_transaction to do a more reliable
+  job of order checking. If your database has transactions (i.e. Postgres),
+  a failure in the log_transaction can cause a failure of the order.
+
+* Added auth_code and tracking_number to transactions table to support
+  charge settlement and shipping_tracking in the UI.
+
+* category_vert_toggle component reworked by Randy Moore.
+
+* new category_vertical_tree component by Rene Hertell.
+
+UserTags
+--------
+
+* Fixed problem in [button] tag to make sure that the current button being 
+  pressed is the only one whose mv_click_map_* variable gets set.
+
+  This works around the problem of a user clicking one button, using the
+  browser's Back button, then clicking on a different button, and both
+  mv_clicks execute instead of just the most recent one.
+
+* [history-scan ...] now escapes form parameters properly.
+
+* Extended stripping of line endings by [import-fields] to 
+  help people who import using files generated on non-Unix
+  operating systems.
+
+* Add [jsq] [/jsq] .. and [jsqn] [/jsqn] tags that build properly
+  JavaScript strings (jsq with variable substitution, jsqn without).
+
+* Add [tabbed-display] tag that shows DHTML tabbed panels.
+
+        [tabbed-display OPTIONS]
+            [tabbed-panel The title of one]
+            The contents of one
+            [/tabbed-panel]
+            [tabbed-panel The titel of two]
+            The contents of two
+            [/tabbed-panel]
+        [/tabbed-display]
+
+  It is pretty much that simple. It is documented, and an example is
+  on the pages/admin/genconfig.html page.
+
+* [table-editor ...] tag updated extensively. Added tabbed displays,
+  full templating of the display, user-includeable forms, almost all
+  features supported with metadata.
+
+* Many minor changes in metadata and preferences. Changed default
+  in some tables to tabbed display.
+
+* [update-order-status] tag added for shipping products. Also does
+  charge settlement if needed.
+
+* [xml-generator] removed.
+
+UI
+----
+
+* Extensive update to look and feel of the admin UI. The HTML design was
+  done by David and Hamish, core members from Zeald, Ltd. in New Zealand.
+  There are no more BGCOLOR references, and only a couple of <font ..>
+  tags. All has been switched to CSS.
+
+* Remove icmenu database. That work now done by lib/UI/pages/include/menus/*.
+
+* Major update to [table-editor ...] which so much of the UI is based
+  around. 
+
+    -- Tabbed displays
+    -- Insert spreadsheet linked via foreign key
+    -- Insert custom form widgets for form processing use,
+           a "recompute transaction" included for an example
+    -- Control over styles and classes for table columns
+        -- Completely templateable
+
+* Add the suggested feature from Dan Browning -- a great idea --
+  a spreadsheet of a linked table within the table editor.
+
+  Adds the options:
+
+    link_table               Table to link in
+
+    link_key                 Key field to link to
+
+    link_fields              Columns to display
+
+    link_sort                How to order the linked rows
+                             (probably should add link_query here)
+
+    link_view                The view for spreasheet meta
+
+    link_label               How to label the thing (default
+                             is something like "Settings in
+                             link_table linked by link_key"
+
+    link_before              Where to plop the thing, input
+                             a column name in the main table to
+                             put it before
+
+    link_extra               Class, style, or other data for
+                             the table cells in the spreadsheet
+
+
+   To make it even better, multiple link tables are allowed,
+   so you could do:
+
+       [table-editor
+            link-table.0=options
+            link-table.1=pricing
+            link-key.0=sku
+            link-key.1=price_group
+        ]
+
+   To test, try this little test-snippet in a default foundation
+   from the latest CVS.
+
+    [table-editor
+        table=products
+        item_id="os28004"
+        link-table=options
+        link-key=sku
+        link-fields="sku price description"
+        link-sort="price desc"
+        link-before="weight"
+    ]
+
+* Complete rework of content editor. Improvements too many to name.
+
+    - "Edit page", "Edit menu", even "edit component" links are inserted when
+      you are logged in as admin.
+
+    - Complete cleanup of page/template/component parsing code, now perhaps
+      someone besides Mike could understand it. 8-)
+
+    - File navigator only now used for pages, not for templates/components,
+      retains context.
+
+    - Hooks are there for doing an entire edit session then pushing new content all
+      at once. Theoreticially, you could create an entire new site, browse it
+      and test it without the public seeing it, and then push one button to
+      publish it all. I say theoretically because I haven't done it yet, but
+      it should be there soon.
+
+    - Preview now holds true for browsing catalog.
+
+    - Now can create and edit pages that have no template wrapper.
+
+    - Add page to clone (push) sets of components to like sets of pages, i.e.
+      edit one to get the components like you want them and then select the
+      pages that that setup should be copied to.
+
+    - Closed all Bugzillas relating to it.
+       -- New pages not creating properly
+       -- Unable to edit in subdirectories
+       -- Templates not written properly
+
+    - TODO:
+
+        -- Allow alternate DSN for staging database tables.
+        -- Document this puppy, finally.
+        -- Change templates so that left-side/right-side components interchange,
+           and so that most class=content components can go vertical.
+        -- Vet the new [menu][/menu] component so that left-hand side
+           menu can be directory/location sensitive.
+        -- Build in the "use the index.html page in the current directory
+           as the template" functionality.
+ 
+* Improve spreadsheet.
+
+    -- Any meta widget can be used.
+    -- No possiblity of data crossover with embedded nulls.
+    -- Remove need for "Change display" with improved meta edit (will
+       add temporary view selector soon).
+    -- Better display (I think).
+    -- Better consistency of display for data and new record, etc.
+    -- Fields can use meta, go to textarea, have text field all selectable
+       from spreadsheet meta control.
+
+* Add cheesy mail list manager, a common thing to ask. Supported by unsubscribe
+  function and a batch download mode for large mailings....probably should
+  create some online help.
+
+* Ability to employ database entries in filters supported by profile 
+  "process_filter" now.
+
+* Major update to order status update program. Now can batch ship by
+  checking boxes, sequence ship, settle transactions previously done
+  via auth_only with realtime payment gateway, and more.
+
+* Many, many, minor bug fixes and improvements.
+
+Swish Search
+------------
+
+* Added module to search indexes with Swish.
+
+* To use, you must add to interchange.cfg:
+
+        Require module Vend::Swish
+        AddDirective Swish hash
+        Variable swish Vend::Swish
+
+* The search is called with st=swish (same as mv_searchtype=swish).
+
+* The fields to return are configurable, and default to;
+
+        rf=code score title url mod_date filesize
+        fn=code score title url mod_date filesize
+
+  These correspond to:
+
+                        code            swishreccount
+                        score           swishrank
+                        url                     swishdocpath
+                        title           swishtitle
+                        filesize        swishdocsize
+                        mod_date        swishlastmodified
+
+mod_interchange
+---------------
+
+* Implemented a proper (automatic) URILevels mechanism and removed
+  the URILevels configuration directive.  This also fixes a bug,
+  reported by Philip Hempel in the interchange-users mail list,
+  where [PT] redirects were not being handled correctly.
+
+Forum
+-----
+
+* Add "forum" feature to foundation. Allows commenting on products and
+  also as a byproduct arbitrary blog-style forums.
+
+  This is a complete forum display:
+
+        [forum top=THREAD_ID /]
+
+  You can get more complex than that. There is an illustration of the
+  templated version in the pages/forum/display.html page.
+
+  Disabled by default for DBM and Oracle. No database def is
+  supplied for Oracle.
+
+  With Postgres and MySQL, the forum is displayed in the flypage
+  automatically by default. The thread doesn't exist until the
+  first comment is made, at which time we create a top-level thread
+  named for the SKU.
+
+  An email notification goes out with new comments if that is
+  enabled.
+
+  There is some scoring logic for display, but no way to assign
+  scores yet (except by editing the database directly).
+
+  The reply and submit pages use include files from include/forum.
+
+  Arbitrary forums need to be enabled by setting the artid equal
+  to the code. If the artid is 0, as is the default on a random
+  submit, no display will be done. (The enabling is done automatically
+  for products by passing the product=1 parameter in the URL and
+  finding the product in the database.)
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.3 released only as nightly builds.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.2 released 2002-08-12.
+
+
+Core
+----
+
+* New ability to run Interchange entirely inside Apache and mod_perl.
+  See POD documentation inside scripts/ic_mod_perl.PL for details.
+
+* Add new Jobs and Cron facility:
+
+  - While we don't keep the time, and a scheduler will have to set the
+    execution time, it allows ITL to be run without the hassles of having
+    to deal with HTTP.
+  - Use $Vend::Cfg->{Cron} for setup.
+  - Emails either to command line address or $Vend::Cfg->{Cron}{email}
+    (only if the cron job supplies output). Uses the $Vend::Cfg->{Cron}
+    variables subject, from, reply_to and extra_headers.
+  - Logs to $Vend::Cfg->{Cron}{log}
+    (only if the cron job supplies output).
+  - Can add session dump when $Vend::Cfg->{Cron}{add_session}.
+  - Base directory set by $Vend::Cfg->{Cron}{base_directory}, defaults
+    to etc/cron. If $Vend::Cfg->{Cron}{use_global} is set, 
+    the same directory in $Global::ConfDir is scanned too.
+  - The macros $Vend::Cfg->{initialize} and $Vend::Cfg->{autoload} are
+    executed once resp. before each job.
+ 
+* Add First and Last links to more-list, with ability to customize via
+  [first-anchor] and [last-anchor] containers.
+
+* Bye bye Wizard. Suggest anyone who wants it resurrect it and
+  make it work properly...
+
+* Add new menu editor and menu system. It is based around Vend::Menu
+  and the new tag [menu ...], which builds various types of DHTMl and
+  standard HTML menus based on browser type.
+
+  The menu editor can edit simple menus or tree-based menus.
+  All UI menus use this. A simple menu component (i.e. a link list)
+  and a tree-based list are provided for Foundation.
+
+* New support for database-native sequences for MySQL, PostgreSQL, and Oracle:
+
+  - To do a minimal sequenced table, all you need to do is:
+
+    Database  sequenced sequenced.txt __DBIDSN__
+    Database  sequenced AUTO_SEQUENCE sequenced_seq
+
+  - The parameter passed to AUTO_SEQUENCE (in the above, "sequenced") will
+    be used as the sequence name for Postgres and Oracle (and presumably
+    others that emulate them).
+
+    For MySQL, the same technique that Stefan introduced is used, with an
+    AUTO_INCREMENT field. The value in AUTO_SEQUENCE is just a non-false
+    value. The behavior depends on the definition of
+    $capability->{LAST_SEQUENCE_FUNCTION}.
+
+    If MySQL is the DB in use,
+
+    $key = $s->autonumber();
+
+    returns nothing and the key will be later found with
+
+    $key = $s->last_sequence_value($key);
+
+    and returned in $db->set_slice, etc. ($db->set_row also uses this, but
+    the key value is never returned. You can get it with
+    $db->last_sequence_value if you need it.)
+
+    If PostgreSQL/Oracle is used, the key is returned with
+
+    $key = $s->autonumber();
+
+    and is just parroted back with
+
+    $key = $s->last_sequence_value($key);
+
+    If the table is being created, the sequence will be created as well. If
+    it exists, it will not be dropped. If the "code" or key field is not
+    set with a COLUMN_DEF, the field type to be used will be found in
+    $capability->{SEQUENCE_KEY}.
+
+    Capablility entries used:
+
+    SEQUENCE_CREATE         Query to create a sequence on table creation.
+    SEQUENCE_QUERY          Query to get next value in sequence.
+    SEQUENCE_KEY            Type definition for key field when AUTO_SEQUENCE
+                            table is created.
+    SEQUENCE_VALUE_FUNCTION Query to get current value of sequence.
+    SEQUENCE_LAST_FUNCTION  Query to get key when MySQL behavior is wanted.
+
+  - Can automatically drop existing sequence if:
+
+    Database sometable AUTO_SEQUENCE_DROP 1
+
+* Add BASE_CAPABILITY configuration parameter to allow testing of a new
+  SQL database type with settings based on one of the known types. If
+  behavior is different in particulars, that capability can be modified
+  in the config file.
+
+* In Vend::Config, fix incompatibility in Perl 5.005-style regex that
+  causes rejection of certain Locale settings.
+
+* Remove unnecessary CGI variable mappings at end of Vend::Config.
+
+* Fix call to [item-tag object name].
+
+* Add Filter alias e = encode_entites.
+
+
+Extensions
+----------
+
+* Various Quickbooks updates:
+
+  - Fixed: When an auto-created user orders from the same company as an
+    existing Quickbooks customer, it overwrites the customer.
+
+  - Save the auto-created user id (e.g. U00001) and use it in the Customer
+    Name as a unique identifier, just as logged-in users.
+
+  - New variables for easy customization of export features via Admin UI,
+    documented via item-specific meta referenced in the documentation.
+
+  - Fixed: "INTL" showing up without country (now matches US or USA).
+
+  - Put the company name on a separate line in Ship-to and Bill-to
+    addresses. Now utilizing all 5 lines.
+
+  - Item name updates:
+    - Length filter now customizable via QB_ITEM_LENGTH
+    - Default is 30 (backwards compatible)
+    - Item name taken from 'title' first, if any, then 'description' second.
+
+  - Optionally cause Quickbooks invoice number to be blank, to keep
+    Quickbook's invoice number progression unmodified.
+  
+  - Accompanying documentation.
+
+Utilities/EG
+-------------
+
+* eg/te -- jon's great tabbed file editor.
+
+    Add some new options:
+
+    -f to handle files without field names on first line of file.
+    -n to number rows in comments.
+
+    -s for starting value support (really only vi).
+
+        te -s os28004 <file>
+
+        Jumps to first occurrence of "os28004" in <file>. Option -i ignores case
+        in the search.
+
+    Allow setting of persistent options in environment variable TE_OPTIONS.
+
+    Handle -i and -s with mixed-case search term (lowercase it first).
+
+    Don't escape " in search term, as it doesn't seem special.
+
+Payment
+-------
+
+* Support for TrustCommerce added. Written, tested, and donated by
+  Dan Helfman of TrustCommerce <dan@trustcommerce.com>. Thanks, Dan!
+
+* Support for the Mainstreet Credit Verification Engine (MCVE) added.
+  Written, tested, and donated by Tom Friedel <tom@readyink.com>.
+  Thanks, Tom!
+ 
+* Support for ECHO added. Written, tested, and donated by
+  Michael Lehmkuhl <michael@electricpulp.com>.  Ported from globalsub to 
+  Vend::Payment by Dan Browning <db@kavod.com>.  Thanks Michael!
+
+UI
+--
+
+* [import_fields]: Performance enhancement: use set_slice() to update all 
+  fields in a record at once when importing files.
+  
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.1 released 2002-07-22
+
+
+Core
+----
+
+* The great tag breakout!
+
+    - Almost all tags are now UserTag definitions. The exceptions are:
+
+        and bounce goto if label or unless
+
+    - New TagDir directive (default is VENDROOT/code) sets the
+      directory (or directories) which are searched for code definitions
+      set by UserTag and CodeDef.
+
+    - New TagGroup directive establishes groups of ITL tags which can
+      be included.
+
+        TagGroup :crufty "banner default ecml html_table onfly sql"
+
+      The default groups include :core, which contains all of the
+      ITL tags defined in 4.8/early 4.9. The groups are defined
+      in $Vend::Cfg::StdTags and can be undefined if desired
+      with "TagGroup :group".
+
+    - New TagInclude directive allows inclusion of tags (or groups
+      of tags). If a tag is defined as a core tag (with a .coretag
+      or .tag or .ct extension) and is not included, it will not
+      be compiled and placed in the tag map. This is for all catalogs,
+      so if *any* catalog uses a tag it must be included.
+
+      Examples:
+
+        # Include the base tags
+        TagInclude :core
+
+        # Not the commerce tags
+        TagInclude !:commerce
+
+        # But make sure item-list is included even though
+        # it is in :commerce
+        TagInclude item-list
+
+        ## Double negatives are honored
+        TagGroup    :foo "bar !baz buz"
+        ## With the group above, the below is equivalent
+        ## to TagInclude !bar baz !buz
+        TagInclude !:foo
+
+    - New CodeDef directive allows the setting of filters, order checks,
+      FormAction, ActionMap, ItemAction, and LocaleChange.
+
+            ## filters
+            CodeDef  mixedcase Filter
+            CodeDef  mixedcase Routine <<EOR
+            sub {
+                my $val = shift;
+                ## [filter mixedcase]mixed case[/filter]
+                ## outputs "MiXeD CaSe"
+                $val =~ s/(.)(.)/\u$1\l$2/g;
+                return $val;
+            }
+            EOR
+
+            ## order checks
+            CodeDef  mixedcase OrderCheck
+            CodeDef  foo  Routine <<EOR
+            sub {
+                my ($ref, $var, $val) = @_;
+                return (1,$var) if $val eq 'bar';
+                return (0,$var, "foo must be bar");
+            }
+            EOR
+
+       All work in catalog.cfg; LocaleChange and ItemAction are not
+       global. FormAction, ActionMap, and ItemAction directives
+       are equivalent to their CodeDef equivalents.
+
+* New Vend::Form module implements display tag and widget creation.
+  Passes all known tests, and runs accessories/widgets (apparently)
+  flawlessly in foundation, barry, simple, and the UI.
+
+* Add new HIDE_FIELD capability to DbSearch. It provides automatic
+  hiding of records accessed via search (and NOT query).
+
+ -When the following configuration is added:
+
+    Database products HIDE_FIELD inactive
+
+ -It adds automatically the qualification to every search:
+
+    WHERE inactive != 1
+
+ -To use, you should have a field of char(1) or int type.
+
+    Database products COLUMN_DEF "inactive=int default 0"
+
+ -This has the side-effect of hiding fields with NULL in the
+  field, so be careful. You should probably set "default 0"
+  as shown above.
+
+ -Works for DBM types too.
+
+ -Does NOT work for TextSearch.
+
+ -If you want to show all records, you can pass mv_no_hide=1
+  in the search parameters. Obviously, this makes this not a
+  security feature.
+
+* Clear the following intermittent error:
+
+    CGI mapping error: multipart/form-data sent incorrectly
+
+  Some browsers, like Opera, use non-word characters like '+' in
+  form-data MIME boundaries, causing the regex matches to fail.
+
+* New function Vend::Util::logOnce which ignores repeated identical
+  log messages (works only in the scope of the current Interchange
+  page)
+
+* Remove last remnants of mv_raw_searchspec.
+
+* Remove HTML-embedded tag syntax
+
+* Remove Vend::ECML, move to extensions/ directory.
+
+* Allow customization of links in more-list, like this:
+  [link-template]<a href="$URL$" target="_top">$ANCHOR$</a>[/link-template]
+
+* Add utility functions Vend::Data::product_row and product_row_hash,
+  which do the same thing as product_field, but return the whole row
+  instead of just one field.
+
+
+UI
+--
+
+* Major changes to the content editing scheme.
+
+    - Requires a CSS/Javascript 1.3 compliant browser. Tested on
+      Mozilla 0.9.8, MSIE 5.51, Opera 6.0tp2. All work pretty well;
+      Mozilla is a bit slow, Opera doesn't have CSS widths down.
+
+    - Page editor has a quasi-visual layout that should be much more
+      intuitive. Support for a "PAGE_PICTURE" file in the templates
+      allows visual links to the editor page.
+
+    - Components, templates, and pages are now all editable.
+      Template and component editors need to be brought up to speed
+      with the page editor, but work fairly well.
+
+    - Added new lib/UI/ContentEditor.pm module which implements
+      this stuff in conjunction with lib/UI/pages/include/*_editor.
+      A bit of a JavaScript dependency nightmare on the generated
+      attribute editors, but I may get this more canned as time goes on.
+
+    - Let's get this on record -- this content editiing WILL NOT
+      UNDER ANY CIRCUMSTANCES EVER WORK ON NETSCAPE 4. Do not ask,
+      though I know the people who monitor this stuff won't.
+
+* Added Mike's cool new "auto_wizard" which builds a wizard from a
+  file like in the example. It will be the method to provide scripted
+  content addition.
+
+* More table-editor updates -- added notable option, and
+  all_opts option which allows building the options in
+  Perl and then doing:
+
+        [table-editor all-opts=`\%opts`]
+
+* Look for major updates on the table editor to make it
+  completely templateable.
+
+* Fix problem with $Tag->display() called with null table, affecting
+  "wizard" mode.
+
+* Add a "admin/test_code.html" page for testing short snippets
+  of ITL without having to create a test page.
+
+* Make the table populator JavaScript honor the db tables the
+  particular admin user is supposed to see.
+
+* [import-fields replace=1] -- added option to replace items in the database
+
+* Add su facility for catalog superuser to switch users to another
+  user id, using new UI_Tag su as follows:
+
+    [su username=miltonbear]
+
+    1. Stringifies current session after checking that su user is valid
+    2. Writes a random string to "$Global::ConfDir/tmp/$Session->{id}"
+    3. Issues a cookie hashing the above two
+    4. Inits a new session, putting in the login info
+    5. Writes $Session->{su} with session string
+
+    [su exit=1]
+
+    1. Reads random string from "$Global::ConfDir/tmp/$Session->{id}"
+    2. Hashes that with session and verifies with cookie
+    3. Safe evals session string
+    4. Retrieves session username/admin info
+
+    [su create_user=1 username=bobby password=howdy verify=howdy]
+
+    Allows combined creation of new user and switching to that user. 
+    Any options you would pass to userdb tag can be given to su usertag, 
+    to tweak account creation. If user already exists, it's silently switched to.
+
+  MMsu profile is called on admin/customer.html to run the switch.
+
+  When you "log out", you are reverting to the previous user, and you
+  can go no further back. So if you go from superuser->adminuser, then
+  adminuser->regular user, there is no way back to superuser without
+  logging in again.
+
+* Continuing work on meta_display and Vend::Form.
+
+    - Relocated date and option widgets
+    - Prepared for breaking out image widgets to code/Widget
+    - Fixed various bugs in widgets
+    - Code simplification in Primitive.pm
+    - Fix widget.coretag to not call UI::Primitive routine
+    - Redo option_format filtering
+
+* Display server hostname on the information page (genconfig).
+
+* Unused usertags component, set-alias and set-click removed.
+
+
+Payment
+-------
+
+* Support for Wells Fargo added
+
+
+Accounting
+----------
+
+* Vend::Accounting module added, along with example module for SQL_Ledger.
+  This is the basis for a start of a defined accounting system interface.
+
+  Some intended functions:
+    NOTE: AS = Accounting Software, i.e. SQL-Ledger, IC = Interchange
+
+    1. Assign customer number
+    2. Change customer information based on input, limit to fields customer
+       should have control over
+    3. Add sales transaction (IC)
+    4. Feed back sales transaction from AS side for account status
+    5. Enter payments (IC --> AS), with credit-cards used to pay invoices
+    6. Reconcile AS account status with IC, i.e. ship status
+    7. Cancel order (IC)
+    8. Ship portion or all of order (IC)
+    9. Mark order complete
+
+    Input on other functions needed is appreciated.
+
+PROPOSED:
+
+* Set of modules selectable by route handle:
+
+    Vend::Account::SQL_Ledger (exists)
+    Vend::Account::QuickBooks (proposed)
+    Vend::Account::Compiere (proposed)
+    Vend::Account::[fill-in-the-blank]
+
+* Use a usertag [account] (a la [charge]) to interface functions.
+
+* Use a profile primitive, "&account=label function" ala "&charge="
+  to do some accounting functions in profiles, notably getting an
+  order number or customer number
+
+* Allow either COMMIT or no-COMMIT operation, with tradeoffs
+
+* Define accounting system parameters via Route, and build
+  in accounting functions into Route so that they can be
+  a predicate for order success.
+
+* Define two transitional state tables for handshaking:
+
+    orderstatus -- status of orders, i.e.
+            pending,transmitted,received,shipped,complete
+
+    accountstatus -- record of payments and orders for account statement
+
+
+Foundation demo
+---------------
+
+* use [if variable MV_DEMO_MODE] instead of the more cumbersome
+  [if type=explicit compare="__MV_DEMO_MODE__"].
+
+* add global INTERCHANGE_URL and INTERCHANGE_EMAIL variables to be used
+  for the Interchange developer website & email contact points, instead
+  of hard-coded stuff
+
+* standardize on the short form "Interchange" for the application name.
+
+* update a few URLs, etc.
+
+* Remove history-scan tag from catalog.cfg; it is now in code/UserTag.
+
+* Remove no_html_parse pragma, for which code has already been deleted.
+
+* Moved payment routes to the top of the Route stack. Technically they
+  should not be below the default route, and though it works in the
+  standard foundation setup, it caused lots of failures when people
+  tried to customize their order routing.
+
+* (Oracle) Add missing Database xxx UPPERCASE 1 settings. Thanks to
+  Jonathan Lee <jonalee740304@yahoo.com> for reporting.
+
+* Get rid of weird tax rate popup notice when updating account
+  info, which is especially strange when you've never had anything
+  in your cart ...
+
+* Change catalog.cfg to highlight etc/after.cfg.
+
+
+UserTags
+--------
+
+* [fedex-query] -- Stop dying if there's a problem with FedEx express
+  lookups, which kept even ground rate lookups from being done during
+  the first request when the Business::Fedex object is first created.
+
+  Instead, just log the error but continue on with possible ground lookup.
+
+  (This situation resulted in the oddity of the shipping rate displaying
+  as $0.00 on the checkout page, but still getting added into the total cost
+  and displaying in the shipping rate pulldown select box just fine.)
+  
+* interchange.cfg: Remove now-redundant include of usertag/*.tag.
+
+* [db-columns] -- Add ability to get back an array instead of a joined string
+  to $Tag->list_databases,$Tag->list_keys,$Tag->db_columns,
+
+* [email] -- Add enhancement made by Jurgen Botz to use send_mail program
+  so that Net::SMTP can send the email tag. Thanks Jurgen!
+
+* [history_scan] -- Count option added, which guarantees that the
+  returned link is at least count # of clicks back in the page history.
+
+* [image] -- descriptionsfields and exists_only options added.
+
+
+Build
+-----
+
+* Removed stale POD documentation from main interchange repository; for
+  some time now, docs source has been in SDF format in docs repository
+  and available in separate docs package.
+
+* Keep test from giving warning about not being able to stat
+  "code" directory.
+
+* Big changes to RPM specfile:
+
+  - Allow non-root RPM builds.
+  - Don't add interch user on build machine.
+  - Don't automatically start Interchange after installing RPM.
+  - Remove unneeded .empty files used in CVS to avoid pruning
+    important but empty directories.
+  - Make admin UI images owned by root.
+  - Don't allow Interchange RPMs to own /usr/share/man/man[18] system
+    directories.
+  - Start using RPM dependencies for Perl CPAN modules. Users who
+    install directly from CPAN will have to use --nodeps.
+  - Start daemon in UNIX mode only by default.
+  - Build foundation-demo RPM with MV_DEMO_MODE set.
+  - On uninstall, remove autogenerated /usr/lib/interchange/etc/varnames
+  - Start using Red Hat standard /sbin/service instead of directly
+    running /etc/rc.d/init.d/interchange.
+  - Add standard 'reload' function as alias for restart.
+  - Quell /sbin/service stop errors.
+  - Let user see if we turn off old IC server before install/upgrade.
+  - Make packages architecture-dependent, to save lots of hassles.
+  - Stop checking for /home/httpd, but use a define for webdir
+    that can easily be changed if needed.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.0 "released" only via CVS
+
+
+------------------------------------------------------------------------------
+
+(end)

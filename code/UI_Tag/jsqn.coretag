@@ -1,0 +1,30 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: jsqn.coretag,v 1.7 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag jsqn hasEndTag
+UserTag jsqn NoReparse
+UserTag jsqn PosNumber 0
+UserTag jsqn Version   $Revision: 1.7 $
+UserTag jsqn Routine   <<EOR
+sub {
+	my $text = shift;
+	$text =~ s/^[ \t\r]*\n//;
+	my @lines = split /\r?\n/, $text;
+
+	for(@lines) {
+		( $_ !~ /'/ and s/\r/\\r/g, $_ = qq{'$_'} )
+		  or
+		( $_ !~ /"/ and s/\r/\\r/g, $_ = qq{"$_"} )
+		  or 
+		( s/'/\\'/g,  s/\r/\\r/g, $_ = qq{'$_'} );
+	}
+	@lines = "''" unless @lines;
+	return join (" +\n", @lines);
+}
+EOR

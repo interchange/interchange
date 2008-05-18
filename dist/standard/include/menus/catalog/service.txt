@@ -1,0 +1,9 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001					query/check_orders		Order Tracking		0	Check the status of your order							
+002		x002					member/returns		Order Returns		0	Get an RMA number for returning an item							
+003		x003					member/account		Account Maintenance		0	Change your name, address, and email options							
+004		x004					change_password		Change Password		0								
+005		x005					member/ship_addresses		Additional Shipping Addresses		0	Add additional destinations to ship to							
+006		x006					member/saved_carts		Saved Carts / Recurring Orders		0								
+007		x007					new_account		New Account		1	Create a new account							
+008		x008					help		Help		0	Get help for buying things in this catalog							

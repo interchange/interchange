@@ -1,0 +1,59 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: next_sequential.filter,v 1.6 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef next_sequential Filter
+CodeDef next_sequential Description Next sequential
+CodeDef next_sequential Visibility  private
+CodeDef next_sequential Routine <<EOR
+sub {
+	my ($value, $field, $table, $col, $qualifier) = @_;
+#::logDebug("called next_sequential filter value='$value' table=$table col=$col qual=$qualifier");
+	return $value if length($value);
+	$table ||= $CGI::values{mv_data_table};
+
+	my $val;
+
+	if(! $table) {
+		return 1 if ! $field;
+		return exists $CGI::values{$field}
+				? ($CGI::values{$field})
+				: ($::Values->{$field});
+	}
+
+	$col ||= $field;
+	
+	eval {
+		my $db = database_exists_ref($table)
+			or die errmsg("next_sequential filter: no table '%s'", $table);
+		my $tname = $db->name();
+		my $q = "SELECT $col FROM $tname";
+		if($qualifier) {
+			my $qval = $CGI::values{$qualifier};
+			$qval = $db->quote($qval, $qualifier);
+			$q .= " WHERE $qualifier = $qval";
+		}
+		$q .= " ORDER BY $col desc";
+#::logDebug("constructed query $q for next_sequential");
+		my $ary = $db->query($q)
+			or die errmsg("next_sequential filter query failed: %s", $q);
+		return 1 unless @$ary;
+		$val = $ary->[0][0];
+		$val++;
+	};
+
+	if($@) {
+		logError($@);
+		return undef;
+	}
+
+	return $val;
+
+}
+EOR

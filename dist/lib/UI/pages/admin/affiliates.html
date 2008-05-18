@@ -1,0 +1,154 @@
+[if !cgi mv_data_table]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = 'affiliate';
+	return;
+[/calc]
+[/if]
+[comment]
+[if-mm function="!tables" table=`$Config->{ProductFiles}[0]`]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[/comment]
+
+[set ui_class]Merchandising[/set]
+[set page_title][L]Affiliates manager[/L][/set]
+[set table_perm]1[/set]
+[set help_name]affiliate.manager[/set]
+[set icon_name]icon_people.gif[/set]
+[calc]
+        $CGI->{affiliates} = 1;
+        return;
+[/calc]
+@_UI_STD_HEAD_@
+
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_message]
+<BLOCKQUOTE>
+	[scratch ui_message]
+	[set ui_message][/set]
+</BLOCKQUOTE>
+<p>
+&nbsp;
+[/if]
+
+<FORM ACTION="[area @@MV_PAGE@@]">
+[form-session-id]
+<INPUT NAME=ui_text_qualification>
+<INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
+</FORM>
+[if cgi ui_text_qualification]
+<H3>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H3>
+[/if]
+[search-region more=1 arg="
+		[if cgi ui_text_qualification]
+		se=[cgi ui_text_qualification]
+		su=yes
+		[else]ra=yes[/else][/if]
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=description
+		[/else]
+		[/if]
+		st=db
+		fi=affiliate
+		sp=@@MV_PAGE@@
+		ml=__UI_SZ_LIST_MERCH__
+"][on-match]
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless $fld eq $f;
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+<TABLE border=0 CELLSPACING=0 width="90%">
+<tr class=rspacer><td colspan=8></td></tr>
+<tr class=rmarq>
+<td>[page
+					extra=rmarq
+					href=@@MV_PAGE@@
+					form=`
+							return "ui_sort_field=affiliate\n" . sortrev('affiliate');
+					`]Code</td>
+<td>[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=name\n" . sortrev('name');
+	` extra=rmarq][L]Name[/L]</td>
+<td class=rmarq>[L]Linkback and entry URLs[/L]</td>
+<td align=center class=rmarq>[L]Reports[/L]</td>
+	<td align=center class=rmarq>
+	[page href=@@MV_PAGE@@ extra=rmarq
+		form=`
+			return "ui_sort_field=active\n" . sortrev('active');
+		`][L]Active[/L]</a>
+	</td>
+</tr>
+<tr class=rspacer><td colspan=5></td></tr>
+[/on-match]
+[search-list]
+<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
+<TD VALIGN=top>[page
+				href=__UI_BASE__/flex_editor
+				form="
+					item_id=[item-code]
+					page_title=Edit affiliate -- [item-data affiliate name]
+					page_banner=Edit affiliate: <B>[item-data affiliate name]</B>
+					mv_data_table=affiliate
+					icon_name=icon_people.gif
+					ui_return_to=__UI_BASE__/affiliates
+					help_name=affiliate.edit
+				"][item-code]</A></TD>
+<TD VALIGN=top>[item-data affiliate name]</TD>
+<TD VALIGN=top><span style="font-size: small">linkback:&nbsp;<A href="[item-data affiliate url]">[item-data affiliate url]</A><br>
+entry:&nbsp;[calc]
+	my $url = $Config->{VendURL};
+	$url .=  q{?mv_pc=[item-code]};
+	return qq{<A HREF="$url">$url</A>};
+[/calc]</span>
+</TD>
+<TD ALIGN=CENTER VALIGN=TOP>[page href="__UI_BASE__/reports/order/ByAffiliate"
+				form="
+					start_date=[tag time]%Y%m[/tag]
+					affiliate=[item-code]
+					 "][L]Orders[/L]</A><br>
+				[page href="__UI_BASE__/reports/traffic/ByAffiliate"
+				form="
+				start_date=[tag time]%Y%m[/tag]
+				affiliate=[item-code]
+				"][L]Traffic[/L]</A></td>
+<TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active][L]Yes[/L][else][L]No[/L][/else][/if-item-data]
+</TD>
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan=5 align=left>
+<br>
+<B>[L]Nothing matched.[/L]</B>
+<br><br>
+</td>
+</tr>
+[/no-match]
+<tr class=rborder height=1><td colspan=5></td></tr>
+[more-list]
+<tr>
+<td colspan=5 align=center>
+[L]More affiliates[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+[/more-list]
+</table>
+[/search-region]
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

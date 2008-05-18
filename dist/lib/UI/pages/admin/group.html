@@ -1,0 +1,113 @@
+[calc]$Config->{NoSearch} = ''; $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
+[set page_title][L]Administration Group Manager[/L][/set]
+[set ui_class]Admin[/set]
+[set page_perm]group=l[/set]
+[set help_name]group.main[/set]
+[set icon_name]icon_config.gif[/set]
+
+@_UI_STD_HEAD_@
+[if scratch ui_message]
+<P>
+<BLOCKQUOTE>
+	[scratch ui_message][set ui_message][/set]
+</BLOCKQUOTE>
+<P>
+&nbsp;
+[/if]
+
+<form action="[area ui]" method=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/group_edit">
+<INPUT TYPE=hidden NAME=ui_hide_key VALUE="1">
+
+<table cellpadding=3 cellspacing=0 width="70%">
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
+</tr>
+
+[set [L]Create new group[/L]]
+mv_nextpage=__UI_BASE__/group_edit
+group_id=NEW
+ui_hide_key=0
+[/set]
+
+[set [L]Show permissions[/L]]
+user_id=[cgi group_id]
+mv_nextpage=__UI_BASE__/access_permissions
+ui_return_to=@@MV_PAGE@@
+[/set]
+
+
+[set [L]Delete group[/L]]
+mv_nextpage=@@MV_PAGE@@
+[flag type=write table="__UI_ACCESS_TABLE__"]
+[if-mm advanced access=d]
+[perl table="__UI_ACCESS_TABLE__"]
+	my $db = $Db{__UI_ACCESS_TABLE__};
+	if(! $db) {
+		$Scratch->{ui_message} = "Bad access table __UI_ACCESS_TABLE__";
+		return;
+	}
+	unless ( $db->delete_record($CGI->{group_id}) ) {
+		$Scratch->{ui_message} =
+			"Failed to delete group $CGI->{group_id} from table __UI_ACCESS_TABLE__";
+		return;
+	}
+	$Scratch->{ui_message} =
+			"Deleted group $CGI->{group_id} from table __UI_ACCESS_TABLE__";
+	return;
+[/perl]
+[else]
+[set ui_message]Not authorized to delete groups.[/set]
+[/else]
+[/if-mm]
+[/set]
+
+<tr>
+<td colspan=2 class=rnorm>
+<input type="submit" name="mv_click" value="[L]Create new group[/L]">
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td class=rnorm width=150>
+<input type="submit" value="[L]Edit group[/L]"><br><br>
+<input type="submit" name="mv_click" value="[L]Show permissions[/L]"><p>
+[if-mm advanced access=d]
+<input type="submit" name="mv_click" value="[L]Delete group[/L]" 
+ onClick="return confirm('[L]Are you sure you want to delete this group?[/L]')">
+[/if-mm]
+</td>
+
+<td class=rnorm width=450>
+<select name="group_id" size=10>
+[loop search="fi=access/st=db/co=yes/sf=username/se=:/bs=yes/tf=name"]
+  <option value="[loop-code]">[loop-data access name]
+[/loop]
+</select>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+<p>
+
+[set [L]Back[/L]]
+mv_todo=back
+mv_nextpage=index
+[/set]
+
+</form>
+
+@_UI_STD_FOOTER_@
+
+<!-- page: @@MV_PAGE@@ -->

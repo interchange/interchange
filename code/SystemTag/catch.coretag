@@ -1,0 +1,80 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: catch.coretag,v 1.7 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag catch               Order        label
+UserTag catch               addAttr
+UserTag catch               hasEndTag
+UserTag catch               Version      $Revision: 1.7 $
+UserTag catch               Routine      <<EOR
+sub {
+	my ($label, $opt, $body) = @_;
+	$label = 'default' unless $label;
+	my $patt;
+	my $error;
+	return pull_else($body) 
+		unless $error = $Vend::Session->{try}{$label};
+
+	$body = pull_if($body);
+
+	if ( $opt->{exact} ) {
+		#----------------------------------------------------------------
+		# Convert multiple errors to 'or' list and compile it.
+		# Note also the " at (eval ...)" kludge to strip the line numbers
+		$patt = $error;
+		$patt =~ s/(?: +at +\(eval .+\).+)?\n\s*/|/g;
+		$patt =~ s/^\s*//;
+		$patt =~ s/\|$//;
+		$patt = qr($patt);
+		#----------------------------------------------------------------
+	}
+
+	my @found;
+	while ($body =~ s{
+						\[/
+							(.+?)
+						/\]
+						(.*?)
+						\[/
+						(?:\1)?/?
+						\]}{}sx ) {
+		my $re;
+		my $emsg = $2;
+		eval {
+			$re = qr{$1}
+		};
+		next if $@;
+		if($emsg =~ $patt) {
+			push @found, $emsg;
+		}
+		next unless $error =~ $re;
+		push @found, $emsg;
+		last;
+	}
+
+	if(@found) {
+		$body = join $opt->{joiner} || "\n", @found;
+	}
+	else {
+		$body =~ s/\$ERROR\$/$error/g;
+	}
+
+	$body =~ s/\s+$//;
+	$body =~ s/^\s+//;
+
+	if($opt->{error_set}) {
+		set_error($body, $opt->{error_set});
+	}
+	if($opt->{error_scratch}) {
+		$::Scratch->{$opt->{error_scratch}} = 1;
+	}
+
+	return '' if $opt->{hide};
+	return $body;
+}
+EOR

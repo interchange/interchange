@@ -1,0 +1,19 @@
+Variable UI_STD_FOOTER  <<EOV
+[unpack]
+[include file="include/templates/ui_[either][scratch display_class][or]type1[/either]"]
+[/unpack]
+[comment] Clear these puppies [/comment][calc]
+	for (qw/
+				page_title
+				page_banner
+				icon_name
+				help_name
+				page_perm
+				table_perm
+				ui_body_extra
+				display_class
+		/) { delete $Scratch->{$_} }
+	return;
+[/calc]
+	
+EOV

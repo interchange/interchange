@@ -1,0 +1,151 @@
+[calc]
+	$CGI->{no_dbmenu} = 1;
+	$CGI->{access_menu} = 1;
+	return;
+[/calc]
+[set page_title][L]Administrator Accounts[/L][/set]
+[set ui_class]Admin[/set]
+[set page_perm]access=l[/set]
+[set help_name]access.main[/set]
+[set icon_name]icon_config.gif[/set]
+
+@_UI_STD_HEAD_@
+
+[calc]
+	$Config->{NoSearch} =~ s/\baccess\b//;
+	$Config->{NoSearch} =~ s/^\|//;
+	$Config->{NoSearch} =~ s/\|$//;
+	return;
+[/calc]
+
+<form action="[area ui]" method=POST name=accessform>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/user_edit">
+<INPUT TYPE=hidden NAME=ui_hide_key VALUE="1">
+
+<style type="text/css">
+<!--
+ td{font-family:arial, helvetica, sans-serif}
+   -->
+</style>
+
+<center>
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+[if-mm advanced access=c]
+
+<tr>
+<td colspan=2 class=rnorm>
+
+[button text="[L]Create new user[/L]"]
+mv_nextpage=__UI_BASE__/user_edit
+user_id=NEW
+ui_hide_key=0
+[/button]
+
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+[/if-mm]
+
+<tr>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
+
+[if-mm advanced access=e]
+	[button name=mv_junk value="[L]Edit user[/L]"][/button]<p>
+[/if-mm]
+
+[if-mm advanced perm=v]
+[button value="[L]Show permissions[/L]"]
+mv_nextpage=__UI_BASE__/access_permissions
+ui_return_to=@@MV_PAGE@@
+[/button]<p>
+[/if-mm]
+
+[if-mm advanced access=e]
+[button value="[L]Change password[/L]"]
+mv_nextpage=__UI_BASE__/user_change_pass
+ui_hide_key=0
+[/button]
+<p>[/if-mm]
+
+[if-mm advanced access=d]
+[button text="[L]Delete user[/L]"
+		form=accessform
+		confirm="[L]Are you sure you want to delete this administrator?[/L]"
+		]
+mv_todo=return
+mv_nextpage=@@MV_PAGE@@
+[flag type=write table="__UI_ACCESS_TABLE__"]
+[perl table="__UI_ACCESS_TABLE__"]
+	my $db = $Db{__UI_ACCESS_TABLE__};
+	if(! $db) {
+		$Scratch->{ui_message} = errmsg("Bad access table '%s'", '__UI_ACCESS_TABLE__');
+		return;
+	}
+	unless ( $db->delete_record($CGI->{user_id}) ) {
+		$Scratch->{ui_message} =
+			errmsg("Failed to delete administrator %s from table %s", $CGI->{user_id}, '__UI_ACCESS_TABLE__');
+		return;
+	}
+	$Scratch->{ui_message} =
+			errmsg("Deleted administrator %s from table %s", $CGI->{user_id},
+  '__UI_ACCESS_TABLE__');
+	return ;
+[/perl]
+[/button]
+<p>
+[/if-mm]
+
+[if-mm super]
+[button text="[L]Switch to user[/L]" form=accessform]
+mv_todo=return
+mv_nextpage=@@MV_PAGE@@
+mv_click=MMsu
+admin=1
+user=[cgi user_id]
+dest=admin/index
+[/button]
+[/if-mm]
+
+</td>
+
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
+<select name="user_id" size=10>
+[loop search="
+		fi=access
+		st=db
+		ml=1000
+		co=yes
+		sf=username
+		se=:
+		bs=yes
+		ne=1
+		tf=name,username
+		to=f
+	"]
+  <option value="[loop-code]">[loop-code] -- [loop-data access name][if-loop-data access super]*[/if-loop-data]
+[/loop]
+</select>&nbsp;<B>* [L]Site Administrator[/L]</B>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+<p>
+
+</form>
+
+@_UI_STD_FOOTER_@
+
+<!-- page: @@MV_PAGE@@ -->

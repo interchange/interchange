@@ -1,0 +1,25 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: linkdecode.filter,v 1.6 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef linkdecode Filter
+CodeDef linkdecode Description URLdecode link text
+CodeDef linkdecode Visibility  private
+CodeDef linkdecode Routine <<EOR
+sub {
+	my $body = shift;
+	$body =~ s{(<form\s+[^>]*action=)(["'])(\%5b\w+.*?\%5d)\2}
+			  { $1 . $2 . unhexify($3) . $2 }egi;
+	$body =~ s{(<\w+\s+[^>]*href=)(["'])(\%5b\w+.*?\%5d)\2}
+			  { $1 . $2 . unhexify($3) . $2 }egi;
+	$body =~ s{(<i\w+\s+[^>]*src=)(["'])(\%5b\w+.*?\%5d)\2}
+			  { $1 . $2 . unhexify($3) . $2 }egi;
+	return $body;
+}
+EOR

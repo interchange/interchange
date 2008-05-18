@@ -1,0 +1,55 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: warnings.coretag,v 1.9 2007-09-21 16:15:48 kwalsh Exp $
+
+UserTag warning  Alias      warnings
+
+UserTag warnings Order      message
+UserTag warnings addAttr
+UserTag warnings PosNumber  1
+UserTag warnings Version    $Revision: 1.9 $
+UserTag warnings Routine    <<EOR
+sub {
+	my($message, $opt) = @_;
+
+	if($message) {
+		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
+		push_warning($message, @$param);
+		return unless $opt->{show};
+	}
+
+	return unless $Vend::Session->{warnings};
+
+	my $out = $opt->{header} || "";
+	if($opt->{auto}) {
+		$opt->{list_container} ||= 'ul';
+		$out .= "<$opt->{list_container}";
+		for(qw/ class style extra /) {
+			next unless $opt->{"list_$_"};
+			if($opt->{"list_$_"} =~ m{^\s*$_\s*=}i) {
+				$out .= ' ' . $opt->{"list_$_"};
+			}
+			else {
+				$out .= qq{ $_="$opt->{"list_$_"}"};
+			}
+		}
+		$out .= '>';
+		$opt->{joiner} = '<li>'
+			if ! length($opt->{joiner});
+		$out .= $opt->{joiner};
+	}
+	elsif(! length($opt->{joiner})) {
+		$opt->{joiner} = "\n";
+	}
+	$out .= join $opt->{joiner}, grep /\S/, @{$Vend::Session->{warnings}};
+	$out .= "</$opt->{list_container}>" if $opt->{auto};
+	$out .= $opt->{footer} if length($opt->{footer});
+	delete $Vend::Session->{warnings} unless $opt->{keep};
+	return $out;
+}
+EOR

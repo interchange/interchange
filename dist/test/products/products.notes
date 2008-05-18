@@ -1,0 +1,159 @@
+code
+description
+title
+artist
+display
+image
+price
+category
+nontaxable
+weight
+size
+color
+related
+comment
+notes_field ~
+
+code: 00-0011
+description: MONA LISA, Da Vinci
+title: Mona Lisa
+artist: Leonardo Da Vinci
+display: The Louvre
+image: 00-0011.jpg
+price: 50000000
+category: Renaissance
+nontaxable: no
+weight: 8
+
+
+~
+code: 00-0011a
+description: Gilded Frame signed by Da Vinci
+title: Frame
+artist: Gilded
+image: 00-0011a.gif
+price: 1000
+category: Accessory
+nontaxable: 1
+weight: 20
+
+
+~
+code: 00-343
+description: PERSISTENCE OF MEMORY, Dali
+title: Persistence of Memory
+artist: Salvador Dali
+display: MOMA
+image: 00-343.jpg
+price: 20000000
+category: Surrealists
+nontaxable: no
+weight: 10
+
+
+~
+code: 19-204
+description: ERA'S END, Keiko
+title: Era's End
+artist: Keiko
+display: South Beach Gallery
+image: 19-204.jpg
+price: 200000
+category: Surrealists
+nontaxable: no
+weight: 5
+
+
+~
+code: 19-202
+description: RADIOACTIVE CATS, Sandy Skoglund
+title: Radioactive Cats
+artist: Sandy Skoglund
+display: Getty Museum
+image: radcats1.gif
+price: 400000
+category: Contemporary
+nontaxable: no
+weight: 30
+
+
+~
+code: 21-221
+description: AMERICAN GOTHIC, by Wood
+title: American Gothic
+artist: Grant Wood
+display: Art Institute
+image: 21-221.jpg
+price: 10000000
+category: Americana
+nontaxable: no
+weight: 10
+
+
+~
+code: 99-102
+description: THE ART STORE T-SHIRT
+title: The Art Store T-Shirt
+artist: The Art Store
+display: A Store Near You
+image: tshirt.jpg
+category: Americana,Contemporary
+nontaxable: no
+weight: 1
+size: S=Small, M=Medium, L=Large*, XL=Extra Large
+color: red=Ruby Red, blue=Sky Blue*, green=Sea Green, Black, White
+
+
+~
+code: 34-101
+description: FAMILY PORTRAIT, by Langan
+title: Family Portrait
+artist: Jean Langan
+display: Krannert
+image: 34-101.gif
+price: 1000000
+category: Americana
+nontaxable: no
+weight: 10
+
+
+~
+code: 00-341
+description: SUNFLOWERS, by Van Gogh
+title: Sunflowers
+artist: Vincent Van Gogh
+display: The Louvre
+image: 00-341.jpg
+price: 40000000
+category: Impressionists
+nontaxable: no
+weight: 40
+
+
+~
+code: 19-203
+description: PANORAMIC PROCESSION, Keiko
+title: Panoramic Procession
+artist: Keiko
+display: South Beach Gallery
+image: 19-203.jpg
+price: 200000
+category: Surrealists
+nontaxable: no
+weight: 5
+
+
+~
+code: 00-342
+description: THE STARRY NIGHT, Van Gogh
+title: The Starry Night
+artist: Vincent Van Gogh
+display: MOMA
+image: 00-342.jpg
+price: 20000000
+category: Impressionists
+nontaxable: no
+weight: 10
+
+
+~

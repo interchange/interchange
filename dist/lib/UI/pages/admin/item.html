@@ -1,0 +1,549 @@
+[if !cgi mv_data_table]
+[or cgi ui_scrub_table]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
+	return;
+[/calc]
+[/if]
+[if cgi mv_data_table eq 'mv_metadata']
+	[cgi name=mv_data_table set=__ProductFiles_0__ hide=1]
+[/if]
+[set ui_class]Items[/set]
+[tmp page_title][L]Item editor[/L][/tmp]
+[if-mm super]
+[tmp page_banner]
+		[page href="__UI_BASE__/db_metaconfig"
+				secure="[scratch page_secure]"
+				form='
+						 ui_return_to=__UI_BASE__/index
+						 ui_table=[cgi mv_data_table]
+						 ui_view=item_select
+						 start_at=height
+				'][L]Item editor[/L]</A>
+[/tmp]
+[/if-mm]
+[set table_perm]__ProductFiles_0__=v[/set]
+[set help_name]item.editor[/set]
+[set icon_name]icon_item.gif[/set]
+@_UI_STD_HEAD_@
+
+[comment]
+<!-- sequence_edit: [cgi ui_sequence_edit] -->
+<!-- item_id_left: [cgi item_id_left] -->
+[/comment]
+
+[if cgi deleterecords]
+[if-mm function="!tables" table="[cgi mv_data_table]"]
+[set ui_error][msg arg.0="[cgi mv_data_table]"]Not allowed to delete from %s.[/msg][/set]
+[bounce page="__UI_BASE__/error"]
+[else]
+<!-- flag write for delete: [flag type=write table="[cgi mv_data_table]"] -->
+[tmp extra_tables][loop list=`
+	my @tab = grep /\S/, split /[\s,\0]+/,  q{__UI_ITEM_TABLES__};
+	my %seen;
+	for (@tab) {
+		s/:.*//;
+		next if $seen{$_}++;
+	}
+	return join " ", @tab;
+	`][if-mm tables [loop-code]=d][loop-code] [flag type=write table="[loop-code]"][/if-mm][/loop][/tmp]
+[/else]
+[/if-mm]
+[/if]
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[output name=search_box]
+<form action="[area @@MV_PAGE@@]">
+<input name=ui_text_qualification type=text class=s3>
+[form-session-id]
+<input type=submit value="[L]Limit with search[/L]" class=s3>
+</FORM>
+
+[output name=""]
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+	my $tab = $CGI->{mv_data_table};
+	$CGI->{showinactive} = $Values->{mv_no_hide} = 1;
+	my $view = $CGI->{ui_meta_view} || 'item_select';
+	my $ref = $Db{$tab};
+	my $meta = $Tag->meta_record($tab, $view);
+#Debug("Meta record: " . uneval($meta));
+	if (! $ref) {
+		$Scratch->{keypos} = 0;
+		return;
+	}
+	elsif (! $meta) {
+		$Scratch->{keypos} = 0;
+	}
+
+	$meta ||= {};
+
+	if($CGI->{ui_flex_key}) {
+		$Scratch->{keypos} = $CGI->{ui_flex_key};
+	}
+	else {
+		$Scratch->{keyname} = $ref->config('KEY');
+		$Scratch->{keypos} = $ref->config('KEY_INDEX');
+	}
+
+	$Config->{NoSearch} = '';
+	$ui_text_qualification = $CGI->{ui_text_qualification}
+		and $CGI->{changed_qual} = 1;
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+nu=0
+os=0
+su=0
+bs=0
+EOF
+		}
+		else {
+			$CGI->{ui_text_qualification} = "co=1\n";
+		}
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message = errmsg('entries matching "%s"', $ui_text_qualification);
+	}
+	elsif ($ui_text_qualification) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message = errmsg('entries matching "%s"', $ui_text_qualification);
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+sf=:*
+se=$CGI->{ui_text_qualification}
+EOF
+		}
+	}
+	elsif($Scratch->{ui_owner}) {
+		$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+EOF
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
+
+	if($meta->{ui_sort_combined} =~ /\S/) {
+		$meta->{ui_sort_field} = $meta->{ui_sort_combined};
+		$meta->{ui_sort_option} = '';
+	}
+
+	if ($CGI->{ui_sort_field}) {
+		$CGI->{changed_qual} = 1;
+		delete $Scratch->{item_special_sort};
+	}
+	elsif(! $Scratch->{item_special_sort}) {
+		$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+								||  $meta->{lookup}
+								||  $Scratch->{keyname};
+		$CGI->{ui_sort_option} ||= $meta->{ui_sort_option};
+		$CGI->{ui_sort_option}	=~ s/[\0,\s]+//g;
+	}
+
+	$CGI->{ui_list_size} = $meta->{height}
+		if ! $CGI->{ui_list_size};
+	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+#Debug("CGI->{ui_show_fields}=$CGI->{ui_show_fields}");
+	if(! $CGI->{ui_show_fields}) {
+		$CGI->{ui_show_fields} = '*';
+		$CGI->{ui_description_fields} = join ",", $ref->columns();
+	}
+	else {
+		my $i = 0;
+		$CGI->{ui_show_fields} =~
+			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+#Debug("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
+		$CGI->{ui_show_fields} =~ s/[\0,\s]+$//g;
+		$CGI->{ui_show_fields} =~ s/^[\0,\s]+//g;
+		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
+		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
+	}
+
+	$meta->{ui_special_add} ||= $meta->{outboard};
+	# Set in item editor area
+	@special = grep /\S/, split /[,\0]+/, $meta->{ui_special_add}
+		if ($meta->{ui_special_add} ||= $meta->{outboard});
+	unless (@special) {
+		@special = (
+			'Qty price;pricing:q5:r',
+			'Up-sell;merchandising:upsell_to:r',
+			'Cross-sell;merchandising:cross_sell:r',
+			'Promo;merchandising:featured:r',
+			'Inventory;inventory:quantity:r',
+			);
+	}
+	@special = grep $_ !~ /^none$/i, @special;
+
+	$Scratch->{ui_show_special} = join ("\n", '', @special, '');
+	@cols = grep /\S/, split /[\s,\0]+/, $CGI->{ui_description_fields};
+	for(@cols) {
+		$numeric{$_} = 1 if $ref->numeric($_);
+	}
+	$CGI->{changed_qual} = 1 if delete $Scratch->{item_list_clicked};
+
+	$Scratch->{ui_text_qualification} = $out_message;
+	return;
+[/perl]
+
+[if scratch ui_text_qualification]
+[calc]
+	return if $CGI->{mv_like_spec};
+	$Scratch->{page_banner} ||= $Scratch->{page_title};
+	$Scratch->{page_banner} .= ' -- ' . $Scratch->{ui_text_qualification};
+	return;
+[/calc]
+[/if]
+
+<!-- existing item_sparams: '[scratch item_sparams]'
+		tq: '[cgi ui_text_qualification]' -->
+
+[if cgi changed_qual]
+[then]
+	[set item_list_clicked][/set]
+	[seti item_sparams]
+			fi=[cgi mv_data_table]
+			st=db
+			[cgi ui_text_qualification]
+			nh=[cgi showinactive]
+			su=1
+			md=1
+			ml=[cgi ui_list_size]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+			rf=[cgi ui_show_fields]
+	[/seti]
+[/then]
+[elsif !scratch item_sparams]
+	[seti item_sparams]
+			fi=[cgi mv_data_table]
+			st=db
+			ra=yes
+			md=1
+			nh=[cgi showinactive]
+			ml=[cgi ui_list_size]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+			rf=[cgi ui_show_fields]
+	[/seti]
+[/elsif]
+[else]
+	[set item_list_clicked]1[/set]
+	<span class=cmessage>([L]click Items again to reset list[/L])</span>
+[/else]
+[/if]
+
+<!-- existing item_sparams: '[scratch item_sparams]'
+		tq: '[cgi ui_text_qualification]' -->
+
+[if cgi ui_special_sort]
+[seti item_special_sort][cgi ui_special_sort][/seti]
+[/if]
+
+[search-region more=1 sort="[scratch item_special_sort]" arg="[scratch item_sparams]"]
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless ($fld eq $f) || ($f eq '__DescriptionField__');
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+
+<FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action VALUE=back>
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+
+<tr class=rhead><TD>&nbsp;</TD>
+[loop list="[cgi ui_description_fields]"]
+<th[loop-calc]
+			my $extra = '';
+			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
+				$extra .= " $1";
+			}
+			return $extra || ' ALIGN=LEFT';
+		[/loop-calc] class=rhead>
+
+    <table align="left">
+    <tr>
+      <td align="right" valign="center">
+	<A HREF="[area
+		href='__UI_BASE__/item_group'
+		form='mv_arg=[loop-code]
+		mv_data_table=[cgi mv_data_table]
+		']"><IMG ALT="select by [loop-code]" SRC="smindex.gif" BORDER=0></A>
+
+      </td>
+      <td align="left" valign="center" class=rhead>
+	<A HREF="[area href='@@MV_PAGE@@'
+					form=`
+						my $f = '[loop-code]';
+						my $o = '';
+						$o .= 'r'
+							if $CGI->{ui_sort_field} eq $f
+									and
+								$CGI->{ui_sort_option} !~ /r/;
+						$o .= 'n' if $numeric{$f};
+						return qq(
+							ui_text_qualification=$ui_text_qualification
+							mv_data_table=$CGI->{mv_data_table}
+							ui_sort_field=$f
+							ui_sort_option=$o
+						);
+					`
+				]" class=rhead>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
+      </td>
+    </tr>
+    </table>	
+  </th>
+[/loop]
+[calc]
+	my $out = '';
+	for(@special) {
+		my $display = $_;
+		$display =~ s/\s*;\s*(.*)//;
+		$display = errmsg($display);
+		my $sort = $1; 
+		if($sort) {
+			my $cgi = $CGI->{ui_special_sort};
+			$cgi =~ s/(.*:.*):(\w+)$/$1/;
+			my $cgiopt = $1;
+			$sort =~ s/(.*:.*):(\w+)$/$1/;
+			my $sortopt = $2;
+			if($cgi eq $sort) {
+				$cgiopt =~ tr/nrx//cds;
+				%toggle = ( qw/
+								rn n
+								nr n
+								n  rn
+								x  r
+								r  x
+							/);
+				$toggle{''} = 'r';
+				$sortopt = $toggle{$cgiopt};
+			}
+			my $url = $Tag->page({
+						href => '@@MV_PAGE@@',
+						extra => 'class=rhead',
+						form => "
+									ui_text_qualification=$ui_text_qualification
+									mv_data_table=$CGI->{mv_data_table}
+									ui_special_sort=$sort:$sortopt
+								",
+							    });
+			$display = "$url$display</A>";
+		}
+		$out .= <<EOF;
+<td class=rhead ALIGN=CENTER><small class=rhead>$display</small></td>
+EOF
+	}
+	return $out;
+[/calc]
+</tr>
+[search-list]
+<tr class=[item-alternate 2]rowalt[else]rownorm[/else][/item-alternate]>
+
+<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"></TD><TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+[item-sub show_line]
+sub {
+	my $extra = shift;
+	$extra =~ s/^[\s%]+//;
+	$extra =~ s/[\s%]+$//;
+	my (%extra) = split /\n%%\n/, $extra;
+	my $line = shift;
+	return unless $line;
+	shift (@$line);
+	my $out = '';
+	my $i = 1;
+	for(@$line) {
+		my $extra = '';
+		my $filter = $filter_show[$i] || 'entities';
+		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
+#Log("$i filter = $filter");
+		$_ = $Tag->filter($filter, $_);
+		s/\[/&#91;/g;
+		$out .= "<TD$extra>$_</TD>";
+		$i++;
+	}
+	for(@special) {
+#Log("Special='$_'");
+		my $item = $_;
+		$item =~ s/\s*;.*//;
+#Log("Special='$item'");
+		$out .= $extra{$item};
+	}
+	return $out . "\n";
+}
+[/item-sub]
+[item-exec show_line]
+Options
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_option form="
+	item_id=[item-code]
+"][if-item-data options o_enable][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
+</TD>
+%%
+Option
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_option form="
+	item_id=[item-code]
+"][if-item-field option_type][item-field option_type][else][L]No[/L][/else][/if-item-field]</A>
+</TD>
+%%
+Qty price
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
+	item_id=[item-code]
+"][if-item-data pricing sku][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
+</TD>
+%%
+Up-sell
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
+	item_id=[item-code]
+"][if-item-data merchandising upsell_to][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
+</TD>
+%%
+Cross-sell
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
+	item_id=[item-code]
+"][either][if-item-data merchandising cross_category][L]Yes[/L][/if-item-data][or][if-item-data merchandising cross_sell][L]Yes[/L][/if-item-data][or][L]No[/L][/either]</a>
+</TD>
+%%
+Promo
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
+	item_id=[item-code]
+"][if-item-data merchandising featured][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
+</TD>
+%%
+Inventory
+%%
+<TD ALIGN=center>[page href=__UI_BASE__/item_inventory form="
+	item_id=[item-code]
+"][if-item-data inventory quantity ne ''][item-data inventory quantity][else]N/A[/else][/if-item-data]</a>
+</TD>
+[/item-exec]
+</tr>
+
+[/search-list]
+[no-match]
+<tr>
+<td align=left>
+<br>
+<B>[L]Nothing matched[/L].</B>
+<br><br>
+</td>
+</tr>
+[/no-match]
+<tr class=rborder height=1><td colspan=8></td></tr>
+[more-list]
+<tr>
+<td colspan=8 align=center>
+[L]More items[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+[/more-list]
+</table>
+
+[/search-region]
+
+[output name="bottom_buttons"]
+
+[button text="[L]Edit checked items in sequence[/L]" extra="class=s3"]
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=__UI_BASE__/item_edit
+mv_todo=return
+[/button]
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+[button text="[L]Delete checked items[/L]" extra="class=s3"
+		confirm="Are you sure you want to delete the checked items\n__UI_ITEM_TABLES__?"
+]
+[flag type=write table="[cgi mv_data_table]"]
+deleterecords=1
+ui_delete_tables=__UI_ITEM_TABLES__
+mv_click=db_maintenance
+mv_todo=back
+mv_nextpage=@@MV_PAGE@@
+[/button]
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
+
+[output name="bottom_of_form"]
+</FORM>
+[output name=""]
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.25 2005-04-23 18:10:07 pvinci Exp $ -->

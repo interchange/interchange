@@ -1,0 +1,48 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: list_databases.coretag,v 1.5 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag list-databases Order   nohide extended
+UserTag list-databases Version $Revision: 1.5 $
+UserTag list-databases routine <<EOR
+sub {
+	my $nohide = shift;
+	my $extended = shift || '';
+	$extended = "=$extended" if $extended;
+	my @dbs;
+	my $d = $Vend::Cfg->{Database};
+	@dbs = sort keys %$d;
+
+	GENDBLIST: {
+		last GENDBLIST if $nohide;
+		my @outdb;
+		my $record =  ui_acl_enabled();
+		last GENDBLIST if $record and $record->{super};
+		undef $record
+			unless ref($record)
+				   and $record->{yes_tables} || $record->{no_tables};
+
+		for(@dbs) {
+			if($record) {
+				next if $record->{no_tables}
+					and ui_check_acl($_, $record->{no_tables});
+				my $check = "$_$extended";
+				next if $record->{yes_tables}
+					and ! ui_check_acl($check, $record->{yes_tables});
+			}
+			push @outdb, $_;
+		}
+
+		@dbs = $nohide ? (@dbs) : (@outdb);
+	}
+
+	return @dbs if wantarray;
+	my $string = join " ", grep /\S/, @dbs;
+	return $string;
+}
+EOR

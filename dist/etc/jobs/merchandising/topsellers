@@ -1,0 +1,24 @@
+[perl tables="__ProductFiles_0__ merchandising orderline transactions"]
+my (%count, $order_number, $last_order_number, $order_state);
+my $set = $Db{orderline}->query("select sku,quantity,order_number from orderline order by order_number");
+
+for (@$set) {
+    $order_number = $_->[2];
+	if ($last_order_number ne $order_number) {
+		$order_state = $Tag->data('transactions', 'status', $order_number);
+		$last_order_number = $order_number;
+	}	
+	# don't count unverified orders
+	next unless ($order_state eq 'shipped' || $order_state eq 'partial');
+    $count{$_->[0]} += $_->[1];
+}
+my $db = $Db{merchandising};
+for (keys %count) {
+	if ($Tag->data($Config->{ProductFiles}[0], 'sku', $_)) {	
+	    $db->set_field($_, 'times_ordered', $count{$_});
+	} else {
+	    $db->set_field($_, 'times_ordered', 0);
+	}
+}
+return;
+[/perl]

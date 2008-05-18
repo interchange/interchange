@@ -1,0 +1,269 @@
+[calc]
+	$CGI->{ui_meta_view} = 'modular_create';
+	$CGI->{mv_data_table} = '@_MV_OPTION_TABLE_@' || 'options';
+	$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
+	return;
+[/calc]
+
+[tmp page_title]
+		Phantom option editor: [cgi item_id]
+[/tmp]
+[tmp page_banner]
+		Phantom option editor: <B>[cgi item_id]</B>
+[/tmp]
+[tmp help_name][either][cgi help_name][or]item.option[/either][/tmp]
+[tmp icon_name][either][cgi icon_name][or]icon_item.gif[/either][/tmp]
+[set ui_class]Items[/set]
+
+[if-mm function="!tables" table="[cgi mv_data_table]"]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+[perl tables="[cgi mv_data_table]"]
+	$id = $CGI->{item_id};
+
+	my $db = $Db{$CGI->{mv_data_table}}
+		or die "No options db?";
+	
+	$CGI->{ui_data_fields} = 'code sku o_master o_group phantom o_enable description';
+
+	if($db->record_exists($id) and ! $db->field($id, 'o_modular')) {
+		$Scratch->{ui_failure} = "Master id $id not a modular item?!!!?";
+		$Scratch->{ui_location} = $Tag->area( {
+										href => '__UI_BASE__/item_option',
+										item_id => $id,
+									});
+	}
+	return;
+[/perl]
+
+<!-- ui_location: [scratch ui_location] -->
+[if scratch ui_location]
+[bounce href=`delete $Scratch->{ui_location}`]
+[elsif !cgi mv_data_table]
+[bounce page="__UI_BASE__/item"]
+[/elsif]
+[/if]
+
+@_UI_STD_HEAD_@
+
+[seti phantom_form]
+<TABLE CELLSPACING=0 CELLPADDING=2 CELLMARGIN=3 WIDTH="600">
+<tr class=rnorm>
+	<TD COLSPAN=4>
+		<INPUT TYPE=checkbox NAME="ui_phantom_takeover" VALUE=1> Take over all options for group
+	</TD>
+</TR>
+<TR class=rmarq>
+	<TD ALIGN=CENTER COLSPAN=4>
+		Take over selected options
+		<INPUT TYPE=hidden NAME=mv_click VALUE=phantom_inherit>
+	</td>
+</TR>
+<TR class=rmarq>
+	<TH ALIGN=LEFT>SKU</TH>
+	<TH ALIGN=LEFT>Master</TH>
+	<TH ALIGN=LEFT>Grp</TH>
+	<TH ALIGN=LEFT>Description</TH>
+</TR>
+	[seti mod_template]
+	<TR>
+	<TD>&nbsp;{ui_spacer}<INPUT TYPE=hidden NAME=ui_phantom_codes_all VALUE="{code}"><INPUT TYPE=checkbox NAME=ui_phantom_inherit VALUE="{code}">{sku}{o_default *}</TD>
+	<TD>{o_master}</td>
+	<TD>{o_group}</TD></td>
+	<TD>{description|{products.description}}</td>
+	</tr>
+	[/seti]
+
+	[perl tables="products [cgi mv_data_table]"]
+	for(qw/ ui_mod_expand ui_mod_explode /) {
+		$Session->{$_} = {} 
+			if ! $Session->{$_};
+	}
+	if($CGI->{expand}) {
+		$Session->{ui_mod_expand}{$CGI->{item_id}}{$CGI->{expand}} = 1;
+	}
+	elsif($CGI->{contract}) {
+		$Session->{ui_mod_expand}{$CGI->{item_id}}{$CGI->{contract}} = 0;
+	}
+	elsif($CGI->{collapse}) {
+		delete $Session->{ui_mod_explode}{$CGI->{item_id}};
+		delete $Session->{ui_mod_expand}{$CGI->{item_id}};
+	}
+	elsif($CGI->{explode}) {
+		delete $Session->{ui_mod_expand}{$CGI->{item_id}};
+		$Session->{ui_mod_explode}{$CGI->{item_id}} = 1;
+	}
+	$Session->{ui_mod_expand}{$CGI->{item_id}} = {}
+		unless $Session->{ui_mod_expand}{$CGI->{item_id}};
+	$expand = $Session->{ui_mod_expand}{$CGI->{item_id}};
+	$explode = $Session->{ui_mod_explode}{$CGI->{item_id}};
+	$otab = $CGI->{mv_data_table};
+	$ptab = '__ProductFiles_0__';
+	$Scratch->{mod_template} =~ s/\%7b/{/g;
+	$Scratch->{mod_template} =~ s/\%7d/}/g;
+	$Scratch->{mod_template} =~ s/UI_ACTION=/{ui_action}/g;
+	$odb = $Db{$otab}
+		or return "bad options database";
+	$pdb = $Db{$ptab}
+		or return "bad products database";
+	my $price_fld = $pdb->column_exists('__PriceField__')
+						? '__PriceField__'
+						: 'price';
+	delete $Scratch->{debug_body};
+	sub display_template {
+		my ($ref) = @_;
+		my $sku = $ref->{sku};
+		my $code = $ref->{code};
+		$ref->{"products.description"} = tag_data($ptab, '__DescriptionField__', $sku);
+		$ref->{"url.description"} = $Tag->filter('urlencode', $ref->{"products.description"});
+
+		if($ref->{level}) {
+			my $level = $ref->{level} * 28;
+			$ref->{ui_spacer} = qq{<IMG SRC="bg.gif" HEIGHT=1 WIDTH=$level>};
+		}
+		for(qw/ products.description description /) {
+			if(length($ref->{$_}) >=30) {
+				substr($ref->{$_}, 27) = '...';
+			}
+		}
+		my $indent = $ref->{level} + 1;
+		my $body = $Scratch->{mod_template};
+#Log("body first:\n$body\n\n") unless $Scratch->{debug_body};
+		$body =~ s!(\{\w+)\%2e(\w+\})!$1.$2!g;
+		$body =~ s!\{([-\w.]+)\}!$ref->{$1}!g;
+		$body =~ s!\{([-\w.]+)\|([\000-\377]*?)\}!$ref->{$1} || $2!eg;
+		$body =~ s!\{([-\w.]+)\s+([\000-\377]*?)\}! $ref->{$1} ? $2 : ''!eg;
+		$body =~ s!\{([-\w.]+)\?\}([\000-\377]*?){/\1\?\}! $ref->{$1} ? $2 : ''!eg;
+		$body =~ s!\{([-\w.]+):\}([\000-\377]*?){/\1:\}! $ref->{$1} ? '' : $2!eg;
+#Log("body now:\n$body\n\n") unless $Scratch->{debug_body}++;
+		return $body;
+	}
+	return;
+[/perl]
+[query
+	table=options
+	list=1
+	hashref=master
+	sql="SELECT * FROM options
+			WHERE o_master = '[cgi name=item_id filter=sql]'
+			ORDER BY o_group, o_sort
+		"]
+[sql-sub o_display]
+	my $master = shift;
+	my %above;
+	$above{$CGI->{sku}} = 1;
+	$above{$master} = 1;
+	my $row = shift;
+	my @rows;
+#Log("received master=$master row=$row modular=$row->{o_enable}");
+	my @stack = ( [ $row ] );
+	ARY: for (;;) {
+		my $ary;
+		$ary = pop(@stack)
+			or last ARY;
+		ROW: for(;;) {
+			$row = shift @$ary
+				or last ROW;
+			$row->{level} = scalar(@stack);
+			push(@rows, $row);
+			my $sku = $row->{sku};
+			if($above{$sku}++) {
+				last ARY;
+			}
+			next ROW if ! $row->{o_enable};
+			my $code = $row->{code};
+			push(@stack, $ary);
+			my $key = $odb->quote($sku, 'sku');
+			my $q = "SELECT * FROM options WHERE o_master = $key ORDER BY o_sort",
+			$ary = $odb->query(
+					{ 
+						hashref => 1,
+						sql => "SELECT * FROM options
+								WHERE o_master = $key
+								ORDER BY o_sort
+							",
+					}
+			);
+		}  # END ROW
+	}  # END ARY
+	
+	my $out;
+	for(@rows) {
+		$out .= display_template($_);
+	}
+	return $out;
+[/sql-sub]
+[sql-exec o_display][sql-code][/sql-exec]
+[/query]
+</table>
+[/seti]
+
+[set phantom_inherit]
+[flag type=write table=="[cgi mv_data_table]"]
+[perl tables="[cgi mv_data_table]"]
+	my $codes;
+	my $group;
+	my $tab = $CGI->{mv_data_table};
+	my $sku = $CGI->{sku};
+	if($CGI->{ui_phantom_takeover}) {
+		$codes = $CGI_array->{ui_phantom_codes_all};
+		$group = $CGI->{o_group}
+			or do {
+				my $msg = "Can't take over all groups in database %s";
+				$msg = errmsg($msg, $tab);
+				$Scratch->{ui_failure} = $msg;
+				Log($msg);
+				return undef;
+			};
+	}
+	else {
+		$codes = $CGI_array->{ui_phantom_inherit};
+	}
+
+	my $odb = $Db{$CGI->{mv_data_table}}
+		or do {
+			Log("bad database %s", $CGI->{mv_data_table});
+			return undef;
+		};
+	for(@$codes) {
+		unless ($odb->record_exists($_)) {
+			Log("bad option item '%s' in table %s", $_, $CGI->{mv_data_table});
+			next;
+		}
+		next if $group and $odb->field($_, 'o_group') ne $group;
+		$odb->set_field($_, 'o_master', $sku);
+	}
+	return;
+[/perl]
+[/set]
+
+<!---- MAJOR -----><table>
+<!---- MAJOR -----><tr>
+<!---- MAJOR -----><td valign=top>
+[table-editor
+	default.o_enable=1
+	default.o_master="[cgi item_id]"
+	default.phantom=1
+	default.sku="[counter file='__ProductDir__/phantom.autonumber' start=999100]"
+	hidden.ignore_sku="1"
+	hidden.item_id="[cgi item_id]"
+	include_form="[scratchd phantom_form]"
+	key="[cgi code]"
+	table="[cgi mv_data_table]"
+	ui_data_fields="[cgi ui_data_fields]"
+	ui_display_only="[cgi ui_display_only]"
+	ui_hide_key=1
+	ui_meta_view="[cgi ui_meta_view]"
+]
+<!---- MAJOR -----></td>
+<!---- MAJOR -----><td valign=top>
+
+<!---- MAJOR -----></td>
+<!---- MAJOR -----></tr>
+<!---- MAJOR -----></table>
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
+

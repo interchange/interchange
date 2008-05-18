@@ -1,0 +1,91 @@
+__NAME__ recompute_transaction
+
+[comment]
+	Makes session from transactions, pretends its an order,
+	and recomputes. Only recomputes tax and shipping if
+	specifically instructed.
+[/comment]
+
+[try]
+[perl tables="transactions orderline userdb products options country state pricing"]
+
+	my $order_number = $CGI->{order_number} 
+		or die "No transaction number.\n";
+
+	my $tdb = $Db{transactions}
+		or die "Cannot find transaction database.\n";
+	my $odb = $Db{orderline}
+		or die "Cannot find orderline database.\n";
+	my $udb = $Db{userdb}
+		or die "Cannot find user database.\n";
+
+	my $trec = $tdb->row_hash($order_number)
+		or die errmsg("Invalid transaction number: %s", $order_number);
+
+	my $date = $Tag->time({ body => '%c' });
+	
+	my $otab = $odb->name();
+	my $on_quoted = $odb->quote($order_number, 'order_number');
+	
+	my $q = "select * from $otab where order_number = $on_quoted";
+
+	my $oary = $odb->query({ sql => $q, hashref => 1})
+		or die errmsg(
+				"Problem with orderline query for order number: %s",
+				$order_number);
+	
+	# In case you want to recompute shipping
+	my $smode = $trec->{shipmode};
+	$smode =~ s/\s+.*//;
+
+	my @updates;
+	@$Items = ();
+	my $nitems = 0;
+	my $subt = 0;
+	for my $orec (@$oary) {
+		my $code = $orec->{sku};
+		my $qty  = $orec->{quantity};
+		my $price = $orec->{price};
+		my $sub  = $orec->{subtotal};
+		my $nsub = $qty * $price;
+		if($nsub != $sub) {
+			push @updates, [ $orec->{code}, { subtotal => $nsub } ];
+		}
+		$nitems += $qty;
+		$subt += $nsub;
+		push @$Items, { code => $code, quantity => $qty, mv_price => $price };
+	}
+
+	for(@updates) {
+		$odb->set_slice(@$_);
+	}
+
+	my $stax;
+	if($CGI->{recompute_tax}) {
+#Debug("tax prior to recompute: $trec->{salestax}");
+		$Values->{country} = $trec->{country};
+		$Values->{state} = $trec->{state};
+		$Values->{zip} = $trec->{zip};
+		$stax = $Tag->salestax( { noformat => 1 });
+		$trec->{salestax} = $stax;
+#Debug("tax after recompute: $trec->{salestax}");
+	}
+
+	$trec->{subtotal} = $subt;
+	$trec->{nitems} = $nitems;
+	$trec->{total_cost} = 0;
+	for(qw/subtotal salestax shipping handling/) {
+		$trec->{total_cost} += $trec->{$_};
+	}
+
+	my $code = delete $trec->{code};
+	$tdb->set_slice($code, $trec);
+	$CGI->{mv_data_table} = 'transactions';
+	$Tag->warnings("Recomputed transaction $order_number");
+
+	[/perl]
+[/try]
+[catch error-set="Recompute transaction"]
+	There was an error recomputing the transaction: $ERROR$
+[/catch]
+

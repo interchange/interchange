@@ -1,0 +1,87 @@
+[seti page_title][L]Upload Content[/L][/seti]
+[set help_name]page_editor[/set]
+[set ui_class]Design[/set]
+[set icon_name]icon_design.gif[/set]
+
+@_UI_STD_HEAD_@
+
+isfile=[value-extended name=content test=isfile]
+[if type=explicit compare="[value-extended name=content test=isfile]"]
+	[perl]
+		my $con = $Tag->value_extended( { name => 'content', file_contents => 1});
+		if(! length($con) ) {
+			$Scratch->{cmessage} = 'No file contents were received.';
+			return;
+		}
+		$con =~ s{.*<!--+\s+begin\s+content\s+--+>}{}is;
+		$con =~ s{<!--+\s+end\s+content\s+--+>.*}{}is;
+		$con =~ s/^\s+//;
+		$con =~ s/\s+$//;
+		$con =~ s/\r\n/\n/g;
+		$con =~ s/\n/\r/g;
+		$con = $Tag->jsqn($con);
+		return <<EoJsCript;
+
+<script>
+
+	var par = window.opener;
+	var con = $con;
+	if(par == undefined) {
+		alert("parent window is " + par);
+	}
+	var f = par.document.$CGI->{ui_source_form}.$CGI->{ui_source_var};
+	if(f == undefined) {
+		alert("target form is " + f);
+	}
+	else {
+		f.value = con;
+		window.close();
+	}
+	
+</script>
+EoJsCript
+		
+	[/perl]
+[/if]
+
+[if scratch cmessage]
+	<blockquote class=cerror>
+		[scratchd cmessage]
+	</blockquote>
+[/if]
+
+<!-- BEGIN CONTENT -->
+<FORM ENCTYPE="multipart/form-data" NAME=content_upload ACTION="[process href='@@MV_PAGE@@']" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action VALUE=back>
+<INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
+<INPUT TYPE=hidden NAME=ui_source_form VALUE="[cgi ui_source_form]">
+<INPUT TYPE=hidden NAME=ui_source_var VALUE="[cgi ui_source_var]">
+<INPUT TYPE=hidden NAME=actual_content VALUE="[cgi ui_source_var]">
+[if !cgi page]
+[cgi name=page set="[data session arg]"]
+[/if]
+
+To edit and upload the page:
+
+<OL style="font-size: larger">
+<LI> <A href="[area href=|[cgi page]|]" target=_blank style="font-size: larger">Open the page</A>, and in Mozilla or Netscape select <B>Edit in Composer</B>. (In MSIE you may be able to do the same with Frontpage.)<br>&nbsp;
+<LI> Edit using your software. Be sure to keep the &lt;!-- BEGIN CONTENT --&gt; and
+&lt!-- END CONTENT --&gt; markers -- no changes are made outside the content area.<br>&nbsp;
+<LI> Save to a file on your local disk -- remember the name.<br>&nbsp;
+<LI> <b>Browse</b> to the file or enter its name:
+
+<blockquote>
+<input type=file name=content>
+</blockquote>
+
+<LI> Upload:
+
+<blockquote>
+	<input type=submit value=Upload>
+
+</OL>
+
+</FORM>
+
+@_UI_STD_FOOTER_@

@@ -1,0 +1,19 @@
+# Copyright 2003-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: crypt.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag crypt Order     value salt
+UserTag crypt attrAlias password value
+UserTag crypt attrAlias crypted salt
+UserTag crypt Version   $Revision: 1.6 $
+UserTag crypt Routine   <<EOR
+sub {
+	my ($string, $salt) = @_;
+	return crypt($string, $salt ? $salt : Vend::Util::random_string(2))
+}
+EOR

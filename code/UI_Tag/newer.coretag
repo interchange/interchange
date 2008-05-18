@@ -1,0 +1,39 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: newer.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag newer Order    source target
+UserTag newer Version  $Revision: 1.4 $
+UserTag newer Routine  <<EOR
+sub {
+	my ($source, $file2) = @_;
+	my $file1 = $source;
+	if(! $file2 and $source !~ /\./) {
+		if($Global::GDBM) {
+			$file1 .= '.gdbm';
+		}
+		elsif($Global::DB_File) {
+			$file1 .= '.db';
+		}
+		else {
+			return undef;
+		}
+		$file2 = $Vend::Cfg->{Database}{$source}{'file'}
+			or return undef;
+		$file1 = $Vend::Cfg->{ProductDir} . '/' . $file1
+			unless $file1 =~ m:/:;
+		$file2 = $Vend::Cfg->{ProductDir} . '/' . $file2
+			unless $file2 =~ m:/:;
+	}
+	my $time1 = (stat($file1))[9]
+		or return undef;
+	my $time2 = (stat($file2))[9];
+	return 1 if $time1 > $time2;
+	return 0;
+}
+EOR

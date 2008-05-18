@@ -1,0 +1,134 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: dump_session.coretag,v 1.8 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag dump_session Order    name
+UserTag dump_session AddAttr
+UserTag dump_session Version  $Revision: 1.8 $
+UserTag dump_session Routine  <<EOR
+sub show_part {
+	my ($ref, $key) = @_;
+	return $ref unless $key;
+	if ($key eq 'SCALAR') {
+		my $newref = {};
+		foreach my $k (keys %$ref) {
+			next if ref $ref->{$k};
+			$newref->{$k} = $ref->{$k};
+		}
+		return $newref;
+	}
+	else {
+		return { $key, $ref->{$key} };
+	}
+}
+
+sub {
+	my ($name, $opt) = @_;
+	my $joiner = $opt->{joiner} || ' ';
+	return "Cannot dump or find sessions with session type $Vend::Cfg->{SessionType}."
+		if ($Vend::Cfg->{SessionType} ne 'File' && $Vend::Cfg->{SessionType} ne 'DBI');
+
+
+	if ($Vend::Cfg->{SessionType} eq 'File') {
+		if($opt->{find}) {
+			require File::Find;
+			my $expire = $Vend::Cfg->{SessionExpire};
+			if( int($::Variable->{ACTIVE_SESSION_MINUTES}) ) {
+				$expire = $::Variable->{ACTIVE_SESSION_MINUTES} * 60;
+			}
+			my $now = time();
+			$expire = $now - $expire;
+			my @files;
+			my $wanted = sub {
+				return unless -f $_;
+				return if (stat(_))[9] < $expire;
+				return if /\.lock$/;
+				push @files, $_;
+			};
+			File::Find::find($wanted, $Vend::Cfg->{SessionDatabase});
+			return join $joiner, @files;
+		}
+		elsif (! $name) {
+			return "dump-session: Nothing to do.";
+		}
+		else {
+			my $fn = Vend::Util::get_filename($name, 2, 1, $Vend::Cfg->{SessionDatabase});
+			return '' unless -f $fn;
+			my $ref = Vend::Util::eval_file($fn);
+
+			$ref = show_part($ref, $opt->{key}) if $opt->{key};
+
+			my $out = '';
+			eval { 
+				$out = Vend::Util::uneval($ref);
+			};
+			return uneval($ref) if $@;
+			return $out;
+		}
+	}
+
+	if ($Vend::Cfg->{SessionType} eq 'DBI') {
+		if($opt->{find}) {
+			my $expire = $Vend::Cfg->{SessionExpire};
+			if( int($::Variable->{ACTIVE_SESSION_MINUTES}) ) {
+				$expire = $::Variable->{ACTIVE_SESSION_MINUTES} * 60;
+			}
+			my $now = time();
+			$expire = $now - $expire;
+			my @sesscodes;
+
+			my $db  = Vend::Data::database_exists_ref($Vend::Cfg->{SessionDB}) 
+				or return errmsg("Table %s is not available", $Vend::Cfg->{SessionDB});
+			my $dbh = $db->dbh();
+			my $tname = $db->name();
+			my $sql = "select code from $tname where UNIX_TIMESTAMP(last_accessed) >= ?";
+
+			my $sth = $dbh->prepare($sql);
+			$sth->execute($expire) || return $DBI::errstr;
+			my $code;
+			$sth->bind_columns( undef, \$code);
+
+			while($sth->fetch) {
+				push @sesscodes, $code;
+			}	
+			$sth->finish;
+			return join $joiner, @sesscodes;
+		}
+		elsif (! $name) {
+			return "dump-session: Nothing to do.";
+		}
+		else {
+			my $db  = Vend::Data::database_exists_ref($Vend::Cfg->{SessionDB}) 
+				or return errmsg("Table %s is not available", $Vend::Cfg->{SessionDB});
+			my $dbh = $db->dbh();
+			my $tname = $db->name();
+			my $sql = "select session from $tname where code=?";
+
+			my $sth = $dbh->prepare($sql);
+			$sth->execute($name);
+			my $session;
+			$sth->bind_columns( undef, \$session);
+			$sth->fetch;
+			$sth->finish;
+
+			my $out = '';
+			my $ref = Vend::Util::evalr($session);
+
+			## Allow show of only part
+			$ref = show_part($ref, $opt->{key}) if $opt->{key};
+
+			eval { 
+				$out = Vend::Util::uneval($ref);
+			};
+			return uneval($ref) if $@;
+			return $out;
+		}
+	}
+
+}
+EOR

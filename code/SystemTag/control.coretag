@@ -1,0 +1,45 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: control.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag control             Order        name default
+UserTag control             addAttr
+UserTag control             PosNumber    2
+UserTag control             Version      $Revision: 1.4 $
+UserTag control             Routine      <<EOR
+sub {
+	my ($name, $default, $opt) = @_;
+
+	use vars qw/$Tmp/;
+
+	if(! $name) {
+		# Here we either reset the index or increment it
+		# Done this way for speed, no blocks to enter other than top one
+		if($opt->{space}) {
+			$::Control = $Tmp->{$opt->{space}} ||= [];
+			return set_tmp('control_index', 0);
+		}
+		else {
+			($::Scratch->{control_index} = 0, return) if $opt->{reset};
+			return set_tmp('control_index', ++$::Scratch->{control_index});
+		}
+	}
+
+	$name = lc $name;
+	$name =~ s/-/_/g;
+	$opt ||= {};
+	if (! defined $default and $opt->{set}) {
+		$::Control->[$::Scratch->{control_index}]{$name} = $::Scratch->{$name};
+		return;
+	}
+
+	return defined $::Control->[$::Scratch->{control_index}]{$name} 
+			?  ( $::Control->[$::Scratch->{control_index}]{$name} || $default )
+			:  ( length($::Scratch->{$name}) ? ($::Scratch->{$name}) : $default )
+}
+EOR

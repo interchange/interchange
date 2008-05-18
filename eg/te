@@ -1,0 +1,451 @@
+#!/usr/bin/perl -w
+
+=pod
+
+=head1 NAME
+
+te (table editor) - front-end that simplifies editing tab-delimited
+text tables
+
+=head1 SYNOPSIS
+
+B<te> I<file1> [ I<file2> ... ]
+
+=head1 DESCRIPTION
+
+This program makes it easier to edit tab-delimited ASCII tables, such
+as are used with Interchange (see icdevgroup.org), and can be exported
+from many popular spreadsheet and database applications.
+
+It converts tab-delimited ASCII files that have one record per line into
+temporary files with one field per line, each line beginning with the
+field name. It then sends each file to your favorite text editor. After
+you exit your editor, it checks to see if you changed anything in the
+file, and if so, it converts the data back to the tab-delimited format
+with one record per line, and replaces the original file.
+
+The first line of each input file must contain the field names,
+tab-delimited, that apply for that file.
+
+Editing is pretty straightforward when you see it in action. The
+rules are:
+
+=over 4
+
+=item o
+
+Empty lines are ignored.
+
+=item o
+
+Comment lines (beginning with C<#>) are ignored at the beginning of the
+file, and terminate a record in the middle.
+
+=item o
+
+The fields in the first record are used in all subsequent records,
+and the order in which they are specified are the order in which the
+columns will be written.
+
+=item o
+
+To delete a column, delete its line in the first record.
+
+=item o
+
+To change which order the columns are in, re-order the first record.
+
+=item o
+
+To add a column, add it to the first record (and as many subsequent
+records as you wish).
+
+Note that if you're using the "extended" option (-e), you can't add new
+columns, because they can't be distinguished from the extended fields that
+go into the serialized hash. You'd need to do that in a separate pass.
+
+=item o 
+
+If you delete a column, you do not need to delete it from every record;
+any instances of that field in records after the first will be ignored.
+
+=item o
+
+Any space left after the field name and colon (like C<fieldname:>) will be
+included as part of the field. Any tabs you put in the field data itself
+will be converted to spaces (as they would corrupt the table otherwise).
+
+=item o
+
+A record can be deleted by removing all its fields. A new record can be
+added by inserting a new block of all fields at a record boundary.
+
+=item o
+
+If any errors are encountered, such as non-existent field names or lines
+that don't follow the prescribed format, processing aborts immediately
+and the original file is left untouched.
+
+=back
+
+You can edit several files in succession by naming each on the command
+line. The editor will be called for each one independently. If you start
+editing many files and decide you want to stop, add a line C<#DONE>
+anywhere in the temporary file and save it. The current file will be
+processed and saved, but the rest will be skipped.
+
+As is customary with many Unix applications, you can set the environment
+variables VISUAL or EDITOR to point to your favorite text editor. If
+neither of those is set, my favorite editor, B<vi>(1) is used.
+
+Options will also be read from environment variable TE_OPTIONS if it is
+set.
+
+=head1 AUTHOR
+
+Jon Jensen <jon@endpoint.com>
+
+=head1 COPYRIGHT
+
+    Copyright (C) 2002-2008 Jon Jensen and others
+    Copyright (C) 2001-2002 Red Hat, Inc.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+at http://www.fsf.org/copyleft/gpl.html for more details.
+
+=head1 VERSION
+
+$Id: te,v 2.13 2008-04-12 02:33:40 jon Exp $
+
+=head1 CHANGELOG
+
+2001-04-26. Initial release.
+
+2001-05-04. Make temporary file in working directory instead of using
+POSIX::tmpnam. Keep ownership and permissions of original file. Fixed
+bug that caused fields with number "0" to be output as empty strings.
+
+2001-05-06. Fix problem with how temporary file names were generated.
+
+2001-07-31. Check for VISUAL environment variable, and handle editor
+options there or in EDITOR if given. Take advantage of Digest::MD5's
+native file reading instead of doing it ourselves.
+
+2001-10-03. Added gvim support by forcing foreground option -f.
+
+2002-07-23. Remove line endings whether CR, LF, or CRLF, instead of
+using running Perl's platform-specific chomp. If preserving a trailing
+solitary CR in the last field of a line is important, you'll want to
+change this behavior.
+
+2002-08-30. Add option -s for starting value support (really only vi).
+
+	te -s os28004 <file>
+
+Jumps to first occurrence of "os28004" in <file>. Option -i ignores case
+in the search. (By Mike Heins.)
+
+2002-09-02. Add option -f to handle files without field names.
+
+2002-09-03. Add option -n to number rows in comments. Allow setting of
+persistent options in environment variable TE_OPTIONS.
+
+2004-06-07. Fixed bug that misinterpreted file as having no data rows
+when last line of file was empty.
+
+2005-08-29. Added ability to delete, re-order, or add columns by placing
+them in the first record.
+
+2005-11-15. Added support for extended columns containing Perl
+serialized hashes with the -e option.
+
+2008-04-11. Added option -o to write output to a file and exit, never
+invoking an editor. By Greg Sabino Mullane.
+
+=cut
+
+use strict;
+use Digest::MD5;
+use File::Basename 'fileparse';
+use Text::ParseWords;
+use Data::Dumper;
+use Getopt::Std;
+
+my ($prog) = fileparse($0);
+
+my $USAGE = <<EOF;
+Usage: $prog [-i] [-s startpoint] tablefile1 [tablefile2 ...]
+
+Edit tab-delimited file with easy field name delineation.
+
+Options:
+    -i       Ignores case on vim jump search.
+    -s TEXT  Jumps to first line where TEXT is. Only for vi.
+    -f       Do not look for field names on first line of file.
+    -n       Number rows in comments
+    -e field Extra fields in this field, a stringified hash
+    -o FILE  Convert to the named output file and exit
+
+See 'man te' or 'perldoc $0' for more information.
+
+EOF
+
+unshift @ARGV, Text::ParseWords::shellwords($ENV{TE_OPTIONS})
+	if defined $ENV{TE_OPTIONS};
+
+use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e $opt_o/;
+getopts('is:fne:o:') or die "$@\n$USAGE";
+
+die $USAGE unless @ARGV;
+
+my @ED = Text::ParseWords::shellwords($ENV{VISUAL} || $ENV{EDITOR} || 'vi');
+
+if ($opt_s) {
+	if ($opt_i) {
+		push @ED, '-c', 'set ic';
+		$opt_s = lc $opt_s;
+	}
+	$opt_s =~ s:/:\\/:g;
+	push @ED, '-c', qq{/$opt_s/};
+}
+
+# run gvim in foreground mode, since it otherwise immediately returns
+# control to us and we never get the user's changes
+if($ED[0] =~ /\bgvim\b/) {
+	push @ED, '-f' unless grep $_ eq '-f', @ED;
+}
+
+for my $filename (@ARGV) {
+	my (@fieldnames, $fieldcount, @fields);
+	my ($name, $path, $tmpfile, $newfile, $digest1, $digest2);
+	unless (-e $filename) {
+		warn "Skipping '$filename': file does not exist\n";
+		next;
+	}
+	unless (-f $filename) {
+		warn "Skipping '$filename': not a regular file\n";
+		next;
+	}
+	unless (open IN, "<$filename") {
+		warn "Error 'opening' $filename for reading: $!\n";
+		next;
+	}
+
+	# get field names
+	$_ = <IN>;
+	s/\x0d?\x0a?$//;
+	$fieldcount = tr/\t/\t/ + 1;
+	if ($opt_f) {
+		@fieldnames = map { "field$_" } (1 .. $fieldcount);
+		seek IN, 0, 0;
+	}
+	else {
+		die "Error in '$filename' header: null field name found\n" if /\t\t/;
+		@fieldnames = split /\t/, $_, $fieldcount;
+	}
+	my %fieldnames = map { $_ => 1 } @fieldnames;
+
+	($name, $path) = fileparse($filename);
+
+	# I tried keeping the whole file in memory (for MD5's sake) instead of
+	# first writing to disk, but doing it this way turned out to be about 5
+	# times faster and used 1/10th the memory on large files. (My benchmark
+	# was a 12 MB products.txt table for Interchange.)
+
+	$tmpfile = "$path.$name.tmp.$$";
+	if ($opt_o) {
+		if (-e $opt_o) {
+			print "Overwrite $opt_o? ";
+			my $ans = <STDIN>;
+			if ($ans !~ /^Y/i) {
+				print "\nFile not overwritten, exiting.\n";
+				exit;
+			}
+		}
+		$tmpfile = $opt_o;
+	}
+	open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
+	print STDERR "Prettifying $filename\n";
+	print OUT <<EOF;
+#
+# This is a temporary file, automatically generated from the data file:
+#
+# $filename
+#
+# If you change anything in it, it will be converted back into the original
+# format and will replace the original file.
+#
+EOF
+	my $rowcount = 0;
+	while (<IN>) {
+		s/\x0d?\x0a?$//;
+		++$rowcount, print OUT "# row $rowcount\n" if $opt_n;
+		@fields = split /\t/, $_, $fieldcount;
+		my $extended;
+		for (my $i = 0; $i < @fieldnames; $i++) {
+			$extended = $i, next if $opt_e and $fieldnames[$i] eq $opt_e;
+			print OUT $fieldnames[$i], ":",
+				defined $fields[$i] ? $fields[$i] : '', "\n";
+		}
+		if ($opt_e) {
+			die "Extended field '$opt_e' does not exist\n"
+				unless $fieldnames{$opt_e};
+			my $extra = eval $fields[$extended];
+			if (ref($extra) eq 'HASH') {
+				for (sort keys %$extra) {
+					if ($fieldnames{$_}) {
+						print OUT <<EOF;
+# NOTE! The following field '$_' from the serialized hash
+# in field '$opt_e' duplicates one of the base columns.
+# If duplicates exist when saving, the last one encountered will win.
+EOF
+					}
+					print OUT $_, ":", $extra->{$_}, "\n";
+				}
+			}
+			elsif ($fields[$extended]) {
+				die "Invalid extended field '$opt_e': $fields[$extended]\n";
+			}
+		}
+		print OUT "#\n";
+	}
+	my $have_rows = ($. > 1);
+	if ($have_rows) {
+		print OUT <<EOF;
+# You can uncomment the following lines to use as a template for inserting
+# a new row into the table. Copy as many times as needed to add many rows.
+#
+EOF
+	} else {
+		print OUT <<EOF;
+# Your file was empty -- it had no data rows, only field definitions.
+# You can copy the following empty row template as many times as needed
+# to add new rows to the table.
+#
+EOF
+	}
+	print OUT join("\n", map { ($have_rows ? '#' : '') . $_ . ":" } @fieldnames);
+	print OUT "\n#\n";
+	close IN;
+	print OUT <<EOF;
+# end of file
+#
+EOF
+	close OUT or die "Error closing '$tmpfile' after writing: $!\n";
+	if ($opt_o) {
+		print "Wrote $opt_o\n";
+		exit;
+	}
+
+	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode IN;
+	$digest1 = Digest::MD5->new->addfile(*IN)->digest;
+	close IN;
+	system (@ED, $tmpfile) == 0
+		or do {
+			for(@ED) {
+				next unless /\s/;
+				s/"/\\"/g;
+				$_ = qq["$_"];
+			}
+			my $editor = join " ", @ED;
+			die "Error calling editor '$editor' with '$tmpfile': $!\n";
+		};
+	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode IN;
+	$digest2 = Digest::MD5->new->addfile(*IN)->digest;
+	if ($digest1 eq $digest2) {
+		print STDERR "No changes made; '$filename' untouched\n";
+		close IN;
+		unlink $tmpfile;
+		next;
+	}
+	print STDERR "Importing changes back into '$filename'\n";
+	$newfile = "$path.$name.new.$$";
+	open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
+
+	my @newfields;
+	my %found_fields;
+	@found_fields{@fieldnames} = @fieldnames;
+
+	my $fields_out = join("\t", @fieldnames) . "\n";
+
+	my $tabcounter = 0;
+	my $fieldpos = 0;
+	my $done;
+	seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
+
+	my %record;
+
+	no warnings qw/ uninitialized /;
+
+	while (<IN>) {
+		$done = 1 if /^#\s*DONE/;
+		if(/^#/) {
+			next unless $fieldpos;
+			if ($fields_out) {
+				if ($opt_e) {
+					# can't change field list when -e in effect
+					@newfields = @fieldnames;
+				}
+				@found_fields{@newfields} = @newfields;
+				$fields_out = join("\t", @newfields) . "\n";
+				print OUT $fields_out;
+				undef $fields_out;
+			}
+			if ($opt_e) {
+				my %extra;
+				for (keys %record) {
+					next if $fieldnames{$_};
+					$extra{$_} = delete $record{$_};
+				}
+				my $d = Data::Dumper->new([ \%extra ]);
+				$d->Indent(0)->Terse(1);
+				$record{$opt_e} = $d->Dump;
+			}
+			print OUT join("\t", @record{@newfields}), "\n";
+			%record = ();
+			$fieldpos = 0;
+			next;
+		}
+		next unless /\S/;
+		/^([^:]+):(.*)$/ or
+			die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
+		my $fn = $1;
+
+		if ($fields_out) {
+			push @newfields, $fn;
+		}
+		elsif (! $found_fields{$fn} and ! $opt_e) {
+			die "Error parsing line $. of '$tmpfile': bad field name '$fn'\n";
+		}
+
+		$_ = $2;
+		$tabcounter += s/\t/ /g;
+		$record{$fn} = $_;
+		$fieldpos++;
+	}
+	print STDERR "$tabcounter tab character",
+		$tabcounter == 1 ? ' was' : 's were',
+		" found in the data! Each tab was replaced with a space.\n"
+		if $tabcounter;
+	close OUT or die "Error closing '$filename.new' after writing: $!\n";
+	close IN or die "Error closing '$tmpfile' after reading: $!\n";
+	my ($mode, $uid, $gid) = (stat($filename))[2,4,5];
+	chmod $mode, $newfile;
+	chown $uid, $gid, $newfile if $> == 0;
+	rename $newfile, $filename or
+		die "Error renaming '$newfile' to '$filename': $!\n";
+	unlink $tmpfile;
+	if ($done) {
+		print STDERR "Found 'DONE' command; skipping rest of files.\n";
+		last;
+	}
+}

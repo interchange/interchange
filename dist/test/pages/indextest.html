@@ -1,0 +1,39 @@
+<PRE>
+[index table=products extension=artist
+						spec="
+						rf=artist,code,category,title
+						tf=artist,title
+						to=f,r
+						ra=yes
+						"]
+[file products/products.asc.artist]
+
+[loop search="sq=select code from products where price < 20"][loop-field artist] -- [loop-field title]
+[/loop]
+
+[loop search="se=art/cs=no/su=yes"][loop-field artist] -- [loop-field title]
+[/loop]
+
+[loop search="
+				ra=yes
+				rf=code
+				fi=products.asc.artist
+			"][loop-field artist] -- [loop-field title]
+[/loop]
+
+[loop search="
+					ml=1000
+					co=yes
+
+					op=>
+					se=5
+					sf=f1
+
+					op=<
+					se=5
+					sf=f2
+
+					fi=sort.asc
+					tf=f1,f2,f3,f4,f5,f6
+				"][loop-data sort f1][loop-data sort f2][loop-data sort f3][loop-data sort f4][loop-data sort f5][loop-data sort f6]
+[/loop]

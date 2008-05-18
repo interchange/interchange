@@ -1,0 +1,228 @@
+[if-mm !advanced orderstats]
+	[calc]
+			$CGI->{affiliate} = $Session->{username};
+			return;
+	[/calc]
+[/if-mm]
+[set page_title][L]Order detail report[/L][/set]
+[set icon_name]icon_stats.gif[/set]
+[set ui_class]Reports[/set]
+[set help_name]orderstats.view[/set]
+[tmpn third_menu]OrderStats[/tmpn]
+
+@_UI_STD_HEAD_@
+
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=7></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top>
+	[L]Order[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Affiliate[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Campaign[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Address[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Date[/L]/[L]Time[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Amount[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Status[/L]
+	</TD>
+</TR>
+<tr class=rborder height=1><td colspan=7></td></tr>
+
+<!-- will default to current if not set:
+		[seti today][tag time]%Y%m[/tag][/seti]
+	-->
+
+[calc]
+	if($CGI->{sku}) {
+		my @skus = grep /\S/, split /[\s,\0]+/, $CGI->{sku};
+		my @qsku = map { $Tag->filter('sql', $_) } @skus;
+		my $sku_query;
+
+		if(@skus > 1) {
+			$sku_query = "sku IN ('";
+			$sku_query .= join("','", @qsku);
+			$sku_query .= "')";
+		}
+		else {
+			$sku_query = "sku = '$qsku[0]'";
+		}
+
+		# Used several places below
+		$Tag->tmpn('tmp_sku_query', $sku_query);
+	}
+
+	if($Session->{arg}) {
+		$Scratch->{date_limit} = "AND order_date like '$Session->{arg}%'";
+	}
+	elsif ($CGI->{ui_begin_date}) {
+		for (qw/ ui_begin_date ui_end_date /) {
+			$CGI->{$_} = $Tag->filter( {
+									op => 'date_change',
+									body => $CGI->{$_}
+								});
+		}
+		$Scratch->{date_limit} = <<EOF
+AND   order_date > '$CGI->{ui_begin_date}'
+AND   order_date < '$CGI->{ui_end_date}Z'
+EOF
+	}
+	else {
+		$Scratch->{date_limit} = "AND order_date like '$Scratch->{today}%'";
+	}
+	$Scratch->{synd_limit} = '';
+	return unless $CGI->{affiliate};
+	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
+	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
+		if $CGI->{campaign};
+	return;
+[/calc]
+
+[if cgi sku]
+[query
+	st=db
+	ml=100000
+	table=transactions
+	arrayref=qual
+	sql="
+		select distinct order_number
+			from  orderline
+			WHERE [scratch tmp_sku_query]
+			[scratch date_limit] [scratch synd_limit]
+	"][/query]
+[/if]
+[query	hashref=main
+	st=db
+	ml=100000
+	table=transactions
+	sql="
+	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date
+		from  transactions
+		WHERE deleted <> '1'
+		[scratch date_limit] [scratch synd_limit]
+		order by order_number
+	"][/query]
+
+[perl tables="store orderline"]
+	my $mary;
+	return <<EOF unless $mary = $Tmp->{main};
+	<TR class=rnorm>
+	<TD VALIGN=top>
+	<H2>Bad query specified, caused error.</H2>
+	</TD>
+EOF
+	$out = '';
+
+	my $skustring = '';
+
+	my $skudisplay = '';
+
+	if(my $qary = $Tmp->{qual}) {
+
+		$skustring = '&sku=';
+		my @skus = split /[\s,\0]+/, $CGI->{sku};
+		$skustring .= join('&sku=', @skus);
+		$skudisplay = join(', ', @skus);
+
+		my %apply;
+		for(@$qary) {
+			$apply{$_->[0]} = 1;
+		}
+		@$mary = grep $apply{$_->{order_number}}, @$mary;
+		my $odb = $Db{orderline};
+		if(! $odb->config('HAS_LIMIT')) {
+			$Tag->error({
+						name => 'Totals',
+						set => 'amounts will be wrong with no SQL',
+					});
+		}
+		else {
+			for my $t (@$mary) {
+				my $q = "SELECT subtotal FROM orderline";
+				$q .= " WHERE order_number = '$t->{order_number}'";
+				$q .= " AND $Scratch->{tmp_sku_query}";
+				my $tary = $odb->query($q);
+				my $cost = 0;
+				for(@$tary) {
+					$cost += $_->[0];
+				}
+				$t->{total_cost} = $cost;
+			}
+		}
+	}
+
+	foreach $line (@$mary) {
+		$total_sales    += $line->{total_cost};
+		$amount = $Tag->currency({}, $line->{total_cost});
+	    $line->{status} = $Tag->loc('', $line->{status});
+		$url = $Tag->area({     href => '__UI_BASE__/order_view',
+								form => "order=$line->{order_number}", });
+		$out .= <<EOF;
+	<TR class=rnorm>
+	<TD VALIGN=top>
+	<A HREF="$url">$line->{order_number}</A>
+	</TD>
+	<TD VALIGN=top>
+	$line->{affiliate}&nbsp;
+	</TD>
+	<TD VALIGN=top>
+	$line->{campaign}&nbsp;
+	</TD>
+	<TD VALIGN=top>
+	$line->{city}, $line->{state}
+	</TD>
+	<TD VALIGN=top>
+	$line->{order_date}
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	$amount
+	</TD>
+	<TD ALIGN="right" VALIGN=top>
+	$line->{status}
+	</TD>
+	</TR>
+EOF
+	}
+		$total_sales  = $Tag->currency({}, $total_sales);
+		$out .= <<EOF;
+<tr class=rborder height=1><td colspan=7></td></tr>
+	<TR class=rnorm>
+	<TD VALIGN=top>
+		[L]GRAND TOTAL[/L]
+	</TD>
+	<TD VALIGN=top>
+	&nbsp;
+	</TD>
+	<TD VALIGN=top>
+	&nbsp;
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	&nbsp;
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	&nbsp;
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	$total_sales
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	&nbsp;
+	</TD>
+	</TR>
+	<tr class=rborder height=1><td colspan=7></td></tr>
+
+EOF
+[/perl]
+</TABLE>
+
+@_UI_STD_FOOTER_@

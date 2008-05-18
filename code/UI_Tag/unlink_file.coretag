@@ -1,0 +1,23 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: unlink_file.coretag,v 1.5 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag unlink_file Order      name prefix
+UserTag unlink_file PosNumber  2
+UserTag unlink_file Version    $Revision: 1.5 $
+UserTag unlink_file Routine    <<EOR
+sub {
+	my ($file, $prefix) = @_;
+#::logDebug("got to unlink: file=$file prefix=$prefix");
+	$prefix = 'tmp/' unless $prefix;
+	return if Vend::File::absolute_or_relative($file);
+	return unless $file =~ /^$prefix/;
+#::logDebug("got to unlink: $file qualifies");
+	unlink $file;
+}
+EOR

@@ -1,0 +1,114 @@
+[set page_title]Auto-wizard[/set]
+[set ui_class]Admin[/set]
+[set help_name]autowizard[/set]
+[set icon_name]icon_pages.gif[/set]
+[set ui_body_extra][/set]
+
+[if cgi script]
+	[auto-wizard compile=1 interpolate=1]
+		[calc reparse=0] return $CGI->{script} [/calc]
+	[/auto-wizard]
+[elsif cgi wizard_name]
+	[auto-wizard name="[cgi wizard_name]"][/auto-wizard]
+[/elsif]
+[/if]
+
+@_UI_STD_HEAD_@
+
+<!-- BEGIN CONTENT -->
+
+[if cgi wizard_name]
+	[auto-wizard show=1][/auto-wizard]
+[else]
+
+
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
+[form-session-id]
+<textarea cols=80 rows=20 name=script></textarea><BR>
+Wizard Name: <input type=text name=wizard_name value="default">
+<input type=submit value="Save wizard">
+<input type=checkbox name=do_now value=1 CHECKED> Do now
+</form>
+<br>
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
+[form-session-id]
+You can create a wizard with a text file like the below, which will create
+one named <b><i>begin</i></b>:<BR>
+<textarea name=script cols=80 rows=44>
+[filter entities]
+begin: test_wizard
+
+1: What is your name and address?
+	fname: First name
+	type: text
+	check: required
+	help: <<EOF
+Some help is needed on this one.
+<br>
+And it has more than one line.
+EOF
+	width: 20
+
+	lname: Last name
+	check: required
+	type: text
+	width: 20
+
+	country: Country
+	type: select
+	lookup_query: select code,name from country order by name
+	database: country
+	default: US
+
+2: What is your city and state?
+perl: <<EOR
+	if( $Values->{country} eq 'CA' ) {
+		$Tag->error( { name => 'country', set => 'Not those hosers! 8-)' });
+		return -1;
+	}
+	else {
+		return 0;
+	}
+EOR
+	address: Address
+	type: textarea
+	height: 4
+	width: 50
+
+	city: City
+
+	state: State
+	type: select
+	lookup_query=i: select state,name from state where country = '[value country]'
+	database: state
+
+
+3: What is fast contact info?
+	phone_day: Daytime phone
+	widget: text
+	width: 15
+
+	email: Email Address
+	check: email
+
+final: Finished collection...
+	page: account
+	mv_action: return
+	remap: address=address1
+	auto: 1
+	template: <<EOF
+<A HREF="{URL}"> This is a fed-in template, use this link</A>
+EOF
+[/filter]
+</textarea><BR>
+Wizard Name: <input type=text name=wizard_name value="default">
+<input type=submit value="Save wizard">
+<input type=checkbox name=do_now value=1 CHECKED> Do now
+</form>
+Clip and past it in to give it a try.
+[/else]
+[/if]
+
+<!-- END CONTENT -->
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

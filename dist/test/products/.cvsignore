@@ -1,0 +1,5 @@
+*.autonumber
+*.gdbm
+*.sql
+composite.asc.*
+site.txt

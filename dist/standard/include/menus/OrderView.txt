@@ -1,0 +1,5 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001					admin/order_view	order=%5Bcgi%20order%5D	View Order		0	View the order							
+002		x002					admin/order_status	order=%5Bcgi%20order%5D	Order Status		0	Change the status of the order, possibly settling with credit card processor, and send email to customer with status update							
+003		x003					admin/flex_editor	item_id=%5Bcgi%20order%5D&mv_data_table=transactions&ui_return_table=transactions&page_title=Edit%20order%20%5Bcgi%20order%5D&ui_return_to=admin/order&order=%5Bcgi%20order%5D	Edit Order		0	Edit the order, possibly re-totalling							
+004		x004					admin/entry	repeat_order=%5Bcgi%20order%5D&pull_customer=1	Repeat this order		0								

@@ -1,0 +1,341 @@
+[set help_name]shipping.data[/set]
+[set ui_class]Admin[/set]
+[seti page_title]Shipping options: edit data for method [cgi ui_shipmode][/seti]
+[seti page_banner]Shipping options: edit data for method <i>[cgi ui_shipmode]</i>[/seti]
+[set page_perm]shipping[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+<!-- read shipping:
+		[calc] $Config->{Shipping_line} = []; return; [/calc]
+	[read-shipping] -->
+
+<!-- do update?: [cgi price_ok]
+	[perl]
+		return if ! $CGI->{price_ok};
+		$CGI->{ui_shipmode} ||= $Values->{ui_shipmode};
+		my $inmode = $CGI->{ui_shipmode};
+		$inmode =~ s/\W+//g;
+		#Log("write inmode=$inmode");
+		my $lines = $Config->{Shipping_line};
+		#Log("write inmode=$inmode, starting with lines=" . scalar @$lines );
+		my $ref;
+		my $idx = -1;
+		my $ptr;
+		my $len;
+		for(@$lines) {
+			$idx++;
+			next unless $_->[0] eq $inmode;
+			$ptr = $idx + 1;
+			$len = 0;
+			for(my $i = 0; $lines->[$ptr + $i]->[0] eq $inmode; $i++) {
+				$len++;
+			}
+			last;
+		}
+		my $master = $lines->[$idx] || {};
+		my $opt = $master->[7] || '';
+		$opt = {} if ! ref $opt;
+		#Log("write inmode=$inmode, ptr=$ptr, len=$len ship_type=$opt->{ui_ship_type}" );
+		if($len) {
+			(@old) = splice (@$lines, $ptr, $len);
+		}
+		my $i = 0;
+		my $del;
+		my $adder;
+		my $done_one_ups;
+		while($CGI->{"mode$i"}) {
+			$modes[$i] = [];
+			if( defined $CGI->{"ui_delete_range$i.x"} ) {
+				$del = $i++;	
+				next;
+			}
+			$modes[$i][0] = $inmode;
+			$modes[$i][1] = $Config->{Shipping_desc}{$inmode};
+			$modes[$i][2] = $master->[2];
+			$modes[$i][3] = $CGI->{"min$i"};
+			$modes[$i][4] = length ($CGI->{"max$i"}) ? $CGI->{"max$i"} : 9999999;
+			my $cost = $CGI->{"cost$i"};
+			$cost =~ s/\0+/ /g;
+			$cost =~ s/\s+$//;
+			$cost =~ s/^\s+//;
+			$cost =~ s/^\!\s*/f /;
+			if(	!	$done_one_ups++
+				and $opt->{ui_ship_type}
+				and $opt->{ui_ship_type} =~ /^UPSE:(.*)/
+				)
+			{
+				my $m = $1;
+				$cost = "f [ups-query mode=$m weight=";
+				$cost .= '"@@TOTAL@'  . '@"';
+				$cost .= qq{ origin="$opt->{origin}"} if $opt->{origin};
+				$cost .= "]";
+			}
+			$modes[$i][5] = $cost;
+			$i++;
+		}
+		if($del) {
+			splice(@modes, $del, 1);
+		}
+		elsif(defined $CGI->{"ui_add_line.x"}) {
+			# append one;
+			#Log("appending at $i");
+			$modes[$i] = [
+					$inmode, 
+					$Config->{Shipping_desc}{$inmode},
+					$master->[2],
+					(defined $modes[$i - 1] ? $modes[$i - 1][4] : 0),
+					9999999,
+					'0',
+					];
+		}
+		$i++;
+		#Log("splicing at $ptr, len $i");
+		splice(@$lines, $ptr, 0, @modes);
+		#Log("write inmode=$inmode, ending with lines=" . scalar @$lines );
+		$Config->{Shipping_line} = $lines;
+		$Scratch->{ui_update_shipping} = 1;
+		return 1;
+	[/perl]
+ -->
+[if scratch ui_update_shipping]
+[set ui_update_shipping][/set]
+<!-- update shipping: [write-shipping] -->
+[/if]
+
+[if cgi ui_bounce_to]
+[bounce page="[cgi ui_bounce_to]"]
+[/if]
+
+<form action="[process]" method=POST>
+[form-session-id]
+<input type=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<input type=hidden NAME=price_ok VALUE="1">
+<input type=hidden NAME=mv_todo VALUE="back">
+
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td colspan=5 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+[perl]
+		$CGI->{ui_shipmode} ||= $Values->{ui_shipmode};
+		my $inmode = $CGI->{ui_shipmode};
+		#Log("ship_data inmode=$inmode");
+		my $lines = $Config->{Shipping_line};
+		my $ref;
+		my (@modes);
+		for(@$lines) {
+			next unless $_->[0] eq $inmode;
+			push (@modes, $_);
+		}
+		
+		my ($master) = shift @modes;
+		#Log("gave: " . join("|", @$master) );
+		my $opt = $master->[7];
+		$opt = {} if ! ref $opt;
+		if ($opt->{ui_ship_type}) {
+				#Log("ui_ship_type: $opt->{ui_ship_type}");
+		}
+		my $algomessage = $master->[2];
+		if ($algomessage =~ /\[subtotal\snoformat=1\]/) {
+			$algomessage = 'total price';
+		}
+		elsif ($algomessage eq 'quantity') {
+			$algomessage = 'total number';
+		}
+		if($algomessage) {
+			$algomessage = <<EOF;
+Calculation is done based on <B>$algomessage</B> of items in cart.
+EOF
+		}
+		my @out;
+		push (@out, <<EOF);
+<tr class=rnorm>
+<td colspan=5 align=left>
+&nbsp;
+<p>
+<b>[cgi ui_shipmode] -- [shipping-desc mode="[cgi ui_shipmode]"]</b>
+<p>
+Borderline values are rounded up the next bracket.
+<p>
+$algomessage
+<p>&nbsp;
+</td>
+</tr>
+
+<tr>
+<td align=left colspan=5 class=rborder><img src="bg.gif" width=1 height=1></td>
+</tr>
+
+<tr class=rnorm>
+<td class=ctitle><INPUT TYPE=hidden NAME=ui_shipmode VALUE="$inmode">Start range</td>
+<td class=ctitle>End range</td>
+<td class=ctitle>Charge type</td>
+<td class=ctitle>Charge amount</td>
+<td> &nbsp; </td>
+</tr>
+EOF
+		my $idx = -1;
+		my $prev_max;
+		@types = (
+			''	=> 'Number',
+			f	=> 'Formula',
+			'!'	=> 'UPS WWW Lookup',
+			x	=> 'Multiply by',
+			u	=> 'Internal UPS',
+			e	=> 'Message',
+		);
+		if(! @modes) {
+			if ($opt->{ui_ship_type} =~ /^UPSE:(.*)/) {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						0,
+						150,
+						"f [ups-query mode=$1 weight=" . '@@TOTAL' . '@@]', 
+						'',
+						$opt,
+					],
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						150,
+						9999999,
+						"e Too heavy for UPS",
+						'',
+						$opt,
+					];
+			}
+			elsif ($opt->{ui_ship_type} =~ /^UPSI/) {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						0,
+						150,
+						"u",
+						'',
+						$opt,
+					],
+					[	$inmode,
+						$master->[1],
+						$master->[2],
+						150,
+						9999999,
+						"e Too heavy for UPS",
+						'',
+						$opt,
+					];
+			}
+			else {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						'',
+						0,
+						9999999,
+						0,
+						'',
+						$opt,
+					];
+			}
+		}
+		for(@modes) {
+			my $ref = $_;
+			$idx++;
+			$ref->[3] = $prev_max 
+				if $ref->[3] < 1 or $ref->[3] > 99999;
+			$ref->[3] = 0 if ! $ref->[3];
+			$ref->[4] = 9999999 if ! length $ref->[4];
+			if ($ref->[4] > 9999998 and ! $modes[$idx + 1]) {
+				$max_display = qq{<INPUT TYPE=hidden NAME=max$idx VALUE=9999999>(infinity)};
+				$class = 'rborder';
+			}
+			else {
+				$max_display = qq{<INPUT size=7 name=max$idx VALUE="$ref->[4]">};
+				$class = 'rnorm';
+			}
+			$out = <<EOF;
+<tr>
+<td class=rborder align=center><input type=hidden name=mode$idx value="$inmode"><input size=7 name=min$idx value="$ref->[3]"></td>
+<td class=$class>
+$max_display
+</td>
+<td class=rnorm>
+
+<select name="cost$idx">
+EOF
+			$ref->[5] =~ s/^\s*([A-Za-z])\s*//;
+			$selector = $1;
+			if($selector eq 'f') {
+				$selector = '!' if $ref->[5] =~ s/\[(ups.query)/&#91;$1/;
+			}
+			$ref->[5] =~ s/"/&quot;/g;
+			$ref->[5] =~ s/\[/&#91;/g;
+			for (my $i = 0; $i < scalar @types; $i += 2) {
+				$out .= qq{<OPTION VALUE="$types[$i]"};
+				$out .= ' SELECTED' if $selector eq $types[$i];
+				$out .= qq{>$types[$i + 1]\n};
+			}
+			$prev_max = $ref->[4];
+			$out .= <<EOF;
+</select>
+</td>
+
+<td class=rnorm>
+<input size=20 name="cost$idx" value="$ref->[5]">
+</td>
+
+<td class=rnorm>
+<input type=image name="ui_delete_range$idx" src="delete.gif" alt="Delete this range" width=20 height=20 border=0>
+</td>
+
+</tr>
+
+EOF
+			push @out, $out;
+		}
+		return join("\n\n", @out);
+[/perl]
+<tr>
+
+<tr>
+<td colspan=5 class=rnorm>
+<INPUT TYPE=image name=ui_add_line src="plus.gif" alt="Add a new range" width=20 height=20 border=0>
+</td>
+</tr>
+
+<tr>
+<td colspan=5 class=rnorm><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 border=0></td>
+</tr>
+
+</table>
+
+<p>
+[set [L]Back[/L]]
+mv_nextpage=__UI_BASE__/ship
+price_ok=0
+[/set]
+
+[set [L]Finished[/L]]
+ui_bounce_to=__UI_BASE__/ship
+[/set]
+
+
+<input type=submit name="price_ok" value="Ok">
+<input type=submit name="mv_click" value="Back">
+<input type=submit name="mv_click" value="Finished">
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
+[comment] $Id: ship_data.html,v 2.5 2006-04-27 21:00:09 jon Exp $ [/comment]

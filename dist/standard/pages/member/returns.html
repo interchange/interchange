@@ -1,0 +1,158 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Returns[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+
+[query st=db arrayref=orders
+		sql="SELECT
+			code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
+			FROM transactions
+			WHERE username = '[data base=session field=username filter=sql]'
+			ORDER by code
+		"][/query]
+[mvasp tables=transactions]
+<%
+	my $uid = $Session->{username};
+
+	if (! $uid) {
+		$Document->write (qq{<h3><font __FFACE__>You are not logged in.</font></h3>});
+		return;
+	}
+
+	my $orders = $Tmp->{orders};
+	
+	if(! $orders or scalar @$orders == 0) {
+		$Document->write( "<p>No orders found for $uid.</p>");
+		return;
+	}
+
+	my $form_session_id = $Tag->form_session_id;
+    my $process_url = $Tag->process;
+
+	HTML <<EOF;
+[L]Please select an order below to continue with the return process.[/L]
+</p>
+				  
+<form action="$process_url" method="POST">
+$form_session_id
+<input type="hidden" name="mv_todo" value="return">
+<input type="hidden" name="mv_nextpage" value="member/returns_processed">
+
+<table cellspacing="0" cellpadding="0" border="1" width="450">
+EOF
+
+	my $header_template = <<'EOF';
+
+<tr>
+	<td valign="bottom">
+		[L]ORDER ID[/L]
+	</td>
+	<td valign="bottom">
+		[L]DATE[/L]
+	</td>
+	<td valign="bottom">
+		[L]TOTAL[/L]
+	</td>
+	<td valign="bottom">
+		[L]STATUS[/L]
+	</td>
+</tr>
+EOF
+
+		my $line_template = <<'EOF';
+<tr>
+	<td valign="top" align="center">
+		<a href="$detail_url">$order_number</a>
+	</td>
+	<td valign="top">
+		$order_date
+	</td>
+	<td align="right" valign="top">
+		$total_cost
+	</td>
+	<td valign="top" align="right">
+		$status
+	</td>
+</tr>
+EOF
+
+	my %hash;
+
+	my @fields = qw/order_number status nitems subtotal shipping
+					handling total_cost payment_method order_date/;
+			
+	my $row;
+
+	my %summary;
+	my $first;
+	my $record;
+	HTML $header_template;
+	foreach $record (@$orders) {
+		my $line = $line_template;
+		@hash{@fields} = @$record;
+		$hash{detail_url} = $Tag->area( {
+									href => 'query/order_return',
+									arg => $hash{order_number},
+								});
+		if($hash{status} =~ /\d/) {
+			my @ids = grep /\S/, split /\s+/, $hash{status};
+			$hash{status} = '';
+			for(@ids) {
+				$hash{status} .= <<EOF;
+<a href="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1=$_&TypeOfInquiryNumber=T">UPS $_</a>
+EOF
+			}
+		}
+		else {
+				$hash{status} = <<EOF;
+$hash{status}
+EOF
+		}
+		for(qw/subtotal shipping total_cost/) {
+			$hash{$_} = $Tag->currency ({ body=> $hash{$_} });
+		}
+		if($hash{handling}) {
+			$hash{handling} = "<br>(handling "								.
+							  $Tag->currency ({ body=> $hash{handling} })	.
+							  ")";
+		}
+		else {
+			$hash{handling} = '';
+		}
+		$line =~ s/\$(\w+)/$hash{$1}/g;
+		HTML $line;
+	}
+
+	HTML "</table></form>";
+%>
+[/mvasp]
+
+<br clear="all">
+
+[seti export][tag export transactions transactions.txt][/tag][/seti]
+[seti export][tag export orderline orderline.txt][/tag][/seti]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

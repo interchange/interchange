@@ -1,0 +1,128 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Quantity Discounts[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+				  
+[fly-list code="[data session arg]"]
+                    
+<table width="65%" border="0">
+<tr class="contentbar1"> 
+  <td>
+    <big>[item-field category] : <b>[item-description]</b></big>
+  </td>
+</tr>
+</table>
+					
+<table width="65%" border="0">
+<tr valign="middle"> 
+  <td align=center> 
+    <table border="0" cellspacing="5" align="center">
+    <tr> 
+      <td valign="center" align="center"> 
+	[if-item-field image]
+	  <IMG SRC="items/[item-field image]" ALT="[item-description]" BORDER="0">
+	[/if-item-field]							  
+      </td>
+      <td valign="center" align="center"> 
+        <table border="0" cellpadding="3" cellspacing="0">
+        <tr> 
+          <td align="center">&nbsp;</td>
+        </tr>									
+        <tr> 
+          <td colspan="2">   
+  	    [item-field comment]
+          </td>
+        </tr>
+	<tr><td>&nbsp;</td></tr>
+
+[seti count][data table=inventory column=quantity key='[item-code]'][/seti]
+[if scratch count eq 0]
+        <tr> 
+          <td>
+	    <b>[L]Out Of Stock[/L]</b>
+	    <a href="[area function/stock_alert [item-code]]">[L]In Stock Notification[/L]</a>
+          </td>
+        </tr>
+[else]
+        <tr> 
+          <td>
+	    <b>In Stock</b>
+	  </td>
+        </tr>
+[/else]
+[/if]									
+        </table>
+      </td>
+    </tr>
+    </table>
+  </td>
+</tr>
+</table>
+					
+<br>			  
+
+[set quantities]1 5 10 25[/set]
+			[calc]
+				$Scratch->{quantities} =~ s/\s+$//;
+				$Scratch->{quantities} =~ s/^\s+//;
+				@things = split /[\s,\0]+/, $Scratch->{quantities};
+				$Scratch->{qp_columns} = scalar @things;
+				$Scratch->{qp_columns}++;
+				return;
+			[/calc]
+
+[loop prefix="part" list="[data session arg]"]
+
+<TABLE width="65%" cellpadding="5">
+[table-organize
+			caption="Quantity Pricing"
+			rows="2"
+			columnize="[scratch qp_columns]"
+			tr.0=|class="contentbar1"|
+			tr.1=|class="maincontent"|
+			cols="[scratch qp_columns]"
+			]
+  <TD>
+    [L]Part No.[/L]
+  </TD>
+  <TD VALIGN=TOP>[part-code]</TD>
+  [loop list="[scratch quantities]"]
+  <TD VALIGN=BOTTOM ALIGN=RIGHT>[loop-code]</TD>
+  <TD VALIGN=TOP ALIGN=RIGHT>
+    [order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</A>	
+  </TD>
+  [/loop]
+[/table-organize]
+</TABLE>
+
+[/loop]
+
+[/fly-list]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

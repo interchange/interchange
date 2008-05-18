@@ -1,0 +1,439 @@
+@_UI_STD_INIT_@
+[value name=mv_data_table set=userdb hide=1]
+[if-mm !tables]
+[set ui_error]
+	[L]Not authorized for customer administration. Contact administrator?[/L]
+[/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+[set ui_class]Customers[/set]
+[set page_title][L]Customer mailing[/L][/set]
+[set help_name]customer.mailing[/set]
+[set page_perm]mailing[/set]
+
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+<script>
+	function selfit (form, hide) {
+		if(hide == undefined)
+			hide = 0;
+		form.hide_textarea.value = hide;
+		form.show_close.value = 0;
+		form.target = '_self';
+		return;
+	}
+
+	function blanktarg (form) {
+		form.hide_textarea.value = 1;
+		form.show_close.value = 1;
+		form.target = '_blank';
+		return;
+	}
+
+	function clearform (form) {
+		if(form == undefined)
+			return;
+		selfit(form);
+		form.mail_to.value = '';
+		form.mail_subject.value = '';
+		form.mail_template.value = '';
+		form.mail_from.value = '';
+		form.mail_reply.value = '';
+		return true;
+	}
+</script>
+
+[calc]
+	my @actions = qw/
+		direct_send
+		download_batch
+		show_email
+	/;
+	my $die = sub {
+		my $msg = shift;
+		$msg = errmsg($msg, @_);
+		for(@actions) {
+			delete $CGI->{$_};
+		}
+		return "<blockquote class=cerror>$msg</blockquote>";
+	};
+	if($CGI->{mv_action} and ! $Values->{mail_to}) {
+		return $die->("[L]Reset to default.[/L]");
+	}
+	if($Values->{mail_subject} !~ /\w/) {
+		return $die->("[L]No subject, cannot send.[/L]");
+	}
+	elsif ($Values->{mail_template} !~ /\w+.*\w+.*\n.*\w+/s) {
+		return $die->("[L]No suitable message to send.[/L]");
+	}
+	return;
+[/calc]
+
+<form action="[process download_name="@@MV_PAGE@@.sh"]" method=POST name=mailform>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action VALUE=go>
+<INPUT TYPE=hidden NAME=hide_textarea VALUE="">
+<INPUT TYPE=hidden NAME=show_close VALUE="">
+[perl tables="userdb __UI_META_TABLE__"]
+	$Config->{NoSearch} = '';
+	my $ary = $Db{userdb}->query("select distinct mail_list from userdb");
+	my @lists;
+	for(@$ary) {
+		push @lists, split /[\s,\0]+/, $_->[0];
+	}
+	my %seen;
+	@lists = sort @lists;
+	@lists = grep !$seen{$_}++ && /\S/, @lists;
+	my $meta = $Tag->meta_record('userdb::mail_list');
+	my $options;
+	if($meta) {
+		$options = $meta->{options};
+	}
+
+	my @out;
+	$options = get_option_hash($options);
+	for(@lists) {
+		next if exists $options->{$_};
+		$options->{$_} = "$_ (???)";
+		$options->{$_} =~ s/,/&#41/g;
+	}
+	@lists = sort { $options->{$a} cmp $options->{$b} } @lists;
+
+	for(@lists) {
+		push @out, "$_=$options->{$_}";
+	}
+	$Scratch->{mail_list_options} = join ",", @out;
+	return;
+[/perl]
+
+
+[if cgi hide_textarea]
+	[if cgi show_close]
+	<input type=button onClick="window.close()" Value="[L]Close window[/L]">
+	[/if]
+[else]
+	[calc]
+		$Values->{mail_to} ||=  $Variable->{MAILING_TO}
+								|| "{FNAME} {LNAME} <{EMAIL}>";
+		$Values->{mail_from} ||= $Variable->{MAILING_FROM}
+							     || q{__COMPANY__ <__EMAIL_SERVICE__>};
+		my $burl  = $Config->{VendURL};
+		my $unsub = "{MV_BASE_URL}?list={MV_LIST}&what={MV_EMAIL}&who={USERNAME}";
+		$Values->{mail_template} =~ s/\s+$//;
+		$Values->{mail_template} =~ s/\r\n/\n/g;
+		$Values->{mail_template} ||= $Variable->{MAILING_TEMPLATE}
+									|| qq{Dear {FNAME} {LNAME},
+		
+<replace with body of message>
+
+Best Regards,
+__COMPANY__ Customer Service
+
+Note: You subscribed to this list ({MV_LIST}) when you placed an order at
+our web site at $burl. You can unsubscribe at any time with the
+URL:
+
+ $unsub
+
+Thanks for your business!
+};
+		return;
+	[/calc]
+<table>
+<tr>
+	<td>
+	[L]From:[/L]
+	</td>
+	<td>
+		<input
+			name=mail_from
+			type=text
+			size=50
+			maxlength="70"
+			value="[value name=mail_from filter=entities keep=1]"
+			>
+	</td>
+</tr>
+<tr>
+	<td>
+	[L]To:[/L]
+	</td>
+	<td>
+		<input
+			name=mail_to
+			type=text
+			size=40
+			maxlength="70"
+			value="[value name=mail_to filter=entities keep=1]"
+			>
+	</td>
+</tr>
+<tr>
+	<td>
+	[L]Subject:[/L]
+	</td>
+	<td>
+		<input
+			name=mail_subject
+			type=text
+			size=50
+			maxlength="70"
+			value="[value name=mail_subject filter=entities keep=1]"
+			>
+	</td>
+</tr>
+<tr>
+	<td>
+	[L]Reply-To:[/L]
+	</td>
+	<td>
+		<input
+			name=mail_reply
+			type=text
+			size=40
+			maxlength="70"
+			value="[value name=mail_reply filter=entities keep=1]"
+			> <I>[L](blank is same as From)[/L]</i>
+	</td>
+</tr>
+<tr>
+<td colspan=2>
+<TEXTAREA name=mail_template cols=80 rows=15>[value name=mail_template filter=entities keep=1]</textarea>
+<br>
+		<b><u>[L]Mailing List[/L]</u>:</b><br>
+[display default="[cgi target_list]" name=target_list type=select options="[scratch mail_list_options]"]
+
+		<input
+			type=submit
+			onClick="checkAll(this.form, 'produce', 1); this.form.produce.value = ''; selfit(this.form)"
+			value="[L]Select list[/L]"
+		>
+		&nbsp;&nbsp;&nbsp;
+		<input
+			type=button
+			onClick="confirm('[L]Reset to defaults?[/L]') && clearform(this.form) && this.form.submit()"
+			value="[L]Clear form[/L]"
+		>
+		<select name=show_members>
+			<option value=0> [L]Don't show list[/L]
+			<option value=1 [selected show_members 1]> [L]Show list members[/L]
+		</select>
+	</td>
+</tr>
+</table>
+[/else]
+[/if]
+<br>
+<br>
+[if cgi mail_template]<!-- update: [update values]-->[/if]
+
+[if !cgi produce]
+<div style="
+			Margin-left: 5%;
+			Width: 600px;
+			[if type=explicit
+				compare=`$CGI->{show_members} && ! $Scratch->{ui_old_browser}`
+			]
+			Height: 100px;
+			Overflow: auto;
+			[/if]
+		">[tmpn tmp_seen][/tmpn][tmpn tmp_users][/tmpn]
+[loop search="
+		fi=userdb
+		st=db
+
+		co=yes
+		op=rm
+		ml=1000
+		tf=email
+		sf=email
+		se=@
+		sf=mail_list
+		se=[cgi target_list]
+		rf=username,fname,lname,company,email,mail_list
+	"] 
+[loop-sub sent_check]
+	$tmp_url ||= $Tag->area({
+							href => '__UI_BASE__/customer_view',
+							form => "view=1",
+						});
+	$tmp_struct ||= $Scratch->{sent_ids} ||= {};
+	my $stuff = shift;
+	my $row = shift;
+	my $list = $CGI->{target_list};
+	my $user = $row->[0];
+	my $email = $row->[4];
+	$email = lc $email;
+	$email =~ s/^\s+//;
+	$email =~ s/\s+$//;
+	if($user_done{$email}++) {
+		Log("Weeded duplicate $email, user $user.");
+		return;
+	}
+	if (my $s = $tmp_struct->{$user}) {
+		 return if $s =~ /\s$list\s/;
+	}
+	$Scratch->{tmp_seen}++;
+	if(! $CGI->{show_members}) {
+		$uary = $Scratch->{tmp_users} ||= [];
+		push @$uary, $user;
+		return;
+	}
+	my $url = $tmp_url . '&' . "customer=$user";
+	$stuff =~ s/HREF=""/href="$url"/;
+	return $stuff;
+[/loop-sub][loop-exec sent_check]
+<input type=checkbox name=produce value="[loop-code]" CHECKED><A href="mailto:[loop-param email]">[loop-param email]</A> -- [loop-param fname] [loop-param lname][if-loop-param company], [loop-param company][/if-loop-param] (<A HREF="">[loop-code]</A>)<br>
+[/loop-exec][/loop]
+[if scratch tmp_users]
+    <input name=produce
+           value="[calc] return join ",", @{$Scratch->{tmp_users}}; [/calc]"
+           type=hidden>
+[/if]
+[if !scratch tmp_seen]
+<blockquote style="font-size: larger">
+You have already sent email to all users on this list. You should not send more
+than one message per day at the very top! Once a month is more appropriate. Imagine
+if someone sent you mail every day!
+<P>
+You will have to turn off your browser or cancel your session to send
+mail to this list again. And it be on your head...
+</blockquote>
+[/if]
+</div>
+<div style="margin-left: 5%">
+	[if value show_members]
+	<P>
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 0)"><img src="__UI_IMG__box_checked.gif" border=0>[L]Check all[/L]</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 1)"><img src="__UI_IMG__box_empty.gif" border=0>[L]Uncheck all[/L]</A>
+	</p>
+	[else]
+		<b>[msg arg.0="[scratch tmp_seen]"]%s users selected.[/msg]</b>
+	[/else]
+	[/if]
+<p>
+<input type=submit name=show onClick="blanktarg(this.form)" value="[L]Preview email[/L]">
+<input type=submit name=download_batch onClick="selfit(this.form, 1)" value="[L]Download Mail Batch[/L]">
+
+[if
+	type=value
+	term=mv_search_match_count
+	op=">"
+	compare="[either]__MAILING_MAX_DIRECT__[or]50[/either]"
+][L](too many matches to send directly)[/L]
+[else]
+<input type=submit name="direct_send" onClick="selfit(this.form, 1)" value="[L]Send now[/L]">
+[/else]
+[/if]
+</div>
+
+[elsif cgi produce]
+
+<div style="margin-left: 5%">
+	[perl]
+		my @list = grep /\S/, split /[\s,\0]+/, $CGI->{produce};
+		my @messages;
+		my @out;
+		my $list = $CGI->{target_list};
+
+		my %done;
+
+		my $opt = { table => 'userdb', hash => 1};
+		my $body = $Values->{mail_template};
+		$body =~ s/\r\n/\n/g;
+		$body =~ s/\r/\n/g;
+		$template = "From: $Values->{mail_from}\n";
+		$template .= "To: $Values->{mail_to}\n";
+		$template .= "Subject: $Values->{mail_subject}\n";
+		$template .= "Reply-To: $Values->{mail_reply}\n"
+			if $Values->{mail_reply} =~ /\w\w+/;
+		$template .= "\n$body";
+		my $burl = $Variable->{MAILING_UNSUB} || "$Config->{VendURL}/query/unsub";
+		for my $user (@list) {
+			$opt->{key} = $user;
+			my $record = $Tag->data($opt);
+			next unless $record;
+			next unless $record->{email} =~ /\S/;
+			next if $done{$record->{email}}++;
+			$record->{mv_base_url} = $burl;
+			$record->{mv_email}    = $Tag->filter('urlencode', $record->{email});
+			$record->{mv_list}     = $list;
+			my $msg = $Tag->uc_attr_list($record, $template);
+			$msg =~ s/\s*$/\n/;
+			push @messages, [ $user, $msg ];
+		}
+		my $out;
+
+		return if ! @messages;
+		if($CGI->{direct_send}) {
+			my $s = $Scratch->{sent_ids} ||= {};
+			for(@messages) {
+				my ($u, $b) = @$_;
+				if( $s->{$u} =~ /\s$list\s/) {
+					push @out, errmsg("Already sent %s email to %s", $list, $u);
+				}
+				else {
+					my $msg = errmsg("Send to %s: ", $u);
+					my $opt = { raw => 1, body => $b };
+					if( $Tag->email_raw({}, $b) ) {
+						$msg .= errmsg('success');
+						$s->{$u} ||= '';
+						$s->{$u} .= " $list ";
+					}
+					else {
+						$msg .= errmsg('FAILED');
+					}
+					push @out, $msg;
+				}
+			}
+			$out = join "<br>\n", @out;
+			$Tag->log({
+						type => 'text',
+						file => 'logs/mailing',
+						body => join("\n",
+										$Tag->time({format => '%c'}),
+										"Sent mailing to list '$list':\n",
+										$template,
+										"\nResults:\n",
+										@out,
+										'####END MAILING ####',
+										''),
+					});
+		}
+		elsif($CGI->{download_batch}) {
+			@out = map { $_->[1] } @messages;
+			$out = "#!/bin/sh\n\ncat <<EOF | $Config->{SendMailProgram} -t\n";
+			$out .= join "EOF\n\ncat <<EOF | $Config->{SendMailProgram} -t\n", @out;
+			$out .= "EOF\n\n";
+			$Tag->deliver( { body => \$out } );
+			$Tag->tmpn('delivered_mail_batch');
+			$Scratch->{delivered_mail_batch} = 1;
+			return;
+		}
+		else {
+			@out = map { $_->[1] } @messages;
+			my $divintro = q{<div style="width: 80%; border: 2pt gray solid; background: #EEEEEE; "><xmp>};
+			my $divend = qq{</xmp></div>\n};
+			$out = $divintro;
+			$out .= join "$divend$divintro", @out;
+			$out .= $divend;
+		}
+
+		return $out;
+
+	[/perl]
+</div>
+[/elsif]
+[/if]
+[if cgi show_close]
+<p>
+	<input type=button onClick="window.close()" Value="Close window">
+[/if]
+</form>
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.11 2007-07-06 11:48:19 pajamian Exp $ -->

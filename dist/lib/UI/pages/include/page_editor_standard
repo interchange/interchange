@@ -1,0 +1,381 @@
+[content-editor name="[cgi ui_name]" ui_page_template="[cgi ui_page_template]" type="page" editor-style=standard]
+[pages]
+
+[calcn]
+	$page_content = <<'EoPA';
+[page-param CONTENT]
+EoPA
+	$page_preamble = <<'EoPB';
+[page-param PREAMBLE]
+EoPB
+	$page_postamble = <<'EoPC';
+[page-param POSTAMBLE]
+EoPC
+	for(\$page_content, \$page_preamble, \$page_postamble) {
+		chop $$_;
+	}
+	return;
+[/calcn]
+
+<script language=JavaScript>
+function changed (code, field) {
+	var name = "changed_" + code;
+	silent_revert();
+	var cchanged =  document.getElementById('cchanged');
+	if(cchanged != undefined) {
+		var lab = field;
+		if(lab == '' || lab == undefined)
+			lab = code;
+		cchanged.innerHTML += '<br><span class=cmessage>Changed ' + lab + '</span>';
+	}
+	cbox = document.getElementById(name);
+	if(cbox != undefined)
+		cbox.checked = true;
+}
+
+function submitted (code) {
+	var name = "changed_" + code;
+	silent_revert();
+	cbox = document.getElementById(name);
+	if(cbox != undefined)
+		cbox.checked = false;
+	return true;
+}
+
+function silent_revert () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML = '[L]Page Attributes/Controls[/L]';
+	return true;
+}
+
+// Don't remove this, called with forms genned by UI::ContentEditor
+function silent_submit () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML
+		= '[L]Page Attributes/Controls[/L] <span class=cmessage>[L]Change saved[/L]</span>';
+	return true;
+}
+
+function change_alert (code) {
+	if(code.length == 0) {
+		code = 'a new component';
+	}
+	var status;
+	status = confirm('You have changed ' + code + ". Choosing OK will lose these changes. Are you sure?");
+	return status;
+}
+
+function check_change () {
+	var el;
+	silent_revert();
+	el = document.getElementById('changed_[page-param ui_name]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page controls');
+	}
+[components]
+	[if-comp-param code]
+	el = document.getElementById('changed_[comp-param code]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('[comp-param code]');
+	}
+	[else]
+	el = document.getElementById('changed_CONTENT');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page content');
+	}
+	[/else]
+	[/if-comp-param]
+[/components]
+	el = document.getElementById('[page-param ui_name]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page controls');
+	}
+	el = document.getElementById('changed_PREAMBLE');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the PREAMBLE');
+	}
+	el = document.getElementById('changed_POSTAMBLE');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the POSTAMBLE');
+	}
+	return true;
+}
+
+function layback (nam) {
+	var el = document.getElementById(nam);
+
+	if(el != undefined) {
+		el.style.background = '#CCCCCC';
+		el.style.borderStyle = 'dotted';
+		el.style.borderWidth = 'thin';
+	}
+}
+
+function standout (nam) {
+	var el = document.getElementById(nam);
+
+	if(el != undefined) {
+		el.style.background = '#EEEEEE';
+		el.style.borderStyle = 'solid';
+		el.style.borderWidth = 'thin';
+	}
+}
+
+function content_win () {
+	window.name = 'mainwindow[scratch window_name]';
+	var url = '[area
+					href="admin/page_portion"
+					form=|
+						ui_source_form=content_edit
+						ui_source_var=ui_body_text
+						page=[page-param ui_name]
+					|]';
+	window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=600,height=480');
+	return void(0);
+}
+
+var visdone = new Array;
+
+</script>
+
+	<form name=overall action="[area @@MV_PAGE@@]" method=POST>
+	<input type=hidden name=ui_content_op value="modify">
+	<input type=hidden name=ui_name value="[page-param ui_name]">
+	<input type=hidden name=ui_type value=page>
+	<input type=hidden name=mv_action value="back">
+	<table width="98%">
+	<tr>
+		<td>
+			[L]Name[/L]: <b>[page-param ui_name]</b><BR>
+			[L]Source[/L]: [page-param ui_source]
+		[page-sub foo_sub]
+			shift;
+			my $item = shift;
+			## Set up access to the controls
+			for(keys %$item) {
+				$control{$_} = $item->{$_};
+			}
+			return;
+		[/page-sub]
+		[page-exec foo_sub][/page-exec]
+		</td>
+		<td id=cchanged
+			 style="
+			 	overflow: auto;
+			">
+		</td>
+		<td align=right>
+			[L]Template[/L]: [display
+							name=ui_page_template
+							type=select
+							default="[page-param ui_page_template]"
+							passed="[content-info templates=1]"
+							]<br>
+
+[set [L]Publish[/L]]
+ui_content_op=publish
+mv_nextpage=__UI_BASE__/content
+[/set]
+[set [L]Cancel[/L]]
+ui_content_op=cancel
+mv_nextpage=__UI_BASE__/content
+[/set]
+[set [L]Preview[/L]]
+ui_content_op=preview
+mv_nextpage=__UI_BASE__/content_preview
+[/set]
+<input
+	style="font-weight: bold"
+	type=submit onClick="return check_change()"
+	name="mv_click"
+	value="[L]Publish[/L]"
+> &nbsp;
+<input
+	type=submit
+	onClick="return confirm(
+			'This will destroy all edits you have made to this page '
+			+ 'since the last Publish operation.\n Are you sure?'
+		)"
+	name="mv_click"
+	value="[L]Cancel[/L]"
+> &nbsp;
+<input
+	type=submit
+	name="mv_click"
+	value="[L]Preview[/L]"
+> &nbsp;
+<input
+	type=submit
+	onClick="return confirm(
+			'[L]This may delete components from your configuration.[/L]' +
+			'[L]Continue?[/L]'
+		)"
+	value="[L]Change template[/L]"
+
+			</td>
+	</tr>
+	</table>
+
+	</form>
+
+[page-calc]
+	$page_content = <<'EoPA';
+[page-param CONTENT]
+EoPA
+	$page_preamble = <<'EoPB';
+[page-param PREAMBLE]
+EoPB
+	$page_postamble = <<'EoPC';
+[page-param POSTAMBLE]
+EoPC
+	for(\$page_content, \$page_preamble, \$page_postamble) {
+		chop $$_;
+	}
+	return;
+[/page-calc]
+
+[tabbed-display
+	ui-style=1
+    start-at-index="[cgi start_at_index]"
+    panel-shade=f
+    panel-width="[either][cgi panel_width][or]100%[/either]"
+    tab-width=160
+]
+
+
+[tabbed-panel [L]Content (source edit)[/L]]
+
+		[table-editor
+			action=return
+			height.ui_body_text="38"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			form-name=content_edit
+			href="silent/ce_modify"
+			item_id="CONTENT"
+			js_changed=changed
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content|
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			panel-style="padding: 5; vertical-align: top"
+			no-table-meta=1
+			override.ui_body_text=`$page_content`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			top-buttons-rows=1
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			ui-style=0
+			widget.ui_body_text="textarea"
+			form-extra=|
+				onSubmit="submitted('CONTENT'); return check_change()"
+				onReset="submitted('CONTENT')"
+			|
+		][/table-editor]
+
+[/tabbed-panel]
+
+[tabbed-panel [L]Page Controls[/L]]
+ <a href="[area
+ 			href="admin/flex_editor"
+			form="
+				mv_data_table=mv_metadata
+				item_id=standard_page_editor::ui_control
+				ui_data_fields=code extended.control_fields
+				ui_te_widget:extended.control_fields=textarea_10_40
+				ui_te_label:extended.control_fields=Constant fields for inclusion
+				ui_return_to=@@MV_PAGE@@
+				ui_return_to=ui_name=[cgi ui_name]
+			"]">Add fields</a>
+		[page-param _editor_table]
+[/tabbed-panel]
+
+[tabbed-panel [L]Components[/L]]
+<span class=cerror>Warning: changing component refreshes page.</span>
+[components]
+	[if-comp-param where]
+	<div class=titlebox>[L]Component[/L] [comp-param component]</div>
+	[comp-param _editor_table]
+	[/if-comp-param]
+[/components]
+[/tabbed-panel]
+
+[tabbed-panel [L]Preamble[/L]]
+		[table-editor
+			action=return
+			height.ui_body_text="10"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			href="silent/ce_modify"
+			item_id="PREAMBLE"
+			js_changed=changed
+			label.ui_body_text="&nbsp;&nbsp;&nbsp;Preamble"
+			mv_nextpage=@@MV_PAGE@@
+			no-table-meta=1
+			no_meta=1
+			nocancel=1
+			notable=1
+			override.ui_body_text=`$page_preamble`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			widget.ui_body_text="textarea"
+			width.ui_body_text="100%"
+			form-extra=|
+				onSubmit="submitted('PREAMBLE'); return check_change()"
+				onReset="submitted('PREAMBLE')"
+			|
+		/]
+[/tabbed-panel]
+
+[tabbed-panel [L]Postamble[/L]]
+		[table-editor
+			action=return
+			height.ui_body_text="30"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			href="silent/ce_modify"
+			item_id="POSTAMBLE"
+			js_changed=changed
+			label.ui_body_text="&nbsp;&nbsp;&nbsp;Postamble"
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			top-buttons=1
+			no-table-meta=1
+			override.ui_body_text=`$page_postamble`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			ui-style=0
+			widget.ui_body_text="textarea"
+			form-extra=|
+				onSubmit="submitted('POSTAMBLE'); return check_change()"
+				onReset="submitted('POSTAMBLE')"
+			|
+		][/table-editor]
+[/tabbed-panel]
+[/tabbed-display]
+
+[/pages]
+[/content-editor]
+[comment]
+<xmp>
+[dump content_edit]
+</xmp>
+[/comment]

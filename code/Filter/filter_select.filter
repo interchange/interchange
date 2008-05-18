@@ -1,0 +1,32 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: filter_select.filter,v 1.3 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef calculated Filter
+CodeDef calculated Alias filter_select
+CodeDef filter_select Filter
+CodeDef filter_select Description Auto-select filter
+CodeDef filter_select Visibility private
+CodeDef filter_select Version $Revision: 1.3 $
+CodeDef filter_select Routine <<EOR
+sub {
+	## This replaces the calculated filter for the survey
+	## Selects an appropriate filter based on the widget type
+	my $wid = $CGI->{type};
+	if($wid =~ /fillin/) {
+		return 'nullselect';
+	}
+	elsif($wid =~ /select.*multip/) {
+		return 'null_to_comma';
+	}
+	elsif ($wid =~ /checkbox/) {
+		return 'checkbox null_to_comma';
+	}
+	return '';
+}
+EOR

@@ -1,0 +1,110 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Select country[/L][/tmp]
+
+[if value country]
+	[if !cgi country_reset]
+	[bounce href="[area href=ord/shipping secure=1]"]
+	[/if]
+[/if]
+
+@_NOLEFT_TOP_@
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+<form action="[area href="ord/shipping" secure=1]" name=checkout>
+[form-session-id]
+<input type=hidden NAME=mv_action        value=return>
+<input type=hidden NAME=mv_nextpage      value="ord/shipping">
+<input type=hidden NAME=mv_failpage      value="ord/country">
+<input type=hidden name=mv_form_profile  value="Check_country">
+
+<table width="95%" align=center>
+<tr>
+  <td align="left" width="100%" align=center>
+
+    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+    <P align=left>
+        <B>[L]There were errors in your last submission[/L]:<br>
+        <blockquote>
+        <FONT color="__CONTRAST__">
+                [error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
+        </font>
+        </blockquote>
+        </p>
+        <p>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
+    </p>
+    [/if]
+
+[set Check_country]
+	&fatal=yes
+	country=required
+[/set]
+
+	</td>
+  </tr>
+  <tr>
+	<td>
+
+	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large">
+			Country selection
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px">
+
+	  <table border=0 align="center" cellspacing=0 width="100%">
+		<tr>
+		  <td colspan="4">&nbsp;</td>
+		</tr>
+	  <tr>
+		<td align="right">
+		  [L]Country[/L]
+		</td>
+		<td colspan="3">
+		  [display
+		  		name=country
+		  		type=select
+				default=__SHIP_DEFAULT_COUNTRY__
+				value=`$Values->{country}`
+				lookup_query="select code,name from country where shipmodes <> '' order by name"
+		  ]
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan="3">
+		<br>
+				<input type=submit value="[L]Next[/L] --&gt;" class=button3 style="font-weight: bold">
+		</td>
+	  </tr>
+	  <tr>
+		<td colspan=4>&nbsp;</td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+
+
+		</td>
+	  </tr>
+			
+	  [tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+	</td>
+  </tr>
+</table>
+</form>
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

@@ -1,0 +1,47 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: backup_file.coretag,v 1.5 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag backup-file Order     file
+UserTag backup-file AddAttr
+UserTag backup-file Version   $Revision: 1.5 $
+UserTag backup-file Routine   <<EOR
+require File::Copy;
+require File::Path;
+require File::Basename;
+sub {
+	my ($file, $opt) = @_;
+	my $bu_file = "backup/$file";
+	$bu_file =~ s://+:/:g ;
+	$bu_file =~ m:(.*)/: ;
+	my $bu_dir = $1;
+	eval {
+		die ::errmsg("Cannot figure out backup directory from %s", $bu_file)
+			if ! $bu_dir;
+		if (! -d $bu_dir) {
+			File::Path::mkpath($bu_dir)
+				or die ::errmsg("Cannot make backup directory %s: %s", $bu_dir, $!);
+		}
+		if (-f $bu_file) {
+			my $fn = $bu_file;
+			$fn =~ s:.*/::;
+			UI::Primitive::rotate($fn, { Directory => $bu_dir } )
+				or die ::errmsg("Cannot make backup of %s: %s", $bu_file, $!);
+		}
+#::logDebug("ready to copy $file to $bu_file");
+		File::Copy::copy($file, $bu_file)
+			or die ::errmsg("Copy %s to %s: %s", $file, $bu_file, $!);
+	};
+	if ($@) {
+		$::Scratch->{ui_error} = $@;
+		::logError($::Scratch->{ui_error});
+		return undef;
+	}
+	return 1;
+}
+EOR

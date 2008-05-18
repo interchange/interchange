@@ -1,0 +1,115 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Edit Page Content[/L][/tmp]
+
+[set bounce_error][/set]
+[set bounce_success][/set]
+[set pagename][/set]
+[set pagedata][/set]
+
+[if !scratch dealer]
+[error name=edit_permission set="Not authorized to edit pages, not dealer=[scratch dealer]."]
+[bounce page=admin/edit_error]
+[/if]
+
+[perl]
+	my $pn = $CGI->{page_name};
+	$pn =~ s/\.html$//;
+	my $fn = "pages/$pn.html";
+	if(! -f $fn) {
+		$Tag->error({ name => 'edit_page', set => "$fn does not exist"});
+		$Scratch->{bounce_error} = 1;
+	}
+
+	my $pagedata = $Tag->file($fn);
+	my $preamble;
+	my $postamble;
+
+	(
+		$pagedata =~ s{(.*)<!--+\s*BEGIN\s+CONTENT\s*--+>\s*}{}is
+			and 
+		$preamble = $1
+			and
+		$pagedata =~ s{\s*<!--+\s*END\s+CONTENT\s*--+>(.*)}{}is
+			and
+		$postamble = $1
+	)
+	or do {
+			my $msg = "$fn has no content markers. Contact admin.";
+			$Tag->error({ name => 'edit_page', set => $msg});
+			$Scratch->{bounce_error} = 1;
+	};
+
+	my $editable;
+	if($preamble =~ m{\[(seti?|tmpn?)\s+editable\s*\](.*?)\[/\1\]}) {
+#Log("Found editable marker=$1 editable=$2 preamble length=" . length($preamble));
+		$editable = $2;
+		$editable =~ s/^\s+//;
+		$editable =~ s/\s+$//;
+	}
+	else {
+#Log("Didn't find preamble length=" . length($preamble));
+	}
+
+	unless ($editable) {
+			my $msg = "$fn is not set to be editable. Contact admin.";
+			$Tag->error({ name => 'edit_page', set => $msg});
+			$Scratch->{bounce_error} = 1;
+			return;
+	}
+
+	if($CGI->{page_edit}) {
+		## We are writing the page presuming it is allowed.
+		if(! $Scratch->{allowed_pages}{$pn}) {
+			my $msg = "$pn was not loaded in this session. Contact admin.";
+			$Tag->error({ name => 'edit_page', set => $msg});
+			$Scratch->{bounce_error} = 1;
+			return;
+		}
+
+		my $newdata = $CGI->{page_data};
+		$newdata =~ s/\r\n/\n/g;
+
+		my $newpage = join "", 
+						$preamble, 
+						"<!-- BEGIN CONTENT -->\n",
+						$newdata,
+						"\n<!-- END CONTENT -->",
+						$postamble;
+		$Tag->write_relative_file($fn, $newpage);
+		$Scratch->{bounce_success} = 1;
+		$Scratch->{bounce_page} = $pn;
+	}
+	else {
+		$Scratch->{allowed_pages} ||= {};
+		$Scratch->{allowed_pages}{$pn} = 1;
+	}
+
+	$Scratch->{pagename} = $pn;
+	$Scratch->{pagedata} = $pagedata;
+	return;
+
+[/perl]
+
+[bounce page=admin/edit_error if="[scratch bounce_error]"]
+[bounce page="[scratch bounce_page]" if="[scratch bounce_success]"]
+
+@_NOLEFT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<form action="[process href=@@MV_PAGE@@]" method=POST NAME=edit_page>
+[form-session-id]
+<input type=hidden name=page_edit value="1">
+<input type=hidden name=page_name value="[scratch pagename]">
+[display type=textarea width=80 height=50 name=page_data value="[scratch pagedata]"]
+<br>
+<input type=submit value="Change">
+</form>
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

@@ -1,0 +1,593 @@
+#### begin order logging of transaction ID [value mv_transaction_id] #####
+[tmp transaction_record]
+
+[comment]
+	First we dump the order to a file to track closely if something goes wrong.
+[/comment]
+[write-relative-file file="orders/session/[value mv_transaction_id]/[data session id].dump" interpolate=1][dump][/write-relative-file]
+
+[comment]
+	Now we initialize some stuff. We set the DB to write mode, and set
+	some variables to known values.
+[/comment]
+
+[tmpn auto_create][/tmpn]
+[loop list="transactions orderline inventory userdb"]
+[flag type=write table="[loop-code]"]
+[/loop]
+Total order: [total-cost]
+Payment processing...payment_method=[value mv_order_profile]
+[set do_payment][/set]
+[set do_invoice][/set]
+
+[try]
+
+[comment]
+	Handling of payment certificates. We set the temporary total, and the
+	amount remaining to be paid by any other payment method.
+
+	At the top, we initialize some variables.
+[/comment]
+
+	[tmp tmp_total][total-cost noformat=1][/tmp]
+	[set charge_total_message][/set]
+	[set pay_cert_total][/set]
+	[tmp tmp_remaining][total-cost noformat=1][/tmp]
+	[calc]
+		$Tag->tmp('certs_to_use') ;
+		if($Values->{use_pay_cert}) {
+			my @things = split /\0/, $Values->{use_pay_cert};
+			$Scratch->{certs_to_use} = join ",", @things;
+		}
+		elsif($Values->{mv_order_profile} eq 'pay_cert') {
+			$Scratch->{certs_to_use} = $Scratch->{pay_cert_code};
+		}
+		return;
+	[/calc]
+
+	[if scratch certs_to_use]
+		Redeeming payment certs: [scratch certs_to_use]
+		[seti tmp_remaining][pay-cert-redeem
+								certs="[scratch certs_to_use]"
+								die=1
+							][/seti]
+		[if scratch tmp_remaining eq '']
+			[calc]
+				die errmsg("Gift cert authorization failed.") . "\n";
+			[/calc]
+		[/if]
+		Amount remaining: [scratch tmp_remaining]
+	[/if]
+[/try]
+
+[catch error-set="Payment process" error-scratch="mv_route_failed"]
+	There was an error accepting payment: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
+[try]
+[if value mv_order_profile eq pay_cert]
+	[if scratch tmp_remaining == 0]
+		Fully paid by payment cert.
+	[else]
+		Not enough value on payment cert.
+		[calc]
+			die("Not enough value on payment certificates.");
+		[/calc]
+	[/else]
+	[/if]
+[elsif scratch tmp_remaining == 0]
+	Fully paid by payment cert.
+[/elsif]
+[elsif value mv_order_profile eq postal]
+	[comment]Sales order only[/comment]
+	Payment: [value name=mv_payment set="Check or Money Order (will call)"]
+[/elsif]
+[elsif value mv_order_profile eq purchase_order]
+	limit=[scratch tmp_climit]
+	total=[data session latest_total]
+	[perl userdb]
+		return unless length($Scratch->{tmp_climit});
+		my $limit = $Tag->data( 'userdb', 'credit_limit', $Session->{username});
+		my $minus	= $Session->{latest_total};
+		$minus = -$minus;
+		my $expect	= $limit + $minus;
+		Log("Access to userdb worked... limit=$limit minus=$minus expect=$expect");
+		$Tag->data(
+						'userdb',
+						'credit_limit',
+						$Session->{username},
+						{
+							value => $minus,
+							increment => 1,
+						}
+					);
+		my $remain = $Tag->data( 'userdb', 'credit_limit', $Session->{username});
+		Log("Write to userdb worked...expect='$expect' remain='$remain'");
+		if ($expect ne $remain) {
+			die errmsg(
+				"error setting credit limit! Limit was %s, subtract %s, got %s, expect %s.\n",
+				$limit,
+				$Session->{latest_total},
+				$remain,
+				$expect,
+				);
+		}
+		$Scratch->{credit_limit} = $remain;
+		return "Credit limit was=$limit\nCredit limit now=$remain\n";
+	[/perl]
+[/elsif]
+[elsif value mv_order_profile eq online_check]
+	[if variable MV_ONLINE_CHECK_MODE]
+	[calc]
+		return if $Scratch->{tmp_total} == $Scratch->{tmp_remaining};
+		my $msg = sprintf "Your checking account was charged %.2f", $Scratch->{tmp_remaining};
+		$Scratch->{pay_cert_total} = $Scratch->{tmp_total} - $Scratch->{tmp_remaining};
+		$Scratch->{charge_total_message} = $msg;
+		return "Check will be written for $Scratch->{tmp_remaining}";
+	[/calc]
+		Online check with payment mode=[var MV_ONLINE_CHECK_MODE]
+		[tmp name="charge_succeed"][charge route="[var MV_ONLINE_CHECK_MODE]" amount="[scratch tmp_remaining]" order_id="[value mv_transaction_id]" method="[var MV_ONLINE_CHECK_METHOD]"][/tmp]
+		[if scratch charge_succeed]
+		[then]
+			[set do_invoice]1[/set]
+			[set do_payment]1[/set]
+			Real-time online check succeeded. ID=[data session payment_id] amount=[scratch tmp_remaining]
+		[/then]
+		[else]
+			Real-time online check FAILED. Reason: [data session payment_error]
+			[calc]
+				for(qw/
+						charge_total_message
+						pay_cert_total
+				/)
+				{
+					delete $Scratch->{$_};
+				}
+				die errmsg(
+						"Real-time online check failed. Reason: %s\n",
+						errmsg($Session->{payment_error}),
+					);
+			[/calc]
+		[/else]
+		[/if]
+	[else]
+		[set do_invoice]1[/set]
+	[/else]
+	[/if]
+[/elsif]
+[elsif value mv_order_profile eq cod]
+	[comment] do nothing [/comment]
+[/elsif]
+[elsif variable MV_PAYMENT_MODE]
+	[calc]
+		return if $Scratch->{tmp_total} == $Scratch->{tmp_remaining};
+		my $msg = sprintf "Your credit card was charged %.2f", $Scratch->{tmp_remaining};
+		$Scratch->{pay_cert_total} = $Scratch->{tmp_total} - $Scratch->{tmp_remaining};
+		$Scratch->{charge_total_message} = $msg;
+		return "Credit card will be charged $Scratch->{tmp_remaining}";
+	[/calc]
+	Charging with payment mode=[var MV_PAYMENT_MODE]
+	[tmp name="charge_succeed"][charge route="[var MV_PAYMENT_MODE]" amount="[scratch tmp_remaining]" order_id="[value mv_transaction_id]"][/tmp]
+	[if scratch charge_succeed]
+	[then]
+	[set do_invoice]1[/set]
+	[set do_payment]1[/set]
+	Real-time charge succeeded. ID=[data session payment_id] amount=[scratch tmp_remaining]
+	[/then]
+	[else]
+	Real-time charge FAILED. Reason: [data session payment_error]
+	[calc]
+		for(qw/
+				charge_total_message
+				pay_cert_total
+		/)
+		{
+			delete $Scratch->{$_};
+		}
+		die errmsg(
+				"Real-time charge failed. Reason: %s\n",
+				errmsg($Session->{payment_error}),
+			);
+	[/calc]
+	[/else]
+	[/if]
+[/elsif]
+
+[else]
+	Offline credit card [value mv_credit_card_type] [value mv_credit_card_reference].
+	Payment: [value name=mv_payment set="credit_card"]
+[/else]
+[/if]
+
+[calc]
+	 $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g;
+	 return;
+[/calc]
+
+[/try]
+
+[catch error-set="Payment process" error-scratch="mv_route_failed"]
+	There was an error accepting payment: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
+[comment]
+	Now we have accepted payment, update the order number.
+[/comment]
+
+Set order number in values: [value
+						name=mv_order_number
+						set="[counter 
+								name=`	
+										$Session->{current_route}{counter_name}
+										|| $Session->{current_route}{counter}
+										|| 'etc/order.number'
+									`
+								sql=`$Session->{current_route}{sql_counter}`
+								start=`$Session->{current_route}{first_order_number}`
+								date=`$Session->{current_route}{date_counter}`
+							]"
+					]
+Set order number in session: [calc]
+						$Session->{mv_order_number} = $Values->{mv_order_number};
+					[/calc]
+
+[if type=explicit compare=`
+		if($Session->{admin} and $Values->{order_desk_entry}) {
+			## This is ordered from admin, don't login
+			## We scrub that order_desk_entry value below if not admin
+			return 0;
+		}
+		delete $Values->{order_desk_entry};
+		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
+		return 0;
+		`]
+[try]
+	[if session logged_in]
+		[userdb function=logout clear=0 clear_cart=0]
+	[/if]
+	[tmp auto_create]1[/tmp]
+    [calcn]
+        $Tag->tmp('tmp_pass');
+        for(qw/ zip phone_day phone_night /) {
+            my $pass = $Values->{$_};
+            $pass =~ s/\s+//g;
+            next if length($pass) < 4;
+            $Scratch->{tmp_pass} = $pass;
+        }
+	
+		my @lets = ('A' .. 'Z', '0 .. 9', 'a' .. 'z');
+		$Scratch->{tmp_pass} .= $lets[ rand @lets ]
+			while length($Scratch->{tmp_pass}) < 5;
+        return;
+    [/calcn]
+    [if type=explicit compare=|
+        [userdb
+            function=new_account
+                assign_username=1
+                    password='[scratch tmp_pass]'
+                        verify='[scratch tmp_pass]'
+        ]
+        |]
+        [seti mv_autocreate]
+            mv_username=[data session username]
+            mv_password=[scratch tmp_pass]
+        [/seti]
+        Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
+    [else]
+    Auto-create of user failed.
+    [perl] die errmsg("Auto-create of user failed."); [/perl]
+    [/else]
+    [/if]
+[/try]
+[catch error-set="Customer record creation" error-scratch="mv_route_failed"]
+There was an error adding you to the customer table.
+[/catch]
+
+[/if]
+
+[if value order_desk_entry]
+[try]
+	[tmpn tmp_compare][/tmpn]
+	[tmp tmp_username][data table=userdb col=username key="[value customer_id]"][/tmp]
+	[if !scratch tmp_username]
+		[tmp hide_status][userdb
+							function=new_account
+							no-login=1
+							assign-username=1
+							password='[value zip]'
+							verify='[value zip]'
+		][/tmp]
+		[tmp tmp_username][data session auto_created_user][/tmp]
+		[if scratch hide_status]
+			Auto-created user [scratch tmp_username], no login.
+			[userdb function=save scratch=NONE username="[scratch tmp_username]" hide=1]
+		[/if]
+	[/if]
+
+	[value name=customer_id set="[scratch tmp_username]" hide=1]
+	[if !value customer_id]
+	Auto-create of user failed. Reason: [data session failure]
+	[perl] die errmsg("Auto-create of user failed. Reason: %s", $Session->{failure}) [/perl]
+	[/else]
+	[/if]
+[/try]
+[catch error-set="Customer record creation" error-scratch="mv_route_failed"]
+There was an error adding to the customer table.
+[/catch]
+
+[/if]
+
+
+[comment][perl] Log("Starting report."); [/perl][/comment]
+
+[try]
+
+[if value mv_same_billing]
+[loop list="lname fname company address1 address2 city state zip country"]
+[tmp tmp_[loop-code]][/tmp]
+[/loop]
+[else]
+[loop list="lname fname company address1 address2 city state zip country phone"]
+[tmp tmp_[loop-code]][value name=b_[loop-code] filter="strip mac"][/tmp]
+[/loop]
+[/else]
+[/if]
+
+[if value order_desk_entry]
+	[tmp tmp_username][value customer_id][/tmp]
+	[tmp tmp_source][value name=salesperson default=ORDER_DESK][/tmp]
+	Order desk entry, set next page to: [cgi name=mv_nextpage set="admin/order_view"]
+[else]
+	[tmp tmp_username][data session username][/tmp]
+	[tmp tmp_source][data session source][/tmp]
+[/else]
+[/if]
+
+[seti total_cost][total-cost noformat=1][/seti]
+Add main order [value mv_order_number] to transactions:
+[import table=transactions type=LINE continue=NOTES no-commit=1]
+code: [value mv_order_number]
+store_id: __STORE_ID__
+order_number: [value mv_order_number]
+session: [data session id]
+username: [scratch tmp_username]
+shipmode: [value mv_shipmode] ([shipping-desc])
+shipping: [shipping noformat=1]
+nitems: [nitems]
+subtotal: [subtotal noformat=1]
+handling: [handling noformat=1]
+salestax: [salestax noformat=1]
+total_cost: [scratch total_cost]
+fname: [value filter=strip name=fname]
+lname: [value filter=strip name=lname]
+company: [value filter=strip name=company]
+address1: [value filter=strip name=address1]
+address2: [value filter=strip name=address2]
+city: [value filter=strip name=city]
+state: [value name=state filter="strip uc"]
+zip: [value name=zip filter=word]
+country: [value country]
+email: [value name=email filter=strip]
+phone_day: [value filter=strip name=phone_day]
+phone_night: [value filter=strip name=phone_night]
+b_company: [scratch tmp_company]
+b_fname: [scratch tmp_fname]
+b_lname: [scratch tmp_lname]
+b_address1: [scratch tmp_address1]
+b_address2: [scratch tmp_address2]
+b_city: [scratch tmp_city]
+b_state: [scratch tmp_state]
+b_zip: [scratch tmp_zip]
+b_country: [scratch tmp_country]
+b_phone: [scratch tmp_phone]
+payment_method: [value mv_payment]
+payment_mode: [data session payment_mode]
+order_id: [data session payment_id]
+auth_code: [calc] ($Session->{payment_result} || {})->{'pop.auth-code'}; [/calc]
+tracking_number:
+order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
+order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
+order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
+status: pending
+deleted: 0
+archived: 0
+complete: 0
+comments: [value filter=mac name=gift_note]
+affiliate: [scratch tmp_source]
+campaign: [value campaign]
+parent: __PARENT__
+po_number: [value filter=strip name=po_number] 
+[/import]
+[/try]
+
+[catch error-set="log_orderline_table" error-scratch="mv_route_failed"]
+There was an error adding the order to the transaction table. It was: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
+[try]
+[if value mv_payment_mode eq purchase_order]
+set credit_limit: [seti credit_limit][data
+		table=userdb
+		col=credit_limit
+		key="[data session username]"
+		value="-[scratch total_cost]"
+		increment=1
+	][/seti]
+[/if]
+
+[comment]Past transactions entry.[/comment]
+
+[set download_present][/set]
+
+[item-list]Added [item-code] to orderline:
+[import table=orderline type=LINE continue=NOTES no-commit=1]
+code: [value mv_order_number]-[item-increment]
+store_id: __STORE_ID__
+order_number: [value mv_order_number]
+session: [data session id]
+username: [scratch tmp_username]
+shipmode: [item-modifier mv_shipmode]
+sku: [item-code]
+options: [item-filter mac strip][item-options report=1 type=value][/item-filter]
+quantity: [item-quantity]
+price: [item-price noformat]
+subtotal: [item-subtotal noformat]
+mv_mi: [item-modifier mv_mi]
+mv_si: [item-modifier mv_si]
+mv_mp: [item-modifier mv_mp]
+order_date: [value order_date]
+affiliate: [scratch tmp_source]
+campaign: [value campaign]
+status: pending
+description: [filter mac][item-description][/filter]
+[/import]
+
+[if variable DECREMENT_INVENTORY]Inventory of [item-code] now:
+	[data
+		table=inventory
+		col=quantity
+		key="[item-code]"
+		increment=1
+		value="-[item-quantity]"
+	]
+[/if]
+
+[comment] Handle purchase of payment certificates [/comment]
+[if-item-field gift_cert]
+	[if value mv_payment =~ /credit.*card/i]
+		Issue payment cert=[pay-cert
+				issue=1
+				amount="[item-subtotal noformat]"
+				expires="__GIFT_CERT_PERIOD__"
+				item-pointer="[item-param mv_ip]"
+		]
+	[/if]
+[/if-item-field]
+
+[comment] Handle downloadables [/comment]
+[if-item-field download]
+	[if value mv_payment =~ /credit.*card/i]
+		[set download_present]1[/set]
+		[userdb
+				function=set_file_acl
+				mode="expire 7 days"
+				location="[item-code]"
+		]
+	[/if]
+[/if-item-field]
+
+[/item-list]
+
+[/try]
+
+[catch
+	error-set="log_orderline_table"
+	error-scratch="mv_route_failed"
+	]
+There was an error adding the items to the orderline table: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
+[if variable TRANSACTION_ACCOUNTING_SYSTEM]
+[try]
+Realtime: [scratch realtime]
+Add to SQL-Ledger: [accounting function=create_order_entry do_invoice="[scratch do_invoice]" do_payment="[scratch do_payment]"]
+[/try]
+
+[catch
+	error-set="log_accounting_xfer"
+	error-scratch="mv_route_failed"
+	]
+There was an error transferring accounting information: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+[/if]
+
+[try]
+[tmpn tmp_user_save]NO[/tmpn]
+[tmpn tmp_save][/tmpn]
+[if value order_desk_entry]
+
+	[calc]
+		## Set this so that we can go to admin/order_view[/comment]
+		$CGI->{order} = $Values->{mv_order_number};
+
+		my @funcs;
+		#### Commented out until separate functions built
+		#for(qw/shipping billing/) {
+		#	next if $Values->{"no_save_$_"};
+		#	push @funcs, "set_$_";
+		#	$Scratch->{tmp_user_save} = '';
+		#}
+		@funcs = 'save' unless $Values->{no_save};
+		$Scratch->{tmp_save} = join(" ", @funcs);
+		my $msg = errmsg("Order %s entered for customer %s",
+						 $Values->{mv_order_number},
+						 $Scratch->{tmp_username},
+						);
+		$Tag->warnings($msg);
+		return;
+	[/calc]
+	[seti tmp_user_save]
+	[loop list="[scratch tmp_save]"]
+			[loop-code]=[userdb
+							function="[loop-code]"
+							profile=default
+							username="[scratch tmp_username]"
+							scratch=NONE
+						] [/loop]
+	[/seti]
+	[calc]
+		$Scratch->{tmp_user_save} =~ s/^\s+//;
+		$Scratch->{tmp_user_save} =~ s/\s+$//;
+		$Scratch->{tmp_user_save} =~ s/\s+/ /g;
+		return;
+	[/calc]
+
+[elsif type=explicit compare="[userdb save]"]
+[tmpn tmp_user_save]SUCCESS[/tmpn]
+[/elsif][/if]
+Saved user information to user database: [scratch tmp_user_save]
+[if scratch auto_create]
+	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]
+[/if]
+[/try]
+
+[catch
+	error-set="log_userdb_table"
+	error-scratch="mv_route_failed"
+	]
+There was an error updating the user information: $ERROR$
+[/catch]
+[goto if="[scratch mv_route_failed]"]
+
+[comment]Past add data entry. Capture payment cert if necessary.[/comment]
+
+[if scratch pay_certs_to_capture]
+	[pay-cert-redeem capture=1]
+[/if]
+
+[comment] 
+	Log order to directory suitable for capture by outside process.
+[/comment] 
+[order-logger]
+
+[comment]Past all transaction log.[/comment]
+[/tmp][perl]
+	my $out = $Scratch->{transaction_record};
+	$out =~ s/^\s+//;
+	$out =~ s/^\s+//mg;
+	$out =~ s/\s+$//mg;
+	$out =~ s/[\r\n]+/\n/;
+	$out =~ s/:\n(\d+|yes|succe\w+|fail\w+)\n/: $1\n/ig;
+	return $out;
+[/perl]
+#### end order logging of tid=[value mv_transaction_id], order_number=[value mv_order_number] #####

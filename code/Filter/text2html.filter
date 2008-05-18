@@ -1,0 +1,22 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: text2html.filter,v 1.5 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef text2html Filter
+CodeDef text2html Description Simple text2html
+CodeDef text2html Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s!\r?\n\r?\n!<p>!g;
+	$val =~ s!\r\r!<p>!g;
+	$val =~ s!\r?\n!<br$Vend::Xtrailer>!g;
+	$val =~ s!\r!<br$Vend::Xtrailer>!g;
+	return $val;
+}
+EOR

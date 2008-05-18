@@ -1,0 +1,101 @@
+[comment]Variables/Templates for log rotation[/comment]
+[set rotate]7[/set]
+[set asciitrack_rotate]200[/set]
+[set route_rotate]200[/set]
+[set size]100k[/set]
+[set trackfile_size]10M[/set]
+[set asciitrack_size]10M[/set]
+[set compress]1[/set]
+[set delaycompress]1[/set]
+[set template]{FILENAME} {	
+	missingok
+	rotate {ROTATE}{WEEKLY?}
+	weekly{/WEEKLY?}{MONTHLY?}
+	monthly{/MONTHLY?}
+	size={SIZE}{COMPRESS?}
+	compress{/COMPRESS?}{DELAYCOMPRESS?}
+	delaycompress{/DELAYCOMPRESS?}
+}
+
+[/set]
+[set file]etc/logrotate[/set]
+[perl]
+my (%frags, %files);
+
+my $generate_logrotate = sub {
+	my ($token, $location) = @_;
+	my ($entry, %hash);
+
+	$token = lc($token);
+
+	if ($location =~ m%^/%) {
+		$hash{filename} = $location;
+	} else {
+		$hash{filename} = "$Config->{VendRoot}/$location";
+	}
+	
+	# avoid duplicate entries
+	return if $files{$hash{filename}};
+	$files{$hash{filename}} = $token;
+
+	for (qw(rotate weekly monthly size compress delaycompress)) {
+		if (exists $Scratch->{"${token}_$_"}) {
+			$hash{$_} = $Scratch->{"${token}_$_"};
+		} elsif ($token =~ /^(.*?)_/
+				 && exists $Scratch->{"${1}_$_"}) {
+			$hash{$_} = $Scratch->{"${1}_$_"};
+		} else {
+			$hash{$_} = $Scratch->{$_};
+		}
+	}
+	
+	$frags{$token} = $Tag->uc_attr_list({hash => \%hash, body => $Scratch->{template}});
+	return 1;
+};
+
+my $out;
+
+# default log file for [log]
+$generate_logrotate->('ErrorFile', $Config->{ErrorFile});
+
+# error log file
+$generate_logrotate->('LogFile', $Config->{LogFile});
+
+# user tracking
+if ($Config->{TrackFile}) {
+	$generate_logrotate->('TrackFile', $Config->{TrackFile});
+}
+
+# file for formatted orders
+if ($Config->{AsciiTrack}) {
+	$generate_logrotate->('AsciiTrack', $Config->{AsciiTrack});
+}
+
+# jobs log file
+if ($Config->{Jobs}->{log}) {
+	$generate_logrotate->('Jobs', $Config->{Jobs}->{log});
+}
+
+# pick up log files from the routes
+my $routelog;
+
+for (keys %{$Config->{Route_repository}}) {
+	if ($routelog = $Config->{Route_repository}->{$_}->{track}) {
+		$generate_logrotate->("Route_$_", $routelog);
+	}
+}
+
+for (keys %frags) {
+	$out .= $frags{$_};
+}
+
+# finally write file
+if ($Scratch->{file}) {
+	$Tag->write_relative_file({file => $Scratch->{file},
+							   umask => 002,
+							   body => $out});
+	$out = '';
+}
+
+return $out;
+[/perl]

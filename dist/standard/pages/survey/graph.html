@@ -1,0 +1,104 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+<style type="text/css">
+.cerror {
+	color: red
+}
+</style>
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo[/component]
+[matches]3[/matches]
+[cols]3[/cols]
+[banner][L]Specials[/L][/banner]
+[/control-set]
+
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[calc]
+	my ($survey, $question) = split /:+/, $CGI->{id} || $CGI->{item_id} || $Session->{arg};
+	unless ($survey) {
+		$CGI->{item_id} = join "::", $CGI->{survey}, $CGI->{question};
+	}
+	else {
+		$CGI->{survey} = $survey;
+		$CGI->{question} = $question;
+		$CGI->{item_id} = $survey . "::$question";
+	}
+	return;
+[/calc]
+
+<blockquote style="color: red">
+	[warnings]
+</blockquote>
+
+[loop extended="[cgi item_id]" table=survey]
+
+<div style="text-align: left; padding: 5">
+	<h1>[either][loop-param graph_title][or][loop-param label][/either]</h1>
+	[tmp legend][either][loop-param graph_label][or][loop-param options][/either][/tmp]
+	<img src="[area
+					add_dot_html=0
+					no_session_id=1
+					no_count=1
+					href="survey/graph.png"
+					form="
+						mv_tmp_session=1
+						mv_arg=[cgi item_id]
+						notitle=1
+					"]">
+
+	<table>
+		[loop prefix=leg acclist=1 list="[scratch legend]"]
+		[leg-calc]
+			my $code = q{[leg-code]};
+			my $lab  = q{[leg-param label]};
+			return '' unless length($code);
+			return '' if $code eq $lab;
+			return qq{
+		<tr>
+			<td>
+				$code
+			</td>
+			<td>
+				&nbsp;==>&nbsp;
+			</td>
+			<td>
+				$lab
+			</td>
+		</tr>};
+		[/leg-calc]
+		[/loop]
+	</table>
+</div>
+	[/loop]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

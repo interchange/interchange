@@ -1,0 +1,19 @@
+# Copyright 2006-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: flag_job.coretag,v 1.2 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag flag_job Order   action token
+UserTag flag_job Version $Revision: 1.2 $
+UserTag flag_job Routine <<EOR
+sub {
+	my ($action, $token) = @_;
+
+	return Vend::Server::flag_job($$, $Vend::Cat, $action, $token);
+}
+EOR
+

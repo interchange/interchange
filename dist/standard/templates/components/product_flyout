@@ -1,0 +1,58 @@
+[comment]
+ui_name: product_flyout
+ui_type: component
+ui_class: vertical
+ui_group: Navigation
+ui_label: Products Flyout Menu
+
+tree_selector:
+	help: Defines which tree menu is selected
+	label: Tree name
+	db: tree
+	lookup: mgroup
+	type: select
+
+link_class:
+	help: Set the class for links (default 'barlink')
+	label: Link CSS class
+	default: barlink
+	widget: text
+	width: 16
+
+flyout_class:
+	help: Set the CSS class for the flyout boxes
+	default: categorybar
+	label: Flyout box CSS class
+	widget: text
+	width: 20
+
+flyout_style:
+	help: Set the CSS style for the flyout boxes
+	default: border: 3px solid #996633; padding: 2px;
+	label: Flyout box CSS style
+	widget: textarea
+	width: 40
+	height: 3
+[/comment]
+
+<!-- BEGIN COMPONENT [control component product_flyout] -->
+
+  <br>
+  <table width="90%" align="center">
+  <tr> 
+    <td valign="top" class="categorybar">
+
+[menu
+	name="[control tree_selector Products]"
+	link-class="[control link_class barlink]"
+	flyout-class="[control flyout_class]"
+	flyout-style="[control flyout_style]"
+	menu-type=flyout
+][/menu]
+	__ADL_MENU__
+    </td>
+  </tr>
+  </table>
+  <br>
+
+<!-- END COMPONENT [control component product_flyout] -->

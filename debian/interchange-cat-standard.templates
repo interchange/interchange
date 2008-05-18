@@ -1,0 +1,95 @@
+Template: interchange-cat-standard/install
+Type: boolean
+Default: false
+_Description: Create the Interchange demo catalog?
+ Whether to install the demo catalog from the standard template or let
+ you manually install it with makecat.
+
+Template: interchange-cat-standard/purge
+Type: boolean
+Default: false
+_Description: Remove demo catalog on package purge?
+ Should all files belonging to the Interchange demo catalog removed when
+ you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?
+
+Template: interchange-cat-standard/replace
+Type: select
+_Choices: always, ask, never
+Default: never
+_Description: Policy for replacing existing demo catalogs:
+ Whether to silently replace an existing demo catalog installation, ask for
+ a confirmation or never touch an existing installation.
+
+Template: interchange-cat-standard/confirm
+Type: boolean
+Default: false
+_Description: Replace the Interchange demo catalog?
+ There seems to already exist an Interchange demo catalog.
+
+Template: interchange-cat-standard/vhost
+Type: string
+Default: 
+_Description: Virtual host for the demo catalog:
+ You are running Interchange with "FullURL" enabled. Please specify the virtual host for the demo catalog.
+
+Template: interchange-cat-standard/username
+Type: string
+Default: interchange
+_Description: Username for this catalog's administration:
+ Please provide an username for administering the demo catalog. The
+ username must be at least 2 characters long and only contain letters,
+ digits, underscore, @ or the dot as characters.
+
+Template: interchange-cat-standard/password
+Type: password
+Default: pass
+_Description: Password for this catalog's administration:
+ Please provide a password for administering the standard demo catalog.
+ Choose one which can not be easily guessed. Default is pass. The password 
+ must be at least 4 characters long and only contain letters, digits,
+ underscore @ or the dot as characters.
+
+Template: interchange-cat-standard/demomode
+Type: boolean
+Default: true
+_Description: Enable demo mode?
+
+Template: interchange-cat-standard/locales
+Type: multiselect
+Choices: de_DE, nl_NL
+_Description: Additional locales for the storefront:
+ The Interchange demo catalog is able to display the storefront in a number
+ of different languages. Each selected locale will increase the memory
+ footprint of the Interchange server processes, so it is recommended to
+ choose only locales which are really needed.
+
+Template: interchange-cat-standard/defaultlocale
+Type: select
+Choices: ${LOCALES}
+Default: en_US
+_Description: Default locale for the storefront:
+ Please select the default locale for the Interchange demo catalog.
+
+Template: interchange-cat-standard/dbtype
+Type: select
+__Choices: PostgreSQL, MySQL
+Default: MySQL
+_Description: DBMS for the demo catalog:
+ Please select the database type used for the demo catalog.
+
+Template: interchange-cat-standard/dbname
+Type: string
+Default: standard
+_Description: Database name:
+ Please select the name of the database.
+
+Template: interchange-cat-standard/dbuser
+Type: string
+Default: interchange
+_Description: Database user:
+ Please specify the username for connecting to the database.
+
+Template: interchange-cat-standard/dbpass
+Type: password
+_Description: Database password:
+ Please specify the password for connecting to the database.

@@ -1,0 +1,20 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: yesno.filter,v 1.4 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef yesno Filter
+CodeDef yesno Description 1/0 to Yes/No
+CodeDef yesno Routine <<EOR
+sub {
+	my $val = shift(@_) ? 'Yes' : 'No';
+	return $val unless $Vend::Cfg->{Locale};
+	return $val unless defined $Vend::Cfg->{Locale}{$val};
+	return $Vend::Cfg->{Locale}{$val};
+}
+EOR

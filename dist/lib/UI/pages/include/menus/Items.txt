@@ -1,0 +1,11 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	Items	x001					admin/item		Item list		0							
+004	Items	x004		item_id		item_id			sku: [cgi item_id]		0							
+002	Items	x002		ui_new_item			admin/item_edit	ui_new_item=1	Create new item		0							
+003	Items	x003		ui_clone_id		item_id	admin/item_edit	ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	Clone item		0							
+006	Items	x006				item_id	admin/item_price	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Pricing		0							
+007	Items	x007				item_id	admin/item_up	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Up-sell		0							
+008	Items	x008				item_id	admin/item_cross	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Cross-sell		0							
+009	Items	x009				item_id	admin/item_feature	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Promotion		0							
+010	Items	x010				item_id	admin/item_inventory	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Inventory		0							
+011	Items	x011				item_id	admin/item_option	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Options		0							

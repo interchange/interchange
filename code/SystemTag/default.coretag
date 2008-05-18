@@ -1,0 +1,23 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: default.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag default             Order        name default
+UserTag default             addAttr
+UserTag default             PosNumber    2
+UserTag default             Version      $Revision: 1.5 $
+UserTag default             Routine      <<EOR
+# Returns the text of a user entered field named VAR.
+# Same as tag [value name=name default="string"] except
+# returns 'default' if not present
+sub {
+    my($var, $default, $opt) = @_;
+	$opt->{default} = !(length $default) ? 'default' : $default;
+    return tag_value($var, $opt);
+}
+EOR

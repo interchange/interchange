@@ -1,0 +1,1128 @@
+[set page_title]Layout Editor[/set]
+[set ui_class]Design[/set]
+[set page_banner]Layout Editor: Organize your site into categories[/set]
+[set page_perm]layout=e[/set]
+[set help_name]layout.edit[/set]
+[set icon_name]icon_pages.gif[/set]
+[set ui_body_extra][/set]
+
+@_UI_STD_HEAD_@
+<!-- ----- BEGIN REAL STUFF ----- -->
+<table __UI_T_PROPERTIES__ width="90%">
+
+[flag type=write table=area]
+[flag type=write table=cat]
+
+[if cgi newarea]
+<!-- Creating area: 
+[value name=area set="[counter file=etc/area.recordnumber start=1000]" hide=1]
+[data table=area column=name key="[value area]" value="[cgi newarea]"] -->
+[elsif cgi newcat]
+<!-- Creating category: 
+[value name=cat set="[counter file=etc/cat.recordnumber start=1000]" hide=1]
+[data table=cat column=name key="[value cat]" value="[cgi newcat]"]
+[data table=cat column=sel key="[value cat]" value="[value area]"] -->
+[/elsif]
+[elsif cgi setarea]
+<!-- Setting area: [value name=area set="[value code]" hide=1] -->
+[/elsif]
+[elsif cgi setcat]
+<!-- Setting cat: [value name=cat set="[value code]" hide=1] -->
+[/elsif]
+[/if]
+
+[set [L]Delete section[/L]]
+[/set]
+
+<tr>
+<td valign=top class=rnorm>
+
+<FORM METHOD=GET ACTION="[process]" name="areaform">
+[form-session-id]
+<input type=hidden name=ui_window_name value="mainwindow[scratch window_name]">
+<input type=hidden name=mv_todo        value=return>
+<input type=hidden name=mv_nextpage    value="@@MV_PAGE@@">
+
+
+<B>Area -- section:</B><br>
+<select name=ui_filter_class onChange="this.form.submit()">
+<option value=""> --every--
+[loop option=which_page search="fi=area/st=db/ra=yes/un=yes/rf=which_page"]<option>[loop-code][/loop]
+</select>
+<br>
+<select name="area" size=10 onchange="this.form.submit()">
+[calc]$Scratch->{start_sort} = 0; $Scratch->{area_sort} = []; return;[/calc]
+[loop   search="
+			fi=area
+			tf=sel
+			tf=sort
+			tf=name
+			st=db
+			[if cgi ui_filter_class]
+			sf=which_page
+			se=[cgi ui_filter_class]
+			[else]
+			ra=yes
+			[/else]
+			[/if]
+			rf=code,name,sel
+		"
+		option=area ]
+<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter][loop-calc]
+	push @{ $Scratch->{area_sort} }, [
+		q{[loop-code]},
+		sprintf('%03d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
+[/loop]
+</select>
+
+[perl tables=area]
+	my $db = $Db{area} || return;
+	foreach ( @{ $Scratch->{area_sort} } ) {
+		$db->set_field( $_->[0], 'sort', $_->[1] );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
+<br>
+
+<small>
+[button text="[L]Section properties[/L]" hspace=2 vspace=5 src="icon_pages.gif" hidetext=1]
+[/button]
+
+[button text="[L]Sort section higher[/L]" src="up.gif" hidetext=1]
+	[flag type=write table=area]
+	[perl tables=area]
+		my $db = $Db{area} || return;
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
+		return;
+	[/perl]
+[/button]
+
+
+[button text="[L]Sort section lower[/L]" src="down.gif" hidetext=1]
+	[flag type=write table=area]
+	[perl tables=area]
+		my $db = $Db{area} || return;
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
+		return;
+	[/perl]
+[/button]
+
+[button text="[L]Create section[/L]" src="plus.gif" hidetext=1]
+	mv_todo=back
+	newarea=NEW
+[/button]
+
+[button
+	text="[L]Delete section[/L]" src="delete.gif" 
+	confirm="[L]Are you sure you want to delete this section?[/L]"
+	hidetext=1]
+	[tag flag write]area[/tag]
+	[if-mm advanced sitedesign=d]
+		[perl tables="area"]
+			my ($item) = $CGI->{area};
+			my $out;
+			unless ($Db{area}) {
+				Log("no site design table 'area'");
+				return undef;
+			}
+			my $name = $Db{area}->field($item, 'name');
+			if ($Db{area}->delete_record($item)) {
+				$out .= "Deleted $name from area table<BR>";
+			}
+			else {
+				$out .= "Item $item not in $_ table (or delete failed)<BR>";
+			}
+			$Scratch->{ui_message} = $out;
+			return;
+		[/perl]
+	[else]
+		[set ui_message]Not authorized to delete layout items.[/set]
+	[/else]
+	[/if-mm]
+[/button]
+</small>
+
+
+</td>
+
+
+[if cgi area]
+[then]
+<td valign=top class=rnorm>
+
+<B>Contains:</B><BR>
+
+<select name="cat" size=10 [if !value cat]onChange="this.form.submit()"[/if]>
+[calc]$Scratch->{start_sort} = 0; $Scratch->{cat_sort} = []; return;[/calc]
+[loop   search="
+			fi=cat
+			st=db
+			ml=1000
+
+			tf=sort
+			tf=name
+
+			co=yes
+
+			sf=sel
+			op=rm
+			se=[value area]
+
+			rf=code,name,sort
+			" option=cat]
+<OPTION VALUE="[loop-code]">[loop-param name][loop-calc]
+	push @{ $Scratch->{cat_sort} }, [
+		q/[loop-code]/,
+		sprintf('%04d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
+[/loop]
+</select>
+
+[perl tables=cat]
+	my $db = $Db{cat} || return;
+	foreach ( @{ $Scratch->{cat_sort} } ) {
+		$db->set_field( $_->[0], 'sort', $_->[1] );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
+<br>
+
+<small>
+[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="icon_pages.gif"][/button]
+
+[button text="Sort category higher" hidetext=1 src="up.gif"]
+	[flag type=write table=cat]
+	[perl tables=cat]
+		my $db = $Db{cat} || return;
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
+		return;
+	[/perl]
+[/button]
+
+[button text="Sort category lower" hidetext=1 src="down.gif"]
+	[flag type=write table=cat]
+	[perl tables=cat]
+		my $db = $Db{cat} || return;
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
+		return;
+	[/perl]
+[/button]
+
+[button text="Create category" hidetext=1 src="plus.gif"]
+	mv_todo=back
+	newcat=NEW
+[/button]
+
+[button text="Delete category" hidetext=1 src="delete.gif"
+	 confirm="Are you sure you want to delete this category?"
+]
+	[tag flag write]cat[/tag]
+	mv_nextpage=@@MV_PAGE@@
+	[if-mm advanced sitedesign=d]
+		[perl tables="cat"]
+			my ($item) = $CGI->{cat};
+			my $out;
+			unless ($Db{cat}) {
+				Log("no site design table 'cat'");
+				return undef;
+			}
+			my $name = $Db{cat}->field($item, 'name');
+			if ($Db{cat}->delete_record($item)) {
+				$out .= "Deleted $name from cat table<BR>";
+			}
+			else {
+				$out .= "Item $item not in $_ table (or delete failed)<BR>";
+			}
+			$Scratch->{ui_message} = $out;
+			return;
+		[/perl]
+	[else]
+		[set ui_message]Not authorized to delete items.[/set]
+	[/else]
+	[/if-mm]
+[/button]
+</small>
+
+</td>
+
+<td class=rnorm valign=top>
+
+
+<table>
+<tr>
+
+<td>
+[set name="<--"]
+[/set]
+
+[button text="Move category left" hidetext=1 src="left.gif"]
+[if-mm advanced layout=e]
+[flag type=write table=cat]
+[perl tables=cat]
+	my $db = $Db{cat};
+	if (! $db) {
+		Log ("No category database.");
+		return;
+	}
+	my $area = $CGI->{area};
+	@codes = split /\0/, $CGI->{add_cat};
+	for(@codes) {
+		my $curr = $db->field($_, 'sel');
+		if($curr) {
+			$curr =~ s/\s+$//;
+			$curr .= " $area";
+		}
+		else {
+			$curr = $area;
+		}
+		$db->set_field($_, 'sel', $curr);
+	}
+	return;
+[/perl]
+[/if-mm]
+[/button]
+
+[button text="Move category right" hidetext=1 src="right.gif"]
+[if-mm advanced layout=e]
+[flag type=write table=cat]
+[perl tables=cat]
+	my $db = $Db{cat};
+	if (! $db) {
+		Log ("No category database.");
+		return;
+	}
+	my $area = $CGI->{area};
+	@codes = split /\0/, $CGI->{cat};
+	my @there;
+	foreach my $one (@codes) {
+		my %seen;
+		my $curr = $db->field($one, 'sel');
+		Log("current = $curr");
+		@there = grep $_ ne $area, split /[\0\s]+/, $curr;
+		Log("now = @there");
+		@there = grep !$seen{$_}++, @there;
+		$curr = join " ", @there;
+		Log("now current = $curr");
+		$db->set_field($one, 'sel', join " ", @there);
+	}
+	return;
+[/perl]
+[/if-mm]
+[/button]
+</td>
+
+<td VALIGN=top><B>Available categories:</B><br>
+<select name="add_cat" size=10>
+[loop   search="
+			fi=cat
+			st=db
+			ml=1000
+
+			tf=name
+
+			co=yes
+
+			sf=sel
+			op=rn
+			se=[value area]
+
+			rf=code,name
+			"]
+<OPTION VALUE="[loop-code]">[loop-param name]
+[/loop]
+</select>
+
+</td>
+</tr>
+</table>
+</FORM>
+</td>
+</tr>
+</table>
+
+<table __UI_T_PROPERTIES__ width="90%">
+<tr>
+<td valign=top class=rnorm>
+<!--- BEGIN SECTION PROPERTIES -->
+
+[value name=mv_data_table set="area" hide=1]
+
+[perl tables="[value mv_data_table]"]
+my $table = $Values->{mv_data_table};
+$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
+if ($table ne $Values->{mv_data_table}) {
+	$Values->{mv_data_table} = $table;
+}
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || '' ;
+$Values->{ui_data_fields} =~ s/\0+/ /g;
+return;
+[/perl]
+
+[set process_ui_area]
+setarea=[cgi selector]
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	return unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	return;
+[/perl]
+[/set]
+
+
+[loop list="[value area]" prefix=table]
+<FORM METHOD=POST name=layout_area_properties ACTION="[area ui]">
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
+<INPUT TYPE=hidden NAME=from_section VALUE=1>
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_area">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
+<INPUT TYPE=hidden name=mv_data_fields value="code sel which_page link_type name display_type">
+<INPUT TYPE=hidden NAME=code VALUE="[table-code]">
+
+<table __UI_T_PROPERTIES__ width="90%">
+
+<tr>
+<td class=rmarq colspan=2><img src="icon_pages.gif">&nbsp;Section Properties</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+	<small><B>Name</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT SIZE=40 NAME=name Value="[table-data area name]">
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+	<small><B>Page&nbsp;class</B>
+	</td>
+	<td class=rnorm>
+	<input type=hidden name="ui_filter:which_page" value="null_to_space">
+	<table> <tr> <td>
+		<small>
+		<select size=3 name="which_page" MULTIPLE>
+		[calc]
+			my (%current);
+			my (%seen);
+			my (@current) = split /\s+/, q{[table-data area which_page]};
+			@current{@current} = @current;
+			my @passed = split /[\s,\0]+/,
+							q{[loop search='
+										fi=area
+										st=db
+										ra=yes
+										un=yes
+										rf=which_page
+									'][loop-code] [/loop]};
+			my @passed = grep !$seen{$_}++, @passed;
+			my $out = '';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if defined $current{$_};
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</select>
+	</td>
+	<td>
+	<input size=16 name="which_page" value="">
+	</td></tr></table>
+	</small>
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+	<small><B>Page area</b>
+	</td>
+	<td class=rnorm>
+	<small>
+	<input type=hidden name="ui_filter:sel" value="nullselect">
+	<table><tr><td>
+	<small>
+	<INPUT SIZE=8 NAME=sel value="">
+	</td>
+	<td>
+	<small>
+	<select name=sel>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $curr = q{[table-data area sel]};
+		my @passed = grep /\S/, split /\s+/, q{[loop search="ra=yes/fi=area/st=db/tf=sel/rf=sel/un=yes"][loop-code] [/loop]};
+		my $out = '<option value=""> &lt;--New';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $curr eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	</td></tr></table>
+	</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rnorm><HR></td>
+</tr>
+
+[set ui_area_type][table-data area link_type][/set]
+
+<tr>
+	<td class=rnorm>
+	<small><B>Link type</b>
+	</td>
+	<td class=rnorm>
+		[display table=area column=link_type key="[value area]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_area_type eq external]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td class=rnorm>
+	<B>External</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT SIZE=40 NAME=url value="[table-data area url]">
+	</td>
+</tr>
+[elsif scratch ui_area_type eq internal]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td class=rnorm>
+	<small><B>Interchange page</B></small>
+	</td>
+	<td class=rnorm>
+	<small>
+	<input type=hidden name="ui_filter:url" value="null_to_space">
+	<select name=url>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $url;
+		($url, $ui_arg) = split /\s+/, q{[table-data area url]}, 2;
+		my @passed = split /\s+/, $Tag->list_pages();
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $url eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	</td>
+</tr>
+<tr>
+	<td class=rnorm>
+	<small><B>Parameters</B></small>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_area_type eq simple]
+<INPUT TYPE=hidden NAME=mv_data_fields value="tab selector page">
+[calc]
+	$Values->{tab} = q{[table-data area tab]} || $Config->{ProductFiles}[0];
+	return;
+[/calc]
+<tr>
+	<td class=rnorm>
+		<small><b>Table
+	</td>
+	<td>
+		<small>
+			<SELECT NAME=tab>
+			[loop list="[list-databases]" option=tab]<OPTION>[loop-code][/loop]
+			</SELECT>
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+		<small><b>field=column pairs
+	</td>
+	<td class=rnorm>
+		<small>
+		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data area selector]</TEXTAREA>
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+		<small><b>Results page
+	</td>
+	<td class=rnorm>
+		<small>
+		<select name=page>
+		[calc]
+			my (%current);
+			my (%seen);
+			my $page = q{[table-data area page]};
+			my @passed = split /\s+/, $Tag->list_pages();
+			my $out = '<OPTION VALUE="">--default--';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if $page eq $_;
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</SELECT>
+	</td>
+</tr>
+
+[/elsif]
+[elsif scratch ui_area_type eq complex]
+
+<INPUT TYPE=hidden NAME=mv_data_fields value="search">
+<INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
+<INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="area=[table-code]">
+<tr>
+	<td class=rnorm>
+	[set Create]
+	mv_todo=back
+	mv_nextpage=__UI_BASE__/search_wizard
+	[/set]
+	<B>Complex search link</B><br><small><INPUT TYPE=submit
+						name=mv_click
+						value="Create"
+						onClick="
+							this.form.ui_searchblob.value=this.form.search.value;
+						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
+	</td>
+	<td class=rnorm>
+	<small>
+		[calc]
+		my $n = 4;
+		if($Scratch->{search_page}) {
+			$stuff = delete $Scratch->{search_page};
+			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^\s+//mg;
+			$stuff =~ s/\s+$//mg;
+		}
+		else {
+			$stuff = q{[table-data area search]};
+		}
+		if($stuff =~ /\S/) {
+			$n = 2 + ($stuff =~ s/[\r\n]+/\n/g);
+		}
+		else { $stuff = '' };
+		return "<TEXTAREA name=search COLS=30 ROWS=$n>$stuff</TEXTAREA>";
+		[/calc]
+	</td>
+</tr>
+
+[/elsif]
+[/if]
+
+<tr>
+<td colspan=2 class=rnorm><HR></td>
+</tr>
+
+[set ui_area_display][table-data area display_type][/set]
+
+<tr>
+	<td class=rnorm>
+	<small><B>Display type</b>
+	</td>
+	<td class=rnorm>
+	<small>
+		[display table=area column=display_type key="[value area]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_area_display =~ /icon|image/]
+<INPUT TYPE=hidden NAME=mv_data_fields value="image">
+<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
+<input type=hidden name="ui_filter:image" value="nullselect">
+<tr>
+	<td class=rnorm>
+	<B>Image</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<small>
+	[display table=area column=image key="[value area]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+<tr>
+	<td class=rnorm>
+	<B>Image properties</B>
+	</td>
+	<td class=rnorm>
+	<small>
+		<input name="image_prop" size=30 VALUE="[calc]
+		$image_prop = q{[table-data area image_prop]};
+		$image_prop =~ s/"/&quot;/g;
+		return $image_prop || 'border=0';
+	[/calc]">
+	</td>
+</tr>
+[/if]
+<tr>
+	<td class=rnorm>
+	<B>Link template</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<input type=hidden name=mv_data_fields value=link_template>
+	[display table=area column=link_template key="[value area]"]
+	</td>
+</tr>
+</table>
+
+[button text="Change area"][/button]
+
+</FORM>
+[/loop]
+
+</td>
+<!--- END SECTION PROPERTIES -->
+
+<!--- BEGIN CATEGORY PROPERTIES -->
+<td valign=top class=rnorm width="50%">
+
+[value name=mv_data_table set="cat" hide=1]
+
+[perl tables="[value mv_data_table]"]
+my $table = $Values->{mv_data_table};
+$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
+if ($table ne $Values->{mv_data_table}) {
+	$Values->{mv_data_table} = $table;
+}
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || '' ;
+$Values->{ui_data_fields} =~ s/\0+/ /g;
+return;
+[/perl]
+
+[set process_ui_cat]
+setcat=[cgi selector]
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	return unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+return;
+[/perl]
+[/set]
+
+[loop list="[either][value cat][or]NEW[/either]" prefix=table]
+<FORM METHOD=GET ACTION="[area ui]" name=layout_cat_properties>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
+<INPUT TYPE=hidden NAME=from_category VALUE=1>
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code link_type name display_type">
+<INPUT TYPE=hidden NAME=code VALUE="[table-code]">
+
+<table __UI_T_PROPERTIES__ width="90%">
+
+<tr>
+<td class=rmarq colspan=2><img src="icon_pages.gif">&nbsp;Category properties</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+	<small><B>Name</B></small>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT SIZE=40 NAME=name Value="[table-data cat name]">
+	</td>
+</tr>
+
+[set ui_cat_type][table-data cat link_type][/set]
+
+<tr>
+	<td class=rnorm>
+	<small><B>Link type</b>
+	</td>
+	<td class=rnorm>
+		[display table=cat column=link_type key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+[set needs_banner_info][/set]
+
+[if scratch ui_cat_type eq external]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td class=rnorm>
+	<B>External</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT SIZE=40 NAME=url value="[table-data cat url]">
+	</td>
+</tr>
+[elsif scratch ui_cat_type eq internal]
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
+<tr>
+	<td class=rnorm>
+	<small><B>Interchange page</B></small>
+	</td>
+	<td class=rnorm>
+	<small>
+	<input type=hidden name="ui_filter:url" value="null_to_space">
+	<select name=url>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $url;
+		($url, $ui_arg) = split /\s+/, q{[table-data cat url]}, 2;
+		my @passed = split /\s+/, $Tag->list_pages();
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $url eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	</td>
+</tr>
+<tr>
+	<td class=rnorm>
+	<small><B>Parameters</B></small>
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_cat_type eq explode]
+<tr>
+	<td class=rnorm>
+	<B>Explode file</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<select name=explode>
+	[calc]
+		my (%current);
+		my (%seen);
+		my ($exp, $exp_parm) = q{[table-data cat explode]}, 2;
+		my @passed = $Tag->list_glob("$Config->{ProductDir}/*.txt");
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $exp eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=explode SIZE=40 VALUE="[calc]$exp_parm[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_cat_type eq simple]
+[set needs_banner_info]1[/set]
+<INPUT TYPE=hidden NAME=mv_data_fields value="tab selector page">
+[calc]
+	$Values->{tab} = q{[table-data cat tab]} || $Config->{ProductFiles}[0];
+	return;
+[/calc]
+<tr>
+	<td class=rnorm>
+		<small><b>Table
+	</td>
+	<td>
+		<small>
+			<SELECT NAME=tab>
+			[loop list="[list-databases]" option=tab]<OPTION>[loop-code][/loop]
+			</SELECT>
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+		<small><b>field=column pairs
+	</td>
+	<td class=rnorm>
+		<small>
+		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data cat selector]</TEXTAREA>
+	</td>
+</tr>
+
+<tr>
+	<td class=rnorm>
+		<small><b>Results page
+	</td>
+	<td class=rnorm>
+		<small>
+		<select name=page>
+		[calc]
+			my (%current);
+			my (%seen);
+			my $page = q{[table-data cat page]};
+			my @passed = split /\s+/, $Tag->list_pages();
+			my $out = '<OPTION VALUE="">--default--';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if $page eq $_;
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</SELECT>
+	</td>
+</tr>
+
+[/elsif]
+[elsif scratch ui_cat_type eq complex]
+[set needs_banner_info]1[/set]
+<INPUT TYPE=hidden NAME=mv_data_fields value="search">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
+<INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="area=[cgi area]">
+<INPUT TYPE=hidden NAME=ui_return_to value="cat=[table-code]">
+<tr>
+	<td class=rnorm>
+	[set Create]
+	mv_todo=back
+	mv_nextpage=__UI_BASE__/search_wizard
+	[/set]
+	<B>Complex search link</B><br><small><INPUT TYPE=submit
+						name=mv_click
+						value="Create"
+						onClick="
+							this.form.ui_searchblob.value=this.form.search.value;
+						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
+	</td>
+	<td class=rnorm>
+	<small>
+		[calc]
+		my $n = 4;
+		if($Scratch->{search_page}) {
+			$stuff = delete $Scratch->{search_page};
+			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^[\s=0]+$//mg;
+			$stuff =~ s/^\s+//mg;
+			$stuff =~ s/\s+$//mg;
+		}
+		else {
+			$stuff = q{[table-data cat search]};
+		}
+		if($stuff =~ /\S/) {
+			$n = 2 + ($stuff =~ s/[\r\n]+/\n/g);
+		}
+		else { $stuff = '' };
+		return "<TEXTAREA name=search COLS=30 ROWS=$n>$stuff</TEXTAREA>";
+		[/calc]
+	</td>
+</tr>
+
+[/elsif]
+[/if]
+
+[if scratch needs_banner_info]
+<tr>
+	<td class=rnorm>
+	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_text">
+	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_image">
+	<small><b>Banner Text
+	</td>
+	<td class=rnorm>
+	<small>
+	<INPUT SIZE=40 NAME=banner_text value="[table-data cat banner_text]">
+	</td>
+</tr>
+<tr>
+	<td class=rnorm>
+	<small><b>Banner Image
+	</td>
+	<td class=rnorm>
+	<small>
+		<INPUT SIZE=40 NAME=banner_img value="[table-data cat banner_img]">
+	</td>
+</tr>
+[/if]
+
+<tr>
+<td colspan=2 class=rnorm><HR></td>
+</tr>
+
+[set ui_cat_display][table-data cat display_type][/set]
+
+<tr>
+	<td class=rnorm>
+	<small><B>Display type</b>
+	</td>
+	<td class=rnorm>
+	<small>
+		[display table=cat column=display_type key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_cat_display =~ /icon|image/]
+<INPUT TYPE=hidden NAME=mv_data_fields value="image">
+<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
+<input type=hidden name="ui_filter:image" value="nullselect">
+<tr>
+	<td class=rnorm>
+	<B>Image</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<small>
+	[display table=cat column=image key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+<tr>
+	<td class=rnorm>
+	<B>Image properties</B>
+	</td>
+	<td class=rnorm>
+	<small>
+		<input name="image_prop" size=30 VALUE="[calc]
+		$image_prop = q{[table-data cat image_prop]};
+		$image_prop =~ s/"/&quot;/g;
+		return $image_prop || 'border=0';
+	[/calc]">
+	</td>
+</tr>
+[/if]
+
+<tr>
+	<td class=rnorm>
+	<B>Link template</B>
+	</td>
+	<td class=rnorm>
+	<small>
+	<input type=hidden name=mv_data_fields value=link_template>
+	[display table=cat column=link_template key="[value cat]"]
+	</td>
+</tr>
+
+</table>
+
+<INPUT TYPE=hidden NAME=mv_auto_export VALUE="[value mv_data_table]">
+
+[button text="Change category"]
+[/button]
+
+</FORM>
+[/loop]
+
+</body>
+</html>
+</td>
+<!--- END CATEGORY PROPERTIES -->
+</tr>
+
+[/then]
+[else]
+<!-- wait for them to select a category first -->
+</tr>
+
+[/else]
+[/if]
+
+</table>
+
+<BR>
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

@@ -1,0 +1,25 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: urldecode.filter,v 1.5 2007-09-21 16:15:48 kwalsh Exp $
+
+CodeDef url       Filter
+CodeDef url       Alias urldecode
+
+CodeDef urld      Filter
+CodeDef urld      Alias urldecode
+
+CodeDef urldecode Filter
+CodeDef urldecode Description URL decode
+CodeDef urldecode Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s|\%([a-fA-F0-9][a-fA-F0-9])|chr(hex($1))|eg;
+	return $val;
+}
+EOR

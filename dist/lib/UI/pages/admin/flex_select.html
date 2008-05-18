@@ -1,0 +1,78 @@
+[flex-select init=1]
+
+[set table_perm]1[/set]
+
+[tmp page_title]
+	[either]
+		[cgi page_title]
+	[or]
+		[L]Select for table edit[/L]: [cgi mv_data_table]
+	[/either]
+[/tmp]
+[tmp page_secure][either]@@UI_SECURE@@[or]__UI_SECURE__[/either][/tmp]
+[tmp page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		[cgi page_title]
+	[or]
+		[L]Select for table edit[/L]:
+		<a href="[area
+					href="__UI_BASE__/db_metaconfig"
+					secure="[scratch page_secure]"
+					form=|
+						 ui_table=[cgi mv_data_table]
+						 start_at=height
+					|
+				]"
+				title="[cgi mv_data_table] [L]edit properties[/L], standard [L]view[/L]"
+				class=rtitle>[cgi mv_data_table]</A>
+		[if cgi ui_meta_view]
+		(<a href="[area
+					href="__UI_BASE__/db_metaconfig"
+					secure="[scratch page_secure]"
+					form=|
+						 ui_view=[cgi ui_meta_view]
+						 ui_table=[cgi mv_data_table]
+						 start_at=height
+					|
+				]"
+				title="[cgi mv_data_table] [L]edit properties[/L], [cgi ui_meta_view] [L]view[/L]"
+				class=rtitle>[cgi ui_meta_view] [L]view[/L]</A>)
+		[/if]
+	[/either]
+[/tmp]
+[tmp help_name][either][cgi help_name][or]flex.select[/either][/tmp]
+[tmp icon_name][either][cgi icon_name][or]icon_config.gif[/either][/tmp]
+
+@_UI_STD_HEAD_@
+[update values]
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[output name=search_box]
+[if compare=`! $Config->{Database}{$CGI->{mv_data_table}}{HUGE}`]
+<form action="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" method=GET>
+[form-session-id]
+<input type=hidden name=mv_data_table    value="[cgi mv_data_table]">
+<input type=hidden name=mv_action        value=back>
+<input type=hidden name=ui_meta_view     value="[cgi ui_meta_view]">
+<input type=hidden name=ui_show_fields value="[cgi ui_show_fields]">
+<span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
+</FORM>
+[else]
+<form action="[area href="admin/flex_editor"]" method=GET>
+[form-session-id]
+<input type=hidden name=mv_data_table    value="[cgi mv_data_table]">
+<input type=hidden name=mv_action        value=back>
+<span class=s3>[L]Edit record[/L]:</span> <input NAME=item_id size=16 class=s2> 
+</form>
+[/else]
+[/if]
+[output name=""]
+
+[flex-select]
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.24 2005-11-04 05:00:59 mheins Exp $ -->

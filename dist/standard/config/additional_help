@@ -1,0 +1,42 @@
+MYSQL
+.
+You can select this to use MySQL in your test catalog. Careful!
+This requires the ability to create a database named e.g. "test_standard",
+and is highly dependent on your Perl and MySQL configuration. Don't
+be too surprised if this doesn't work.
+
+MYSQLCREATE
+.
+We can try and use mysqladmin to create the database in
+MySQL. In many default MySQL distributions, any user can create
+a database beginning with "test". 
+.
+Use the next option to add parameters. If your MySQL is password-protected
+(and you know the password) you may want to add "-u root -p".
+
+MYSQLCREATEOPT
+.
+To create the database you may need to supply a password and
+username. To do that, add the option "-u USERNAME -p", where
+USERNAME is a MySQL user with permission to create databases.
+This is often the user "root".
+
+PGSQL
+.
+You can select this to use PostgreSQL in your test catalog.
+This requires the ability to create a database named e.g. "test_standard",
+and is highly dependent on your Perl and system configuration. Don't
+be too surprised if this doesn't work.
+
+SUPERUSER
+.
+You can use Interchange's companion configuration
+interface, to do upload/download of files, manipulation of
+the database, reconfiguration of the catalog, and much more.
+.
+To enable the UI, you will need a "super-user" account
+name that has full access.
+.
+The initial password is "pass". CHANGE IT! You can do this
+by going to the admin menu and selecting the superuser and
+then "Change password".

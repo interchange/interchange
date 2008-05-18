@@ -1,0 +1,50 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: future.oc,v 1.5 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef future OrderCheck 1
+CodeDef future Description Future date
+CodeDef future Routine <<EOR
+sub {
+	my($ref, $name, $value, $code) = @_;
+	my $message;
+
+	my @code = Text::ParseWords::shellwords($code);
+	if($code =~ /(["']).+?\1$/) {
+		$message = pop(@code);
+	}
+	my $adjust = join " ", @code;
+	if(! $message) {
+		$message = errmsg(
+						  "Date must be in the future at least %s",
+						  $adjust,
+						 );
+	}
+	if($value =~ /\0/) {
+		$value = Vend::Interpolate::filter_value(
+												 'date_change',
+												 $value,
+												);
+	}
+	my $current = Vend::Interpolate::mvtime(
+											undef,
+											{ adjust => $adjust },
+											"%Y%m%d%H%M",
+										   );
+
+	# reject invalid dates
+	if($value !~ /^[12]\d\d\d[01]\d[0123]\d(?:[0-2]\d[0-5]\d(?:[0-5]\d)?)?$/) {
+		return (0, $name, $message);
+	} 
+	
+	if($value lt $current) {
+		return (0, $name, $message);
+	}
+	return (1, $name, '');
+}
+EOR

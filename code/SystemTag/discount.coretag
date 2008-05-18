@@ -1,0 +1,66 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: discount.coretag,v 1.7 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag discount            Order        code
+UserTag discount            AddAttr
+UserTag discount            attrAlias    space discount_space
+UserTag discount            hasEndTag
+UserTag discount            PosNumber    1
+UserTag discount            Version      $Revision: 1.7 $
+UserTag discount            Routine      <<EOR
+
+# Sets the value of a discount field
+sub {
+	my($code, $opt, $value) = @_;
+
+	# API compatibility
+	if(! ref $opt) {
+		$value = $opt;
+		$opt = {};
+	}
+
+	if (! ($::Discounts
+			and $Vend::Session->{discount_space}
+			and $Vend::Session->{discount}
+			and $Vend::DiscountSpaceName)) {
+		$::Discounts
+		 	= $Vend::Session->{discount}
+			= $Vend::Session->{discount_space}{ $Vend::DiscountSpaceName = 'main' }
+			||= ($Vend::Session->{discount} || {});
+	}
+
+	my $dspace;
+	if ($Vend::Cfg->{DiscountSpacesOn} and $dspace = $opt->{discount_space}) {
+		$dspace = $Vend::Session->{discount_space}{$dspace} ||= {};
+	}
+	else {
+		$dspace = $::Discounts;
+	}
+
+	if($opt->{subtract}) {
+		$value = <<EOF;
+my \$tmp = \$s - $opt->{subtract};
+\$tmp = 0 if \$tmp < 0;
+return \$tmp;
+EOF
+	}
+	elsif ($opt->{level}) {
+		$value = <<EOF;
+return (\$s * \$q) if \$q < $opt->{level};
+my \$tmp = \$s / \$q;
+return \$s - \$tmp;
+EOF
+	}
+
+	$dspace->{$code} = $value;
+	delete $dspace->{$code}
+		unless defined $value and $value;
+	return '';
+}
+EOR

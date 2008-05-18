@@ -1,0 +1,410 @@
+[set table_perms]__UI_META_TABLE__[/set]
+[tmp page_title][msg arg.0="[cgi ui_table]"]Configure table display: %s[/msg][/tmp]
+[tmp page_banner][scratch page_title]
+	[if cgi ui_view]
+	[tmp tmp_dbcode][cgi ui_view]::[cgi ui_table][/tmp]
+		(view [cgi ui_view])
+	[else]
+	[tmp tmp_dbcode][cgi ui_table][/tmp]
+	[/else]
+	[/if]
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	&nbsp;
+		[page href=admin/db_newview
+			  extra="class=rtitle"
+			  form="
+				ui_table=[cgi ui_table]
+			  "][L]Create new view[/L]</A>
+
+[/tmp]
+[set ui_class]Admin[/set]
+@_UI_STD_HEAD_@
+
+[if !cgi ui_table]
+	[calc]
+		my ($view, $table) = split /:+/, $CGI->{code}, 2;
+		($table = $view, $view = '')
+			if ! $table;
+		$Scratch->{tmp_bpage} = $Tag->area( {
+									href => '__UI_BASE__/flex_select', 
+									form => qq{
+										mv_data_table=$table
+										ui_meta_view=$view
+									}, 
+								});
+		return;
+	[/calc]
+	[bounce href="[scratchd tmp_bpage]"]
+[/if]
+
+[table-editor
+	table=__UI_META_TABLE__
+	display-only=fieldmeta
+	view=dbconfig
+	no-table-meta=1
+	tabbed=1
+	table_width=1000
+	tab_width=120
+	break_row_class=rmarq
+	output-map=1
+	ui_style=1
+	panel_width=1000
+	panel_height=700
+	no-meta=1
+	left_width=160
+	label_cell_valign=top
+	help_cell_width=200
+	start_at="[cgi start_at]"
+	key="[scratch tmp_dbcode]"
+
+	ui_data_fields="
+
+		=[L]General[/L]
+
+		code
+		name
+		type
+		extended.tabbed extended.file_upload extended.ui_meta_specific
+		extended.restrict_allow
+		extended.filter_field
+
+		=[L]Select page display[/L]
+
+		height
+		extended.explicit_edit extended.number_list
+		extended.no_code_link extended.no_checkbox
+		extended.check_uncheck_all
+		extended.radio_box extended.user_merge
+		extended.ui_sort_field
+		extended.ui_sort_option
+		extended.ui_sort_combined
+		extended.ui_show_fields
+		extended.ui_special_add
+		extended.ui_more_alpha
+		extended.ui_more_decade
+		extended.sql_query
+		fieldmeta
+
+		=[L]Edit page[/L]
+
+		extended.ui_data_fields
+		extended.bottom_buttons
+		extended.top_buttons
+		extended.view_from
+		extended.ui_profile
+		extended.display_type
+
+		=[L]Form Linking[/L]
+
+		extended.link_table
+		extended.link_before
+		extended.link_key
+		extended.link_label
+		extended.link_sort
+		extended.link_fields
+		extended.link_auto_number extended.link_row_qual
+		extended.link_rows_blank extended.link_blank_auto
+		extended.link_view extended.link_extra
+
+		=[L]Included form[/L]
+
+		extended.include_before
+		extended.include_form
+		extended.include_form_expand
+		extended.include_form_interpolate
+
+		=[L]Tabbed Display[/L]
+
+		extended.tab_width extended.panel_width
+		extended.tab_height extended.panel_height
+		extended.tab_horiz_offset extended.tab_vert_offset
+		extended.tab_style	extended.panel_style
+		extended.panel_shade
+
+		=Edit Page HTML
+
+		extended.table_width extended.left_width
+		extended.widget_class extended.data_row_class
+		extended.break_row_class extended.spacer_row_class
+		extended.combo_row_class
+		extended.label_cell_class   extended.label_cell_style 
+		extended.data_cell_class    extended.data_cell_style
+		extended.widget_cell_class  extended.widget_cell_style
+		extended.help_cell_class    extended.help_cell_style 
+
+		=Spreadsheet page
+
+		extended.spread_height extended.spread_width
+		extended.spread_fields extended.spread_textarea_rows
+		extended.spread_textarea
+		extended.spread_meta
+
+	"
+
+	label=`{
+		code							=> 'View::Table',
+		name							=> 'Description',
+		height							=> 'Rows on select page',
+		'extended.bottom_buttons'		=> 'Buttons only on bottom',
+		'extended.restrict_allow'		=> 'Allow these ITL tags',
+		'extended.explicit_edit'		=> 'Show "edit record" link',
+		'extended.no_code_link'		    => "Don't link key column to editor",
+		'extended.no_checkbox'		    => "No checkbox for group ops",
+		'extended.check_uncheck_all'	=> 'Links to check/uncheck all',
+		'extended.radio_box'			=> 'Generate radio box for single selection',
+		'extended.user_merge'			=> 'Offer user merge option',
+		'extended.number_list'		    => "Number the entries",
+		'extended.display_type'		    => "Table cell display type",
+		'extended.file_upload'			=> 'Allow file upload for this table',
+		'extended.filter_field'			=> 'Import field filtering',
+		'extended.left_width'			=> 'Width specification for label column',
+		'extended.panel_height'			=> 'Panel Height',
+		'extended.panel_width'			=> 'Panel Width',
+		'extended.panel_style'			=> 'Panel CSS Style',
+		'extended.panel_shade'			=> 'Panel Lightest Shade',
+		'extended.tab_style'			=> 'Tab CSS Style',
+		'extended.sql_query'			=> 'SQL query to select',
+		'extended.spread_fields'		=> 'Fields to edit',
+		'extended.spread_height'		=> 'Number of rows',
+		'extended.spread_meta'			=> 'Fields to meta display',
+		'extended.spread_textarea'		=> 'Fields for textarea display',
+		'extended.spread_textarea_rows' => 'Rows in a textarea',
+		'extended.spread_width'			=> 'Column width',
+		'extended.tab_height'			=> 'Tab Height',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
+		'extended.tab_width'			=> 'Tab Width',
+		'extended.tabbed'				=> 'Use tabbed display',
+		'extended.ui_meta_specific'		=> 'Present item-specific meta for this table',
+		'extended.table_width'			=> 'Width specification for editor table',
+		'extended.ui_data_fields'		=> 'Fields to edit',
+		'extended.ui_display_only'		=> 'Fields for display only',
+		'extended.view_from'			=> 'Custom view from field',
+		'extended.ui_show_fields'		=> 'Show on select page',
+		'extended.ui_sort_field'		=> 'Sort by on select page',
+		'extended.ui_more_alpha'		=> 'More with alpha links',
+		'extended.ui_more_decade'		=> 'More decade',
+		'extended.ui_profile'			=> 'Form profile',
+		'extended.ui_sort_option'		=> 'Sort modifier for select page',
+		'extended.ui_sort_combined'		=> 'Complex sort for select page',
+		'extended.ui_special_add'		=> 'Special Additions',
+		'extended.link_table'			=> 'Table to link in cell',
+		'extended.link_rows_blank'		=> 'Number of blank rows',
+		'extended.link_blank_auto'		=> 'Auto handling blank row link key',
+		'extended.link_row_qual'		=> 'Field indicating valid row',
+		'extended.link_auto_number'		=> 'Allow auto_number in link',
+		'extended.link_before'			=> 'Column to appear before',
+		'extended.include_before'		=> 'Column for include to appear before',
+		'extended.include_form'			=> 'Custom form widget for inclusion',
+		'extended.include_form_expand'	=> 'Expand values of include',
+		'extended.include_form_interpolate'	=> 'Full interpolate of include',
+		'extended.link_key'				=> 'Foreign Key',
+		'extended.link_label'			=> 'Label for linked table',
+		'extended.link_sort'			=> 'Sort linked records by',
+		'extended.link_fields'			=> 'Fields in table to link',
+		'extended.link_view'			=> 'View to derive link display',
+		'extended.link_extra'			=> 'HTML style info for linked cells',
+		'extended.widget_class'			=> 'HTML widget class',
+		'extended.data_row_class'		=> 'Data row class',
+		'extended.break_row_class'		=> 'Break row class',
+		'extended.spacer_row_class'		=> 'Spacer row class',
+		'extended.combo_row_class'		=> 'User widget row class',
+		'extended.label_cell_class'		=> 'Label cell class (standard row)',
+		'extended.data_cell_class'		=> 'Data cell class (standard row)',
+		'extended.widget_cell_class'	=> 'Widget cell class (standard row)',
+		'extended.help_cell_class'		=> 'Help cell class (standard row)',
+		'extended.label_cell_style'		=> 'Label cell style (standard row)',
+		'extended.data_cell_style'		=> 'Data cell style (standard row)',
+		'extended.widget_cell_style'	=> 'Widget cell style (standard row)',
+		'extended.help_cell_style'		=> 'Help cell style (standard row)',
+		'extended.bottom_buttons'		=> 'Buttons only on bottom',
+		'extended.top_buttons'			=> 'Buttons only on top',
+		'fieldmeta'						=> 'Individual field meta (view only)',
+
+	}`
+
+	override.type=table
+
+	help=`{
+		'extended.panel_height'			=> 'Default 500 pixels.',
+		'extended.panel_width'			=> 'Default 800 pixels.',
+		'extended.tab_height'			=> 'Default 20 pixels.',
+		'extended.user_merge'			=> 'Only active for userdb and transactions table',
+		'extended.ui_profile'			=> 'Standard form profile like order check or mv_form_profile',
+		'extended.filter_field'			=> q{
+			Specified one per line:
+			<blockquote>
+<pre>
+	fieldname1=filter
+	fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+			If multiple tables, must specify table as well:
+			<blockquote>
+<pre>
+	table1:fieldname1=filter
+	table2:fieldname2=filter1 filter2 
+</pre>
+			</blockquote>},
+		'extended.display_type'		    => "Sets the general style of column edit areas",
+		'extended.link_rows_blank'		=> 'default 1',
+		'extended.link_row_qual'		=> 'Default is key field, needs to be different field if auto-numbering. Must not be same as Foreign Key if in auto mode.',
+		'extended.link_blank_auto'		=> 'Requires link row qualifier be separate from primary key and foreign key in linked table.',
+		'extended.sql_query'			=> 'Cannot use more-list with this. Should not use on large table.',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
+		'extended.tab_width'			=> 'Default 100 pixels.',
+		'extended.tabbed'				=> 'Use the tabbed display, broken into tabs as you label sections.',
+		'extended.ui_data_fields'		=> 'Breaks can be embedded in the fields by placing &quot;=Title String&quot; on a line by itself and surrounding with blank lines.',
+		'extended.ui_display_only'		=> 'Will not be set, only shown.',
+		'extended.ui_more_decade'		=> 'Maximum number of pages for [more] before [next] links show up',
+		'extended.ui_more_alpha'		=> 'Display [more] on oversize pages with alpha links instead of page numbers',
+		'extended.ui_special_add'		=> 'Only applies to certain pages (Items uses this)',
+		'extended.ui_sort_combined'		=> 'WARNING: overrides sort field and sort option. Should contain a comma-separated list of sort fields, with possible colon-separated modifiers. Example: <blockquote>price:r, description:f</blockquote>',
+	}`
+
+	widget=`{
+		code							=> 'text_40',
+		name							=> 'text_40',
+		height							=> 'text_5',
+		type							=> 'hidden',
+		'extended.restrict_allow'		=> 'text_40',
+		'extended.explicit_edit'		=> 'yesno',
+		'extended.no_code_link'			=> 'yesno',
+		'extended.no_checkbox'			=> 'yesno',
+		'extended.number_list'			=> 'yesno',
+		'extended.check_uncheck_all'	=> 'yesno',
+		'extended.radio_box'			=> 'yesno',
+		'extended.user_merge'			=> 'yesno',
+		'extended.file_upload'			=> 'yesno',
+		'extended.display_type'			=> 'select',
+		'extended.filter_field'			=> 'textarea_2_40',
+		'extended.tab_style'			=> 'textarea_5_40',
+		'extended.panel_style'			=> 'textarea_5_40',
+		'extended.panel_shade'			=> 'select',
+		'extended.left_width'			=> 'text_8',
+		'extended.panel_height'			=> 'text_5',
+		'extended.panel_width'			=> 'text_5',
+		'extended.sql_query'			=> 'textarea_3_60',
+		'extended.spread_fields'		=> 'move_combo_8',
+		'extended.spread_height'		=> 'text_5',
+		'extended.spread_meta'			=> 'multiple',
+		'extended.spread_textarea'		=> 'multiple',
+		'extended.spread_textarea_rows' => 'text_5',
+		'extended.spread_width'			=> 'text_5',
+		'extended.ui_special_add'		=> 'multiple',
+		'extended.tab_height'			=> 'text_5',
+		'extended.tab_horiz_offset'		=> 'text_5',
+		'extended.tab_vert_offset'		=> 'text_5',
+		'extended.tab_width'			=> 'text_5',
+		'extended.tabbed'				=> 'yesno',
+		'extended.ui_meta_specific'		=> 'yesno',
+		'extended.table_width'		    => 'text_8',
+		'extended.ui_data_fields'		=> 'move_combo_8',
+		'extended.ui_display_only'		=> 'text_40',
+		'extended.view_from'			=> 'select',
+		'extended.ui_show_fields'		=> 'move_combo_8',
+		'extended.ui_sort_field'		=> 'select',
+		'extended.ui_more_alpha'		=> 'yesno',
+		'extended.ui_more_decade'		=> 'select',
+		'extended.ui_sort_option'		=> 'multiple',
+		'extended.ui_sort_combined'		=> 'text_50',
+		'extended.bottom_buttons'		=> 'yesno',
+		'extended.link_table'			=> 'select',
+		'extended.link_before'			=> 'text_12',
+		'extended.include_form'			=> 'textarea_10_80',
+		'extended.ui_profile'			=> 'textarea_10_60',
+		'extended.include_form_expand'	=> 'yesno',
+		'extended.include_form_interpolate'	=> 'yesno',
+		'extended.link_label'			=> 'text_50',
+		'extended.link_fields'			=> 'text_70',
+		'extended.link_key'			=> 'text_20',
+		'extended.link_rows_blank'	=> 'text_3',
+		'extended.link_blank_auto'		=> 'yesno',
+		'extended.link_row_qual'	=> 'text_12',
+		'extended.link_auto_number'	=> 'yesno',
+		'extended.top_buttons'		=> 'yesno',
+		'fieldmeta'					=> 'links',
+	}`
+
+	filter=`{
+		height							=> 'digits',
+		'extended.ui_sort_option'		=> 'null_to_space',
+		'extended.ui_special_add'		=> 'null_to_comma',
+		'extended.spread_meta' => 'null_to_space',
+	}`
+
+	database=`{
+		'extended.ui_sort_field'		=> $CGI->{ui_table},
+		'extended.ui_show_fields'		=> $CGI->{ui_table},
+		'extended.ui_data_fields'		=> $CGI->{ui_table},
+		'extended.view_from'			=> $CGI->{ui_table},
+		'extended.spread_fields'		=> $CGI->{ui_table},
+		'extended.spread_meta'			=> $CGI->{ui_table},
+		'extended.spread_textarea'		=> $CGI->{ui_table},
+	}`
+
+	height=`{
+		'extended.ui_sort_field'		=> 8,
+		'extended.ui_show_fields'		=> 8,
+		'extended.ui_data_fields'		=> 16,
+		'extended.spread_fields'		=> 8,
+		'extended.spread_meta'			=> '10',
+		'extended.spread_textarea'		=> '10',
+	}`
+
+	width=`{
+		'extended.ui_data_fields'		=> 30,
+		'extended.ui_show_fields'		=> 50,
+	}`
+
+	form=`{
+			fieldmeta => '',
+	}`
+
+	wid_href=`{
+			fieldmeta => 'meta_editor',
+	}`
+
+	options=`{
+		'extended.ui_sort_field'		=> 'columns',
+		'extended.ui_show_fields'		=> 'columns',
+		'extended.ui_data_fields'		=> 'columns',
+		'extended.view_from'			=> 'columns',
+		'extended.spread_fields'		=> 'columns',
+		'extended.spread_meta'			=> 'columns',
+		'extended.spread_textarea'		=> 'columns',
+		'extended.panel_shade'			=> 'f=white,e=Light gray,d=Medium gray,c=Dark gray',
+		'extended.link_table'			=> 'tables',
+		'extended.link_before'			=> '',
+		'extended.ui_more_decade'		=> '0=No,5,10*,15,20,25,50,100',
+		'extended.ui_sort_option'		=> q{=none,n=numeric,r=reverse,f=case-insensitive},
+		'extended.display_type'		=> $Variable->{UI_TABLE_EDITOR_DISPLAY_TYPES}
+										|| q{
+			image_meta=Standard UI,
+			adjust_width=UI with adjusted width,
+			default=default,
+			simple_row=Simpler,
+			text_help=Simple with text/js help,
+			simple_icon_help=Simple with icon/js help,
+			over_under=Over and under,
+			simple_help_below=Simple with help below,
+			three_column=Three column,
+			nospace=Like UI but no spacing,
+										},
+		'extended.ui_special_add'		=> q{NONE,
+Qty price;pricing:q5:rn=Qty price,
+Option;products:option_type=Options,
+Options;options:o_enable:r=Old Options,
+Up-sell;merchandising:upsell_to:r=Up-sell,
+Cross-sell;merchandising:cross_sell:r=Cross-sell,
+Promo;merchandising:featured:r=Promo,
+Inventory;inventory:quantity:rn=Inventory},
+	}`
+
+]
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.23 $ -->

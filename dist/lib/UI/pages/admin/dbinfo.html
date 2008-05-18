@@ -1,0 +1,192 @@
+[tmp page_perm]techadmin[/tmp]
+[tmp page_title][L]Administration[/L]: [cgi name=mv_data_table filter=entities keep=1] [L]table information[/L][/tmp]
+[tmp page_banner]<i>[calc]$Config->{CatalogName}[/calc]</i> [L]table information[/L] [if cgi mv_data_table]([cgi name=mv_data_table filter=entities keep=1])[/if][/tmp]
+[set ui_class]Admin[/set]
+[tmp help_name]genconfig.main[/tmp]
+[tmp icon_name]icon_config.gif[/tmp]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<center>
+<table width="100%" border=0 cellpadding=2 cellspacing=0 class=rseparator>
+
+[perl tables="[list-databases] __UI_META_TABLE__"]
+	my @tables;
+	if($CGI->{mv_data_table}) {
+		@tables = split /[\s,\0]+/, $CGI->{mv_data_table};
+	}
+	else {
+		@tables = sort keys %{$Config->{Database}};
+	}
+	my $mdb = $Db{__UI_META_TABLE__};
+	my %ignore;
+	my @ignore = qw/
+			Class
+			db_file
+			db_file_extended
+			db_file_extended
+			db_text
+			dir
+			DSN
+			dsn_id
+			Exists_handle
+			EXTENDED
+			file
+			_Insert_h
+			name
+			Object
+			Read_only
+			type
+			Update_handle
+		/;
+	@ignore{@ignore} = @ignore;
+
+	my %typemap = (
+		1	=> 'DBM/Memory, auto-detect delimiter',
+		2	=> 'DBM/Memory, LINE delimiter',
+		3	=> 'DBM/Memory, %% delimiter',
+		4	=> 'DBM/Memory, CSV delimiter',
+		5	=> 'DBM/Memory, PIPE delimiter',
+		6	=> 'DBM/Memory, TAB delimiter',
+		7	=> 'This should never appear (old Msql)',
+		8	=> 'DBI/SQL',
+		9	=> 'LDAP',
+	);
+	my $tcount = 0;
+	for (@tables) {
+		my $tname = $_;
+		my $rclass = ($tcount++ % 2) ? 'rownorm' : 'rowalt';
+		my $tinfo = '';
+		if($mdb and $mdb->record_exists($tname) ) {
+			$tinfo = $mdb->field($tname, 'label');
+			if($tinfo) {
+				$tinfo .= "<br>($tinfo)";
+			}
+		}
+
+		my $ref = $Config->{Database}{$_};
+		my $class = $ref->{Class};
+		my $file  = $ref->{file};
+		my $dfile = ($class eq 'DBI' ? $ref->{db_file_extended} : $ref->{db_file});
+		my $dfn   = $dfile;
+		$dfile =~ s:^$Config->{ProductDir}/::o;
+		my $dir   = $ref->{DIR} || $Config->{ProductDir};
+		my %delim_map = (
+			"|" => 'PIPE',
+			"\t" => 'TAB',
+			"\n" => 'LINE',
+		);
+
+		my $delim;
+		$delim = $ref->{delimiter};
+		$delim   = $delim_map{$delim} || $delim;
+
+		my $type  = $typemap{$ref->{type}};
+
+		$type .= " DSN=$ref->{DSN}" if $ref->{DSN};
+		my $fn = "$dir/$file";
+		$file .= "<BR><TT>mod date:   " . $Tag->file_info( { name => $fn, date => 1 } );
+		$file .= "<BR>file size: " . $Tag->file_info( { name => $fn, size => 1 } );
+		$file .= "</TT>";
+		$dfile .= "<BR><B>(not significant for DBI types)</b>" if $class eq 'DBI';
+		$dfile .= "<BR><TT>mod date:   " . $Tag->file_info( { name => $dfn, date => 1 } );
+		$dfile .= "<BR>file size: " . $Tag->file_info( { name => $dfn, size => 1 } );
+		$dfile .= "</TT>";
+		my $obj   = $ref->{Object};
+		$out .= <<EOF;
+		<tr class=rhead>
+			<td valign=TOP align=center class=rhead colspan=2>
+			<b>$tname$tinfo</b>
+			</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left class=clabel>Type</th>
+			<td class=cdata>$type</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Class</th>
+			<td class=cdata>$class</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Directory</th>
+			<td class=cdata>$dir</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Text File</th>
+			<td class=cdata>$file</td>
+		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>DB File</th>
+			<td class=cdata>$dfile</td>
+		</tr>
+EOF
+
+		$out .= <<EOF if $delim;
+		<tr>
+			<th valign=top align=left width="30%">Delimiter</th>
+			<td>$delim</td>
+		</tr>
+EOF
+
+		$out .= <<EOF;
+		<tr class=rhead>
+			<td colspan=2 class=rhead>Parameters</th>
+		</tr>
+EOF
+		for(sort keys %{$ref}) {
+			next if $ignore{$_};
+			my $key = $_;
+			my $r = $ref->{$_};
+			my $o = <<EOF;
+		<tr class=rownorm>
+			<td valign=top align=left width="30%" class=clabel>$_</td>
+			<td class=cdata>
+EOF
+			if(! defined $r) {
+				$o .= "undef";
+			}
+			elsif(ref($r) =~ /^ARRAY/) {
+				my $t = join "<br>", @$r;
+				$o .= $t || '&nbsp;';
+			}
+			elsif(ref($r) =~ /^HASH/) {
+				my $t = '';
+				for(sort keys %$r) {
+					if (! defined $r->{$_} and $key eq 'NUMERIC') {
+						$t .= "$_<br>";
+						next;
+					}
+					$t .= "$_ --&gt; $r->{$_}<br>";
+				}
+				$o .= $t || '&nbsp;';
+			}
+			elsif(! defined $r) {
+				$o .= "&nbsp;";
+			}
+			elsif(! length($r)) {
+				$o .= "&nbsp;";
+			}
+			else {
+				$o .= $r;
+			}
+			$o .= <<EOF;
+			</td>
+		</tr>
+EOF
+			$out .= $o;
+		}
+
+		$out .= <<EOF;
+EOF
+
+	}
+	return $out;
+[/perl]
+
+</TABLE>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

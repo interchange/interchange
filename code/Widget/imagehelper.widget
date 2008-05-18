@@ -1,0 +1,77 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: imagehelper.widget,v 1.6 2007-03-30 23:40:58 pajamian Exp $
+
+CodeDef imagehelper  Widget  1
+CodeDef imagehelper  Description Image upload
+CodeDef imagehelper  Routine <<EOR
+sub  {
+    my ($opt) = @_;
+
+	my $name = $opt->{name};
+	my $size = $opt->{cols} || $opt->{width};
+	my $val  = $opt->{value};
+	my $path = $opt->{image_path} || $opt->{outboard};
+	my $name_from = $opt->{name_from_field} || '';
+	my $imagebase = $opt->{image_base} || $opt->{prepend};
+
+	Vend::Interpolate::vars_and_comments(\$path);
+	Vend::Interpolate::vars_and_comments(\$imagebase);
+	if ($imagebase ||= '') {
+		$imagebase =~ s/^\s+//;
+		$imagebase =~ s:[\s/]*$:/:;
+	}
+
+	my $of_widget;
+	if($path =~ s!/\*(?:\.([^/]+))?$!!) {
+		my $spec = $1;
+		my @files = UI::Primitive::list_images($path, $spec);
+		unshift(@files, "=(none)");
+		my $passed = join ",", map { s/,/&#44;/g; $_} @files;
+		my $opt = {
+			type => 'select',
+			default => $val,
+			attribute => 'mv_data_file_oldfile',
+			passed => $passed,
+		};
+		$of_widget = Vend::Interpolate::tag_accessories(
+				undef, undef, $opt, { 'mv_data_file_oldfile' => $val } );
+	}
+	else {
+		$of_widget = qq{<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">};
+	}
+	$size = qq{ SIZE="$size"} if $size > 0;
+    if ($val) {
+        qq{<A HREF="$imagebase$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name"><INPUT TYPE=hidden NAME=mv_data_file_name_from VALUE="$name_from">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name" VALUE="$val">};      
+    } else {
+        qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name"><INPUT TYPE=hidden NAME=mv_data_file_name_from VALUE="$name_from">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name"$size>};
+    }
+}
+EOR
+
+CodeDef imagehelper ExtraMeta <<EOM
+{
+	_order => [ qw/
+			image_path
+			name_from_field
+		/],
+	image_path => {
+		label => 'Image Path',
+		help => 'default is <b>images/items</b> in <i>standard catalog</i>',
+		widget => 'text_30',
+	},
+	name_from_field => {
+		label => 'Name from field',
+		help => 'Usually named from products SKU',
+		widget => 'select',
+		options => 'columns::',
+	},
+}
+EOM

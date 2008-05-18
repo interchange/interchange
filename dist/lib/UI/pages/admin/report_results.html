@@ -1,0 +1,447 @@
+[if-mm !tables]
+[seti ui_error]Not authorized for table [cgi mv_data_table][/seti]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[if-mm !advanced report]
+[seti ui_error]Not authorized for reporting functions.[/seti]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[seti page_title][cgi report_title][/seti]
+[set ui_class]Reports[/set]
+[set icon_name]icon_stats.gif[/set]
+[set help_name]report[/set]
+[calc]
+	$Scratch->{head_put} = '@' . '_UI_STD_HEAD_@';
+	$Scratch->{foot_put} = '@' . '_UI_STD_FOOTER_@';
+	$Scratch->{page_put} = '@' . '@MV_PAGE@@';
+	$Config->{NoSearch} = '';
+[/calc]
+
+[perl]
+	$Scratch->{relocate} = '';
+	return unless $CGI->{row_change};
+	$CGI->{row_change} =~ /^(insert|append|delete)(\d+)$/
+		or return;
+	$function = $1;
+	$row = $2;
+	%saved = %$CGI;
+	for(keys %saved) {
+		push @del, $_ unless length($saved{$_});
+	}
+	for(@del) {
+		delete $saved{$_};
+	}
+	@del = ();
+	my @change;
+	my %ignore = qw/
+					break
+					sort_order
+					sort_option
+				/;
+	my $key;
+	my $max = 0;
+	foreach $key (keys %saved) {
+		next unless $key =~ /^(\w+\D)(\d+)$/;
+		my $nm  = $1;
+		my $idx = $2;
+		next if $ignore{$nm};
+		$max = $idx if $idx > $max and $key eq "table$idx";
+		if($function eq 'append') {
+			next if $idx <= $row;
+		}
+		else {
+			next if $idx < $row;
+		}
+		push @change, [$key, $saved{$key}];
+		push @del, $key;
+	}
+	for(@del) {
+		delete $saved{$_};
+	}
+	if($function eq 'insert' or $function eq 'append') {
+		$max++;
+		for(@change) {
+			my ($k, $v) = @{$_};
+			$k =~ s/(\d+)$/$1 + 1/e;
+			$saved{$k} = $v;
+		}
+		$Scratch->{relocate} = '__UI_BASE__/report';
+	}
+	elsif($function eq 'delete') {
+		$max--;
+		for(@change) {
+			my ($k, $v) = @{$_};
+			$k =~ /(\d+)/;
+			my $idx = $1;
+			next if $idx == $row;
+			$k =~ s/(\d+)$/$1 - 1/e;
+			$saved{$k} = $v;
+		}
+		$Scratch->{relocate} = '__UI_BASE__/report';
+	}
+	else {
+		$Scratch->{relocate} = 'special/failed';
+	}
+
+	$saved{num_columns} = $max > 1 ? $max + 1 : 3;
+
+	$Values->{saved_report} = \%saved;
+	return;
+[/perl]
+
+[if scratch relocate]
+	[bounce href="[area href=`$Scratch->{relocate}`]"]
+[/if]
+
+@_UI_STD_HEAD_@
+
+[seti name=tables][list-databases][/seti]
+[perl table="[scratch tables]"]
+	$vals = {};
+	my $current_table = $Values->{mv_data_table} = $CGI->{report_table};
+	%saved = %$CGI;
+	
+	for(keys %saved) {
+		push @del, $_ unless length($saved{$_});
+	}
+	for(@del) {
+		delete $saved{$_};
+	}
+	unless ($current_table) {
+		$Scratch->{search_string} = "";
+		$Scratch->{search_page} = "<TR><TD>NO CURRENT TABLE</TD></TR>";
+		return;
+	}
+	my $large = $Db{$current_table}->config('LARGE');
+
+	for( keys %{$CGI} ) {
+		next unless /^([A-Za-z_]+)(\d+)$/;
+		my $item = $1;
+		my $idx  = $2;
+		$vals->{$item} = []  
+			unless defined $vals->{$item};
+		$vals->{$item}[$idx] = $CGI->{"$item$idx"};
+	}
+	return "No tables/columns selected" unless defined $vals->{table};
+	$summary_only = $CGI->{summary_only};
+	for(0 .. 2) {
+		if($CGI->{"search_field$_"} and $CGI->{"search_spec$_"}) {
+			my $spec	= $CGI->{"search_spec$_"};
+			my $field	= $CGI->{"search_field$_"};
+			my $op		= $CGI->{"search_op$_"};
+			push @string, "se=$spec";
+			push @string, "sf=$field";
+			push @string, "op=$op";
+			push @string, "nu=1" if $op =~ /\W/;
+		}
+	}
+
+	if(! scalar @string) {
+		push @string, "ra=yes";
+	}
+	else {
+		push @string, "co=1";
+	}
+
+	push @string, "st=db"
+		unless $large;
+	push @string, "fi=$current_table";
+
+	if ($CGI->{matchlimit}) {
+		push @string, "ml=$CGI->{matchlimit}";
+		my $page = $CGI->{report_title};
+		$page =~ s/%/%37/g;
+		push @string, "sp=__UI_BASE__/reports/$page";
+	}
+	else {
+		push @string, "ml=999999";
+	}
+
+	if($vals->{sort_order}) {
+		for(my $i = 0; $i < scalar @{$vals->{sort_order}}; $i++) {
+			my $f = $vals->{sort_order}[$i];
+			last unless $f;
+			push @string, "tf=$f";
+			push @string, "to=" . $vals->{sort_option}[$i];
+			if($vals->{break}[$i]) {
+				unshift(@breaks, $f);
+				$hfoot_change{$f} =  qq{\n[item-change $i][condition]};
+				$hfoot_change{$f} .= qq{[item-data $current_table $f]};
+				$hfoot_change{$f} .= qq{[/condition]\n};
+				$foot_change{$f} = qq{<TR>\n};
+				$last_foot_change{$f} = qq{<TR>\n};
+				$efoot_change{$f} = "[/item-change $i]\n";
+			}
+		}
+	}
+	my $header = "<TR>\n";
+	my $page = '';
+	my $summary_found;
+	$page .= "<TR>\n" unless $summary_only;
+	my $end_line = '';
+	my $total_line = "<TR>\n";
+	my $last_total_line = "<TR>\n";
+	my $count = 0;
+	for (my $i = 0; $i < 10; $i++) {
+		last if ! $vals->{table}[$i];
+		$count++;
+	}
+
+	$saved{num_columns} = $count;
+	$Values->{saved_report} = \%saved;
+
+	for (my $i = 0; $i < $count; $i++) {
+		my $t = $vals->{table}[$i] or last;
+		my $c = $vals->{column}[$i];
+		my $k = $vals->{key}[$i];
+		my $h = $vals->{heading}[$i] || $c;
+		my $s = $vals->{summary}[$i];
+		my $r = $vals->{filter}[$i];
+		my $e = $vals->{edit}[$i];
+		my $ek = $vals->{editkey}[$i] || '';
+		if($r) {
+			$r =~ s/'/\\'/g;
+			$r =~ s/[\0 ]+/' '/g if $r;
+			$r = "'$r'";
+		}
+		my $l = "ALIGN=$vals->{align}[$i]";
+		$header .= "\t<TH $l>$h</TH>\n";
+		my $data;
+		if($k) {
+			$data = "[data table=$t column=$c key='[item-data $current_table $k]']";
+		}
+		else {
+			$data = "[item-data $current_table $c]";
+		}
+		if($e) {
+			$ek = $ek ? "[item-data $t $ek]" : $data;
+		}
+		unless($summary_only) {
+			$page .= "\t<TD $l>";
+			$page .= qq{[page href="__UI_BASE__/flex_editor"
+								form="
+									ui_return_to=$Scratch->{page_put};
+									mv_data_table=$e
+									item_id=$ek
+									"]} if $e;
+			if ($r) {
+				$page .= $k
+						? qq{[filter op=$r interpolate=1]}
+						: qq{[item-filter $r]};
+			}
+			$page .= $data;
+			if ($r) {
+				$page .= $k
+						? qq{[/filter]}
+						: qq{[/item-filter]};
+			}
+			$page .= qq{</A>} if $e;
+		}
+		$total_line .= "\t<TD $l>";
+		$total_line .= "<B>TOTAL</B>" unless $i;
+		$last_total_line .= "\t<TD $l>";
+		$last_total_line .= "<B>TOTAL</B>" unless $i;
+		for (@breaks) {
+			$foot_change{$_} .= "\t<TD $l>";
+			$last_foot_change{$_} .= "\t<TD $l>";
+			if($_ eq $c) {
+				$foot_change{$_} .= qq{[if scratch first_done_$c]};
+				$foot_change{$_} .= qq{<HR>} if ! $summary_only;
+				$foot_change{$_} .= qq{[value prev_data_$c]};
+				$foot_change{$_} .= qq{<HR>} if ! $summary_only;
+				$foot_change{$_} .= qq{[/if]};
+				$last_foot_change{$_} .= "<HR>[value prev_data_$c]<HR>";
+			}
+			elsif($s) {
+				$foot_change{$_} .= qq{[if scratch first_done_$_]};
+				$foot_change{$_} .= qq{<HR>} if ! $summary_only;
+				$foot_change{$_} .= qq{[item-filter $r]} if $r;
+				$foot_change{$_} .= "[item-exec summary]$t.$c.$_ SUBTOTAL[/item-exec]\n";
+				$foot_change{$_} .= qq{[/item-filter]} if $r;
+				$foot_change{$_} .= qq{<HR>} if ! $summary_only;
+				$foot_change{$_} .= qq{[/if]\n};
+				$last_foot_change{$_} .= qq{<HR>};
+				$last_foot_change{$_} .= qq{[filter op="$r" interpolate=1]} if $r;
+				$last_foot_change{$_} .= '[calc]$subtotal' . "{'$t.$c.$_'}" . "[/calc]\n";
+				$last_foot_change{$_} .= qq{[/filter]} if $r;
+				$last_foot_change{$_} .= qq{<HR>};
+			}
+			$foot_change{$_} .= "</TD>\n";
+			$last_foot_change{$_} .= "</TD>\n";
+		}
+		if($s) {
+			$summary_found = 1;
+			$page .= qq{[item-exec summary]$t.$c ADD $data} . '[/item-exec]';
+			for(@breaks) {
+				$page .= qq{[item-exec summary]$t.$c.$_ ADD $data} . '[/item-exec]';
+			}
+			$total_line .= qq{<B>};
+			$total_line .= qq{[item-filter $r]} if $r;
+			$total_line .= "[item-exec summary]$t.$c TOTAL[/item-exec]\n";
+			$total_line .= qq{[/item-filter]} if $r;
+			$total_line .= qq{</B>};
+			$last_total_line .= qq{<B>};
+			$last_total_line .= qq{[filter op="$r" interpolate=1]} if $r;
+			$last_total_line .= '[calc]$total' . "{'$t.$c'}" . "[/calc]\n";
+			$last_total_line .= qq{[/filter]} if $r;
+			$last_total_line .= qq{</B>};
+		}
+		$total_line .= "</TD>\n";
+		$last_total_line .= "</TD>\n";
+		$page .= "</TD>\n" unless $summary_only;
+	}
+	if($summary_found) {
+		$page .= <<'EOF';
+[item-sub summary]
+	my $string = shift;
+	$string =~ s/^\s+//;
+	my ($name, $function, $value) = split /\s+/, $string;
+	if ($function eq 'ADD') {
+		$subtotal{$name} += $value;
+		$total{$name} += $value;
+		return;
+	}
+	my $result;
+	if ($function eq 'SUBTOTAL') {
+		$result = $subtotal{$name};
+		$subtotal{$name} = 0
+			unless $value eq 'SHOW';
+	}
+	elsif ($function eq 'TOTAL') {
+		$result = $total{$name};
+		$total{$name} = $subtotal{$name} = 0
+			unless $value eq 'SHOW';
+	}
+	return $result;
+[/item-sub]
+EOF
+	}
+	$page .= "</TR>\n" unless $summary_only;
+	$header .= "</TR>\n";
+	$total_line .= "</TR>\n";
+	$Scratch->{search_string} = join "\n\t\t", '', @string, '';
+	if( scalar(@breaks) and ! $summary_only ) {
+		$Scratch->{search_page} = '';
+	}
+	else {
+		$Scratch->{search_page} = $header;
+	}
+	$header = '' if $summary_only;
+	$Scratch->{search_page} = scalar(@breaks) ? '' : $header;
+	for (reverse @breaks) {
+		$Scratch->{search_page} .= "[set first_done_$_][/set]\n";
+		$foot_change{$_} .= "</TR>";
+		$efoot_change{$_} = "\n$header\n$efoot_change{$_}\n";
+		$header = '';
+	}
+	$Scratch->{search_page} .= "[search-list]\n";
+	for (@breaks) {
+		$Scratch->{search_page} .= $hfoot_change{$_};
+		$Scratch->{search_page} .= $foot_change{$_};
+		$Scratch->{search_page} .= $efoot_change{$_};
+		$Scratch->{search_page} .= "\n[set first_done_$_]1[/set]\n";
+	}
+	$Scratch->{search_page} .= $page;
+	for (@breaks) {
+		$Scratch->{search_page} .= qq{[value name=prev_data_$_ hide=1 set=|};
+		$Scratch->{search_page} .= qq{[item-data $current_table $_]};
+		$Scratch->{search_page} .= qq{|]};
+	}
+	$Scratch->{search_page} .= "\n[/search-list]\n";
+	for (@breaks) {
+		$Scratch->{search_page} .= $last_foot_change{$_};
+	}
+	$Scratch->{search_page} .= $last_total_line if $summary_found;
+	if($CGI->{matchlimit}) {
+		$Scratch->{search_page} .= "<TR><TD COLSPAN=$count><HR></TD></TR>";
+		$count--;
+		$Scratch->{search_page} .= <<EOF;
+[more-list]
+<TR>
+	<TD>More</TD>
+	<TD COLSPAN=$count>[more]</TD>
+	</TR>
+[/more-list]
+EOF
+	}
+	return;
+[/perl]
+[comment]
+<XMP>
+string: [scratch search_string]
+page: [scratch search_page]
+</XMP>
+[/comment]
+
+[if cgi generate_page]
+[set write_report]
+[seti name=tables][list-databases][/seti]
+success=[perl table="[scratch tables]"]
+	my $data = $CGI->{page};
+	$data =~ s/&#91;/[/g;
+	$data =~ s/\r//g;
+	my $page = $CGI->{report_name};
+	return 0 unless ($page and $data);
+	$CGI->{definition} =~ s/\r//g;
+	$def = '[';
+	$def .= <<EOF;
+perl]
+	\$Values->{saved_report} = $CGI->{definition};
+	return;
+EOF
+	$def .= '[';
+	$def .= '/perl]';
+	$def .= "[bounce href='[area __UI_BASE__/report]']\n";
+	$page =~ s/([^-\w.])/sprintf '%%%02x', ord($1)/ge;
+	if($Tag->if_mm('super')) {
+		$save_dir = '';
+	}
+	else {
+		$save_dir = "/user/$Session->{username}";
+	}
+	$status = $Tag->write_relative_file("pages/__UI_BASE__$save_dir/report_def/$page.html", $def);
+	$status &&= $Tag->write_relative_file("pages/__UI_BASE__$save_dir/reports/$page.html", $data);
+	delete $CGI->{page};
+	delete $CGI->{def};
+	return $status;
+[/perl]
+[/set]
+<FORM ACTION="[area __UI_BASE__/report_save]" METHOD=POST>
+[form-session-id]
+<INPUT NAME=mv_click TYPE=hidden VALUE="write_report">
+<INPUT NAME=mv_action TYPE=hidden VALUE="return">
+Report name: <INPUT NAME=report_name VALUE="[cgi report_title]"><INPUT TYPE=submit VALUE=Save><BR CLEAR=LEFT>
+<TEXTAREA ROWS=50 COLS=80 NAME=page>
+&#91;set page_title][cgi report_title][/set]
+&#91;set icon_name]icon_stats.gif[/set]
+&#91;set table_perm]1[/set]
+[scratch head_put]
+<TABLE>
+&#91;set first_done]&#91;/set]
+&#91;search-region more=1 search="[scratch search_string]"]
+[scratch search_page]
+&#91;/search-region]
+</TABLE>
+[scratch foot_put]
+</TEXTAREA>
+<TEXTAREA ROWS=50 COLS=80 NAME=definition>
+[perl]
+my $val = $Tag->uneval({ ref => $Values->{saved_report} });
+$val =~ s/([{,])(')/$1\n$2/g;
+return $val;
+[/perl]
+</TEXTAREA>
+<P><BR CLEAR=LEFT><INPUT TYPE=submit VALUE=Save></P>
+</FORM>
+[else]
+<TABLE>
+[search-region search="[scratch search_string]" interpolate=1]
+[scratch search_page]
+[/search-region]
+</TABLE>
+[/else]
+[/if]
+[set search_page][/set]
+[set search_string][/set]
+@_UI_STD_FOOTER_@
+

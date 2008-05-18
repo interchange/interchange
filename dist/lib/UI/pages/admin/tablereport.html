@@ -1,0 +1,183 @@
+[if-mm !tables]
+[set ui_error]Not authorized for table.[/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[if-mm !advanced report]
+[bounce page="__UI_BASE__/error"]
+[value name=saved_report set=""]
+[/if-mm]
+[seti page_title]Reports[/seti]
+[set ui_class]Reports[/set]
+[set help_name]report[/set]
+[set icon_name]icon_config.gif[/set]
+[seti name=tables][list-databases][/seti]
+
+@_UI_STD_HEAD_@
+
+[seti table_list]
+	[loop prefix=table list="[scratch tables]"]
+	<OPTION VALUE="[table-code]">[table-code]</OPTION>
+	[/loop]
+[/seti]
+
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=3></td>
+</tr>
+
+<TR>
+<TD class=rnorm VALIGN=TOP WIDTH=200>
+	<IMG src="icon_stats.gif"><B>
+		Run saved report
+	</B>
+</TD>
+<TD class=rnorm VALIGN=TOP WIDTH=200>
+	<IMG src="icon_config.gif"><B>
+		Retrieve saved definition
+	</B>
+</TD>
+<TD class=rnorm VALIGN=TOP WIDTH=200>
+	<IMG src="icon_error.gif"><B>
+		Delete report
+	</B>
+</TD>
+</TR>
+<TD VALIGN=TOP WIDTH=200>
+	[loop list="[list-glob spec='pages/__UI_BASE__/reports/* pages/__UI_BASE__/user/[data session mm_username]/reports/*']"]
+	[calc]
+		$lab = q{[loop-code]}; 
+		$lab =~ s:\.html.*::;
+		$opt = $lab;
+		$opt =~ s:^pages/::;
+		$lab =~ s:.*/::;
+		$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+		my $out = $Tag->page($opt);
+		$out .= $lab;
+		$out .= '</A><BR>'
+	[/calc]
+	[/loop]
+</TD>
+<TD VALIGN=TOP WIDTH=200>
+	[loop list="[list-glob spec='pages/__UI_BASE__/report_def/* pages/__UI_BASE__/user/[data session mm_username]/report_def/*']"]
+	[calc]
+		$lab = q{[loop-code]}; 
+		$lab =~ s:\.html.*::;
+		$opt = $lab;
+		$opt =~ s:^pages/::;
+		$lab =~ s:.*/::;
+		$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+		my $out = $Tag->page($opt);
+		$out .= $lab;
+		$out .= '</A><BR>'
+	[/calc]
+	[/loop]
+</TD>
+<TD VALIGN=TOP WIDTH=200>
+	[calc]
+		delete $Scratch->{report_spec};
+		$reldir = $Config->{PageDir};
+		$reldir =~ s:^$Config->{VendRoot}/::
+			or do {
+				$Scratch->{report_spec} = "Cannot do reports with absolute page directory.";
+				return;
+			
+			};
+		$Session->{username} =~ /^\S+$/
+			or return "Bad username, no spaces allowed.";
+		my @files = $Tag->list_glob("$reldir/__UI_BASE__/$Session->{username}/report*/*.html");
+		if($Tag->if_mm('super')) {
+			push @files, $Tag->list_glob("$reldir/__UI_BASE__/report*/*.html");
+		}
+		@files = sort @files;
+		$Scratch->{report_spec} = join "\n", @files;
+		return;
+	[/calc]
+	[set del_report]
+	[calc]
+		return unless $CGI->{ui_report_delete};
+		$reldir = $Config->{PageDir};
+		$reldir =~ s:^$Config->{VendRoot}/::
+			or return "Cannot do reports with absolute page directory.";
+		@files = grep /$CGI->{ui_report_delete}$/,
+					split /\n+/, $Scratch->{report_spec};
+		$out = '';
+		for(@files) {
+			my $lab = $_;
+			$lab =~ s:.*/([^/]+/.+)\.html:$1:;
+			$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+			$out .= "Delete $lab: ";
+			$out .= 
+				$Tag->unlink_file($_, "$reldir/") 
+				? 'success'
+				: 'FAILED';
+			$out .= '<BR>';
+		}
+		$Scratch->{report_delete_message} = $out;
+		return;
+	[/calc]
+	[/set]
+	<SMALL>
+	[scratchd report_delete_message]
+	<FORM METHOD=POST ACTION="[area ui]">
+        [form-session-id]
+	<INPUT TYPE=hidden NAME=mv_click VALUE=del_report>
+	<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+	<SELECT NAME="ui_report_delete">
+	<OPTION VALUE=""> -- </OPTION>
+	[calc]
+		@opts = split /\s+/, $Scratch->{report_spec};
+		my $out = '';
+		for(@opts) {
+			my $lab = $_;
+			$lab =~ s:.*/::;
+			my $val = $lab;
+			$lab =~ s:\.html.*::;
+			next if $seen{$lab}++;
+			$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+			$out .= qq{<OPTION VALUE="$val">$lab</OPTION>};
+		}
+		return $out;
+	[/calc]
+	</SELECT>
+	<BR><INPUT TYPE=SUBMIT VALUE=Delete>
+	</FORM>
+	</SMALL>
+</TD>
+</tr>
+
+</TABLE>
+
+
+<FORM METHOD=POST ACTION="[area __UI_BASE__/report]">
+[form-session-id]
+<P>
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td WIDTH="40%" class=rnorm ALIGN=center>
+	<INPUT TYPE=submit VALUE="Report on table">
+</TD>
+<td class=rnorm>
+<FORM NAME=report ACTION="[area __UI_BASE__/report]" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action VALUE="return">
+<SELECT NAME=mv_data_table>
+[loop list="[scratch tables]" option=mv_data_table]
+	<OPTION>[loop-code]
+[/loop]
+</SELECT>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+</table>
+
+</FORM>
+
+@_UI_STD_FOOTER_@

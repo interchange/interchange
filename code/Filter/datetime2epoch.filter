@@ -1,0 +1,46 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: datetime2epoch.filter,v 1.2 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef datetime2epoch Filter
+CodeDef datetime2epoch Description Date and optional time to seconds since the UNIX Epoch
+CodeDef datetime2epoch Routine <<EOR
+sub {
+    use Time::Local;
+
+    my ($year, $mon, $day, $hr, $min, $sec, $time);
+
+    my $val = shift;
+    $val =~ s/\0+//g;
+
+    $val =~ m%^\s*(\d\d)[-/]+(\d+)[-/]+(\d+)% and do {
+	($year, $mon, $day) = ($3, $1, $2);
+
+	$val =~ /:(\d\d):?(\d\d)?:?(\d\d)?\s*$/
+	    and $time = sprintf('T%02d:%02d:%02d', $1, $2 || 0, $3 || 0);
+
+	if (length($year) < 4) {
+	    $year =~ s/^0//;
+	    $year = $year < 50 ? $year + 2000 : $year + 1900;
+	}
+	$val = sprintf('%d-%02d-%02d%s', $year, $mon || 1, $day || 1, $time);
+    };
+
+    $val =~ /^\s*(\d\d\d\d)-(\d\d)-(\d\d)(?:[T\s](\d\d)?(?::(\d\d)?(?::(\d\d)?)?)?)?/;
+    ($year, $mon, $day, $hr, $min, $sec) = ($1, $2, $3, $4 || 0, $5 || 0,$6 || 0);
+    eval {
+	$time = timelocal($sec, $min, $hr, $day, --$mon, $year);
+    };
+    if ($@) {
+	logError("bad time value passed to datetime2epoch: %s", $@);
+	return 0;
+    }
+    return $time;
+}
+EOR

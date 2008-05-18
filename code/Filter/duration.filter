@@ -1,0 +1,79 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: duration.filter,v 1.6 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef duration Filter
+CodeDef duration Description Duration
+CodeDef duration Routine <<EOR
+sub {
+	my ($val, undef, $startvar, $durvar, @extra) = @_;
+
+	## Accepts two parameters, the name of the CGI variables which
+	## hold the start date/time and the duration value. With this:
+	#
+	#  [cgi name=start_date set=200502120800]
+	#  [cgi name=length set="12 hours"]
+	#  [filter op=duration.start_date.length /]
+	#
+	# The filter call will return 20050212200000
+	#
+	## Can also be used like this, with the same output:
+	#
+	#  [filter duration.-dummy.12.hours]200502120800[/filter]
+	#
+	use vars qw/$CGI/;
+	my $start = $CGI->{$startvar} || $val;
+	my $durstring = $CGI->{$durvar};
+	my $duration = 0;
+	use Time::Local;
+
+	if (!length($durstring) && $durvar =~ /^\d+$/) {
+		$durstring = join(' ', $durvar, @extra);
+	}
+
+	while($durstring =~ s/(\d+\s*[hmwd]\w*)\s*//) {
+		$duration += Vend::Config::time_to_seconds($1);
+	}
+
+	## Want to allow setting the value directly
+	return $val unless $duration;
+
+	$start =~ s/\0+//g;
+	if($start =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):) {
+		my ($yr, $mon, $day) = ($3, $1, $2);
+
+		my $time;
+		$start =~ /:(\d+)$/
+			and $time = $1;
+		if(length($yr) < 4) {
+			$yr =~ s/^0//;
+			$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
+		}
+		$mon =~ s/^0//;
+		$day =~ s/^0//;
+		$start = sprintf("%d%02d%02d", $yr, $mon, $day);
+		return $val unless $time;
+		$start .= sprintf('%04d', $time);
+	}
+
+	my $time;
+	$start =~ /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)?(\d\d)?/;
+	my ($yr, $mon, $day, $hr, $min) = ($1 || 0, $2 || 1, $3 || 1, $4 || 0, $5 || 0);
+	$mon--;
+	eval {
+		$time = timelocal(0, $min, $hr, $day, $mon, $yr);
+	};
+	if($@) {
+		logError("bad time value passed to duration filter: %s", $@);
+		return 0;
+	}
+	$time += $duration;
+	return POSIX::strftime("%Y%m%d%H%M%S", localtime($time));
+}
+EOR

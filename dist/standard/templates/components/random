@@ -1,0 +1,94 @@
+[comment]
+ui_name: random
+ui_type: component
+ui_class: content, vertical
+ui_group: promotion
+ui_label: Random items
+
+matches:
+	label: Number to show
+	options: 1,2*,3,4,5,6,7,8,9,10
+	type: select
+
+pool:
+	help: Controls now many items will be returned and randomized, always from the beginning of the database/text file
+	label: Number to select from
+	options: 100,1000*,10000
+	type: select
+
+table_width:
+	filter: nullselect
+	label: Table width
+	options: 150,300,450
+	type: combo
+
+cols:
+	label: Columns
+	options: 1*,2,3,4
+	type: select
+
+banner:
+	label: Banner for top box
+	type: text
+	width: 40
+
+buttons:
+	label: Display buy/info buttons
+	type: yesno
+
+
+[/comment]
+<!-- BEGIN COMPONENT [control component random] -->
+
+<br>
+    <div class="random_title">
+    <b>[control name=banner default="[L]See also[/L]"]</b>
+    </div>
+    <div class="random_body">
+    <br>    
+    [calc]
+  	my $n = [control cols 2];
+	$Scratch->{width_percent} = int(100 / $n) . '%';
+	return;
+    [/calc]
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+	[loop
+			random="[control matches 2]"
+			search="
+					fi=products
+					st=db
+					ra=yes
+					ml=[control pool 1000]
+				"]
+      <TD width="[scratch width_percent]" valign="top" align="center"> 
+	<table border="0" cellspacing="0" cellpadding="5" width="100%">
+	[if-loop-field thumb]
+	<tr> 
+	  <td width="100%" align="center">
+	    <a href="[area [loop-code]]" class="random_description">[loop-description]<br>	    
+	      <img border="0" src="thumb/[loop-field thumb]"><br></a>
+	      [L]Our Price[/L]: <b>[loop-price]</b>
+	  </td>
+	</tr>
+	[/if-loop-field]
+[if type=explicit condition="[control buttons]"]
+	<tr> 
+	  <td nowrap align="center">
+			[b-link [loop-code]][L]MORE INFO[/L][/b-link]
+			[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+	  </td>
+	</tr>
+[/if]
+        <tr>
+          <td><p>&nbsp;<br></p></td>
+        </tr>
+	</table>
+      </TD>
+      [/loop]
+      [/table-organize]
+    </table>
+  </div>
+  
+
+<!-- END COMPONENT [control component random] -->

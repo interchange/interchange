@@ -1,0 +1,138 @@
+# Copyright 2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: local.coretag,v 1.2 2007-08-09 13:40:52 pajamian Exp $
+
+UserTag local Order scratch
+UserTag local attrAlias scratches scratch
+UserTag local attrAlias value values
+UserTag local posNumber 1
+UserTag local hasEndTag
+UserTag local addAttr
+UserTag local Description Tag to localize scratch and/or values for block
+UserTag local Routine <<EOR
+sub {
+	my ($scratch, $opt, $body) = @_;
+
+	use Storable qw/ dclone /;
+	$Storable::forgive_me = 1;
+
+	## It may seem simpler just to clone the top-level reference and
+	## be done with it, but we are going through all these gyrations
+	## to prevent the problem of overwriting code, which is not
+	## preserved with a cloning operation.
+	##
+	## Obviously (or maybe not) if you pass a top-level array which
+	## happens to contain a code reference, you are going to lose it.
+	## But code references which are in non-localized hash keys will
+	## survive.
+
+	my %delete_top;
+	my %delete;
+	my %settings;
+
+	# Perhaps {extra} is a bad option, but it has to be something. We
+	# don't have the _ intro for a key, alas. Doubt it will often be
+    # used, but discounts could be localized, I suppose.
+
+	my @extra = split /[,\s\0]+/, $opt->{extra};
+
+	for my $top (qw/ values scratch /, @extra) {
+
+		exists $Vend::Session->{$top}
+			or do {
+				$delete_top{$top} = 1;
+				next;
+			};
+
+		my $v = $Vend::Session->{$top};
+
+		unless (ref($v) eq 'HASH') {
+			if(! ref $v) {
+				$settings{$top} = $v;
+			}
+			else {
+				$settings{$top} = dclone($v);
+			}
+			next;
+		}
+
+		my @values = Text::ParseWords::shellwords($opt->{$top});
+
+		for(@values) {
+			if( ! exists $v->{$_}) {
+				$delete{$top}{$_} = 1;
+			}
+			elsif(! ref $v->{$_}) {
+				$settings{$top}{$_} = $v->{$_};
+			}
+			else {
+				$settings{$top}{$_} = dclone($v->{$_});
+			}
+		}
+	}
+
+	my $result = interpolate_html($body);
+
+	for my $top (qw/ values scratch /, @extra) {
+		if(my $d = $delete_top{$top}) {
+			delete $Vend::Session->{$top};
+			next;
+		}
+
+		unless (ref($settings{$top}) eq 'HASH') {
+			$Vend::Session->{$top} = $settings{$top};
+			next;
+		}
+
+		my $s = $settings{$top};
+		my $d = $delete{$top};
+		my $v = $Vend::Session->{$top};
+
+		for(keys %$d) {
+			delete $v->{$_};
+		}
+
+		for(keys %$s) {
+			$v->{$_} = $settings{$top}{$_};
+		}
+	}
+
+	return $result;
+
+}
+EOR
+
+UserTag local Documentation <<EOT
+=head1 NAME
+
+local -- localize scratch, values, etc. for code block.
+
+=head1 SYNOPSIS
+
+	[set foo]bar[/set]
+
+	[local scratch="foo"]
+		[set foo]nonbar[/set]
+		foo=[scratch foo]
+	[/local]
+
+	[if scratch foo eq bar]
+		local worked.
+	[else]
+		local did not work, kept at [scratch foo].
+	[/else]
+	[/if]
+
+=head1 DESCRIPTION
+
+The local tag allows you to drop some code using scratch or values settings
+in a page without the possibility of affecting the overall operation of the
+site.
+
+EOT
+

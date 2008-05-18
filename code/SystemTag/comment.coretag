@@ -1,0 +1,18 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: comment.coretag,v 1.2 2007-03-30 23:40:49 pajamian Exp $
+
+# This tag exists to strip out any [comment]...[/comment] blocks
+# that weren't caught by &Vend::Interpolate::vars_and_comments,
+# e.g. in reparsed output from [perl] blocks
+
+UserTag comment Version $Revision: 1.2 $
+UserTag comment hasEndTag
+UserTag comment Routine <<EOR
+sub { '' }
+EOR

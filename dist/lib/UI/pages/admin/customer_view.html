@@ -1,0 +1,397 @@
+[tmp page_title][L]Customer manager[/L]: [L]View customer[/L] [cgi customer][/tmp]
+[set ui_class]Customers[/set]
+[set page_banner][L]View customer[/L][/set]
+[set help_name]customer.view[/set]
+[set icon_name]icon_people.gif[/set]
+
+@_UI_STD_HEAD_@
+
+[calc]
+	delete $Scratch->{ui_bounce};
+	$CGI->{customer} ||= $CGI->{mv_arg} 
+		or $Scratch->{ui_bounce} = '__UI_BASE__/customer';
+	return;
+[/calc]
+[if scratch ui_bounce]
+	[bounce page="[scratch ui_bounce]"]
+[/if]
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[perl tables=country]### pre-open database for calcs below[/perl] 
+
+[query list=1
+		table=userdb
+		prefix=loop
+		sql="select * from userdb where username = '[cgi customer]'"]
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr> 
+      <td> 
+         <table width="100%" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+            <tr> 
+               <td width="25%" nowrap class="block4bold">[L]User Name[/L]: &nbsp; [loop-code]</a></td>
+               <td width="25%" nowrap class="block4bold">
+			   	[L]Account Status[/L]: &nbsp;
+					[filter uc]
+					[if-loop-param inactive]
+					[L]inactive[/L]
+					[else]
+					[L]active[/L]
+					[/else]
+					[/if-loop-param]
+					[/filter]
+					
+				</td>
+               <td width="25%" nowrap class="block4bold">
+			   		
+					[L]Total Sales[/L]: &nbsp;
+				[query arrayref=totals table=transactions sql=|
+										SELECT total_cost,status
+										FROM  transactions
+					                    WHERE username = '[loop-code]'
+										|][/query]
+					[calc]
+						my $q = $Tmp->{totals};
+						my $ary;
+						return '[L]no orders[/L]' unless $q and defined $q->[0];
+						my $total = 0;
+						for(@$q) {
+							next if $_->[1] eq 'canceled';
+							$total += $_->[0];
+						}
+						return $Tag->currency({ body => $total } );
+					[/calc]
+				</td>
+                <td width="25%" nowrap class="block4bold">
+			   		[L]Last login[/L]: &nbsp; <span class="maincontent">
+						[if-loop-param !mod_time]
+						[L]Never[/L]
+						[else]
+						[time time="[loop-param mod_time]"]%b %e, %Y %l:%M %P[/time]
+						[/else]
+						[/if-loop-param]
+					</span>
+				</td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr> 
+      <td height="6"><img src="bg.gif" width="1" height="6"></td>
+   </tr>
+   <tr> 
+      <td> 
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+               <!-- CUSTOMER DETAILS -->
+               <td width="33%" valign="top"> 
+                  <table width="100%" height="200" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+               
+                        <td height="1%" class="block4">[L]Customer Details[/L]</td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Customer[/L]:</td>
+                                 <td width="70%" class="maincontent">[loop-param fname] [loop-param lname]</td>
+                              </tr>
+                              <tr> 
+                                 <td class="block4bold"> [L]Company[/L]:</td>
+                                 <td class="maincontent">[loop-param company]</td>
+                              </tr>
+                              <tr> 
+                                 <td nowrap class="block4bold">[L]Home phone[/L]:</td>
+                                 <td class="maincontent">[loop-param phone_night]</td>
+                              </tr>
+                              <tr> 
+                                 <td nowrap class="block4bold"> [L]Work phone[/L]:</td>
+                                 <td class="maincontent">[loop-param phone_day]</td>
+                              </tr>
+                              <tr> 
+                                 <td class="block4bold">[L]Email[/L]:</td>
+                                 <td class="maincontent"><a href="mailto:[loop-param email]">[loop-param email]</a></td>
+                              </tr>
+			[if variable CUSTOMER_VIEW_DEALER]
+							  <tr>
+                                 <td nowrap class="block4bold">[L]Dealer[/L]:</td>
+                                 <td class="maincontent">
+								 	[page href=admin/customer_pref
+										  form="
+										  	customer=[loop-code]
+											start_at=dealer
+										  "][if-loop-param dealer][L]Yes[/L][else][L]No[/L][/else][/if-loop-param]</a>
+										  </td>
+							  </tr>
+							  <tr>
+                                 <td nowrap class="block4bold">[L]Price Level[/L]:</td>
+                                 <td class="maincontent">
+								 	[page href=admin/customer_pref
+										  form="
+										  	customer=[loop-code]
+											start_at=price_level
+										  "][display type=display table=userdb col=price_level key="[loop-code]"]</a>
+										  </td>
+							  </tr>
+		  [/if]
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td width="3"><img src="bg.gif" width="3" height="1"></td>
+               <!-- BILLING DETAILS -->
+               <td width="33%" valign="top"> 
+                  <table width="100%" height="200" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+                        <td height="1%" class="block4"><a href="[area
+						
+								href="admin/customer_bill"
+								form="
+									customer=[loop-code]
+									item_id=[loop-code]
+								"
+						]">[L]Billing Details[/L]</a></td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+[if-loop-param b_address1]
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Name[/L]:</td>
+                                 <td width="70%" class="maincontent"><A HREF="[area
+				href=__UI_BASE__/customer_view
+				arg="[loop-param username]"
+		]"><u>[loop-param b_fname] [loop-param b_lname]</A>
+                                 </td>
+                              </tr>
+							[if-loop-param b_company]
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Company[/L]:</td>
+                                 <td width="70%" class="maincontent">
+									[loop-param b_company]
+                                 </td>
+                              </tr>
+							[/if-loop-param]
+                              <tr> 
+                                 <td valign="top" class="block4bold">[L]Address[/L]:</td>
+                                 <td class="maincontent">
+								[loop-param b_address1]
+								[if-loop-param b_address2]
+								<br>
+								[loop-param b_address2]
+								[/if-loop-param]
+								</td>
+                              </tr>
+							[if-loop-param b_country =~ /^US|^CA/]
+                              <tr> 
+                                 <td class="block4bold">[L]City, State, Zip[/L]:</td>
+                                 <td class="maincontent">[loop-param b_city], [loop-param b_state]  [loop-param b_zip]</td>
+                              </tr>
+							[else]
+                              <tr> 
+                                 <td class="block4bold">[L]City[/L]:</td>
+                                 <td class="maincontent">[loop-param b_city]</td>
+                              </tr>
+								[if-loop-param b_state]
+                              <tr> 
+                                 <td class="block4bold">[L]State[/L]:</td>
+                                 <td class="maincontent">[loop-param b_state]</td>
+                              </tr>
+								[/if-loop-param]
+								[if-loop-param b_zip]
+                              <tr> 
+                                 <td class="block4bold">[L]Postal code[/L]:</td>
+                                 <td class="maincontent">[loop-param b_zip]</td>
+                              </tr>
+								[/if-loop-param]
+							[/else]
+							[/if-loop-param]
+                              <tr> 
+                                 <td class="block4bold">[L]Country[/L]:</td>
+                                 <td class="maincontent">[data table=country col=name key="[loop-param b_country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+[else]
+						<i>[L]Same as shipping address[/L]</i>
+[/else]
+[/if-loop-param]
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td width="3"><img src="bg.gif" width="3" height="1"></td>
+               <!-- SHIPPING DETAILS -->
+               <td width="34%" valign="top"> 
+                  <table width="100%" height="200" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+                        <td height="1%" class="block4"><a href="[area
+						
+								href="admin/customer_ship"
+								form="
+									customer=[loop-code]
+									item_id=[loop-code]
+								"
+						]">[L]Shipping Details[/L]</a></td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Name[/L]:</td>
+                                 <td width="70%" class="maincontent"><A HREF="[area
+				href=__UI_BASE__/customer_view
+				arg="[loop-code]"
+		]"><u>[loop-param fname] [loop-param lname]</A>
+                                 </td>
+                              </tr>
+							  [if-loop-param company]
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Company[/L]:</td>
+                                 <td width="70%" class="maincontent">
+								 	[loop-param company]
+                                 </td>
+                              </tr>
+							  [/if-loop-param]
+                              <tr> 
+                                 <td valign="top" class="block4bold">[L]Address[/L]:</td>
+                                 <td class="maincontent">
+								 [loop-param address1]
+								 [if-loop-param address2]
+								 <br>
+								 [loop-param address2]
+								 [/if-loop-param]
+								 </td>
+                              </tr>
+							  [if-loop-param country =~ /^US|^CA/]
+                              <tr> 
+                                 <td class="block4bold">[L]City, State, Zip[/L]:</td>
+                                 <td class="maincontent">[loop-param city], [loop-param state]  [loop-param zip]</td>
+                              </tr>
+							  [else]
+                              <tr> 
+                                 <td class="block4bold">[L]City[/L]:</td>
+                                 <td class="maincontent">[loop-param city]</td>
+                              </tr>
+							  		[if-loop-param state]
+                              <tr> 
+                                 <td class="block4bold">[L]State[/L]:</td>
+                                 <td class="maincontent">[loop-param state]</td>
+                              </tr>
+								    [/if-loop-param]
+							  		[if-loop-param zip]
+                              <tr> 
+                                 <td class="block4bold">[L]Postal code[/L]:</td>
+                                 <td class="maincontent">[loop-param zip]</td>
+                              </tr>
+								    [/if-loop-param]
+							  [/else]
+							  [/if-loop-param]
+                              <tr> 
+                                 <td class="block4bold">[L]Country[/L]:</td>
+                                 <td class="maincontent">[data table=country col=name key="[loop-param country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr> 
+      <td height=6><img src="bg.gif" width=1 height=6></td>
+   </tr>
+   <tr> 
+      <td> 
+         <!-- CUSTOMERS ORDER GRID -->
+         <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+            <tr> 
+               <td width="14%" class=rhead style="padding: 5px">[L]Status[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px">[L]Order Number[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px">[L]Order Date[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: left">[L]Shipped to[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Number of items[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Subtotal[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
+            </tr>
+[query list=1 table=transactions sql="select * from transactions where username = '[loop-param username]'"]
+            <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
+               <td style="padding: 5px">[page href="admin/order_status"
+			   							 form="order=[sql-code]"
+									]
+                [display    table=transactions
+                            column=status
+                            key="[sql-code]"
+                            arbitrary=order_view
+                ]</A>
+				</td>
+               <td style="padding: 5px">
+			   	[page href='__UI_BASE__/order_view' form='order=[sql-code]'][sql-code]</a>
+			   	</td>
+               <td style="padding: 5px">[convert-date fmt="%b %e, %Y %H:%M"][sql-param order_date][/convert-date]</td>
+               <td align=left style="padding: 5px">
+			   	[loop-param city], [loop-param state] [loop-param country]
+               </td>
+               <td align=right style="padding: 5px">[sql-param nitems]</td>
+               <td align=right style="padding: 5px">[currency][sql-param subtotal][/currency]</td>
+			   <td align=right style="padding: 5px">[currency][sql-param total_cost][/currency]</td>
+            </tr>
+[/query]
+         </table>
+      </td>
+   </tr>
+</table>
+
+[seti page_banner][L]View Customer[/L]:
+					[if-loop-param company]
+						[loop-param company]
+					[else][loop-param fname] [loop-param lname][/else]
+					[/if-loop-param]
+				[/seti]
+
+[output name=bottom_buttons]
+<form action="[area __UI_BASE__/order]" method=post>
+[form-session-id]
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=order value="[loop-data transactions order_number]">
+<input type=hidden name=archive value=false>
+<input type=hidden name=viewnext value=1>
+[set [L]Return[/L]]
+viewnext=
+vieworder=
+[/set]
+<input type=submit name=mv_click value="[L]Return[/L]" class=s3>
+<input type=submit name="vieworder" value="[L]View next order[/L]" class=s3>
+
+[if-loop-data transactions archived]
+<input type=submit name="unarchiveorder" value="[L]Un-archive order and view next[/L]" class=s3>
+[else]
+<input type=submit name="archiveorder" value="[L]Archive order and view next[/L]" class=s3>
+[/else]
+[/if-loop-data]
+[if-mm advanced order=d]
+<input type=submit name="deleteorder" value="[L]Delete order and view next[/L]" 
+ onClick="return confirm('[L]Are you sure you want to delete this order?[/L]')" class=s3>
+[/if-mm]
+</form>
+
+[output]
+
+[/query]
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.16 2005-04-23 18:10:07 pvinci Exp $ -->

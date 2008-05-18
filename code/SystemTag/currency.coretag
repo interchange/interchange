@@ -1,0 +1,21 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: currency.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag currency            Order        convert noformat
+UserTag currency            hasEndTag
+UserTag currency            Interpolate
+UserTag currency            addAttr
+UserTag currency            PosNumber    2
+UserTag currency            Version      $Revision: 1.5 $
+UserTag currency            Routine      <<EOR
+sub {
+	my($convert,$noformat,$opt,$amount) = @_;
+	return Vend::Util::currency($amount, $noformat, $convert, $opt);
+}
+EOR

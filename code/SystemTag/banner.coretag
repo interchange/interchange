@@ -1,0 +1,119 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: banner.coretag,v 1.6 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag banner              Order        category
+UserTag banner              addAttr
+UserTag banner              PosNumber    1
+UserTag banner              Version      $Revision: 1.6 $
+UserTag banner              Routine      <<EOR
+sub {
+	my ($place, $opt) = @_;
+
+
+	sub initialize_banner_directory {
+		my ($dir, $category, $opt) = @_;
+		mkdir $dir, 0777 if ! -d $dir;
+		my $t = $opt->{table} || 'banner';
+		my $c_field;
+		my $append = '';
+		if($category) {
+			$append = ' AND ';
+			$append .= ($opt->{c_field} || 'category');
+			$category =~ s/'/''/g;
+			$append .= " = '$category'";
+		}
+		my $db = database_exists_ref($t);
+		if(! $db) {
+			my $weight_file = "$dir/total_weight";
+			return undef if -f $weight_file;
+			$t = "no banners db $t\n";
+			Vend::Util::writefile( $weight_file, $t, $opt);
+			::logError($t);
+			return undef;
+		}
+		my $w_field = $opt->{w_field} || 'weight';
+		my $b_field = $opt->{b_field} || 'banner';
+		my $q = "select $w_field, $b_field from $t where $w_field >= 1$append";
+		my $banners = $db->query({
+			query => $q,
+			st => 'db',
+		});
+		my $i = 0;
+		for(@$banners) {
+			my ($weight, $text) = @$_;
+			for(1 .. $weight) {
+				Vend::Util::writefile(">$dir/$i", $text, $opt);
+				$i++;
+			}
+		}
+		Vend::Util::writefile(">$dir/total_weight", $i, $opt);
+	}
+
+
+	sub tag_weighted_banner {
+		my ($category, $opt) = @_;
+		my $dir = catfile($Vend::Cfg->{ScratchDir}, 'Banners');
+		mkdir $dir, 0777 if ! -d $dir;
+		if($category) {
+			my $c = $category;
+			$c =~ s/\W//g;
+			$dir .= "/$c";
+		}
+		my $statfile = $Vend::Cfg->{ConfDir};
+		$statfile .= "/status.$Vend::Cat";
+		my $start_time;
+		if($opt->{once}) {
+			$start_time = 0;
+		}
+		elsif(! -f $statfile) {
+			Vend::Util::writefile( $statfile, "banners initialized " . time() . "\n");
+			$start_time = time();
+		}
+		else {
+			$start_time = (stat(_))[9];
+		}
+		my $weight_file = "$dir/total_weight";
+		initialize_banner_directory($dir, $category, $opt)
+			if  ( ! -f $weight_file  or  (stat(_))[9] < $start_time );
+		my $n = int( rand( readfile($weight_file) ) );
+		return Vend::Util::readfile("$dir/$n");
+	}
+	return tag_weighted_banner($place, $opt) if $opt->{weighted};
+
+	my $table = $opt->{table}     || 'banner';
+	my $r_field = $opt->{r_field} || 'rotate';
+	my $b_field = $opt->{b_field} || 'banner';
+	my $sep  = $opt->{separator}  || ':';
+	my $delim = $opt->{delimiter} || "{or}";
+	$place = 'default' if ! $place;
+	my $totrot;
+	do {
+		my $banner_data;
+		$totrot = tag_data($table, $r_field, $place);
+		if(! length $totrot) {
+			# No banner present
+			unless ($place =~ /$sep/ or $place eq 'default') {
+				$place = 'default';
+				redo;
+			}
+		}
+		elsif ($totrot) {
+			my $current = $::Scratch->{"rotate_$place"}++ || 0;
+			my $data = tag_data($table, $b_field, $place);
+			my(@banners) = split /\Q$delim/, $data;
+			return '' unless @banners;
+			return $banners[$current % scalar(@banners)];
+		}
+		else {
+			return tag_data($table, $b_field, $place);
+		}
+	} while $place =~ s/(.*)$sep.*/$1/;
+	return;
+}
+EOR

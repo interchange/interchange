@@ -1,0 +1,37 @@
+# Copyright 2005 Cursor Software Limited (http://www.cursor.biz/)
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: roman.filter,v 1.4 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef roman Filter
+CodeDef roman Description Integer to Roman numerals
+CodeDef roman Visibility  private
+CodeDef roman Routine     <<EOR
+sub {
+    my $val = shift;
+
+    $val =~ s/\D+//g;
+    return '' unless $val;
+
+    $val =~ m/(\d*?)(\d{1,3})$/ or return '';
+
+    my $buf = 'M' x ($1 || 0);
+    my @digits = reverse(split('',$2));
+
+    my @numerals = (
+        [ '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', ],
+        [ '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC', ],
+        [ '', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM', ],
+    );
+
+    for (my $i = $#digits; $i >= 0; $i--) {
+        $buf .= $numerals[$i]->[$digits[$i]];
+    }
+    return $buf;
+}
+EOR

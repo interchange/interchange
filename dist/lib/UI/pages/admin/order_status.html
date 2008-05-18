@@ -1,0 +1,193 @@
+[calc]
+	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'status archive delete';
+	$CGI->{mv_data_table} = 'transactions';
+	$CGI->{item_id} ||= $CGI->{order};
+	$CGI->{order} = $CGI->{item_id};
+	return;
+[/calc]
+
+[if cgi ship_auto]
+[calc]
+	my $orders = join ",", delete $CGI->{item_id}, delete $CGI->{item_id_left};
+	$orders =~ s/-_NULL_-/\0/g;
+	$orders =~ s/\0+/,/g;
+	$orders =~ s/,+/,/g;
+	delete $CGI->{order};
+	$Scratch->{order_list} = $orders;
+[/calc]
+[flag type=write value=1 tables="orderline transactions"]
+[loop list="[scratch order_list]"]
+	[update-order-status
+			order_number="[loop-code]"
+			ship_all=1
+			[if-loop-data transactions order_id]
+			settle_transaction="__SETTLE_TRANSACTION__"
+			[/if-loop-data]
+			archive=1]
+	[if scratch ship_notice_username]
+	[email-raw][include etc/ship_notice][/email-raw]
+	[/if]
+[/loop]
+			
+
+
+[/if]
+[if !cgi order]
+	[bounce page="__UI_BASE__/order"]
+[/if]
+
+[set ui_class]Orders[/set]
+[seti page_title][L]Order status[/L] -- [cgi order][/seti]
+[tmp page_banner][L]Order status[/L]: [L]order[/L] <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
+[set help_name]item.edit[/set]
+[set icon_name]icon_item.gif[/set]
+
+@_UI_STD_HEAD_@
+
+[tmp form_include]
+<tr class=rnorm>
+<td class=clabel align=center style="font-size: larger">
+	Actions
+</td>
+<td class=cdata>
+	<div 
+		style="
+			border: 2px solid black;
+			padding: 8px;
+		">
+
+	[tmp tmp_orderid][data table=transactions col=order_id key="[cgi order]"][/tmp]
+<script>
+	var have_orderid = '[scratch tmp_orderid]';
+	function copasetic (el,form) {
+		if(have_orderid == '')
+			return;
+		if(el.name == 'ship_all') {
+			if(el.options[el.selectedIndex].value == 0) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = false;
+			}
+			if(el.options[el.selectedIndex].value == 1) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = true;
+				form.do_archive.checked = true;
+			}
+			if(el.options[el.selectedIndex].value == 2) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = true;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = true;
+			}
+		}
+		else {
+			if (el.name == 'settle_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 1;
+					form.void_transaction.checked = false;
+				}
+			}
+			if(el.name == 'void_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 2;
+					form.settle_transaction.checked = false;
+				}
+			}
+		}
+	}
+	document.tform.tracking_number.focus();
+</script>
+
+	<select name=ship_all onChange="copasetic(this, this.form)">
+		<option value=0> [L]Ship per status above[/L]
+		<option value=1 SELECTED> [L]Ship all lines[/L]
+		<option value=2> [L]Cancel order[/L]
+	</select>
+
+	[button form=tform
+			extra='style="font-weight: bold"'
+			text="[L]Update the order[/L]"]
+	mv_todo=back
+	order=[cgi code]
+	[tag flag write]orderline transactions[/tag]
+	[update-order-status
+		order-number="[cgi code]"
+		cancel-order="[if cgi ship_all eq 2]1[/if]"
+	]
+	[if scratch ship_notice_username]
+	[email-raw][include etc/ship_notice][/email-raw]
+	[/if]
+
+	[/button]
+
+	[L]Email[/L]
+	<select name=send_email>
+		<option value="">[L]Use customer preference[/L]</option>
+		<option value="0">[L]No[/L]</option>
+		<option value="1">[L]Yes[/L]</option>
+	</select>
+	[if variable SETTLE_TRANSACTION]
+	<br>
+		[if scratch tmp_orderid]
+			<input type=checkbox name=settle_transaction value=1
+				onChange="copasetic(this, this.form)"
+				[if type=scratch term=tmp_orderid op="!~" compare="/[-*]$/"] CHECKED [/if]>
+					<b>[L]Settle transaction[/L]</b>
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=void_transaction onChange="copasetic(this, this.form)" value=1> <b>[L]Void transaction[/L]</b>
+
+		[/if]
+	[/if]
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=do_archive value=1 CHECKED> <b>[L]Archive transaction at end[/L]</b>
+	</div>
+</td>
+</tr>
+[/tmp]
+
+[table-editor 
+	table=transactions
+	key="[cgi order]"
+	output_map=1
+	button_delete=1
+	form-name=tform
+	table-width="100%"
+	next-text="[L]Update status only, no ship function[/L]"
+	ok-button-style="font-weight: normal; font-size: smaller"
+	no-table-meta=1
+	mv-nextpage="__UI_BASE__/order"
+	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
+	include-form="[scratch form_include]"
+	include-before="order_id"
+	widget.code=hidden_text
+	help.order_id='<span style="font-size: larger;font-weight: bold">* = [L]settled[/L], - = [L]voided[/L]</span>'
+	link-table=orderline
+	link-key=order_number
+	link-fields="order_number sku quantity price status"
+	link-before=order_id
+	link-no-blank=1
+	link-label="[L]Ordered Items[/L]"
+	hidden.ui_sequence_destination="@@MV_PAGE@@"
+/]
+
+<script>
+	var f = document.tform;
+	if(f != undefined) {
+		var str = f.order_id.value;
+// alert("in check, str=" + str);
+		if(str.match(/\*$/) ) {
+			f.settle_transaction.checked = false;
+// alert("set checked status!");
+		}
+	}
+</script>
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.17 2004-04-13 15:38:31 mheins Exp $ -->

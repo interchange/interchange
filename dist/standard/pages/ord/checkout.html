@@ -1,0 +1,167 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Check Out[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+<table width="100%">
+<tr>
+  <td align="left" width="100%">
+
+	[if !variable NO_TAX_POPUP]
+		[comment]
+			This is JavaScript that pops up a tax message
+			when in simple tax mode
+		[/comment]
+		[include include/checkout/tax_popup]
+	[/if]
+
+    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+    <P>
+        <B>[L]There were errors in your last submission[/L]:<br>
+        <blockquote>
+        <FONT color="__CONTRAST__">
+                [error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
+        </font>
+        </blockquote>
+        </p>
+        <p>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
+    </p>
+    [/if]
+
+	[comment]
+		Form intro -- the input elements are largely in the
+		individual tables in include/checkout/*
+	[/comment]
+    <form action="[process secure=1]" method="POST" name=checkout>
+    [form-session-id]
+    <input type=hidden NAME=mv_doit       value=refresh>
+    <input type=hidden NAME=mv_nextpage   value="ord/checkout">
+    <input type=hidden name=mv_check      value="Save_database">
+
+
+	</td>
+  </tr>
+  <tr>
+	<td>
+
+	<table align="center">
+	  <tr>
+		<td align="center">
+		  [if session logged_in]
+		  [L]Please verify the information below and click the <b>'Place Order'</b> button to process your order.[/L]
+		  [else]
+		  [L]Please fill in the information below and click the <b>'Place Order'</b> button to process your order.[/L]
+		  [/else]
+		  [/if]
+		</td>
+	  </tr>
+	  <tr>
+		<td align="center" width="100%">
+			  <br>
+			  [include include/checkout/shopping_cart]
+
+		</td>
+	  </tr>
+
+	  <tr>
+		<td>
+				<br>
+				[include include/checkout/shipping_address]
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+				<br>
+				[include include/checkout/mailing_status]				
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+				<br>
+				[include include/checkout/billing_address]
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+				<br>
+				[include include/checkout/payment_select]
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+				<br>
+				[if scratch old_browser]
+				[include include/checkout/old_browser_payment]
+				[else]
+				[include include/checkout/new_browser_payment]
+				[/else]
+				[/if]
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+		  <br>
+		  <table align="center" cellpadding="10" cellspacing="10">
+			[if items]
+			<tr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+			  <td>
+			  <input type=submit value="[L]Recalculate[/L]" class=button3>
+			  </td>
+			  <td> 
+			  [button 
+					  name="mv_click" 
+					  text="[L]Place Order[/L]"
+					  wait-text="-- [L]Wait[/L] --"
+					  form=checkout
+					  class=button3
+					  style="font-weight: bold"
+			  ]
+					  mv_todo=submit
+			  [/button]
+			  </td>
+			</tr>
+			[else]
+			<tr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+			  <td>
+			  <b>[L]No items in your shopping cart![/L]</b>
+			  </td>
+			</tr>
+			[/else]
+			[/if]
+		  </table>
+			
+	  </form>
+	  [tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+		</td>
+	  </tr>
+	</table>
+
+	</td>
+  </tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

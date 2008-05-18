@@ -1,0 +1,81 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: accounting.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag accounting Order   function
+UserTag accounting addAttr
+UserTag accounting Version $Revision: 1.5 $
+UserTag accounting Routine <<EOR
+my %account_super = (qw/
+	noparts_update 1
+/);
+my %account_admin = (qw/
+	inventory_update 1
+/);
+
+sub {
+	my ($func, $opt) = @_;
+
+	use vars qw/$Tag/;
+	die "Accounting not enabled!"
+		unless $Vend::Cfg->{Accounting};
+
+	my $enable;
+	if($account_super{$func}) {
+		eval {
+			$enable = $Vend::admin && $Tag->if_mm('super');
+		};
+	}
+	elsif($account_admin{$func}) {
+		$enable = $Vend::admin;
+	}
+	else {
+		$enable = 1;
+	}
+
+	if(! $enable) {
+		die errmsg("Function '%s' not enabled for current user level.", $func);
+	}
+
+	if(my $sys = $opt->{system}) {
+		my $former = $Vend::Cfg->{Accounting};
+		$Vend::Cfg->{Accounting} = $Vend::Cfg->{Accounting_repository}{$sys}
+			or do {
+				logError(
+					"Failed to change accounting system to %s, returning to %s.",
+					$opt->{system},
+					$former->{Class},
+				);
+				$Vend::Cfg->{Accounting} = $former;
+				return undef;
+			};
+	}
+
+	my $a = $Vend::Cfg->{Accounting} 
+		or do {
+			logError("No accounting system present. Aborting.");
+			return undef;
+		};
+	
+	my $class = $a->{Class};
+	my $self = new $class;
+	my $can;
+	unless( $can = $self->can($func) ) {
+		logError(
+			"No function '%s' in accounting system %s. Aborting.",
+			$func,
+			$class,
+		);
+		return undef;
+	}
+
+	return $can if $opt->{can_do_function};
+
+	return $self->$func($opt);
+}
+EOR

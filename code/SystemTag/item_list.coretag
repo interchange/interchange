@@ -1,0 +1,38 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: item_list.coretag,v 1.7 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag item-list           Order        name
+UserTag item-list           addAttr
+UserTag item-list           attrAlias    cart name
+UserTag item-list           attrAlias    space discount_space
+UserTag item-list           hasEndTag
+UserTag item-list           Version      $Revision: 1.7 $
+UserTag item-list           Routine      <<EOR
+sub {
+	my($cart,$opt,$text) = @_;
+	return if ! $text;
+	my $items = $cart ? ($::Carts->{$cart} ||= []) : $Vend::Items;
+
+	my $oldspace;
+	$oldspace = Vend::Interpolate::switch_discount_space($opt->{discount_space})
+		if defined $opt->{discount_space};
+
+	$items = [ reverse @$items ] if $opt->{reverse};
+	my $obj = { mv_results => $items };
+	$opt->{prefix} = 'item' unless defined $opt->{prefix};
+# LEGACY
+	list_compat($opt->{prefix}, \$text);
+# END LEGACY
+
+	# store the output temporarily, as we need to switch back to the old discount space...
+	my $output = labeled_list($opt, $text, $obj);
+	Vend::Interpolate::switch_discount_space($oldspace) if defined $oldspace;
+	return $output;
+}
+EOR

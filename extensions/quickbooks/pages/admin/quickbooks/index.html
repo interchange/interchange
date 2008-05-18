@@ -1,0 +1,71 @@
+[set page_title]QuickBooks Interface Functions[/set]
+[set page_perm]import[/set]
+[set help_name]quickbooks.main[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<center>
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+
+[if-mm advanced items]
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<font size="+1" face="arial,helvetica,sans-serif">
+<a href="[area __UI_BASE__/quickbooks/import_items]">Upload and Import Items</a>
+</font>
+</td></tr>
+[/if-mm]
+
+[if-mm advanced userdb]
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<font size="+1" face="arial,helvetica,sans-serif">
+<a href="[area __UI_BASE__/quickbooks/export_items]">Export Items (items.iif)</a>
+</font>
+</td></tr>
+[/if-mm]
+
+[if-mm advanced userdb]
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<font size="+1" face="arial,helvetica,sans-serif">
+<a href="[area __UI_BASE__/quickbooks/export_coa]">Export Chart of Accounts (coa.iif)</a>
+</font>
+</td></tr>
+[/if-mm]
+
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+	<font size="+1" face="arial,helvetica,sans-serif">
+		<a href="[area __UI_BASE__/quickbooks/generate_new_iif]">Generate Quickbooks IIF Files</a>
+	</font>
+</td></tr>
+
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+	<font size="+1" face="arial,helvetica,sans-serif">
+		[page
+			href="__UI_BASE__/file_transfer"
+			form="
+				action=chdir
+				dir=orders
+			"
+		]Download Quickbooks IIF files</a>
+	</font>
+</td></tr>
+
+
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+</center>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

@@ -1,0 +1,326 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Finalize Order[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+[weight hide=1]
+
+[comment]
+	Form intro -- the input elements are largely in the
+	individual tables in include/checkout/*
+[/comment]
+<form action="[area href="ord/finalize" secure=1]" method="POST" name=checkout>
+[form-session-id]
+<input type=hidden NAME=mv_action        value=refresh>
+<input type=hidden NAME=mv_nextpage      value="ord/finalize">
+<input type=hidden NAME=mv_failpage      value="ord/finalize">
+
+<table width="100%">
+<tr>
+  <td align="left" width="100%" align=center>
+
+    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+	[tmp error_display]
+    <P align=left>
+        <B>[L]There were errors in your last submission[/L]:<br>
+        <blockquote>
+        <FONT color="__CONTRAST__">
+                [error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
+        </font>
+        </blockquote>
+        </p>
+        <p>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
+    </p>
+	[/tmp]
+    [/if]
+
+	</td>
+  </tr>
+  <tr>
+	<td>
+
+	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large">
+			Review your order details
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px">
+
+        <table cellspacing="0" cellpadding="5" border="0" width="100%">
+        <TR class="titletab_small">
+          <td class="titletab_small">&nbsp;<b>[L]Remove[/L]</b></td>
+          <td class="titletab_small" align="center"><b>[L]SKU[/L]</b></td>
+          <td class="titletab_small"><b>[L]Description[/L]</b></td>
+          <td class="titletab_small"><b>[L]Quantity[/L]</b></td>
+          <td class="titletab_small" align="center"><b>[L]Price[/L]</b></td>
+          <td class="titletab_small"><b>[L]Extension[/L]&nbsp;</b></td>
+        </TR>
+        <TBODY>
+
+        [if items]
+        [then]
+        [item-list]
+
+        <TR class="[item-alternate 2]cartdisplay[else]cartdisplay_alt[/else][/item-alternate]">
+          <TD align=center valign=top>
+            <INPUT TYPE=checkbox NAME="[item-quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
+          </TD>
+          <TD><b>[item-sku]</b></TD>
+          <TD><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
+
+                [table-organize cols=4 table=' ' font="size=1" pretty=1]
+                    [item-options td=1 label=1 bold=1 price=1]
+                [/table-organize]
+
+            [if-item-field weight]
+            [seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+            [/if-item-field]
+          </TD>
+          <TD ALIGN=CENTER valign=top>
+            <INPUT TYPE=text NAME="[item-quantity-name]" VALUE="[item-quantity]" SIZE=3>
+          </TD>
+          <TD ALIGN=RIGHT>
+            [item-discount-price]
+            [if discount [item-code]]<BR>[msg arg.0="[item-discount]"]Item is discounted %s[/msg][/if]
+          </TD>
+          <TD ALIGN=RIGHT>[item-subtotal]</TD>
+        </TR>
+		[/item-list]
+        [/then]
+        [else]
+        <TR>
+          <TD ALIGN=CENTER COLSPAN=6 class="titletab_small">
+            [L]No items at the moment.[/L]
+          </TD>
+        </TR>
+
+        [/else]
+        [/if]
+        </table>
+
+        <br clear=all>
+
+        <table border="0" cellspacing="0" cellpadding="0" width="50%" align=right>
+        <TR>
+          <td align="left">
+                        [if items]
+            <INPUT TYPE=submit VALUE="[L]Recalculate[/L]" class=button3>
+                        [/if]
+          </td>
+          <td align="right">
+            <table align="center" cellspacing="0" border="0">
+            <tr>
+              <td align=right class=contentbar1>[L]Subtotal[/L]: </TD>
+              <td align=right class=contentbar1>[subtotal]</TD>
+            </TR>
+		[if config Levies]
+			[levies recalculate=1 hide=1]
+                        [levy-list]
+            <tr>
+              <td align=left class=contentbar1>[levy-param label]:</TD>
+              <td align=right class=contentbar1>[levy-param cost]</TD>
+            </tr>
+                        [/levy-list]
+		[else]
+            <tr>
+              <td align=right class=contentbar1>[L]Sales Tax[/L]:</TD>
+              <td align=right class=contentbar1>[salestax]</TD>
+            </tr>
+            <tr>
+              <td align=right class=contentbar1>[if scratch total_weight]([shipping-desc]) [/if][L]Shipping[/L]:</TD>
+              <td align=right class=contentbar1>[shipping]</TD>
+            </Tr>
+			[if value mv_handling]
+            <TR>
+              <td align=right class=contentbar1>[L]Handling[/L]:</TD>
+              <td align=right class=contentbar1>[handling]</TD>
+            </TR>
+			[/if]
+		[/else]
+		[/if]
+            <tr>
+              <td align=right class="titletab_small">[L]TOTAL[/L]:</TD>
+              <td align=right class="titletab_small">[total-cost]</TD>
+            </tr>
+            </table>
+		</td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+  <tr>
+	<td border=0>
+		&nbsp;
+		&nbsp;
+
+	</td>
+  </tr>
+[if variable CHECKOUT_MAIL]
+  <tr>
+	<td>
+	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large" style="padding: 12px; border-bottom: 0">
+			Mailing status
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px">
+			<table>
+			<tr>
+				<td width="30%">
+			<SELECT NAME=email_copy>
+			<OPTION VALUE="1">[L]Yes[/L]
+			<OPTION [selected name=email_copy value=0] VALUE="0">[L]No[/L]
+			</SELECT>
+				</td>
+				<td>
+				  <B>[L]Send an email copy of my receipt[/L]</B>
+				</td>
+			</tr>
+  [if variable CHECKOUT_MAIL_LIST]
+			<tr>
+				<td>
+			[perl tables="mv_metadata"]
+			return;
+			[/perl]
+			[input-filter name=mail_list op=null_to_space][/input-filter]
+			[display table=userdb type=multiple column=mail_list key="[data session username]"]
+				</td>
+				<td>
+					Add me to these mail lists
+				</td>
+			</tr>
+  [/if]
+	  		</table>
+		</td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+  <tr>
+	<td border=0>
+		&nbsp;
+		&nbsp;
+
+	</td>
+  </tr>
+[/if]
+  <tr>
+	<td>
+
+	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large">
+			Payment and submit order
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px">
+
+		  <table width="100%">
+		  <tr>
+			<td style="padding: 5px">
+					<table width="100%">
+					<tr>
+						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
+						[page ord/shipping]<u><b>Ship [if value mv_same_billing]and bill[/if] to</b></u></a>:<br>
+						<blockquote>
+						[value fname] [value lname]<br>
+						[value address1]<br>
+						[if value address2][value address2]<br>[/if]
+						[value city][if value state], [value state][/if]  [value zip]<br>
+						[value country]
+						</blockquote>
+						</td>
+						[if !value mv_same_billing]
+						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
+						[page ord/billing]<u><b>Bill to</b></u></a>:<br>
+						<blockquote>
+						[value b_fname] [value b_lname]<br>
+						[value b_address1]<br>
+						[if value b_address2][value b_address2]<br>[/if]
+						[value b_city][if value b_state], [value b_state][/if]  [value b_zip]<br>
+						[value b_country]
+						</blockquote>
+						</td>
+						[/if]
+					</tr>
+				</table>
+
+			</td>
+		  </tr>
+		  <tr>
+			<td>
+					[include include/checkout/payment_select_multi]
+			</td>
+		  </tr>
+		  <tr>
+			<td>
+					<br>
+					[if scratch old_browser]
+					[include include/checkout/old_browser_payment_multi]
+					[else]
+					[include include/checkout/new_browser_payment_multi]
+					[/else]
+					[/if]
+			</td>
+		  </tr>
+
+		  <tr>
+			<td>
+			<br>
+			&nbsp;
+			<br>
+			&nbsp;
+			<br>
+			&nbsp;
+			</td>
+		  </tr>
+		  </table>
+
+		<div align=center>
+			<input type=button onClick="
+					this.form.mv_action.value='back';
+					this.form.mv_nextpage.value='[either][scratch finalize_back][or]ord/shipmode[/either]';
+					this.form.submit();
+				"
+				value="&lt;-- [L]Back[/L]" class=button3>
+				[button text="[L]Place Order[/L]" wait-text="-- Wait --"  class=button3 id=placebutton style="font-weight: bold"]
+					mv_todo=submit
+				[/button]
+		</div>
+
+		  [if scratch error_display]
+					<div style="padding-left: 10px"> [scratchd error_display]</div>
+		  [/if]
+		</td>
+		</tr>
+	  </table>
+
+	</td>
+  </tr>
+</table>
+
+	</td>
+  </tr>
+</table>
+
+</form>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

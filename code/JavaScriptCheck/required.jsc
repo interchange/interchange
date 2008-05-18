@@ -1,0 +1,95 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: required.jsc,v 1.4 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef required  JavaScriptCheck  1
+CodeDef required  Description Javascript non-blank check
+CodeDef required  Help Also checks for only whitespace
+CodeDef required  Routine <<EOR
+sub {
+	my $opt = shift;
+
+	use vars qw/$Tag/;
+
+	my $name = $opt->{name};
+	my $fn = $opt->{form_name} || 'flex_editor';
+	my $rn = $opt->{js_check_name} || "${fn}_${name}_required";
+	my $lab = $opt->{label};
+
+	$lab ||= $name;
+
+	my $exist = $opt->{prepend} || '';
+	my $undef_message = $Tag->jsq(
+							errmsg(
+								"%s (%s): requires entry, currently %s", 
+								$lab, $name, errmsg('undefined'),
+								)
+							);
+	my $blank_message = $Tag->jsq(
+							errmsg(
+								"%s (%s): requires entry, currently %s", 
+								$lab, $name, errmsg('blank'),
+								)
+							);
+	my $whitespace_message = $Tag->jsq(
+							errmsg(
+								"%s (%s): requires entry, currently %s", 
+								$lab, $name, errmsg('whitespace'),
+								)
+							);
+	my $script = <<EOS;
+<script>
+	function $rn (el, frm) {
+		var nm = el.name;
+		if(el.value == undefined) {
+			alert($undef_message);
+			return false;
+		}
+		if(el.value.length == 0) {
+			alert($blank_message);
+			return false;
+		}
+		if(el.value.match(/^\\s*\$/)) {
+			alert($whitespace_message);
+			return false;
+		}
+		return true;
+	}
+</script>
+EOS
+
+	if($exist) {
+		$opt->{prepend} = "$script\n$exist";
+	}
+	else {
+		$opt->{prepend} = $script;
+	}
+
+	my $call = "$rn(this,this.form)";
+	if(my $ejs = $opt->{js}) {
+		if($ejs =~ s{(^|\s+)onchange\s*=\s*"(.*)"}{
+						my $pre = $1;
+						my $ex = $2;
+						qq[${pre}onBlur="if($call) { $ex }"];
+
+						}ie
+			)
+		{
+			$opt->{js} = $ejs;
+		}
+		else {
+			$opt->{js} =~ s/\s+$//;
+			$opt->{js} .= qq{ onBlur="$call"};
+		}
+	}
+	else {
+		$opt->{js} = qq{ onBlur="$call"};
+	}
+	return;
+}
+EOR

@@ -1,0 +1,47 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: assign.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag assign              addAttr
+UserTag assign              PosNumber    0
+UserTag assign              Version      $Revision: 1.5 $
+UserTag assign              Routine      <<EOR
+my %_assignable = (qw/
+				salestax	1
+				shipping	1
+				handling	1
+				subtotal	1
+				credit		1	
+				/);
+sub {
+	my ($opt) = @_;
+	if($opt->{clear}) {
+		delete $Vend::Session->{assigned};
+		return;
+	}
+	$Vend::Session->{assigned} ||= {};
+	for(keys %$opt) {
+		next unless $_assignable{$_};
+		my $value = $opt->{$_};
+		$value =~ s/^\s+//;
+		$value =~ s/\s+$//;
+		if($value =~ /^-?\d+\.?\d*$/) {
+			$Vend::Session->{assigned}{$_} = $value;
+		}
+		else {
+			logError(
+				"Attempted assign of non-numeric '%s' to %s. Deleted.",
+				$value,
+				$_,
+			);
+			delete $Vend::Session->{assigned}{$_};
+		}
+	}
+	return;
+}
+EOR

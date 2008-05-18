@@ -1,0 +1,36 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: control_set.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag control-set         Order        index
+UserTag control-set         addAttr
+UserTag control-set         hasEndTag
+UserTag control-set         PosNumber    1
+UserTag control-set         Version      $Revision: 1.4 $
+UserTag control-set         Routine      <<EOR
+# Batch sets a set of controls without affecting Scratch
+# Increments the index afterwards unless index is defined
+sub {
+	my ($index, $opt, $body) = @_;
+
+	my $inc;
+	unless($index) {
+		$index = $::Scratch->{control_index} || 0;
+		$inc = 1;
+	}
+	
+	while($body =~ m{\[([-\w]+)\](.*)\[/\1\]}sg) {
+		my $name = lc $1;
+		my $val = $2;
+		$name =~ s/-/_/g;
+		$::Control->[$index]{$name} = $val;
+	}
+	$::Scratch->{control_index}++;
+	return;
+}
+EOR

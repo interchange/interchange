@@ -1,0 +1,218 @@
+__NAME__                            invalid
+&fatal     = yes
+mv_failpage= interact
+&set       = mv_junk 0
+__END__
+
+__NAME__                            shipping_address
+
+ __COMMON_ORDER_PROFILE__
+
+&fatal = yes
+
+email=email
+
+__END__
+
+
+__NAME__                            account_change
+
+ __COMMON_ORDER_PROFILE__
+
+&fatal = yes
+email=email
+
+__END__
+
+__NAME__                            pay_cert
+
+__COMMON_ORDER_PROFILE__
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+&set = mv_payment Incomplete
+[cgi name=have_cert set='']
+
+[if value use_pay_cert]
+	[cgi name=have_cert set=1 hide=1]
+	&set = mv_payment Gift Certificate
+[elsif scratch pay_cert_code]
+	[cgi name=have_cert set=1 hide=1]
+	&set = mv_payment Gift Certificate
+[/elsif]
+[/if]
+
+have_cert=mandatory Must present payment certificate code.
+
+&final = yes
+&setcheck = end_profile 1
+&setcheck = payment_method pay_cert
+
+__END__
+
+
+__NAME__                            credit_card
+
+__COMMON_ORDER_PROFILE__
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+&set = mv_payment Incomplete
+
+[if variable MV_PAYMENT_MODE]
+[value name=mv_payment_realtime set=""]
+&credit_card=standard keep __CREDIT_CARDS_ACCEPTED__
+&set=mv_payment Real-time Credit Card (%c -- [var MV_PAYMENT_MODE])
+&set=mv_payment_realtime 1
+[else]
+&credit_card=standard __CREDIT_CARDS_ACCEPTED__
+&set=mv_payment Credit Card (%c)
+[/else]
+[/if]
+
+&calc = $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g; 1;
+&final = yes
+&setcheck = end_profile 1
+&setcheck = payment_method credit_card
+
+__END__
+
+__NAME__                            purchase_order
+
+ __COMMON_ORDER_PROFILE__
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+[if !session admin]
+&set = prof_po_accepted [var PO_ACCEPTED]
+[/if]
+
+prof_po_accepted=required This site doesn't accept purchase orders. You should not have been offered that option; please contact us.
+
+po_number=required Please include your PO number
+
+[if session logged_in]	[cgi name=logged_in_po set=1 hide=1]
+[else]					[cgi name=logged_in_po set=""]	[/else]
+[/if]
+logged_in_po=mandatory Must have pre-existing account for PO.
+
+[value name=mv_payment set="Incomplete" hide=1]
+[tmp tmp_total][total-cost noformat=1][/tmp]
+[tmp tmp_climit][data table=userdb col=credit_limit key="[data session username]"][/tmp]
+[calc]
+	$CGI->{credit_limit_ok} = 1;
+	my $total = $Scratch->{tmp_total};
+	my $limit = $Scratch->{tmp_climit};
+	return unless length($limit);
+	Log("credit_limit=$limit total=$total");
+	delete $CGI->{credit_limit_ok};
+	if($limit >= $total) {
+		$CGI->{credit_limit_ok} = 1;
+	}
+	return;
+[/calc]
+credit_limit_ok=mandatory Credit limit exceeded.
+&set=mv_payment PO number [value po_number]
+
+&final = yes
+&set = payment_method purchase_order
+
+__END__
+
+__NAME__                            postal
+
+ __COMMON_ORDER_PROFILE__
+
+[if !session admin]
+&set = prof_mode_accepted [var POSTAL_ACCEPTED]
+[/if]
+
+prof_mode_accepted=required This site doesn't accept postal orders. You should not have been offered that option; please contact us.
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+&set = mv_payment Check or Money Order (will call)
+&final = yes
+&set = payment_method postal
+
+__END__
+
+__NAME__                            cod
+
+ __COMMON_ORDER_PROFILE__
+
+[cgi set="" name=not_po_box]
+[if value address1 =~ /p\.?o\.?\s*box\b/i]
+not_po_box=mandatory No PO boxes allowed for COD.
+[/if]
+[if value address2 =~ /p\.?o\.?\s*box\b/i]
+not_po_box=mandatory No PO boxes allowed for COD.
+[/if]
+
+[if !session admin]
+&set = prof_mode_accepted [var COD_ACCEPTED]
+[/if]
+
+prof_mode_accepted=required This site doesn't accept COD orders. You should not have been offered that option; please contact us.
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+&calc = $Values->{mv_handling} .= "\0cod" unless $Values->{mv_handling} =~ /\bcod\b/; return 1;
+
+&final = yes
+&set = mv_payment COD
+&set = payment_method cod
+
+__END__
+
+__NAME__                            online_check
+
+ __COMMON_ORDER_PROFILE__
+
+[if !session admin]
+&set = prof_mode_accepted [var CHECK_ACCEPTED]
+[/if]
+
+prof_mode_accepted=required This site doesn't accept online checks. You should not have been offered that option; please contact us.
+[value name=check_routing filter=digits hide=1]
+check_account=required You must supply your checking account number.
+check_routing=required You must supply your bank's ABA routing number. They are always 9 digits.
+&and
+check_routing=length 9-9 ABA bank route numbers are always 9 digits.
+[if variable MV_PAYMENT_MODE eq authorizenet]
+check_accttype=required You must supply an account type.
+check_bankname=required We need your bank's name.
+check_acctname=required We need the name on your bank account.
+[else]
+check_number=required You must supply a check number for us to use.
+check_bank_phone=required We need your bank's phone number.
+[/else]
+[/if]
+
+email=required
+email=email
+&fatal = yes
+&setcheck = end_profile 1
+
+
+&final = yes
+&set = mv_payment Online check
+&set = payment_method online_check
+
+__END__
+

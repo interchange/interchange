@@ -1,0 +1,297 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: traffic_report.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag traffic-report Order   save
+UserTag traffic-report addAttr
+UserTag traffic-report Version $Revision: 1.6 $
+UserTag traffic-report Routine <<EOR
+sub {
+	my ($save, $opt) = @_;
+
+	use Search::Dict;
+
+	my %header = (
+		date	=> errmsg('Date'),
+		affiliate	=> errmsg('Affiliate'),
+		campaign	=> errmsg('Campaign'),
+		visits	=> errmsg('Visits'),
+		hits	=> errmsg('Hits'),
+		pages	=> errmsg('Pages'),
+		views	=> errmsg('Prod. views'),
+		incart	=> errmsg('Items in cart'),
+		orders	=> errmsg('Orders'),
+	);
+
+	my %hmap = qw/
+		VIEWPAGE pages
+		VIEWPROD views
+		ADDITEM  incart
+		ORDER    orders
+	/;
+
+	if(ref $opt->{header}) {
+		for(keys %{$opt->{header}}) {
+			$header{$_} = errmsg($opt->{header}{$_});
+		}
+	}
+
+	my $cols = $opt->{show} || 'date affiliate visits hits pages views incart orders';
+	my @cols = grep /\w/, split /[\0,\s]+/, $cols;
+	my $numcols = scalar(@cols);
+
+	my @out = <<EOF;
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=8></td></tr>
+<TR class=rmarq>
+EOF
+	for(@cols) {
+		push @out, "<TD VALIGN=top>$header{$_}</td>";
+	}
+
+	push @out, <<EOF;
+</TR>
+<tr class=rborder height=1><td colspan=8></td></tr>
+EOF
+
+	my $file = $Vend::Cfg->{TrackFile};
+	unless (-f $file) {
+		push @out, "<tr><td colspan=$numcols class=error>No traffic statistics found</td></tr></table>";
+		return;
+	}
+
+	unless(open REPORT, "< $file") {
+		push @out, "<tr><td colspan=$numcols class=error>Cannot open file $file</td></tr></table>";
+		return;
+	}
+
+	my $affiliate = $opt->{affiliate} || $CGI::values{affiliate};
+	my $begin_date = $opt->{begin_date} || $CGI::values{ui_begin_date};
+	my $end_date = $opt->{end_date} || $CGI::values{ui_end_date};
+	my $Tag = new Vend::Tags;
+
+	if($begin_date) {
+		$begin_date = filter_value('date_change', $begin_date);
+		look(\*REPORT, $begin_date) if $begin_date;
+	}
+
+	$end_date = filter_value('date_change', $end_date)
+		if $end_date;
+
+	my %names = qw/
+		 01 January
+		 02 February
+		 03 March
+		 04 April
+		 05 May
+		 06 June
+		 07 July
+		 08 August
+		 09 September
+		 10 October
+		 11 November
+		 12 December
+	/;
+
+    my $timeout = $::Variable->{VISIT_TIMEOUT} || (30 * 10);
+
+	my $by_day = $opt->{by_day} || $CGI::values{ui_by_day};
+	my $len;
+	$len = $by_day ? 8 : 6;
+
+	my $done;
+	my $prev;
+	my $break_check = sub {
+		if(! defined($prev)) {
+			$prev = $_[0];
+			return;
+		}
+		if ($end_date and $_[0] gt $end_date) {
+			$done = 1;
+			return 1;
+		}
+		return if $_[0] eq $prev;
+		$prev = $_[0];
+		return 1;
+	};
+
+
+  BREAK: {
+    my $hits;
+    my $interval_count = 0;
+    my $interval_total = 0;
+    my $max_interval = 0;
+    my $min_interval = 9999999;
+    my $out = '';
+    my $visits;
+    my $visit_number;
+    my %action_by_aff;
+    my %action_by_day;
+    my %action_by_period;
+    my %action_by_tag;
+    my %action_by_visit;
+    my %action_by_visit_number;
+    my %actions_per_visit_boolean;
+    my %hits_by_day;
+    my %hits_by_item;
+    my %hits_by_page;
+    my %hits_by_period;
+    my %hits_by_session;
+    my %last_access;
+    my %session_by_order;
+    my %session_by_page;
+    my %visit_by_aff;
+    my %visit_by_aff_by_day;
+    my %visit_by_aff_by_period;
+    my %visit_by_day;
+    my %visit_by_ip;
+    my %visit_by_period;
+    my %visit_by_session;
+    my %visit_by_user;
+    my %visit_number;
+
+
+
+	my $donelines = 0;
+
+	## To fudge around break
+	my $saved_line;
+	my $recall;
+
+	COUNT:
+	while (<REPORT>) {
+		chop;
+
+		## To fudge around break, so that we can break then recall
+		## the line where we broke
+		if($recall) {
+			$saved_line = $_;
+			$_ = $recall;
+			undef $recall;
+		}
+		my $line = [ split /\t/, $_ , 7];
+
+		my $per = substr($line->[0], 0, $len);
+		$break_check->($per)
+			and do {
+				$recall = $_;
+				last COUNT;
+			};
+		next if $affiliate and $line->[5] ne $affiliate;
+		my $update_visit;
+		my $interval;
+		$hits++;
+		$hits_by_period{$per}++;
+		$hits_by_day{$line->[0]}++;
+		$hits_by_session{$line->[1]}++
+			or $update_visit = 1;
+		
+		$interval = $line->[4] - $last_access{$line->[1]}
+			if  $last_access{$line->[1]};
+		if($interval) {
+			$max_interval = $interval 
+				if $interval > $max_interval;
+			$min_interval = $interval 
+				if $interval < $min_interval;
+			$interval_total += $interval;
+			$interval_count++;
+			$update_visit = 1 if $interval > $timeout;
+		}
+		$last_access{$line->[1]} = $line->[4];
+
+		if($update_visit) {
+			$visits++;
+			$visit_number = "$line->[1]:" . $visit_by_session{$line->[1]}++;
+			$visit_by_period{$per}++;
+			$visit_by_day{$line->[0]}++;
+			$visit_by_user{$line->[2]}++;
+			$visit_by_ip{$line->[3]}++;
+			$visit_by_aff{$line->[5]}++;
+			$visit_by_aff_by_period{$per}{$line->[5]}++;
+			$visit_by_aff_by_day{$line->[0]}{$line->[5]}++;
+		}
+
+		# Leave this at & instead of UrlJoiner because of Vend::Track
+		my (@items) = split /(?:^|&)([A-Z]+)=/, $line->[6];
+		shift @items;
+#::logDebug("items = " . ::uneval(\@items)) if $line->[6] =~ / \& /;
+		while (@items) {
+			my($tag, $val) = splice(@items, 0, 2);
+			$action_by_visit{$tag}++
+				unless $action_by_visit_number{$visit_number}{$tag}++;
+			$action_by_tag{$tag}{$val}++;
+			$action_by_aff{$line->[5]}{$tag}++;
+			$action_by_period{$per}{$tag}++;
+			$action_by_day{$line->[0]}{$tag}++;
+		}
+
+		## To fudge around break
+		if($saved_line) {
+			$_ = $saved_line;
+			undef $saved_line;
+			redo COUNT;
+		}
+	}
+#::logDebug("action_by_visit=" . ::uneval(\%action_by_visit));
+	foreach my $one (sort keys %visit_by_period) {
+		my ($yr, $mon, $day) = $one =~ /(\d\d\d\d)(\d\d)(\d\d)?/;
+		my $date;
+		my %output;
+		push @out, "<TR class=rnorm>\n";
+		$date = $day ? "$names{$mon} $day, $yr" : "$names{$mon} $yr";
+		$output{date} = <<EOF;
+<TD VALIGN="top">
+$date
+</TD>
+EOF
+		my (@number) = grep /\S/, keys %{ $visit_by_aff_by_period{$one} };
+		my $count = scalar(@number);
+		$output{affiliate} = <<EOF;
+<TD VALIGN="top" ALIGN=CENTER>
+$count
+</TD>
+EOF
+
+		$output{visits} = <<EOF;
+<TD VALIGN="top" ALIGN=CENTER>
+$visit_by_period{$one}
+</TD>
+EOF
+
+		$output{hits} = <<EOF;
+<TD VALIGN="top" ALIGN=CENTER>
+$hits_by_period{$one}
+</TD>
+EOF
+		for(qw/ VIEWPAGE VIEWPROD ADDITEM ORDER /) {
+			$count = $action_by_period{$one}{$_} || 0;
+			my $pct = '';
+			$pct = $action_by_visit{$_} / $visit_by_period{$one} * 100
+				if $visit_by_period{$one};
+			$pct = $pct <= 0 ? '' : sprintf( "<FONT SIZE=1><BR>%.2f%%</FONT>", $pct);
+			$output{$hmap{$_}} = <<EOF;
+<TD VALIGN="top" ALIGN=CENTER>
+$count$pct
+</TD>
+EOF
+		}
+		for(@cols) {
+			push @out, $output{$_};
+		}
+		push @out, '</TR>';
+	}
+	
+	redo BREAK unless $done or eof(REPORT);
+  }
+  push @out, <<EOF;
+<tr class=rborder height=1><td colspan=8></td></tr>
+</TABLE>
+EOF
+  return join "\n", @out;
+}
+EOR

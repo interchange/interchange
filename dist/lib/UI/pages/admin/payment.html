@@ -1,0 +1,201 @@
+[flag type=write table=variable]
+[set page_title][L]Payment Options[/L][/set]
+[set ui_class]Admin[/set]
+[set help_name]payment.main[/set]
+[set icon_name]icon_config.gif[/set]
+[set page_perm]payment[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[perl tables=variable]
+	delete $Scratch->{change_payment};
+	return unless $CGI->{change_payment} eq 'do';
+	$Scratch->{change_payment} = 1;
+	for (my $i = 1; $i < 1000; $i++) {
+		last unless defined $CGI->{"cc_accepted$i"};
+		push @cc, $CGI->{"cc_accepted$i"};
+	}
+	$Scratch->{CREDIT_CARDS_ACCEPTED} = join " ", @cc;
+	$Scratch->{PO_ACCEPTED} = $CGI->{po};
+	$Scratch->{COD_ACCEPTED} = $CGI->{cod};
+	$Scratch->{POSTAL_ACCEPTED} = $CGI->{postal};
+	$Scratch->{CHECK_ACCEPTED} = $CGI->{check};
+	return;
+[/perl]
+[if scratch change_payment]
+[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED"]
+	<!-- [loop-code]: [data table=variable
+						col=Variable
+						key=[loop-code]
+						value="[scratch [loop-code]]"] -->
+[/loop]
+<!-- exporting: [export variable] -->
+[/if]
+
+[if type=explicit
+	compare=|
+			[newer
+				source=__UI_PRODUCT_DIR__/variable.txt
+				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
+				]
+			|]
+[value name=ui_changes_made set=1 hide=1]
+<span class=cerror>[msg arg.0="[page __UI_BASE__/reconfig @@MV_PAGE@@]" arg.1="</a>"]You need to %sapply changes%s for changes to take effect.[/msg]</span>
+[/if]
+
+[calc]
+		@cc = grep /\S/, split /\s+/,
+						tag_data(qw/variable Variable CREDIT_CARDS_ACCEPTED/);
+		for (qw/PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED/) {
+			$Scratch->{$_} = tag_data(qw/variable Variable/, $_);
+		}
+		for (@cc) {
+			$cc{$_} = 1;
+		}
+		$Scratch->{its} = <<EOF;
+visa	VISA	$cc{visa}
+mc	Mastercard	$cc{mc}
+discover	Discover	$cc{discover}
+amex	American Express	$cc{amex}
+other	Diners Club/Other	$cc{other}
+EOF
+		return;
+[/calc]
+<form action="[area @@MV_PAGE@@]" method=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=change_payment VALUE=do>
+
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td class=rmarq>[L]Name[/L]</td>
+<td class=rmarq>[L]Accepted[/L]</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+[loop list="[scratch its]" lr=1]
+<tr>
+
+<td class=rnorm>
+[loop-pos 1]
+</td>
+
+<td class=rnorm>
+
+<select name="cc_accepted[loop-increment]">
+<option value=""> [L]Not Accepted[/L]
+<option value="[loop-code]" [if-loop-pos 2]SELECTED[/if-loop-pos]> [L]Accepted[/L]
+</select>
+
+</td>
+</tr>
+[/loop]
+
+<tr>
+
+<td class=rnorm>
+[L]Online Check[/L]
+</td>
+
+<td class=rnorm>
+
+<select name="check">
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch CHECK_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
+</select>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td class=rnorm>
+[L]COD[/L]
+</td>
+
+<td class=rnorm>
+
+<select name="cod">
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch COD_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
+</select>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td class=rnorm>
+[L]Postal billing[/L]
+</td>
+
+<td class=rnorm>
+
+<select name="postal">
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch POSTAL_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
+</select>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td class=rnorm>
+[L]Purchase Order[/L]
+</td>
+
+<td class=rnorm>
+
+<select name="po">
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch PO_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
+</select>
+
+</td>
+
+</tr>
+
+<tr>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td>&nbsp;</td>
+	<td>
+		<input type=submit name="update" value="[L]Update[/L]">
+	</td>
+</tr>
+
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+[loop list="CREDIT_CARDS_ACCEPTED PO_ACCEPTED COD_ACCEPTED CHECK_ACCEPTED POSTAL_ACCEPTED"]
+	[set [loop-code]][/set]
+[/loop]
+
+<p>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

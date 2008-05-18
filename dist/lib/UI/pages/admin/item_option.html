@@ -1,0 +1,176 @@
+@_UI_STD_INIT_@[set page_title][L]Select option type[/L][/set]
+[set ui_class]Items[/set]
+[calc]
+	$Tag->tmp('tables_to_open');
+	$Tag->tmp('enable_atom');
+	$Tag->tmp('enable_field');
+	$Tag->tmp('bounce_url');
+	$CGI->{item_id} ||= $CGI->{sku};
+#Debug("item_id=$CGI->{item_id}");
+
+	if(! $CGI->{item_id}) {
+		$Scratch->{bounce_url} = $Tag->area('admin/item');
+		return;
+	}
+
+	my $oenable = $Config->{OptionsEnable};
+
+	if(! $oenable) {
+		$Scratch->{bounce_url} = $Tag->area( {
+												href => 'admin/item_option_old',
+												form => "
+														item_id=$CGI->{item_id}
+														",
+											});
+		return;
+	}
+
+	if($oenable =~ /(\w+):+(\w+)/) {
+		$Scratch->{tables_to_open} = $CGI->{mv_data_table} = $1;
+		$Scratch->{enable_field} = $2;
+		$Scratch->{enable_atom} = $oenable;
+	}
+	else {
+		$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
+		$Scratch->{tables_to_open} = join " ", @{$Config->{ProductFiles}};
+		$Scratch->{enable_atom} = "$CGI->{mv_data_table}:$oenable";
+		$Scratch->{enable_field} = $oenable;
+	}
+	$Scratch->{enable_atom} =~ s/:+/::/;
+	$Scratch->{enable_atom} .= "::$CGI->{item_id}";
+#Debug("enable_atom=$Scratch->{enable_atom}");
+	return;
+[/calc]
+
+[bounce href="[scratch bounce_url]" if="[scratch bounce_url]"]
+
+[if cgi set_options]
+	[if-mm type=tables table="[cgi mv_data_table]"]
+	[flag type=write table="[cgi mv_data_table]"]
+	<!-- Setting option enable for [cgi item_id]: [data
+													table="[cgi mv_data_table]"
+													column="[scratch enable_field]"
+													key="[cgi item_id]"
+													value="[cgi setting]"
+													] -->
+													[seti setting][cgi setting][/seti]
+	[else]
+		[error set="No permission to write table [cgi mv_data_table]" name=set_options]
+	[/else]
+	[/if-mm]
+[/if]
+
+@_UI_STD_HEAD_@
+
+[tmpn ui_change_options][/tmpn]
+[tmpn ui_never_options][/tmpn]
+[if cgi ui_change_options]
+[tmp ui_change_options]1[/tmp]
+[/if]
+
+[if type="!data" term="[scratch enable_atom]"]
+[tmp ui_change_options]1[/tmp]
+[tmp ui_never_options]1[/tmp]
+[/if]
+
+[perl tables="[scratch tables_to_open]"]
+	my $id  = $CGI->{item_id};
+	my @tabs = split /\s+/, $Scratch->{tables_to_open};
+	$Tag->tmp('options_loop');
+
+	# Set this up front, returns set 'none' type
+	$Scratch->{setting} = 'none';
+	foreach my $tab (@tabs) {
+		my $db = $Db{$tab}
+			or return;
+		next unless $db->record_exists($id);
+
+		my $record = $db->row_hash($id)
+			or next;
+	
+		if(not $Scratch->{setting} = $record->{$Scratch->{enable_field}}) {
+			$Scratch->{setting} = 'none';
+		}
+		last;
+	}
+	my @types = sort keys %{$Config->{Options_repository}};
+	my %def_desc = (
+		Simple	=> '[L]Simple Options[/L]',
+		Matrix	=> '[L]Matrix Options[/L]',
+		Old48 	=> '[L]Old Interchange 4.8 Options[/L]',
+	);
+	my @lines = "code\tdescription";
+	for(@types) {
+		my $loc = $Config->{Options_repository}{$_};
+		next if $loc->{disable};
+		my $desc = errmsg($loc->{description}) || $def_desc{$_} || errmsg($_);
+		push @lines, "$_\t$desc";
+	}
+
+	$Scratch->{options_loop} = join "\n", @lines;
+	
+	return;
+[/perl]
+
+
+[if scratch ui_change_options]
+[then]
+<H2>
+[if scratch ui_never_options]
+[L]Select option type and/or enable options[/L]
+[else]
+[L]Select option type and/or disable options[/L]
+[/else][/if]
+</H2>
+
+<FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
+[form-session-id]
+<INPUT TYPE=HIDDEN NAME="item_id" VALUE="[cgi item_id]">
+<INPUT TYPE=HIDDEN NAME="mv_data_table" VALUE="[cgi mv_data_table]">
+<INPUT TYPE=HIDDEN NAME="set_field" VALUE="[scratch enable_field]">
+<INPUT TYPE=HIDDEN NAME="set_options" VALUE="1">
+<INPUT TYPE=RADIO NAME="setting" VALUE="" [if scratch setting eq 'none']CHECKED[/if]> [L]No Options[/L]<BR>
+[loop list="[scratch options_loop]" lr=1 head-skip=1]
+<INPUT TYPE=RADIO NAME="setting" VALUE="[loop-code]" [if scratch setting eq '[loop-code]']CHECKED[/if]> [loop-param description]<BR>
+[/loop]
+[button text="[L]Update[/L]" mv_check="[L]Update[/L]"]
+mv_todo=return
+mv_nextpage="@@MV_PAGE@@"
+[/button]
+
+</FORM>
+
+[/then]
+[else]
+[loop list="[cgi item_id]"]
+
+<table width="__UI_OVERALL_WIDTH__" __UI_T_PROPERTIES__>
+
+<tr class=rnorm>
+        <td class=titlebox colspan=2>[L]Option type:[/L]
+                [scratch setting]
+&nbsp; &nbsp; &nbsp;
+                [page href="@@MV_PAGE@@" form="
+                        ui_change_options=1
+                        item_id=[loop-code]
+                        "][L]Change[/L]</A><br>
+        </td>
+</tr>
+
+</table>
+<P>
+[/loop]
+
+[tmp page_title][msg arg.0="[scratch setting]" arg.1="[description code='[cgi item_id]']"]Configure %s options for %s[/msg][/tmp]
+[options code="[cgi item_id]" admin_page=1]
+
+[/else]
+[/if]
+
+<!---- MAJOR -----></td>
+<!---- MAJOR -----></tr>
+<!---- MAJOR -----></table>
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

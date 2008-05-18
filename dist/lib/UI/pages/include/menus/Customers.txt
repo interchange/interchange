@@ -1,0 +1,11 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	debug
+001	Customers	x001		showactive			admin/customer	showactive=1	Active Customers		0								1
+002	Customers	x002		showinactive			admin/customer	showinactive=1	Inactive Customers		0								1
+003	Customers	x003					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&ui_new_item=1&ui_return_to=admin/customer	Create new customer		0								
+004		x004					admin/customer_mailing		Customer Mailing		0	Send mail to all customers on a list							
+005	Customers	x005	1		deletecustomer	customer	admin/customer_view	customer=[cgi customer]	View		0								
+006	Customers	x006			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping		0								
+007	Customers	x007			deletecustomer	customer	admin/customer_bill	customer=[cgi customer]	Billing		0								
+008	Customers	x008			deletecustomer	customer	admin/customer_all	customer=[cgi customer]	All		0								
+009	Customers	x009			deletecustomer	customer	admin/customer_pref	customer=[cgi customer]	Preferences		0								
+010	Customers	x010			deletecustomer	customer	admin/entry	customer=[cgi customer]	Enter Order		0								

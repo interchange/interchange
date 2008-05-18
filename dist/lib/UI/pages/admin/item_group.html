@@ -1,0 +1,182 @@
+[strip interpolate=1][if !cgi mv_data_table]
+[or cgi ui_scrub_table]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
+	return;
+[/calc]
+[/if]
+
+[tmp tmp_ftitle][either][data
+							table=mv_metadata
+							col=label
+							key="[cgi mv_data_table]::[cgi mv_arg]"
+						][or][cgi mv_arg][/either][/tmp]
+
+[set ui_class]Items[/set]
+[tmp page_title]Item group -- [scratch tmp_ftitle][/tmp]
+[tmp page_banner] Item group by <B>[scratch tmp_ftitle]</B>
+[/tmp]
+[set table_perm]__ProductFiles_0__=v[/set]
+[set help_name]item.editor[/set]
+[set icon_name]icon_item.gif[/set]
+[/strip]@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_message]
+<BLOCKQUOTE>
+	[scratchd ui_message]
+</BLOCKQUOTE>
+<p>
+&nbsp;
+[/if]
+
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+	$CGI->{mv_arg} = 'category' if ! $CGI->{mv_arg};
+	my $ref = $Db{$CGI->{mv_data_table}};
+	my $mref = $Db{__UI_META_TABLE__};
+	
+	if (! $ref) {
+		$Scratch->{keypos} = 0;
+		return;
+	}
+	elsif (! $mref) {
+		$Scratch->{keypos} = 0;
+	}
+
+	my $meta;
+	if($mref and $mref->record_exists($CGI->{mv_data_table}) ) {
+		$meta = $mref->row_hash($CGI->{mv_data_table});
+	}
+	else {
+		$meta = {};
+	}
+	if($CGI->{ui_flex_key}) {
+		$Scratch->{keypos} = $CGI->{ui_flex_key};
+	}
+	else {
+		$Scratch->{keyname} = $ref->config('KEY');
+		$Scratch->{keypos} = $ref->config('KEY_INDEX');
+	}
+
+	$Config->{NoSearch} = '';
+	$ui_text_qualification = $CGI->{ui_text_qualification};
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		$CGI->{ui_text_qualification} = "co=1\n";
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message =  <<EOF;
+<H3>Entries matching "$ui_text_qualification"</H3>
+EOF
+	}
+	elsif ($ui_text_qualification) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message =  <<EOF;
+<H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
+EOF
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
+	$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+							||  $meta->{lookup}
+							||  $Scratch->{keyname};
+	$CGI->{ui_list_size} = $meta->{height}
+		if ! $CGI->{ui_list_size};
+	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+	if(! $CGI->{ui_show_fields}) {
+		$CGI->{ui_show_fields} = '*';
+		$CGI->{ui_description_fields} = join ",", $ref->columns();
+	}
+	else {
+		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
+		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
+	}
+
+	return $out_message;
+[/perl]
+
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
+[if scratch ui_owner]
+[tmp ui_return_all]
+sf=[scratch ui_owner]
+se=[data session username]
+co=1
+op=eq
+[/tmp]
+[else]
+[tmp ui_return_all]
+	ra=yes
+[/tmp]
+[/else]
+[/if]
+
+<!-- tq: [cgi ui_text_qualification] -->
+
+	[tmp sparams]
+			fi=[cgi mv_data_table]
+			st=db
+			[scratch ui_return_all]
+			un=yes
+			sp=@@MV_PAGE@@
+			tf=[cgi mv_arg]
+			rf=[cgi mv_arg]
+	[/tmp]
+
+
+[search-region more=1 arg="[scratch sparams]"]
+<UL>
+[search-list]
+	<A HREF="[area href='__UI_BASE__/item'
+					form="ui_text_qualification=[cgi mv_arg]==[item-code]"
+				]"><LI>[either][item-code][or](blank)[/either]</LI></A>
+[/search-list]
+
+</UL>
+
+[more-list]More: [more][/more-list]
+
+[/search-region]
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

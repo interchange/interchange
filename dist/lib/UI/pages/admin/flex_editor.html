@@ -1,0 +1,96 @@
+[strip interpolate=1]
+@_UI_STD_INIT_@
+[calc]
+	if($CGI->{mv_return_table}) {
+		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
+		$CGI->{ui_return_to} = 'admin/flex_select';
+	}
+	return;
+[/calc]
+[tmp page_title]
+	[either]
+		[loc][cgi page_title][/loc]
+	[or]
+		[L]Table Edit[/L]: [cgi mv_data_table]
+	[/either]
+[/tmp]
+[tmp page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		[if cgi mv_data_table ne __UI_META_TABLE__]
+		[if-mm super]
+		[L]Select for table edit[/L]:
+		 [cgi mv_data_table]
+		[if cgi ui_meta_view]
+		 (<b>[page href="__UI_BASE__/db_metaconfig"
+				 form='
+				 ui_table=[cgi mv_data_table]
+				 ui_view=[cgi ui_meta_view]
+				 start_at=extended.ui_data_fields
+		 '][cgi ui_meta_view]</b> [L]view[/L]</A>)
+		 [/if]
+		 (<b>[page href="__UI_BASE__/db_metaconfig"
+				 form='
+				 ui_table=[cgi mv_data_table]
+				 start_at=extended.ui_data_fields
+				 '][L]standard view[/L]</A>)
+		[/if-mm]
+		 [/if]
+	[or]
+		[cgi page_title]
+	[or]
+		[L]Select for table edit[/L]: [cgi mv_data_table]
+	[/either]
+[/tmp]
+[seti table_perm][cgi mv_data_table]=v[/seti]
+[seti help_name][either][cgi help_name][or]flex.meta[/either][/seti]
+[seti icon_name][either][cgi icon_name][or]icon_config.gif[/either][/seti]
+[if !scratch ui_class][seti ui_class][either][cgi ui_class][or]Admin[/either][/seti][/if]
+[flag type=write table="[cgi mv_data_table]"]
+
+[if cgi ui_new_item]
+	[loop list="__MV_ITEM_TABLES__"]
+		[flag type=write table="[loop-code]"]
+	[/loop]
+	[perl tables="[cgi mv_data_table]"]
+		my $db = $Db{$CGI->{mv_data_table}} or return;
+		unless ($db->config('AUTO_SEQUENCE')) {
+			$db->config('AUTO_NUMBER', '000001')
+				unless $db->config('AUTO_NUMBER');
+			$CGI->{item_id} = $db->autonumber();
+		}
+		if ($CGI->{ui_clone_id}) {
+			$CGI->{ui_clone_tables} = '__UI_CLONE_TABLES__' || '__UI_ITEM_TABLES__';
+			my $db = $Db{$CGI->{mv_data_table}} or return;
+			return unless $db->record_exists($CGI->{ui_clone_id});
+			my $ref = $db->row_hash($CGI->{ui_clone_id});
+			$CGI->{ $db->config('KEY') } = $CGI->{item_id}
+				if defined $CGI->{item_id};
+			@{$CGI}{ keys %$ref } = values %$ref;
+		}
+		return;
+	[/perl]
+[/if]
+
+[/strip]@_UI_STD_HEAD_@
+
+[tmp tmp_item_id][cgi item_id][/tmp]
+[table-editor cgi=1 form_name=flex_editor keep-errors=1 output_map="[scratch ui_style_edit]" ui_style="[scratch ui_style_edit]"]
+
+<A HREF="[area href=admin/flex_editor
+				form='
+					item_id=[scratch tmp_item_id]
+					mv_data_table=[value mv_data_table]
+					page_title=Edit [value mv_data_table]: [cgi item_id]
+					help_name=genedit
+					ui_return_stack=1
+					ui_data_fields_all=1
+					ui_no_meta_display=1
+					ui_hide_key=1
+					icon_name=icon_config.gif
+					']">[L]No meta display[/L]</A>
+
+@_UI_STD_FOOTER_@
+
+<!-- page: @@MV_PAGE@@ version: $Id: flex_editor.html,v 2.11 2004-04-23 17:12:01 mheins Exp $ -->

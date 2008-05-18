@@ -1,0 +1,31 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: price.coretag,v 1.10 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag price               Order        code
+UserTag price               addAttr
+UserTag price               attrAlias    base mv_ib
+UserTag price               attrAlias    space discount_space
+UserTag price               PosNumber    1
+UserTag price               Version      $Revision: 1.10 $
+UserTag price               Routine      <<EOR
+sub {
+	my ($code, $ref) = @_;
+	$ref->{code} ||= $code;
+
+	my $oldspace;
+	$oldspace = Vend::Interpolate::switch_discount_space($ref->{discount_space})
+		if defined $ref->{discount_space};
+
+	my $amount = Vend::Data::item_price($ref);
+	$amount = discount_price($code, $amount, $ref->{quantity})
+			if $ref->{discount};
+	Vend::Interpolate::switch_discount_space($oldspace) if defined $oldspace;
+	return currency( $amount, $ref->{noformat}, undef, $ref );
+}
+EOR

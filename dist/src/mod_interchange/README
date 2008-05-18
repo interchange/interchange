@@ -1,0 +1,197 @@
+mod_interchange
+===============
+
+$Id: README,v 2.10 2007-03-30 11:39:43 pajamian Exp $
+
+Version: 1.33
+
+Description
+-----------
+
+mod_interchange is designed to replace the vlink and tlink programs
+that comes with Interchange.  The Interchange link protocol has been
+implemented via an Apache module which saves us the (small) overhead
+of the execution of a CGI program.
+
+Note that this module is not compatible with Apache 2.
+
+Building the module
+-------------------
+
+The included Makefile builds the module as a DSO object. So if
+you're Apache has mod_dso.so configured you can do
+
+    make
+    make install
+
+If not, you should be able to copy the file mod_interchange.c under
+src/modules/extra and add the line when building Apache:
+
+    --activate-module=src/modules/extra/mod_interchange.c
+
+
+Installing the module as a DSO object
+-------------------------------------
+
+Copy mod_intercange.so into your Apache DSO library directory and
+add the following lines to your httpd.conf:
+
+    LoadModule interchange_module /wherever/lib/apache/mod_interchange.so
+    AddModule mod_interchange.c
+
+
+Documentation
+-------------
+
+The module understands directives which specify the way to contact the
+primary, and possibly a secondary, Interchange server.  The InterchangeServer
+directive takes either a pathname to the Interchange UNIX socket or a
+host:port specification if you want to use INET mode.
+
+The optional InterchangeServerBackup directive takes the same arguments,
+but should obviously point to a different Interchange server than the
+primary.  The InterchangeServerBackup directive is only of any use if
+you have multiple Interchange servers configured in a clustered environment.
+
+Note: The Apache <Location> path should not contain a dot (.) or any
+other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
+
+	<Location /shop.name> is invalid, whereas:
+	<Location /shop-name> is valid.
+
+
+Examples
+--------
+
+UNIX mode local connection:
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+    </Location>
+
+INET mode local connection:
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer localhost:7786
+    </Location>
+
+UNIX mode local primary connection and INET mode remote backup connection:
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+	InterchangeServerBackup another.server.com:7786
+    </Location>
+
+The ConnectTries parameter specifies the number of connection attempts to
+make before giving up.  ConnectRetryDelay specifies the delay, in seconds,
+between each retry attempt.
+
+The ConnectTries default is 10 and the ConnectRetryDelay default is 2 seconds.
+Here is an example:
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer localhost:7786
+	ConnectTries 10
+	ConnectRetryDelay 1
+    </Location>
+
+The DropRequestList allows a list of up to 10 space-separated URI components
+to be specified.  If one of the list entries is found anywhere in the
+requested URI, the request will be dropped with a 404 (not found) error,
+without the request being passed to Interchange.  This parameter is useful
+for blocking known Microsoft IIS attacks like "Code Red", so that we don't
+waste any more time processing the (bogus) requests than we have to.
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
+    </Location>
+
+The OrdinaryFileList allows a list of up to 10 space-separated URI path
+components to be specified.  If one of the list entries is found at the
+start of any request then that request will not be passed to Interchange.
+Instead, the file will be directly served by Apache.  For example:
+
+    <Location />
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
+	OrdinaryFileList /foundation/ /interchange-5/ /robots.txt /somefile.css
+    </Location>
+
+This will result in the following:
+
+    www.example.com/index.html          (handled by Interchange)
+    www.example.com/ord/basket.html     (handled by Interchange)
+    www.example.com/foundation/images/somefile.gif (served by Apache)
+    www.example.com/robots.txt          (served by Apache)
+
+You should add a trailing slash to directory names to prevent, for instance,
+"/images/foo.gif" from being confused with the likes of "/images.html".
+If OrdinaryFileList was set to "/images" then both of those requests would
+be handled by Apache.  If OrdinaryFileList was set to "/images/" then
+"/images/foo.gif" would be handled by Apache and "/images.html" would be
+handled by Interchange.
+
+If you're using "<Location />" then you will need a dummy "index.html" file
+in your VirtualHost's DocumentRoot directory to avoid permission problems
+assocated with the Apache directory index creation code.
+
+The InterchangeScript parameter allows the SCRIPT_NAME to be different from
+the <Location>.  For example:
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+    </Location>
+
+The above will set the SCRIPT_NAME to "/shop".
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+	InterchangeScript /foo
+    </Location>
+
+The above will set the SCRIPT_NAME to "/foo", instead of "/shop"  before
+passing the request to Interchange.
+
+The appropriate SCRIPT_NAME must be configured into the "Catalog"
+directive in your interchange.cfg file.
+
+
+Bugs
+----
+
+Send bug reports and suggestions to Kevin Walsh <kevin@cursor.biz>
+
+
+Copyright and License
+---------------------
+
+Author: Kevin Walsh <kevin@cursor.biz>
+Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
+
+Copyright (c) 2000-2005 Cursor Software Limited.
+Copyright (c) 1999 Francis J. Lacoste and iNsu Innovations Inc.
+All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+02110-1301 USA.

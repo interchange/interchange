@@ -1,0 +1,21 @@
+[if-mm !advanced affiliate=v]
+	[calc]
+			$CGI->{affiliate} = $Session->{username};
+			return;
+	[/calc]
+[/if-mm]
+[seti page_title][if cgi affiliate]
+	[L]Traffic by Affiliate[/L]: 
+	[either][data table=affiliate col=name key="[cgi affiliate]"][or][cgi affiliate][/either] ([cgi affiliate])
+	[else]
+	[L]Traffic Statistics[/L]
+	[/else]
+[/if][/seti]
+[set icon_name]icon_stats.gif[/set]
+[set help_name]stats.traffic[/set]
+
+@_UI_STD_HEAD_@
+
+[traffic-report]
+
+@_UI_STD_FOOTER_@

@@ -1,0 +1,20 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: show_null.filter,v 1.5 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef show_null Filter
+CodeDef show_null Description Show NULL
+CodeDef show_null Visibility  private
+CodeDef show_null Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s/\0/\\0/g;
+	return $val;
+}
+EOR

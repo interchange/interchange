@@ -1,0 +1,77 @@
+@_UI_STD_INIT_@[if-mm !advanced orderstats]
+[set ui_error]
+[L]Not authorized for order statistics.[/L]
+[/set]
+[bounce page="__UI_BASE__/error"]
+[value name=saved_report set=""]
+[/if-mm]
+[set ui_class]Reports[/set]
+[set page_title][L]Order Statistics[/L][/set]
+[set icon_name]icon_stats.gif[/set]
+[set help_name]stats.order[/set]
+[tmpn third_menu]OrderStats[/tmpn]
+
+@_UI_STD_HEAD_@
+
+<table border=0 __UI_T_PROPERTIES__>
+<tr height=1><td class=rborder colspan=2></td></tr>
+<tr>
+<td colspan=2 class=rmarq>[L]View stats for this month only[/L]</td>
+</tr>
+<tr height=1><td class=rborder colspan=2></td></tr>
+<tr>
+<td class=rnorm colspan=2>
+
+<BLOCKQUOTE>
+<A HREF="[area __UI_BASE__/reports/order/ByAffiliate]">[L]Overall by month[/L]</A><BR>
+<A HREF="[area __UI_BASE__/reports/order/Monthly]">[L]By day for this month[/L]</A><BR>
+<A HREF="[area __UI_BASE__/reports/order/Detail]">[L]Individual orders this month[/L]</A><BR>
+<A HREF="[area __UI_BASE__/reports/order/BySKU]">[L]Orders for a SKU[/L]</A><BR>
+</BLOCKQUOTE>
+
+</td>
+</tr>
+<tr height=1><td class=rborder colspan=2></td></tr>
+
+<tr>
+<td colspan=2 class=rmarq>[L]View stats for any period of time[/L]</td>
+</tr>
+<tr height=1><td class=rborder colspan=2></td></tr>
+
+<FORM ACTION="[process]">
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/order/ByAffiliate">
+<TR>
+<TD class=rnorm>
+<BLOCKQUOTE>[L]Beginning:[/L]<BR>
+	[display type=date name=ui_begin_date]
+</BLOCKQUOTE>
+</TD>
+<TD class=rnorm>
+<BLOCKQUOTE>[L]Ending:[/L]<BR>
+	[display type=date name=ui_end_date]
+</BLOCKQUOTE>
+</TD>
+<TR>
+<TD COLSPAN=2 class=rnorm>
+	[set [L]List individual orders[/L]]
+	mv_nextpage=__UI_BASE__/reports/order/Detail
+	[/set]
+	[set [L]By day[/L]]
+	mv_nextpage=__UI_BASE__/reports/order/Monthly
+	[/set]
+	<BLOCKQUOTE>
+	<INPUT TYPE=submit VALUE="[L]By month[/L]">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="[L]By day[/L]">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="[L]List individual orders[/L]">
+	</BLOCKQUOTE>
+</TD>
+</TR>
+<tr class=rborder height=1><td colspan=2></td></tr>
+</TABLE>
+</FORM>
+</td>
+</tr>
+
+</table>
+
+@_UI_STD_FOOTER_@

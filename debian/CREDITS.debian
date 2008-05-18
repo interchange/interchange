@@ -1,0 +1,16 @@
+Ardo van Rangelrooij <ardo@debian.org> for:
+- reporting bug #104747 (package contains spurious .packlist)
+
+Joey Hess <joeyh@debian.org> for:
+- reporting bug #109565 (package description interchange-cat-foundation)
+
+Marcelo E. Magallon <mmagallo@debian.org> for:
+- reporting bug #109228 (package description interchange-cat-foundation)
+
+Michael Bilow <mike@bilow.com> for:
+- providing an 400mod_interchange.info
+
+Doug Alcorn <doug@lathi.net> for:
+- reporting that an empty mode no longer triggers both unix and inet mode
+  in 4.9.x
+

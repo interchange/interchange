@@ -1,0 +1,26 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: write_relative_file.coretag,v 1.10 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag write-relative-file Order         file
+UserTag write-relative-file hasEndTag
+UserTag write-relative-file addAttr
+UserTag write-relative-file Version       $Revision: 1.10 $
+UserTag write-relative-file Routine       <<EOR
+sub {
+	my ($file, $opt, $data) = @_;
+#::logDebug("writing $file");
+	unless(defined $data) {
+		$data = $opt;
+		$opt = {};
+	}
+	return undef unless Vend::File::allowed_file($file, 1);
+	$opt->{auto_create_dir} = 1 unless defined $opt->{auto_create_dir};
+	Vend::File::writefile(">$file", $data, $opt);
+}
+EOR

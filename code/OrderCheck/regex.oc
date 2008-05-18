@@ -1,0 +1,45 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: regex.oc,v 1.3 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef regex OrderCheck 1
+CodeDef regex Description Regular expression match
+CodeDef regex Routine <<EOR
+sub {		
+	my($ref, $name, $value, $code) = @_;
+	my $message;
+
+	$code =~ s/\\/\\\\/g;
+	my @code = Text::ParseWords::shellwords($code);
+	if($code =~ /(["']).+?\1$/) {
+		$message = pop(@code);
+	}
+
+	for(@code) {
+		my $negate;
+		s/^!\s*// and $negate = 1;
+		my $op = $negate ? "!~" :  '=~';
+		my $regex = qr($_);
+		my $status;
+		if($negate) {
+			$status = ($value !~ $regex);
+		}
+		else {
+			$status = ($value =~ $regex);
+		}
+		if(! $status) {
+			$message = errmsg(
+							  "failed pattern - %s",
+							  "'$value' $op $_"
+							 ) if ! $message;
+			return ( 0, $name, $message);
+		}
+	}
+	return (1, $name, '');
+}
+EOR

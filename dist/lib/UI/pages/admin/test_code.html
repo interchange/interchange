@@ -1,0 +1,51 @@
+[set page_title][L]Test ITL code snippet[/L][/set]
+[set ui_class]Admin[/set]
+[set page_banner][L]Test ITL code snippet[/L][/set]
+[set page_perm]super[/set]
+[set help_name][/set]
+[set icon_name]icon_config.gif[/set]
+[seti ui_body_extra][/seti]
+
+@_UI_STD_HEAD_@
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+
+<FORM ACTION="[area @@MV_PAGE@@]">
+[form-session-id]
+<table>
+[if cgi itl_code]
+	<tr>
+		<td style="font-size: larger">
+		<u style="font-size: larger; font-weight: bold">[L]Results[/L]</u><br>
+		[if cgi xmp]
+			<pre>[filter op="entities" interpolate=1][calcn]$Scratch->{itl_code} = $CGI->{itl_code};[/calcn][/filter]</pre>
+		[else]
+			[calcn]$Scratch->{itl_code} = $CGI->{itl_code};[/calcn]
+		[/else][/if]
+		</td>
+	</tr>
+[/if]
+	<tr>
+		<td>
+		[display
+			type=textarea
+			name=itl_code
+			rows=20 cols=80
+			value="[scratchd itl_code]"
+			enable-itl=1]
+		<br>
+		<input type=submit value="[L]Run[/L]"> <input type=button value="[L]Clear[/L]" onClick="this.form.itl_code.value=''"> [display type=select name=xmp cgi-default=1 options="1=[L]Source[/L], 0=[L]HTML[/L]"]
+		</td>
+	</tr>
+</table>
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
+
+
+
+
+
+

@@ -1,0 +1,194 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Check Out[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+[if session logged_in]
+[and !session admin]
+	[bounce href="[area href=ord/shipping secure=1]"]
+[/if]
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+<div style="padding-left: 12px; padding-top: 12px;">
+<br>
+<h2>[L]Check out[/L]</h2>
+
+<p>&nbsp;</p>
+<blockquote style="font-size: larger">
+[L MULTI_PAR1]You can decide to use [page ord/checkout]Express checkout</a> without creating
+an account, log in below with your existing account, or if you will be purchasing
+often and have not already done so, you can create a new account.[/L]
+</blockquote>
+
+[if session failure]
+<blockquote style="color: __CONTRAST__">
+	[calc] delete $Session->{failure} [/calc]
+</blockquote>
+[/if]
+
+[warnings auto=1]
+
+<table width="90%" align="center" cellspacing="0">
+<tr>
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
+		[L]Log in to account[/L]
+	</td>
+	<td width="5%" valign="top">
+	</td>
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
+		[L]Create a new account[/L]
+	</td>
+	<td width="5%" valign="top">
+	</td>
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
+		[L]Don't create an account[/L]
+	</td>
+<tr>
+	<td width="30%" valign="top" class="shadowbox">
+		<form action="[process secure=1]" method="POST">
+		<input type="hidden" name="mv_todo" value="return">
+		<input type="hidden" name="mv_click" value="Login">
+		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
+		<input type="hidden" name="mv_successpage" value="ord/country">
+		<input type="hidden" name="mv_nextpage" value="ord/country">
+		[form-session-id]
+
+		<table border="0" align="center" width="100%" height="100%">
+		<tr>
+		  <td align="center"> 
+		<table align="center">
+		<tr> 
+		  <td align="right">
+			[L]Username[/L]
+		  </td>
+		  <td>
+			<INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+		  </td>
+		</tr>
+		<tr>
+		  <td align="right">
+			[L]Password[/L]
+		  </td>
+		  <td>
+			<input type="password" name="mv_password" value="">
+		  </td>
+		</tr>
+		<tr>
+		  <td>&nbsp;</td>
+		  <td>
+			<input type="submit" value="[L]Log In[/L] --&gt;" class="button3">
+		  </td>
+		</tr>
+		[if config CookieLogin]
+		<tr>
+		  <td align="right">
+			<input type="hidden" name="mv_cookie_password" value="0">
+			<input type="checkbox" name="mv_cookie_password" value="1">
+		  </td>
+		  <td>
+			[L]Log me in automatically (sets cookie)[/L]
+		  </td>
+		</tr>
+		[/if]
+			</table>
+		  </td>
+		</tr>
+		</table>
+		
+		</form>
+	</td>
+	<td width="5%" valign="top">
+		&nbsp;
+	</td>
+	<td width="30%" valign="top" class="shadowbox">
+		<table border="0" align="center" width="100%" height="100%">
+
+		<form action="[process secure=1]" method="POST">
+		[form-session-id]
+		<input type="hidden" name="mv_click" value=NewAccount>
+		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
+		<input type="hidden" name="mv_successpage" value="ord/country">
+		<input type="hidden" name="mv_nextpage" value="ord/country">
+		<input type="hidden" name="mv_todo"  value="return">
+
+		<tr> 
+		  <td>
+			<table border="0" align="center" width="100%" height="100%">
+			<tr> 
+			  <td align="right">
+				[L]Username[/L]:
+			  </td>
+			  <td align="left"> 
+				<input type="text" name="mv_username" value="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td align="right"> 
+				[L]Password[/L]:
+			  </td>
+			  <td align="left"> 
+				<input type="password" name="mv_password" value="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td align="right"> 
+				[L]Verify Password[/L]:
+			  </td>
+			  <td align="left"> 
+				<input type="password" name="mv_verify" value="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td>&nbsp;</td>
+			  <td> 
+				<input type="submit" value="[L]Create[/L] --&gt;" class="button3">
+			  </td>
+			</tr>
+			[if config CookieLogin]
+			<tr> 
+			  <td align="right"> 
+				<input type="checkbox" name="mv_cookie_password" value="1">
+			  </td>
+			  <td>[L]Log me in automatically (sets cookie)[/L]</td>
+			</tr>
+			[/if]
+			<tr> 
+			  <td align="right" colspan="2">&nbsp;</td>
+			</tr>
+			</table>
+			
+		  </td>
+		</tr>
+
+		</form>
+		</table>
+
+
+	</td>
+	<td width="5%" valign="top">
+		&nbsp;
+	</td>
+	<td width="30%" valign="top" class="shadowbox" style="padding-left: 10px">
+		<br>
+		[L]I would prefer not to create an account at all.[/L] 
+			<blockquote>
+			[page ord/country][L]Take me to the next step[/L]</A>.
+			<br>
+			<br>
+			[page ord/checkout][L]Take me to express checkout[/L]</A>.
+			</blockquote>
+	</td>
+</tr>
+</table>
+
+</div>
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

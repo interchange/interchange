@@ -1,0 +1,18 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: list_glob.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag list_glob Order      spec prefix
+UserTag list_glob PosNumber  2 
+UserTag list_glob Version    $Revision: 1.4 $
+UserTag list_glob Routine    <<EOR
+sub {
+	my @files = UI::Primitive::list_glob(@_);
+	return (wantarray ? @files : join "\n", @files);
+}
+EOR

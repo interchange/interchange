@@ -1,0 +1,9 @@
+Template: interchange-ui/defaultlocale
+Type: select
+Choices: en_US, da_DK, de_DE, it_IT, nl_NL, sv_SE
+Default: en_US
+_Description: Default language for user interface:
+ The administration interface for Interchange catalogs, called UI, has been
+ translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian
+ (it_IT) and Swedish (sv_SE). You can choose the default language here. Any
+ user may change this default at login time.

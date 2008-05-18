@@ -1,0 +1,20 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: gpg_keys.widget,v 1.4 2007-03-30 23:40:58 pajamian Exp $
+
+CodeDef gpg_keys Widget 1
+CodeDef gpg_keys Description GPG key selector
+CodeDef gpg_keys Routine <<EOR
+sub {
+	my ($opt) = @_;
+	$opt->{passed} = $Tag->get_gpg_keys();
+	$opt->{type} = delete $opt->{variant} || 'combo';
+	$opt->{filter} = 'nullselect' if $opt->{type} eq 'combo';
+	return Vend::Form::display($opt);
+}
+EOR

@@ -1,0 +1,21 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: html2text.filter,v 1.8 2008-04-30 16:50:09 docelic Exp $
+
+CodeDef html2text Filter
+CodeDef html2text Description Simple html2text
+CodeDef html2text Routine <<EOR
+sub {
+	my $val = shift;
+
+	$val =~ s%</?(b|i|u)>%%gi;
+	$val =~ s%\s*<(?:br\s*/?|/?p)>\s*%\n%gi;
+	return $val;
+}
+EOR

@@ -1,0 +1,68 @@
+[calc]
+	if($CGI->{customer}) {
+		$CGI->{item_id} = $CGI->{customer};
+	}
+	if(! $CGI->{item_id} and $Session->{arg}) {
+		$CGI->{item_id} = $CGI->{customer} = $Session->{arg};
+	}
+	$CGI->{customer} = $CGI->{item_id} if ! $CGI->{customer};
+	return if ! $CGI->{item_id};
+	if(! $CGI->{mv_data_table}) {
+		$CGI->{ui_hide_key} = 1;
+		$CGI->{mv_data_table} = 'userdb';
+	}
+	if(! $CGI->{ui_data_fields}) {
+		$CGI->{ui_data_fields} = 'username
+									fname
+									lname
+									email
+									order_number
+									subject
+									comment';
+		$CGI->{ui_display_only} = 'fname
+									lname
+									subject
+									email
+									comment
+									order_number';
+					
+	}
+	if(! $CGI->{mv_blob_field}) {
+		$CGI->{mv_blob_title} = '<B>Comments:</B>';
+		$CGI->{mv_blob_field} = 'feedback';
+		$CGI->{mv_blob_only} = '1';
+		$CGI->{mv_blob_label} = 'subject';
+	}
+	if(! $CGI->{ui_break_before}) {
+		$CGI->{ui_break_before} = 'comment';
+		$CGI->{ui_break_before_label} = 'comment=Comment';
+	}
+	if(! $CGI->{ui_return_to}) {
+		$CGI->{ui_return_to} = join "\0",
+									'__UI_BASE__/customer_view',
+									"customer=$CGI->{item_id}",
+								;
+
+	}
+	return;
+[/calc]
+[if !cgi item_id]
+	[bounce page="__UI_BASE__/customer"]
+[/if]
+
+[set ui_class]Customers[/set]
+[seti page_title]Customer comments -- [cgi item_id][/seti]
+[seti page_banner]Customer comments: <B>[page href="__UI_BASE__/customer_view" form="customer=[cgi customer]"][cgi customer]</A></B>[/seti]
+[set help_name]customer.edit[/set]
+[set icon_name]icon_people.gif[/set]
+
+@_UI_STD_HEAD_@
+<P>
+<SPAN class=clabel style="width: 150">
+[table-editor cgi=1 nodelete=1 nosave=1 no-table-meta=1 tabbed=0 break_row_class=rmarq]
+</SPAN>
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@
+[return-to click]
+-->

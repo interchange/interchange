@@ -1,0 +1,165 @@
+[comment]
+ui_component: results_buylist
+ui_type: component
+ui_name: results_buylist
+ui_class: content
+ui_group: search
+ui_help: This is the default results page with Buy List.
+ui_label: Search Results with Buy List
+ui_source: templates/components/results_buylist
+
+
+[/comment]
+<!-- BEGIN COMPONENT [control component results_buylist] -->
+
+<br>
+
+[if scratch did_order]
+[include file="templates/components/cart_display"]
+<br>
+[/if]
+[set did_order][/set]
+[search-region]
+[seti results_return_to][history-scan exclude=nothing count=0][/seti]
+[set munge_quantity]
+[calc]
+        $Scratch->{did_order} = 1;
+        @q = split /\0/, $CGI->{mv_order_quantity};
+        for (@q) {
+                next unless length $_;
+                $_ = "=$_";
+        }
+        @parms = grep /^mv_oi\d+/ && $CGI->{$_}, keys %{$CGI};
+
+        # If we have parms, means an individual buy. If we don't
+        # we want to strip empty items
+        unless (@parms) {
+                @i = split "\0", $CGI->{mv_order_item};
+                for(my $i = 0; $i < @i; $i++) {
+                        next if length($q[$i]);
+                        $i[$i] = '';
+                }
+                @i = grep length($_), @i;
+                @q = grep length($_), @q;
+                $CGI_array->{mv_order_quantity} = \@q;
+                $CGI->{mv_order_quantity} = join "\0", @q;
+                $CGI_array->{mv_order_item} = \@i;
+                $CGI->{mv_order_item} = join "\0", @i;
+                return;
+        }
+        my $item = $parms[0];
+        $item =~ /(\d+)/ or return;
+        my $idx = $1;
+		$idx -= $CGI->{first_match};
+        $idx--;
+        $CGI->{mv_order_item} = $CGI->{$item};
+        $CGI->{mv_order_quantity} = "$q[$idx]";
+        return;
+[/calc]
+        [bounce href="[scratch results_return_to]"]
+[/set]
+
+[on-match]
+<FORM ACTION="[area nothing]" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_action VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_separate_items VALUE=0>
+<INPUT TYPE=hidden NAME=mv_click VALUE=munge_quantity>
+<INPUT TYPE=hidden NAME=first_match VALUE="[value mv_first_match]">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr class="titletab_small"> 
+  <td><b>&nbsp;[L]Product[/L]</b></td>
+  <td align="center"><b>[L]SKU[/L]</b></td>
+  <td align="center"><b>[L]Stock[/L]</b></td>
+  <td align="center"><b>[L]Price[/L]</b></td>
+  <td align="center"><b>[L]Qty[/L]</b></td>
+  <td align="center"><b>[L]Buy[/L]</b></td>
+</tr>
+[/on-match]
+
+[search-list]
+
+[item-change 1][condition][item-field category][/condition]
+
+[if-item-field category]
+<tr class="title"> 
+  <td colspan="6" class="title"><br>[either][value banner_text][or][item-field category][/either]</td>
+</tr>
+[/if-item-field]
+
+[/item-change 1]
+
+<tr valign="middle"> 
+      <td>
+        <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+        <a href="[area [item-code]]" class="resultslink">[item-description]</a>
+      </td>
+      <td align="center">[item-code]</td>
+      <td align="center">
+        [item-calc]
+        my $q = q{[item-data inventory quantity]};
+        if($q > 0) {
+                return <<EOF;
+<font __FFACE__ size="1" color="#008000"><b>[L]Yes[/L]</b></font>
+EOF
+        }
+        else {
+                return <<EOF;
+<a href="[area function/stock_alert [item-code]]" class="resultslink"><b>[L]No[/L]</b></a>
+EOF
+        }
+[/item-calc]
+      </td>
+      <td align="center">[item-price]</td>
+      <td align="center"><input type=hidden name="mv_oi[item-increment]" value=""><input type=text name=mv_order_quantity size=2 value=""></td>
+      <td align="center">
+				<input type=submit value="[L]BUY NOW[/L]" onClick="this.form.mv_oi[item-increment].value='[item-code]'" class="button2">
+                        </td>
+</tr>
+
+[/search-list]
+
+[on-match]
+</table>
+
+<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="[L]Buy List[/L]" class="button2"></div>
+</FORM>
+[/on-match]
+
+[no-match]
+<BR><BR>
+<BLOCKQUOTE>
+[comment]
+        Don't show the search string if it was empty, since it looks weird
+        and the user will see the error below anyway.
+[/comment]
+[tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
+[if scratch matchstring]
+[msg arg.0="[scratch matchstring]"]Sorry, no matches for <B>%s</B>.[/msg]
+[/if]
+[if value mv_search_error]
+<P>
+<B>
+[L]Errors[/L]:
+<BR> 
+[value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+
+<BR><BR>
+</BLOCKQUOTE>
+[/no-match]
+<BR CLEAR=LEFT>
+[more-list]
+<BLOCKQUOTE>
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+
+<br>
+
+<!-- END COMPONENT [control component results_buylist] -->

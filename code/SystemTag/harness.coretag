@@ -1,0 +1,46 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: harness.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag harness             addAttr
+UserTag harness             hasEndTag
+UserTag harness             PosNumber    0
+UserTag harness             Version      $Revision: 1.4 $
+UserTag harness             Routine      <<EOR
+my $Test = 'test001';
+sub {
+	my ($opt, $input) = @_;
+	my $not;
+	my $expected =  $opt->{expected} || 'OK';
+	$input =~ s:^\s+::;
+	$input =~ s:\s+$::;
+	$input =~ s:\s*\[expected\](.*)\[/expected\]\s*::s
+		and $expected = $1;
+	$input =~ s:\[not\](.*)\[/not\]::s
+		and $not = $1;
+	my $name = $Test++;
+	$name = $opt->{name}
+		if defined $opt->{name};
+	my $result;
+	eval {
+		$result = Vend::Interpolate::interpolate_html($input);
+	};
+	if($@) {
+		my $msg = "DIED in test $name. \$\@: $@";
+#::logDebug($msg);
+		return $msg;
+	}
+	if($expected) {
+		return "NOT OK $name: $result!=$expected" unless $result =~ /$expected/;
+	}
+	if($not) {
+		return "NOT OK $name: $result==$not" unless $result !~ /$not/;
+	}
+	return "OK $name";
+}
+EOR

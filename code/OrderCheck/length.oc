@@ -1,0 +1,39 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: length.oc,v 1.3 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef length OrderCheck 1
+CodeDef length Description String length
+CodeDef length Routine <<EOR
+sub {
+	my($ref, $name, $value, $msg) = @_;
+	$msg =~ s/^(\d+)(?:\s*-(\d+))?\s*//
+		or return undef;
+	my $min = $1;
+	my $max = $2;
+	my $len = length($value);
+
+	if($len < $min) {
+		$msg = errmsg(
+					  "%s length %s less than minimum length %s.",
+					  $name,
+					  $len,
+					  $min) if ! $msg;
+		return(0, $name, $msg);
+	}
+	elsif($max and $len > $max) {
+		$msg = errmsg(
+					  "%s length %s more than maximum length %s.",
+					  $name,
+					  $len,
+					  $max) if ! $msg;
+		return(0, $name, $msg);
+	}
+	return (1, $name, '');
+}
+EOR

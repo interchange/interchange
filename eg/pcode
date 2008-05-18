@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+#
+# Mon Oct 18 22:10:29 CEST 2004
+# docelic@icdevgroup.org
+#
+# Simple script to extract Perl code out of combined files like 
+# UserTags or Filters.
+#
+# Script also takes out the item name and sees if it's the same as file.
+# Say, "CodeDef currency" is ok in file .../currency.filter, "CodeDef xy"
+# is not.
+#
+# Example use:
+# for p in *.filter; do pcode $p | perl -c; done
+# 
+
+@ARGV==1 and do {
+	$file = $ARGV[0];
+	$item = $file;
+	$item =~ s#.*/##;
+	$item =~ s/\..+$//;
+	$item or warn "No item name out of '$file'?\n";
+};
+
+while (<>) {
+	if ( $item and /^CodeDef\s+(\S+)\s+/  and  $item ne $1) {
+		warn "File '$file', item '$item' != '$1' from script content.\n";
+	}
+	next if /Routine\s+<<(\S+)/ and $run=$1  or  /^$run$/ and $run=0;
+	print if $run;
+}
+

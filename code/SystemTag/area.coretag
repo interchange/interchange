@@ -1,0 +1,17 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: area.coretag,v 1.6 2007-09-21 16:15:48 kwalsh Exp $
+
+UserTag href Alias        area
+
+UserTag area Order        href arg
+UserTag area addAttr
+UserTag area Implicit     secure secure
+UserTag area PosNumber    2
+UserTag area Version      $Revision: 1.6 $
+UserTag area MapRoutine   Vend::Interpolate::tag_area

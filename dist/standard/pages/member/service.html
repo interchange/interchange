@@ -1,0 +1,96 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Customer Service[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="95%">
+<tr>
+  <td>
+
+	<p>&nbsp;</p>
+
+    [if cgi mv_successpage]
+        <B>[L]Welcome back[/L][if value fname], [value fname][/if]!</B>
+            <p>&nbsp;</p>
+	[/if]
+
+	<p>
+	[msg arg.0="[page contact]" arg.1="</a>"]Below are our automated
+    customer service options. If you need to talk to someone please
+    %sclick here%s.[/msg]
+	</p>
+
+    <br><br>
+
+    <table cellspacing=0 cellpadding=6>
+    <tr> 
+      <td class=titlebox style="border-bottom: 0"> 
+          [L]Account Management Functions[/L]
+          </td>
+        </tr>
+        <tr>
+                <td class=shadowbox>
+                <table width="100%">
+                [menu name="catalog/service" inactive=inactive localize="description,name"]
+        <tr>
+          <td>
+            <a href="{HREF}" title="{DESCRIPTION}"><b>{NAME}</b></a>
+          </td>
+        </tr>
+                [/menu]
+[if session admin]
+        <tr>
+          <td>
+[page href="admin/menu_editor" form="qmenu_name=catalog/service"][L]edit[/L]</a>
+          </td>
+        </tr>
+[/if]
+        </table>
+      </td>
+    </tr>
+    </table>
+
+        <p>
+        [L]We would also like you to take our[/L]
+                [page
+                        href=survey/standard
+                        form="survey_start=customer_satisfaction"
+                ][L]Customer Satisfaction Survey[/L]</A>.
+        </p>
+
+		<p>&nbsp;</p>
+
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

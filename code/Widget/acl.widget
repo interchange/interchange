@@ -1,0 +1,94 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: acl.widget,v 1.3 2007-03-30 23:40:58 pajamian Exp $
+
+CodeDef acl Widget 1
+CodeDef acl Description ACL Settings
+CodeDef acl Routine <<EOR
+sub {
+	my($opt) = @_;
+	my($name, $val) = ($opt->{name}, $opt->{value});
+
+	my $del_label = errmsg('delete');
+	my $n_label = errmsg('none');
+	my $rw_label = errmsg('read-write');
+	my $r_label = errmsg('read');
+
+	my $opsub = 
+sub  {
+	my ($name, $val, $lab, $width) = @_;
+	my ($nsel, $rsel, $rwsel, $tsel) = ('', '', '', '');
+
+#::logDebug("$val=$lab");
+	if   ($lab =~ /n/) { $nsel = ' SELECTED' }
+	elsif($lab =~ /w/) { $rwsel = ' SELECTED' }
+	elsif($lab =~ /r/) { $rsel = ' SELECTED' }
+	if   ($lab =~ /t/) { $tsel = ' CHECKED' }
+#::logDebug("nsel=$nsel, rsel=$rsel, rwsel=$rwsel");
+	$val =~ s/"/&quot;/g;
+	$lab =~ s/"/&quot;/g;
+	$width = 16 if ! $width;
+	return qq{	<tr>
+      <td>
+		  <input type="text" name="$name" value="$val" size="$width" style="font-size: small">
+		  <input type="hidden" name="$name" value="=">
+	  </td>
+
+      <td>
+	  	<select name="$name" style="font-size: small">
+			<option value="n"$nsel>$n_label</option>
+			<option value="r"$rsel>$r_label</option>
+			<option value="rw"$rwsel>$rw_label</option>
+			<option value="d">$del_label</option>
+		</select>
+	  </td>
+      <td align=center>
+	  	<input type="checkbox" name="$name" value="t" style="font-size: small"$tsel>
+	    <input type="hidden" name="$name" value=",">
+	  </td>
+	</tr>};
+};
+
+	
+	my $width = $opt->{width} || 16;
+	$opt->{pre_filter} = 'hash2acl'
+		unless length($opt->{filter});
+	$opt->{filter} = 'acl2hash'
+		unless length($opt->{filter});
+	$val = Vend::Interpolate::filter_value($opt->{pre_filter}, $val);
+	my @opts = split /\s*,\s*/, $val;
+
+	my $out = qq{<table cellpadding="0" cellspacing="0"><tr>};
+	$out .= qq{<th style="font-size: small">};
+	$out .= errmsg('Object');
+	$out .= qq{</th>};
+	$out .= qq{<th align="left" style="font-size: small">};
+	$out .= errmsg('Permissions');
+	$out .= qq{</th>};
+	$out .= qq{<th align="center" style="font-size: small">};
+	$out .= errmsg('Allow tar');
+	$out .= qq{</th>};
+	$out .= qq{</tr>};
+
+	my $done;
+	my $height = $opt->{height} || 5;
+	$height -= 2;
+	for(@opts) {
+		my ($v,$l) = split /\s*=\s*/, $_, 2;
+		next unless length($v);
+		$done++;
+		$out .= $opsub->($name, $v, $l, $width);
+	}
+	while($done++ < $height) {
+		$out .= $opsub->($name, '', '', '', $width);
+	}
+	$out .= $opsub->($name, '', '', '', $width);
+	$out .= $opsub->($name, '', '', '', $width);
+	$out .= "</table>";
+}
+EOR

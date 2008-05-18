@@ -1,0 +1,36 @@
+@_UI_STD_INIT_@[if-mm !advanced reconfig]
+[set ui_error][L]Not authorized to regenerate.[/L][/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[set help_name]reconfig[/set]
+[set ui_class]Admin[/set]
+[set page_title][L]Reconfiguring[/L]....[/set]
+[tmp meta_header]
+<META HTTP-EQUIV="refresh" content="[calc]
+		my $secs = $Tag->global_value('Global::HouseKeeping') || 10;
+		$secs += 2;
+		my $url = $Tag->area({
+							href => 'admin/genconfig',
+							form => 'start_at_index=1',
+							});
+		return "$secs; URL=$url";
+		[/calc]">
+[/tmp]
+
+[set icon_name]icon_regen.gif[/set]
+
+@_UI_STD_HEAD_@
+
+[L]Reconfiguring catalog[/L]...
+[if type=explicit compare="[reconfigure]"]
+[L]Catalog reconfigure request was sent successfully, please wait....[/L]
+[else]
+[L]Catalog reconfigure request failed.[/L]
+[/else]
+[/if]
+</HTML>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.5 $ -->

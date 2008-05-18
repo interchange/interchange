@@ -1,0 +1,150 @@
+#! /bin/sh -e
+#
+# Copyright 2001,2004,2005,2006,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
+
+# Source debconf library
+. /usr/share/debconf/confmodule
+
+# Call dbconfig-common hook
+. /usr/share/dbconfig-common/dpkg/postinst
+dbc_go interchange-cat-standard $@
+
+GOAHEAD=false
+
+# Get interchange user and group
+db_get interchange/user
+USER=$RET
+db_get interchange/group
+GROUP=$RET
+
+# Whether to do the actual installation of the demo catalog
+db_get interchange-cat-standard/install
+
+if [ "$RET" = "true" ]; then
+	CATALOG=standard
+	if [ -d /var/lib/interchange/catalogs/$CATALOG ]; then
+		db_get interchange-cat-standard/replace
+		if [ "$RET" = "always" ]; then
+			GOAHEAD=true
+		elif [ "$RET" = "ask" ]; then
+			db_get interchange-cat-standard/confirm
+			GOAHEAD=$RET
+		fi
+		if [ "$GOAHEAD" = "true" ]; then
+			rm -rf /var/lib/interchange/catalogs/$CATALOG
+		fi
+	else
+		GOAHEAD=true
+	fi
+fi
+
+if [ "$GOAHEAD" = "true" ]; then
+	db_get interchange/docroot
+
+	# document root for static HTML
+	BASEDIR=/var/lib/interchange/catalogs
+	CGIBASE=/cgi-bin/ic
+	DOCROOT="$RET"
+	CATALOG=standard
+
+	# replace document root
+	if [ "$DOCROOT" -a -d "$DOCROOT" ]; then
+		rm -rf $DOCROOT/$CATALOG
+	fi
+	mkdir -p $DOCROOT/$CATALOG/images
+	chown -R $USER.$GROUP $DOCROOT/$CATALOG
+
+	# replace catalog directory
+	mkdir /var/lib/interchange/catalogs/$CATALOG
+	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
+	db_get interchange-cat-standard/username
+	UI_SUPERUSER=$RET
+	db_get interchange-cat-standard/password
+	UI_PASSWORD=$RET
+    db_get interchange-cat-standard/locales
+    LOCALES=`echo "$RET" | sed -e 's/, /,/'`
+	db_get interchange-cat-standard/defaultlocale
+	DEFAULTLOCALE=$RET
+	# determine database parameters
+	MYSQL=0
+	PGSQL=0
+	SQLDSN=
+	db_get interchange-cat-standard/dbtype
+	if [ "$dbc_dbtype" = "mysql" ]; then
+		MYSQL=1
+		SQLDSN="dbi:mysql:$dbc_dbname"
+	elif [ "$dbc_dbype" = "pgsql" ]; then
+		PGSQL=1
+		SQLDSN="dbi:Pg:dbname=$dbc_dbname"
+	fi
+	
+	SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
+	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
+		-F \
+		-l /var/log/interchange/makecat.log \
+		--demotype=$CATALOG \
+		--catalogname=$CATALOG \
+		--basedir=$BASEDIR \
+		--catroot=$BASEDIR/$CATALOG \
+		--documentroot=$DOCROOT \
+		--samplehtml=$DOCROOT/$CATALOG \
+		--sampleurl=http://$SERVERNAME/shops/$CATALOG \
+		--imagedir=$DOCROOT/$CATALOG/images \
+		--imageurl=/shops/$CATALOG/images \
+		--servername=$SERVERNAME \
+		--sharedir=NONE \
+		--shareurl='' \
+		--cgidir=/usr/lib/cgi-bin/ic \
+		--cgibase=$CGIBASE \
+		--cgiurl=$CGIBASE/$CATALOG \
+		--interchangeuser=$USER \
+		--interchangegroup=$GROUP \
+		--permtype=user \
+		--serverconf=/etc/apache/httpd.conf \
+		--vendroot=/usr/lib/interchange \
+		--linkmode=UNIX \
+		--catuser=$USER \
+		--mailorderto=$USER \
+		--nocfg \
+		MYSQLCREATE=0 \
+		SQLDSN="$SQLDSN" \
+		SQLUSER="$dbc_dbuser" \
+		SQLPASS="$dbc_dbpass"
+fi
+
+db_get interchange-cat-standard/install
+if [ "$RET" = "true" ]; then
+	db_get interchange/full_url
+	if [ "$RET" = "true" ]; then
+		db_get interchange-cat-standard/vhost
+		URLS="$RET/cgi-bin/ic/standard $RET:443/cgi-bin/ic/standard"
+	else
+		URLS="/cgi-bin/ic/standard"
+	fi
+	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-standard.cfg
+include usertag/standard/*
+require module Vend::Payment::TestPayment
+Catalog standard /var/lib/interchange/catalogs/standard $URLS
+EOF
+	if [ ! -f /var/run/interchange-install ]; then
+		# add catalog to running server
+		echo "Catalog standard /var/lib/interchange/catalogs/standard $URLS" | /usr/sbin/interchange --add standard
+	fi
+fi
+
+#DEBHELPER#

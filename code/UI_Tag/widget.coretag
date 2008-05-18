@@ -1,0 +1,58 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: widget.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag widget Order       name
+UserTag widget PosNumber   1
+UserTag widget attrAlias   db table
+UserTag widget attrAlias   column field
+UserTag widget attrAlias   outboard key
+UserTag widget addAttr
+UserTag widget HasEndTag   1
+UserTag widget Interpolate 1
+UserTag widget Version     $Revision: 1.6 $
+UserTag widget Routine     <<EOR
+sub {
+	my($name, $opt, $string) = @_;
+	#my($name, $type, $value, $table, $column, $key, $data, $string) = @_;
+	my $value;
+	
+	if(defined $opt->{set}) {
+		$value = $opt->{set};
+	}
+	else {
+		$value = $::Values->{$name} || $opt->{default};
+	}
+	if($opt->{pre_filter}) {
+#::logDebug("pre-filter with $opt->{pre_filter}");
+		$value = $Tag->filter($opt->{pre_filter}, $value);
+	}
+	my $ref = {
+				attribute	=> $opt->{attribute} || 'attribute',
+				db			=> $opt->{table},
+				field		=> $opt->{field},
+				extra		=> $opt->{extra} || $opt->{js},
+				cols		=> $opt->{cols},
+				delimiter	=> $opt->{delimiter},
+				rows		=> $opt->{rows} || undef,
+				name		=> $name,
+				outboard	=> $opt->{key},
+				passed		=> $opt->{data} || $opt->{passed} || $string,
+				type		=> $opt->{type} || 'select',
+				value		=> $value,
+				};
+
+	my $w = Vend::Form::display($ref);
+	if($opt->{filter}) {
+		$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$name" VALUE="};
+		$w .= $opt->{filter};
+		$w .= '">';
+	}
+	return $w;
+}
+EOR

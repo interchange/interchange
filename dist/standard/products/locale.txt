@@ -1,0 +1,504 @@
+code	en_US	de_DE	fr_FR	nl_NL	hr_HR	sl_SI
+<B>If the above links do not work</B>, this is an indication of one of the following	<B>If the above links do not work</B>, this is an indication of one of the following			<B>Als bovenstaande links niet werken</B> kan een reden hiervan zijn	<B>Ako gonji linkovi ne rade</B>, to je vjerovatan znak slijedeæeg	<B>Èe zgornje povezave ne delujejo</B>, to je verjeten znak naslednjega
+About Us	About Us	Über uns		Over ons	O nama	O nas
+Access denied	Access denied	Zugriff verweigert		Toegang gewijgerd	Pristup odbijen	Dostop prepovedan
+Account Information Erased	Account Information Erased			Rekeninginformatie gewist	Podaci o korisnièkom raèunu izbrisani	Uporabni¹ki podatki izbrisani
+Account Maintenance	Account Maintenance			Rekeningonderhoud	Korisnièke postavke	Uporabni¹ke nastavitve
+Account Management Functions	Account Management Functions			Functies rekeningonderhoud	Ureðivanje korisnièkih podataka	Vzdr¾evanje uporabni¹kih podatkov
+Account Number	Account Number			Rekeningnummer	Broj raèuna	©tevilka raèuna
+Account active	Account active			Rekening actief	Raèun aktiviran	Raèun aktiviran
+Action	Action			Actie	Operacija	Operacija
+Add address	Add address	Adresse hinzufügen		Adres toevoegen	Dodaj adresu	Dodaj naslov
+Additional (not required, shown on second page)	Additional (not required, shown on second page)			Additioneel (is niet vereist en wordt getoond op tweede pagina)	Dodatno (nije obvezno, prikazano na drugoj stranici)	Dodatno (ni obvezno, prikazano na drugi strani)
+Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen	Dodatne adrese za dostavu	Dodatni naslovi za dostavo
+Address	Address	Adresse		Adres	Adresa	Adresa
+Admin	Admin			Administratie		
+Admin interface	Admin interface			Administratie interface	Administracijsko suèelje	Administracijski vmesnik
+Advanced	Advanced	Erweitert		 Verfijnd zoeken	Napredno	Napredno
+Advanced Search	Advanced Search	Erweiterte Suche		Uitgebreid zoeken	Napredno pretra¾ivanje	Napredno iskanje
+Affiliate code	Affiliate code				©ifra partnera	©ifra partnerja
+Affiliate headquarters	Affiliate headquarters				Sjedi¹te partnera	Sede¾ partnerja
+Affiliates	Affiliates				Partneri	Partnerji
+Allowed HTML	Allowed HTML			Toegestane HTML code	HTML dozvoljen	HTML dovoljen
+Also see...	Also see...			Zie ook...	Pogledajte i...	Oglejte si tudi...
+Amount of gift	Amount of gift			Bedrag van het kado	Vrijednost dara	Vrednost darila
+Apache Web Server	Apache Web Server				Apache Web poslu¾itelj	Apache spletni stre¾nik
+Approximate Credit	Approximate Credit			Credit circa	Pribli¾no stanje	Pribli¾no stanje
+April		April	Avril	April	travanj	april
+August		August	Aout	Augustus	kolovoz	avgust
+Available credit	Available credit			Beschikbaar krediet	Raspolo¾ivo stanje	Raspolo¾ljivo stanje
+BACK	BACK			TERUG	NATRAG	NAZAJ
+BUY NOW		JETZT KAUFEN			KUPI	KUPI
+Back					Prethodna	Prej¹nja
+Bad search specification	Bad search specification			Verkeerde zoekspecificatie	Lo¹e postavke pretra¾ivanja	Slabo nastavljeno iskanje
+Bank Phone	Bank Phone			Telefoon bank	Telefon banke	Telefon banke
+Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.	Molimo Vas da prilikom slanja obavezno navedete svoj RMA broj.	Prosimo Vas da pri povraèilu obvezno navedete svojo RMA ¹tevilko.
+Below are our automated customer service options. If you need to talk to someone please %sclick here%s.	Below are our automated customer service options. If you need to talk to someone please %sclick here%s.			Onderstaand vindt U onze geautomatiseerde klantenservice mogelijkheden. Wilt U een medewerker spreken, %sklik dan hier%s.		
+Best sellers...	Best sellers...			Best verkopende...	Najprodavaniji...	Najbolj prodajani...
+Billing Address	Billing Address			Faktuuradres	Adresa za naplatu	Adresa plaènika
+Billing Address (if different)					Adresa za naplatu (ako se razlikuje)	Adresa plaènika (èe se razlikuje)
+Billing Name	Billing Name			Faktuurnaam	Ime uplatitelja	Ime plaènika
+Billing is same as this address					Ovo je ujedno i adresa naruèitelja	Ta naslov je isti kot naslov naroènika
+Business name	Business name			Bedrijfsnaam		
+Buy	Buy	Kaufen		Kopen	Kupnja	Nakup
+Buy List	Buy List			Bestellijst		
+Buy it Now!	Buy it Now!			Koop nu!	Kupi!	Kupi!
+Buy now	Buy now			Koop nu	Kupi	Kupi
+C.O.D.	C.O.D.			Rembours		
+CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.					
+CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.	Molimo Vas potvrdite svoj zahtjev za prekidom kupovine klikom na donji gumb. Svi artikli iz Va¹e ko¹arice æe biti ispra¾njeni, a sve saèuvane postavke Va¹eg posjeta æe nestati	Prosimo potrdite svojo zahtevo za prekid nakupa klikom na spodnji gumb. Vsi artikli iz Va¹e ko¹arice bodo izpra¾njeni, in vsi podatki o Va¹em obisku bodo unièeni.
+CART_MSG1	You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.			Om de winkelwagen te kunnen verlaten dient het ontvangen van cookies te zijn ingesteld. Controleer dat alstublieft nu, anders gaat uw winkelwagen definitief verloren.	Morate ukljuèiti kolaèièe da bi napustili ko¹aricu. Idite na blagajnu ili æe se Va¹i podaci o kupovini izgubiti.	Pi¹kotki morajo biti vkljuèeni da bi lahko zapustili ko¹arico. Lahko greste na blagajno, v nasprotnem bodo  podatki o nakupu izgubljeni.
+CC_NOT_VALID_MSG1	Please go BACK and check the information you entered and see that the correct card type, expiration date, and number are entered.					
+COLOR	COLOR			KLEUR	BOJA	BARVA
+CONFIRMATION_MSG1	Your order has been sent, and you will receive an order confirmation via email.			Uw bestelling is verzonden en U ontvangt een orderbevestiging per email.	Va¹a narud¾ba je poslana. Potvrdu æete primiti elektronskom po¹tom.	Va¹e naroèilo je odposlano. Potrdilo dobite po elektronski po¹ti.
+Canada	Canada			Canada	Kanada	Kanada
+Card Number	Card Number			Kaartnummer	Broj kartice	©tevilka kartice
+Cart		Warenkorb			Ko¹arica	Ko¹arica
+Cart Contents	Cart Contents			Inhoud winkelwagen	Sadr¾aj ko¹arice	Vsebina ko¹arice
+Catalog Reconfigured	Catalog Reconfigured			Catalogus opnieuw geconfigureerd	Katalog rekonfiguriran	Katalog rekonfiguriran
+Change Password	Change Password			Wijzigen wachtwoord	Izmijeni lozinku	Spremeni geslo
+Change password	Change password			Wijzigen wachtwoord	Izmijeni lozinku	Spremeni geslo
+Change your password	Change your password			Wijzig uw wachtwoord	Izmijenite svoju lozinku	Spremenite svoje geslo
+Check Information	Check Information			Cheque-informatie	Podaci o èeku	Podatki o èeku
+Check Number	Check Number			Chequenummer	Broj èeka	©tevilka èeka
+Check Out	Check Out	Zur Kasse		Naar de kassa	Na blagajnu	Na blagajno
+City	City	Stadt		Plaats	Grad	Mesto
+City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode	Grad, dr¾ava, po¹tanski broj	Mesto, dr¾ava po¹tna ¹tevilka
+Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen	Isprazni&nbsp;ko¹aricu	Izprazni&nbsp;ko¹arico
+Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres		
+Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestellen	Izvr¹ite prednarud¾bu	Izvedi prednaroèilo
+Click for more information.	Click for more information.			Klik voor meer informatie.	Vi¹e o tome.	Veè o tem.
+Click here for more information on this product	Click here for more information on this product			Klik hier voor meer informatie over dit product	Vi¹e o ovom proizvodu	Veè o tem izdelku
+Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.	Ovaj artikl mo¾ete kupiti putem prednarud¾be, ili Vas o zalihama mo¾emo obavijestiti putem elektronièke po¹te	Ta artikel lahko kupite s prednaroèilom, ali pa Vas o dostopnosti le-tega lahko obvestimo po elektronski po¹ti.
+Code	Code				©ifra	©ifra
+Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen	Sakrij sve kategorije	Skrij vse kategorije
+Collapse tree					Sakrij stablo	Skrij drevo
+Comment	Comment			Commentaar	Komentar	Komentar
+Comment on this product.	Comment on this product.			Geef uw mening over dit product.	Komentirajte ovaj proizvod	Komentirajte ta izdelek
+Company	Company	Firma		Bedrijf	Tvrtka	Podjetje
+Company P.O.	Company P.O.			Bedrijf's inkooporder	Po¹tanski pretinac tvrtke	Po¹tni predal podjetja
+Contact Information	Contact Information	Kontaktinformation		Contactinformatie	Podaci za kontakt	Kontakt podatki
+Contact Us	Contact Us			Neem contact met ons op	Kontaktirajte nas	Kontaktirajte nas
+Contact us					Kontakt	Kontakt
+Continue shopping	Continue shopping			Doorgaan met winkelen	Nastavite kupovinu	Nadaljujte nakup
+Country	Country	Land		Land	Dr¾ava	Dr¾ava
+Create Account	Create Account			Aanmaken rekening	Registriraj korisnika	Registriraj uporabnika
+Create a new account	Create a new account			Nieuwe rekening aanmaken		
+Create new account					Novi korisnici	Novi uporabniki
+Credit Amount	Credit Amount			Credit bedrag		
+Credit Card	Credit Card				Kreditna kartica	Kreditna kartica
+Credit Card Information	Credit Card Information			Credit Card Informatie	Podaci o kreditnoj kartici	Podatki o kreditni kartici
+Credit Card number fails test	Credit Card number fails test				Broj kreditne kartice nije pro¹ao provjeru	©tevilka kreditne kartice ni pravilna
+Current Price	Current Price	Aktueller Preis		Huidige prijs	Trenutna cijena	Trenutna cena
+Custom configure and buy	Custom configure and buy					
+Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek	Anketa o zadovoljstvu kupaca	Anketa o zadovoljstvu kupcev
+Customer Service	Customer Service			Klantenservice	Korisnièka podr¹ka	Uporabni¹ka podpora
+Customers who bought this item also bought	Customers who bought this item also bought			Liefhebbers van dit artikel bestelden ook	Kupci koji su kupili ovaj proizvod, kupili su i	Kupci, ki so kupili ta izdelek so kupili tudi
+DATE	DATE			DATUM	DATUM	DATUM
+Date Issued	Date Issued			Datum uitgifte	Datum izdavanja	Datum izdaje
+Day Phone	Day Phone			Telefoon overdag	Telefon (jutro)	Telefon (jutro)
+Daytime Phone	Daytime Phone			Telefoon overdag	Telefon (jutro)	Telefon (jutro)
+December		Dezember	D&eacute;cembre	December	prosinac	december
+Description	Description	Beschreibung		Omschrijving	Opis	Opis
+Edit address	Edit address			Adres wijzigen	Izmijeni adresu	Spremeni adreso
+Email	Email			Email	Email	Email
+Email Address	Email Address	Emailadresse		Emailadres	Elektronièka po¹ta	Elektronska po¹ta
+Empty cart					Isprazni ko¹aricu	Isprazni ko¹arico
+Enter as customer	Enter as customer			Betreedt als klant	Ulaz kao kupac	Vhod kot kupec
+Errors	Errors			Fouten	Gre¹ke	Napake
+Evening Phone	Evening Phone			Telefoon avond	Telefon (veèer)	Telefon (veèer)
+Existing account holders					Postojeæi korisnici	Obstojeèi uporabniki
+Expiration	Expiration			Expiratiedatum	Datum isteka	Datum poteka
+Explode tree					Prika¾i stablo	Prika¾i drevo
+Express					Odmah	Takoj
+Extension	Extension			Bedrag	Iznos	Znesek
+FAILED_MSG1	We're sorry, but your order could not be processed at this time due totechnical problems.  Please print the order page and give us a call.We will follow up as soon as possible.				Na¾alost, Va¹u narud¾bu trenutno ne mo¾emo obraditi. Molimo vas da tiskate ponudu i nazovete nas. Va¹ problem rije¹iti æemo u najkraæem moguæem roku.	Na¾alost, trenutno ne moremo obdelati Va¹ega naroèila. Prosimo natisnite ponudbo in nas poklièite. Va¹ problem bomo re¹ili v najkraj¹em mo¾nem èasu.
+Fax	Fax			Fax	Fax	Fax
+February		Februar	F&eacute;vrier	Februari	veljaèa	februar
+Finalize Order					Zakljuèak i predaja narud¾be	Zakljuèek in oddaja naroèila
+First	First			Eerste	Prvi	Prvi
+First Name	First Name	Vorname		Voornaam	Ime	Ime
+Frequently Asked Questions	Frequently Asked Questions			Veel gestelde vragen	Èesto postavljana pitanja	Pogosto zastavljana vpra¹anja
+Full words only					Samo cijele rijeèi	Samo cele besede
+GET_PASSWORD_MSG1	Hello! You requested that your ID and password be sent to your email address of record. The information is			Hallo! U verzocht ons uw gebruikersnaam en wachtwoord te sturen naar het emailadres dat wij in ons bestand hebben. Onderstaand treft U deze informatie aan.	Po¹tovani, zatra¾ili ste da Vam korisnièko ime i lozinku po¹aljemo elektronièkom po¹tom. Podaci koje ste zatra¾ili su	Spo¹tovani, zahtevali ste da Vam uporabni¹ko ime in geslo po¹ljemo po elektronski po¹ti. Zahtevani podatki so
+GET_PASSWORD_MSG2	Please contact us if we can be of service, and thank you for doing business with us.			Neem gerust contact met ons op als wij U op enigerlij wijze van dienst kunnen zijn. Hartelijk dank voor uw vertrouwen.	Slobodno nas nazovite, ako Vam mo¾emo pomoæi, i hvala ¹to ste poslovali s nama.	Èe Vam lahko pomagamo, nas poklièite. Hvala ker ste poslovali z nami.
+HANDLING	HANDLING			BEHANDELING	OTPREMA	OTPREMA
+HTML Formatted	HTML Formatted			Opgemaakt met HTML	HTML formatirano	HTML formatirano
+HTML Formatted (no wiki)	HTML Formatted (no wiki)				HTML formatirano (ne wiki)	HTML formatirano (ne wiki)
+Handling	Handling				Otprema	Odprema
+Hello and thank you for your interest in %s products.	Hello and thank you for your interest in %s products.			Hallo en bedankt voor uw interesse in de producten van %s.	Po¹tovani, hvala na Va¹em interesu za %s proizvode	Spo¹tovani, hvala na Va¹em interesu za %s izdelke
+Hello and thank you for your interest in __COMPANY__ products.	Hello and thank you for your interest in __COMPANY__ products.			Hallo en bedankt voor uw interesse in de producten van __COMPANY__.	Po¹tovani, hvala ¹to se zanimate za __COMPANY__ proizvode	Spo¹tovani, hvala na Va¹em interesu za __COMPANY__ izdelke
+Help	Help	Hilfe		Help	Pomoæ	Pomoè
+Hi	Hi			Hallo	Po¹tovanje	Zdravo
+Home					Na poèetak	Domov
+ID sent by fastest available email method!	ID sent by fastest available email method!			Uw klantnummergegevens zijn verzonden met de snelste beschikbare emailmethode!	ID poslan elektronièkom po¹tom.	ID poslan elektronièkom po¹tom.
+INDEX_PAR1		Willkommen zum <b>Interchange</b> Demoshop. Er hilft Ihnen, einen eigenen E-Business Internetauftritt zu erstellen. Ersetzen Sie die vorgegebenen Grafiken, Produkte und Kategorien in diesen Shop, um Ihren maßgeschneiderten Internetauftritt zu erhalten.		Welkom bij de <b>Interchange</b> Foundation Store! Deze site is bedoeld om U op weg te helpen met het bouwen van uw eigen e-business site. Om te starten met uw eigen site vervangt U simpelweg de standaard afbeeldingen, producten en categorieen.	Dobrodo¹li u <strong>Interchange</strong> Standard Store! Ova stranica bi Vam trebala pomoæi da izgradite vlastitu e-trgovinu. Zamijenite slike, proizvode i kategorije u ovoj trgovini i poènite graditi svoju trgovinu.	Dobrodo¹li v <strong>Interchange</strong> Standard Store! To spletno mesto naj bi Vam pomagalo zgraditi svojo lastno e-trgovino. Slike, izdelke in kategorije zamenjajte z lastnimi in pustolov¹èina se lahko zaène.
+If different than above	If different than above			Indien anders dan hierboven	Ako je drukèiji od gore navedenog	Èe je drugaèno od zgoraj navedenega
+If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.			Als U een rekening bij ons hebt, kunt U zich aanmelden middels onderstaand formulier. Desgewenst kunt U ook een %snieuwe rekening%s aanmaken.	Ako veæ imate korisnièki raèun, molimo prijavite se. Iako nije obvezno, mo¾ete i %sotvoriti korisnièki raèun%s.	Èe ste ¾e uporabnik, prosimo prijavite se. Èeprav ni obvezno, lahko tudi odprete novi %suporabni¹ki raèun%s
+If you would like further information on constructing a store like this, please contact the Interchange Development Group	If you would like further information on constructing a store like this, please contact the Interchange Development Group			Mocht u nadere informatie wensen over het bouwen van een winkel als deze, neem dan contact op met de Interchange Development Group	Ako ¾elite dodatne informacije o izgradnji sluène trgovine, kontaktirajte Interchange Development Group	Èe ¾elite dodatne informacije o gradnji podobne trgovine, kontaktirajte Interchange Development Group
+In Stock	In Stock			Op Voorraad	Dostupno	Na zalogi
+In Stock Notification	In Stock Notification			Op voorraadmelding	Obavijest o zalihama	Obvestilo o zalogah
+In fields					Po polju	Po polju
+In-Stock Notification	In-Stock Notification			Op voorraadmelding	Obavijest o zalihama	Obvestilo o zalogah
+Interchange Documentation	Interchange Documentation			Interchange Documentie	Interchange dokumentacija	Interchange dokumentacija
+Interchange server not running. Usually one of	Interchange server not running. Usually one of			Interchange server loopt niet. Meestal een van	Interchange server nije pokrenut. Obièno jedan od	Interchange server ni zagnan. Ponavadi eden izmed
+Invalid username or password.					Pogre¹no ste upisali korisnièko ime ili lozinku.	Vnesli ste napaèno uporabni¹ko ime ali geslo.
+Is that really a phone number?	Is that really a phone number?			Is dat werkelijk een telefoonnummer?	Da li je to zaista telefonski broj?	Ali je to res telefonska ¹tevilka?
+Item No.	Item No.			Artikelnr.	Proizvod br.	Izdelek ¹t.
+Item Quantity	Item Quantity			Productaantal	Kolièina	Kolièina
+Item is discounted %s	Item is discounted %s				Proizvod je sni¾en %s	Izdelek je zni¾an %s
+January		Januar	Janvier	Januari	sijeèanj	januar
+July		Juli	Juillet	Juli	srpanj	julij
+June		Juni	Juin	Juni	lipanj	junij
+Just a thought...	Just a thought...			Zomaar een gedachte...	Samo pomisao...	Samo pomislek...
+Just complete enough to ensure one match.	Just complete enough to ensure one match.			Vul juist voldoende informatie in om verzekerd te zijn van slechts een zoekreslutaat.	Ispunite dovoljno da znamo da se odnosi toèno na Vas.	Izpolnite dovolj da vemo, da so podatki natanèno Va¹i.
+LOGIN_EXISTING					Ako veæ imate korisnièki raèun, prijavite se ovdje.	Èe uporabni¹ki raèun ¾e imate, prijavite se tukaj-
+LOGIN_NEW					Stvaranje korisnièkog raèuna æe Vam omoguæiti br¾e naruèivanje, kao i moguænost provjere stanja narud¾bi i pregledajte pro¹le kupovine.	Z ustvarjanjem uporabni¹kega raèuna boste hitreje oddajali naroèila, preverjali stanje in pregledali zgodovino nakupov.
+Language					Jezik	Jezik
+Last	Last			Laatste	Zadnje	Zadnje
+Last Name	Last Name	Nachname		Achternaam	Prezime	Priimek
+Linkback URL	Linkback URL			Teruglink URL		
+Links that will help you to use this software	Links that will help you to use this software			Links die U behulpzaam kunnen zijn bij het gebruiken van deze software.	Poveznice koje æe vam pomoæi koristiti ovaj program	Povezave ki Vam lahko pomagajo pri uporabi tega programa
+Log In	Log In			Aanmelden	Prijava	Prijava
+Log Out	Log Out			Afmelden	Odjava	Odjava
+Log in	Log in			Aanmelden	Prijava	Prijava
+Log in as an affiliate	Log in as an affiliate			Aanmelden als affiliate	Prijavite se kao partner	Prijavite se kot partner
+Log me in automatically (sets cookie)	Log me in automatically (sets cookie)			Meld mij automatisch aan (zet cookie)	Automatska prijava (postavi kolaèiæ)	Samodejna prijava (nastavi pi¹kotek)
+Log out	Log out			Afmelden	Odjava	Odjava
+Log out and keep name/address					Odjavi se i zadr¾i ime/adresu	Odjavi se in obdr¾i ime/adreso
+Logo image	Logo image			Afbeelding logo	Logotip	Logotip
+Lost your customer ID?	Lost your customer ID?			Uw klantnummer vergeten?	Izgubili ste korisnièke podatke?	Zgubili ste uporabni¹ke podatke?
+Lost your password?	Lost your password?			Wachtwoord vergeten?	Izgubili ste lozinku?	Zgubili ste geslo?
+Mail lists (if any)	Mail lists (if any)					Elektronski po¹tanski popisi (ako postoje)
+Mailing Status	Mailing Status			Mailing Status	Slanje po¹te	Po¹iljanje po¹te
+Main Interchange developer site	Main Interchange developer site				Stranica Interchange razvojne grupe	Spletna stran Interchange razvojne ekipe
+Manage shipping addresses					Ureðivanje adresa za dostavu	Urejanje naslova za dostavo
+March		M&auml;rz	Mars	Maart	o¾ujak	mart
+Matches %s of %s found.	Matches %s of %s found.			%s van %s gevonden resultaten	%s od %s rezulata pretra¾ivanja	%s od %s rezultatov iskanja
+Maximum Price					Najvi¹a cijena	Najvi¹ja cena
+Maximum order quantity of %s enforced.	Maximum order quantity of %s enforced.			Maximale bestelhoeveelheid is %s.	Najveæa dopu¹tena kolièina %s namje¹tena	Najvi¹ja dovoljena kolièina %s nastavljena
+May		Mai	Mai	Mei	svibanj	maj
+Minimum Price					Najni¾a cijena	Najni¾ja cena
+Minimum order quantity of %s enforced.	Minimum order quantity of %s enforced.			Minimale bestelhoeveelheid is %s.	Najmanja dopu¹tena kolièina %s namje¹tena	Najni¾ja dovoljena kolièina %s nastavljena
+Modified	Modified			Gewijzigd	Izmijenjeno	Spremenjeno
+More Info	More Info			Meer informatie	Vi¹e o tome	Veè o tem
+More info	More info			Meer informatie	Vi¹e o tome	Veè o tem
+More info...	More info...			Meer informatie...	Vi¹e o tome...	Veè o tem...
+Multi-page					Cijeli postupak	Celoten postopek
+NEW_BROWSER_PAYMENT_MSG1	We will wait for a check sent to us referencing the order number you receive on your receipt.					
+Name	Name			Naam	Ime	Ime
+New Account	New Account			Nieuwe rekening	Novi korisnièki raèun	Novi uporabni¹ki raèun
+New items	New items			Nieuw artikel	Novi proizvodi	Novi izdelki
+Next	Next			Volgende	Slijedeæa	Naslednja
+Nickname	Nickname			Korte naam	Nadimak	Vzdevek
+No	No	Nein		Nee	Ne	Ne
+No %s entered.	No %s entered.			Geen %s ingegeven.	Trenutno nemate %s	Trenutno nimate %s
+No Match for %s	No Match for %s			Geen resultaat voor %s	Nema rezutata ze '%s'	Ni rezultatov za '%s'
+No change, go to checkout	No change, go to checkout			Geen wijziging, ga naar kassa	Bez izmjena, idite na blagajnu	Ni sprememb, nadaljujte na blagajno
+No items at the moment.	No items at the moment.			Momenteel geen artikelen.	Trenutno nema artikala.	Trenutno ni artiklov.
+No items in your shopping cart!	No items in your shopping cart!			Er bevinden zich geen artikelen in uw winkelwagen!	Va¹a ko¹arica je prazna!	Va¹a ko¹arica je prazna!
+No items were selected for return.	No items were selected for return.			Er zijn geen producten geselecteerd om te retourneren.	Ni jedan artikl nije izabran za povrat.	Noben artikel ni izbran za povraèilo
+No items with '%s' were found.  You can %sreturn to browsing our catalog%s, if you wish.	No items with '%s' were found.  You can %sreturn to browsing our catalog%s, if you wish.				Na¾alost, nemamo artikala sa '%s'. Mo¾ete %snastaviti pregledavati katalog%s	Na¾alost, nimamo artiklov s '%s'. Lahko nadaljujete s %sbrskanjem po katalogu%s
+No payment method selected.	No payment method selected.			Er is geen betalingsmethode geselecteerd.	Naèin plaæanja nije odabran.	Naèin plaèila ni izbran.
+Not Found	Not Found			Niet gevonden	Nije pronaðeno	Ne obstaja
+Note	Note			Opmerking	Napomena	Opombe
+November		November	Novembre	November	studeni	november
+Number Of Items	Number Of Items			Aantal producten	Broj artikala	©tevilo artiklov
+ORDER ID	ORDER ID			ORDER NR	©IFRA NARUD®BE	©IFRA NAROÈILA
+ORDER NUMBER	ORDER NUMBER			ORDERNUMMER	BROJ NARUD®BE	©TEVILKA NAROÈILA
+ORDER TOTAL	ORDER TOTAL			ORDER TOTAAL	UKUPNO	SKUPAJ
+ORDER_RETURN_PAR1	Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.			Controleert U alstublieft onderstaande informatie en selecteer de artikelen die U wenst te retourneren door het aanvinken van de corresponderende vakjes. Pas de aantallen zonodig aan.	Potvrdite da su dolje navedeni podaci toèni i odaberite artikle koje ¾elite vratiti.	Potrdite spodaj navedene podatke in izberite izdelke ki jih ¾elite vrniti.
+ORDER_SECURITY_MSG1	Either this web server did not receive the last transaction viaSSL/HTTPS, or your browser doesn't handle SSL.<P>We recommend you do not leave any critical informationuntil this situation is corrected. You can CANCEL yoursession below to wipe all information, or return to thecatalog with the buttonbar.					
+October		Oktober	Octobre	October	listopad	oktober
+Off Coupon Active	Off Coupon Active			Kortingcoupon actief		
+Old password	Old password			Oud wachtwoord	Stara lozinka	Staro geslo
+One message below your threshold	One message below your threshold			Een bericht beneden uw drempel		
+Online Check	Online Check				Elektronski èek	Elektronski èek
+Only in category					Samo u kategoriji	Samo v kategoriji
+Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar	Po¹aljite elektronièku po¹tu na adresu	Po¹ljite elektronsko po¹to na adreso
+Or you can create a %snew account%s.	Or you can create a %snew account%s.			Of U kunt een %snieuwe rekening%s openen.	Kreirajte %snovi korisnièki raèun%s	Ustvarite %novi uporabni¹ki raèun%s
+Order Date	Order Date			Orderdatum	Datum narud¾be	Datum naroèila
+Order Detail	Order Detail			Order Details	Detalji narud¾be	Detajli naroèila
+Order Failed	Order Failed				Narud¾ba nije uspjela	Naroèilo ni uspelo
+Order History	Order History			Orderhistorie	Pro¹le narud¾be	Zgodovina naroèil
+Order Number	Order Number			Ordernummer	Broj narud¾be	©tevilka naroèila
+Order Processed -- Thank You!	Order Processed -- Thank You!			Order verwerkt -- Dank U!	Narud¾ba obraðena -- Hvala!	Naroèilo obdelano -- Hvala!
+Order Returns	Order Returns			Retourzendingen	Povrat narud¾be	Povraèilo naroèila
+Order Total	Order Total			Ordertotaal	Ukupno naruèeno	Skupaj naroèeno
+Order Tracking	Order Tracking			Traceren orders	Praæenje narud¾bi	Spremljanje naroèil
+Order this	Order this			Koop dit product	Naruèi	Naroèi
+Order total %s exceeds credit limit, please call.	Order total %s exceeds credit limit, please call.			Het totaal van uw bestelling (%s) overschrijdt uw kredietlimiet. Bel ons alstublieft.	Skupna cijena narud¾be (%s) prelazi ogranièenje, molimo nazovite.	Skupna cena naroèila (%s) presega omejitev, prosimo poklièite
+Other	Other			Ander	Ostalo	Ostalo
+Other items you may like	Other items you may like			Wellicht houdt U ook van deze artikelen	Drugi proizvodi koji bi Vam se mogli svidjeti	Drugi izdelki, ki bi Vam lahko bili v¹eè
+Our Price	Our Price	Unser Preis		Onze prijs	Na¹a cijena	Na¹a cena
+Our Story					O nama	O podjetju
+Out Of Stock	Out Of Stock	Nicht vorrätig		Niet voorradig	Nije raspolo¾ivo	Ni raspolo¾ivo
+P.O. Information	P.O. Information					
+PAYMENT<BR>METHOD	PAYMENT<BR>METHOD			BETALINGS<BR>METHODE	NAÈIN<BR>PLAÆANJA	NAÈIN<BR>PLAÈILA
+PO Number	PO Number			Inkooporder nummer		
+PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to the address below and your account will be credited for the returned amount. A return confirmation has also been emailed to you.			Uw retourzending is verwerkt. Stuur het(de) product(en) naar onderstaand adres en uw rekening zal worden gecrediteerd voor het bedrag dat de teruggestuurde goederen vertegenwoordigen. Ter confirmatie van deze retourzending is een email naar U verzonden.		
+Parent	Parent			Ouder		
+Part No.	Part No.			Onderdeel No.	Dio br.	Del ¹t.
+Password	Password	Passwort		Wachtwoord	Lozinka	Geslo
+Password and check value don't match.		Passwort und Gegenprobe stimmen nicht überein.		Het bevestigingswachtwoord ter controle komt niet overeen met uw nieuwe wachtwoord.	Lozinka i kontrolna vrijednost se ne podudaraju.	Geslo in kontrolna vrednost nista enaka.
+Payment Information					Naèin plaæanja	Naèin plaèila
+Payment Method	Payment Method			Betalingsmethode	Naèin plaæanja	Naèin plaèila
+Payment and submit order					Plaæanje i predaja narud¾be	Plaèilo in oddaja naroèila
+Perl Information	Perl Information			Perl informatie	Informacije o Perlu	Perl informacije
+Phone	Phone			Telefoon	Telefon	Telefon
+Place Order					Zakljuèi narud¾bu	Zakljuèi naroèilo
+Place one-click test order	Place one-click test order			Plaats een-klik testorder		
+Plain Old Text	Plain Old Text			Puur tekst	Samo tekst	Samo tekst
+Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.	Slobodno nam se %sjavite%s s Va¹im pitanjima.	Èe imate vpra¹anja v zvezi s trgovino, lahko %snas kontaktirate%s.
+Please Log In					Prijava	Prijava
+Please contact %sCustomer Service%s for assistance.	Please contact %sCustomer Service%s for assistance.			Voor hulp kunt U contact opnemen met %sklantenservice%s.	Molimo javite se slu¾bi %skorisnièke podr¹ke%s za pomoæ	Prosimo kontaktirajte slu¾bo %uporabni¹ke podpore% za pomoè
+Please either	Please either			Kiest U alstublieft	Molimo Vas, ili	Prosimo, ali
+Please select an order below to continue with the return process.	Please select an order below to continue with the return process.			Selecteer een order en ga verder met het retourneringsproces.	Odaberite narud¾bu koju ¾elite vratiti	Izberite naroèilo, ki ga ¾elite povrniti
+Please try your request again.	Please try your request again.			Probeer nog een keer a.u.b.	Poku¹ajte ponovno poslati zahtjev.	Poskusite zahtevo poslati ¹e enkrat.
+Please use the information below to process your return	Please use the information below to process your return			Gebruik onderstaande informatie voor uw retourzending	Koristite navedene podatke pri povratu	Uporabite navedene podatke pri povraèilu
+Please use your browser's back button to return to the order and select at least one item from the order to return.	Please use your browser's back button to return to the order and select at least one item from the order to return.			Gebruik de browser's 'Terug'-knop om terug te keren naar de order en selecteer minimaal een artikel dat U wilt retourneren.	Koristite "Natrag" ("Back") tipku, kako bi se vratili na stranicu s narud¾bom i odberite barem jedan artikl koji ¾elite vratiti.	Uporabite "Nazaj" ("Back") tipko v Va¹em brskalniku da bi se vrnili na stran z naroèilom in izberite vsaj en artikel, ki bi ga ¾eleli vrniti.
+Please use your browser's back to enter a more appropriate value.	Please use your browser's back to enter a more appropriate value.			Gebruik de browser's 'Terug'-knop en vul een geschiktere waarde in.	Moliomo vratite se tipkom "Nazad" ("Back") u Va¹em pregledniku i upi¹ite prikladnu vrijednost	Prosimo uporabite "Nazaj" ("Back") gumb v Va¹em brskalniku in upi¹ite primerno vrednost.
+Please verify the information below and click the <b>'Place Order'</b> button to process your order.	Please verify the information below and click the <b>'Place Order'</b> button to process your order.			Controleert U alstublieft onderstaande gegevens en klik vervolgens de <b>"Plaats Order"</b> knop om uw bestelling te verwerken.	Molimo provjerite podatke i pritisnite <b>'Naruèi'</b>	Prosimo da preverite podatke in pritisnete <b>'Naroèi</b>
+Please wait					Molimo prièekajte	Prosimo poèakajte
+Post Anonymously	Post Anonymously			Anoniem verzenden	Po¹alji anonimno	Po¹lji anonimno
+Postal Billing	Postal Billing				Pouzeæem	Pri prevzemu
+Posted on	Posted on				Poslano	Poslano
+Powered by Interchange	Powered by Interchange				Powered by Interchange	Powered by Interchange
+Preview	Preview				Pregled	Predogled
+Previous	Previous			Vorige	Prethodna	Prej¹nja
+Price	Price	Preis		Prijs	Cijena	Cena
+PriceDivide	1	0.5409	0.1632		0.1701	0.7906
+Privacy Policy	Privacy Policy				Privatnost podataka	Varovanje osebnih podatkov
+Problem	Problem			Probleem	Problem	Problem
+Process Order Return	Process Order Return			Verwerken retourzending	Obrada povrata narud¾be	Obdelava povraèila naroèila
+Product	Product	Artikel			Proizvod	Izdelek
+Product Views All	Product Views All					
+ProductFiles						
+Products		Artikel			Proizvodi	Izdelki
+Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)	®elim se pretplatit na slijedeæe mailing liste	®elim se naroèiti na naslednje po¹tne sezname
+Put me on your email list of infrequent offers	Put me on your email list of infrequent offers			Plaats mij op uw emaillijst van niet frequente aanbiedingen		
+QTY<BR>TOTAL	QTY<BR>TOTAL			TOTAAL<BR>AANTAL	KOL<BR>UKUPNO	KOL<BR>SKUPAJ
+QUANTITY PRICING	QUANTITY PRICING			KWANTUMPRIJZEN	KOLIÈINSKA CIJENA	KOLIÈINSKA CENA
+Qty	Qty	Anz.		Aantal	Kol.	Kol.
+Qty Total					Ukupno art.	©t. artiklov
+Quan	Quan			Aantal	Kolièina	Kolièina
+Quantity	Quantity	Anzahl		Aantal	Kolièina	Kolièina
+Quantity Discounts	Quantity Discounts			Kwantumkortingen	Kolièinski popust	Kolièinski popust
+RMA Number	RMA Number			RMA nummer	RMA broj	RMA ¹tevilka
+Read more	Read more					
+Recalculate					Preraèunaj	Preraèunaj
+Recurring Orders	Recurring Orders			Herhalingsorders	Trajne narud¾be	Trajna naroèila
+Regular price	Regular price			Normale prijs	Redovna cijena	Redna cena
+Remove	Remove	Löschen		Verwijder	Ukloni	Odstrani
+Reply	Reply			Antwoord	Odgovori	Odgovori
+Requested Product Unavailable	Requested Product Unavailable				Proizvod nije dostupan	Izdelek je na zalogi
+Residential?					Adresa stana?	Adresa stanovanja?
+Return	Return			Retour	Povrat	Povraèilo
+Return Info	Return Info			Informatie retourzending	Informacije o povratu	Informacije o povraèilu
+Return Selected Items	Return Selected Items			Retourneer geselecteerde producten	Povrat odabranih artikala	Povraèilo izbranih artiklov
+Return request received.	Return request received.			Verzoek voor retourzending ontvangen.	Zahtjev za povrat zaprimljen	Zahteva za povraèilo sprejeta
+Returns	Returns			Retour producten	Povrati	Povraèila
+Review your order details					Provjerite narud¾bu	Preverite naroèilo
+Routing Number	Routing Number					
+SALES TAX	SALES TAX			BTW	PDV	DDV
+SEARCH		SUCHEN			TRA®I	I©ÈI
+SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM	SIGURNOSNI PROBLEM	VARNOSTNA TE®AVA
+SHIPPING	SHIPPING			VERZENDING	DOSTAVA	DOSTAVA
+SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING	DOSTAVA<BR>OTPREMA	DOSTAVA<BR>ODPREMA
+SIZE	SIZE			MAAT	VELIÈINA	VELIKOST
+SKU	SKU			Art.Nr.	©ifra art.	©ifra art.
+SSL/HTTPS, or your browser doesn't handle SSL.						
+STATUS	STATUS			STATUS	STATUS	STATUS
+STOCK_ALERT_PAR1	Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature         and you are not in any way obligated to purchase the item.			Als U onderstaand formulier invult zullen wij U berichten zodra het door U geselecteerde artikel weer voorradig is. Dit is een aanvullende dienst en U bent op geen enkele wijze verplicht om het artikel te kopen.		
+STOCK_ALERT_PAR2	You may also pre-order the item. When the item becomes available, you will be        notified via email and the order will be shipped the same day.			U mag het product ook vooruit bestellen. Zodra het product op voorraad is sturen wij U een kennisgeving per email en het artikel zal dezelfde dag worden verzonden. 	Proizvod mo¾ete dobiti i u prednarud¾bi. Kad proizvod postane dostupan, obavijestit æemo Vas putem elektronske po¹e i isti dan isporuèiti po¹iljku.	Izdelek lahko dobite tudi preko prednaroèila. Ko dobimo izdelek, Vas o tem obvestimo po elektronski po¹ti in isti dan po¹ljemo naroèeno.
+SUBTOTAL	SUBTOTAL			SUBTOTAAL	UKUPNO	SKUPAJ
+Sales Tax	Sales Tax			Btw	PDV	DDV
+Same shipping address	Same shipping address			Hetzelfde verzendadres	Ista adresa za dostavu	Enaka adresa za dostavo
+Save	Save			Opslaan	Spremi	Shrani
+Save Acct. Info	Save Acct. Info			Opslaan rekeninginformatie	Spremi podatke o raèunu	Shrani podatke o raèunu
+Save Cart	Save Cart			Winkelwagen opslaan	Spremi ko¹aricu	Shrani ko¹arico
+Save This Cart	Save This Cart			Deze winkelwagen opslaan	Spremi ovu ko¹aricu	Shrani to ko¹arico
+Save and Checkout	Save and Checkout			Opslaan en naar kassa	Spremi i idi na blagajnu	Shrani in pojdi na blagajno
+Saved Carts	Saved Carts			Opgeslagen winkelwagen	Spremljene ko¹arice	Shranjene ko¹arice
+Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders	Spremljenje ko¹arice / Trajne narud¾be	Shranjene ko¹arice / Trajna naroèila
+Saved Carts/Recurring Orders					Spremljene ko¹arice/Trajne narud¾be	Shranjene ko¹arice/Trajna naroèila
+Search	Search			Zoeken	Pretra¾ivanje	Iskanje
+Search Go	Search Go			Zoek nu	Pretra¾i	I¹èi
+Search by Category	Search by Category			Zoek op categorie	Tra¾i po kategoriji	I¹èi po kategoriji
+Search by Field	Search by Field			Zoek op veld	Tra¾i po polju	I¹èi po polju
+Search by Price					Tra¾i po cijeni	I¹èi po ceni
+Search for	Search for			Zoek voor	Tra¾i	I¹èi
+Search results	Search results	Suchergebnisse		Zoekresultaten	Rezultati pretra¾ivanja	Rezultati iskanja
+See also	See also			Zie ook	Pogledajte i	Oglejte si tudi
+See also...	See also...			Zie ook...	Pogledajte i...	Oglejte si tudi...
+See...	See...			Zie...	Pogledajte...	Oglejte si...
+Select Shipping					Izbor dostave	Izbira dostave
+Select country					Izbor dr¾ave	Izbira dr¾ave
+Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email	Po¹aljite dvojnik raèuna elektronièkom po¹to	Po¹ljite kopijo raèuna po elektronski po¹ti
+Separate shipping	Separate shipping			Separate verzending	Odvojena dostava	Loèena dostava
+Separate shipping addresses	Separate shipping addresses			Separate verzendadressen	Odvojene adrese za dostavu	Loèene adrese za dostavo
+September		September	Septembre	September	rujan	september
+Service					Usluge	Storitve
+Set As Recurring Order	Set As Recurring Order			Bewaar als herhalingsorder	Postavi kao trajnu narud¾bu	Nastavi kot trajno naroèilo
+Ship and bill to					Dostava i plaæanje:	Dostava in plaèilo:
+Shipping	Shipping			Verzending	Dostava	Dostava
+Shipping Address	Shipping Address			Verzendadres	Adresa za dostavu	Adresa za dostavo
+Shipping Address Added	Shipping Address Added			Verzendadres toegevoegd	Adresa za dostavu dodana	Adresa za dostavo dodana
+Shipping Address Removed	Shipping Address Removed			Verzendadres verwijderd	Adresa za dostavu uklonjena	Adresa za dostavo izbrisana
+Shipping Addresses	Shipping Addresses			Verzendadressen	Adrese za dostavu	Adrese za dostavo
+Shipping Country	Shipping Country			Verzendland	Dr¾ava za dostavu	Dr¾ava za dostavo
+Shipping Method	Shipping Method			Verzendmethode	Naèin dostave	Naèin dostave
+Shipping Weight	Shipping Weight			Verzendgewicht	Te¾ina za dostavu	Dostavna te¾a
+Shipping method	Shipping method			Verzendwijze	Naèin dostave	Naèin dostave
+Shipping selection					Izbor dostave	Izbira dostave
+Shipping weight					Te¾ina za dostavu	Dostavna te¾a
+Shopping Cart	Shopping Cart			Winkelwagen	Ko¹arica	Nakupovalna ko¹arica
+Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen	Prika¾i sve podkategorije	Prika¾i vse podkategorije
+Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?	Dogodila se pogre¹ka pri dostavi po¹te. Provjerite svoju adresu?	Zgodila se je napaka pri po¹iljanju elektronske po¹te. Mogoèe ste vnesli napaèno adreso?
+Sorry, no match for that. Try again?	Sorry, no match for that. Try again?			Sorry, daarvoor zijn geen resultaten gevonden. Opnieuw proberen?	Na¾alost, pretraga nije urodila rezultatima. Poku¹ajte ponovno?	Na¾alost, iskanje ni vrnilo nobenih rezultatov. Poskusite znova?
+Sorry, no matches for	Sorry, no matches for			Sorry, geen resultaten voor	Na¾alost, nema rezultata za	Na¾alost, ni rezultatov za
+Sorry, no matches for <B>%s</B>.	Sorry, no matches for <B>%s</B>.			Sorry, geen zoekresultaten gevonden voor <B>%s</B>.	Na¾alost, nema rezultata za <B>%s</B>	Na¾alost, ni rezultatov za <B>%s</B>
+Sorry, the page (%s) was not found	Sorry, the page (%s) was not found			Sorry, de pagina (%s) is niet gevonden	Na¾alost, stranica (%s) ne postoji	Na¾alost, stran (%s) ne obstaja
+Specials	Specials			Aanbiedingen	Posebna ponuda	Posebna ponudba
+State/Province	State/Province			Staat/Provincie	Dr¾ava/pokrajina	Dr¾ava/regija
+Stock	Stock			Voorraad	Zalihe	Zaloge
+Stock Alert Request	Stock Alert Request			Op voorraadmelding	Zahtijev za obavijest o zalihama	Zahteva za obvestilo o zalogah
+Stock Alerting	Stock Alerting			Op voorraad melden	Obavje¹tavanje o zalihama	Obve¹èanje o zalogah
+Stop Shopping	Stop Shopping			Stoppen met winkelen	Prekini kupovinu	Prenehaj z nakupom
+Story	Story			Commentaar	Komentar	Komentar
+Subject	Subject			Onderwerp	Tema	Zadeva
+Submit	Submit			Verzend	Po¹alji	Po¹lji
+Submit Request	Submit Request			Verstuur verzoek	Po¹alji zahtjev	Po¹lji zahtevo
+Subtotal	Subtotal			Subtotaal	Ukupno	Skupaj
+TOTAL	TOTAL			TOTAAL	ZA NAPLATU	ZA PLAÈILO
+Take our	Take our			Doe ons	Kako bi saznali Va¹e mi¹ljenje, poma¾e nam	Da bi izvedeli Va¹e mnenje, pomaga nam
+Thank you for ordering from us!	Thank you for ordering from us!				Hvala ¹to ste kupovali kod nas!	Hvala za va¹ nakup!
+Thank you for visiting!	Thank you for visiting!			Bedankt voor uw bezoek!	Hvala na posjeti!	Hvala za obisk!
+Thank you for visiting.	Thank you for visiting.			Bedankt voor uw bezoek.	Hvala na posjeti.	Hvala za obisk!
+Thank you for your interest in our products.	Thank you for your interest in our products.			Bedankt voor uw interesse in onze producten.	Hvala na Va¹em zanimanju za na¹e proizvode.	Hvala na Va¹em zanimanju za na¹e izdelke.
+That one generated more than one match. %sTry again%s with more info?	That one generated more than one match. %sTry again%s with more info?			Dat leverde meer dan een resultaat op. %sOpnieuw proberen%s met meer informatie?		
+The areas you need to correct are shown in %sthis color%s below.	The areas you need to correct are shown in %sthis color%s below.			Onderstaande velden, weergegeven in %sdeze kleur%s, behoeven correctie.	Polja koja treba popraviti su oznaèena %sovom bojom%s	Polja ki so napaèno vnesena, so oznaèena s %sto barvo%s.
+The catalog should be successfully reconfigured.	The catalog should be successfully reconfigured.				Katalog bi trebao biti uspje¹no namje¹ten.	Katalog je uspe¹no rekonfiguriran.
+The following error was seen	The following error was seen				Ova gre¹ka je uoèena	Ta napaka se je zgodila
+The requested page (%s) was not found. You can %sreturn to browsing our catalog%s, if you wish.	The requested page (%s) was not found. You can %sreturn to browsing our catalog%s, if you wish.					
+The search could not be done. The problem was	The search could not be done. The problem was				Pretraga se nije mogla izvr¹iti. Problem je	Iskanje se ni izvedlo. Problem je
+The selected shipping addresses have been removed.	The selected shipping addresses have been removed.			De geselecteerde verzendadressen zijn verwijderd.	Odabrane adrese za dostavu su izbrisane	Izbrane adrese za dostavo so izbrisane
+There are communication problems with the server. See the links below.	There are communication problems with the server. See the links below.			Er zijn communicatieproblemen met de server. Zie onderstaande links.		
+There was an error adding the new address entry.	There was an error adding the new address entry.			Er is een fout opgetreden bij het toevoegen van het nieuwe adres.		
+There were errors in your last submission	There were errors in your last submission			Er zijn fouten opgetreden bij de verzending		
+There were errors in your last submission.	There were errors in your last submission.			Er zijn fouten opgetreden bij de verzending		
+There were no matches found.	There were no matches found.			Er zijn geen resultaten gevonden.		
+There will be a %s charge added for COD.	There will be a %s charge added for COD.			Er geldt een toeslag van %s voor rembourszendingen.		
+They are shown in %sthis color%s below.	They are shown in %sthis color%s below.			Ze zijn hieronder aangegeven in %sdeze kleur%s.	Prikazane su %sovom bojom%s.	Prikazane so s %sto barvo%s.
+This a confirmation of your request submission.	This a confirmation of your request submission.			Dit is een bevestiging van uw ingezonden verzoek.	Ovo je potvrda o prijemu Va¹eg zahtijeva.	To je potrdilo o sprejemu Va¹e zahteve.
+This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.	This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.			Dit is een demonstratie internet winkel. Wilt U meer informatie over hoe uzelf zo'n winkel bouwt of hoe U aangepaste diensten kunt krijgen, %sbezoek dan onze website%s.	Ovo je demonstracijska trgovina. Ako Vam treba pomoæ pri izradi trgovine, ili bi ¾eljeli posebne usluge, posjetite na¹u %sweb stranicu%s.	Ta trgovina je zgolj demonstracijska. Èe ¾elite pomoè pri izdelavi trgovine, ali ¾elite dodatne usluge, obi¹èite na¹o %sspletno stran%s
+This is a demonstration <b>help page</b> for your customer service area.	This is a demonstration <b>help page</b> for your customer service area.			Dit is een demonstratie <b>helppagina</b> voor uw klantenservice sectie. 		
+This is the "standard" demonstration of the Interchange electronic catalog system.	This is the "standard" demonstration of the Interchange electronic catalog system.			Dit is de "standard" demonstratie van het Interchange electronisch catalogussysteem.	Ovo je "standard" demonstracija Interchange elektronskog kataloga	To je "standard" demonstracija Interchange elektronskega kataloga
+This item is currently in your %sshopping cart%s.	This item is currently in your %sshopping cart%s.			Dit artikel bevindt zich in uw %swinkelwagen%s.	Ovaj artikal je veæ u va¹oj %sko¹arici%s.	Ta izdelek je ¾e v Va¹i %sko¹arici%s.
+To save this cart, give it a nickname, then press 'Save Cart'.	To save this cart, give it a nickname, then press 'Save Cart'.			Geef deze winkelwagen een korte naam om hem op te slaan en klik daarna 'Winkelwagen opslaan'.		
+To save this recurring order, give it a nickname, then press 'Save Cart'.	To save this recurring order, give it a nickname, then press 'Save Cart'.			Geef deze herhalingsorder een korte naam om hem op te slaan en klik daarna 'Herhalingsorder opslaan'.	Ako ¾elite spremiti ovu trajnu narud¾bu, dodijelite joj nadimak i izaberite 'Spremi ko¹aricu'.	Èe ¾elite shraniti to trajno naroèilo, dodelite mu vzdevek in izberite 'Shrani ko¹arico'.
+Toll free	Toll free				Besplatni broj	Brezplaèna ¹tevilka
+Toll-free	Toll-free			Gratis nummer	Besplatni broj	Brezplaèna ¹tevilka
+Trying to retrieve....	Trying to retrieve....			Probeert op te halen....		
+Trying to unsub you from the <b>%s</b> list....	Trying to unsub you from the <b>%s</b> list....			Probeert U te verwijderen van de <b>%s</b> lijst....		
+Trying to unsub....	Trying to unsub....			Probeert te verwijderen....		
+URL to enter catalog	URL to enter catalog			URL voor binnengaan catalogus		
+URL to order a product	URL to order a product			URL voor bestellen van product		
+United States	United States			Verenigde Staten	Sjedinjene amerièke dr¾ave	Zdru¾ene dr¾ave amerike
+Update item	Update item			Product bijwerken		
+Use the Preview Button! Check those URLs!  Don't forget the http://!	Use the Preview Button! Check those URLs!  Don't forget the http://!					
+User support mail lists	User support mail lists					
+Username	Username			Gebruikersnaam	Korisnièko ime	Uporabni¹ko ime
+Username must be of characters [A-Za-z0-9]	Username must be of characters [A-Za-z0-9]			Gebruikersnaam moet bestaan uit letters [A-Za-z0-9]	Korisnièko ime mora biti sastavljeno od znakova [A-Za-z0-9]	Uporabni¹ko ime mora biti sestavljeno iz znakov [A-Za-z0-9]
+Verify	Verify			Verifieer	Potvrdi	Potrdi
+Verify Password	Verify Password			Verifieer wachtwoord	Potvrdi lozinku	Potrdi geslo
+View cart					Pregled ko¹arice	Pregled ko¹arice
+WWW Resources	WWW Resources			WWW bronnen		
+We can be contacted at	We can be contacted at			Wij zijn te bereiken op	Mo¾ete nas kontaktirati na	Lahko nas dobite na
+We don't give out your information to anyone!	We don't give out your information to anyone!			Wij waken over uw informatie. Die zal nooit aan anderen worden uitgegeven!		
+We have received your in-stock alert notification and we will contact you once the selected item becomes available.	We have received your in-stock alert notification and we will contact you once the selected item becomes available.			Wij hebben uw "op voorraad melding" verzoek ontvangen en we zullen U berichten zodra het artikel weer leverbaar is.		
+We have received your return request and have issued you an RMA number.	We have received your return request and have issued you an RMA number.			Wij hebben uw verzoek om goederen te retourneren ontvangen en hebben een RMA nummer toegekend.		
+We hope you will ordering from us in the future.	We hope you will ordering from us in the future.				Nadamo se da æete i slijedeæi put kupovati kod nas.	Upamo da boste tudi v prihodnosti nakupovali pri nas.
+We must have an email address in order to notify you.	We must have an email address in order to notify you.			Uw email adres is nodig om U een kennisgeving te kunnen sturen.		
+We need a city....	We need a city....			De plaats is nodig...	Potrebno je unijeti grad...	Potrebno je vnesti mesto...
+We need a first name....	We need a first name....			De voornaam is nodig...	Potrebno je unijeti ime...	Potrebno je vnesti ime...
+We need a last name....	We need a last name....			De achternaam is nodig...	Potrebno je unijeti prezime...	Potrebno je vnesti priimek...
+We need a postal code....	We need a postal code....			De postcode is nodig...	Potrebno je unijeti po¹tanski broj...	Potrevno je vnesti po¹tno ¹tevilko...
+We need a state....	We need a state....			De staat/provincie is nodig...	Morate unijeti regiju...	Potrebno je vnesti regijo....
+We need a valid two-letter state code like CA.	We need a valid two-letter state code like CA.					
+We need a zip code for UPS lookup.	We need a zip code for UPS lookup.					
+We need an address....	We need an address....			Het adres is nodig...	Potrebna nam je adresa...	Potrebujemo adreso...
+We need some more information!	We need some more information!			Wij hebben wat meer informatie nodig!	Niste unijeli sve podatke!	Potrebujemo veè podatkov!
+We need the <b>bold fields</b> to process your order	We need the <b>bold fields</b> to process your order			De <b>vetgedrukte velden</b> zijn nodig voor een correcte verwerking van uw bestelling	<b>Podebljana polja</b> su obvezna.	<b>Krepko oznaèena</b> polja so obvezna.
+We need the bold fields to process your order	We need the bold fields to process your order			De vetgedrukte velden zijn nodig voor een correcte verwerking van dit formulier	Podebljana polja su obvezna	Krepko oznaèena polja so obvezna
+We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.	We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.					
+We need to have some fields entered to be able to process your order. Please %sgo back</a> and fill out the information.					Niste ispunili sva polja koja su potrebna da bismo mogli obraditi Va¹u nadrud¾bu. Molimo %svratite se</a> i popunite ih.	Niste ispolnili vseh obveznih polj. Prosimo %svrnite se</a> in izpolnite jih.
+We recommend you do not leave any critical information						
+We will contact you once your selected item becomes available.	We will contact you once your selected item becomes available.			Wij nemen contact met U op zodra de door U geselecteerde artikelen beschikbaar zijn.	Obavijestiti æemo Vas kad odabrani artikli postanu dostupni.	Ko izbrane artikle dobimo na zalogi, boste o tem obve¹èeni.
+We will wait for a check sent to us referencing the order number you receive on your receipt.	We will wait for a check sent to us referencing the order number you receive on your receipt.					
+We would also like you to take our	We would also like you to take our			Wij stellen het zeer op prijs als u deelneemt aan ons	Zamolili bi Vas, ako imate vremena, da ispunite na¹u	Prosili bi Vas, èe imate èas, da izpolnite na¹o
+Welcome	Welcome			Welkom	Dobrodo¹li	Dobrodo¹li
+Welcome Affiliate Program Visitor	Welcome Affiliate Program Visitor				Dobro do¹li kao posjetitelj Partner Programa	Dobrodo¹li kot obiskovalec Partner Programa
+Welcome back	Welcome back			Welkom terug	Dobrodo¹li nazad	Dobrodo¹li nazaj
+Welcome to	Welcome to			Welkom bij	Dobrodo¹li u	Dobrodo¹li v
+Welcome to __COMPANY__, an Interchange catalog!	Welcome to __COMPANY__, an Interchange catalog!			Welkom bij __COMPANY__, een Interchange catalogus!	Dobrodo¹li na __COMPANY__, Interchange katalog	Dobrodo¹i na __COMPANY__, Interchange katalog
+Will one-click order these random items	Will one-click order these random items			Bestelt deze willekeurige artikelen met een klik	Narud¾ba sluèajnih artikala jednim klikom	Naroèilo sluèajnih artiklov z enim klikom
+Yes	Yes	Ja		Ja	Da	Da
+You are already logged in.	You are already logged in.			U bent al aangemeld.	Veæ ste prijavljeni.	®e ste prijavljeni.
+You are logged in as user	You are logged in as user			U bent aangemeld als gebruiker	Prijavljeni ste kao	Prijavljeni ste kot
+You can contact us the following ways	You can contact us the following ways			U kunt ons als volgt bereiken	Mo¾ete nas kontaktirati	Lahko nas kontaktirate
+You can log in at	You can log in at			U kunt zich hier aanmelden	Prijava je moguæa	Prijava je mogoèa
+You have accessed a page that requires authorization.	You have accessed a page that requires authorization.				Pristupili ste stranici za koju je potrebna autorizacija	Za to stran je potrebna avtorizacija
+You have been logged out.	You have been logged out.			U bent afgemeld.	Uspje¹no ste se odjavili	Uspe¹no ste odjavljeni
+You may not return more items than you originally purchased.	You may not return more items than you originally purchased.			Het is niet toegestaan om meer artikelen te retourneren dan U hebt gekocht.	Nije moguæe vratiti vi¹e proizvoda nego ¹to je naruèeno	Ni mogoèe povrniti veè izdelkov kot je naroèeno
+You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.	You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.			U kunt nu het toegevoegde verzendadres gebruiken door het te selecteren in de winkelwagen of op de herhalingsorder pagina.		
+You may only return items from orders that have been fully shipped.	You may only return items from orders that have been fully shipped.			U kunt alleen producten retourneren van volledig uitgeleverde orders.	Vratiti mo¾ete samo artikle iz potpuno dostavljenih narud¾bi.	Povraèilo lahko zahtevate samo za artikle iz popolnoma dostavljenih naroèil.
+You might also like	You might also like			Misschien houdt U ook van	Mo¾da Vam se svidi i	Mogoèe Vam bo v¹eè
+You might also like...	You might also like...			Misschien houdt U ook van...	Mo¾da Vam se svidi i...	Mogoèe Vam bo v¹eè...
+You need to select your method of payment.	You need to select your method of payment.				Morate odabrati naèin plaæanja	Potrebno je izbrati naèin plaèila
+You need to validate your credit card information.	You need to validate your credit card information.				Potrebna je potvrda podataka o kreditnoj kartici	Potrebno je potrdilo podatkov o kreditni kartici
+You save	You save			U bespaart	Spremi	Shrani
+Your Cart	Your Cart			Uw winkelwagen	Ko¹arica	Ko¹arica
+Your Current Shopping Cart	Your Current Shopping Cart			Uw huidige winkelwagen	Trenutno stanje Va¹e ko¹arice	Trenutno stanje Va¹e ko¹arice
+Your login information	Your login information			Uw login informatie	Va¹i podaci za prijavu	Va¹i podatki za prijavo
+Your price	Your price			Uw prijs	Va¹a cijena	Va¹a cena
+Your request has been sent sucessfully.	Your request has been sent sucessfully.			Uw verzoek is met succes verzonden.	Va¹ zahtjev je uspje¹no poslan.	Va¹a zahteva je uspe¹no oddana.
+Your session information has been canceled.	Your session information has been canceled.					
+Zip Code	Zip Code			Postcode	Po¹tanski broj	Po¹tna ¹tevilka
+Zip/Postal Code	Zip/Postal Code			Postcode	Po¹tanski broj	Po¹tna ¹t.
+all categories					sve kategorije	vse kategorije
+all fields	all fields			alle velden	sva polja	sva polja
+buy now	buy now			koop nu	kupiti	kupiti
+by	by			door		
+catalog with the buttonbar.						
+contact us	contact us			neem contact met ons op	kontaktirajte nas	kontaktirajte nas
+create a new account	create a new account			nieuwe rekening aanmaken	otvaranje novog raèuna	odpiranje novega raèuna
+currency_symbol	$	&#8364;	&#8364;	&#8364;	kn.	&#8364;
+decimal_point	.	.	.	.	.	,
+default	1	0	0	1	0	0
+e-mail	e-mail					
+edit	edit			bewerk	uredi	uredi
+entered.						
+frac_digits	2	2	2	2	2	2
+in	in			in	u	v
+in the category	in the category			in categorie	u kategoriji	v kategoriji
+int_currency_symbol	$	EUR	EUR	EUR	HRK	EUR
+log in	log in			Aanmelden	prijava	prijava
+mon_decimal_point	.	,	,	.	.	,
+mon_thousand_sep		 				
+mon_thousands_sep	,	,	.	,	,	.
+none	none			geen	nijedno	nobeno
+on	on			op	na	na
+or	or			of	ili	ali
+p_cs_precedes	1			1		
+p_sep_by_space			1	1		
+password minder	password minder			wachtwoord verzorger		
+primary	primary			primair	prvo	prvo
+products		de_products	produits		proizvodi	izdelki
+session below to wipe all information, or return to the						
+test number	test number			testnummer	pokusni broj	poskusna ¹tevilka
+that the correct card type, expiration date, and number are						
+unfortunately you will have to re-enter any account information.					Èe ¾elite naroèiti ¹e nekatere artikle, lahko to storite, ampak morali boste ¹e enkrat vnesti svoje podatke	
+until this situation is corrected. You can CANCEL your						
+will update display	will update display			Ververst het scherm		
+will work to start it.	will work to start it.			zal werken om het te starten.		

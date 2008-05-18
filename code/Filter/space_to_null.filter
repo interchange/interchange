@@ -1,0 +1,19 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: space_to_null.filter,v 1.4 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef space_to_null Filter
+CodeDef space_to_null Description SPACE to NULL
+CodeDef space_to_null Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s/\s+/\0/g;
+	return $val;
+}
+EOR

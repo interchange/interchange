@@ -1,0 +1,23 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: encode_entities.filter,v 1.5 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef e Filter
+CodeDef e Alias encode_entities
+
+CodeDef entities Filter
+CodeDef entities Alias encode_entities
+
+CodeDef encode_entities Filter
+CodeDef encode_entities Description Encode HTML entities
+CodeDef encode_entities Routine <<EOR
+sub {
+	return HTML::Entities::encode(shift, $ESCAPE_CHARS::std);
+}
+EOR

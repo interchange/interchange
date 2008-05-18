@@ -1,0 +1,15 @@
+CVS
+_allow_threads
+_session_storable
+_uid
+blib
+build
+Makefile
+META.yml
+pm_to_blib
+build-stamp
+*.pdf
+.cpan.tried
+install-stamp
+*.tar.gz
+

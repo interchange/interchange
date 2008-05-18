@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+File: cvv2.svg CVV2 images for the standard demo, part of the Interchange ecommerce platform.
+
+$Id: cvv2.svg,v 1.3 2007-08-09 13:40:53 pajamian Exp $
+
+Copyright (C) 2006-2007 Interchange Development Group.
+Copyright (C) 2006 Jure Kodzoman
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-->
+
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.44"
+   sodipodi:docbase="/home/jure/images/cvv2"
+   sodipodi:docname="cvv2.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2918">
+      <stop
+         style="stop-color:#9edbc0;stop-opacity:1;"
+         offset="0"
+         id="stop2920" />
+      <stop
+         style="stop-color:#9edbc0;stop-opacity:0;"
+         offset="1"
+         id="stop2922" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2902">
+      <stop
+         style="stop-color:#8fd668;stop-opacity:1;"
+         offset="0"
+         id="stop2904" />
+      <stop
+         style="stop-color:#84d259;stop-opacity:0.0927835;"
+         offset="1"
+         id="stop2906" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2918"
+       id="radialGradient2924"
+       cx="292.85715"
+       cy="592.36714"
+       fx="292.85715"
+       fy="592.36714"
+       r="74.292996"
+       gradientTransform="matrix(1,0,0,1.346221,0,-205.0897)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="232.25545"
+     inkscape:cy="558.58835"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="1278"
+     inkscape:window-height="723"
+     inkscape:window-x="0"
+     inkscape:window-y="24" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#80b3ff;fill-opacity:1;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1872"
+       width="459.46896"
+       height="258.57144"
+       x="102.85715"
+       y="159.50504"
+       rx="23.857141"
+       ry="23.857141"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <rect
+       style="fill:#1c2224;fill-opacity:1;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1874"
+       width="458.57141"
+       height="58.57143"
+       x="102.85714"
+       y="188.07646"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <rect
+       style="fill:#ccc;fill-opacity:1;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1876"
+       width="432.85715"
+       height="38.57143"
+       x="115.71428"
+       y="273.79077"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#1c2422;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="257.14288"
+       y="265.21933"
+       id="text1878"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962"><tspan
+         sodipodi:role="line"
+         id="tspan1880"
+         x="257.14288"
+         y="265.21933">AUTHORIZED SIGNATURE</tspan></text>
+    <g
+       id="g1969"
+       transform="matrix(1.398377,0,0,1,-55.67033,0)"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962">
+      <path
+         id="path1894"
+         d="M 148.8635,281.53026 C 153.77479,280.28647 159.58855,280.29407 163.22692,276.22228 C 166.82774,280.60695 162.94657,285.97531 161.29694,290.31343 C 158.4152,297.41126 156.00083,304.87875 151.26973,311.0149 C 146.19366,314.54181 138.52498,308.3915 140.58679,302.63243 C 141.14775,297.54724 145.72036,292.95626 150.94511,293.12063 C 154.92088,295.94086 159.96843,299.03389 164.96926,297.07664 C 171.1565,296.30118 175.53851,303.07259 181.77659,301.89241 C 186.15352,301.71556 190.30429,300.1415 194.59963,299.44976"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:0.84564435px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         id="path1896"
+         d="M 183.44448,275.93041 C 187.37095,275.85569 191.92579,277.84701 195.35784,275.10355 C 196.45462,273.21636 196.89386,272.23586 196.81197,275.11795 C 196.81499,281.18056 192.42296,286.15671 191.89802,292.14555 C 190.17388,297.22322 188.52539,302.34316 187.7583,307.65371 C 186.21554,312.55984 180.4236,311.67137 176.73926,310.21402 C 174.99477,309.36534 173.54328,307.53866 173.85105,305.49759"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:0.84564435px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         id="path1898"
+         d="M 206.4241,277.49837 C 201.91406,280.77496 200.91089,287.01923 196.32606,290.22236 C 199.56684,293.00215 189.99179,293.90306 194.83069,296.23281 C 196.69691,300.38237 198.74936,305.87031 203.93474,306.49349 C 210.30255,307.38362 213.54804,300.07269 219.4347,299.21453 C 225.33692,298.05827 231.42266,298.74932 237.33307,297.62142 C 239.29573,297.45931 241.26685,297.37071 243.23609,297.43381"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:0.84564435px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:#ffb1b1;fill-opacity:0.64480878;stroke:black;stroke-width:1.19001198;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3856"
+       width="42.967129"
+       height="37.252846"
+       x="508.51645"
+       y="266.5929"
+       rx="8.5714293"
+       ry="8.5714293"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <text
+       xml:space="preserve"
+       style="font-size:15.54215336;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Andale Mono"
+       x="329.78726"
+       y="291.41968"
+       id="text1974"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962"><tspan
+         sodipodi:role="line"
+         id="tspan1976"
+         x="329.78726"
+         y="291.41968">1234 5678 2345 2334 123</tspan></text>
+    <rect
+       style="fill:#348a64;fill-opacity:1;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2866"
+       width="459.46896"
+       height="258.57144"
+       x="108.83695"
+       y="445.93359"
+       rx="23.857141"
+       ry="23.857141"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <path
+       sodipodi:type="arc"
+       style="fill:url(#radialGradient2924);fill-opacity:1.0;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path2890"
+       sodipodi:cx="292.85715"
+       sodipodi:cy="592.36218"
+       sodipodi:rx="74.285713"
+       sodipodi:ry="100"
+       d="M 219.18222,605.15932 A 74.285713,100 0 1 1 220.07117,612.35466"
+       sodipodi:start="3.0132694"
+       sodipodi:end="9.2234968"
+       sodipodi:open="true"
+       transform="matrix(1.057134,0,0,1.057134,30.3696,-56.7017)"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <text
+       xml:space="preserve"
+       style="font-size:36.72885895px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Andale Mono"
+       x="148.33432"
+       y="607.97406"
+       id="text2886"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962"><tspan
+         sodipodi:role="line"
+         id="tspan2888"
+         x="148.33432"
+         y="607.97406">3750 122445 32445</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:20.71593094px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Andale Mono"
+       x="141.1709"
+       y="641.62439"
+       id="text2912"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962"><tspan
+         sodipodi:role="line"
+         id="tspan2914"
+         x="141.1709"
+         y="641.62439">04/02 THRU 07/06   9104</tspan><tspan
+         sodipodi:role="line"
+         x="141.1709"
+         y="667.5193"
+         id="tspan2916">JOHN DOE</tspan></text>
+    <rect
+       style="fill:#ffb1b1;fill-opacity:0.64480878;stroke:black;stroke-width:1.53663599;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect4743"
+       width="62.620506"
+       height="42.620506"
+       x="487.26114"
+       y="508.19479"
+       rx="8.5714293"
+       ry="8.5714293"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962" />
+    <text
+       xml:space="preserve"
+       style="font-size:20.71593094px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="494.33643"
+       y="537.98969"
+       id="text2926"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962"><tspan
+         sodipodi:role="line"
+         x="494.33643"
+         y="537.98969"
+         id="tspan2930">1234</tspan></text>
+    <g
+       id="g4768"
+       transform="matrix(1.768731,0,0,1.768731,-374.5132,-407.1311)"
+       inkscape:export-filename="/home/jure/images/cvv2/amex.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962">
+      <path
+         id="rect2938"
+         d="M 461.82408,511.72544 L 461.85211,518.6762 L 430.60171,518.6762 C 427.76246,518.6762 425.47271,521.53138 425.47271,525.08043 L 425.47271,535.3244 C 425.47271,538.87345 427.76246,541.74264 430.60171,541.74265 L 461.93619,541.74265 L 461.96422,547.50225 L 474.22615,538.49148 L 486.48808,529.4667 L 474.15608,520.59607 L 461.82408,511.72544 z "
+         style="fill:#f55;fill-opacity:1;stroke:black;stroke-width:1.39015257;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text2934"
+         y="536.2323"
+         x="428.66861"
+         style="font-size:16.95397568px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans Mono"
+         xml:space="preserve"><tspan
+           y="536.2323"
+           x="428.66861"
+           id="tspan2936"
+           sodipodi:role="line">CVV</tspan></text>
+    </g>
+    <g
+       id="g4763"
+       transform="matrix(1.686752,0,0,1.686752,-365.3124,-183.9471)"
+       inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+       inkscape:export-xdpi="31.325962"
+       inkscape:export-ydpi="31.325962">
+      <path
+         inkscape:export-ydpi="29.237564"
+         inkscape:export-xdpi="29.237564"
+         inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+         inkscape:transform-center-x="8.5714286"
+         inkscape:transform-center-y="17.142857"
+         id="path3850"
+         d="M 547.8884,242.49158 L 540.93764,242.51961 L 540.93764,211.26921 C 540.93764,208.42996 538.08246,206.14021 534.53341,206.14021 L 524.28944,206.14021 C 520.74039,206.14021 517.8712,208.42996 517.87119,211.26921 L 517.87119,242.60369 L 512.11159,242.63172 L 521.12236,254.89365 L 530.14714,267.15558 L 539.01777,254.82358 L 547.8884,242.49158 z "
+         style="fill:#f55;fill-opacity:1;stroke:black;stroke-width:1.39015257;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         inkscape:export-ydpi="29.237564"
+         inkscape:export-xdpi="29.237564"
+         inkscape:export-filename="/home/jure/images/cvv2/visa.png"
+         inkscape:transform-center-y="10.088116"
+         inkscape:transform-center-x="9.0184255"
+         transform="matrix(0,1,-1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text3852"
+         y="-523.38153"
+         x="209.33614"
+         style="font-size:16.95397568px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans Mono"
+         xml:space="preserve"><tspan
+           y="-523.38153"
+           x="209.33614"
+           id="tspan3854"
+           sodipodi:role="line">CVV</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="145.71429"
+       y="772.36218"
+       id="text4773"><tspan
+         sodipodi:role="line"
+         id="tspan4775"
+         x="145.71429"
+         y="772.36218">Published under GPL</tspan><tspan
+         sodipodi:role="line"
+         x="145.71429"
+         y="787.36218"
+         id="tspan4777" /><tspan
+         sodipodi:role="line"
+         x="145.71429"
+         y="802.36218"
+         id="tspan4779">Author: Jure Kodzoman 2006.</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,493 @@
+-----------------------------------------------------------------------------
+
+                U P G R A D I N G     I N T E R C H A N G E
+
+
+Interchange is designed to be drop-in compatible in its major version.
+Briefly summarized, here's what you can expect when upgrading from the
+following versions:
+
+ 5.4.x -- A number of incompatible changes were made. Most of them will be
+          simple to deal with, but please consult the list below in the
+          "Known Issues" section. Your code will almost certainly fail to
+          work properly until you make the necessary changes described!
+
+ 5.2.x -- There should be few to no compatibility issues in
+          upgrading from Interchange 5.2.x.
+
+ 5.0.x -- There should be few to no compatibility issues in
+          upgrading from Interchange 5.0.x.
+
+ 4.8.x -- There should be only a few issues in upgrading from 4.8.x; known
+          issues are shown below. The major change is in the admin UI,
+          and you will have a distinctly different look and feel 
+          in that area. Most people find it an improvement.
+          
+ 4.6.x -- Upgrading from 4.6.x and before is problematic if you rely on
+          the admin UI -- particularly if you have customized it. The public-
+          facing side should be fairly straightforward to port. See
+          "UPGRADING FROM 4.6.x" below.
+
+INSTALLING INTERCHANGE IN THE SAME LOCATION
+--------------------------------------------
+
+NOTE:    All below procedures assume you have installed in
+         /usr/local/interchange -- substitute paths as appropriate.
+
+WARNING: BACK UP EVERYTHING BEFORE YOU START!
+
+    1. Make a tar backup of your Interchange software directory, e.g.
+
+        tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
+
+    2. Unpack the new version of the software to a temporary directory,
+       and change to that directory.
+
+        tar xzf interchange-5.x.x.tar.gz
+        cd interchange-5.x.x
+
+    3. You can see the section below, "TO TEST BEFORE YOU UPGRADE", if
+       you want to try it out before you switch your running catalog.
+
+    4. Install it in the same location as your current software:
+
+        ## Create the makefile
+        perl Makefile.PL prefix=/usr/local/interchange
+
+        ## Make the software
+        make
+
+        ## Test -- if this fails, don't worry too much.
+        make test
+
+        ## Install the software
+        make install
+
+    5. You don't need to run makecat again!!!
+
+    6. Restart Interchange.
+
+That's it. Verify your catalog's operation, and you are live.
+
+---------------------------------------------------------------------------
+
+                         K N O W N   I S S U E S
+
+
+PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
+
+In PostgreSQL 8.3 many implicit casts were removed, some of which Interchange
+relied on. By default, the Standard demo and some Interchange core SQL does
+not work with PostgreSQL 8.3.
+
+We expect to work around this in a future version of Interchange, but at the
+moment the easiest way to get things working is to manually put back the
+removed casts, as Peter Eisentraut describes here:
+
+    http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html
+
+Running his pg83-implicit-casts.sql script fixes the known problems with the
+Standard demo.
+
+This issue does not affect earlier versions of PostgreSQL.
+
+
+KNOWN ISSUES UPGRADING FROM 5.5.2
+
+1. Several old versions of CPAN modules were distributed in the extra/
+directory but have been removed:
+
+    Business::UPS - part of Bundle::InterchangeKitchenSink
+    File::Spec - now distributed with Perl itself
+    Tie::ShadowHash - part of Bundle::Interchange
+    URI::URL - part of Bundle::Interchange
+
+If you find Interchange won't start up, check to make sure you have all the
+necessary Perl modules.
+
+2. We have removed the option available in some polymorphs of the
+database abstraction layer's set_slice() routine that allowed key/value
+pairs to be passed in as a simple array. For example, this will no longer
+work:
+
+    $db->set_slice($key, $field1, $value1)
+
+But it can be rewritten as this, which has long worked:
+
+    $db->set_slice($key, [$field1], [$value1])
+
+3. The syntax of the custom SQL function for counters has changed. At the time
+of the feature's introduction on 2007-11-17, the syntax was e.g.:
+
+    UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
+
+That conflicted with MySQL pseudo-sequence functionality that used the same
+syntax. The new syntax does not conflict and has the benefit of being more
+generic, allowing any SELECT statement:
+
+    UserDB  default   sql_counter  "userdb:SELECT custom_counter('userdb_username_seq')"
+
+
+KNOWN ISSUES UPGRADING FROM 5.5.1
+
+SpecialSub catalog_init has been renamed to request_init.
+
+UserTrack now defaults to "no", so if you want the X-Track HTTP response header
+to be output, add "UserTrack yes" to your catalog.cfg.
+
+UserTrack also no longer affects TrackFile, so if you don't want TrackFile
+output, you should not have a TrackFile directive in catalog.cfg.
+
+
+KNOWN ISSUES UPGRADING FROM 5.4.x
+
+Check the "special_pages/missing.html" file, in all of your Interchange-driven
+websites, for a line that looks like the following:
+
+    [if type=explicit compare="q{[subject]} =~ m{^admin/}"]
+
+If found then replace with the following two lines:
+
+    [tmpn missing_subject][subject][/tmpn]
+    [if scratch missing_subject =~ /^admin/]
+
+Perl 5.8.0 or newer is now required. Running with threads is still not
+recommended for production installations, but is allowed under Perl 5.8.5
+or newer.
+
+The long-deprecated [sql] tag has been removed. You'll likely want to
+rewrite queries to use the [query] tag.
+
+The ConfigParseComments directive has been removed, and Interchange now
+behaves as if "ConfigParseComments No" has been specified. That means that
+no configuration file line beginning with # will be parsed, including
+#ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
+must now be used.
+
+Global ActionMaps: Previously, the path passed to a global ActionMap
+did not include the action itself, but the path passed to a catalog
+ActionMap did include the action. This discrepancy was annoying to keep
+track of. Now both kinds of ActionMaps receive a path that includes
+the action. This means that all global ActionMap code will need to be
+updated to deal with the action. Most simply, you can strip off the
+action at the beginning of the sub something like this:
+
+    ActionMap your_action <<EOR
+    sub {
+        my ($path) = @_;
+        # remove action
+        $path =~ s:^[^/]+/::;
+        # your code here
+    }
+    EOR
+
+Removed SOAP_Host, RequiredFields, HTMLmirror and UseCode directives.
+
+All previously deprecated configuration directives have been removed.
+
+Deprecated-feature pragmas and associated code have been removed:
+* compatible_5_2 - used to keep table editor error text (mistakenly)
+  hidden, as it was the case up to Interchange 5.2.
+* no_html_parse - used to disable parsing of MV= arguments inside HTML tags.
+
+If MV_COUNTRY_FIELD was in use to determine the country for tax
+purposes, then that setting needs to be changed to MV_COUNTRY_TAX_VAR.
+
+The [either] tag historically reparsed its output. This has been changed
+so that while the tag body parts are interpolated, the tag output is not
+reparsed.
+
+Removed the [fedex-query] tag, which hasn't been useful for some time
+because FedEx discontinued their web API that the tag interfaced with.
+
+Removed the [/page] and [/order] macros. The [page] and [order] tags have
+never been container tags; [/page] and [/order] were macros that were
+replaced with </a>. You should now just use </a> in HTML instead.
+
+The various *Robot* directives have been split from the interchange.cfg
+file into a new robots.cfg file.  If you are upgrading then you will
+need to remove any existing *Robot* directives from your interchange.cfg
+file and add "include robots.cfg" in their place.
+
+A new subdomains.cfg file has been created, and should be included into
+your interchange.cfg file with "include subdomains.cfg".  This file defines
+a list of country-specific standardised subdomains that should be taken
+into account when the DomainTail directive is in effect.
+
+The session per IP counters have been changed to the new "timecard" round-robin
+style counters.  You will need to delete the old counter files from the
+tmp/addr_ctr directory with a command similar to the following:
+
+    rm -rf catroot/tmp/addr_ctr/*
+
+...be careful with the above command. If mistyped it can seriously mess up
+your filesystem.
+
+The [error] and [formel] tags now make use of the following CSS class,
+that will need to be added to your CSS file:
+
+    .mv_contrast {
+        color: #FF0000;
+    }
+
+The name of the class can be specified using the CSS_CONTRAST Variable,
+or will default to "mv_contrast".
+
+
+KNOWN ISSUES UPGRADING FROM 5.2.x
+
+    None.
+
+
+KNOWN ISSUES UPGRADING FROM 5.0.x
+
+    None.
+
+
+KNOWN ISSUES UPGRADING FROM 4.8.x
+
+Interchange is designed to be compatible between major versions, and
+for the most part a catalog designed under Interchange 4.8 should
+be compatible with 5.0.
+
+More information on upgrades is available in the document icupgrade, part
+of the Interchange documentation package.
+
+UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
+-------------------------------------------
+
+* Add a new column "extended" to products/mv_metadata.asc. This just involves
+  adding a TAB and "extended" to the end of the first line of the file.
+
+* If MV_COUNTRY_FIELD was in use to determine the country for
+  tax purposes, then that setting needs to be changed to
+  MV_COUNTRY_TAX_VAR.
+
+* Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
+  them to the new location, e.g. replace /interchange/
+  with /interchange-5/.
+
+* If you didn't follow Interchange's SKU naming convention for Matrix
+  options, and assigned them arbitrary part numbers, or you hand-edited
+  the options table, you may find that your product options don't work. 
+  You should post the question to the user mail list or contact a
+  competent Interchange consultant at interchange-biz@icdevgroup.org.
+
+* You will probably receive a message about "history-scan tag overrides global
+  definition". See the section "PROBLEMS WITH USERTAGS" below.
+
+* The static-page build capability is no longer supported in
+  Interchange 5. You will receive warnings about "Directive StaticPath
+  no longer supported at line XXX". 
+
+  To stop these warnings, remove the NoCache directive and any
+  directive beginning with "Static" from your catalog.cfg file.
+  In the standard-style catalog, these are all located near
+  each other.
+
+  If you use the static page build facility, there are other means of
+  accomplishing the same thing with scripts. Contact a competent
+  Interchange consultant at interchange-biz@icdevgroup.org to get help.
+
+* See the section "PROBLEMS WITH USERTAGS" below.
+
+---------------------------------------------------------------------------
+
+TO TEST BEFORE YOU UPGRADE
+--------------------------
+
+YOU SHOULD STILL BACK UP, and in addition it is recommended you back
+up your catalog. While the new server should not impact your running
+catalog beyond normal catalog interaction for orders, statistics,
+userdb, and such, it is not outside of the realm of possiblity that
+something could happen. It should not happen in a catalog that is
+based on Foundation and not heavily customized (i.e. using global UserTag
+routines).
+
+1. Install the new Interchange 5.x.x in /usr/lib/interchange-5.x.x
+using the procedure from INSTALL.
+
+2. Make /usr/lib/interchange-5.x.x/interchange.cfg match your
+/usr/lib/interchange.cfg. Note that there may be new options; but the
+existing one should work if you just copy it.
+
+3. Run bin/compile_link:
+
+    cd /usr/lib/interchange-5
+    bin/compile_link -p 7787
+
+NOTE: If you use the INET mode linking method, you have to run the
+      test server on a different port. Assuming you use the standard
+      7786 on your live catalog, you would add to interchange.cfg:
+
+         TcpMap  localhost:7787
+
+After running compile_link, you should see four new files in the
+/usr/lib/interchange-5.x.x/src:
+
+-rwxr-xr-x  1 root  root  8088 Oct  3 09:59 tlink
+-rwxr-xr-x  1 root  root  8088 Oct  3 09:59 tlink.localhost.7787
+-rwxr-xr-x  1 root  root  7704 Oct  3 09:59 vlink
+-rwxr-xr-x  1 root  root  7704 Oct  3 09:59 vlink._usr_lib_interchange_5_etc_socket
+
+4. Note the Catalog lines in your interchange.cfg:
+
+  EXAMPLE:
+
+    Catalog standard /var/lib/interchange/standard /cgi-bin/standard
+
+You should comment out all but the one you want to test.
+
+5. Change the /cgi-bin/standard script link name to /cgi-bin/test5.
+
+  EXAMPLE:
+
+    Catalog standard /var/lib/interchange/standard /cgi-bin/test5
+
+6. Copy the src/vlink (UNIX mode) or src/tlink (INET mode) link executable
+to your CGI directory and name it "test5", i.e.
+
+  EXAMPLE:
+
+    cp -p src/vlink /var/www/cgi-bin/test5
+
+7. IMPORTANT: Make sure its permissions match the permissions on your
+running 4.x catalog! You may have to make it SUID, i.e.:
+
+  EXAMPLE:
+
+    chmod u+s /var/www/cgi-bin/test5
+
+That should only be done if you are in UNIX mode and your current 
+link program is SUID.
+
+8. Add this line to the /usr/lib/interchange-5/interchange.cfg file:
+
+    Variable TEST_SERVER 1
+
+9. Copy any *custom* global UserTag files to the usertag/ directory. Do not
+copy any that were distributed with Interchange if you did not modify them.
+
+10. Copy the new Interchange image and CSS files to the interchange-5
+subdirectory in your document root, i.e.:
+
+        EXAMPLE:
+
+                cp -r /usr/lib/interchange-5/share/interchange \
+                          /var/www/html/interchange-5
+
+11. Modify your /var/lib/interchange/standard/catalog.cfg file to
+point the URLs to the test server if appropriate by placing at the
+end:
+
+   ifdef @TEST_SERVER
+   Variable  CGI_URL             /cgi-bin/test5
+   Variable  UI_IMAGE_DIR        /interchange-5/
+   Variable  UI_IMAGE_DIR_SECURE /interchange-5/
+   ## This ensures the UI image directory will be set properly
+   Pragma    dynamic_variables_file_only
+   VendURL   http://__SERVER_NAME____CGI_URL__
+   SecureURL   https://__SERVER_NAME____CGI_URL__
+   endif
+
+12. Start the new interchange server:
+
+    /usr/lib/interchange-5/bin/restart
+
+At that point, your catalog should be running on both Interchange 5 and
+Interchange 4. Test thoroughly and then upgrade. Note that the UI will
+be significantly changed, and that all features of the UI may not be
+supported by your old catalog. The customer-facing side should function
+in much the same way.
+
+------------------------------------------------------------------------
+
+UPGRADING FROM 4.6.x
+
+The public-facing side of a 4.6.x catalog is fairly straightforward to
+port. The Admin UI is problematic, particularly if you have customized
+it.
+
+You should be able to update a catalog from 4.6.x if you are reasonably
+proficient in Perl and/or Interchange. If you expect to rely on the
+backend admin UI, it is sometimes better to build a new catalog from
+scratch, and integrate your look and feel with that. Contact a competent
+Interchange consultant to help (interchange-biz@icdevgroup.org).
+
+That being said, here are some of the issues.
+
+If you have this line in interchange.cfg:
+
+        #include usertag/*
+
+       You should change it to:
+
+        include usertag/*.tag
+
+       (The leading # sign is no longer needed).
+
+       If you have created any other UserTag definitions you will need
+       to either rename the file to add a .tag extension, or include
+       them explicitly like:
+
+          include usertag/my_tag
+
+       See the "problems with UserTags" section, below.
+
+If you use CyberCash, you should replace these lines in catalog.cfg
+
+        Variable CYBER_MODE       mauthonly
+        Variable CYBER_CONFIGFILE /path/to/your/merchant_conf
+
+    with
+
+        Variable MV_PAYMENT_MODE        cybercash
+        Variable MV_PAYMENT_CONFIGFILE  /path/to/your/merchant_conf
+
+There is one security change that can break constructs that ran under 4.6.x.
+
+    safe_data=1
+
+        If you had a database object which contained ITL tags and
+        they now show up as [itl-tag arg=val], then you probably
+        need to add the safe-data=1 parameter around your [loop ...]
+        or [query ...] construct.
+
+        The reason this change was made was the capability of Interchange
+        to directly enter user submissions into a database. If the
+        user put in something in [square brackets], knowingly or even
+        unknowingly, it could cause anomalous or insecure behavior. 
+        (There were no known exploits in the demo, but they could
+        easily be constructed.)
+
+
+PROBLEMS WITH USERTAGS
+----------------------
+
+You may see the following error/warning messages when you (re)start
+Interchange:
+
+1. Duplicate usertag xxxx found.
+
+    This message is most likely to mean that you have a global "usertags"
+    directory included from your interchange.cfg file.  Interchange 4.9 has a
+    new location (code/UserTag) for global UserTags.  Your old globals may
+    "clash" with the new ones.  Delete the old usertags that are named in the
+    error messages.  As always, it is recommended that you back up everything
+    before you start.
+
+    This message will also be raised if Interchange notices two local UserTags
+    with the same name.  If this is detected then rename or delete one of the
+    two UserTags.
+
+2. Local usertag xxxx overrides global definition.
+
+    This message is most likely to refer to your local history_scan UserTag.
+    If you have this tag definition in your catalog.cfg file then you may
+    safely delete it;  Interchange 4.9 includes this as a global UserTag.
+
+    This message will also be raised if you have created a local UserTag
+    and have given it a name identical to one of the global tags (SystemTag,
+    UserTags, UI_Tag etc.)  The message is only a warning as your local UserTag
+    will override the global one.  If you didn't mean to override the global
+    tag of the same name then simply rename your tag and restart Interchange.

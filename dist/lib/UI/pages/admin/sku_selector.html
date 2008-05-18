@@ -1,0 +1,153 @@
+[seti page_title]Interchange SKU selector (selecting for [description code="[cgi item_id]"])[/seti]
+[set icon_name]icon_item.gif[/set]
+[set meta_header]
+<script language="JavaScript1.2">
+<!--
+function addItemCheckbox(selector, receptor, joiner) {
+	if(joiner == null) {
+		joiner = " ";
+	}
+	else {
+		joiner = "\n";
+	}
+
+    if(selector.value == null) {
+		return false;
+	}
+	
+    if(selector.checked == true) {
+		if(receptor.value != "") {
+			receptor.value = receptor.value + joiner;
+		}
+        receptor.value = receptor.value + selector.value;
+    }
+	else {
+		re = /\s+/;
+
+		string = new String;
+		string = receptor.value;
+
+		myArray = new Array;
+		myArray = string.split(re);
+
+		if(myArray == null) {
+			return false;
+		}
+		if(myArray.length == 0) {
+			return true;
+		}
+		receptor.value = "";
+		for ( i=0; i < myArray.length; i++ ) {
+			if(myArray[i] != selector.value) {
+				if(receptor.value != "") {
+					receptor.value = receptor.value + joiner;
+				}
+				receptor.value = receptor.value + myArray[i];
+			}
+		}
+    }
+    return true;
+}
+
+//-->
+</script>
+[/set]
+
+@_UI_STD_HEAD_@
+
+[calc]
+	if($CGI->{value}) {
+		$CGI->{origvalue} = $CGI->{value};
+		$CGI->{value} =~ s/\s+$//;
+		$CGI->{value} =~ s/^\s+//;
+		$CGI->{value} =~ s/\s+/\n/g;
+	}
+	$CGI->{tstring} = 'ui_preload_' . $CGI->{table} . "_" . $CGI->{col};
+	$CGI->{rstring} = 'ui_preload:' . $CGI->{table} . ":" . $CGI->{col};
+	my $k = $Config->{Database}{$Config->{ProductFiles}[0]}{KEY}
+			|| 'sku';
+	$CGI->{sstring} = qq(
+		rf=$k,$Config->{DescriptionField},category
+		tf=category,$Config->{DescriptionField}
+	);
+	return;
+[/calc]
+[search-region more=1 arg="
+			ra=yes
+			st=db
+			ml=1000
+			[cgi sstring]
+			"
+]
+
+[set tstring_rename]
+	[calc]
+	if($CGI->{Cancel}) {
+		$CGI->{$CGI->{rstring}} = $CGI->{origvalue};
+		return;
+	}
+	$CGI->{$CGI->{rstring}} = $CGI->{$CGI->{tstring}};
+	$CGI->{$CGI->{rstring}} =~ s/\s+/ /g
+		unless $CGI->{ui_preload_height} > 1;
+	return;
+	[/calc]
+[/set]
+
+<FORM ACTION="[process]">
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/[cgi caller]">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=mv_click VALUE=tstring_rename>
+<INPUT TYPE=hidden NAME=origvalue VALUE="[cgi origvalue]">
+<INPUT TYPE=hidden NAME=tstring VALUE="[cgi tstring]">
+<INPUT TYPE=hidden NAME=rstring VALUE="[cgi rstring]">
+<INPUT TYPE=hidden NAME=preload_height VALUE="[cgi ui_preload_height]">
+<INPUT TYPE=hidden NAME=item_id VALUE="[cgi item_id]">
+
+<TABLE __UI_T_PROPERTIES__>
+<tr class=rmarq>
+<td colspan=2>&nbsp;&nbsp;<INPUT TYPE=submit VALUE="Select these SKUs">&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=Cancel VALUE="Cancel"></td>
+</tr>
+<TR>
+<TD colspan=2 class=rnorm>
+	<table>
+	<TR>
+	<TD>
+	<SMALL><BLOCKQUOTE>
+	[search-list]
+	[item-change 1][condition][item-param category][/condition]
+	</BLOCKQUOTE></SMALL>
+	<B>[item-field category]</B><BR>
+	<SMALL><BLOCKQUOTE>
+	[/item-change 1]
+	<INPUT
+		TYPE=checkbox
+		NAME=item[item-increment]
+		VALUE="[item-code]"
+		[item-calc]
+			return 'CHECKED' if $CGI->{origvalue} =~ m{(^|\s)[item-code](\s|$)};
+			return;
+		[/item-calc]
+		onClick="addItemCheckbox(this.form.item[item-increment], this.form.[cgi tstring], 1)">[item-code] - [item-pos 1]</BR>
+	[/search-list]
+	</BLOCKQUOTE></SMALL>
+	</TD>
+	<TD VALIGN=top>
+	<TEXTAREA NAME="[cgi tstring]" ROWS="[value mv_search_match_count]" COLS=20>[cgi value]</TEXTAREA><BR>
+	<INPUT TYPE=submit VALUE="Select these SKUs">&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME="Cancel" VALUE="Cancel">
+	</TD>
+	</tr>
+	</table>
+</td>
+<tr class=rmarq>
+<td colspan=2>&nbsp;&nbsp;<INPUT TYPE=submit VALUE="Select these SKUs">&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=Cancel VALUE="Cancel"></td>
+</tr>
+</table>
+
+[more-list]
+	more: [more]
+[/more-list]
+</form>
+[/search-region]
+
+@_UI_STD_FOOTER_@

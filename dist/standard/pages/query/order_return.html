@@ -1,0 +1,188 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Returns[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[if session arg]
+	[seti arg][data session arg][/seti]
+[else]
+	[bounce href="[area special/violation arg_missing]"]
+[/else]
+
+[/if]
+
+[value name=test_user
+	set="[data
+		table=transactions
+		col=username
+		key='[scratch arg]'
+	]"
+hide=1]
+
+[if value test_user]
+[else]
+	[bounce href="[area special/violation user_missing]&user=[value test_user]&arg=[scratch arg]"]
+[/else]
+[/if]
+[if type=explicit compare=`
+	return 1 if ! $Session->{username};
+	return 0 if $Session->{username} eq $Values->{test_user};
+	return 1;
+`]
+[bounce href="[area special/user_violation username_no_match]&s=[data session username]&v=[value test_user]"]
+[/if]
+
+[seti order_status][data table=transactions column=status key='[scratch arg]'][/seti]
+
+[if scratch order_status eq shipped]
+                    
+<p>[L ORDER_RETURN_PAR1]Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.[/L]</p>
+
+[loop list="[scratch arg]"]
+<TABLE BORDER=0>
+[html-table fr='class="contentbar1"']
+<B>[L]ORDER NUMBER[/L]	[scratch arg]
+<B>[L]Order Date[/L]	[loop-data transactions order_date]
+[/html-table]
+</TABLE>
+
+<p>
+
+<TABLE BORDER=0 class="contentbar1">
+
+[perl products userdb]
+	sub get_download {
+		my $sku = shift;
+		return '' unless tag_data('products', 'download', $sku);
+		my $loc =  tag_data('products', 'dl_location', $sku);
+		my $save = delete $Scratch->{mv_add_dot_html};
+		my $url = $Tag->area( { href => "deliver/$loc", arg => $sku } ); 
+		$Scratch->{mv_add_dot_html} = $save if $save;
+		return qq{<BR><A HREF="$url"><IMG border=0 SRC="download.png"></A>};
+	}
+	return;
+[/perl]
+
+[value name=return_items set='' hide=1]
+
+<FORM ACTION="[process]" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="member/process_return">
+<INPUT TYPE=hidden NAME=order_number VALUE="[scratch arg]">
+
+[html-table interpolate=1 td="VALIGN=TOP"]
+<B>[L]Return[/L]	<B>[L]Qty[/L]	<B>[L]SKU[/L]	<B>[L]Description[/L]	<B><DIV ALIGN=RIGHT>[L]Price[/L]	<B><DIV ALIGN=RIGHT>[L]Extension[/L]
+[query
+	list=1
+	st=db
+	sql=|
+		SELECT * FROM orderline
+		WHERE order_number = '[scratch arg]'
+		ORDER BY code
+	|
+]<input type="checkbox" name="return_items" value="[sql-param code]">	<input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]">	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size][L]SIZE[/L]-->[sql-param size][/if-sql-data][if-sql-data orderline color] [L]COLOR[/L]-->[sql-param color][/if-sql-data][calc]
+return unless
+	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
+	return get_download(q{[sql-param sku]});
+[/calc]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
+[/query]
+
+[/html-table]
+</TABLE>
+
+<p>
+
+<table width="100%" cellpadding="2" cellspacing="2" border="0" align="center">
+<tr>
+	<td valign="top">
+	
+        	<table border="0" cellspacing="0" cellpadding="0" align="center">
+                <tr> 
+                	<td class="contentbar1"><b>[L]Contact Information[/L]</b></td>
+                        <td class="contentbar1">&nbsp;</td>
+                </tr>
+                <tr> 
+                	<td>[error name=fname std_label="[L]Company[/L]" required=1]</td>
+                        <td><INPUT TYPE=text NAME=company VALUE="[loop-data transactions company]" size="20" maxlength="20"></td>
+                </tr>							  
+                <tr> 
+                	<td>[error name=fname std_label="[L]First Name[/L]" required=1]</td>
+                        <td><INPUT TYPE=text NAME=fname VALUE="[loop-data transactions fname]" size="20" maxlength="20"></td>
+		</tr>
+		<tr>
+                        <td>[error name=lname std_label="[L]Last Name[/L]" required=1]</td>
+                        <td align="left"><INPUT TYPE=text NAME=lname VALUE="[loop-data transactions lname]" size="20"></td>
+                </tr>
+                <tr> 
+                	<td>[error name=email std_label="[L]Email Address[/L]" required=1]</td>
+                        <td><b><INPUT TYPE=text NAME=email VALUE="[data table=userdb column=email key='[loop-data transactions username]']" size="20"></b></td>
+                </tr>
+                <tr> 
+                        <td>[error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]</td>
+                        <td><b><INPUT TYPE=text NAME=phone_day VALUE="[loop-data transactions phone_day]" size="10" maxlength="20"></b></td>
+		</tr>
+		<tr>
+                        <td><b>[L]Evening Phone[/L]</b></td>
+                        <td align="left"><b><INPUT TYPE=text NAME=phone_night VALUE="[loop-data transactions phone_night]" size="10" maxlength="20"></b></td>
+                </tr>
+                </table>
+
+		<p>
+
+		<input type="submit" value="[L]Return Selected Items[/L]">
+		</form>
+	
+	</td>
+	<td valign="top">
+
+		<table align="right" cellpadding="0" cellspacing="0" border="0"> 
+		[html-table interpolate=1 td="VALIGN=TOP"]
+			<DIV ALIGN=RIGHT>[L]Subtotal[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Sales Tax[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Shipping[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Order Total[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]	 	
+		[/html-table]
+		</table>
+	</td>
+</tr>
+</table>
+
+[/loop]
+
+[else]
+
+[L]You may only return items from orders that have been fully shipped.[/L] 
+[msg arg.0="<a href='[area member/service]'>" arg.1="</a>"]Please contact %sCustomer Service%s for assistance.[/msg]
+
+[/else]
+[/if]
+
+<BR CLEAR=ALL>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

@@ -1,0 +1,24 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: lc.filter,v 1.7 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef lower Filter
+CodeDef lower Alias lc
+
+CodeDef lc Filter
+CodeDef lc Description Lower case
+CodeDef lc Routine <<EOR
+sub {
+	use locale;
+	if ($Scratch->{mv_locale}) {
+	    POSIX::setlocale(LC_CTYPE, $Scratch->{mv_locale});
+	}
+	return lc(shift);
+}
+EOR

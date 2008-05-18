@@ -1,0 +1,9 @@
+*.debhelper
+*.substvars
+files
+interchange
+interchange-cat-foundation
+interchange-doc
+interchange-ui
+substvars
+tmp

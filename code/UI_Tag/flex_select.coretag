@@ -1,0 +1,1468 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: flex_select.coretag,v 1.17 2007-07-06 08:54:20 racke Exp $
+
+UserTag flex-select Order      table
+UserTag flex-select addAttr
+UserTag flex-select attrAlias  ml height
+UserTag flex-select hasEndTag
+UserTag flex-select Version    $Revision: 1.17 $
+UserTag flex-select Routine    <<EOR
+use vars qw/$CGI $Tmp $Tag/;
+my @fs_more = qw/
+	help_name
+	icon_name
+	page_banner
+	page_title
+	ui_break_before
+	ui_description_fields
+	ui_flex_description
+	ui_flex_key
+	ui_show_fields
+	ui_sort_field
+	ui_sort_option
+/;
+sub flex_select_init {
+	my ($table, $opt) = @_;
+
+	my @warnings;
+	my @errors;
+
+#::logDebug("Entering flex_select init");
+	if($CGI->{mv_more_ip}) {
+		for(@fs_more) {
+			$CGI->{$_} = $::Values->{$_};
+		}
+	}
+
+	if($CGI->{mv_return_table}) {
+		my $rt = delete $CGI->{mv_return_table};
+		$rt =~ s/^\0+//;
+		$rt =~ s/\0.*//;
+		$CGI->{mv_data_table} = $rt if $rt;
+	}
+
+	my $bounce_url;
+	$::Scratch->{ui_class} = $CGI->{ui_class}
+		if $CGI->{ui_class} &&  $CGI->{ui_class} =~ /^\w+$/;
+
+	if($opt->{sql_query}) {
+		my $spec;
+		eval {
+			($table) = Vend::Scan::sql_statement($opt->{sql_query}, { table_only => 1});
+		};
+		if($@) {
+			$Tag->error( {
+						set => errmsg(
+									"flex-select -- bad query %s: %s",
+									$opt->{sql_query},
+									$@,
+								),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+	}
+
+	if($table =~ s/\.(txt|asc)$/_$1/) {
+		$table =~ s:.*/::;
+	}
+	my $db = database_exists_ref($table);
+
+	$Tmp->{flex_select} ||= {};
+	my $ts = $Tmp->{flex_select}{$table} = {};
+
+	if(! $db) {
+		$Tag->error({
+						name => 'flex_select',
+						set =>  errmsg('no %s database', $table),
+					});
+		my $url = $Tag->area( {
+							href => $::Variable->{UI_ERROR_PAGE} || 'admin/error',
+							secure => $::Variable->{UI_SECURE},
+						});
+#::logDebug("delivering error url=$url");
+		$Tag->deliver( { location => $url });
+		return;
+	}
+
+	if( $::Variable->{UI_LARGE_TABLE} =~ /\b$table\b/ or $db->config('LARGE') ) {
+		$ts->{large} = 1;
+	}
+
+	if( $db->config('COMPOSITE_KEY') ) {
+		$ts->{multikey} = 1;
+		$ts->{key_columns} = $db->config('_Key_columns');
+	}
+
+	DELETE: {
+		last DELETE unless $CGI->{item_id};
+		last DELETE unless delete $CGI->{deleterecords};
+		unless ($Tag->if_mm('tables', '=d')) {
+			$Tag->error({
+							name => 'flex_select',
+							set => errmsg("no permission to delete records"),
+						});
+			last DELETE;
+		};
+
+		$Vend::Cfg->{NoSearch} = '';
+
+		my @ids = split /\0/, $CGI->{item_id};
+		for(grep $_, @ids) {
+			if($db->delete_record($_)) {
+				push @warnings, errmsg("Deleted record %s", $_);
+			}
+			else {
+				push @errors, $db->errstr();
+			}
+		}
+	}
+
+	SEQUENCE: {
+		my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/flex_editor';
+#::logDebug("Entering flex_select sequence edit stuff");
+		last SEQUENCE unless $CGI->{ui_sequence_edit};
+#::logDebug("doing flex_select sequence edit stuff");
+		my $doit;
+		if($CGI->{item_id_left} =~ s/^(.*?)[\0]//) {
+			$CGI->{ui_sequence_edit} = 1;
+			$CGI->{item_id} = $1;
+			$doit = 1;
+		}
+		elsif ($CGI->{item_id_left}) {
+			$CGI->{item_id} = delete $CGI->{item_id_left};
+			delete $CGI->{ui_sequence_edit};
+			$doit = 1;
+		}
+		else {
+			delete $CGI->{item_id};
+			delete $CGI->{ui_sequence_edit};
+		}
+		last SEQUENCE unless $doit;
+		my $url = $Tag->area( {
+									href => $dest,
+									form => qq{
+										mv_data_table=$CGI->{mv_data_table}
+										item_id=$CGI->{item_id}
+										item_id_left=$CGI->{item_id_left}
+										ui_sequence_edit=$CGI->{ui_sequence_edit}
+									},
+								});
+#::logDebug("flex_select sequence developed URL=$url");
+		$Tag->deliver( { location => $url } );
+		return;
+	}
+
+	$ts->{table_meta} = $Tag->meta_record($table, $CGI->{ui_meta_view}) || {};
+	my $tm = $ts->{table_meta};
+	
+	my $extra;
+	if($tm->{name}) {
+		$extra .= "<b>$tm->{name}</br>";
+	}
+	if($ts->{help_url}) {
+		$extra .= qq{&nbsp;&nbsp;&nbsp;<small><a href="$ts->{help_url}">};
+		$extra .= errmsg('help');
+		$extra .= "</a></small>";
+	}
+	if($ts->{help}) {
+		$extra .= "<blockquote>$ts->{help}</blockquote>";
+	}
+	$::Scratch->{page_banner} ||= $::Scratch->{page_title};
+	$::Scratch->{page_banner} .= $extra;
+
+	for(@errors) {
+		$Tag->error({ name => 'flex_select', set => $_ });
+	}
+	for(@warnings) {
+		$Tag->warnings($_);
+	}
+	return;
+}
+
+sub {
+	my ($table, $opt, $body) = @_;
+
+#::logDebug("Entering flex_select");
+	my $CGI = \%CGI::values;
+
+	$table ||= $CGI->{mv_data_table};
+
+	## Do the initialization
+	if($opt->{init}) {
+		return flex_select_init($table, $opt);
+	}
+
+	my $filter;
+	if(ref($opt->{filter}) eq 'HASH') {
+		$filter = $opt->{filter};
+	}
+	$filter ||= {};
+
+	my $spec;
+	my $stmt;
+	my $q;
+	if($opt->{sql_query}) {
+		$q = $opt->{sql_query};
+		if($CGI->{ui_sort_field} =~ s/^(\w+)(:[rfn]+)?$/$1/) {
+			my $field = $1;
+			my $opt = $2 || $CGI->{ui_sort_option};
+			$field .= ' DESC', $CGI->{ui_sort_option} = 'r' if $opt =~ /r/i;
+			$q =~ s/
+						\s+ORDER\s+BY
+						\s+(\w+(\s+desc\w*)?)
+						(\s*,\s*\w+(\s+desc\w*)?)*
+						(\s*$|\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)
+				   / ORDER BY $field$5/ix
+			or
+				$q =~ s/(\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)/ ORDER BY $field$1/ix
+				or $q .= " ORDER BY $field";
+		}
+
+		eval {
+			($spec) = Vend::Scan::sql_statement($q);
+		};
+		if($@ || ! $spec->{rt}) {
+			$Tag->error( {
+						set => errmsg("flex-select -- bad query %s: %s", $q, $@),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+		$table = $spec->{rt}->[0];
+	}
+
+	my $ref = dbref($table)
+		or do {
+			my $msg = errmsg("%s: table '%s' does not exist", 'flex_select', $table);
+			logError($msg);
+			$Tag->error({ name => 'flex_select', set => $msg });
+			return undef;
+		};
+	my $ts = $Tmp->{flex_select}{$table} ||= {};
+	my $meta = $ts->{table_meta} ||= $Tag->meta_record($table, $CGI->{ui_meta_view});
+
+#::logDebug("flex_select table=$table");
+	if($meta->{sql_query}) {
+		$q = $meta->{sql_query};
+		if($CGI->{ui_sort_field} =~ s/^(\w+)(:[rfn]+)?$/$1/) {
+			my $field = $1;
+			my $opt = $2 || $CGI->{ui_sort_option};
+			$field .= ' DESC', $CGI->{ui_sort_option} = 'r' if $opt =~ /r/i;
+			$q =~ s/
+						\s+ORDER\s+BY
+						\s+(\w+(\s+desc\w*)?)
+						(\s*,\s*\w+(\s+desc\w*)?)*
+						(\s*$|\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)
+				   / ORDER BY $field$5/ix
+			or
+				$q =~ s/(\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)/ ORDER BY $field$1/ix
+				or $q .= " ORDER BY $field";
+		}
+
+		eval {
+			($spec) = Vend::Scan::sql_statement($q);
+		};
+		if($@ or ! $spec->{rt}) {
+			$Tag->error( {
+						set => errmsg("flex-select -- bad query %s: %s", $q, $@),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+		$table = $spec->{rt}->[0];
+	}
+
+	if( $table ne $ref->config('name')) {
+		## Probably transient database
+		$CGI->{mv_data_table_real} = $table = $ref->config('name');
+	}
+
+	my @labels;          ## Locally set labels in ui_show_fields
+	my @views;           ## Locally set view data in ui_show_fields
+	my @filter_show;     ## Locally set filters in ui_show_fields
+	my @calcs;           ## Data calculation code (if any) from fs_data_calc
+	my @redirect;        ## A column with a different metadata from standard
+	my @extras;          ## A column with a different metadata from standard
+	my @style;           ## Style for data cell, only have to read once
+	my @link_page;       ## Locally set filters in ui_show_fields
+	my @link_parm;       ## Locally set filters in ui_show_fields
+	my @link_parm_extra; ## Locally set filters in ui_show_fields
+	my @link_anchor;     ## Locally set filters in ui_show_fields
+	my $filters_done;    ## Tells us we are done with filters
+
+	if(my $show = $CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field}) {
+		my $i = 0;
+		if($show =~ s/[\r\n]+/\n/g) {
+			$show =~ s/^\s+//;
+			$show =~ s/\s+$//;
+			my @f = split /\n/, $show;
+			my @c;
+			for(@f) {
+				s/^\s+//;
+				s/\s+$//;
+				if(s/\s*\((.+)\)\s*$//)  {
+					$filter_show[$i] = $1;
+				}
+				
+				if(/^(\w+)-(\w+)$/) {
+					push @c, $1;
+					$redirect[$i] = $2;
+				}
+				elsif(/^(\w+)(?:-([^=]+))?(?:=(.*))?/) {
+					push @c, $1;
+					$views[$i] = $2 if $2;
+					$labels[$i] = $3;
+				}
+				else {
+					push @c, $_;
+				}
+				$i++;
+			}
+			$show = join ",", @c;
+		}
+		else {
+			$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+			$show =~ s/[\0,\s]+/,/g;
+		}
+		$CGI->{ui_description_fields} = $show;
+		$filters_done = 1;
+	}
+
+	if($spec) {
+#::logDebug("flex_select spec=$spec");
+		if($spec->{rf} and $spec->{rf}[0] ne '*') {
+			my @c;
+			my $header;
+			for(my $i = 0; $i < @{$spec->{rf}}; $i++) {
+				if($spec->{hf}[$i]) {
+					$header++;
+					push @c, $spec->{rf}[$i] . '=' . $spec->{hf}[$i];
+				}
+				else {
+					push @c, $spec->{rf}[$i];
+				}
+			}
+			if($header) {
+				$CGI->{ui_show_fields} = join "\n", @c;
+			}
+			else {
+				$CGI->{ui_show_fields} = join " ", @c;
+			}
+		}
+		if($spec->{tf} and $spec->{tf}[0]) {
+			$CGI->{ui_sort_field} = join ",", @{$spec->{tf}};
+			$CGI->{ui_sort_option} = join ",", @{$spec->{to}};
+		}
+		$CGI->{ui_list_size} = $spec->{ml} if $spec->{ml};
+	}
+
+	$meta ||= {};
+
+	if($CGI->{ui_flex_key}) {
+		$ts->{keypos} = $CGI->{ui_flex_key};
+	}
+	else {
+		$ts->{keypos} = $ref->config('KEY_INDEX');
+	}
+
+	$ts->{keyname} = $ref->config('KEY');
+	$ts->{owner_field} = $ref->config('OWNER_FIELD') || $::Scratch->{ui_owner};
+
+	if($CGI->{ui_exact_record}) {
+#::logDebug("found exact record input");
+		undef $CGI->{mv_like_field};
+		my $id = $CGI->{mv_like_spec};
+		$id =~ s/\0.*//s;
+		my $url = $Tag->area({
+								href => 'admin/flex_editor',
+								form => qq{
+									mv_data_table=$CGI->{mv_data_table}
+									item_id=$id
+									ui_meta_view=$CGI->{ui_meta_view}
+								},
+							});
+
+		$Tag->deliver({ location => $url });
+#::logDebug("deliver=$url");
+		return;
+	}
+
+	my $sf;
+	if($sf = $CGI->{ui_sort_field} and $sf =~ s/^(\w+)([,\s\0]+.*)?$/$1/) {
+		my $fmeta;
+		$fmeta = $Tag->meta_record("${table}::$sf", $CGI->{ui_meta_view})
+			and do {
+				$CGI->{ui_more_alpha} = $fmeta->{ui_more_alpha}
+					if length($fmeta->{ui_more_alpha});
+				if (! $CGI->{ui_sort_option} and length($fmeta->{ui_sort_option}) ) {
+					my $o = $fmeta->{ui_sort_option};
+					if($CGI->{ui_sort_option} =~ /r/) {
+						$o =~ s/^([^r]+)$/$1r/
+							or $o =~ s/r//;
+					}
+					$CGI->{ui_sort_option} = $o;
+				}
+			};
+	}
+
+	for(qw/ui_more_alpha ui_more_decade ui_meta_specific/) {
+		$CGI->{$_} = $meta->{$_} unless defined $CGI->{$_};
+	}
+	$Vend::Cfg->{NoSearch} = '';
+	my $out_message = '';
+	my $ui_text_qualification = $CGI->{ui_text_qualification};
+
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		if($ts->{owner_field}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+st=db
+sf=$ts->{owner_field}
+se=$Vend::username
+op=eq
+nu=0
+os=0
+su=0
+bs=0
+EOF
+		}
+		else {
+			$CGI->{ui_text_qualification} = "co=1\n";
+		}
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			if(length($s) > 1) {
+				$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "se=.\nsf=$f\nop=rn\n";
+			}
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
+	}
+	elsif ($ui_text_qualification) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
+		if($ts->{owner_field}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$ts->{owner_field}
+se=$Vend::username
+op=eq
+sf=:*
+se=$CGI->{ui_text_qualification}
+EOF
+		}
+	}
+	elsif ( $CGI->{mv_like_field} ) {
+		my @f = split /\0/, $CGI->{mv_like_field};
+		my @s = split /\0/, $CGI->{mv_like_spec};
+		my @q = 'ra=yes';
+		my $found;
+		for(my $i = 0; $i < @f; $i++) {
+			next unless length $s[$i];
+			$found++;
+			push @q, "lf=$f[$i]";
+			push @q, "ls=$s[$i]";
+		}
+		if($found) {
+			$CGI->{ui_text_qualification} = join "\n", @q;
+			my @out;
+			for(@q) {
+				my $thing = $_;
+				$thing =~ s/^ls=/mv_like_spec=/;
+				$thing =~ s/^lf=/mv_like_field=/;
+				push @out, $thing; 
+			}
+			$ts->{like_recall} = join "\n", @out;
+		}
+		else	   { $CGI->{ui_text_qualification} = "" }
+	}
+	elsif($ts->{owner_field}) {
+		$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$ts->{owner_field}
+se=$Vend::username
+op=eq
+EOF
+	}
+	elsif ($ts->{large}) {
+		my $keylabel = $Tag->display({
+							table => $table,
+							name => 'item_id',
+							column => $ts->{keyname},
+							template => 1,
+						});
+		$ts->{like_spec} = $CGI->{mv_more_ip} ? 0 : 1;
+		$CGI->{ui_text_qualification} = "";
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
+
+	if($meta->{ui_sort_combined} =~ /\S/) {
+		$meta->{ui_sort_field} = $meta->{ui_sort_combined};
+		$meta->{ui_sort_option} = '';
+	}
+
+	$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+							||  $meta->{lookup}
+							||  $ts->{keyname};
+	$CGI->{ui_sort_option}	||= $meta->{ui_sort_option};
+	$CGI->{ui_sort_option}	=~ s/[\0,\s]+//g;
+	$CGI->{ui_list_size} = $opt->{height} || $meta->{height}
+		if ! $CGI->{ui_list_size};
+
+	if(! $CGI->{ui_show_fields} ) {
+		$CGI->{ui_show_fields} = 
+			$CGI->{ui_description_fields}
+				= join ",", $ref->columns();
+	}
+	else {
+		my $i = 0;
+		my $show = $CGI->{ui_show_fields};
+		if($filters_done) {
+			# do nothing
+		}
+		else {
+			if($show =~ s/[\r\n]+/\n/g) {
+				$show =~ s/^\s+//;
+				$show =~ s/\s+$//;
+				my @f = split /\n/, $show;
+				my @c;
+				for(@f) {
+					s/^\s+//;
+					s/\s+$//;
+					if(s/\s*\((.+)\)\s*$//)  {
+						$filter_show[$i] = $1;
+					}
+					
+					if(/^(\w+)-(\w+)$/) {
+						push @c, $1;
+						$redirect[$i] = $2;
+					}
+					elsif(/^(\w+)(?:-([^=]+))?(?:=(.*))?/) {
+						push @c, $1;
+						$views[$i] = $2 if $2;
+						$labels[$i] = $3;
+					}
+					else {
+						push @c, $_;
+					}
+					$i++;
+				}
+				$show = join ",", @c;
+			}
+			else {
+				$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+				$show =~ s/[\0,\s]+/,/g;
+			}
+			$CGI->{ui_description_fields} = $show;
+		}
+	}
+
+	my @cols = split /,/, $CGI->{ui_description_fields};
+
+	@cols = grep $ref->column_exists($_), @cols
+		unless $spec;
+
+	my %limit_field;
+
+	$CGI->{ui_limit_fields} =~ s/[\0,\s]+/ /g;
+	$CGI->{ui_limit_fields} =~ s/^\s+//;
+	$CGI->{ui_limit_fields} =~ s/\s+$//;
+
+	my (@limit_field) = split " ", $CGI->{ui_limit_fields};
+
+	if(@limit_field) {
+		@limit_field{@limit_field} = ();
+		@cols = grep ! exists($limit_field{$_}), @cols;
+	}
+
+	unshift(@cols, $ts->{keyname})
+		if $cols[0] ne $ts->{keyname};
+
+	$CGI->{ui_description_fields} = join ",", @cols;
+
+	unless ($CGI->{ui_sort_option}) { 
+		 $CGI->{ui_sort_option} = 'n'
+				if $ref->numeric($CGI->{ui_sort_field}); 
+	} 
+
+	my $fi = $CGI->{mv_data_table_real} || $CGI->{mv_data_table};
+	$ts->{sparams} = ($ts->{like_spec} || $spec) ? '' : <<EOF;
+
+	fi=$fi
+	st=db
+	$CGI->{ui_text_qualification}
+	su=1
+	ma=$CGI->{ui_more_alpha}
+	md=$CGI->{ui_more_decade}
+	ml=$CGI->{ui_list_size}
+	tf=$CGI->{ui_sort_field}
+	to=$CGI->{ui_sort_option}
+	rf=$CGI->{ui_description_fields}
+	nh=1
+
+EOF
+	$::Scratch->{page_banner} .= $out_message;
+	$::Scratch->{page_title} .= $out_message;
+
+	my %output;
+### Header determination
+
+	my @refkeys = grep ref($opt->{$_}) eq 'HASH', keys %$opt;
+
+	my %default = (
+		data_cell_class   => '',
+		data_cell_style   => '',
+		data_row_class_even   => 'rownorm',
+		data_row_class_odd   => 'rowalt',
+		data_row_style_even   => '',
+		data_row_style_odd   => '',
+		form_method => 'GET',
+		explicit_edit => '',
+		no_code_link => '',
+		group_image   => 'smindex.gif',
+		group_class   => 'rhead',
+		group_spacing   => 2,
+		group_padding   => 0,
+		group_width   => '100%',
+		header_link_class   => 'rhead',
+		header_cell_class   => 'rhead',
+		header_cell_style   => '',
+		header_row_class   => 'rhead',
+		header_row_style   => '',
+		mv_action => 'back',
+		meta_image => errmsg('meta.png'),
+		label => "flex_select_$table",
+		no_checkbox => 0,
+		radio_box => 0,
+		user_merge => 0,
+		check_uncheck_all => 0,
+		number_list => 0,
+		table_border  => 0,
+		table_class   => 'rseparator',
+		table_padding => 0,
+		table_spacing => 1,
+		table_style   => '',
+		table_width   => '100%',
+	);
+
+	for(keys %default) {
+		next if defined $opt->{$_};
+		if(length $meta->{$_}) {
+			$opt->{$_} = $meta->{$_};
+		}
+		else {
+			$opt->{$_} = $default{$_};
+		}
+	}
+
+	$opt->{ui_style} = 1 unless defined $opt->{ui_style};
+	$opt->{no_checkbox} = 1 if $ts->{multikey};
+
+	my $show_meta;
+	my $meta_anchor;
+	if($Tag->if_mm('super') and ! $opt->{no_meta}) {
+		$show_meta = defined $::Values->{ui_meta_force}
+					? $::Values->{ui_meta_force}
+					: $::Variable->{UI_META_SELECT};
+		if($opt->{meta_image}) {
+			$meta_anchor = qq{<img src="$opt->{meta_image}" border=0>};
+		}
+		else {
+			$meta_anchor = 'M';
+		}
+	}
+
+	$opt->{form_name} ||= "fs_$table";
+
+	$output{TOP_OF_TABLE} = <<EOF;
+<table width="$opt->{table_width}" border="$opt->{table_border}" cellpadding="$opt->{table_padding}" cellspacing="$opt->{table_spacing}" class="$opt->{table_class}">
+EOF
+
+	my $cwp = $Global::Variable->{MV_PAGE};
+	$opt->{form_href} ||= $CGI->{ui_searchpage} || $cwp;
+	$opt->{form_extra} ||= '';
+	$opt->{form_extra} .= qq{ name="$opt->{form_name}"} if $opt->{form_name};
+	$opt->{form_extra} =~ s/^\s*/ /;
+	my $action = $Tag->process({href => $opt->{form_href}});
+
+	$output{TOP_OF_FORM} = <<EOF;
+<form action="$action" method="$opt->{form_method}"$opt->{form_extra}>
+<input type=hidden name=mv_data_table    value="$table">
+<input type=hidden name=mv_action        value="$opt->{mv_action}">
+<input type=hidden name=mv_click         value="warn_me_main_form">
+<input type=hidden name=mv_session_id    value="$Vend::SessionID">
+EOF
+
+	### What the heck is going on here?
+	if($CGI->{ui_meta_view}) {
+		$output{TOP_OF_FORM} .= <<EOF;
+<input type=hidden name=ui_meta_view         value="$CGI->{ui_meta_view}">
+EOF
+		$output{TOP_OF_FORM} .= $Tag->return_to();
+	}
+	else {
+		$output{TOP_OF_FORM} .= <<EOF;
+	<!-- got no return-to -->
+<input type=hidden name=ui_meta_specific value="$CGI->{ui_meta_specific}">
+<input type=hidden name=ui_page_title    value="$CGI->{ui_page_title}">
+<input type=hidden name=ui_page_banner   value="$CGI->{ui_page_banner}">
+<input type=hidden name=ui_limit_fields  value="$CGI->{ui_limit_fields}">
+<input type=hidden name=ui_show_fields   value="$CGI->{ui_show_fields}">
+<input type=hidden name=ui_return_to     value="$cwp">
+<input type=hidden name=ui_return_to     value="mv_data_table=$table">
+EOF
+	}
+
+	my $cc = $ts->{column_meta} ||= {};
+	my $mview = $CGI->{ui_meta_view};
+
+	my $cmeta = sub {
+		my $col = shift;
+		return $cc->{$col} if $cc->{$col};
+		my $m = $Tag->meta_record("${table}::$col", $mview);
+		for(@refkeys) {
+			$m->{$_} = $opt->{$_}{$col} if exists $opt->{$_}{$col};
+		}
+		$cc->{$col} = $m;
+		return $m;
+	};
+
+	my $header_cell_style = sub {
+				my $col = shift;
+				my $m = $cmeta->($col);
+#::logDebug("meta for header=" . ::uneval($m));
+				my $stuff = '';
+				for(qw/ class style align valign /) {
+					my $tag = "header_cell_$_";
+					my $thing;
+					if(ref $opt->{$tag}) {
+						$thing = $opt->{$tag}{$col} || $m->{$tag} || $opt->{"all_$tag"}
+							or next;
+					}
+					else {
+						$thing = $m->{$tag} || $opt->{$tag}
+							or next;
+					}
+					encode_entities($thing);
+					$stuff .= qq{ $_="$thing"};
+				}
+				return $stuff;
+			};
+
+	my $data_cell_style = sub {
+				my $col = shift;
+				my $m = $cmeta->($col);
+				my $stuff = '';
+				for(qw/ class style align valign /) {
+					my $tag = "data_cell_$_";
+					my $thing;
+					if(ref $opt->{$tag}) {
+						$thing = $opt->{$tag}{$col} || $m->{$tag} || $opt->{"all_$tag"}
+							or next;
+					}
+					else {
+						$thing = $m->{$tag} || $opt->{$tag}
+							or next;
+					}
+					encode_entities($thing);
+					$stuff .= qq{ $_="$thing"};
+				}
+				return $stuff;
+			};
+
+	my @head;
+	my $rc = $opt->{header_row_class};
+	push @head, "<tr ";
+	push @head, qq( class=$opt->{header_row_class}) if $opt->{header_row_class};
+	push @head, qq( style=$opt->{header_row_style}) if $opt->{header_row_style};
+	push @head, ">\n";
+	if(! $opt->{no_checkbox}) {
+		push @head, "	<td class=rhead>&nbsp;</td>" 
+	}
+	if($opt->{radio_box}) {
+		push @head, "	<td class=rhead>&nbsp;</td>" 
+	}
+	if($opt->{number_list}) {
+		push @head, "	<td class=rhead align=right>#&nbsp;</td>" ;
+	}
+	if($opt->{explicit_edit}) {
+		push @head, "	<td class=rhead>&nbsp;</td>" 
+	}
+
+	my $return = <<EOF;
+ui_return_to=$cwp
+ui_return_to=ui_meta_view=$opt->{ui_meta_view}
+ui_return_to=mv_return_table=$table
+mv_return_table=$table
+ui_return_stack=$CGI->{ui_return_stack}
+start_at=extended.ui_more_alpha
+EOF
+
+	my %mkey;
+	if($ts->{multikey}) {
+		for(@{$ts->{key_columns}}) {
+			$mkey{$_} = 1;
+		}
+	}
+
+	my @mcol;
+
+	my $idx = 0;
+	foreach my $col (@cols) {
+		my $mcol = $col;
+		if($redirect[$idx]) {
+			$mcol .= "-$redirect[$idx]";
+		}
+		my $td_extra = $header_cell_style->($mcol);
+
+		## $cc is set in header_cell_class 
+		my $m = $cc->{$mcol};
+
+		if($mkey{$col}) {
+			push @mcol, $idx - 1;
+		}
+
+		push @head, <<EOF;
+<td$td_extra>
+<table align="left" class="$opt->{group_class}" cellspacing=$opt->{group_spacing} cellpadding=$opt->{group_padding} width="$opt->{group_width}">
+    <tr>
+EOF
+		unless($opt->{no_group} || $m->{fs_no_group}) {
+			my $u = $Tag->area({
+								href => 'admin/flex_group',
+								form => qq(
+											mv_data_table=$table
+											ui_meta_view=$mview
+											from_page=$Global::Variable->{MV_PAGE}
+											mv_arg=$col
+										),
+							});
+			my $msg = errmsg('Select group by %s', $col);
+
+			push @head, <<EOF;
+      <td align="right" valign="center" width=1>
+		<a href="$u" title="$msg"><img src="$opt->{group_image}" border=0></a>
+      </td>
+EOF
+
+		}
+
+		my $o = '';
+		my $msg;
+		my $rmsg;
+		if($o = $m->{ui_sort_option}) {
+			my @m;
+			$msg = "sort by %s (%s)";
+
+			if($CGI->{ui_sort_field} eq $col) {
+				if($CGI->{ui_sort_option} =~ /r/) {
+					$o =~ s/r//;
+				}
+				else {
+					$o .= "r";
+				}
+			}
+			push @m, errmsg('reverse') if $o =~ /r/;
+			push @m, errmsg('case insensitive') if $o =~ /f/;
+			push @m, errmsg('numeric') if $o =~ /n/;
+			$rmsg = join ", ", @m;
+		}
+		else {
+			if ($CGI->{ui_sort_field} eq $col and $CGI->{ui_sort_option} !~ /r/) {
+				$o .= 'r';
+				$msg = "sort by %s (%s)";
+				$rmsg = errmsg('reverse');
+			}
+			else {
+				$msg = "sort by %s";
+			}
+			$o .= 'n' if $ref->numeric($col);
+		}
+		my $sort_msg = errmsg($msg, $col, $rmsg);
+		my $url = $Tag->area( {
+								href => $cwp,
+								form => qq(
+									$ts->{like_recall}
+									ui_text_qualification=$ui_text_qualification
+									mv_data_table=$table
+									ui_meta_view=$mview
+									ui_sort_field=$col
+									ui_sort_option=$o
+									ui_more_alpha=$m->{ui_more_alpha}
+								),
+							});
+
+		my $lab = $labels[$idx] || $m->{label} || $col;
+
+		# Set up some stuff for the data cells;
+		$style[$idx] = $data_cell_style->($mcol);
+
+		$filter_show[$idx] = $filter->{$mcol} if $filter->{$mcol};
+		$filter_show[$idx] ||= $m->{fs_display_filter} || 'encode_entities';
+		$filter_show[$idx] .= ' encode_entities'
+			 unless $filter_show[$idx] =~ /\b(?:encode_)?entities\b/;
+		$style[$idx] .= " $1" while $filter_show[$idx] =~ s/(v?align=\w+)//i;
+
+		if($views[$idx]) {
+			my ($page, $parm, $l) = split /:/, $views[$idx];
+			$m->{fs_link_page} = $page;
+
+			$parm ||= 'item_id';
+			my @p = split /[\s,\0]+/, $parm;
+			my $arg = shift @p;
+			$m->{fs_link_parm} = $arg;
+			$m->{fs_link_parm_extra} = join ",", @p;
+			$m->{fs_link_anchor} = $l;
+		}
+
+		if($m->{fs_link_page}) {
+			$link_page[$idx]		= $m->{fs_link_page};
+			$link_parm[$idx]		= $m->{fs_link_parm};
+			if($m->{fs_link_parm_extra}) {
+				my @p = grep /\S/, split /[\s,\0]+/, $m->{fs_link_parm_extra};
+				$link_parm_extra[$idx]	= \@p;
+			}
+			$link_anchor[$idx]	= $m->{fs_link_anchor};
+		}
+
+		if(my $prog = $m->{fs_data_calc}) {
+#::logDebug("looking at calcs=$prog");
+			$prog =~ s/^\s+//;
+			$prog =~ s/\s+$//;
+			if($prog =~ /^\w+$/) {
+				$calcs[$idx] = $Vend::Cfg->{Sub}{$prog} || $Global::GlobalSub->{$prog};
+			}
+			else {
+				$prog =~ s/^\[(calc|perl)(.*?)\]//;
+				$prog =~ s{\[/(calc|perl)\]$}{};
+				$calcs[$idx] = $prog;
+			}
+			if($m->{fs_data_tables}) {
+				tag_perl($m->{fs_data_tables}, {});
+			}
+		}
+
+		push @head, <<EOF;
+	  <td$td_extra>
+		<a href="$url" class=$opt->{header_link_class} title="$sort_msg">$lab</a>
+      </td>
+EOF
+
+		if($show_meta) {
+			my $u = $Tag->area({ href=>'admin/meta_editor',
+								 form => qq(
+								 item_id=${table}::$mcol
+								 ui_meta_view=$mview
+								 $return),
+								});
+			my $tit = errmsg(
+							"Edit header meta information for %s::%s",
+							$table,
+							$col,
+						);
+			push @head, <<EOF;
+<td width=1>
+<a href="$u" title="$tit">$meta_anchor</a>
+</td>
+EOF
+
+		}
+
+		push @head, <<EOF;
+    </tr>
+    </table>	
+	</td>
+EOF
+
+		$idx++;
+	}
+	push @head, "</tr>";
+
+	shift @mcol;
+
+	my $ncols = $idx;
+	$ncols++ if $opt->{explicit_edit};
+	$ncols++ if $opt->{number_list};
+	$ncols++ if $opt->{radio_box};
+	$ncols++ unless $opt->{no_checkbox};
+
+	$output{HEADER_AREA} = join "", @head;
+### Row output
+
+	my $cb_width = $opt->{checkbox_width} || '30';
+	my $cb_name = $opt->{checkbox_name} || 'item_id';
+	my $rb_name = $opt->{radiobox_name} || 'item_radio';
+	my $edit_page = $opt->{edit_page} || 'admin/flex_editor';
+	my $edit_parm = $opt->{edit_parm} || 'item_id';
+	my $edit_extra = <<EOF;
+mv_data_table=$table
+ui_page_title=$CGI->{ui_page_title}
+ui_meta_view=$mview
+ui_page_banner=$CGI->{ui_page_banner}
+ui_meta_specific=$CGI->{ui_meta_specific}
+EOF
+
+	
+	my @rows;
+
+	if($ts->{like_spec}) {
+		## Do nothing
+	}
+	elsif($body =~ /\S/) {
+		my $o = { 
+					label		=> $opt->{label},
+					list_prefix	=> 'flex',
+					prefix		=> 'flex',
+					more		=> 1,
+					search		=> $ts->{sparams},
+				};
+		push @rows, tag_loop_list($o);
+	}
+	else {
+		my $ary;
+		my $search;
+		my $params;
+		my $c;
+#::logDebug("MM=$CGI->{MM}($CGI::values{MM}) mv_more_matches=$CGI->{mv_more_matches}($CGI::values{mv_more_matches})");
+		if($CGI->{mv_more_ip}) {
+			$search = $::Instance->{SearchObject}{$opt->{label}};
+			$search ||= $::Instance->{SearchObject}{''};
+			$search ||= perform_search();
+			$ary = [ splice(
+						@{$search->{mv_results}},
+						$search->{mv_first_match},
+						$search->{mv_matchlimit},
+						)] ;
+#::logDebug("search first_match=$search->{mv_first_match} length=$search->{mv_matchlimit}");
+#::logDebug("Found search=" . ::uneval($search));
+		}
+		elsif($q) {
+			my $db = dbref($table);
+			my $o = {
+				ma		=> $CGI->{ui_more_alpha},
+				md		=> $CGI->{ui_more_decade},
+				ml		=> $CGI->{ui_list_size},
+				more	=> 1,
+				table	=> $fi,
+				query	=> $q,
+			};
+			$ary = $db->query($o);
+		}
+		else {
+#::logDebug("In new search");
+			$params = escape_scan($ts->{sparams});
+			$c = { mv_search_immediate => 1, mv_search_label => $opt->{label} };
+			Vend::Scan::find_search_params($c, $params);
+			$search = Vend::Scan::perform_search($c);
+			$ary = $search->{mv_results};
+		}
+
+		finish_search($search) if $search;
+		
+		$search ||= {};
+
+		if($CGI->{ui_return_to} and ! $CGI->{ui_return_stack}) {
+			$edit_extra .= $Tag->return_to('formlink');	
+		}
+		else {
+			$edit_extra .= "ui_return_to=$cwp";
+		}
+
+		my $edit_anchor;
+		my $ee_extra;
+		if($opt->{explicit_edit}) {
+			$edit_anchor = errmsg('edit record');
+			$edit_anchor =~ s/ /&nbsp;/g;
+			$ee_extra = '';
+			for(qw/ class style width align valign /) {
+				my $v = $opt->{"explicit_edit_$_"}
+					or next;
+				$ee_extra .= qq{ $_="$v"};
+			}
+			$ee_extra ||= ' width=30';
+		}
+#::logDebug("explicit_edit=$opt->{explicit_edit} no_code_link=$opt->{no_code_link}");
+		my $j = $search->{mv_first_match} || 0;
+		foreach my $line (@$ary) {
+			my $code = shift (@$line);
+			my $ecode = encode_entities($code);
+			my $rc = $j++ % 2
+					? $opt->{data_row_class_even}
+					: $opt->{data_row_class_odd};
+			my $out = qq{<tr class="$rc">\n};
+
+			my $code_pre; my $code_post;
+			if($opt->{no_code_link} and ! $opt->{explicit_edit}) {
+				$code_pre = $code_post = '';
+			}
+			else {
+				my @what;
+				push @what, "$edit_parm=$code";
+				if($ts->{multikey}) {
+					unshift @what, 'ui_multi_key=1';
+					for(@mcol) {
+						push @what, "$edit_parm=$line->[$_]";
+					}
+
+				}
+
+				my $ep_string = join "\n", @what, $edit_extra;
+
+				my $edit_url = $Tag->area({
+									href => $edit_page,
+									form => $ep_string,
+								});
+				my $msg = errmsg('edit %s', $ecode);
+				$code_pre = qq{<a href="$edit_url" title="$msg">};
+				$code_post = qq{</a>};
+			}
+
+			unless($opt->{no_checkbox}) {
+				$out .= <<EOF;
+<td width="$cb_width"><input type=checkbox name=$cb_name value="$ecode"></td>
+EOF
+			}
+			if($opt->{radio_box}) {
+				$out .= <<EOF;
+<td width="$cb_width"><input type=radio name=$rb_name value="$ecode"></td>
+EOF
+			}
+
+			if($opt->{number_list}) {
+				$out .= qq{<td align=right>&nbsp;$j&nbsp;</td>};
+			}
+
+			if($opt->{explicit_edit}) {
+				$out .= qq{<td$ee_extra>&nbsp;$code_pre$edit_anchor$code_post&nbsp;</td>};
+				$opt->{no_code_link} and $code_pre = $code_post = '';
+			}
+
+#::logDebug("keyname=$ts->{keyname}");
+			$out .= "<td" . $data_cell_style->($ts->{keyname}) . ">";
+			$ecode = '';
+			if ($calcs[0]) {
+				my %item;
+				@item{@cols} = ($code, @$line);
+				if(ref($calcs[0]) eq 'CODE') {
+					$ecode = $calcs[0]->(\%item);
+				}
+				else {
+					$Vend::Interpolate::item = \%item;
+					$ecode = tag_calc($calcs[0]);
+				}
+			}
+			if ($filter_show[0]) {
+				$ecode = $code unless $ecode;
+				$ecode = $Tag->filter($filter_show[0], $ecode, $cols[0]);
+				$ecode =~ s/\[/&#91;/g;
+			}
+			$ecode = encode_entities($code) unless $ecode;
+			$out .= "$code_pre$ecode$code_post</td>";
+			my $i = 1;
+			for my $v (@$line) {
+				my $extra = $style[$i];
+				my $pre = '';
+				my $post = '';
+				my $lab;
+
+				if($link_page[$i]) {
+					my $opt = { $link_parm[$i] => $v, form => 'auto' };
+					if(my $p = $link_parm_extra[$i]) {
+						for(@$p) {
+							$opt->{$_} = $CGI->{$_};
+						}
+					}
+					$opt->{href} = $link_page[$i];
+
+					$lab = $link_anchor[$i];
+					$lab =~ s/^\s+//;
+					my $url = $Tag->area($opt);
+					my $ev = encode_entities($v);
+					$pre = qq{<a href="$url" title="$ev">};
+					$post = '</a>';
+				}
+
+				if($calcs[$i]) {
+#::logDebug("found a calc");
+					my %item;
+					@item{@cols} = ($code, @$line);
+					if(ref($calcs[$i]) eq 'CODE') {
+						$lab = $calcs[$i]->(\%item);
+					}
+					else {
+						$Vend::Interpolate::item = \%item;
+						$lab = tag_calc($calcs[$i]);
+					}
+				}
+
+				$lab ||= $v;
+
+				$lab = $Tag->filter($filter_show[$i], $lab, $cols[$i]);
+
+				$lab =~ s/\[/&#91;/g;
+				$out .= "<td$extra>$pre$lab$post</td>";
+
+				$i++;
+			}
+			$out .= "</tr>\n";
+			push @rows, $out;
+		}
+
+		unless(@rows) {
+			my $nomsg = errmsg('No records');
+			push @rows, qq{<tr><td colspan=$ncols><blockquote>$nomsg.</blockquote></td></tr>};
+		}
+		else {
+			my $mmsg = errmsg($opt->{more_message} ||= 'More rows');
+			$opt->{more_list} ||= <<EOF;
+<tr>
+<td colspan={NCOLS} align=center>
+$mmsg: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+EOF
+			$opt->{more_list} =~ s/\{NCOLS\}/$ncols/g;
+			my $override = { mv_data_table => $table, ui_meta_view => $mview };
+			my @forms;
+			my @formparms = qw/ mv_data_table ui_meta_view ui_meta_specific /;
+			for(@formparms) {
+				my $thing = $override->{$_} || $CGI->{$_};
+				next unless length $thing;
+				push @forms, "$_=$thing";
+			}
+			my $o = {
+				object => $search,
+				label => $opt->{label},
+				form => join("\n", @forms),
+			};
+			$output{MORE_LIST} = tag_more_list(
+										$opt->{next_anchor},
+										$opt->{prev_anchor},
+										$opt->{page_anchor},
+										$opt->{more_border},
+										$opt->{more_border_selected},
+										$o,
+										$opt->{more_list},
+									);
+		}
+	}
+
+	$output{BOTTOM_OF_TABLE} = '</table>';
+	$output{BOTTOM_OF_FORM} = '</form>';
+	my $calc_sequence = <<'EOF';
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+EOF
+	$calc_sequence .= "mv_nextpage=$edit_page\nmv_todo=return";
+	my $ebutton = $Tag->button(	
+							{
+								text => errmsg('Edit checked records in sequence'),
+								extra => $opt->{edit_button_extra} || ' class=s2',
+							},
+							$calc_sequence,
+						);
+	my $mbutton = '';
+	my $dbutton = '';
+	if($Tag->if_mm({ function => 'tables', table => "$table=d"}) ) {
+		$opt->{confirm} ||= "Are you sure you want to delete the checked records?";
+		my $dtext = qq{
+[flag type=write table=$table]
+deleterecords=1
+mv_click=db_maintenance};
+		$dbutton = '&nbsp;';
+		$dbutton .= $Tag->button(	
+							{
+								text => errmsg('Delete checked records'),
+								extra => $opt->{edit_button_extra} || ' class=s2',
+								confirm => errmsg($opt->{confirm}),
+							},
+							$dtext,
+						);
+		
+		if($opt->{user_merge}) {
+			$opt->{confirm_merge} ||= "Are you sure you want to merge the checked users?";
+			$mbutton = '&nbsp;';
+			$mbutton .= $Tag->button(	
+								{
+									text => errmsg('Merge checked users'),
+									extra => $opt->{merge_button_extra} || ' class=s2',
+									confirm => errmsg($opt->{confirm_merge}),
+								},
+								'[user-merge]',
+							);
+				
+		}
+	}
+	my $cboxes = '';
+
+	if($meta->{check_uncheck_all}) {
+		my $uc_msg = errmsg('Uncheck all');
+		my $ch_msg = errmsg('Check all');
+		$ch_msg =~ s/\s/&nbsp;/g;
+		$uc_msg =~ s/\s/&nbsp;/g;
+		$cboxes = <<EOF;
+<a href="javascript:checkAll(document.$opt->{form_name}, '$cb_name')">
+$ch_msg
+</a>&nbsp;&nbsp;
+<a href="javascript:checkAll(document.$opt->{form_name}, '$cb_name', 1)">
+$uc_msg
+</a>&nbsp;&nbsp;
+EOF
+		$cboxes =~ s/\n//g;
+	}
+
+	if(! $opt->{no_checkbox} and ! $ts->{like_spec}) {
+		unless($opt->{no_top} || $opt->{bottom_buttons}) {
+			$output{TOP_BUTTONS} = $cboxes;
+			$output{TOP_BUTTONS} .= $ebutton;
+			if($mbutton) {
+				$output{TOP_BUTTONS} .= '&nbsp;' x 4;
+				$output{TOP_BUTTONS} .= $mbutton;
+			}
+			if($dbutton) {
+				$output{TOP_BUTTONS} .= '&nbsp;' x 4;
+				$output{TOP_BUTTONS} .= $dbutton;
+			}
+		}
+
+		unless($opt->{no_bottom} || $opt->{top_buttons}) {
+			$output{BOTTOM_BUTTONS} = $cboxes;
+			$output{BOTTOM_BUTTONS} .= $ebutton;
+			if($mbutton) {
+				$output{BOTTOM_BUTTONS} .= '&nbsp;' x 4;
+				$output{BOTTOM_BUTTONS} .= $mbutton;
+			}
+			if($dbutton) {
+				$output{BOTTOM_BUTTONS} .= '&nbsp;' x 4;
+				$output{BOTTOM_BUTTONS} .= $dbutton;
+			}
+		}
+	}
+
+	my %map = qw/
+			TOP_OF_FORM			top_of_form
+			BOTTOM_OF_FORM		bottom_of_form
+			HIDDEN_FIELDS  	    hidden_fields
+			TOP_BUTTONS    	    top_buttons
+			BOTTOM_BUTTONS    	bottom_buttons
+			EXTRA_BUTTONS    	extra_buttons
+		/;
+
+	my @areas = qw/
+					TOP_OF_TABLE
+					TOP_OF_FORM
+					HIDDEN_FIELDS
+					TOP_BUTTONS 
+					HEADER_AREA
+					MAIN_BODY
+					MORE_LIST
+					BOTTOM_BUTTONS
+					EXTRA_BUTTONS
+					BOTTOM_OF_FORM
+					BOTTOM_OF_TABLE
+				/;
+	if($ts->{like_spec}) {
+		push @rows, <<EOF;
+	<tr>
+	<td>&nbsp;</td>
+	<td colspan="$ncols" align=left>
+	[L]Check the box for exact record and enter the record id/key.[/L]
+	[L]Or enter a query by example to select a set of records.[/L]
+	[L]Each input will match on the <i>beginning</i> text in the field.[/L]
+	<p>
+	<small><input type=checkbox name=ui_exact_record value=1 class=s3> Edit exact record in key column</small>
+	<br>
+	&nbsp;
+	</td>
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	[loop list="[cgi ui_description_fields]"]
+	<td>
+		<input type=hidden name=mv_like_field value="[loop-code]">
+		<input type=text name=mv_like_spec size=10>
+	</td>
+	[/loop]
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	<td colspan="$ncols" align=left>
+	&nbsp;
+	<br>
+	&nbsp;
+	<br>
+	<input type=submit value="[L]Find[/L]">
+	</td>
+	</tr>
+EOF
+	}
+
+	$output{MAIN_BODY} = join "", @rows;
+
+	my @out;
+	for(@areas) {
+		next unless $output{$_};
+		if($opt->{ui_style} and $map{$_}) {
+			my $op = $map{$_};
+			$Tag->output_to($op, { name => $op }, $output{$_} );
+		}
+		else {
+			push @out, $output{$_};
+		}
+	}
+	return join "", @out;
+}
+EOR

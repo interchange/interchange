@@ -1,0 +1,25 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: grep_mm.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag grep-mm Order        function
+UserTag grep-mm addAttr
+UserTag grep-mm Interpolate
+UserTag grep-mm hasEndTag
+UserTag grep-mm Version      $Revision: 1.4 $
+UserTag grep-mm Routine      <<EOR
+sub {
+	my($func, $opt, $text) = @_;
+#::logDebug("grep-mm record: " . Vend::Util::uneval_it(\@_));
+	my $table = $opt->{table} || $::Values->{mv_data_table};
+	my $acl = UI::Primitive::get_ui_table_acl($table);
+	return $text unless $acl;
+	my @items = grep /\S/, Text::ParseWords::shellwords($text);
+	return join "\n", UI::Primitive::ui_acl_grep($acl, $func, @items);
+}
+EOR

@@ -1,0 +1,268 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Shipping Address[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+
+[include include/checkout/initialization]
+
+[if session logged_in]
+	[if cgi get_shipping]
+		[userdb function=get_shipping nickname="[cgi get_shipping]" hide=1]
+		[tmp get_message](set from <i>[cgi get_shipping]</i>)[/tmp]
+	[/if]
+	[userdb get_shipping_names]
+[else]
+	[value name=address_book set=""]
+[/else]
+[/if]
+
+<!-- BEGIN CONTENT -->
+
+<form action="[area href="ord/next_step" secure=1]" method="POST" name=checkout>
+[form-session-id]
+<input type=hidden NAME=mv_action        value=return>
+<input type=hidden NAME=mv_nextpage      value="ord/billing">
+<input type=hidden NAME=mv_failpage      value="ord/shipping">
+<input type=hidden name=mv_form_profile  value="Check_shipping">
+
+<table width="100%" align=center>
+<tr>
+  <td align="left" width="100%" align=center>
+
+	[if !variable NO_TAX_POPUP]
+		[comment]
+			This is JavaScript that pops up a tax message
+			when in simple tax mode
+		[/comment]
+		[include include/checkout/tax_popup]
+	[/if]
+
+    [if type=explicit compare="[error all=1 keep=1]"]
+	[tmp error_display]
+    <P align=left>
+        <B>[L]There were errors in your last submission[/L]:<br>
+        <blockquote>
+        <FONT color="__CONTRAST__">
+                [error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
+        </font>
+        </blockquote>
+        </p>
+        <p>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
+    </p>
+    [/tmp]
+    [/if]
+
+[set Check_shipping]
+	&fatal=no
+	&update=yes
+	__COMMON_ORDER_PROFILE__
+	&fail=@@MV_PAGE@@
+	&fatal=yes
+	email=email
+[/set]
+
+	[comment]
+		Form intro -- the input elements are largely in the
+		individual tables in include/checkout/*
+	[/comment]
+	</td>
+  </tr>
+  <tr>
+	<td>
+
+	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large">
+			[L]Shipping Address[/L] <small>[scratch get_message]</small>
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px">
+
+	  <table border=0 align="center" cellspacing=0 width="100%">
+		<tr>
+		  <td colspan="4">&nbsp;</td>
+		</tr>
+		<tr>
+		  <td align=right>
+			[error name=fname std_label="[L]First Name[/L]" required=1]
+		  </td>
+		  <td align=left>
+			<INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
+		  </td>
+		  <td align="right">[error name=lname std_label="[L]Last Name[/L]" required=1]</td>
+		  <td align="left"><INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
+		</tr>
+		<tr>
+		  <td align="right">
+			[error name=company std_label="[L]Company[/L]" required="[scratch dealer]"]
+		  </td>
+		  <td align="left" colspan=3>
+			<INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
+		  </td>
+		</tr>
+		<tr>
+		  <td align="right">[error name=address1 std_label="[L]Address[/L]" required=1]
+		</td>
+		<td align="left" colspan=3>
+		  <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="40" maxlength="64">
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td align="left" colspan=3>
+		  <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="40" maxlength="64">
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [error name=city std_label="[L]City[/L]" required=1]
+		</td>
+		<td colspan=3>
+		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
+		</td>
+	  </tr>
+	  <tr>
+		<td align=right>
+			[error name=state std_label="[L]State/Province[/L]" required=1]
+		</td>
+		<td align="left" colspan=3>
+			[display name=state type=state_select value="[value state]"]
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1] 
+		</td>
+		<td colspan=3>
+		  <INPUT TYPE=text NAME=zip VALUE="[value zip]" size="10" maxlength="10">
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [error name=email std_label="[L]Email Address[/L]" required=1]
+		</td>
+		<td colspan=3>
+		  <INPUT TYPE=text NAME=email VALUE="[value email]" size="30">
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [L]Country[/L]
+		</td>
+		<td colspan="3">
+		  [display name=country type=country_select value="[value country]"]
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [L]Residential?[/L]
+		</td>
+		<td colspan="3">
+		  [display
+		  		name=mv_ship_residential
+		  		type=radio
+				value="[value mv_ship_residential]"
+				passed="=No,1=Yes"
+		  ]
+		</td>
+	  </tr>
+	  <tr>
+		<td align="right">
+		  [error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]
+		</td>
+		<td>
+		  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
+		</td>
+		<td align="right">
+		  [error name=phone_night std_label="[L]Evening Phone[/L]"]
+		</td>
+		<td align="left">
+		  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan="3">
+		  <br>
+		  <i>[L]We need the <b>bold fields</b> to process your order[/L]</i>
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan="3">
+			<input type=checkbox name=mv_same_billing value="1" [checked mv_same_billing 1]> Billing is same as this address
+			<br>
+			<br>
+			[if value address_book]
+				  <br>
+					<u>[L]Use account from address book[/L]</u>:<br>
+				
+						<blockquote> |
+						[loop list="[value address_book]"]
+						[page href=@@MV_PAGE@@
+							  form="get_shipping=[loop-code]"
+							][loop-code] - [data table=userdb col=address_book.[loop-code].city key="[data session username]" serial=1]</a> |
+						[/loop]
+						</blockquote>
+			[/if]
+			[if session logged_in]
+			[page href=member/ship_addresses form="destination=@@MV_PAGE@@"]Manage shipping addresses</a>
+			[/if]
+
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan="3">
+		<br>
+			<input type=hidden name=country_reset value="">
+			<input type=button onClick="
+					this.form.mv_form_profile.value='';
+					this.form.country_reset.value='1';
+					this.form.mv_action.value='back';
+					this.form.mv_nextpage.value='ord/country';
+					this.form.submit();
+				"
+				value="&lt;-- [L]Back[/L]" class=button3>
+				<input type=submit value="[L]Next[/L] --&gt;" class=button3 style="font-weight: 500">
+		</td>
+	  </tr>
+	  [if scratch error_display]
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan=3>
+		<br>
+		<br>
+			[scratchd error_display]
+		</td>
+	  </tr>
+	  [/if]
+	  <tr>
+		<td colspan=4>&nbsp;</td>
+	  </tr>
+	  </table>
+	</td>
+  </tr>
+</table>
+
+
+
+		</td>
+	  </tr>
+			
+	  [tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+</table>
+</form>
+
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

@@ -1,0 +1,110 @@
+[comment]
+ui_name: promo
+ui_type: component
+ui_class: content, vertical
+ui_group: promotion
+ui_label: Promotion
+
+promo_type:
+	label: Promotion type
+	options: specials=Specials, new=New items
+	type: select
+
+matches:
+	label: Number to show
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cols:
+	label: Columns
+	options: 1,2,3*,4
+	type: select
+
+banner:
+	default: [L]Specials[/L]
+	label: Banner for top box
+	type: text
+	width: 40
+
+[/comment]
+<!-- BEGIN COMPONENT [control component promo] -->
+
+<table width="100%" align=center>
+<tr> 
+  <td class="titletab_small" align="left"><b>[control name=banner default="[L]Specials[/L]"]</b></td>
+</tr>
+<tr> 
+  <td> 
+	[query arrayref=main
+		   sql="
+		   	SELECT sku,timed_promotion,start_date,finish_date
+			FROM [either]__UI_MERCH_TABLE__[or]merchandising[/either]
+			WHERE featured = '[control promo_type specials]'
+			"][/query]
+	[perl tables="__UI_MERCH_TABLE__ merchandising"]
+		my @out;
+		my $ref;
+		my $db;
+		delete $Scratch->{promo_codes};
+		my $date = $Tag->time( { body => '%Y%m%d' } );
+		$ref = $Tmp->{main} or return;
+		for(@$ref) {
+			my $line = $_;
+			push(@out, $line->[0]), next if ! $line->[1];
+			next if $line->[2] gt $date;
+			next if $line->[3] lt $date;
+			push @out, $line->[0];
+		}
+		$Scratch->{promo_codes} = join(' ', @out);
+		return;
+	[/perl]
+      <table width="100%" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+[loop
+	random="[control matches 3]"
+	list="[scratch promo_codes]"
+	 ] 
+     <TD> 
+	  <table border="0">
+	  <tr> 
+		<td align="center" class="titlebar1">		  
+		  [if-loop-data merchandising blurb_begin]
+			[loop-data merchandising blurb_begin]
+		  [else]
+			<a href="[area href="[loop-code]"]" class="crosstitle">
+			<b>[loop-description]</b><br>
+		  [/else]
+		  [/if-loop-data]
+		  [if-loop-field thumb]
+		  	<img src="thumb/[loop-field thumb]" height="80" border="0"></a><br>
+		  [/if-loop-field]
+		  	[L]Our Price[/L]: <b>[loop-price]</b>
+		  [if-loop-data merchandising blurb_end]
+		  	<a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
+		  [else]
+		  [if type=explicit condition="[control buttons]"]
+                	[b-link [loop-code]][L]MORE INFO[/L][/b-link]
+		  	[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+		  [/if]
+		  [/else]
+		  [/if-loop-data]
+		</td>
+	  </tr>
+   
+      
+	  <tr> 
+		<td align="center">&nbsp;</td>
+	  </tr>
+	  </table>
+  	</TD>
+[/loop]
+[/table-organize]
+      </table>
+
+      <p>&nbsp;</p>
+
+  </td>
+</tr>
+</table>
+
+<!-- END COMPONENT [control component promo] -->

@@ -1,0 +1,241 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: htmlarea.widget,v 1.16 2007-09-26 19:56:56 racke Exp $
+
+CodeDef htmlarea Widget 1
+CodeDef htmlarea Description Rich text editor
+CodeDef htmlarea Documentation <<EOD
+=head1 NAME
+
+HTMLArea widget for Interchange
+
+=head1 SYNOPSIS
+
+  [display type=htmlarea name=foo height=NN width=NNN]
+
+ or
+
+  [table-editor
+  	widget.foo=htmlarea
+	...
+  ]
+
+=head1 DESCRIPTION
+
+The C<htmlarea> widget makes calls to a rich-text editor that replaces 
+a C<TEXTAREA> component on supported browsers. It operates as a normal 
+textarea otherwise.
+
+Two flavours of rich-text editors are available, htmlarea (HTMLArea) and
+fckeditor (FCKeditor).
+
+Supported browsers include at least Mozilla 1.3.1 and higher, and
+MSIE 6 and higher.
+
+=head1 INSTALLATION
+
+The flavour can be selected by the Interchange Variable HTMLAREA_FLAVOUR
+or the flavour option and defaults to htmlarea.
+
+To install the htmlarea flavour, get HTMLArea-3.0-RC1 or later and install 
+in the C<htmlarea> directory of your DocumentRoot. 
+That means that routines can be accessed with a base HREF of C</htmlarea/>).
+
+To install the fckeditor flavour, get FCKeditor 2.1 or later and install 
+in the C<fckeditor> directory of your DocumentRoot. 
+That means that routines can be accessed with a base HREF of C</fckeditor/>.
+
+Alternatively, you can set the Interchange Variable HTMLAREA_PATH to
+the appropriate path.
+
+This widget requires Interchange 5.0 and higher.
+
+If you are planning on using it outside of the Interchange UI, you must
+either have the output-style of layout (the "standard" demo) with a 
+[scratch meta_header] call in the <HEAD> area, or you must place the
+equivalent of the following in the header of any page to use this widget:
+
+    [tmp tmp_hpath][either]__HTMLAREA_PATH__[or]/htmlarea/[/either][/tmp]
+	<script type="text/javascript">
+	   _editor_url = "[scratch tmp_hpath]";
+	   _editor_lang = "en";
+	</script>
+	<script type="text/javascript" src="[scratch tmp_hpath]htmlarea.js"></script>
+
+For the fckeditor flavour:
+
+    [tmp tmp_hpath][either]__HTMLAREA_PATH__[or]/htmlarea/[/either][/tmp]
+	<script type="text/javascript">
+	   _editor_url = "[scratch tmp_hpath]";
+	</script>
+	<script type="text/javascript" src="[scratch tmp_hpath]fckeditor.js"></script>
+
+Additionally for the fckeditor flavour, if "htmlarea_config" is set, upon
+loading it will call a javascript function by the name of its value:
+
+    [display type=htmlarea name=foo height=NN width=NNN htmlarea_config="bar"]
+
+    <script>
+    function bar (fckobj) {
+        fckobj.ToolbarSet = 'Basic';
+    }
+    </script>
+
+This is useful to pass fckeditor configurations, such as the above example "ToolbarSet".
+Note that you must supply the Javascript function of (in this case) "bar" as shown, somewhere
+on the same page for it to work. 
+
+The "en" is the language locale to use. If you use the output-style
+layout, this is automatically determined from the Interchange locale.
+You can also override this with the Variable HTMLAREA_LANG. This is not
+applicable for the fckeditor flavour.
+
+=head1 BUGS
+
+A bug in MSIE doesn't allow initialization of a textarea until the
+complete document is loaded. This means that the editor toolbox will not
+show up until the mouse enters the C<TEXTAREA>.
+
+=cut
+EOD
+
+CodeDef htmlarea Routine <<EOR
+sub {
+	my ($opt) = @_;
+#::logDebug("called kupu widget, value=$opt->{value}");
+	use vars qw/$Tag/;
+
+	my %flavours = (htmlarea => {path => '/htmlarea/',
+					header => qq|
+<script type="text/javascript">
+   _editor_url = "{PATH}";
+   _editor_lang = "{LANG}";
+</script>
+<script type="text/javascript" src="{PATH}htmlarea.js"></script>
+|,
+					area => qq|<textarea id="htmlarea_{NAME}" rows="{HEIGHT}" cols={WIDTH} name="{NAME}"{ONMOUSE}>{VALUE}</textarea>|},
+					fckeditor => {path => '/fckeditor/',
+					header => qq|
+<script type="text/javascript" src="{PATH}fckeditor.js"></script>
+<script type="text/javascript">
+   _editor_url = "{PATH}";
+
+   function addLoadEvent(func) {
+	var oldonload = window.onload;
+	if (typeof window.onload != 'function') {
+		window.onload = func;
+	} else {
+		window.onload = function() {
+		oldonload();
+		func();
+		}
+	}
+   }
+</script>|,
+					pre => qq|<script>
+addLoadEvent(function()
+{
+    var {NAME}FCKeditor = new FCKeditor( '{NAME}', '{WIDTH}', '{HEIGHT}' ) ;
+    {NAME}FCKeditor.BasePath = _editor_url ;
+	{CONFIG?}{CONFIG}({NAME}FCKeditor);{/CONFIG?}
+    {NAME}FCKeditor.ReplaceTextarea() ;
+});
+
+</script>
+|,
+					area => qq|<textarea id="{NAME}" rows="{HEIGHT}" cols="{WIDTH}" name="{NAME}">{VALUE}</textarea>|,
+					post => ''
+});
+	
+	my $flavour = $opt->{flavour} || $::Variable->{HTMLAREA_FLAVOUR} || 'htmlarea';
+
+	my $fname = $opt->{form_name} || 'editor';
+
+	my $callpage = $opt->{append} || 'special/kupu';
+
+	my $pname = $opt->{name};
+
+	my $wname = $opt->{window_name} || "ic_kupu_$pname";
+
+	$pname =~ s/\W/_/g;
+
+	unless(defined $opt->{close_window}) {
+		$opt->{close_window} = 1;
+	}
+
+	if(! $::Scratch->{htmlarea_added}) {
+		$Tag->tmp({ name => 'htmlarea_added', body => 1 });
+		$::Scratch->{meta_header} ||= '';
+		my $path = $::Variable->{HTMLAREA_PATH} || $flavours{$flavour}->{path};
+		my $lang = $::Variable->{HTMLAREA_LANG} || $::Scratch->{mv_locale} || 'en';
+		$lang = substr($lang, 0, 2);
+		$path =~ s:/*$:/:;
+		$::Scratch->{meta_header} .= $Tag->uc_attr_list({hash => {path => $path, lang => $lang}}, $flavours{$flavour}->{header});
+	}
+
+	my $val;
+	if($opt->{value} =~ /</) {
+		$val = HTML::Entities::encode($opt->{value});
+	}
+	else {
+		$val = $opt->{value};
+	}
+	my $pre_scr = '';
+	my $post_scr = '';
+	my $onmouse = '';
+	my $htmlarea_config = '';
+	
+	if ($opt->{htmlarea_config}) {
+		$htmlarea_config = ", $opt->{htmlarea_config}";
+	}
+
+	if($Session->{browser} =~ /MSIE/) {
+		if ($flavour eq 'htmlarea') {
+		    $pre_scr = qq{
+<script>
+var htmlarea_needinit_$pname = true;
+</script>
+};
+			$onmouse = qq{ onMouseOver="if(htmlarea_needinit_$pname) { HTMLArea.replace('htmlarea_$pname'$htmlarea_config); htmlarea_needinit_$pname=false }"};
+		}
+	}
+	else {
+		if ($flavour eq 'fckeditor') {
+			$post_scr = <<EOF;
+
+EOF
+		} else {
+			$post_scr = <<EOF;
+<script>
+	HTMLArea.replace('htmlarea_$pname'$htmlarea_config);
+</script>
+EOF
+		}
+	}
+
+    $opt->{height} =~ s/\D+//;
+    $opt->{width} =~ s/\D+//;
+
+	$pre_scr .= $Tag->uc_attr_list({hash => {name => $pname, width => $opt->{width}, height => $opt->{height},
+																	config => $flavour eq 'fckeditor' ? $opt->{htmlarea_config} : undef },
+									body => $flavours{$flavour}->{pre}});
+	
+	$opt->{anchor_style} ||= 'font-size: smaller';
+
+	my $extra = $opt->{anchor_class} ? qq{ class="$opt->{anchor_class}"} : '';
+	$extra .= qq{ style="$opt->{anchor_style}"} if $opt->{anchor_style};
+	my $textra = $opt->{text_class} ? qq{ class="$opt->{text_class}"} : '';
+	$textra .= qq{ style="$opt->{text_style}"} if $opt->{text_style};
+
+	my $wid = $pre_scr . $Tag->uc_attr_list({hash => {name => $pname,
+		height => $opt->{height}, width => $opt->{width}, onmouse => $onmouse,
+		value => $val}, body => $flavours{$flavour}->{area}}) . $post_scr;
+	
+	return $wid;
+}
+EOR

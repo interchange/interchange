@@ -1,0 +1,18 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: checkbox.widget,v 1.5 2007-11-14 15:20:30 racke Exp $
+
+CodeDef checkbox Widget 1
+CodeDef checkbox Description Checkbox
+CodeDef checkbox Help Selection of single/multiple values
+CodeDef checkbox Multiple 1
+CodeDef checkbox MapRoutine Vend::Form::box
+CodeDef check_nbsp Widget 1
+CodeDef check_nbsp Description Checkbox (nbsp)
+CodeDef check_nbsp Multiple 1
+CodeDef check_nbsp Help Selection of single/multiple values, &nbsp; for spaces

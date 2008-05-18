@@ -1,0 +1,219 @@
+<html[scratch ui_language_direction]>
+<head>
+<title>[scratch page_title]</title>
+[tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
+@@UI_JSLIB@@
+<link href="__UI_IMG__interchange.css" rel="stylesheet" type="text/css">
+[if value personal_css]<style>[value personal_css]</style>[/if]
+{{HEADER}}
+[scratchd meta_header]
+</head>
+<body [scratch ui_body_extra] marginwidth="0" marginheight="0">
+<table height="100%" width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+      <td>
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td width="121"><a href="http://www.icdevgroup.org/" target=icdevgroup><img src="logo.gif" width="121" height="32" border=0></A></td>
+			   <td width="100%" align=right valign=bottom>
+			   		<a href="[area admin/index]"><img border=0 width=300 height=29 src="bg.gif"></a>
+			   </td>
+			   {{FIXED_MENU}}
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr>
+   		<td height=15>
+		  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <!-- FIRST LEVEL TABS -->
+            <tr>
+			   {{TOP_TABS}}
+               <td width="100%" style="vertical-align:bottom;">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tr><td class="lightshade"><img src="bg.gif" height="1"></td></tr>
+                  </table>
+				</td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr>
+      <td class=block1 height="100%">
+         <table width="100%" border=0 cellspacing=0 cellpadding=0 height="100%">
+            <tr>
+               <td class=lightshade><img src="bg.gif" width=1></td>
+               <td width="100%" class=block1inner height="100%">
+                  <table width="100%" border=0 cellspacing=0 cellpadding=0 height="100%">
+                     <tr> 
+                        <td colspan=3> 
+                           <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                              <tr> 
+                                 <td><img src="bg.gif" height=1></td>
+                                 <td width="100%" rowspan=2 valign=bottom align=right> 
+																							
+                                    <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                                       <tr> 
+                                          <td align=right><img src="bg.gif" width=1 height=1></td>
+                                       </tr>
+                                       <tr> 
+                                          {{SEARCH_BOX?}}
+                                          <td style="
+																								text-align: right;
+																								padding-right: 5px;
+																					">
+																					{{SEARCH_BOX}}
+																					</td>
+                                          {{/SEARCH_BOX?}}
+                                          {{SEARCH_BOX:}}
+                                          <td height=3><img src="bg.gif" height=3></td>
+                                          {{/SEARCH_BOX:}}
+                                       </tr>
+                                       <tr> 
+                                          <td class=lightshade><img src="bg.gif" height=1></td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr> 
+                                 <td valign=bottom> 
+                                    <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                                       <!-- SECOND LEVEL TABS -->
+                                       <tr> 
+																			{{SECOND_TABS}}
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+{{TOP_OF_FORM}}
+{{HIDDEN_FIELDS}}
+                     <tr> 
+                        <td width=1 class=lightshade><img src="bg.gif" width=1 height=1></td>
+                        <td width="100%" class=block3inner> 
+                           <table width="100%" border=0 cellspacing=0 cellpadding=1>
+                              <!-- TABLE TITLE ROW -->
+                              <tr> 
+                                 <td> 
+                                    <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                                       <tr> 
+                                          <td class=rtitle><img src="bg.gif" width=29 height=1></td>
+                                          <td class=rtitle><img src="bg.gif" width=1 height=1></td>
+                                       </tr>
+                                       <tr> 
+                                          <td width=29 height=22 align=center class=rtitle><a href="[area href='admin/page_metaconfig' form='page=[var MV_PAGE 1]']" title="[L]Page properties[/L]"><img src="[either][scratch icon_name][or]icon_error.gif[/either]" width=16 height=14 border=0></a></td>
+                                          <td class=rtitle>[either][scratch page_banner][or][scratch page_title][/either]</td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr> 
+                                 <td height=4><img src="bg.gif" width=1 height=4></td>
+                              </tr>
+							  <!-- THIRD_TABS -->
+								<tr> 
+								   <td valign=bottom style="padding-bottom: 0"> 
+									  <table cellpadding=0 cellspacing=2 width="100%">
+									  <tr>
+											<td height=4><img src="bg.gif" width=1 height=4></td>
+											<td align=right nowrap width="100%" rowspan=2> 
+											 <!-- TOP BUTTONS -->
+												{{TOP_BUTTONS}}
+											 </td>
+										 </tr>
+										 <tr>
+										   <td>
+												<table border=0 cellspacing=0 cellpadding=0>
+												 <!-- THIRD LEVEL TABS -->
+												 <tr> 
+												 {{THIRD_TABS}}
+												 </tr>
+												</table>
+											 </td>
+										  </tr>
+									  </table>
+								   </td>
+								</tr>
+                              <tr> 
+                                 <td class="darkshade"> 
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="7">
+                                       <tr> 
+                                          <td class="workarea"> 
+			  [if warnings]
+			  <blockquote class=cmessage>
+				  [warnings]
+			  </blockquote>
+			  [/if]
+
+			  [if errors]
+			  <blockquote class=cerror>
+				
+				[error show_var=1 all=1 show_error=1 joiner="<br>"]
+			  </blockquote>
+			  [/if]
+										  {{:DEFAULT}}
+                                          </td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+															{{BOTTOM_BUTTONS?}}
+                              <tr> 
+                                 <td height="4" align=right>{{EXTRA_BUTTONS}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{BOTTOM_BUTTONS}}</td>
+                              </tr>
+															{{/BOTTOM_BUTTONS?}}
+															{{BOTTOM_BUTTONS:}}
+                              <tr> 
+                                 <td height="4"><img src="bg.gif" width="1" height="4"></td>
+                              </tr>
+															{{/BOTTOM_BUTTONS:}}
+                           </table>
+                        </td>
+                        <td width="1" class="darkshade"><img src="bg.gif" width="1" height="1"></td>
+                     </tr>
+{{BOTTOM_OF_FORM}}
+                     <tr> 
+                        <td colspan="3" class="darkshade"><img src="bg.gif" width="1" height="1"></td>
+                     </tr>
+					<!-- FOOTER -->
+                     <tr> 
+                        <td colspan="3" class="darkshade"><img src="bg.gif" width="1" height="1"></td>
+                     </tr>
+					<tr>
+					   <td height="28" class="footer" colspan=2>
+						   &nbsp;
+						   	<a href="@_INTERCHANGE_URL_@" class=footer>
+								Interchange
+							</A>
+							[version] &copy; 2002-2007 Interchange Development Group&nbsp;&nbsp;&nbsp;
+							&nbsp;
+							Username:
+						   <a href="[area href='__UI_BASE__/access_permissions' form='user_id=[data session username]']" class=footer>[data session username]</A> &nbsp; 
+							&nbsp;
+							[time]%e %b %Y %H:%M:%S[/time]
+							&nbsp;
+						    &nbsp;
+						   StoreID: <a href="[calc]$Config->{VendURLOriginal}[/calc]" class=footer>[calc]$Config->{CatalogName}[/calc]</A> &nbsp; 
+							&nbsp;
+							&nbsp;
+							([var MV_PAGE 1])
+                       </td>
+						<td align=right class=footer>
+								
+                       </td>
+					</tr>
+                  </table>
+               </td>
+               <td class="darkshade"><img src="bg.gif" width="1"></td>
+            </tr>
+            <tr>
+               <td colspan=3 class=darkshade><img src="bg.gif" width=1></td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+</table>
+</body>
+</html>

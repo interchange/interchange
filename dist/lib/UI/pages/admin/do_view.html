@@ -1,0 +1,66 @@
+@_UI_STD_INIT_@[tmp total_junk][set violation]Failed to run security checks.[/set][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
+	delete $Scratch->{violation};
+	$_ = delete $Session->{arg};
+	$Scratch->{violation} = errmsg('Must be logged in.')
+		unless $Session->{logged_in};
+	$Scratch->{violation} = errmsg('Must be logged in as admin.')
+		unless $Session->{admin};
+	$Scratch->{violation} = errmsg('No .. allowed in file name.')
+		if m{\.\./};
+	$Scratch->{violation} = errmsg('No | allowed.')
+		if m{\|};
+	$Scratch->{violation} = errmsg('No whitespace allowed.')
+		if m{\s};
+	$Scratch->{violation} = errmsg('No drive letters!')
+		if m{^\s*[a-zA-Z]:/};
+	$Scratch->{violation} = errmsg('No absolute file paths allowed.')
+		if s{^/}{};
+	if($Scratch->{violation}) {
+			Log (<<EOF);
+SECURITY VIOLATION
+Attempt to view:
+	$_
+
+by:
+	$Session->{username}
+	$Session->{host}
+EOF
+		return;
+	}
+	else {
+		$Scratch->{file_to_view} = $_;
+	}
+
+	delete $Scratch->{alternate_view};
+	if(
+		/:/
+		and $Tag->if_mm('super')
+		and $Config->{SessionType} eq 'File'
+		and $sd = $Config->{SessionDatabase}
+		and $sd =~ s:^$Config->{VendRoot}/::
+		and $_ =~ m{^$sd/././(.*)}
+		and $check = $1
+		and $check !~ /\.lock$/
+		) 
+	{
+		$Scratch->{alternate_view} = "[dump-session name='$check']";
+		$Scratch->{content_type} = 'text/plain';
+		delete $Scratch->{file_to_view};
+	}
+	else {
+		$Scratch->{content_type} = $Tag->filter('mime_type', $_);
+		$Scratch->{content_type} = $CGI->{content_type} || "text/plain"
+			if $Scratch->{content_type} eq 'application/octet-stream'
+			or $Scratch->{content_type} eq 'text/html';
+	}
+	return;
+[/perl][if scratch violation]
+[seti ui_error][scratch violation] -- logged.[/seti]
+[bounce page="__UI_BASE__/error"]
+[else]
+[comment][calc]Debug("Setting content-type to $Scratch->{content_type}"); return; [/calc][/comment]
+[tag op=header interpolate=1]Content-Type: [scratchd content_type][/tag]
+[/else]
+[/if]
+[/tmp][scratchd name=alternate_view interpolate=1][file name="[scratch file_to_view]" type="[value download_conversion]"
+][goto end=1 abort=1]

@@ -1,0 +1,24 @@
+# Copyright 2007 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: match.oc,v 1.1 2007-05-04 14:36:00 mheins Exp $
+
+CodeDef match OrderCheck 1
+CodeDef match Description Matches another CGI variable, possibly for password verify
+CodeDef match Routine <<EOR
+sub {
+	my($ref, $name, $value, $msg) = @_;
+	$msg =~ s/^\s*(\w[-\w]*)\s*//
+		or return undef;
+	my $other = $1;
+
+	if($ref->{$other} ne $value) {
+		$msg = errmsg(
+					  "%s doesn't match %s.",
+					  $name,
+					  $other,
+					  ) if ! $msg;
+		return(0, $name, $msg);
+	}
+	return (1, $name, '');
+}
+EOR

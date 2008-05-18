@@ -1,0 +1,20 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001							File Management		0								
+002		x002					admin/file_transfer	initial_dir=pages	Upload/Download Pages		0	File transfer tool starting in pages directory							
+003		x003					admin/file_transfer	initial_dir=images	Upload/Download Images		0	File transfer tool starting in images directory							
+004		x004					admin/file_transfer	initial_dir=session&find_session=1	Search for sessions		0	File transfer tool starting in session directory							
+005		x005					admin/file_transfer	initial_dir=.	General File Transfer		0	Start transferring from catalog root							
+006		x006							Backup Functions		0								
+007		x007					admin/transfer_catalog		Create catalog tar file		0	Create a tar file of the catalog suitable for transferring to other systems							
+008		x008							Legacy Tools		0								
+009		x009					admin/layout		Layout Editor		0	Organize categories with area and cat tables							
+010		x010					admin/layout_auto		Layout Editor Auto-populate		0	Automatically populate area and cat tables from product data							
+011		x011							ITL Helpers		0								
+012		x012					admin/search_wizard		Search Wizard		0	Generate a search for a page							
+013		x013					admin/button_builder		Button Builder		0	Generate an order button or link							
+014		x014					admin/test_code		Test code	1	0	Test snippets of ITL							
+015		x015							Encryption	1	0								
+016		x016					admin/gpg_key		Add GPG Key	1	0	Check and add GPG keys to keyring							
+017		x017					admin/pref_select	ui_text_qualification=pref_group=Encryption	Encryption Preferences	1	0								
+018		x018							Upgrade Helpers		0								
+019		x019					admin/merge_meta		Merge metadata		0	Merge new metadata values from upgraded Interchange version							

@@ -1,0 +1,513 @@
+[calc]
+	if ( $CGI->{showarchive} ) {
+		delete $Values->{showpending};
+		$Values->{showarchive} = 1;
+		$Scratch->{archive_sense} = 'eq';
+		$Scratch->{archive_img} = 'left.gif';
+		$Scratch->{archive_nm} = 'unarchive';
+		$Scratch->{archive_label} = 'archived';
+	}
+	elsif($CGI->{showpending}) {
+		delete $Values->{showarchive};
+		$Values->{showpending} = 1;
+		$Scratch->{archive_sense} = 'ne';
+		$Scratch->{archive_img} = 'right.gif';
+		$Scratch->{archive_nm} = 'archive';
+		$Scratch->{archive_label} = 'pending';
+	}
+	elsif(! $Values->{showarchive} and ! $Values->{showpending}) {
+		delete $Values->{showarchive};
+		$Values->{showpending} = 1;
+		$Scratch->{archive_sense} = 'ne';
+		$Scratch->{archive_img} = 'right.gif';
+		$Scratch->{archive_nm} = 'archive';
+		$Scratch->{archive_label} = 'pending';
+	}
+	else {
+		$CGI->{showpending} = $Values->{showpending};
+		$CGI->{showarchive} = $Values->{showarchive};
+	}
+	if($CGI->{checked_status}) {
+		$Values->{checked_status} = $CGI->{checked_status};
+	}
+	else {
+		$Values->{checked_status} ||= '__UI_SHIPPED_STATUS__';
+	}
+	return;
+[/calc]
+[set icon_name]icon_orders.gif[/set]
+[seti page_title]
+	[if value showarchive]
+	[L]Orders[/L]: [L]Archived Orders[/L]
+	[set help_name]order.main.archived[/set]
+	[else]
+	[L]Orders[/L]: [L]Pending Orders[/L]
+	[set help_name]order.main.pending[/set]
+	[/else]
+	[/if]
+[/seti]
+[set ui_class]Orders[/set]
+[tmp page_perm]order=l[/tmp]
+
+[perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
+	delete $Scratch->{ui_location};
+	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/order_status';
+	if($CGI->{ui_sequence_edit}) {
+		my $doit;
+		$CGI->{item_id_left} =~ s/-_NULL_-/\0/g;
+		$CGI->{item_id_left} =~ s/\0+/,/g;
+		$CGI->{item_id_left} =~ s/,+/,/g;
+		if($CGI->{item_id_left} =~ s/^(.*?),//) {
+			$CGI->{item_id} = $1;
+			$doit = 1;
+		}
+		elsif ($CGI->{item_id_left}) {
+			$CGI->{item_id} = delete $CGI->{item_id_left};
+			delete $CGI->{ui_sequence_edit};
+			$doit = 1;
+		}
+		else {
+			delete $CGI->{item_id};
+			delete $CGI->{ui_sequence_edit};
+		}
+		return unless $doit;
+		$Scratch->{ui_location}
+				= $Tag->area( {
+						href => $dest,
+						form => qq{
+							item_id=$CGI->{item_id}
+							item_id_left=$CGI->{item_id_left}
+							ui_sequence_edit=$CGI->{ui_sequence_edit}
+						},
+					});
+		return;
+	}
+
+[/perl]
+
+[if scratch ui_location]
+[comment]Comes from above include[/comment]
+[bounce href="[scratchd ui_location]"]
+[/if]
+
+@_UI_STD_HEAD_@
+
+[comment]
+<!-- sequence_edit: [cgi ui_sequence_edit] -->
+<!-- item_id_left: [cgi item_id_left] -->
+[/comment]
+
+[value name=mv_data_table set=transactions hide=1]
+[if-mm !tables]
+[set ui_error]
+	[L]Not authorized for order administration. Contact administrator?[/L]
+[/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+[tmp can_delete][if-mm advanced order=d]1[/if-mm][/tmp]
+
+[include include/order_delete_archive]
+
+[calc]
+	if ($CGI->{mv_like_spec}) {
+		my @f = split /\0/, $CGI->{mv_like_field};
+		my @s = split /\0/, $CGI->{mv_like_spec};
+		my @q = 'ra=yes';
+		my $found;
+		for(my $i = 0; $i < @f; $i++) {
+			next unless length $s[$i];
+			$found++;
+			push @q, "lf=$f[$i]";
+			push @q, "ls=$s[$i]";
+		}
+		if($found) { $CGI->{ui_text_qualification} = join "\n", @q; }
+		else	   { $CGI->{ui_text_qualification} = "" }
+	}
+	return if $CGI->{ui_text_qualification};
+	return unless
+		$Variable->{ORDER_VIEW_LARGE} or $Config->{Database}{transactions}{LARGE};
+	$Scratch->{ui_location} = $Tag->area( {
+									
+									href => '__UI_BASE__/flex_select',
+									form => q(
+										mv_data_table=transactions
+										page_title=Order select
+										page_banner=Order select
+										ui_searchpage=__UI_BASE__/order
+									),
+								},
+								);
+	return;
+[/calc]
+
+[if scratch ui_location]
+[comment]Comes from above include[/comment]
+[bounce href="[scratchd ui_location]"]
+[/if]
+
+[update values]
+
+[if scratch message]
+<BLOCKQUOTE>
+[scratchd message]
+</BLOCKQUOTE>
+[/if]
+</font>
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[output name=search_box]
+<table align=right>
+	<tr>
+		<td class=s3>
+		<FORM ACTION="[area admin/order_view]">
+                [form-session-id]
+		[L]View order[/L]: <INPUT NAME=order VALUE="[cgi order]" class=s3>
+		<INPUT TYPE=submit VALUE="[L]Go[/L]" class=s3>
+		</FORM>
+		</td>
+		<td>
+    <FORM ACTION="[area @@MV_PAGE@@]">
+    [form-session-id]
+    <INPUT NAME=ui_text_qualification VALUE="" class=s3>
+    <INPUT TYPE=submit VALUE="[L]Limit with search[/L]" class=s3>
+    </FORM>
+		</td>
+	</tr>
+</table>
+
+
+
+[output name=""]
+
+[if cgi ui_text_qualification]
+	[calc]
+		return if $CGI->{mv_like_spec};
+		$Scratch->{page_banner} ||= $Scratch->{page_title};
+		$Scratch->{page_banner} .= errmsg(
+																'-- entries containing "%s"',
+																$CGI->{ui_text_qualification},
+																);
+		return;
+	[/calc]
+[/if]
+
+[search-region more=1 arg="
+		fi=transactions
+		ml=__UI_SZ_LIST_ORDER__
+		md=1
+		st=db
+		[if cgi mv_like_spec]
+			[cgi ui_text_qualification]
+		[elsif cgi ui_text_qualification]
+			se=[cgi ui_text_qualification]
+		[/elsif]
+		[else]
+			co=yes
+			sf=archived
+			se=1
+			op=[scratch archive_sense]
+			sf=deleted
+			se=1
+			op=ne
+			[if cgi only_status]
+			sf=status
+			se=[cgi only_status]
+			op=eq
+			[/if]
+		[/else]
+		[/if]
+		[scratch start_at][set start_at][/set]
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=0
+		[/else]
+		[/if]
+		rf=code,order_date,total_cost,nitems,status,city,state,country,fname,lname,username,company
+"]
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	my $qual = $CGI->{ui_text_qualification} ? "se=$CGI->{ui_text_qualification}" : '';
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = "$qual\nui_sort_option=";
+		$out .= 'n' if $n;
+		return $out unless ($fld eq $f) || ($f eq 'code');
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+
+[output name=top_of_form]
+<FORM ACTION="[process]" METHOD=POST NAME=batch>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+
+[output]
+
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+<tr class=rhead>
+<td>&nbsp;</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=code\n" . sortrev('code');
+	`][L]Order[/L]</A>
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=lname,fname\n" . sortrev('lname');
+	`][L]User[/L]</A>
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=country,state,city\n" . sortrev('country');
+	`][L]Location[/L]</A>
+</td>
+<td class=rhead>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=order_date\n" . sortrev('order_date');
+	`][L]Date[/L]/[L]Time[/L]</A>
+</td>
+<td class=rhead align=right>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
+`][L]Items[/L]</A>
+</td>
+<td class=rhead align=right>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
+`][L]Total[/L]</A>
+</td>
+<td align=right class=rhead>
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=status\n" . sortrev('status');
+`][L]Status[/L]</A>
+</td>
+</tr>
+[search-list]
+<tr [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
+<td>
+<INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
+		[item-calc]
+			my $string = '';
+			if(! $Scratch->{old_browser}) {
+				my $nm = 'checker[item-increment]';
+				push @els, qq{push_el('$nm', '[item-param status]');};
+				$string .= "id=$nm ";
+			}
+			return $string if $Scratch->{archive_nm} eq 'unarchive';
+			$string .= 'CHECKED'
+				if q{[item-param status]} eq $Values->{checked_status};
+			return $string;
+		[/item-calc]
+		>
+[page href="@@MV_PAGE@@"
+	form="
+		[scratch archive_nm]order=1
+		order=[item-code]
+	"]<IMG SRC="[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
+[if scratch can_delete]
+<A HREF="[area
+	href='@@MV_PAGE@@'
+	form='
+		deleteorder=1
+		order=[item-code]
+	']"
+	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+<input type="radio" name="item_radio" value="[item-code]" title="Select target for merge">
+[/if]
+</td>
+<TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></td>
+<TD>
+	[page href=__UI_BASE__/customer_view form="customer=[item-param username]"][item-param lname], [item-param fname][if-item-param company] -- [item-param company][/if-item-param]</A>
+</td>
+<td>[item-filter 30][item-param city], [item-param state] [item-param country][/item-filter]</td>
+<td align=left>[convert-date][item-param order_date][/convert-date]</td>
+<td align=right>[item-param nitems]</td>
+<td align=right>[currency][item-param total_cost][/currency]</td>
+<td align=right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][loc][item-param status][/loc]</A></td>
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan=8>
+<br>
+<B>[L]No orders[/L]</B>
+<br><br>
+</td>
+</tr>
+[/no-match]
+[more-list]
+<tr class=ralt>
+<td colspan=8 align=center>
+<br>
+<b>[msg arg.0="[matches]" arg.1="[value mv_search_match_count]"]Orders %s of %s [scratch archive_label] displayed.[/msg] [L]More orders[/L]:</b> [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+<br>
+&nbsp;
+</td>
+</tr>
+[/more-list]
+</table>
+[/search-region]
+
+[output name=bottom_buttons]
+
+[if scratch can_delete]
+	[button form=batch text="[L]Delete checked[/L]"
+	 no-src="__UI_IMG__delete.gif"
+		extra="class=s3"
+	 link-text-too=1
+	 confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
+	[/button]
+&nbsp;
+[/if]
+
+[if-mm advanced merge_users]
+[button form=batch
+			no-src="[scratch archive_img]"
+			extra="class=s3"
+			link-text-too=1
+			text="Merge orders from checked users to one user"
+			]
+[user-merge from="[cgi order]" to="[cgi item_radio]" from-order=1]
+[/button]
+[/if-mm]
+
+[button form=batch
+			no-src="[scratch archive_img]"
+			extra="class=s3"
+			link-text-too=1
+			text=`
+			my $tmp = "$Scratch->{archive_nm} checked";
+			return errmsg("\u$tmp");
+			`]
+[scratch archive_nm]order=1
+[/button]
+
+<input type=button
+		onClick="location='[area href=__UI_BASE__/spread
+													form="
+														mv_data_table=transactions
+													ui_meta_view=tracking
+													ui_text_qualification=tracking_number=
+													"]'"
+		value="[L]Enter tracking numbers[/L]" class=s3>
+
+[button form=batch
+			no-src="__UI_IMG__icon_merch.gif"
+			link-text-too=1
+			extra="class=s3"
+			text="[L]Ship checked[/L]"
+			]
+ui_sequence_edit=[calc]
+	$CGI->{item_id} = delete $CGI->{order};
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=__UI_BASE__/order_status
+[/button]
+
+		<input
+			type=checkbox
+			name=ship_auto
+			value=1 class=s3>
+				<span title="Ship all lines of all orders, archive[if variable SETTLE_TRANSACTION], settle[/if]" class=s3>[L]Ship all automatically[/L]</span>
+
+[output name=""]
+
+[if !scratch old_browser]
+<script>
+	var stat_array = new Array;
+	function push_el (el, status) {
+		if(stat_array[status] == undefined) {
+			stat_array[status] = new Array;
+// alert('created ' + status + ' array');
+		}
+		var els = stat_array[status];
+		els[els.length] = el;
+	}
+
+	function checkType (type, cond) {
+		var other = false;
+		if(cond == undefined) 
+			cond = true;
+		if(cond != true) 
+			other = true;
+		if(stat_array == undefined) {
+			return;
+		}
+		var i;
+		var alerted;
+		for(i in stat_array) {
+// alert("checking status of " + i);
+			var els = stat_array[i];
+			for (var j = 0; j < els.length; j++) {
+				var el = document.getElementById(els[j]);
+				if(el != undefined) {
+					if( type == 'none' ) {
+						el.checked = false;
+					}
+					else {
+						if( type == 'all' ) {
+							el.checked = true;
+						}
+						else {
+							if(i == type)
+								el.checked = cond;
+							else
+								el.checked = other;
+						}
+					}
+				}
+			}
+			var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
+			var types = ['all', 'none', 'shipped', 'pending', 'waiting', 'partial'];
+			for(var i = 0; i < types.length; i++) {
+				var img = document.getElementById('img_check_' + types[i]);
+				if(img != undefined) 
+					img.src= image_dir + 'box_empty.gif';
+			}
+			var img = document.getElementById('img_check_' + type);
+			img.src= image_dir + 'box_checked.gif';
+		}
+	}
+	[calc]
+		return join "\n", @els, '';
+	[/calc]
+</script>
+<br>
+			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>[L]Check all[/L]</A>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<A HREF="javascript:checkType('none')"><img id="img_check_none" src="__UI_IMG__box_empty.gif" border=0>[L]Uncheck all[/L]</A>
+[loop list="shipped pending waiting partial"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<A HREF="javascript:checkType('[loop-code]')">
+			<img id="img_check_[loop-code]" src="__UI_IMG__box_empty.gif" border=0>[loc]Check all [loop-code][/loc]
+		</A>
+[/loop]
+[/if]
+
+[output name=bottom_of_form]
+</FORM>
+[output]
+
+<!-- ----- END REAL STUFF ----- -->
+
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.19 2005-11-04 05:14:24 mheins Exp $ -->

@@ -1,0 +1,212 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]
+	[if session arg]
+		[description code="[data session arg]"]
+	[else]
+		[item-description]
+	[/else]
+	[/if]
+[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+
+[fly-list code="[data session arg]"]
+[set cross_category][item-field category][/set]
+[set upsell][item-data merchandising upsell_to][/set]
+[set cross_codes][item-data merchandising cross_sell][/set]
+
+  <form action="[area href="ord/basket.html"]" method="POST">
+  <input type="hidden" name="mv_action"  value="refresh">
+  <input type="hidden" name="mv_order_item"  value="[item-code]">
+  [form-session-id]
+
+  <table width="70%" border="0" cellspacing="0" cellpadding="5">
+  <tr valign="middle"> 
+    <td align="left">
+      <h1>[item-description]</h1>
+    </td>
+  </tr>
+  <tr valign="middle"> 
+    <td align="center"> 
+      <table cellspacing="0" cellpadding="3" align="center">
+      <tr> 
+	<td valign="center" align="left"> 
+	  [if-item-field image]
+	    <img src="items/[item-field image]" alt="[item-filter encode_entities][item-description][/item-filter]" title="[item-filter encode_entities][item-description][/item-filter]" border="0">
+ 	  [/if-item-field]
+	</td>
+	<td valign="center" align="center"> 
+	  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+	  <tr>
+	    <td colspan="2">
+	      [item-field comment]
+	    </td>
+	  </tr>
+[comment]
+	This below allows you to put in unlimited extra specs for a product
+	in a file. It needs to be sorted by SKU; after that they are presented
+	in order.
+
+	IT IS NOT A DATABASE.
+
+	It would be quite easy to make it a database with some different
+	code, targeting "select * from specs where sku = '[item-code]'"
+	and appropriate query code.
+[/comment]
+	  [if file products/specs.txt]
+	  [loop search="
+	  	fi=specs.txt
+		st=text
+		sf=sku
+		se=[item-code]
+		op=eq
+		co=yes
+		rf=header,detail
+	  "][on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3></td>
+		</tr>
+	  [/on-match]
+	  [list]<tr>
+	    <td style="contentbar1">
+	      <B>[loop-param header]:</b>
+	    </td>
+	    <td>
+	      [loop-param detail]
+	    </td>
+	  </tr>
+	  [/list]
+	  [on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3></td>
+		</tr>
+	  [/on-match]
+	  [/loop]
+	  [/if]
+	  <tr> 
+	    <td colspan="2">&nbsp;</td>
+	  </tr>
+
+	  <tr>
+	    <td colspan="2">
+	      [if ordered [item-code]]
+	        [msg arg.0="[page ord/basket]" arg.1="</a>"]This item is currently in your %sshopping cart%s.[/msg]
+	        <br>
+	      [/if]
+
+   [error auto=1 show_var=0]
+
+   [if-item-field option_type eq Matrix]
+        [set check_opt]
+				&success=ord/basket
+                mv_sku=mandatory Need to select an option.
+        [/set]
+        <input type=hidden name=mv_form_profile value=check_opt>
+   [/if-item-field]
+
+   [if-item-field option_type eq Simple]
+        [seti check_opt]
+			&success=ord/basket
+            [query
+                list=1
+                sql="select o_group,o_label from options where sku='[item-code]'"
+            ]mv_order_[sql-code]=mandatory Need to select [sql-param o_label]
+			[/query]
+        [/seti]
+        <input type=hidden name=mv_form_profile value=check_opt>
+   [/if-item-field]
+
+		  [table-organize cols=2 table=' ' font="size=1" pretty=1]
+			[item-options td=1 label=1 bold=1 price=1 blank_label="--select--"]
+		  [/table-organize]
+
+	    </td>
+	  </tr>
+			 
+	  <tr> 
+  	    [if-item-data inventory quantity < 1]
+	    <td align="left">
+	      <b>[L]Out Of Stock[/L]<b>
+	        <br>
+	        <a href="[area function/stock_alert [item-code]]">[L]In-Stock Notification[/L]</a>
+	    </td>
+	    [else]
+	    <td align="left">
+		<b>[L]In Stock[/L]</b>
+            </td>
+	    [/else]
+	    [/if-item-data]
+
+	    <td align="right">
+	      [L]Quantity[/L]: <input type="text" name="mv_order_quantity" size="2" value="1">
+	    </td>
+
+	  </tr>
+	  </table>
+	</td>
+      </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="titlebar1">
+
+	<table width="100%">
+	<tr>
+	  <td align="left">
+      		[L]Price[/L]: <b>[item-price]</b>
+	  </td>
+	  <td align="right">					
+
+	    <input type="submit" value="[L]BUY NOW[/L]" class="button2">
+
+	  </td>
+	</tr>
+	</table>
+
+    </td>
+  </tr>
+[if variable FORUM_PRODUCTS]
+  <tr>
+  	<td>
+		[forum top="[item-code]" display_page="forum/display" /]
+		<p>
+		[page href="forum/submit"
+				form="
+					product=1
+					mv_arg=[item-code]
+				"
+		][L]Comment on this product.[/L]</A>
+		</p>
+	</td>
+  </tr>
+[/if]
+  </table>
+
+</form>
+
+[/fly-list]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

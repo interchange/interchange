@@ -1,0 +1,741 @@
+[content-editor name="[cgi ui_name]" ui_page_template="[cgi ui_page_template]" type="page"]
+[pages]
+
+<script language=JavaScript>
+function changed (code, field) {
+	var name = "changed_" + code;
+	silent_revert();
+	cbox = document.getElementById(name);
+	if(cbox != undefined)
+		cbox.checked = true;
+}
+
+function submitted (code) {
+	var name = "changed_" + code;
+	silent_revert();
+	cbox = document.getElementById(name);
+	if(cbox != undefined)
+		cbox.checked = false;
+	return true;
+}
+
+function silent_revert () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML = '[L]Page Attributes/Controls[/L]';
+	return true;
+}
+
+// Don't remove this, called with forms genned by UI::ContentEditor
+function silent_submit () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML
+		= '[L]Page Attributes/Controls[/L] <span class=cmessage>[L]Change saved[/L]</span>';
+	return true;
+}
+
+function change_alert (code) {
+	if(code.length == 0) {
+		code = 'a new component';
+	}
+	var status;
+	status = confirm('You have changed ' + code + ". Choosing OK will lose these changes. Are you sure?");
+	return status;
+}
+
+function check_change () {
+	var el;
+	silent_revert();
+	el = document.getElementById('changed_[page-param ui_name]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page controls');
+	}
+[components]
+	[if-comp-param code]
+	el = document.getElementById('changed_[comp-param code]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('[comp-param code]');
+	}
+	[else]
+	el = document.getElementById('changed_CONTENT');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page content');
+	}
+	[/else]
+	[/if-comp-param]
+[/components]
+	el = document.getElementById('[page-param ui_name]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the page controls');
+	}
+	el = document.getElementById('changed_PREAMBLE');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the PREAMBLE');
+	}
+	el = document.getElementById('changed_POSTAMBLE');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the POSTAMBLE');
+	}
+	return true;
+}
+
+function layback (nam) {
+	var el = document.getElementById(nam);
+
+	if(el != undefined) {
+		el.style.background = '#CCCCCC';
+		el.style.borderStyle = 'dotted';
+		el.style.borderWidth = 'thin';
+	}
+}
+
+function standout (nam) {
+	var el = document.getElementById(nam);
+
+	if(el != undefined) {
+		el.style.background = '#EEEEEE';
+		el.style.borderStyle = 'solid';
+		el.style.borderWidth = 'thin';
+	}
+}
+
+function content_win () {
+	window.name = 'mainwindow[scratch window_name]';
+	var url = '[area
+					href="admin/page_portion"
+					form=|
+						ui_source_form=content_edit
+						ui_source_var=ui_body_text
+						page=[page-param ui_name]
+					|]';
+	window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=600,height=480');
+	return void(0);
+}
+
+var visdone = new Array;
+function visible (index, base) {
+	var ai;
+	var xi;
+	var dosel;
+	var selstd = 'dynform';
+	var clickstd = 'clicker';
+	var picstd = 'picture';
+
+	if(base == undefined || base.length == 0) {
+		selbase = selstd;
+		clickbase = clickstd;
+		picbase = picstd;
+	}
+	else {
+		selbase   = base + '_' + selstd;
+		clickbase = base + '_' + clickstd;
+		picbase = base + '_' + picstd;
+		var found = 0;
+		for(ai = 0; ai < visdone.length; ai++) {
+			if (visdone[ai].value == base) {
+				found = 1;
+				break;
+			}
+		}
+		if(found != 1) 
+			visdone[ai] = base;
+	}
+
+	selnam =  selbase + index;
+	clicknam = clickbase + index;
+	picnam = picbase + index;
+
+	for(ai = 0; ai < visdone.length; ai++) {
+		sb = visdone[ai] + '_' + selstd;
+		cb = visdone[ai] + '_' + clickstd;
+		pb = visdone[ai] + '_' + picstd;
+		for( xi = 0; ; xi++) {
+			nam = sb + xi;
+			cnam = cb + xi;
+			pnam = pb + xi;
+			var el = document.getElementById(nam);
+
+			if(el == undefined) {
+				break;
+			}
+
+			el.style.zIndex = 0;
+			el.style.visibility = 'Hidden';
+
+			layback(cnam);
+			layback(pnam);
+		}
+	}
+
+	for( xi = 0; ; xi++) {
+		nam = selstd + xi;
+		cnam = clickstd + xi;
+		pnam = picstd + xi;
+		var el = document.getElementById(nam);
+
+		if(el == undefined) {
+			break;
+		}
+
+		el.style.zIndex = 0;
+		el.style.visibility = 'Hidden';
+
+		layback(pnam);
+		layback(cnam);
+	}
+
+	if (index < 0) return;
+
+	var element = document.getElementById(selnam);
+	element.style.visibility = 'Visible';
+	element.style.zIndex = 2;
+	standout(clicknam);
+	standout(picnam);
+
+	return;
+}
+
+</script>
+
+<table width="98%" cellspacing=0 cellpadding=0>
+<tr>
+	<td colspan=2>
+	<form name=overall action="[area @@MV_PAGE@@]" method=POST>
+	<input type=hidden name=ui_content_op value="modify">
+	<input type=hidden name=ui_name value="[page-param ui_name]">
+	<input type=hidden name=ui_type value=page>
+	<input type=hidden name=mv_action value="back">
+		<table width="100%" cellpadding=0 cellspacing=0 cellmargin=3>
+		<tr>
+			<td id=clicker>
+	<h3 id="silent_display">[L]Page Attributes/Controls[/L]</h3>
+			[L]Name[/L]: <b>[page-param ui_name]</b><BR>
+			[L]Source[/L]: [page-param ui_source]
+		[page-sub foo_sub]
+			shift;
+			my $item = shift;
+			## Set up access to the controls
+			for(keys %$item) {
+				$control{$_} = $item->{$_};
+			}
+			return;
+		[/page-sub]
+		[page-exec foo_sub][/page-exec]
+			</td>
+			<td align=right>
+			[L]Template[/L]: [display
+							name=ui_page_template
+							type=select
+							default="[page-param ui_page_template]"
+							passed="[content-info templates=1]"
+							]<br>
+
+[set [L]Publish[/L]]
+ui_content_op=publish
+mv_nextpage=__UI_BASE__/content
+[/set]
+[set [L]Cancel[/L]]
+ui_content_op=cancel
+mv_nextpage=__UI_BASE__/content
+[/set]
+[set [L]Preview[/L]]
+ui_content_op=preview
+mv_nextpage=__UI_BASE__/content_preview
+[/set]
+<input
+	style="font-weight: bold"
+	type=submit onClick="return check_change()"
+	name="mv_click"
+	value="[L]Publish[/L]"
+> &nbsp;
+<input
+	type=submit
+	onClick="return confirm(
+			'This will destroy all edits you have made to this page '
+			+ 'since the last Publish operation.\n Are you sure?'
+		)"
+	name="mv_click"
+	value="[L]Cancel[/L]"
+> &nbsp;
+<input
+	type=submit
+	name="mv_click"
+	value="[L]Preview[/L]"
+> &nbsp;
+<input
+	type=submit
+	onClick="return confirm(
+			'[L]This may delete components from your configuration.[/L]' +
+			'[L]Continue?[/L]'
+		)"
+	value="[L]Change template[/L]"
+
+			</td>
+			<td id=clicker1>
+	[L]Page controls[/L]
+	<input type=checkbox
+			name="changed_[page-param ui_name]"
+			id="changed_[page-param ui_name]"
+			value=1><br>
+[loop list="[page-param ui_display_order]"]
+	<A
+		HREF="javascript:void(0)"
+		onClick="visible(1)"
+		title="[L]edit page controls[/L]"
+	>[loop-code]</A><br>
+[/loop]
+
+			</td>
+		</tr>
+		</table>
+	</form>
+	</td>
+</tr>
+<tr>
+	<td width="20%" align=right valign=top>
+<br>
+<div id=clicker0
+	 style="
+	 	padding: 1px;
+		width: 82%;
+		border-style: solid;
+		border-width: thin;
+	 ">
+		<A
+			href="javascript:void(0)"
+			title="[L]edit page preamble[/L]"
+			onClick="visible(0)"
+		>[L]PREAMBLE[/L]</A>&nbsp;<input
+			type=checkbox
+			name=changed_PREAMBLE
+			id=changed_PREAMBLE
+			value=1>
+</div>
+[tmpn CONTENT_shown][/tmpn]
+[components]
+	[comp-sub tmp_slot]
+		return ++$slot;
+	[/comp-sub]
+<div id="comp_clicker[comp-increment]"
+	 style="
+	 	padding: 1px;
+		width: 90%;
+		border-style: solid;
+		border-width: thin;
+	 ">
+	[if-comp-param where]
+		<A
+			HREF="javascript:void(0)"
+			TITLE="edit [comp-param component]"
+			onClick="visible([comp-increment],'comp')"
+		>[if-comp-param component][comp-param component][else]-empty-[/else][/if-comp-param]</A>&nbsp;<input
+				type=checkbox
+				name=changed_slot[comp-increment]
+				id=changed_slot[comp-increment]
+				value=1>
+	[else]
+	[set CONTENT_shown]1[/set]
+	 <A	HREF="javascript:void(0)"
+			style="font-size: larger; font-weight: bolder"
+			onClick="visible([comp-increment],'comp')"
+			title="[L]edit page content[/L]"
+		>CONTENT</A>&nbsp;<input
+			type=checkbox
+			name=changed_CONTENT
+			id=changed_CONTENT
+			value=1>
+	[/else]
+	[/if-comp-param]
+</div>
+[/components]
+[if !scratch CONTENT_shown]
+	 <A	HREF="javascript:void(0)"
+			style="font-size: larger; font-weight: bolder"
+			onClick="visible('only','comp')"
+			title="[L]edit page content[/L]"
+		>CONTENT</A>&nbsp;<input
+			type=checkbox
+			name=changed_CONTENT
+			id=changed_CONTENT
+			value=1>
+[/if]
+<div id=clicker2
+	 style="
+	 	padding: 1px;
+		width: 82%;
+		border-style: solid;
+		border-width: thin;
+	 ">
+		<A
+			href="javascript:void(0)"
+			title="[L]edit page postamble[/L]"
+			onClick="visible(2)"
+		>[L]POSTAMBLE[/L]</A>&nbsp;<input
+			type=checkbox
+			name=changed_POSTAMBLE
+			id=changed_POSTAMBLE
+			value=1>
+	
+</div>
+[if-page-param ui_page_image]
+<IMG SRC="[page_param ui_page_image]">
+[/if-page-param]
+[page-param ui_page_picture]
+
+</td>
+<td width="80%" align=center valign=center>
+<div
+    style="
+            Position:Relative;
+            Left:0; Top:0; Height:100%; Width:100%;
+            Visibility:Visible;
+            z-index:1;
+	">
+	<div 
+		id=comp_dynform0
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute;
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility:Visible;
+				z-index:0;
+				background: #EEEEEE;
+		">
+		<blockquote>
+		<h2>[L]Edit area[/L]</H2>
+		[L]When you select an element to the left, it will be edited here.[/L]
+		</blockquote>
+	</div>
+[components]
+	<div
+		id="comp_dynform[comp-increment]"
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute; 
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+			">
+	[if-comp-param where]
+	[comp-param _editor_table]
+	<p>
+	<div
+		align=left
+		valign=bottom
+		border=1
+		style="
+				border-style: inset;
+				border-width: thin;
+				padding: .25in;
+				text-align: left;
+				margin: 1in;
+				font-size: larger;
+				background: #DDDDDD;
+			"
+	>
+	[if-comp-param component]
+	<b>[L]Name[/L]</b>: <A HREF="[area
+						href=@@MV_PAGE@@
+						form=auto
+						ui_type=component
+						ui_name=[comp-param component]
+					]" TARGET="_blank">[comp-param component] - [content-info code="[comp-param component]" label=1]</a><br>
+	[else]
+		<B>[L]No component here[/L]</B><br>
+	[/else]
+	[/if-comp-param]
+	<b>Class</b>: [comp-param class]<br>
+	<b>Where</b>: <A HREF="[area
+						href=@@MV_PAGE@@
+						form=auto
+						ui_type=template
+						ui_name=[page-param ui_page_template]
+					]" TARGET="_blank">[comp-param where]</A><br>
+	<b>Slot</b>: [comp-increment]<br>
+	</div>
+	[else]
+
+[page-calc]
+	$page_content = $Row->{CONTENT};
+	$page_preamble = $Row->{PREAMBLE};
+	$page_postamble = $Row->{POSTAMBLE};
+	return;
+[/page-calc]
+
+		[table-editor
+			action=return
+			height.ui_body_text="38"
+			width.ui_body_text="100%"
+			no-table-meta=1
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			form-name=content_edit
+			href="silent/ce_modify"
+			item_id="CONTENT"
+			js_changed=changed
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content|
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			top-buttons-rows=1
+			no_meta=1
+			override.ui_body_text=`$page_content`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			filter.ui_body_text="linkdecode"
+			widget.ui_body_text="textarea"
+			view=ui_component
+			form-extra=|
+			  [if-comp-param where]
+				onSubmit="submitted('[comp-param where]'); return check_change()"
+				onReset="submitted('[comp-param where]')"
+			  [else]
+				onSubmit="submitted('CONTENT'); return check_change()"
+				onReset="submitted('CONTENT')"
+			  [/else]
+			  [/if-comp-param]
+			|
+		][/table-editor]
+		
+	[/else]
+	[/if-comp-param]
+	</div>
+[/components]
+
+[page-calc]
+	$page_content = $Row->{CONTENT};
+	$page_preamble = $Row->{PREAMBLE};
+	$page_postamble = $Row->{POSTAMBLE};
+	return;
+[/page-calc]
+
+[if !scratch CONTENT_shown]
+
+	<div
+		id="comp_dynformonly"
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute; 
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+			">
+
+		[table-editor
+			action=return
+			height.ui_body_text="38"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			form-name=content_edit
+			href="silent/ce_modify"
+			item_id="CONTENT"
+			js_changed=changed
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content<br><br><input type=button onClick="content_win();" Value="[L]Edit in Browser[/L]">|
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			no-table-meta=1
+			override.ui_body_text=`$page_content`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			widget.ui_body_text="textarea"
+			view=ui_component
+			form-extra=|
+				onSubmit="submitted('CONTENT'); return check_change()"
+				onReset="submitted('CONTENT')"
+			|
+		][/table-editor]
+
+	</div>
+
+[/if]
+
+	<div
+		id=dynform0
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute;
+				Left:0; Top:0; Width:100%; Height: 100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+		">
+		[table-editor
+			action=return
+			height.ui_body_text="10"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			href="silent/ce_modify"
+			item_id="PREAMBLE"
+			js_changed=changed
+			label.ui_body_text="&nbsp;&nbsp;&nbsp;Preamble"
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			no-table-meta=1
+			override.ui_body_text=`$page_preamble`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			widget.ui_body_text="textarea"
+			view=ui_component
+			form-extra=|
+				onSubmit="submitted('PREAMBLE'); return check_change()"
+				onReset="submitted('PREAMBLE')"
+			|
+		][/table-editor]
+		<div
+			align=left
+			valign=bottom
+			border=1
+			style="
+					border-style: inset;
+					border-width: thin;
+					padding: .25in;
+					text-align: left;
+					margin: 1in;
+					font-size: larger;
+					background: #DDDDDD;
+				"
+		>
+		<b>[L]Name[/L]</b>: [L]Page preamble[/L]<br>
+		<b>[L]Slot[/L]</b>: [L]N/A[/L] ([L]precedes all slots and control settings[/L])<br>
+		</div>
+	</div>
+	<div
+		id=dynform1
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute;
+				Left:0; Top:0; Width:100%; Height: 100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+		">
+		[page-param _editor_table]
+		<div
+			align=left
+			valign=bottom
+			border=1
+			style="
+					border-style: inset;
+					border-width: thin;
+					padding: .25in;
+					text-align: left;
+					margin: 1in;
+					font-size: larger;
+					background: #DDDDDD;
+				"
+		>
+		<b>Name</b>: [L]Page controls[/L]<br>
+		<b>Slot</b>: [L]N/A[/L] ([L]precedes all except preamble[/L])<br>
+		</div>
+	</div>
+	<div
+		id=dynform2
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute;
+				Left:0; Top:0; Width:100%; Height: 100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+		">
+		[table-editor
+			action=return
+			height.ui_body_text="10"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			href="silent/ce_modify"
+			item_id="POSTAMBLE"
+			js_changed=changed
+			label.ui_body_text="&nbsp;&nbsp;&nbsp;Postamble"
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			no-table-meta=1
+			override.ui_body_text=`$page_postamble`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			widget.ui_body_text="textarea"
+			view=ui_component
+			form-extra=|
+				onSubmit="submitted('POSTAMBLE'); return check_change()"
+				onReset="submitted('POSTAMBLE')"
+			|
+		][/table-editor]
+		<div
+			align=left
+			valign=bottom
+			border=1
+			style="
+					border-style: inset;
+					border-width: thin;
+					padding: .25in;
+					text-align: left;
+					margin: 1in;
+					font-size: larger;
+					background: #DDDDDD;
+				"
+		>
+		<b>[L]Name[/L]</b>: [L]Page postamble[/L]<br>
+		<b>[L]Slot[/L]</b>: [L]N/A[/L] ([L]after all slots and control settings[/L])<br>
+		</div>
+	</div>
+</div>
+[components]
+[if cgi ui_content_pos]
+	<script>
+		visible([calcn]
+					$CGI->{ui_content_pos} + 1
+				[/calcn], 'comp')
+	</script>
+[else]
+	[if-comp-param !code]
+	<script>
+		visible([comp-increment], 'comp');
+	</script>
+	[/if-comp-param]
+[/else]
+[/if]
+[/components]
+</td>
+</tr>
+</table>
+[/pages]
+[/content-editor]
+[comment]
+<xmp>
+[dump content_edit]
+</xmp>
+[/comment]

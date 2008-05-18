@@ -1,0 +1,8 @@
+__NAME__ category
+
+mv_search_field=category
+mv_return_fields=0,artist,title,price
+mv_case=yes
+mv_last=1
+
+__END__

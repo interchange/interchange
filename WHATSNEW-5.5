@@ -1,0 +1,807 @@
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+                       (since the version 5.4 branch)
+
+------------------------------------------------------------------------------
+
+See UPGRADE document for a list of incompatible changes.
+
+
+Interchange 5.5.3 released on 2008-05-17.
+
+Core
+----
+
+* Extended set_slice() to allow control of upsert behavior:
+
+  Calls to set_slice() have to date been forced to use the upsert model of
+  data manipulation. This can be a highly desirable editing model, but it
+  also has disadvantages, particularly in the context of the 'set' and
+  'autoset' form actions, which imply--but don't enforce--a distinction
+  between insert and update at the data-storage level.
+
+  The effects on insert can be particularly insidious, where one faces
+  having the assumed behavior on duplicate primary keys thwarted by a
+  surreptitious conversion to a SQL update. In such an instance, instead of
+  existing data being protected by a duplicate primary key error, the
+  extant record is silently replaced by the data from the insert. Detecting
+  this condition, particularly on a large table, is virtually impossible.
+
+  While the results of an update-to-insert adjustment are more benign, it
+  still presents a nuisance if a strict update is intended. To correct it,
+  one merely needs to delete the newly created, unanticipated row, and such
+  behavior does not destroy existing data.
+
+  To enforce update or insert, set_slice()'s $key arg can be optionally
+  passed as an array ref, essentially replacing the existing call:
+
+    set_slice($key, $fary, $vary)
+
+  with
+
+    set_slice([$opt, $key], $fary, $vary)
+
+  where $opt->{dml} is set to the desired value. $opt as a hash ref is
+  used so that any possible future opt-style params can simply be loaded
+  into the existing calling structure.
+
+  Change details:
+
+  * Default behavior for set_slice() is 'upsert'. If you do nothing to
+    your code or catalog, the behavior remains unchanged.
+
+  * $opt->{dml} can be 'insert', 'update', or anything else. If it's
+    anything else, it has no specific behavior currently. It defaults the
+    value 'upsert' just to be somewhat self-documenting and open up the
+    possibility of behaviors based on that value in the future.
+
+  * Despite the decision to key it off of 'dml', this has no effect on
+    deletes. Deletes have no ambiguous behavior, reflected in the fact that
+    deletes have their own dedicated method.
+
+  * Change only has core impact when processing requests through
+    Vend::Data::update_data(). However, any direct calls to set_slice() may
+    avail themselves of the new feature simply by overloading the $key arg
+    in the same fashion.
+
+  * Behavior of Vend::Data::update_data() can be in three modes,
+    controllable by the new 'dml' pragma.
+
+    + No pragma setting works in historic mode, with upsert behavior.
+
+    + "Pragma dml=preserve" restricts inserts to insert-only, but allows
+      the fall-through behavior from update to insert. As the name preserve
+      implies, it means no existing data can be clobbered.
+
+      The advantage to preserve is the easy use of set_slice() as a
+      record-cloning operation. In the table editor, one can clone a
+      record by simply changing the PK. Without this behavior, one must
+      completely re-enter existing data to the new key's name to clone.
+
+    + "Pragma dml=strict" forces update or insert to only perform the
+      requested action.
+
+  Removed the option available in some polymorphs of set_slice that allowed
+  key/value pairs to be passed in as a simple array.
+
+* Fixed bug that caused change of delimiter for all loops on a page.
+
+* Skip eval in [perl] blocks if there is no code to eval, which speeds up
+  [perl] blocks used only for the side-effect of opening database handles.
+
+* Changed syntax for option to use custom SQL as a counter.
+
+  This allows something other than a plain database sequence to be used to
+  replace counter files, for example to allow character prefixes or suffixes
+  with sequences, or to avoid writing files locally when in a cluster
+  environment.
+
+  For example, if you create a function called "custom_counter" in PostgreSQL,
+  you could set up catalog.cfg like this:
+
+  UserDB  default   sql_counter  "userdb:SELECT custom_counter('users')"
+  Route   default   sql_counter  "transactions:SELECT custom_counter('orders')"
+
+  And whatever the custom_counter function returns will be used by Interchange.
+
+* Removed original Vend::Swish, and renamed prior Vend::Swish2 to Vend::Swish.
+  This module uses the Swish Perl API instead of calling a Swish subprocess
+  and dealing with shell escapes.
+
+Filters
+-------
+
+* Made html2text filter also strip <b>, <i>, and <u> start & end tags.
+
+Widgets
+-------
+
+* Add type_empty parameter to table editor. This allows the selection of a
+  different widget type if the length of the data is zero. Found on the
+  extended page of the meta editor for the field.
+
+  An example of use would be a "created" field in a table, which is a
+  DATETIME type. If the value of the field is the empty string or NULL,
+  set type_empty to "datetime" to put a date widget in. Make the normal
+  widget type be "value", which allows you to just display the data when
+  the value is already set.
+
+* Made date widget formatting shorthand apply to time widget as well. User
+  widgets called time* are unaffected if they don't use a non-word character
+  in the callout. Examples:
+
+  time.ampm    { type => 'time', ampm => 1 }
+  time.blank   { type => 'time', blank => 1 }
+  time.8-23    { type => 'time', start_hour => 8, end_hour => 23 }
+  time.half    { type => 'time', minutes => 'half_hourly' }
+
+Standard demo
+-------------
+
+* Cleaned up spurious meta_header scratch variable set on two pages.
+
+* Make MySQL do right thing with mod_time by setting to PREFER_NULL and making
+  the widget in the table editor be 'value'.
+
+Packaging
+---------
+
+* Removed copied CPAN modules in extra/ and associated code. Commonly needed
+  CPAN modules are in Bundle::Interchange or Bundle::InterchangeKitchenSink.
+
+* Moved IniConf.pm (used by makecat) into dist/lib. On CPAN it is marked as
+  deprecated, so make sure a copy is available here until we switch to a
+  different module.
+
+* Converted a few bashisms to standard Bourne shell compatibility (RT #194).
+
+Extra tools
+-----------
+
+* Added new eg/iclint tool for quick-and-dirty ITL syntax checking.
+
+* Improved eg/check_perl_itl error detection.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.5.2 released on 2008-04-29.
+
+Core
+----
+
+* Allow box-based widgets access to VALUE from option template (in addition
+  to LABEL). With VALUE added, the following template becomes possible:
+
+    option_template => "<img src='/images/{VALUE}.gif'>&nbsp;{LABEL}"
+
+* Fixed the MinQuantityField and MaxQuantityField enforcement code so that
+  it takes the entire cart into account when SeparateItems is in use.
+
+* New SocketReadTimeout global configuration parameter that controls
+  the amount of time (in seconds) that Interchange will wait for incoming
+  request data to arrive on an open socket.  This was previously hard-coded
+  to one second, but that value was found to be too slow for some dial-up
+  Internet users.
+
+* Fix to the "random" parameter used by looping tags.
+
+    -- If set to "no" or "false" or "0" then return all of the results
+       their original order (previously returned one random result).
+
+    -- If set to "yes" or "true" then then return all results in a
+       random order (again, previously returned one random result).
+
+    -- If set to a numeric > 0 then return that many random results.
+
+    -- If set to a numeric > the available results then return all
+       results in a random order (previously returned the original
+       results in the original order).
+
+  If you're using "random=yes" to request one random result then you
+  will need to change your code to use random=1 instead.
+
+* Altered the DomainTail directive to take subdomains of various ccTLDs
+  into account.  For example, if "foo.example.co.uk" pays a visit then
+  "example.co.uk" as the domain tail will be used instead of just "co.uk".
+
+  This is done with a new CountrySubdomains directive.  A predefined block
+  of country subdomains is listed in a new subdomains.cfg file, which
+  should be "included" into the interchange.cfg file.
+
+* Modified MaxQuantityField to support more than one quantity "[table:]column"
+  specification.  The column values get added together to create the maximum
+  quantity value.
+
+  The idea is that you might have an "on hand" quantity and an "on order"
+  quantity that you want to consider when allowing orders.
+
+* Created a new [PREFIX-include] loop sub-tag.  This works just like the
+  [include] tag, except that it allows other [PREFIX-*] sub-tags to be parsed
+  from within the included file. Files included with [PREFIX-include] cannot
+  contain further [PREFIX-include] sub-tags.
+
+* Allow for the proper display of product options that use text or textarea
+  widgets by showing the actual value if a label doesn't exist for the value.
+
+* You can now change the default display type for Matrix widgets (ie if you
+  want the default to be seperate widgets instead of single widget) with a line
+  in catalog.cfg like this:
+
+    Options Matrix display_type separate
+
+* New Multiple CodeDef flag to indicate that a widget can return multiple
+  selections.  Usage example:
+
+    CodeDef checkbox Multiple 1
+
+* Added some simple options code to Matrix.pm so that it can support mixed
+  Matrix/Simple option products.
+
+* Set new Multiple flag for checkbox, movecombo, check_nbsp and multiple
+  widgets.
+
+* Log missing order reports.
+
+* Unlinking the existing session file before re-writing it causes a race
+  condition in the FETCH method, where if it checks with a concurrent request
+  on the same session while the file is missing, the failure causes Interchange
+  to create a new session for the user. As long as the file exists continuously,
+  the lock kicks in and concurrent requests serialize appropriately.
+
+* New universal "hide" attribute.  You can now set the attribute hide=1 for any
+  tag to suppress its output.  For example [calcn hide=1]$foo='bar'[/calcn] will
+  still set $foo to bar, but won't output bar from the tag itself.
+
+* Recognize "cc" and "bcc" headers in Route settings for emails generated
+  directly by the routes.
+
+* Avoid multiple identical cookies (#150).
+
+* Job server displays catalog and job name in $0.
+
+* Renamed catalog_init SpecialSub to request_init to accommodate for a hook
+  called after catalog configuration (#160).
+
+* Allow specifying alternate location of counter files in the Database directive
+  with AUTO_NUMBER_FILE setting.
+
+* Add option to use a custom SQL function as a counter.
+
+  This allows something other than a plain database sequence to be used to
+  replace counter files, for example to allow character prefixes or suffixes
+  with sequences, or to avoid writing files locally when in a cluster
+  environment.
+
+* Allow [if var ...] as shorthand for [if variable ...].
+
+* Quell threaded perl warning for 5.8.8 and above.
+
+* Fail gracefully on bad searches (#164).
+
+* Make global ActionMap input consistent with catalog ActionMaps (RT #48), such
+  that they all have the action at the beginning of the path.
+
+* Add new Preload catalog directive. This is just like Autoload but runs at the
+  earliest possible stage of page processing, which allows tweaking the session,
+  path, robot status, cookie handling, authorization, cookie handling, etc.
+
+* Add new UserTrack boolean catalog directive, which enables or disables
+  sending the X-Track HTTP response header. Off by default, but formerly was on.
+
+* Allow the shipping.asc weight to be modified with weight_callout SpecialSub.
+
+  This SpecialSub modifies the 'weight' criteria in shipping.asc. It does not
+  affect other calculations, such as the [weight] usertag. In the following
+  example, it is used to exclude items that are part of a free shipping
+  promotion from the calculation of the shipping cost. That is, if two out of
+  three items qualify for free shipping, then only the weight of the third
+  item would be used for weight-based shipping methods.
+
+  # Override the normal shipping.asc weight calculations to take the free
+  # shipping promotion into consideration. Uses custom is_free_shipping and
+  # weight Item Modifiers. Only non-free-shipping items have their weight
+  # included.
+  Sub custom_weight <<EOF
+  sub {
+      my ($normal_weight) = @_;
+
+      my $new_weight = 0;
+      for my $item (@$Items) {
+          $new_weight += $item->{weight} * $item->{quantity}
+              unless $item->{is_free_shipping};
+      }
+      return $new_weight;
+  }
+  EOF
+  SpecialSub weight_callout custom_weight
+
+* Allow default error labels to be set in the Locale.
+
+  The previous behavior was to use the variable name when no label was given.
+  This change causes it to first check for a default label in the form of an
+  error_label_${variable name} entry in the Locale configuration before
+  falling back on just the variable name. As such, it is fully backwards
+  compatible.
+
+  This is useful if you use Locale to override the error messages in core
+  modules and also want to override the display of the label without setting
+  up or modifying the profile everywhere the error may be displayed (with
+  labels) on the site. For example:
+
+  Locale en_US <<EOF
+  {
+    # Override an error in Order.pm with one specific to this catalog.
+    "'%s' for item %s is not numeric/integer",
+    "We do not offer fractions of a product. (The quantity you entered was '%s'.)",
+
+    # Also override the error label.
+    "error_label_mv_order_quantity",
+    "Quantity",
+  }
+  EOF
+
+* Allow rounding of negative numbers by round_to_frac_digits routine.
+
+* Allow empty field changes to stick, fixing "(none)" image selections.
+
+* Give the "flypage" SpecialSub the choice of returning a plain SKU value
+  rather than the overly-complicated { mv_results => [[$sku]] } hashref.
+
+* Added a cache to save on lookups in the min/max quantity enforcement code.
+
+* Stop including an old version of HTML::Entities with Interchange.
+  Use the current CPAN version instead.
+
+* Remove never-used dump command, which is only for the DBM sessions that
+  no one uses any more.
+
+* Fix problems caused by prototype mismatch in Perl 5.10.
+
+* UserDB: Allow saved shipping and billing addresses to be returned as a raw
+  hashref for use in Perl.
+
+* Add ability to set attrDefault for the Widget codedef type, which then
+  transmits that to the opt hash prior to widget routine call.
+
+* Add ability to define multiple columns in the same Database COLUMN_DEF line.
+
+* Make explicit the various implicit dependencies between PreFork,
+  PreForkSingleFork, and StartServers.
+
+  PreForkSingleFork should only ever affect behavior in conjunction with
+  PreFork true, ensuring the prefork code path is entirely controllable by
+  the value of PreFork.
+
+  Fixed condition on StartServers where a positive value for that parameter
+  when not in PreFork mode spawned a StartServers number of superfluous
+  daemons that were never used. Now, StartServers is effectively ignored
+  unless PreFork is also true.
+
+* UserTag aliases now allow names tags to be specified using hyphens or
+  underscores. Previously, only underscores were allowed.
+
+* Disallow negative tax in salestax() routine if no_negative_tax pragma is set.
+
+* Allow comments (starting with "#" and ending with EOL) in the Robot*
+  directive lists, and added more robots to the list.
+
+* Add new options for determining date of events in the userdb:
+
+    UserDB <profile> created_date_iso   <field_name>
+    UserDB <profile> created_date_epoch <field_name>
+    UserDB <profile> updated_date_iso   <field_name>
+    UserDB <profile> updated_date_epoch <field_name>
+
+    created_date_iso
+        Place a string ISO date in this field when user created.
+    created_date_epoch
+        Place a string epoch date in this field when user created.
+        Only works if no iso date defined.
+    updated_date_iso
+        Place a string ISO date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+    updated_date_epoch
+        Place a string epoch date in this field when user updated via
+        [userdb save] (i.e. set_values()).
+        Only works if no iso date defined.
+
+   Default is not to use this feature, though this is now in
+   the standard template:
+
+        UserDB    default    created_date_epoch created
+        UserDB    default    updated_date_epoch updated
+
+   along with the appropriate fields.
+
+* During compilation of custom routines, keep warnings and errors separated
+  from valid Perl that doesn't resolve to a sub ref.
+
+* Avoid crash on non-hashes in Filter directive.
+
+Tags
+----
+
+* Added scratch option to [get-url] for saving binary content into a scratch
+  variable instead of returning it.
+
+* Fixed invalid JavaScript generated by the button tag (#135).
+
+* Allow [include] et al. to scan the local TemplateDir as well as the global
+  version.
+
+* [save-cart]: Don't delete the cart after saving if the new "keep" parameter
+  is set true.
+
+* Respect new "charset" parameter for [email] to allow sending UTF-8 emails.
+
+* Correct output of value-extended after successful file write.
+
+  The docs here:
+
+  http://www.icdevgroup.org/interchange-doc-5.2.0/frames/ictags_121.html
+
+  state, and it makes intuitive sense, that Perly true should be returned when
+  a file is successfully written. This was not the case before.
+
+* Fix bug where previous rows values were left in $Row if [loop] was iterated
+  with [PREFIX-next].
+
+* Don't add a ".html" suffix to the "process" page URI if
+  [process add_dot_html=no] is specified. If the "add_dot_html" parameter is
+  not specified then the "mv_add_dot_html" scratchpad variable will be in
+  control of the suffix.
+
+* In [image] tag, quote filename when shelling out in case it contains spaces.
+
+Payment
+-------
+
+* Removed inoperative WellsFargo payment module.
+
+* Added Sage payment gateway. http://www.sagepayments.com/
+
+* Added Getitcard payment module.
+
+* Added Protx2 payment module.
+
+* Authorize.net: Support auto-cleared mv_credit_card_cvv2 if cvv2 isn't set,
+  and send customer IP.
+
+Jobs
+----
+
+* Force email notification of errors, can be prevented with ignore_errors
+  setting.
+
+* Inclusion of global jobs can be forced with "Jobs UseGlobal 1"
+
+Standard demo
+-------------
+
+* Fixed a bug which caused overwriting a forum post.
+
+* Fixed a security bug where an attacker could craft a URI that tricks
+  Interchange into executing arbitrary Perl code.  The Perl code would be
+  subject to the Safe constraints of course, but could still be devastating
+  to the security of the target website.
+
+* Display modified date on Saved Carts / Recurring Order page in a human
+  readable format (#37).
+
+* Add Croatian & Slovenian localization (RT #4).
+
+UI
+--
+
+* Function UI::Primitive::list_images(), used by imagehelper, now works
+  correctly with directory paths whose last component is a directory symlink
+  (such as "path/to/symlink/*.jpg")
+
+* It is now possible to have multiple imagehelper widgets that use different
+  suffix filter on the same page. (such as 'images/*.jpg' and 'images/*.gif')
+
+* Matrix options editor can now display more than 50 variants via the use of a
+  more-list.
+
+* Fix sort order of generated variant codes so that they match the code that is
+  ordered from the flypage.
+
+* You can now mark individual options to be treated as "simple options" even
+  though the product is set to Matrix options.  This is useful if you have one
+  or more options that you don't wish to track for inventory purposes or if you
+  want to use a text or textarea widget (which is not possible with matrix
+  options).  Requires the addition of an o_simple column to the options table
+  for existing catalogs.
+
+* New [widget-info] UI tag.
+
+* Option editor will now correctly generate variants for options that use
+  widgets capable of multiple selections (ie, multiple or checkbox widgets).
+
+* Add new ynzero widget, which does a 1/0 yes/no for integer type field.
+
+* Fixed bug with component cloning
+
+Linking
+-------
+
+* Improvements to Interchange::Link: Return an HTTP 404 response code when
+  appropriate. Avoid segmentation faults on broken pipe.
+
+Packaging
+---------
+
+* Apache 2 is now default webserver for Debian packages.
+
+* Added missing dbconfig-common hooks and set defaults for database name and
+  database user to interchange-cat-standard Debian package.
+
+Extra tools
+-----------
+
+* Added -o option to eg/te, which writes output to a file instead of calling
+  an editor.
+
+* Added eg/merge-tab-files, helpful for merging tab-delimited files on
+  matching keys.
+
+* Added eg/check_perl_itl, a helper for syntax-checking [perl] and [calc]
+  blocks in ITL pages from within an editor.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.5.1 released on 2007-08-21.
+
+Core
+----
+
+* Removed odd formatting from --add entry in interchange manual page.
+
+* Fixed a DoS exploit. A carefully crafted HTTP POST request could cause
+  an Interchange page processor to hang until it's killed by Interchange's
+  periodic housekeeping routine. If several of these requests are received
+  in quick succession then it could be possible to disable all of the page
+  processors, rendering Interchange unresponsive for a while. Fixed by
+  Kevin Walsh; pointed out by Donald Alexander.
+
+* Removed unused AdminHost global configuration directive.
+
+* In &Vend::Table::DBI::set_row, avoid unwanted expansion of array when we
+  have PREFER_NULL fields and number of fields passed is one.
+
+* Added Vend::Swish2 module provided by Brian Miller <brian@endpoint.com>.
+  This is superior to Vend::Swish, because instead of the awkward way to
+  interface with Swish-e by running the binary it uses the Swish Perl API.
+
+  Note: This module will replace Vend::Swish after we ensure as much backward
+  compatibility as possible.
+
+* Allow specification of one additional include directory for specific
+  modules, specified like this:
+
+  Require module Vend::Swish /usr/lib/swish-e/perl
+
+* Terminate search if mv_min_string condition isn't met.
+
+* Make [sql-quote] list tag to work properly with multiple lines.
+
+* Fixed case-insensitive searches for different locales.
+
+* Fix the [error] tag so it does not attempt to replace format specifiers other
+  than %s in the text or std_label attributes.
+
+* Vend::SQL_Parser required LIMIT clause to be lowercase when it should be
+  case-insensitive.
+
+* Issue error message if subroutine for PREFIX-exec is missing.
+
+* Fix [on-match]/[no-match] for loop lists without matchlimit generated from
+  embedded Perl objects
+
+* Fixed problem where both set_row() and set_slice() would try to get the key
+  from last_sequence_value() for returning even if we already know the key and
+  even on an UPDATE which can cause problems.
+
+* New "timecard" round-robin style counters added with the timecard_stamp and
+  timecard_read subs in Util.pm.  These are now used for better control of the
+  session per IP lockouts (when RobotLimit is set).  See CVS log for more
+  details (#2).
+
+* lockout specialsubs will now override session per IP lockouts properly (#3).
+
+* Fixed error where the wrong tag name can sometimes appear in [calc] error
+  messages (#7).
+
+* Superfluous Vend::Interpolate::sort_cart function removed (#70).
+
+* set_slice now skips updates on existing records when we have only key
+  columns (#98).
+
+* Change [shipping-desc] to allow access to arbitrary keys in the shipping
+  configuration.
+
+* Fixed problem where only the last shipping policy will get stored if the
+  multi-line format is used in shipping.asc.
+
+* Fixed problem where options are not converted and stored properly on all
+  shipping policies.
+
+* Moved more code into the new process_new_beginning sub and cleaned up other
+  code in Ship.pm.
+
+* Added "file" (readable file) and "executable" (executable file) as extra
+  Require directive tests.
+
+* Added a new TABLE_COMMENT modifier to the Database directive to allow
+  a short comment to be attached to MySQL and PostgreSQL tables.
+
+* Delay "Server started" message as long as possible.
+
+* Disable SOAP and display error when Vend::SOAP fails to load (#46).
+
+* Remove catalog status files when removing catalog. Also call remove_catalog at
+  server stop -- would be nice for cleanup anyway (#95).
+
+* Fixed problem where RPC mode would fork too many processes at startup due to
+  race condition (#107).
+
+* Set $0 throughout the server and dispatch process to reflect current
+  conditions (#107).
+
+* Set up more aggressive management in response to INT or TERM to propagate the
+  request down to the children. Prior to this arrangement, a restart or kill
+  would leave many of the children running. This cleaned up Interchange stops
+  to remove all preforked daemons (#107).
+
+* Adjusted housekeeping to cull out old pids so that PIDcheck was enforced in
+  PreFork (#107).
+
+* Make PreFork handle idle children more intelligently.
+
+  If a child is idle, then don't needlessly respawn it at PIDcheck seconds.
+  To make sure we still catch child processes that have spun out of control,
+  track idle vs. active state.
+
+* Pass $opt to labeled_list fixing behaviour of fly-list to be matching other
+  x-list tags (#89).
+
+* Pass applylocale option into Vend::Form::options_to_array in order to
+  localize option labels (#80).
+
+* New set_process_name sub which is used to change the status in the process
+  name indicator.
+
+* Fixed problem where form values do not always default to the $Values hash
+  values for corresponding form fields when defaults=1 and wizard=1 are both
+  set in the table editor.
+
+* Fixed a bug where the [data session host] was not being set on a session's
+  first page access.  The "host" key was only being set for subsequent pages.
+
+* Removed MV_DOLLAR_ZERO workaround for a bug fixed 5 years ago.
+
+* Added a new "scratchd" test type.  This is the same as "scratch" except
+  that it deletes the variable from the scratchpad after testing.
+
+* New BounceReferrals catalog directive. When enabled, GET requests to URLs
+  with mv_pc or mv_source set to an affiliate code are redirected to the
+  same URL minus the affiliate code.
+
+  This keeps search engines that respect redirects from storing the affiliate
+  code-salted URL in their indexes, and helps them focus on the real resource
+  with a single URL instead of a multitude of salted links.
+
+UserDB
+------
+
+* Fixed UserDB login issues within embedded Perl by using
+  Vend::Util::string_to_ref for deserialization of carts and other
+  hashes.
+
+* New validchars option to customize valid characters for usernames, e.g.
+  adding the + character to the list of valid characters:
+
+  UserDB    default    validchars "-A-Za-z0-9_@.+"
+
+UserTag
+-------
+
+* Make [save-cart] keep cart if userdb returns with an error.
+
+* Make [formel] call [display] on unknown types.
+
+* Fixed cleanse option of [import-fields] for composite keys (#98).
+
+* Added [timed-display] tag to allow date specific display of text or html in pages.
+
+Filter
+------
+
+* Added "round" filter to round in floating-point-safe way, using the
+  Vend::Util routine.
+
+* Avoid ambiguity between two time formats in date_change filter.
+
+* Added "lspace2nbsp" filter. Translates leading spaces to nbsp
+
+Checks
+------
+
+* Added "match" check to match another CGI variable, e.g. for password
+  verification.
+
+Payment
+-------
+
+* New NetBilling module.
+
+Jobs
+----
+
+* Added new job group db with export job to export databases offline for
+  backup and version control purposes.
+
+* Added process ID to "Run jobs" and "Finished jobs" log messages for better
+  troubleshooting.
+
+* Avoid cluttering global log file with job run messages.
+
+* Allow parameters passed to jobs, acknowledges --email commandline option
+  now (#103).
+
+UI
+--
+
+* Fix page banner in menu editor.
+
+* Tidied up some code in customer_mailing.html
+
+* Fixed test to see if sku exists on creation of new item
+  in quick_question.html (#17)
+
+* Avoid crashes on table export if data contains Interchange tags (#100).
+
+Standard demo
+-------------
+
+* Fixed minor security hole of admin's session ID being exposed when placing
+  an order in the admin. Found by Mark Lipscombe <markl@gasupnow.com>.
+
+* Various special_pages/missing.html fixes:
+  - Fixed broken admin 404 error page (which came from Standard).
+  - Removed duplicate, sometimes-bogus MV_PREV_PAGE display.
+  - Eliminated double-interpolation of page comparison.
+
+* Updated Discover Card logo. Provided by Steve Graham.
+
+* Increased compatibility with XHTML.
+
+* Cleaned up splash page and fixed broken links.
+
+* Add CVV2 support to checkout pages, images thanks to Jure Kodzoman.
+
+* Fix problem with permanently setting members_only, bug and fix found
+  by Jo-Ellen Matthews.
+
+SOAP
+----
+
+* Return proper SOAP error to the client instead of disclosing our faults.
+
+Packaging
+---------
+
+* Switched from dh_movefiles to dh_install for Debian packaging.
+
+* Added --oknodo option to start-stop-daemon for restart action in the
+  Debian init script (#28).
+
+Other
+-----
+
+* Updated copyright in headers to 2007 (#102).

@@ -1,0 +1,3 @@
+affiliate	name	campaigns	coupon_amount	join_date	url	timeout	active	password	image
+hardhat	Hardhat Construction	coupon	5	20000827	http://demo.icdevgroup.net/~hardhat		1	akopia	http://demo.icdevgroup.net/~hardhat/images/logo.gif
+consolidated	Consolidated Diversified	coupon	5	20000910	http://www.minivend.com/consolidated/		1	akopia	http://www.minivend.com/consolidated/conslogo.gif

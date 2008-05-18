@@ -1,0 +1,84 @@
+CodeDef user_uploadhelper  Widget  1
+CodeDef user_uploadhelper  Description Survey file upload
+CodeDef user_uploadhelper  Routine <<EOR
+sub {
+	# $column, $value, $record->{outboard}, $record->{width}
+    my ($opt) = @_;
+	my $name = $opt->{name};
+	my $val  = $opt->{value};
+	my $path = $opt->{path};
+	my $tmploc = $::Variable->{SCRATCH_DIR} || 'tmp';
+	if(! $path) {
+		my $frag = substr($Vend::SessionID, 0, 1);
+		$path = Vend::File::catfile($tmploc, $frag, $Vend::SessionID, 'upload');
+	}
+
+	my $size = $opt->{cols} || $opt->{width};
+	
+	$::Scratch->{"user_upload_routine_$name"} = <<'EOU';
+[perl]
+# $Id: user_uploadhelper.widget,v 1.1 2005-04-12 19:17:03 mheins Exp $
+	my @uploads = grep /^user_upload_file_path:/, keys %$CGI;
+#Debug("Check uploads: " . join ",", @uploads);
+	return unless @uploads;
+	foreach my $key (@uploads) {
+#Debug("Check key=$key");
+		my $path = delete $CGI->{$key};
+#Debug("path=$path");
+		$key =~ s/^user_upload_file_path://;
+#Debug("key=$key");
+		next unless $path;
+		next unless $path =~ m(tmp/.*$Session->{id});
+#Debug("cgi->$key=$CGI->{$key}");
+		next unless defined $CGI->{$key};
+		$CGI->{$key} =~ s/\0(.*)//s;
+		my $old = $1;
+		unless($CGI->{$key}) {
+			$CGI->{$key} = $old; 
+			next;
+		}
+		my $isfile = $Tag->value_extended( { name => $key, test => 'isfile' } );
+#Debug("cgi->$key isfile='$isfile'");
+		next unless $isfile;
+		$path =~ s,[\\/]+$,,;
+		my $fn = $CGI->{$key};
+		$fn =~ s,.*/,,;
+		$fn =~ s,.*\\,,;
+		$fn = $Tag->filter('filesafe', $fn);
+#Debug("cgi->$key now='$CGI->{$key}'");
+		my $out = "$path/$fn";
+		$Scratch->{user_uploads}{$key} = $out;
+		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1, auto_create_dir => 1} ) ) {
+			$Tag->error({
+						name => 'File upload',
+						set => "Failed to write upload file $out",
+					});
+		}
+	}
+	return;
+[/perl]
+EOU
+
+	my $view_url;
+	$size = qq{ SIZE="$size"} if $size > 0;
+	my $out = '';
+    if ($val) {
+		if($path) {
+			my $view_url = Vend::Interpolate::tag_area("free_deliver/$path/$val");
+			$out .= qq{<A HREF="$view_url">};
+		}
+		$out .= $val;
+		$out .= "</A>" if $path;
+		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
+<INPUT TYPE=hidden NAME="user_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
+    }
+	else {
+        $out = qq{<INPUT TYPE=hidden NAME="user_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+	$out .= qq{<input type=hidden name="mv_click" value="user_upload_routine_$name">};
+	return $out;
+}
+EOR
+

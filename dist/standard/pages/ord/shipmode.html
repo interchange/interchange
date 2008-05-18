@@ -1,0 +1,178 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Select Shipping[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+[comment]
+	Form intro -- the input elements are largely in the
+	individual tables in include/checkout/*
+[/comment]
+<form action="[area href="ord/finalize" secure=1]" method="POST" name=checkout>
+[form-session-id]
+<input type=hidden NAME=mv_action        value=return>
+<input type=hidden NAME=mv_nextpage      value="ord/finalize">
+<input type=hidden name=mv_form_profile  value="Check_shipmode">
+<input type=hidden name=mv_click         value="Jump to paymode">
+
+<table width="95%">
+<tr>
+  <td width="100%" align=center>
+
+    [if type=explicit compare="[error all=1 keep=1]"]
+	[tmp error_display]
+    <P align=center>
+        <blockquote>
+        <FONT color="__CONTRAST__">
+                [error all=1 show_error=1 joiner="<br>"]
+        </font>
+        </blockquote>
+        </p>
+        <p>
+    </p>
+    [/tmp]
+    [/if]
+
+[set Check_shipmode]
+&fatal=no
+&fail=@@MV_PAGE@@
+mv_shipmode=mandatory You need to select a shipping mode.
+[cgi name=ship_ok set=""]
+[cgi name=mode_ok set=""]
+[seti allowed_modes][either][query list=1 sql="select shipmodes from state where state = '[value state]' and country = '[value country]'"][sql-code][/query][or][data table=country col=shipmodes key="[value country]"][/either][/seti]
+[calc]
+	$CGI->{mode_ok} = $Scratch->{allowed_modes} =~ /(^|\s)$CGI->{mv_shipmode}(\s|$)/;
+	return;
+[/calc]
+&fatal=yes
+mode_ok=mandatory Shipping type [shipping-desc] not valid for country [value country].
+[/set]
+
+[set jump_to_paymode]
+mv_nextpage=ord/payment
+[/set]
+
+	</td>
+  </tr>
+  <tr>
+	<td>
+
+	<table align=center cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
+	  <tr>
+		<td class="titletab_large" align=center>
+			Shipping selection
+		</td>
+	  </tr>
+	  <tr>
+		<td class=shadowbox style="padding: 12px" align=center>
+
+	  <table border=0 cellspacing=0>
+		<tr>
+		  <td colspan="4">&nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+			  &nbsp;
+			</td>
+			<td colspan=3>
+			  Shipping weight: [weight hide=1][scratch total_weight] lbs
+			</td>
+		</tr>
+		<tr>
+			<td>
+			  &nbsp;
+			</td>
+			<td colspan="3">
+[tmp tmp_shipmodes][shipping possible=1][/tmp]
+
+[seti ship_options][filter op="strip line2options" interpolate=1]
+[loop list="[scratch tmp_shipmodes]"]
+[set num][loop-increment][/set]
+[loop-code]=[shipping-desc mode="[loop-code]"] ([shipping mode="[loop-code]"])
+[/loop]
+[/filter][/seti]
+
+[if !scratch total_weight]
+	[set num]0[/set]
+[/if]
+		[if scratch num <= 1]
+					[if value mv_same_billing]
+					[set finalize_back]ord/shipping[/set]
+					[else]
+					[set finalize_back]ord/billing[/set]
+					[/else]
+					[/if]
+					[bounce page=ord/finalize]
+		[else]
+					[set finalize_back]ord/shipmode[/set]
+		[/else]
+		[/if]
+			<!-- options=[scratch ship_options] -->
+			[shipping widget=radio_left_1 mode="[scratch tmp_shipmodes]"]
+		</td>
+	  </tr>
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan="3">
+		<br>
+			<input type=button onClick="
+					this.form.mv_form_profile.value='';
+					this.form.mv_action.value='back';
+					[if value mv_same_billing]
+					this.form.mv_nextpage.value='ord/shipping';
+					[else]
+					this.form.mv_nextpage.value='ord/billing';
+					[/else]
+					[/if]
+					this.form.submit();
+				"
+				class=button3
+				value="&lt;-- [L]Back[/L]"
+				>
+				<input type=submit value="Next --&gt;" class=button3 style="font-weight: 600">
+		</td>
+	  </tr>
+	  [if scratch error_display]
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan=3>
+		<br>
+		<br>
+			[scratchd error_display]
+		</td>
+	  </tr>
+	  [/if]
+	  [if session ship_message]
+	  <tr>
+		<td>&nbsp;</td>
+		<td colspan=3>
+		<br>
+		<br>
+			[calc]delete $Session->{ship_message}[/calc]
+		</td>
+	  </tr>
+	  [/if]
+	  <tr>
+		<td colspan=4>&nbsp;</td>
+	  </tr>
+	  </table>
+
+	</td>
+  </tr>
+</table>
+</form>
+
+	</td>
+  </tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

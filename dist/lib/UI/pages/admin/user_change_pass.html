@@ -1,0 +1,116 @@
+[tmp passuser][either][cgi username][or][cgi user_id][/either][/tmp]
+[calc]
+	$CGI->{no_dbmenu} = 1;
+	$CGI->{access_menu} = 1;
+	return;
+[/calc]
+[seti page_title][L]Change password[/L]: [scratch passuser][/seti]
+[seti page_banner][L]Change password[/L]: <b>[scratch passuser]</b>[/seti]
+[set ui_class]Admin[/set]
+[set page_perm]access=e[/set]
+[set help_name]change.password[/set]
+[set icon_name]icon_config.gif[/set]
+[tmp old_needed]1[/tmp]
+[if-mm super]
+	[calc]
+		# Note that the final authority on whether the old password is needed
+		# is &Vend::UserDB::change_pass -- this logic is for widget display only.
+		$Scratch->{old_needed} = 0 if $CGI->{user_id} ne $Session->{username};
+		return;
+	[/calc]
+[/if-mm]
+@_UI_STD_HEAD_@
+
+[if session failure]
+	<blockquote class=cerror>
+		[L]Failure:[/L] [data session failure][data base=session field=failure value=""]
+	</blockquote>
+[/if]
+
+[if scratch ui_message]
+	<blockquote class=cmessage>
+		[scratchd ui_message]
+	</blockquote>
+[/if]
+
+<FORM ACTION="[process]" METHOD=POST>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=back>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/access>
+<INPUT TYPE=hidden NAME=mv_failpage VALUE=@@MV_PAGE@@>
+<INPUT TYPE=hidden NAME=mv_username VALUE="[scratch passuser]">
+<INPUT TYPE=hidden NAME=user_id     VALUE="[scratch passuser]">
+
+<table __UI_T_PROPERTIES__>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td class=rnorm align=right>
+<small>[L]User name[/L]</small>
+</td>
+<td class=rnorm>
+[scratch passuser]
+</td>
+</tr>
+
+[if scratch old_needed]
+<tr>
+<td class=rnorm align=right>
+<small>[L]Old password[/L]</small>
+</td>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_password_old VALUE="" SIZE=12>
+</td>
+</tr>
+[/if]
+
+<tr>
+<td class=rnorm align=right>
+<small>[L]New password[/L]</small>
+</td>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=12>
+</td>
+</tr>
+
+<tr>
+<td class=rnorm align=right>
+<small>[L]Verify password[/L]</small>
+</td>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_verify VALUE="" SIZE=12>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</TABLE>
+
+[if-mm advanced access=e]
+	[button text="[if scratch old_needed][L]Change[/L][else][L]Set Password[/L][/else][/if]"]
+		mv_todo=set
+		mv_click=MMChange
+	[/button]
+	[button text=[L]Permissions[/L]]
+		mv_todo=set
+		mv_click=MMChange
+		mv_nextpage=__UI_BASE__/access_permissions
+	[/button]
+	[button text=[L]Cancel[/L]]
+	[/button]
+[else]
+	[button text=[L]Back[/L]]
+	[/button]
+[/else]
+[/if-mm]
+
+</FORM>
+
+@_UI_STD_FOOTER_@
+
+<!-- page: @@MV_PAGE@@ -->

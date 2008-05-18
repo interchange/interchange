@@ -1,0 +1,11 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	Top	x001		`$Scratch->{ui_class} eq 'Orders'`		order	admin/order	showpending=1	Orders		0	View and manage incoming orders, archive and access past orders		B2.gif	B2_b.gif	B2_b.gif	icon_orders.gif	
+002	Top	x002		`$Scratch->{ui_class} eq 'Customers'`		userdb	admin/customer	showactive=1	Customers		0	View and manage customer information and order history		B3.gif	B3_b.gif	B3_b.gif	icon_people.gif	
+003	Top	x003		`$Scratch->{ui_class} eq 'Items'`		item	admin/item	mv_data_table=products	Items		0	Add and edit items displayed for sale on the site		B4.gif	B4_b.gif	B4_b.gif	icon_item.gif	
+004	Top	x004		`$Scratch->{ui_class} eq 'Content'`		content	admin/content		Content		0	Create, edit, upload and download pages		B5.gif	B5_b.gif	B5_b.gif	icon_pages.gif	
+005	Top	x005		`$Scratch->{ui_class} eq 'Design'`		layout	admin/menu_editor		Design		0	Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
+006	Top	x006		`$Scratch->{ui_class} eq 'Merchandising'`		item	admin/merchandising		Merchandising		0	Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
+007		x007		`$Scratch->{ui_class} eq 'Misc'`		misc	admin/genfunction		Miscellaneous		0	Legacy and other functions					icon_regen.gif	
+008	Top	x008		`$Scratch->{ui_class} eq 'Tables'`		gentable	admin/gentable		Tables		0	Table Manager: Edit, view, import, export, upload, and download your tables.		B8.gif	B8_b.gif	B8_b.gif	icon_tab.png	
+009	Top	x009		`$Scratch->{ui_class} eq 'Reports'`		orderstats	admin/orderstats		Reports		1	View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
+010	Top	x010		`$Scratch->{ui_class} eq 'Admin'`		admin	admin/preferences		Administration		0	Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	

@@ -1,0 +1,22 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: pgbool.filter,v 1.6 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef pgbool Filter
+CodeDef pgbool Description PostgreSQL Boolean (undef as false)
+CodeDef pgbool Visibility  private
+CodeDef pgbool Routine <<EOR
+sub {
+	my $val = shift;
+	return 'f' if ! defined($val);
+	$val =~ s/\s+//g;
+	return 'f' if $val =~ /^(?:0|f(?:alse)?)?$/i;
+	return 't';
+}
+EOR

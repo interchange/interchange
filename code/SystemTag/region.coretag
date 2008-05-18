@@ -1,0 +1,17 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: region.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag region              addAttr
+UserTag region              attrAlias    args arg
+UserTag region              attrAlias    params arg
+UserTag region              attrAlias    search arg
+UserTag region              hasEndTag
+UserTag region              PosNumber    0
+UserTag region              Version      $Revision: 1.4 $
+UserTag region              MapRoutine   Vend::Interpolate::region

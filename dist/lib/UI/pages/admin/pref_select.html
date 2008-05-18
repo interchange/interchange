@@ -1,0 +1,611 @@
+
+<!-- [if cgi mv_more_ip]
+[calc]
+	for( qw/
+		help_name
+		icon_name
+		mv_data_table
+		page_title
+		ui_break_before
+		ui_show_fields
+		ui_sort_field
+		ui_sort_option
+		ui_description_fields
+		ui_flex_description
+		ui_flex_key
+		page_banner
+		/)
+	{
+		$CGI->{$_} = $Values->{$_};
+		push @out, "$_ = $CGI->{$_}";
+	}
+	return join "\n", @out;
+[/calc]
+[/if] -->
+
+[if !cgi mv_data_table][cgi name=mv_data_table set=variable hide=1][/if]
+[tmp page_title][L]Preference Edit[/L][/tmp]
+
+[tmp page_banner]
+	[if cgi ui_text_qualification]
+		[calc]
+			my $thing = $CGI->{ui_text_qualification};
+			$thing =~ s/^\s*\w+=//;
+			return errmsg("Preference edit: %s", $thing);
+		[/calc]
+	[else]
+		[scratch page_title]
+	[/else]
+	[/if]
+[/tmp]
+
+[tmp ui_class]Admin[/tmp]
+[tmp mv_logical_page]admin/preferences[/tmp]
+[tmp help_name]flex.select[/tmp]
+[tmp icon_name]icon_config.gif[/tmp]
+
+<!-- sequence_edit: [cgi ui_sequence_edit] -->
+<!-- item_id_left: [cgi item_id_left] -->
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+	delete $Scratch->{ui_location};
+	$Scratch->{ui_class} = $CGI->{ui_class}
+		if $CGI->{ui_class}
+		&&  $CGI->{ui_class} =~ /^\w+$/;
+
+	my $tab = $CGI->{mv_data_table} or return;
+	if($tab =~ s/\.(txt|asc)$/_$1/) {
+		$tab =~ s:.*/::;
+	}
+	my $db = $Db{$tab};
+	if(! $db) {
+		$Scratch->{ui_error} = errmsg('no %s database', $tab);
+		$Scratch->{ui_location} = $Tag->area({href=>"__UI_BASE__/error",
+            secure=>$Scratch->{page_secure}});
+		return;
+	}
+
+	delete $Scratch->{tmp_large};
+	if( $Variable->{UI_LARGE_TABLE} =~ /\b$tab\b/ or $db->config('LARGE') ) {
+		$Scratch->{tmp_large} = 1;
+	}
+
+	return unless $CGI->{item_id};
+	return unless delete $CGI->{deleterecords};
+	return unless $Tag->if_mm('tables', '=d');
+
+	delete $Scratch->{ui_location};
+	$Config->{NoSearch} = '';
+
+	for(grep $_, @{$CGI_array->{item_id}}) {
+		$db->delete_record($_)
+			or push @errors, $@;
+	}
+	if(@errors) {
+		my $plural = @errors > 1 ? 's' : '';
+		return "<span CLASS=error>Error$plural:<UL><LI>" .
+				join ("<LI>", @errors)                    .
+				"</UL></span><BR>";
+	}
+	return;
+[/perl]
+
+<!-- ui_location: [scratch ui_location] -->
+[if scratch ui_location]
+[bounce href=`delete $Scratch->{ui_location}`]
+[elsif !cgi mv_data_table]
+[bounce page="__UI_BASE__/gentable"]
+[/elsif]
+[/if]
+
+@_UI_STD_HEAD_@
+[update values]
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+	[tmp extra_title]
+		[loop list="[cgi mv_data_table]"]
+		 	[if-loop-data __UI_META_TABLE__ name]
+		 	<B>[loop-data __UI_META_TABLE__ name]</B>
+			[/if-loop-data]
+		 	[if-loop-data __UI_META_TABLE__ help_url]
+		 	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
+			[/if-loop-data]
+		 	[if-loop-data __UI_META_TABLE__ help]
+		 	<i>[loop-data __UI_META_TABLE__ name]</i>
+			[/if-loop-data]
+		[/loop]
+	[/tmp]
+
+[output name=search_box]
+<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+[form-session-id]
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+<span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
+</FORM>
+[output name=""]
+
+[if scratch ui_failure]
+<blockquote class=cerror>
+	[scratchd ui_failure]
+</blockquote>
+[/if]
+
+[if scratch ui_message]
+	<blockquote class=cmessage>
+		[scratchd ui_message]
+	</blockquote>
+[/if]
+
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
+[set tmp_nomatch_message]<B>[L]No records[/L].</b>[/set]
+[set tmp_like_spec][/set]
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+	my $tab = $CGI->{mv_data_table};
+	my $ref = $Db{$tab};
+	my $meta = $Tag->meta_record($CGI->{mv_data_table}, $CGI->{ui_meta_view});
+	
+	if (! $ref) {
+		$Scratch->{keypos} = 0;
+		return;
+	}
+	elsif (! $meta) {
+		$Scratch->{keypos} = 0;
+	}
+
+	if( $tab ne $ref->config('name')) {
+		## Probably transient database
+		$CGI->{mv_data_table_real} = $tab = $ref->config('name');
+	}
+
+	$meta ||= {};
+
+	if($CGI->{ui_flex_key}) {
+		$Scratch->{keypos} = $CGI->{ui_flex_key};
+	}
+	else {
+		$Scratch->{keypos} = $ref->config('KEY_INDEX');
+	}
+	$Scratch->{keyname} = $ref->config('KEY');
+
+	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+	$CGI->{ui_meta_specific} ||= $meta->{ui_meta_specific};
+	$Config->{NoSearch} = '';
+	$ui_text_qualification = $CGI->{ui_text_qualification};
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+st=db
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+nu=0
+os=0
+su=0
+bs=0
+EOF
+		}
+		else {
+			$CGI->{ui_text_qualification} = "co=1\n";
+		}
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			if(length($s) > 1) {
+				$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "se=.\nsf=$f\nop=rn\n";
+			}
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
+	}
+	elsif ($ui_text_qualification) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message = errmsg('Entries matching "%s"', $ui_text_qualification);
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+sf=:*
+se=$CGI->{ui_text_qualification}
+EOF
+		}
+	}
+	elsif ( $CGI->{mv_like_field} ) {
+		my @f = split /\0/, $CGI->{mv_like_field};
+		my @s = split /\0/, $CGI->{mv_like_spec};
+		my @q = 'ra=yes';
+		my $found;
+		for(my $i = 0; $i < @f; $i++) {
+			next unless length $s[$i];
+			$found++;
+			push @q, "lf=$f[$i]";
+			push @q, "ls=$s[$i]";
+		}
+		if($found) { $CGI->{ui_text_qualification} = join "\n", @q; }
+		else	   { $CGI->{ui_text_qualification} = "" }
+	}
+	elsif($Scratch->{ui_owner}) {
+		$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+EOF
+	}
+	elsif ($Scratch->{tmp_large}) {
+#Debug("It is large.");
+		my $keylabel = $Tag->display({
+							table => $tab,
+							name => 'item_id',
+							column => $Scratch->{keyname},
+							template => 1,
+						});
+		my $url = $Tag->area( { href => '__UI_BASE__/flex_editor' } );
+		$Scratch->{'[L]Edit[/L]'} = <<EOF;
+	mv_nextpage=__UI_BASE__/flex_editor
+	mv_todo=return
+	item_id=[cgi goto_id]
+EOF
+		$Scratch->{tmp_nomatch_message} = <<EOF;
+Record to edit: <INPUT TYPE=text NAME=goto_id> <INPUT NAME=mv_click TYPE=submit VALUE="[L]Edit[/L]">
+EOF
+		$Scratch->{tmp_like_spec} = 1;
+		$CGI->{ui_text_qualification} = "";
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
+
+	if($meta->{ui_sort_combined} =~ /\S/) {
+		$meta->{ui_sort_field} = $meta->{ui_sort_combined};
+		$meta->{ui_sort_option} = '';
+	}
+
+	$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+							||  $meta->{lookup}
+							||  $Scratch->{keyname};
+	$CGI->{ui_sort_option}	||= $meta->{ui_sort_option};
+	$CGI->{ui_sort_option}	=~ s/[\0,\s]+//g;
+	$CGI->{ui_list_size} = $meta->{height}
+		if ! $CGI->{ui_list_size};
+
+	if(! $CGI->{ui_show_fields} ) {
+		$CGI->{ui_show_fields} = 
+			$CGI->{ui_description_fields}
+				= join ",", $ref->columns();
+	}
+	else {
+		my $i = 0;
+		my $show = $CGI->{ui_show_fields};
+		$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+#Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
+		$show =~ s/[\0,\s]+/,/g;
+		$CGI->{ui_description_fields} = $show;
+	}
+
+	@cols = grep $ref->column_exists($_), 
+				split /,/, $CGI->{ui_description_fields};
+
+	my %limit_field;
+
+	$CGI->{ui_limit_fields} =~ s/[\0,\s]+/ /g;
+	$CGI->{ui_limit_fields} =~ s/^\s+//;
+	$CGI->{ui_limit_fields} =~ s/\s+$//;
+
+	my (@limit_field) = split " ", $CGI->{ui_limit_fields};
+
+#Log("show_field: " . $Tag->uneval( { ref => \@cols } ));
+#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
+	if(@limit_field) {
+#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
+		@limit_field{@limit_field} = ();
+#Log("limit_fields: " . $Tag->uneval( { ref => \%limit_field } ));
+		@cols = grep ! exists($limit_field{$_}), @cols;
+#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+	}
+
+	unshift(@cols, $Scratch->{keyname})
+		if $cols[0] ne $Scratch->{keyname};
+
+	for(@cols) {
+		$numeric{$_} = 1 if $ref->numeric($_);
+	}
+
+	$CGI->{ui_description_fields} = join ",", @cols;
+
+	unless ($CGI->{ui_sort_option}) { 
+		 $CGI->{ui_sort_option} = 'n'
+				if $ref->numeric($CGI->{ui_sort_field}); 
+	} 
+
+	my $fi = $CGI->{mv_data_table_real} || $CGI->{mv_data_table};
+	$Scratch->{sparams} = $Scratch->{tmp_like_spec} ? '' : <<EOF;
+
+	fi=$fi
+	st=db
+	$CGI->{ui_text_qualification}
+	su=1
+	md=1
+	ml=$CGI->{ui_list_size}
+	tf=$CGI->{ui_sort_field}
+	to=$CGI->{ui_sort_option}
+	rf=$CGI->{ui_description_fields}
+
+EOF
+	return;
+[/perl]
+</FORM>
+
+[tmpn tmp_ncols][/tmpn]
+<!-- tq: [scratch sparams] -->
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+        [form-session-id]
+	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+	[if cgi ui_meta_view]
+	[return-to]
+	<!-- got a return-to -->
+	[else]
+	<!-- got no return-to -->
+	<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
+	<INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
+	<INPUT TYPE=hidden NAME=ui_page_banner   VALUE="[cgi ui_page_banner]">
+	<INPUT TYPE=hidden NAME=ui_limit_fields VALUE="[cgi ui_limit_fields]">
+	<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
+	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="mv_data_table=[cgi mv_data_table]">
+	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="ui_sequence_edit=1">
+	[/else]
+	[/if]
+	<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+	<tr class=rhead>
+	<td class=rhead>&nbsp;</td>
+	[loop list="[cgi ui_description_fields]"]
+	<td class=rhead>
+    <table align="left" class=rhead cellspacing=2 cellpadding=0>
+    <tr>
+      <td align="right" valign="center">
+		<A HREF="[area href='__UI_BASE__/flex_group'
+						form='
+							mv_data_table=[cgi mv_data_table]
+							ui_meta_view=[cgi ui_meta_view]
+							mv_arg=[loop-code]
+						'
+					]"
+			title="[msg arg.0='[loop-code]']Select group by %s[/msg]"
+				><img src="smindex.gif" border=0></a>
+      </td>
+      <td align="left" valign="center" class=rhead>
+	  [calc]
+			my $f = '[loop-code]';
+			my $o = '';
+			my $msg;
+			my $rmsg;
+			if ($CGI->{ui_sort_field} eq $f and $CGI->{ui_sort_option} !~ /r/) {
+				$o .= 'r';
+				$msg = "sort by %s (%s)";
+				$rmsg = errmsg('reverse');
+			}
+			else {
+				$msg = "sort by %s";
+			}
+			$o .= 'n' if $numeric{$f};
+			$Scratch->{tmp_sort_msg} = errmsg($msg, $f, $rmsg);
+			$Scratch->{tmp_url} = $Tag->area( {
+											href => '@@MV_PAGE@@',
+											form => qq(
+									ui_text_qualification=$ui_text_qualification
+									mv_data_table=$CGI->{mv_data_table}
+									ui_meta_view=$CGI->{ui_meta_view}
+									ui_sort_field=$f
+									ui_sort_option=$o
+											),
+											});
+			return;
+		[/calc]
+		<a href="[scratch tmp_url]"
+			class=rhead
+			title="[scratch tmp_sort_msg]">[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
+      </td>
+    </tr>
+    </table>	
+	</td>
+	[/loop]
+	</tr>
+	[tmp tmp_url]
+		mv_data_table=[cgi mv_data_table]
+		ui_page_title=[cgi ui_page_title]
+		ui_meta_view=[cgi ui_meta_view]
+		ui_page_banner=[cgi ui_page_banner]
+		ui_meta_specific=[cgi ui_meta_specific]
+		[if cgi ui_return_to]
+		[and !cgi ui_return_stack]
+			[return-to formlink]
+		[else]
+			ui_return_to=@@MV_PAGE@@
+		[/else]
+		[/if][/tmp]
+	[search-region more=1
+		form="
+			ui_meta_specific=[cgi ui_meta_specific]
+			ui_meta_view=[cgi ui_meta_view]
+		" arg="[scratch sparams]"]
+	[search-list]
+	<tr [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
+
+	<td width="30"><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"></td>
+	<td>[page href=__UI_BASE__/flex_editor form=|
+								[scratch tmp_url]
+							item_id=[item-code]
+						|][item-code]</A></TD>
+[item-sub show_line]
+sub {
+	my ($pre, $post) = split /\t/, shift;
+	my $line = shift;
+	return unless $line;
+	shift (@$line);
+	my $out = '';
+	my $i = 1;
+	for(@$line) {
+		my $filter = $filter_show[$i] || '';
+		$filter .= ' encode_entities' unless $filter =~ /\b(?:encode_)?entities\b/;
+
+		my $extra = '';
+		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
+
+#Log("$i filter = $filter");
+
+		$_ = $Tag->filter($filter, $_);
+		s/\[/&#91;/g;
+		$out .= "<TD$extra>$_</TD>";
+		$i++;
+	}
+	return $out . "\n";
+}
+[/item-sub]
+[item-exec show_line][/item-exec]
+</tr>
+[/search-list]
+[no-match]
+<tr>
+<td colspan="[scratch tmp_ncols]" align=left>
+[scratchd tmp_nomatch_message]
+</td>
+</tr>
+[if scratch tmp_like_spec]
+	<tr>
+	<td colspan="[scratch tmp_ncols]" align=left>
+	[L]Or enter a query by example to select a set of records.[/L]
+	[L]Each input will match on the <i>beginning</i> text in the field.[/L]
+	</td>
+	</tr>
+	[loop list="[cgi ui_description_fields]"]
+	<TD>
+		<input type=hidden name=mv_like_field value="[loop-code]">
+		<input type=text name=mv_like_spec size=10>
+	</td>
+	[/loop]
+	<tr>
+	<td colspan="[scratch tmp_ncols]" align=left>
+	<input type=submit value="[L]Find[/L]">
+	</td>
+	</tr>
+[/if]
+[/no-match]
+[more-list]
+<tr>
+<td colspan=6 align=center>
+[L]More rows[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+</td>
+</tr>
+[/more-list]
+</table>
+
+[on-match]
+[if !cgi ui_meta_view]
+
+[output name=top_buttons]
+[button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
+ui_sequence_edit=1
+mv_nextpage=__UI_BASE__/flex_editor
+mv_todo=return
+[/button]
+
+[output name=bottom_buttons]
+[button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
+mv_nextpage=__UI_BASE__/flex_editor
+mv_todo=return
+[/button]
+
+[output]
+[/if]
+
+[if-mm function="tables" table="[cgi mv_data_table]=d"]
+
+[output name=top_buttons]
+&nbsp;&nbsp;&nbsp;&nbsp;
+[button text="[L]Delete checked records[/L]"
+		extra="class=s2"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
+[flag type=write table="[cgi mv_data_table]"]
+deleterecords=1
+mv_click=db_maintenance
+[/button]
+
+[output name=bottom_buttons]
+&nbsp;&nbsp;&nbsp;&nbsp;
+[button text="[L]Delete checked records[/L]"
+		extra="class=s2"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
+[flag type=write table="[cgi mv_data_table]"]
+deleterecords=1
+mv_click=db_maintenance
+[/button]
+[output]
+
+[/if-mm]
+
+[/on-match]
+</FORM>
+[/search-region]
+<!-- ----- END REAL STUFF ----- -->
+
+[update values]
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.4 2005-04-23 18:10:07 pvinci Exp $ -->

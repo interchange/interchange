@@ -1,0 +1,35 @@
+sku	featured	banner_text	banner_image	blurb_begin	blurb_end	timed_promotion	start_date	finish_date	upsell_to	cross_sell	cross_category	others_bought	times_ordered
+os28004	new						20020301	20030531		os28005 os28006 os28007	Paintbrushes	{'os28087' => "1",'os28068a' => "1",}	1
+os28005	new						20020301	20030531	os28006	os28004	Rollers		
+os28006	new						20020301	20030531		os28004	Rollers		
+os28007	specials						20020301	20030430	os28006	os28004	Rollers		
+os28008	expired					1	20020223	20030223	os28085	os29000	Step Stools	{}	1
+os28011	specials					1	20020301	20030430		os28081	Sandpaper	{'os28087' => "1",'os28081' => "1",'os28108' => "1",}	1
+os28044	specials					0	20020321	20030325	os28005 os28007 os28008 os28011	os28057aos28057bos28057cos28069	Nails		
+os28057a	specials					1	20020201	20030331	os28007 os28008	os28075 os28074 os28073	Hammers		
+os28057b	specials					1	20020201	20030330	os28057a os28057c	os28075 os28074 os28073	Hammers	{'os28057c' => "1",'os28068a' => "1",'os28068b' => "1",}	2
+os28057c	expired					1	20020301	20030311	os28057a	os28044 os28075 os28073		{'os28057b' => "1",'os28068a' => "1",'os28068b' => "1",}	1
+os28062	new					1	20020301	20030531	os28007 os28009 os28044	os28069 os28070	Tool Boxes	{'os28077' => "1",'os28064' => "1",'os28065' => "1",}	1
+os28064												{'os28077' => "1",'os28062' => "1",'os28065' => "1",}	1
+os28065												{'os28077' => "1",'os28062' => "1",'os28064' => "1",}	2
+os28068a	new						20020223	20030501		os28068b	Eye Protection	{'os28004' => "1",'os28057b' => "1",'os28087' => "1",'os28057c' => "1",'os28068b' => "1",}	2
+os28068b	new						20020301	20030430		os28068a	Breathing Protection	{'os28057b' => "1",'os28057c' => "1",'os28068a' => "1",}	1
+os28069	specials					1	20020301	20030430					
+os28072												{}	1
+os28073	expired					1	20020221	20030221		os28057a os28057b os28057c os28069 os28077	Nails		
+os28074	specials						20020221	20030221		os28057a os28057b os28057c os28069	Nails		
+os28075	expired					1	20020221	20030221	os28044	os28057a os28057b os28057c os28069	Nails		
+os28076						1	20020221	20030221		os28112 os28109	Shovels		
+os28077												{'os28062' => "1",'os28064' => "1",'os28065' => "1",}	1
+os28080												{}	1
+os28081	specials			From rough to smooth.....		1	20020301	20030430	os28087	os28068b	Breathing Protection	{'os28087' => "1",'os28011' => "1",'os28108' => "1",}	1
+os28082	new						20020301	20030531		os28066 os28084 os28069	Squares		
+os28084	new						20020301	20030531		os28077 os28069	Tool Belts	{}	1
+os28085	new					1	20020301	20030531		os29000	Step Stools	{}	
+os28086	specials					1	20020301	20030430	os28084	os28066	Squares	{}	1
+os28087												{'os28004' => "1",'os28081' => "1",'os28068a' => "1",'os28011' => "1",'os28108' => "1",}	2
+os28108	specials					1	20020301	20030430	os28009			{'os28087' => "1",'os28081' => "1",'os28011' => "1",}	1
+os28110	new						20020301	20030531		os28070 os28069	Tool Belts	{'os28111' => "1",}	
+os28111	specials					1	20020301	20030430				{'os28110' => "1",}	
+os28113	specials						20020301	20030430	os28076	os28112 os28109	Shovels		
+os29000	specials						20020301	20030430	os28085	os28085 os28008		{}	2

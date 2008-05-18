@@ -1,0 +1,8 @@
+__PAGE_INIT__
+[output name=main_css][css name=THEME_CSS basefile=variables/THEME_CSS][output name=trash]
+[output name=line_menu]__LINE_MENU__[output name=trash]
+[output name=top_menu]__COMMON_MENU__[output name=trash]
+[output name=breadcrumbs][breadcrumbs reset-on-product=1][output name=trash]
+[component group=content output="[control output top]"]
+[component group=content output="[control output bottom]"]
+[output name=""]

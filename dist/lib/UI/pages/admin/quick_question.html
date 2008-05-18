@@ -1,0 +1,48 @@
+[comment]
+This page is being used on 'Items -> Create new item'. It is loaded in an
+iframe which informs the user whether or not a SKU is already existing.
+
+mv_metadata.asc contains a block of code which calls this page using an area
+tag with a couple of attributes. mv_metadata.asc has no love for newlines, 
+but the area tags needs them to separate the attributes. Below calc block 
+separates out the attributes so they can be parsed later on.
+[/comment]
+
+[calc]
+  my $tempcgi = $CGI->{type};
+  my @tempcgiarr = split(/\s{2,}/,$tempcgi);
+  my ($var,$val);
+
+  foreach my $arr_elem (@tempcgiarr) {
+    if (!($arr_elem =~ /\=/)) {
+      $CGI->{type} = $arr_elem;   #only type should have no = as we split on it
+    }
+    ($var,$val) = split(/\=/,$arr_elem);
+    $CGI->{$var} = $val;
+  }
+  return "";
+[/calc]
+
+<html>
+<head>
+<title>Quick question</title>
+<body style="[cgi name=style filter=entities]" margintop="0" marginleft="0">
+[tmp litmus][if type="[cgi type]" term="[cgi term]"]1[/if][/tmp]
+[calc]
+        my $yes = $CGI->{yes} || errmsg('Yes');
+        my $no = $CGI->{no} || errmsg('No');
+        if($CGI->{yes_style}) {
+                $CGI->{yes_style} =~ $Tag->filter('entities', $CGI->{yes_style});
+                $yes = qq{<span style="$CGI->{yes_style}">$yes</span>};
+        }
+        if($CGI->{no_style}) {
+                $CGI->{no_style} =~ $Tag->filter('entities', $CGI->{no_style});
+                $yes = qq{<span style="$CGI->{no_style}">$no</span>};
+        }
+        my $status = $Scratch->{litmus};
+        $status = ! $status if $CGI->{reverse};
+        return $status ? $yes : $no;
+[/calc]
+</body>
+</html>
+

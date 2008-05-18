@@ -1,0 +1,8 @@
+etc/interchange/
+etc/logrotate.d/interchange
+usr/bin/
+usr/lib/cgi-bin/
+usr/lib/interchange/
+usr/sbin/
+usr/share/man/man1/
+usr/share/man/man3/

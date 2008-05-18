@@ -1,0 +1,22 @@
+	<table cellpadding="0" cellspacing="0" class="linemenu" align="right">
+	<tr>
+[menu
+	name="[either][scratch line_menu][or]catalog/line[/either]"
+        inactive=inactive
+	full_interpolate=page
+	localize="name,description"
+	]
+	<td nowrap>&nbsp;<a href="{HREF}" title="{DESCRIPTION}" class=toplink>{NAME}</a>&nbsp;</td>{MV_LAST_ROW:}<td>-</td>{/MV_LAST_ROW:}{MV_LAST_ROW?}<td>&nbsp;&nbsp;</td>{/MV_LAST_ROW?}
+[menu-footer]
+[if session admin]
+			<td nowrap>
+				&nbsp;&nbsp;<a
+					href="[area href='admin/menu_editor' form='qmenu_name=[scratch line_menu]']"
+					style="font-size: 7pt" class=edittablink {CHECK_PUBLISH} title="[L]Edit this menu[/L]">[L]edit[/L]</A>
+			&nbsp;&nbsp;</td>
+[/if]
+[/menu-footer]
+[/menu]
+	</tr>
+	</table>
+

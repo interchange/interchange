@@ -1,0 +1,19 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: content_editor.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag content-editor Order      name
+UserTag content-editor addAttr
+UserTag content-editor hasEndTag
+UserTag content-editor Version    $Revision: 1.6 $
+UserTag content-editor Routine    <<EOR
+use UI::ContentEditor;
+sub {
+	return UI::ContentEditor::editor(@_);
+}
+EOR

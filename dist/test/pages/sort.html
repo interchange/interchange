@@ -1,0 +1,31 @@
+<PRE>[search-region more=1
+				arg="
+					sp=sort
+					dp=sort
+					ml=25
+					fi=sort.asc
+					ra=yes
+					rf=f1,f2,f3,f4,f5,f6
+					tf=f1,f2,f3,f4,f5,f6
+					"]
+[set out][search-list][item-pos 0][item-pos 1][item-pos 2][item-pos 3][item-pos 4][item-pos 5]
+[/search-list][/set]Search: 
+[scratch out]
+[more-list]
+[more]
+[/more-list]
+[/search-region]
+[page sort]Rerun</a>
+</PRE>
+Comparision:
+
+[perl]
+	@items = grep /\S/, split /\n/, $Scratch->{out};
+	@test = sort @items;
+	for ($i = 0; $i < $#items; $i++) {
+		$items[$i] le $items[$i+1] 
+			and next;
+		return "error at element $i";
+	}
+	return "Compared sort OK.\n";
+[/perl]

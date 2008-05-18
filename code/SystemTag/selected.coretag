@@ -1,0 +1,58 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: selected.coretag,v 1.9 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag selected            Order        name value
+UserTag selected            addAttr
+UserTag selected            PosNumber    2
+UserTag selected            Version      $Revision: 1.9 $
+UserTag selected            Routine      <<EOR
+# Returns ' SELECTED' when a value is present on the form
+# Must match exactly, but NOT case-sensitive
+sub {
+	my ($field,$value,$opt) = @_;
+	$value = '' unless defined $value;
+	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
+	return ' selected="selected"' if ! length($ref) and $opt->{default};
+
+	if(! $opt->{case}) {
+		$ref = lc($ref);
+		$value = lc($value);
+	}
+
+	my $r = '';
+
+	return ' selected="selected"' if $ref eq $value;
+
+	if ($opt->{delimiter}) {
+		$opt->{multiple} = 1;
+	}
+
+	if ($opt->{multiple}) {
+	    
+	    my $be;
+	    my $ee;
+	    $opt->{delimiter} = "\0" unless defined $opt->{delimiter};
+
+	    if (length $opt->{delimiter}) {
+		my $del = Vend::Interpolate::get_joiner($opt->{delimiter}, "\0");
+		$be = '(?:^|' . $del . ')'; ;
+		$ee = '(?:$|' . $del . ')'; ;
+	    }
+	    else {
+		$be = '';
+		$ee = '';
+	    }
+
+	    my $regex = qr/$be\Q$value\E$ee/;
+	    return ' selected="selected"' if $ref =~ $regex;
+	}
+
+	return '';
+}
+EOR

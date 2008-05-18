@@ -1,0 +1,48 @@
+[if !cgi item_id]
+	[bounce page="__UI_BASE__/item"]
+[/if]
+[calc]
+	if(! $CGI->{mv_data_table}) {
+		$CGI->{ui_hide_key} = 1;
+		$CGI->{mv_data_table} = 'merchandising';
+	}
+	if(! $CGI->{ui_data_fields}) {
+		$CGI->{ui_data_fields} = 'sku __ProductFiles_0__:__DescriptionField__ featured blurb_begin blurb_end timed_promotion start_date finish_date';
+		$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
+	}
+	if(! $CGI->{ui_break_before}) {
+		$CGI->{ui_break_before} = 'blurb_begin timed_promotion';
+	}
+	if(! $CGI->{ui_return_to}) {
+		my @args = (
+			 '__UI_BASE__/item_edit',
+			 "item_id=$CGI->{item_id}",
+			 "item_id_left=$CGI->{item_id_left}",
+			 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+		);
+		$CGI->{ui_return_to} = join "\0", @args;
+	}
+	return;
+[/calc]
+[perl tables="merchandising"]
+	my $db = $Db{merchandising};
+	my $date = $Tag->convert_date({ raw => 1 });
+	my $code = $CGI->{item_id} or return;
+	return unless $db->record_exists($code);
+	return unless $db->field($code, 'timed_promotion');
+	return if $date le $db->field($code, 'finish_date');
+	$db->set_field($code, 'featured', 'expired');
+	return;
+[/perl]
+
+[seti page_title]Promotion: [cgi item_id][/seti]
+[seti page_banner]Promotion: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
+[set help_name]promotion[/set]
+[set icon_name]icon_item.gif[/set]
+
+@_UI_STD_HEAD_@
+<P>
+[table-editor cgi=1 output-map=1 no-table-meta=1]
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

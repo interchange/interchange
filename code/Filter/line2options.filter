@@ -1,0 +1,27 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: line2options.filter,v 1.4 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef line2options Filter
+CodeDef line2options Description line2options
+CodeDef line2options Routine <<EOR
+sub {
+	my ($value, $tag, $delim) = @_;
+	return $value unless length $value;
+	$value =~ s/\s+$//;
+	$value =~ s/^\s+//;
+	my @opts = split /[\r\n]+/, $value;
+	for(@opts) {
+		s/^\s+//;
+		s/[,\s]+$//;
+		s/,/&#44;/g;
+	}
+	return join ",", @opts;
+}
+EOR

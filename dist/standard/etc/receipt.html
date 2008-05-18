@@ -1,0 +1,367 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- Receipt[/tmp]
+
+@_NOLEFT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+<center>
+<TABLE>
+<tr>
+	<th align=right>
+	ORDER NUMBER
+	</th>
+	<td>
+	[value mv_order_number]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Name
+	</th>
+	<td>
+	[value fname] [value lname]
+	</td>
+</tr>
+[if value company]
+<tr>
+	<th align=right>
+		Company
+	</th>
+	<td>
+	[value company]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th align=right>
+		Email Address
+	</th>
+	<td>
+	[value email]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Address
+	</th>
+	<td>
+	[value address1]
+	</td>
+</tr>
+[if value address2]
+<tr>
+	<th align=right>
+		&nbsp;
+	</th>
+	<td>
+	[value address2]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th align=right>
+		City, State, Zip
+	</th>
+	<td>
+	[value city], [value state]  [value zip]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Country
+	</th>
+	<td>
+	[value country]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Payment Method
+	</th>
+	<td>
+	[value mv_payment]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Shipping Method
+	</th>
+	<td>
+	[shipping_desc]
+	</td>
+</tr>
+[if value mv_handling]
+<tr>
+	<th align=right>
+		Handling Charge
+	</th>
+	<td>
+	[loop list="[value mv_handling]"]
+	[loop-change 1]
+		[condition]1[/condition]
+		[else]<BR>[/else]
+	[/loop-change 1]
+	[either][shipping_desc mode="[loop-code]"][or]CHARGED[/either]
+	[/loop]
+	</td>
+</tr>
+[/if]
+[if value phone_day]
+<tr>
+	<th align=right>
+		Daytime Phone
+	</th>
+	<td>
+	[value phone_day]
+	</td>
+</tr>
+[/if]
+[if value phone_night]
+<tr>
+	<th align=right>
+		Evening Phone
+	</th>
+	<td>
+	[value phone_night]
+	</td>
+</tr>
+[/if]
+[if !value mv_same_billing]
+<tr>
+	<th align=right>
+		Billing Name
+	</th>
+	<td>
+	[value b_fname] [value b_lname]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Billing Address
+	</th>
+	<td>
+	[value b_address1]
+	</td>
+</tr>
+[if value b_address2]
+<tr>
+	<th align=right>
+		&nbsp;
+	</th>
+	<td>
+	[value b_address2]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th align=right>
+		City, State, Zip
+	</th>
+	<td>
+	[value b_city], [value b_state]  [value b_zip]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Billing Country
+	</th>
+	<td>
+	[value b_country]
+	</td>
+</tr>
+[/if]
+
+</TABLE>
+
+<p>
+
+[comment] Handle downloadables [/comment]
+[perl products]
+	sub get_download {
+		if (! $Scratch->{download_present}) {
+			return '(<B>Must pay by credit card to download now.)</B>';
+		}
+		my $sku = shift;
+		return '' unless tag_data('products', 'download', $sku);
+		my $loc =  tag_data('products', 'dl_location', $sku);
+		my $save = delete $Scratch->{mv_add_dot_html};
+		my $url = $Tag->area( {
+						href => "deliver/$loc",
+						no_session_id => 1,
+						no_count => 1,
+						arg => $sku,
+						form => $Scratch->{mv_autocreate},
+					} ); 
+		$Scratch->{mv_add_dot_html} = $save if $save;
+		return qq{<BR><A HREF="$url"><IMG border=0 SRC="download.png"></A>};
+	}
+	return;
+[/perl]
+<p>
+<TABLE>
+<TH align=right>[L]Quan[/L]</TH>
+<TH>[L]Item No.[/L]</TH>
+<TH>[L]Description[/L]</TH>	
+<TH align=right>[L]Price[/L]</TH>	
+<TH align=right>[L]Extension[/L]</TH>	
+[item-list modular=1]
+<tr>
+	<td align=right valign=top>
+	[item-quantity]
+	</td>
+	<td valign=top>
+		[item-sku]
+	</td>
+	<td>
+	[item-data products description]
+	[if-modifier size]<BR>SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+	[if-item-data options o_enable]
+		[if-item-data !options o_modular]
+			[table-organize cols=4 table=' ' font="size=1" pretty=1]
+				[item-options td=1 label=1 bold=1 price=1 type=display]
+			[/table-organize]
+		[/if-item-data]
+	[/if-item-data]
+
+	[if-item-param pay_cert_code]
+		[tmp gc_url][area href="pay_cert/redeem"
+						  no_session_id=1
+						  no_count=1
+						  form="
+						  	pay_cert_code=[item-param pay_cert_code]
+						  	pay_cert_check=[item-param pay_cert_check]
+						  "][/tmp]
+		<br>Give this URL to pass on the gift certificate:
+				<A href="[scratch gc_url]">[scratch gc_url]</A>
+	[/if-item-param]
+
+	[if-item-field download]
+		<br>[calc]get_download('[item-code]')[/calc]
+	[/if-item-field]
+	[if-item-modifier mv_ad]
+	<BR>
+	<tt><b>SHIP TO:</B></tt>
+	<PRE>[item-modifier mv_ad]</pre>
+	[/if-item-modifier]
+	</td>
+	<td align=right valign=top>
+		[item-price]
+	</td>
+	<td align=right valign=top>
+		[item-subtotal]
+	</td>
+[/item-list]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SUBTOTAL
+	</td>
+	<td align=right>
+		[subtotal]
+	</td>
+</tr>
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SALES TAX
+	</td>
+	<td align=right>
+		[salestax]
+	</td>
+</tr>
+[if value mv_shipmode]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SHIPPING
+	</td>
+	<td align=right>
+		[shipping]
+	</td>
+</tr>
+[/if]
+[if value mv_handling]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		HANDLING
+	</td>
+	<td align=right>
+		[handling]
+	</td>
+</tr>
+[/if]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		ORDER TOTAL
+	</td>
+	<td align=right>
+		[total-cost]
+	</td>
+</tr>
+[if scratch pay_cert_total]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		GIFT CERTIFICATE
+	</td>
+	<td align=right>
+		[currency][scratch pay_cert_total][/currency]
+	</td>
+</tr>
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		CHARGED
+	</td>
+	<td align=right>
+		[currency][scratch tmp_remaining][/currency]
+	</td>
+</tr>
+[/if]
+[if value gift_note]
+<tr>
+	<td colspan=2>
+	<B>Comments/Note for Gift:</B>
+	</td>
+	<td colspan=3>
+	<PRE>
+	[value gift_note]
+	</PRE>
+	</td>
+</tr>
+[/if]
+</table>
+<P>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+<I>(Please print this receipt for your records. Thank you for your order!)</I>
+</font>
+<P>
+
+[include templates/components/specials]
+</CENTER>
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

@@ -1,0 +1,36 @@
+@_UI_STD_INIT_@
+[if-mm function="!files" name="[value ui_upload_fn]"]
+[seti ui_error] [msg arg.0="[value ui_upload_fn]"]Not allowed to upload %s.[/msg][/seti]
+[bounce page=__UI_BASE__/error]
+[/if-mm]
+
+[if type=!explicit compare=|
+						[value-extended name='ui_upload_file' test=isfile]
+						|
+]
+[seti ui_error] No file sent.[/seti]
+[bounce page=__UI_BASE__/error]
+[/if]
+
+[calc]Log("backup=$CGI->{ui_backup}");[/calc]
+[if cgi ui_backup]
+[and type="!explicit" compare=|
+						[backup-file file='[value ui_upload_fn]' ]
+				|]
+[bounce page=__UI_BASE__/error]
+[/if]
+[if type=explicit compare=|
+					[value-extended
+							Yes=1
+							umask="[cgi ui_upload_umask]"
+							No=0
+							ascii="[value ui_upload_ascii]"
+							name=ui_upload_file
+							outfile="[value ui_upload_fn]"
+						]
+					|]
+[bounce href="[either][return-to url][or][area __UI_BASE__/file_transfer][/either]"]
+[else]
+[seti ui_error][msg arg.0="[value ui_upload_fn]"]Error writing file %s.[/msg][/seti]
+[bounce page=__UI_BASE__/error]
+[/else][/if]

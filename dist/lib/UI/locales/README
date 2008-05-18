@@ -1,0 +1,115 @@
+Contact
+=======
+
+If you have any questions concerning i18n and translations issues in
+respect to Interchange, please send them to the Interchange i18n mailing
+list:
+
+interchange-i18n@icdevgroup.org
+
+More information about this mailing list can be found at:
+   
+http://www.icdevgroup.org/mailman/listinfo/interchange-i18n
+
+Existing translations
+=====================
+
+Brazilian Portuguese (pt_BR):
+Jack Tsai <jack@3light.com.br>
+
+German (de_DE):
+Stefan Hornburg (Racke) <racke@linuxia.de>
+
+Danish (da_DK):
+Kim Lauritz Christensen <kim@hambrosalle.dk>
+
+Dutch (nl_NL):
+Ton Verhagen <ton@verhagen.net>
+
+Hebrew (he_IL):
+Chen Naor <chen@lilux.co.il>
+
+Italian (it_IT):
+Marco Mescoli <m.mescoli@omnibit.nu>
+
+Japanese (ja_JP):
+Murahashi <murahashi@ayayu.com>, Hiroyuki Cozy Kojima <kojima@redhat.com>
+
+Spanish (es_ES):
+Ignacio Lizarán <nacho@hsc.sas.junta-andalucia.es>, José Mª Revuelto <josemaria.revuelto@solgrama.com>
+
+Swedish (sv_SE):
+Tommi Labermo <tommi.labermo@surfnet.fi>
+
+Translation Hints
+=================
+
+Edit $LOCALE.cfg in the following way:
+
+MV_LANG_NAME
+------------
+
+Enter the _native_ name of the $LOCALE, e.g. Deutsch for
+the German locale.
+
+"MV_LANG_NAME",
+undef,
+
+"MV_LANG_NAME",
+"Deutsch",
+
+MV_LANG_DIRECTION
+-----------------
+
+Put "rtl" here _only_ if your language is written from right to
+left (like Hebrew, Arabic and Persian).
+
+"MV_LANG_DIRECTION",
+"rtl",
+
+MV_CHARSET
+---------------
+
+If you need the web browser to use a character set other than the default
+ISO-8859-1, specify it here. (Note that this is a character set browsers
+are aware of, NOT a Unix locale name.) For example, Japanese Shift-JIS
+encoding is indicated like this:
+
+MV_CHARSET => 'x.sjis',
+
+Short strings
+-------------
+
+Just translate the first string.
+
+"About Your Company",
+undef,
+
+"About Your Company",
+"Über Ihre Firma",
+
+Larger chunks of text:
+----------------------
+
+Just translate the text in the comment.
+
+# Please be patient after clicking the Finish button.
+# If you are uploading a large spreadsheet file, the server may take
+# several minutes to process your data.
+"WIZARD_STEP_PREVIEW_PAR_1",
+undef,
+
+# Please be patient after clicking the Finish button.
+# If you are uploading a large spreadsheet file, the server may take
+# several minutes to process your data.
+"WIZARD_STEP_PREVIEW_PAR_1",
+"Nach dem Betätigen des Abschließen-Buttons gedulden Sie sich bitte.
+Beim Hochladen von größeren Spreadsheetdateien benötigt der Server
+u.U. mehrere Minuten um die Daten zu verarbeiten.",
+
+Adding new languages
+====================
+
+Just drop a file $LOCALE.cfg in this directory, which contains
+a value for MV_LANG_NAME and add the file to the MANIFEST.
+

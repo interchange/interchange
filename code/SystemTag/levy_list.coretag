@@ -1,0 +1,28 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: levy_list.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag levy-list           Order        name
+UserTag levy-list           addAttr
+UserTag levy-list           attrAlias    cart name
+UserTag levy-list           hasEndTag
+UserTag levy-list           Version      $Revision: 1.5 $
+UserTag levy-list           Routine      <<EOR
+sub {
+	my($cart,$opt,$text) = @_;
+	my $lev = $Vend::Session->{levies} ||= {};
+	my $obj = {
+				mv_results => $cart
+								? ($lev->{$cart} ||= [] )
+								: ($lev->{$Vend::CurrentCart || 'main'} ||= [] )
+					};
+	return if ! $text;
+	$opt->{prefix} = 'levy' unless defined $opt->{prefix};
+	return labeled_list($opt, $text, $obj);
+}
+EOR

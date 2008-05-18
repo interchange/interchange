@@ -1,0 +1,9 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	Merchandising	x001					admin/merchandising		Product Merchandising		0							
+002	Merchandising	x002					admin/affiliates		Affiliates		0							
+003	Merchandising	x003					admin/build_related		Generate "others who ..."		0							
+004	Merchandising	x004	1			affiliates	admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&ui_return_to=admin/affiliates&icon_name=icon_people.gif	Create new affiliate		0							
+005		x005	1			merchandising	admin/item_up	item_id=%5Bcgi%20item_id%5D&ui_meta_view=upsell&merchandising=1	Upsell		0							
+006		x006				merchandising	admin/item_cross	mv_data_table=merchandising&item_id=%5Bcgi%20item_id%5D&ui_meta_view=cross&merchandising=1	Cross-sell		0							
+007		x007				merchandising	admin/item_feature	mv_data_table=merchandising&item_id=%5Bcgi%20item_id%5D&ui_meta_view=promotion&merchandising=1	Promotion		0							
+008		x008				merchandising	admin/item_price	item_id=%5Bcgi%20item_id%5D&merchandising=1	Quantity Pricing		0							

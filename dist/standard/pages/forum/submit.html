@@ -1,0 +1,235 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[flag type=write table=forum]
+[tmp page_title]Submit a forum story[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+[comment]
+	Form shamelessly stolen from Slash, thanks guys.
+[/comment]
+
+@_LEFTONLY_TOP_@
+
+[if cgi product]
+[perl tables=products]
+	## Set the subject if coming from product page
+	my $desc = tag_data('products', $Config->{DescriptionField}, $Session->{arg});
+	$CGI->{subject} = $desc;
+	return;
+[/perl]
+[/if]
+
+[perl tables="forum"]
+#code	parent	artid	mod_time	created	username	host	score	lastscore	reason	anon	extended	subject	comment
+	sub scrub {
+		my ($value, $type) = @_;
+		my @allowed = qw/ a b i u blockquote li ol ul em br tt p strong div /;
+		my %v;
+		my $db = $Db{forum}
+			or return "Database error.";
+		my $noscrub;
+		if(! $type) {
+			$value =~ s/\[/&#91;/g;
+		}
+		elsif($type eq '2') {
+			$value = $Tag->filter('text2html', $value);
+			$value =~ s/\[/&#91;/g;
+		}
+		elsif($type eq '4') {
+			unless ($value =~ m{</\s*xmp\s*>}i) {
+				$noscrub = 1;
+				$value =~ s/\[//g;
+				$value = "<XMP>$value</XMP>";
+			}
+		}
+		my $filter = join ".", 'restrict_html', @allowed;
+		$value = $Tag->filter($filter,$value)
+			unless $noscrub;
+		return $value;
+	}
+	if($CGI->{product}) {
+		$Session->{forum_start} ||= {};
+		$Session->{forum_start}{$CGI->{product}} = 1;
+	}
+	return;
+[/perl]
+
+[if cgi operation eq 'Preview']
+
+<B>This is what would go on the front page:</b>
+<P>
+	<table>
+	<tr>
+	<td bgcolor="#eeeeee">
+	[restrict enable=cgi]
+	<B>[cgi name=subject filter="restrict_html"]<br>
+	[/restrict]
+	by [either][value fname][or]Guest user[/either] on [convert-date fmt="%A, %B %e, %Y @%H:%M"][/convert-date]<B>
+	</td>
+	</tr>
+	<tr>
+	<td>
+[perl tables="forum"]
+	return scrub($CGI->{comment}, $CGI->{commtype});
+[/perl]
+	</td>
+	</tr>
+[if cgi additional]
+	<tr>
+	<td>
+<B>This is what goes on "Read More":</b>
+<P>
+[perl tables="forum"]
+	return scrub($CGI->{additional}, $CGI->{commtype});
+[/perl]
+	</td>
+	</tr>
+[/if]
+	</table>
+<blockquote><hr></blockquote>
+Above is a preview of what you just entered. Use <b>Submit</b> to actually
+submit if you are satisfied.
+
+[/if]
+</P>
+[if cgi operation eq 'Submit']
+
+[perl tables="forum"]
+#code	parent	artid	mod_time	created	username	host	score	lastscore	reason	anon	extended	subject	comment
+	my %v;
+	delete $Scratch->{tmp_code};
+	my $db = $Db{forum}
+		or return "Database error.";
+	$v{host} = $Session->{host};
+	$v{score} = 1;
+	my $noscrub;
+	if(! $CGI->{commtype}) {
+		# do nothing
+	}
+	elsif($CGI->{commtype} eq '2') {
+		$CGI->{comment} = $Tag->filter('text2html', $CGI->{comment});
+	}
+	elsif($CGI->{commtype} eq '4') {
+		unless ($CGI->{comment} =~ m{</\s*xmp\s*>}i) {
+			$noscrub = 1;
+			$CGI->{comment} = "<XMP>$CGI->{comment}</XMP>";
+		}
+	}
+	$v{comment}    = scrub($CGI->{comment}, $CGI->{commtype});
+	$v{additional} = scrub($CGI->{additional}, $CGI->{commtype});
+	$v{username} = $Session->{username} || '';
+	$v{anon} = $CGI->{anon} ? 1 : 0;
+	$v{mod_time} =
+	$v{created} =  $Tag->time( { body => "%Y-%m-%d %H:%M:%S" });
+	$v{subject} =  $Tag->filter('encode_entities', $CGI->{subject}, 'subject');
+	$v{artid}  =  $CGI->{artid} || 0;
+
+	my $code;
+
+	if($CGI->{parent}) {
+                my $existing = $db->query("select * from forum where parent = '$CGI->{parent}' or (parent = '0' and code = '$CGI->{parent}')");
+
+		if($existing and ! @$existing) {
+			$v{artid} = $CGI->{parent};
+			$code = $CGI->{parent};
+			$v{parent} = 0;
+		}
+		else {
+			$v{parent} =  $CGI->{parent};
+		}
+	}
+	$Scratch->{tmp_code} = $db->set_slice($code, \%v)
+		or return "Error submitting reply!";
+	$Scratch->{tmp_code} =~ s/'//g;
+
+	unless ($code) {
+		$Scratch->{tmp_code} = $v{parent};
+	}
+
+	## This is special processing only if there is a submission email address
+	## is found
+	if($Variable->{FORUM_SUBMIT_EMAIL}) {
+		my $cc = $Variable->{FORUM_SUBMIT_EMAIL};
+		my $url = $Tag->area(
+								{ href => 'admin/flex_editor',
+								  form => "
+								  		mv_data_table=forum
+								  		item_id=$Scratch->{tmp_code}
+								  ",
+								  });
+
+
+		my $message = <<EOF;
+Subject: $v{subject}
+From: $v{name} <$v{email}>
+Host: $v{host}
+
+Subject: $v{subject}
+
+Content
+--------
+$v{comment}
+EOF
+		$message .= <<EOF if $v{additional};
+
+Additional
+-----------
+$v{additional}
+EOF
+		$message .= <<EOF;
+Edit/delete:
+
+	$url
+EOF
+
+		$Tag->email( {
+					subject => "Posting from $v{artid} forum: $v{subject}",
+					to => $cc,
+					body => $message,
+					});
+
+	}
+	return;
+[/perl]
+
+	[if cgi parent]
+		Your comment has been submitted.
+		[if type=data term="products::sku::[cgi parent]"]
+		 [page href="[cgi parent]"]Return to product</a>.
+		[else]
+		 [page href="forum/display" arg="[cgi parent]"]See in context.
+		[/else]
+		[/if]
+	[/if]
+[else]
+	[include include/forum/submit_form]
+[/else]
+[/if]
+
+<P>
+
+[if variable FORUM_DEFAULT_THREAD]
+[page forum __FORUM_DEFAULT_THREAD__]__COMPANY__ forum</a>
+[/if]
+
+@_LEFTONLY_BOTTOM_@
+
+

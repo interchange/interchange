@@ -1,0 +1,231 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: version.coretag,v 1.15 2007-08-05 08:01:03 kwalsh Exp $
+
+UserTag version Order      extended
+UserTag version attrAlias  module_test modtest
+UserTag version attrAlias  moduletest modtest
+UserTag version attrAlias  require modtest
+UserTag version addAttr
+UserTag version Version    $Revision: 1.15 $
+UserTag version Routine    <<EOR
+sub {
+	return $::VERSION unless shift;
+	my $opt = shift;
+	my $joiner = $opt->{joiner} || "<br$Vend::Xtrailer>";
+	my @out;
+	my $done_something;
+
+	if($opt->{global_error}) {
+		push @out, $Global::ErrorFile;
+		$done_something = 1;
+	}
+
+	if($opt->{local_error}) {
+		my $dfn = my $fn = $Vend::Cfg->{ErrorFile};
+		my $pre = $Global::Catalog{$Vend::Cat}->{dir} . '/';
+		$fn =~ s:^\Q$pre\E::;
+		my $href = $Tag->area("$::Variable->{UI_BASE}/do_view", $fn);
+		push(@out, qq{<a href="$href">$dfn</a>});
+		$done_something = 1;
+	}
+
+	if($opt->{env}) {
+		push @out,
+			ref $Global::Environment eq 'ARRAY' ?
+			join ' ', @{$Global::Environment} :
+			'(none)';
+		$done_something = 1;
+	}
+
+	if($opt->{safe}) {
+		push @out, join " ", @{$Global::SafeUntrap};
+		$done_something = 1;
+	}
+
+	if($opt->{child_pid}) {
+		push @out, $$;
+		$done_something = 1;
+	}
+
+	if($opt->{modtest}) {
+		eval "require $opt->{modtest}";
+		if($@) {
+			push @out, 0;
+		}
+		else {
+			push @out, 1;
+		}
+		$done_something = 1;
+	}
+
+	if($opt->{pid}) {
+		push @out, ::readfile($Global::PIDfile);
+		$done_something = 1;
+	}
+
+	if($opt->{mode}) {
+		push @out, Vend::Server::server_start_message('%s', 1);
+		$done_something = 1;
+	}
+
+	if($opt->{uid}) {
+		push @out, scalar getpwuid($>) . " (uid $>)";
+		$done_something = 1;
+	}
+
+	if($opt->{global_locale_options}) {
+		my @loc;
+		my $curr = $Global::Locale;
+		
+		while ( my($k,$v) = each %$Global::Locale_repository ) {
+			next unless $k =~ /_/;
+			push @loc, "$v->{MV_LANG_NAME}~:~$k=$v->{MV_LANG_NAME}";
+		}
+		if(@loc > 1) {
+			push @out, join ",", map { s/.*~:~//; $_ } sort @loc;
+		}
+		$done_something = 1;
+	}
+
+	if($opt->{perl}) {
+		push @out, ($^V ? sprintf("%vd", $^V) : $]) . errmsg(" (called with: %s)", $^X);
+		$done_something = 1;
+	}
+
+	if($opt->{perl_config}) {
+		require Config;
+		push @out, "<pre>\n" . Config::myconfig() . "</pre>";
+		$done_something = 1;
+	}
+
+	if($opt->{hostname}) {
+		require Sys::Hostname;
+		push @out, Sys::Hostname::hostname()
+			|| errmsg("unable to determine hostname");
+		$done_something = 1;
+	}
+
+	if(not $opt->{db} || $opt->{modules} || $done_something) {
+		$opt->{db} = 1;
+		push @out, "Interchange Version $::VERSION";
+		push @out, "";
+	}
+
+	if($opt->{db}) {
+		if($Global::GDBM) {
+			push @out, errmsg('%s available (v%s)', 'GDBM', $GDBM_File::VERSION);
+		}
+		else {
+			push @out, errmsg('No %s.', 'GDBM');
+		}
+		if($Global::DB_File) {
+			push @out, errmsg('%s available (v%s)', 'Berkeley DB_File', $DB_File::VERSION);
+		}
+		else {
+			push @out, errmsg('No %s.', 'Berkeley DB_File');
+		}
+		if($Global::LDAP) {
+			push @out, errmsg('%s available (v%s)', 'LDAP', $Net::LDAP::VERSION);
+		}
+		if($Global::DBI and $DBI::VERSION) {
+			push @out, errmsg ('DBI enabled (v%s), available drivers:', $DBI::VERSION);
+			my $avail = join $joiner, DBI->available_drivers;
+			push @out, "<blockquote>$avail</blockquote>";
+		}
+	}
+
+	if($opt->{modules}) {
+		my @wanted = qw/
+			Archive::Tar
+			Archive::Zip
+			Bundle::LWP
+			Business::UPS
+			Compress::Zlib
+			Crypt::SSLeay
+			DBI
+			Digest::MD5
+			Image::Size
+			LWP::Simple
+			MIME::Base64
+			Safe::Hole
+			Set::Crontab
+			Spreadsheet::ParseExcel
+			Spreadsheet::WriteExcel
+			Storable
+			Tie::ShadowHash
+			Tie::Watch
+			URI::URL
+		/;
+		my %l_than;
+		my %g_than;
+		my %info = (
+			'Archive::Tar' => q{Only needed for supplementary UserTag definitions.},
+			'Archive::Zip' => q{Only needed for supplementary UserTag definitions.},
+			'Bundle::LWP' => q{Certain parts of these modules (URI::URL and MIME::Base64) are required for Interchange's internal HTTP server. Also, Business::UPS, for calculating shipping, requires this.},
+			'Business::UPS' => q{Enables lookup of shipping costs directly from www.ups.com. Requires Bundle::LWP.},
+			'Compress::Zlib' => q{Only needed for supplementary UserTag definitions.},
+			'Crypt::SSLeay' => q{Payment interface links via HTTPS/SSL.},
+			'DBI' => q{Most people want to use SQL with Interchange, and this is a requirement.  You will also need the appropriate DBD module, i.e. DBD::mysql to support MySQL.},
+			'Digest::MD5' => q{IMPORTANT: cache keys and other search-related functions will not work.},
+			'Image::Size' => q{Optional but recommended for [image ...] tag.},
+			'LWP::Simple'  => q{External UPS lookup and other internet-related functions will not work.},
+			'MIME::Base64' => q{Provides HTTP services for internal HTTP server and basic authentication.},
+			'Safe::Hole' => q{IMPORTANT: SQL and some tags will not work in embedded Perl.},
+			'Set::Crontab' => q{Used by HouseKeepingCron task scheduler.},
+			'Spreadsheet::ParseExcel' => q{Allows upload of XLS spreadsheets for database import in the UI.},
+			'Spreadsheet::WriteExcel' => q{Allows output of XLS spreadsheets for database export in the UI.},
+			'Storable' => q{Session and search storage will be slower.},
+			'Tie::ShadowHash' => q{Needed for PreFork mode of Interchange, prevents permanent write of configuration.},
+			'Tie::Watch' => q{Minor: cannot set watch points in catalog.cfg.},
+			'URI::URL' => q{Provides HTTP primitives for internal HTTP server.},
+		);
+		foreach my $name (@wanted) {
+			no strict 'refs';
+			eval "require $name";
+			if($@) {
+				my $info = errmsg($info{$name} || "May affect program operation.");
+				push @out, "$name " . errmsg('not found') . ". $info"
+			}
+			elsif($l_than{$name}) {
+				my $ver = ${"${name}::VERSION"};
+				$ver =~ s/^(\d+\.\d+)\..*/$1/;
+				if($ver > $l_than{$name}) {
+					my $info = errmsg($info{$name} || "May affect program operation.");
+					my $ex = errmsg(
+								'%s too high a version, need %s or lower',
+								$ver,
+								$l_than{$name},
+							);
+					push @out, "$name $ex. $info";
+				}
+			}
+			elsif($g_than{$name}) {
+				my $ver = ${"${name}::VERSION"};
+				$ver =~ s/^(\d+\.\d+)\..*/$1/;
+				if($ver < $g_than{$name}) {
+					my $info = errmsg($info{$name} || "May affect program operation.");
+					my $ex = errmsg(
+								'%s too low a version, need %s or higher',
+								$ver,
+								$g_than{$name},
+							);
+					push @out, "$name $ex. $info";
+				}
+			}
+			else {
+				my $ver = ${"$name" . "::VERSION"};
+				$ver = $ver ? "v$ver" : 'no version info';
+				push @out, "$name " . errmsg('found') . " ($ver).";
+			}
+		}
+	}
+
+	return join $joiner, @out;
+}
+EOR

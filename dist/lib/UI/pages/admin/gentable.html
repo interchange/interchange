@@ -1,0 +1,265 @@
+[set page_perm]gentable[/set]
+[set page_title][L]Table Manager[/L][/set]
+[set ui_class]Tables[/set]
+[set help_name]gentable[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<!-- touch metatable [data __UI_META_TABLE__ test test] -->
+[tmp list_databases][list-databases][/tmp]
+[perl tables="__UI_META_TABLE__"]
+	my %all_tables = map { $_ => 1 }
+		grep /\S/,
+		split /\s+/, $Scratch->{list_databases};
+	# %admin is used throughout this page
+	%admin = map { $_ => 1 }
+		grep { $all_tables{$_} }
+		split /[\s,\0]+/, $Variable->{UI_ADMIN_TABLES};
+	$Tag->tmp(ui_tmp_admin => join ' ', sort keys %admin);
+
+	my $db = $Db{__UI_META_TABLE__};
+	my $q = "select code from __UI_META_TABLE__ where type = 'table'";
+	my $ary = $db->query($q);
+	for(@$ary) {
+		my($code) = @$_; 
+		my ($view,$tab) = split /:+/, $code, 2;
+		if(! $tab) {
+			$tab = $view;
+			undef $view;
+		}
+		## $db->set_field($code, 'lookup', $tab);
+		## $db->set_field($code, 'attribute', $view);
+		## push @out, "set code=$code tab=$tab view=$view lookup=$tab attribute=$view";
+		next unless $view;
+		$views{$tab} ||= [];
+		push @{$views{$tab}}, $view;
+	}
+	for(keys %views) {
+		my $ary = $views{$_};
+		@$ary = sort @$ary;
+	}
+	return;
+[/perl]
+
+<table width="100%" border=0 cellspacing=0 cellpadding=0>
+  <tr>
+		<td>
+			<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+			  <tr class=rhead> 
+[loop list="[scratch list_databases]"]
+[loop-sub db_action]
+sub {
+#Log("args=" . $Tag->uneval({ ref => \@_ }));
+	my $name = shift;
+	return if $admin{$name};
+	my $rec = shift;
+	my $tab = $rec->[0];
+	return '' if $admin{$tab};
+
+#Log("name=$name tab=$tab");
+	$name = $tab if ! $name;
+	my $url = "$Config->{VendURL}/__UI_BASE__";
+	my $froot = sub {
+		my $fn = shift;
+		$fn =~ s#^$Config->{VendRoot}/##o;
+		return $fn;
+	};
+	my $ref = {
+		upload => { 
+						img => 'ico_upload.gif',
+						url => $Tag->area(
+									'__UI_BASE__/upload_file',
+									$froot->(join "/",
+											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
+											$Config->{Database}{$tab}{file}
+										),
+									{
+										form => 'ui_return_to=@@MV_PAGE@@'
+									}
+								),
+									
+					},
+		download => { 
+						img => 'ico_download.gif',
+						url => $Tag->area( 
+									{
+										href => 'ui_download/' .
+										  $froot->(
+										  	join "/",
+												(	$Config->{Database}{$tab}{dir}
+													||
+													$Config->{ProductDir}
+												),
+												$Config->{Database}{$tab}{file}
+											 ),
+										 form => 'filler=1',
+										 add_dot_html => 0,
+									},
+								),
+					},
+		import => { 
+						img => 'ico_import.gif',
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/import_table',
+										form => "mv_data_table=$tab",
+									}
+									),
+					},
+		export => { 
+						img => 'ico_export.gif',
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/export_table',
+										form => "mv_data_table=$tab",
+									}
+									),
+					},
+		config => { 
+						img => 'icon_config.gif',
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/dbconfig',
+										form => "mv_data_table=$tab",
+									}
+									),
+					},
+		edit => { 
+						img => 'layout.gif',
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/flex_select',
+										form => "mv_data_table=$tab",
+									}
+									),
+					},
+	};
+	my $out = '';
+	my @litems = (
+				$title_thing || '[L]Table name[/L] ([L]description[/L]) -- [L]click to edit[/L]',
+				'[L]views[/L]',
+				'[L]import[/L]',
+				'[L]export[/L]',
+				'[L]upload[/L]',
+				'[L]download[/L]',
+			);
+	if ($Variable->{UI_DBCONFIG}) {
+		push @litems, '[L]config[/L]';
+	}
+	
+	if(! $dblist_done_one++) {
+		$out .= '<tr class=rhead>';
+		my $i = 0;
+		for(@litems) {  # Add "report"
+			my $align = $i++ == 0 ? 'left' : 'center';
+			$out .= qq{<td class=rhead align=$align>$_</td>};
+		}
+		$out .= "</tr>";
+	}
+
+	my $class;
+	if($dblist_done_one % 2) {
+		$class = 'rownorm';
+	}
+	else {
+		$class = 'rowalt';
+	}
+
+	my $desc = tag_data('__UI_META_TABLE__', 'name', $name);
+	my $totdesc = $name;
+	$totdesc .= " ($desc)" if $desc;
+	my $titdesc = errmsg('edit table %s', $totdesc);
+	$titdesc = $Tag->filter('encode_entities', $titdesc);
+	
+	my $mainwidth = $Variable->{UI_DBCONFIG} ? '30%' : '40%';
+
+	my $mref = $ref->{edit};
+	$out .= <<EOF;
+<tr class=$class>
+	<td class=$class width="$mainwidth">
+		<a href="$mref->{url}" title="$titdesc" class=$class>$totdesc</a>
+	</td>
+EOF
+
+	$out .= <<EOF;
+	<td class=$class width="20%">
+EOF
+	if(my $ary = $views{$name}) {
+		for(sort @$ary) {
+			my $tit = errmsg("edit %s with view %s", $tab, $_);
+			my $url = $Tag->area(
+								{
+									href => '__UI_BASE__/flex_select',
+									form => qq{
+												mv_data_table=$tab
+												ui_meta_view=$_
+											},
+								}
+							);
+			$out .= qq{<a href="$url" title="$tit">$_</a> };
+		}
+	}
+	else {
+		$out .= '&nbsp;';
+	}
+
+	$out .= "\n\t</td>\n";
+	my @mitems = (qw/import export upload download/);
+
+	if($Variable->{UI_DBCONFIG}) {
+		push @mitems, 'config';
+	}
+
+	for(@mitems) {  # Add "report"
+		my $line = $ref->{$_};
+		if($_ eq 'config' and $Config->{Database}{$tab}{type} > 7) {
+			$out .= qq{<td class=$class align=center width="12%">&nbsp;</td>};
+		}
+		else {
+			$out .= <<EOF;
+<td class=$class align=center width="12%"><a href="$line->{url}" title="$_ $tab"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
+EOF
+		}
+	}
+	$out .= q{</tr>};
+	return $out;
+}
+[/loop-sub]
+[loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
+[/loop]
+
+[if-mm super]
+[calc]
+	%admin = ();
+	undef $dblist_done_one;
+	$title_thing = q{[L]Hidden Admin Tables[/L]};
+	return;
+[/calc]
+
+</table>
+</td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=0 cellpadding=0>
+  <tr>
+		<td>
+			<br><br>
+			<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+			  <tr class=rhead> 
+[loop list="[scratch ui_tmp_admin]"]
+[loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
+[/loop]
+[/if-mm]
+
+</table>
+</td>
+</tr>
+</table>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

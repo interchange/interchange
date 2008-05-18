@@ -1,0 +1,19 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: lspace_to_nbsp.filter,v 1.2 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef lspace_to_nbsp Filter
+CodeDef lspace_to_nbsp Description Leading SPACE to nbsp
+CodeDef lspace_to_nbsp Routine <<EOR
+sub {
+        my $str = shift;
+        $str =~ s/^( +)/'&nbsp;' x length($1)/emg;
+        return $str;
+}
+EOR
+

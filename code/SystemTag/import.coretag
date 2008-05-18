@@ -1,0 +1,18 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: import.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag import              Order        table type
+UserTag import              addAttr
+UserTag import              attrAlias    base table
+UserTag import              attrAlias    database table
+UserTag import              hasEndTag
+UserTag import              Interpolate
+UserTag import              PosNumber    2
+UserTag import              Version      $Revision: 1.5 $
+UserTag import              MapRoutine   Vend::Data::import_text

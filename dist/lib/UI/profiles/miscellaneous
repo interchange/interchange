@@ -1,0 +1,13 @@
+__NAME__ send_to_icdevgroup
+
+[email 
+	to="[either][var ICDEVGROUP_DOCS_EMAIL][or]docs@icdevgroup.org[/either]"
+	subject="User-submitted change to [filter op=entities interpolate=1][cgi title][/filter]"
+	reply="[var ORDERS_TO]"
+]code: [cgi code]
+title: [cgi title]
+
+body of change
+---------------
+[cgi name=helptext enable-html=1]
+[/email]

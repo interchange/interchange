@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<TITLE>Shopping Cart Contents</TITLE>
+</HEAD>
+[body 1]
+<P>
+Order URL: [process-order]
+<P>
+<CENTER>
+<FORM ACTION="[process-order]" METHOD=POST>
+<input type="hidden" name="mv_doit" value="refresh">
+<input type="hidden" name="mv_orderpage" value="ord/basket">
+<input type="hidden" name="mv_checkout" value="ord/checkout">
+<input type="hidden" name="mv_nextpage" value="test">
+<TABLE BORDER=0>
+<CAPTION><FONT SIZE=7>Shopping Cart Contents</FONT><BR></CAPTION>
+<TR>
+<P>
+	<TH BGCOLOR="#00F0F0" WIDTH=70 VALIGN=BOTTOM>
+	ISBN
+	</TH>
+	<TH BGCOLOR="#00F0F0" VALIGN=BOTTOM ALIGN=LEFT>
+	Description
+	</TH>
+	<TH BGCOLOR="#00F0F0" WIDTH=70 VALIGN=BOTTOM ALIGN=center>
+	Quantity
+	</TH>
+	<TH BGCOLOR="#00F0F0" WIDTH=90 VALIGN=BOTTOM ALIGN=center>
+	Price
+	</TH>
+</TR>
+[item-list]
+<TR>
+<P>
+	<TD BGCOLOR="#FFFFFF" VALIGN=TOP align=center>[item-code]</TD>
+	<TD BGCOLOR="#FFFFFF" VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	[item-description]
+[if explicit items scratch]
+[condition]
+$no = $Scratch->{"nodisplay_[item-code]"};
+return 1 unless $no;
+foreach $item (reverse @$Items) {
+	return '' if $no eq $item->{code};
+}
+1;
+[/condition]
+	<BR><FONT SIZE="-1">[item-accessories][item-accessories size][item-accessories color]</FONT>	
+	</TD>
+[/if]
+	<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=CENTER>
+	<input type="text"
+		name=[quantity-name] value="[item-quantity]" size=3>
+
+	</TD>
+	<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=RIGHT>
+		$[discount-price]
+		[if discount [item-code]]
+		<BR><FONT COLOR=RED SIZE=-2>Item is discounted
+			$[item-discount]
+			</FONT>
+		[/if]
+	</TD>
+</TR>
+[/item-list]
+[if discount ALL_ITEMS]
+<TR>
+<TD ALIGN=CENTER BGCOLOR="#00F0F0" COLSPAN=4>
+<FONT COLOR=RED>All items are discounted by 30 percent!</FONT>
+</TR>
+[/if]
+<TR>
+<TD BGCOLOR="#00F0F0" COLSPAN=3 ALIGN=RIGHT VALIGN=CENTER>
+<input type="submit"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_submit" value="Recalculate">
+&nbsp;&nbsp;
+	<B>Subtotal</B>
+<TD BGCOLOR="#FFFFFF" ALIGN=RIGHT VALIGN=CENTER>$[subtotal]</TD>
+</TR>
+<TR>
+<TD BGCOLOR="#00F0F0" COLSPAN=4 ALIGN=CENTER>
+<input type="submit" name="mv_todo" value="Check out">
+<input type="submit"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_click" value="Search">
+<input type="submit"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_click" value="Browse">
+<input type="mv_click"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_click" value="Turn off order security">
+<input type="submit"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_click" value="Home">
+<input type="submit"
+	onClick="document.forms[0].action='[process-target]'"
+	name="mv_click" value="Stop shopping">
+</TD>
+</TR>
+</TABLE>
+
+
+<P>
+[set Turn off order security]
+mv_todo=unsecure
+mv_nextpage=ord/basket
+[/set]
+
+[set Stop shopping]
+mv_todo=return
+mv_nextpage=canceled
+[/set]
+
+[set Home]
+mv_todo=return
+mv_nextpage=test
+[/set]
+
+[set Search]
+mv_todo=return
+mv_nextpage=srchform
+[/set]
+
+[set Browse]
+mv_todo=return
+mv_nextpage=browse
+[/set]
+
+<BR>
+
+</FORM>
+</body> </html>

@@ -1,0 +1,77 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Contact Us[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo[/component]
+[promo_type]new[/promo_type]
+[matches]3[/matches]
+[cols]3[/cols]
+[banner][L]New items[/L][/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="90%">
+<tr>
+  <td align="left">
+    
+	<p><br>[L]You can contact us the following ways[/L]:</p>
+
+	<p>
+    <b>__COMPANY__</b><br>
+    __ADDRESS__<br>
+    __CITY__
+	</p>
+
+	<p>
+    [L]Phone[/L]: __PHONE__<br>
+	[if variable FAX]
+	    [L]Fax[/L]: __FAX__<br>
+	[/if]
+    [if variable TOLLFREE]
+    	[L]Toll-free[/L]: __TOLLFREE__<br>
+	[/if]
+	[if variable EMAIL_INFO]
+		[L]e-mail[/L]: <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a><br>
+	[/if]
+	</p>
+
+	<hr>
+
+	<p>[L]If you would like further information on constructing a store like this, please contact the Interchange Development Group[/L]:</p>
+
+    <p><a href="@_INTERCHANGE_URL_@">@_INTERCHANGE_URL_@</a><br>
+    [L]e-mail[/L]: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a><br><br></p>     
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

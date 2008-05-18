@@ -1,0 +1,26 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: convert_date.filter,v 1.7 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef convert_date Filter
+CodeDef convert_date Description Convert date
+CodeDef convert_date Visibility  private
+CodeDef convert_date Routine <<EOR
+sub {
+	my $time = shift(@_);
+	# Don't convert nothing to something
+	return '' unless $time;
+	shift(@_);
+	my $fmt = shift(@_);
+	while(my $add = shift(@_)) {
+		$fmt .= " $add";
+	}
+	return $Tag->convert_date({ fmt => $fmt, body => $time});
+}
+EOR

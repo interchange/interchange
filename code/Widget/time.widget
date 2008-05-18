@@ -1,0 +1,139 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: time.widget,v 1.3 2007-03-30 23:40:58 pajamian Exp $
+
+CodeDef time Widget 1
+CodeDef time Description Time selector
+CodeDef time Routine <<EOR
+sub {
+	my($opt) = @_;
+
+	my $name = $opt->{name};
+	my $val  = $opt->{value};
+
+	my $now;
+	if($opt->{time} and $opt->{time_adjust} =~ /([-+]?)(\d+)/) {
+		my $sign = $1 || '+';
+		my $adjust = $2;
+		$adjust *= 3600;
+		$now = time;
+		$now += $sign eq '+' ? $adjust : -$adjust;
+	}
+
+	my $sel_extra;
+	my $opt_extra;
+	for(qw/ class style extra /) {
+		my $stag = "select_$_";
+		my $otag = "option_$_";
+		my $selapp;
+		my $optapp;
+
+		if($_ eq 'extra') {
+			$selapp = " $opt->{$stag}";
+			$optapp = " $opt->{$otag}";
+		}
+		else {
+			$selapp = qq{ $_="$opt->{$stag}"};
+			$optapp = qq{ $_="$opt->{$otag}"};
+		}
+		$sel_extra .= $opt->{$stag} ? $selapp : '';
+		$opt_extra .= $opt->{$otag} ? $optapp : '';
+	}
+
+	my @t = localtime($now || time);
+	if (not $val) {
+		$t[2]++ if $t[2] < 23;
+		$val = POSIX::strftime("%H00", @t);
+	}
+
+	my $sel = 0;
+	my $out = qq{<SELECT NAME="$name"$sel_extra>};
+	my $o;
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0"$opt_extra>------</OPTION>';
+	}
+
+	$val = Vend::Form::round_to_fifteen($val);
+
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0"$opt_extra>--:--</OPTION>';
+	}
+	
+	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
+	my $mod = '';
+	undef $sel;
+	my %special = qw/ 0 midnight 12 noon /;
+	
+	my @min;
+
+	$opt->{minutes} ||= '';
+
+	if($opt->{minutes} =~ /half/i) {
+		@min = (0,30);
+	}
+	elsif($opt->{minutes} =~ /hourly/i) {
+		@min = (0);
+	}
+	elsif($opt->{minutes} =~ /ten/i) {
+		@min = (0,10,20,30,40,50);
+	}
+	elsif($opt->{minutes} =~ /[\0,]/) {
+		@min = grep /^\d+$/ && $_ <= 59, split /[\0,\s]+/, $opt->{minutes};
+	}
+	else {
+		@min = (0,15,30,45);
+	}
+
+	$opt->{start_hour} ||= 0;
+	for(qw/start_hour end_hour/) {
+		$opt->{$_} = int(abs($opt->{$_}));
+		if($opt->{$_} > 23) {
+			$opt->{$_} = 0;
+		}
+	}
+	$opt->{start_hour}	||= 0;
+	$opt->{end_hour}	||= 23;
+	
+	for my $hr ( $opt->{start_hour} .. $opt->{end_hour} ) {
+		next if defined $opt->{start_hour} and $hr < $opt->{start_hour};
+		next if defined $opt->{end_hour} and $hr > $opt->{end_hour};
+		for my $min ( @min ) {
+			my $disp_hour = $hr;
+			if($opt->{ampm}) {
+				if( $hr < 12) {
+					$mod = 'am';
+				}
+				else {
+					$mod = 'pm';
+					$disp_hour = $hr - 12 unless $hr == 12;
+				}
+				$mod = errmsg($mod);
+				$mod = " $mod";
+			}
+			if($special{$hr} and $min == 0) {
+				$disp_hour = errmsg($special{$hr});
+			}
+			elsif($ampm) {
+				$disp_hour = sprintf("%2d:%02d%s", $disp_hour, $min, $mod);
+			}
+			else {
+				$disp_hour = sprintf("%02d:%02d", $hr, $min);
+			}
+			my $time = sprintf "%02d%02d", $hr, $min;
+			$o = sprintf qq{<OPTION VALUE="%s"$opt_extra>%s}, $time, $disp_hour;
+			($out .= $o, next) unless ! $sel and $val;
+#::logDebug("prospect=$time actual=$val");
+			$o =~ s/>/ SELECTED>/ && $sel++
+				if $val eq $time;
+			$out .= $o;
+		}
+	}
+	$out .= "</SELECT>";
+	return $out;
+}
+EOR

@@ -1,0 +1,49 @@
+[menu name="[either][scratch menu_bar][or]catalog/top[/either]"
+		menu-type=flyout
+		use-file=1
+		anchor_down=1
+		entities=description
+		exclude_on=exclude_on
+		items=depends_on
+		js_prefix=top_
+		flyout_class=submenu
+		flyout_style="border: 1px solid #dddddd; padding: 4px; padding-left: 1px"
+		submenu_image_right="[var IMAGE_DIR]/sm_right.gif"
+		inactive=inactive
+		indicator_class="menu_class=name"
+		indicator_page=page
+		link_class=submenu
+		nbsp=name
+		logged_in=member
+		localize="name,description"
+	  ]
+[menu-header]
+<table class=menubar>
+<tr>
+		<td valign="center" class="topmenu">
+		-<!-- <img src="bg.gif" align="middle" height="1" width="1"> -->
+		</td>
+[/menu-header]
+{MV_LEVEL:}
+	<!-- class={NAME} down menu_class='[scratch menu_class]' -->
+		<td valign="bottom">
+		<a
+		href="{PAGE}"
+		title="{DESCRIPTION}"
+		onMouseOver="top_mousein(this)"
+		onMouseOut="top_mouseout(this)"
+		id="{CODE}"
+		class="topmenu">{NAME}</a>
+		</td>
+		<td valign="center" class="topmenu">
+		-<!-- <img src="bg.gif" align="middle" height="1" width="1"> -->
+		</td>
+{/MV_LEVEL:}
+[/menu]
+<td>
+[if session admin]
+<a href="[area href="admin/menu_editor" form="qmenu_name=[scratch menu_bar]"]" class=topmenu_soft style="font-size: 8pt; font-weight: normal">[L]edit[/L]</a>
+[/if]
+</td>
+</tr>
+</table>

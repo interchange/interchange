@@ -1,0 +1,48 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: option_format.filter,v 1.4 2007-03-30 23:40:45 pajamian Exp $
+
+CodeDef option_format Filter
+CodeDef option_format Description Option format
+CodeDef option_format Routine <<EOR
+sub {
+	my ($value, $tag, $delim) = @_;
+
+	return $value unless $value =~ /\0.*\0/s;
+
+	my $scrubcommas;
+	if(! length($delim) ) {
+		$delim = ',';
+		$scrubcommas = 1;
+	}
+	else {
+		$delim =~ /pipe/i and $delim = '|' 
+			or
+			$delim =~ /semicolon/i and $delim = ';'  
+			or
+			$delim =~ /colon/i and $delim = ':'  
+			or
+			$delim =~ /null/i and $delim = "\0"
+			;
+	}
+
+	my @opts = split /\0/, $value;
+	my @out;
+
+	while(@opts) {
+		my ($v, $l, $d) = splice @opts, 0, 3;
+		$l = length($l) ? "=$l" : '';
+		$l =~ s/,/&#44;/g if $scrubcommas;
+		$d = $d ? '*' : '';
+		next unless length("$v$l");
+		push @out, "$v$l$d";
+	}
+	return join $delim, @out;
+}
+EOR

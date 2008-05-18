@@ -1,0 +1,263 @@
+[if-mm !advanced orderstats]
+	[calc]
+			$CGI->{affiliate} = $Session->{username};
+			return;
+	[/calc]
+[/if-mm]
+[set page_title][L]Orders by day for a month[/L][/set]
+[set icon_name]icon_stats.gif[/set]
+[set ui_class]Reports[/set]
+[set help_name]orderstats.view[/set]
+[tmpn third_menu]OrderStats[/tmpn]
+
+@_UI_STD_HEAD_@
+
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN="top" width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD VALIGN="top">
+		[L]Affiliate[/L]/[L]Campaign[/L]
+	</TD>
+	<TD ALIGN=center VALIGN="top">
+		[L]Number of Orders[/L]
+	</TD>
+	<TD ALIGN=right VALIGN="top">
+		[L]Revenue[/L]
+	</TD>
+</TR>
+<tr class=rborder height=1><td colspan=4></td></tr>
+
+<!-- will default to current if not set:
+		[seti today][tag time]%Y%m[/tag][/seti]
+	-->
+
+[calc]
+	if($CGI->{sku}) {
+		my @skus = grep /\S/, split /[\s,\0]+/, $CGI->{sku};
+		my @qsku = map { $Tag->filter('sql', $_) } @skus;
+		my $sku_query;
+
+		if(@skus > 1) {
+			$sku_query = "sku IN ('";
+			$sku_query .= join("','", @qsku);
+			$sku_query .= "')";
+		}
+		else {
+			$sku_query = "sku = '$qsku[0]'";
+		}
+
+		# Used several places below
+		$Tag->tmpn('tmp_sku_query', $sku_query);
+	}
+
+	if($Session->{arg}) {
+		$Scratch->{date_limit} = "AND order_date like '$Session->{arg}%'";
+	}
+	elsif ($CGI->{ui_begin_date}) {
+		for (qw/ ui_begin_date ui_end_date /) {
+			$CGI->{$_} = $Tag->filter( {
+									op => 'date_change',
+									body => $CGI->{$_}
+								});
+		}
+		$Scratch->{date_limit} = <<EOF
+AND order_date > '$CGI->{ui_begin_date}'
+AND order_date < '$CGI->{ui_end_date}Z'
+EOF
+	}
+	else {
+		$Scratch->{date_limit} = "AND order_date like '$Scratch->{today}%'";
+	}
+
+	$Scratch->{synd_limit} = '';
+	return unless $CGI->{affiliate};
+	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
+	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
+		if $CGI->{campaign};
+	return;
+[/calc]
+
+[if cgi sku]
+
+[query
+	st=db
+	ml=100000
+	table=transactions
+	arrayref=qual
+	sql="
+		select distinct order_number
+			from  orderline
+			WHERE [scratch tmp_sku_query]
+			[scratch date_limit] [scratch synd_limit]
+	"][/query]
+[/if]
+[query	hashref=main
+	st=db
+	ml=100000
+	table=transactions
+	nu=0,0,0,0
+	sql="
+	select affiliate, campaign, total_cost, order_date, order_number
+		FROM  transactions
+		WHERE deleted <> '1' [scratch date_limit] [scratch synd_limit]
+	"][/query]
+[tmp ALL][L]ALL[/L][/tmp]
+[tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
+[perl tables="store orderline transactions"]
+	my %sales;
+	$master = {};
+	my $mary = $Tmp->{main} || [];
+
+	my $skustring = '';
+
+	my $skudisplay = '';
+
+	if(my $qary = $Tmp->{qual}) {
+
+		$skustring = '&sku=';
+		my @skus = split /[\s,\0]+/, $CGI->{sku};
+		$skustring .= join('&sku=', @skus);
+		$skudisplay = join(', ', @skus);
+
+		my %apply;
+		for(@$qary) {
+			$apply{$_->[0]} = 1;
+		}
+		@$mary = grep $apply{$_->{order_number}}, @$mary;
+		my $odb = $Db{orderline};
+		if(! $odb->config('HAS_LIMIT')) {
+			$Tag->error({
+						name => 'Totals',
+						set => 'amounts will be wrong with no SQL',
+					});
+		}
+		else {
+			for my $t (@$mary) {
+				my $q = "SELECT subtotal FROM orderline";
+				$q .= " WHERE order_number = '$t->{order_number}'";
+				$q .= " AND $Scratch->{tmp_sku_query}";
+				my $tary = $odb->query($q);
+				my $cost = 0;
+				for(@$tary) {
+					$cost += $_->[0];
+				}
+				$t->{total_cost} = $cost;
+			}
+		}
+	}
+
+	if($Scratch->{synd_limit}) {
+		$syndstring = "&affiliate=$CGI->{affiliate}$skustring";
+	}
+	else {
+		$syndstring = $skustring;
+	}
+
+	foreach $line (@$mary) {
+		my ($month) = substr($line->{order_date}, 0, 8);
+		my $id = $line->{affiliate};
+		$id .= "-$line->{campaign}";
+		$month{$month}++;
+		$master->{$month} = { } if ! $master->{$month};
+		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
+		my $ref = $master->{$month}{$id};
+		$ref->{sales}  += $line->{total_cost};
+		$ref->{orders}++;
+	}
+	%names = qw/
+		 01 January
+		 02 February
+		 03 March
+		 04 April
+		 05 May
+		 06 June
+		 07 July
+		 08 August
+		 09 September
+		 10 October
+		 11 November
+		 12 December
+	/;
+	my $out = '';
+	foreach $month (sort { $a <=> $b } keys %$master) {
+		my $year = $month;
+		$year =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1/;
+		my $mname = errmsg($names{$2});
+		my $day = $3;
+		$day =~ s/^0+//;
+		my $subtotal_sales  = 0;
+		my $subtotal_quantity  = 0;
+		my $ref = $master->{$month};
+		foreach $id (sort keys %$ref) {
+			my $record = $ref->{$id};
+			$sales = $Tag->currency({}, $record->{sales});
+			$subtotal_sales  += $record->{sales};
+			$subtotal_quantity += $record->{orders};
+			($syn, $camp) = split /-/, $id, 2;
+			my $synlabel = $syn || errmsg('(none)');
+			$synlabel .= " (for $skudisplay)" if $skudisplay;
+			my $burl = $Tag->area('__UI_BASE__/reports/order/Detail', $month);
+			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
+				if $mname;
+			$out .= <<EOF;
+	<TR class=rnorm>
+	<TD VALIGN=top>
+	$url&nbsp;
+	</TD>
+	<TD VALIGN=top>
+	<A HREF="$burl&affiliate=$syn$skustring">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+	$record->{orders}
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	$sales
+	</TD>
+EOF
+			$mname = $year = $day = '';
+		}
+		$total_sales        += $subtotal_sales;
+		$total_quantity     += $subtotal_quantity;
+		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
+		$out .= <<EOF;
+	<TR class=rnorm>
+	<TD VALIGN=top>
+	&nbsp;
+	</TD>
+	<TD VALIGN=top>
+	$Scratch->{ALL}<BR><HR color=black size=1>
+	</TD>
+	<TD ALIGN=center VALIGN=top>
+	$subtotal_quantity
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	$subtotal_sales
+	</TD>
+	</TR>
+EOF
+	}
+		$total_sales  = $Tag->currency({}, $total_sales);
+		$out .= <<EOF;
+	<TR class=rnorm>
+	<TD VALIGN="top">
+	$Scratch->{TOTAL}
+	</TD>
+	<TD VALIGN="top">
+	$Scratch->{ALL}
+	</TD>
+	<TD ALIGN=center VALIGN="top">
+	$total_quantity
+	</TD>
+	<TD ALIGN="right" VALIGN="top">
+	$total_sales
+	</TD>
+	</TR>
+	<tr class=rborder height=1><td colspan=4></td></tr>
+EOF
+[/perl]
+</TABLE>
+
+@_UI_STD_FOOTER_@

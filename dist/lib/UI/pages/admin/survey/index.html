@@ -1,0 +1,75 @@
+[calc]
+	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'survey_q';
+	$CGI->{no_dbmenu} = 1;
+	return;
+[/calc]
+[set table_perm]1[/set]
+[set ui_class]Content[/set]
+[set page_title][L]Set up surveys[/L][/set]
+[set help_name]survey.main[/set]
+[set icon_name]icon_pages.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- BEGIN REAL STUFF -->
+
+[tmp survey_keys]code	label
+[loop search="
+		ml=1000
+		fi=survey
+		st=db
+		co=yes
+		se=:
+		sf=code
+		op=rn
+		rf=code,label
+	  "][loop-code]	[loop-param label]
+[/loop][/tmp]
+
+<div class=titlebox>[L]Edit an existing survey[/L]</div>
+<ul>
+[loop list="[scratch survey_keys]" lr=1 head-skip=1]
+<li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A>
+	([page href=survey/standard form="survey_start=[loop-code]"][L]run[/L]</a>)
+	 </li>
+[/loop]
+</ul>
+
+
+<div class=titlebox>[L]Create a new survey[/L]</div>
+<blockquote>
+<form action="[area __UI_BASE__/survey/overall]">
+<input type=hidden name=mv_action value=back>
+[form-session-id]
+<input type=hidden name="ui_filter:item_id" value=word>
+<table class=rseparator cellspacing=0 cellpadding=3>
+<tr class=rhead>
+	<td>[L]Survey name[/L]</td>
+	<td colspan=2>[L]Clone from[/L]</td>
+</tr>
+<tr class=rownorm>
+	<td class=clabel>
+	 <input type=text size=16 name=item_id class=s3> 
+	</td>
+	<td class=cdata>
+		<select name="survey_clone" class=s3>
+		<option value=""> -- none --
+		[loop list="[scratch survey_keys]" lr=1 head-skip=1]<option value="[loop-code]"> [loop-code]</option>[/loop]
+		</select>
+	</td>
+	<td class=cdata>
+		<input type=submit value="[L]Create[/L]">
+	</td>
+</tr>
+</table>
+
+</form>
+</blockquote>
+<div class=titlebox>[L]Access survey results[/L]</div>
+
+<blockquote>
+	[file-navigator initial_dir="logs/survey" no-up=1 no-new-file=1]
+</blockquote>
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.7 2007-05-11 11:15:00 docelic Exp $ -->

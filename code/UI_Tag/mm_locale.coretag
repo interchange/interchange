@@ -1,0 +1,33 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: mm_locale.coretag,v 1.5 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag mm_locale Version $Revision: 1.5 $
+UserTag mm_locale Routine <<EOR
+sub {
+	my $locale = $Values->{ui_locale} || $Tag->var('UI_LOCALE', 2);
+	my $lref;
+
+	# tell Shadow database to return the unmangled database records
+	$Tag->tmp('mv_shadowpass', 1);
+
+	# first delete locale settings from catalog
+	$Vend::Cfg->{Locale_repository} = {};
+
+	if ($locale && exists $Global::Locale_repository->{$locale}) {
+		$lref = $Vend::Cfg->{Locale_repository}{"$locale"} 
+			= $Global::Locale_repository->{$locale};
+		$Tag->setlocale("$locale");
+		$Tag->tmp('mv_locale', $locale);
+		if ($lref->{MV_LANG_DIRECTION}) {
+			$Tag->tmp('ui_language_direction', qq{ dir="$lref->{MV_LANG_DIRECTION}"});
+		}
+	}	
+	1;
+}
+EOR

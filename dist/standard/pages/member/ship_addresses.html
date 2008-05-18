@@ -1,0 +1,332 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Shipping Addresses[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<style type=text/css>
+
+.cborder {
+	background-color: #999999;
+	padding: 0;
+}
+
+.cbreak {
+	background-color: #EEEEEE;
+	border-left: 1px solid #999999;
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.cdata {
+	border-bottom: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+	font-size: 11px;;
+	margin-right: 4px;
+	padding-right: 2px;
+	vertical-align: top
+}
+
+.cerror {
+	color: red;
+	font-size: 11px;
+}
+
+.cheader {
+	color: #663333;
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.chelp,.rhint {
+	background-color: #FFFFFF;
+	color: #AFABA5;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.clabel {
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+	font-size: 11px;
+	font-weight: medium;
+	padding-left: 5px;;
+	text-align: left
+}
+
+.cmessage {
+	color: green;
+	font-size: 11px;
+}
+
+A:link.ctitle,A:visited.ctitle {
+	color: white;
+	font-size: 11px;;
+	font-weight: bold;
+	text-decoration: none
+}
+
+A:hover.ctitle,A:active.ctitle {
+	color: yellow;
+	font-size: 11px;;
+	font-weight: bold;
+	text-decoration: underline
+}
+
+.ctitle {
+	font-size: 11px;;
+	font-weight: bold
+}
+
+.cwidget {
+	font-size: 11px;;
+	vertical-align: center
+}
+
+.lightshade,.workarea,.rbreak {
+	background-color: #FFFFFF;
+}
+
+.rborder {
+	background-color: #CCCCCC;
+	margin: 0;;
+	padding: 2
+}
+
+.rhead {
+	background-color: #E6E6E6;;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px
+}
+
+A.rhead:active,A.rhead:hover {
+	color: #000000;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+A.rhead:link,A.rhead:visited {
+	color: #000000;
+	font-size: 12px;
+	text-decoration:none;
+}
+
+.rheadBold {
+	background-color: #E6E6E6;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rheader {
+	background-color: #999999;
+	color: #663333;
+}
+
+.rmarq {
+	background-color: #999999;;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold
+}
+
+A.rmarq:active,A.rmarq:link,A.rmarq:visited {
+	color: #FFFFCC;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration:none;
+}
+
+A.rmarq:hover {
+	color: #FFFF99;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.rnobg {
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rnorm {
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
+}
+
+.rowalt {
+	background-color: #EAF1FB;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+A.rowalt:hover,A.rowalt:hover,A.rownorm:active,A.rownorm:hover {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+A.rowalt:link,A.rowalt:visited,A.rownorm:link,A.rownorm:visited {
+	color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration:none;
+}
+
+.rownorm {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rownormbold {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rseparator {
+	background-color: #CCCCCC;
+}
+
+.rshade {
+	background-color: #E6E6E6;
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: 4px;
+}
+
+.rspacer {
+	background-color: #999999;
+	margin: 0;;
+	padding: 0
+}
+
+.rsubbold {
+	background-color: #FFFFFF;
+	color: #808080;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;;
+	padding: 4px
+}
+
+.rtitle {
+	background-color: #808080;;
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold
+}
+
+A.rtitle:active,A.rtitle:link,A.rtitle:visited {
+	color: #FFFFCC;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration:none;
+}
+
+</style>
+
+[if cgi delete_shipping]
+	[userdb function=delete_shipping nickname="[cgi delete_shipping]"]
+	<blockquote style=cmessage>
+		Deleted shipping [cgi name=delete_shipping filter=encode_entities]
+	</blockquote>
+[/if]
+
+<br>
+
+    [table-editor
+        tabbed=0
+	    href="@@MV_PAGE@@"
+	    hidden.mv_action=back
+	    hidden_all.destination=`$CGI->{destination}`
+		hidden.ui_return_to=`$CGI->{destination}`
+		mv_nextpage=`$CGI->{destination}`
+		ui_hide_key=1
+	    table=userdb
+		table_width="95%"
+	    auto_secure=1
+		reload=1
+	    all_errors=1
+		mv_blob_label="city"
+		mv_blob_title="Shipping addresses"
+		mv_blob_only=1
+		mv_blob_field="address_book"
+		mv_blob_nick="[cgi mv_blob_nick]"
+	    check.mv_blob_nick="
+			regex ^[-\w\0]+$ 'Nickname must be of characters [-A-Za-z0-9]'
+	    " 
+	    check.username="
+			regex ^\w+$ '[L]Username must be of characters [A-Za-z0-9][/L]'
+			length 4-10
+	    " 
+	    get=1
+	    ui_data_fields="username company fname lname address1 address2 city state zip country phone_day"
+	    key="[data session username]"]
+
+[userdb get_shipping_names]
+[if value address_book]
+<blockquote>
+[loop list="[value address_book]"]
+[page
+	href=@@MV_PAGE@@
+	form="
+		delete_shipping=[loop-code]
+		destination=[cgi destination]
+	"]Delete [loop-code]</a><br>
+[/loop]
+</blockquote>
+[/if]
+
+[if cgi destination]
+<br>
+[page href="[cgi destination]"]<span style="font-size: larger; font-weight: bold">Return</span></a>
+[/if]
+
+<br>
+<br>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

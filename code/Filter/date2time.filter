@@ -1,0 +1,50 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: date2time.filter,v 1.6 2007-03-30 23:40:44 pajamian Exp $
+
+CodeDef date2time Filter
+CodeDef date2time Description Date to UNIX time (deprecated - use datetime2epoch instead)
+CodeDef date2time Visibility private
+CodeDef date2time Routine <<EOR
+sub {
+	my $val = shift;
+	use Time::Local;
+
+	$val =~ s/\0+//g;
+	if($val =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):) {
+		my ($yr, $mon, $day) = ($3, $1, $2);
+
+		my $time;
+		$val =~ /:(\d+)$/
+			and $time = $1;
+		if(length($yr) < 4) {
+			$yr =~ s/^0//;
+			$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
+		}
+		$mon =~ s/^0//;
+		$day =~ s/^0//;
+		$val = sprintf("%d%02d%02d", $yr, $mon, $day);
+		return $val unless $time;
+		$val .= sprintf('%04d', $time);
+	}
+
+	my $time;
+	$val =~ /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)?(\d\d)?/;
+	my ($yr, $mon, $day, $hr, $min) = ($1 || 0, $2 || 1, $3 || 1, $4 || 0, $5 || 0);
+	$mon--;
+	eval {
+		$time = timelocal(0, $min, $hr, $day, $mon, $yr);
+	};
+	if($@) {
+		logError("bad time value passed to date2time: %s", $@);
+		return 0;
+	}
+	return $time;
+}
+EOR

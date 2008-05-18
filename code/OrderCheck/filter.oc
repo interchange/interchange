@@ -1,0 +1,35 @@
+# Copyright 2005-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: filter.oc,v 1.3 2007-03-30 23:40:48 pajamian Exp $
+
+CodeDef filter OrderCheck 1
+CodeDef filter Description Passes filter unchanged
+CodeDef filter Routine <<EOR
+sub {		
+	my ($ref, $name, $value, $code) = @_;
+	my $message;
+	my $filter;
+
+	$code =~ s/\\/\\\\/g;
+	if($code =~ /(["']).+?\1$/) {
+		my @code = Text::ParseWords::shellwords($code);
+		$message = pop(@code);
+		$filter = join " ", @code;
+	}
+	else {
+		($filter, $message) = split /\s+/, $code, 2;
+	}
+
+	my $test = Vend::Interpolate::filter_value($filter, $value, $name);
+	if($test ne $value) {
+		$message ||= errmsg("%s caught by filter %s", $name, $filter);
+		return ( 0, $name, $message);
+	}
+	return (1, $name, '');
+}
+EOR

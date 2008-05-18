@@ -1,0 +1,37 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: cgi.coretag,v 1.6 2007-03-30 23:40:49 pajamian Exp $
+
+UserTag cgi                 Order        name
+UserTag cgi                 addAttr
+UserTag cgi                 PosNumber    1
+UserTag cgi                 Version      $Revision: 1.6 $
+UserTag cgi                 Routine      <<EOR
+sub {
+	my($var, $opt) = @_;
+	my($value);
+
+	local($^W) = 0;
+	$CGI::values{$var} = $opt->{set} if defined $opt->{set};
+	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
+	if ($value) {
+		# Eliminate any Interchange tags
+		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
+		$value =~ s/\[/&#91;/g;
+	}
+	if($opt->{filter}) {
+		$value = filter_value($opt->{filter}, $value, $var);
+		$CGI::values{$var} = $value unless $opt->{keep};
+	}
+
+	return '' if $opt->{hide};
+
+	$value =~ s/</&lt;/g unless $opt->{enable_html};
+	return $value;
+}
+EOR

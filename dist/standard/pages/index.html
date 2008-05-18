@@ -1,0 +1,110 @@
+[comment]
+ui_page: index.html
+ui_type: page
+ui_name: index.html
+ui_page_template: leftright
+ui_source: pages/index.html
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Welcome[/L][/tmp]
+[tmpn members_only][/tmpn]
+
+[control reset=1]
+[control-set]
+	[component]search_box_small[/component]
+[/control-set]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+	[link_class][/link_class]
+	[link_class_closed][/link_class_closed]
+	[link_class_open][/link_class_open]
+	[link_closed_style][/link_closed_style]
+	[link_open_style][/link_open_style]
+	[link_style][/link_style]
+	[no_image][/no_image]
+	[tree_selector]Products[/tree_selector]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component]cross[/component]
+	[banner][L]Specials[/L][/banner]
+	[buttons][/buttons]
+	[cols]3[/cols]
+	[cross_codes][/cross_codes]
+	[random][/random]
+	[size]3[/size]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[banner][L]See also...[/L][/banner]
+	[buttons][/buttons]
+	[cols]1[/cols]
+	[matches]3[/matches]
+	[pool]100[/pool]
+	[size]3[/size]
+	[table_width]150[/table_width]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+<!-- BEGIN CONTENT -->
+<table width="100%" border="0">
+<tr> 
+  <td>
+[L INDEX_PAR1]
+    <h1>Welcome to the Interchange Standard Store!</h1>
+    <p><br>This site is intended to get you started building
+    your own e-business site. Replace the stock graphics, products, 
+    and categories in this store to begin building your custom site.</p>
+    <p>Please note that any products purchased will not be delivered nor 
+    will the customer be billed. Any products found on this site is to 
+    be treated as fictional.
+    </p>[/L]
+    <p>[L]Take our[/L]
+               [page
+                       href=survey/standard
+                       form="survey_start=customer_satisfaction"
+               ][L]Customer Satisfaction Survey[/L]</A>.</p>
+  </td>
+</tr>
+[if !scratch gift_cert_code]
+	[seti gift_cert_code][read-cookie MV_GIFT_CERT_CODE][/seti]
+	[seti gift_cert_check][read-cookie MV_GIFT_CERT_CHECK][/seti]
+[/if]
+[if scratch gift_cert_code]
+<tr> 
+  <td>
+	<br>
+	[loop list="[scratch gift_cert_code]"]
+		[if-loop-data gift_certs amount > 0]
+		<blockquote>
+		<B>You have a[loop-alternate except_first]nother[/loop-alternate] gift certificate for [currency][loop-data gift_certs amount][/currency]!</B>
+		</blockquote>
+		[/if-loop-data]
+	[/loop]
+  </td>
+</tr>
+[/if]
+
+<tr> 
+  <td>    
+    <p>[L]Generate test order to fill the sample order database[/L]:
+		<a href="[area href="test_order"]">[L]Do test order[/L]</a>.<br><br></p>
+  </td>
+</tr>
+</table>
+<!-- END CONTENT -->
+@_LEFTRIGHT_BOTTOM_@

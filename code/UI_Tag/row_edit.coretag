@@ -1,0 +1,176 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: row_edit.coretag,v 1.12 2007-03-30 23:40:54 pajamian Exp $
+
+UserTag row-edit Order       key table size columns
+UserTag row-edit HasEndTag
+UserTag row-edit addAttr
+UserTag row-edit Interpolate 1
+UserTag row-edit Version     $Revision: 1.12 $
+UserTag row-edit Routine     <<EOR
+sub {
+	my ($key,$table,$size,$columns,$opt) = @_;
+	use vars qw/$CGI $Values $Variable/;
+#::logDebug("row_edit options=" . ::uneval($opt));
+	$table = $table || $CGI::values{mv_data_table} || return "BLANK DB";
+	my $db = ::database_exists_ref($table);
+	my $mtab = $::Variable->{UI_META_TABLE} || 'mv_metadata';
+	my $mdb = ::database_exists_ref($mtab);
+	$opt->{view} ||= $CGI->{ui_meta_view};
+
+	my $view = Vend::Table::Editor::meta_record($table, $opt->{view}) || {};
+	
+	my $tm_extra = '';
+	my $ta_extra = '';
+	my $tf_extra = '';
+	if($opt->{extra}) {
+		$tf_extra = " $opt->{extra}";
+	}
+	if($opt->{meta_extra}) {
+		$tm_extra .= " $opt->{meta_extra}";
+	}
+	if($opt->{textarea_extra}) {
+		$tm_extra .= " $opt->{textarea_extra}";
+	}
+
+	$ta_extra ||= $tf_extra;
+	$tm_extra ||= $tf_extra;
+
+	my $prependor = '';
+	if($opt->{pointer}) {
+		$prependor = $opt->{pointer};
+		$prependor =~ s/\D+//;
+		$prependor = $prependor ? $prependor . '_' : '';
+#::logDebug("setting prependor to $prependor");
+	}
+
+	my $appendor = '';
+	if($opt->{stacker}) {
+		$appendor = "__$opt->{stacker}";
+#::logDebug("setting appendor to $appendor");
+	}
+	return errmsg("non-existent table '%s' for row-edit", $table)
+		unless $db;
+	$db = $db->ref();
+
+	my $acl = UI::Primitive::get_ui_table_acl();
+
+	my $record;
+	my $bad;
+	if ($key) {
+		eval {
+			$bad = ! $db->record_exists($key);
+			$bad = errmsg('DELETED') if $bad;
+		};
+		$bad = errmsg('ERROR') if $@;
+		if($bad) {
+			# Do nothing, we are already bad
+		}
+		elsif($acl) {
+			$bad = errmsg('Not available')
+				if ! UI::Primitive::ui_acl_atom($acl, 'keys', $key);
+		}
+		else {
+			$record = $db->row_hash($key);
+		}
+	}
+
+	$record ||= {};
+
+	my @cols;
+
+	if($columns ||= $view->{spread_cols} || $view->{attribute}) {
+		@cols = split /[\s,\0]+/, $columns;
+		my %col;
+		for($db->columns()) {
+			$col{$_} = 1;
+		}
+		@cols = grep defined $col{$_}, @cols;
+	}
+	else {
+		@cols = $db->columns();
+	}
+
+	if($acl) {
+		@cols = UI::Primitive::ui_acl_grep( $acl, 'fields', @cols);
+	}
+
+	# See if we have a textarea reference
+	my %ta;
+	if($opt->{textarea}) {
+		my @tmp = split /[\s,\0]+/, $opt->{textarea};
+		for(@tmp) {
+			$ta{$_} = 1;
+		}
+	}
+
+	my $out = '';
+
+	my $meta   = $CGI->{ui_no_meta_display} ? '' : $view->{spread_meta};
+	my %do_ta;
+	my %do_meta;
+	if($meta) {
+		my @metas = grep /\S/, split /[\0,\s]+/, $meta;
+		@do_meta{@metas} = @metas;
+	}
+
+	if($view->{spread_textarea}) {
+		my @tas = grep /\S/, split /[\0,\s]+/, $view->{spread_textarea};
+		@do_ta{@tas} = @tas;
+	}
+	my $tmp;
+
+	$size = $size || $view->{spread_width} || $view->{width} || 12;
+	if($bad) {
+		for(@cols) {
+			$out .= "<TD$tf_extra>$bad</TD>";
+		}
+	}
+	elsif($key or $opt->{blank}) {
+		for(@cols) {
+			my $text = $opt->{blank} ? '' : $record->{$_} || '';
+			my $msg = '';
+			if($do_meta{$_}) {
+				my $tmp = Vend::Tags->display( {
+											table => $table,
+											column => $_,
+											name => "$prependor$_$appendor",
+											value => $text,
+											template => ' $WIDGET$ ',
+											specific => $opt->{ui_meta_specific},
+											key => $key,
+										});
+				$out .= "<TD$tm_extra>$tmp</TD>";
+				next;
+			}
+			elsif($do_ta{$_}) {
+				my $rows = $opt->{height} || 4;
+				HTML::Entities::encode($text, $ESCAPE_CHARS::std);
+				$out .= <<EOF;
+<TD$ta_extra><TEXTAREA NAME="$prependor$_$appendor" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
+EOF
+			}
+			else {
+				$text =~ s/"/&quot;/g;
+				$out .= <<EOF;
+<TD$tf_extra><INPUT NAME="$prependor$_$appendor" SIZE=$size VALUE="$text">$msg</TD>
+EOF
+			}
+		}
+	}
+	else {
+		for(@cols) {
+				$out .= <<EOF;
+<TH ALIGN=left>$_</TH>
+EOF
+		}
+	}
+	return $out;
+
+}
+EOR
