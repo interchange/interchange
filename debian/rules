@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 #
-# Copyright 2000,2001,2002,2003,2005,2006,2007,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002,2003,2005,2006,2007 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,12 +33,13 @@ build-stamp:
 	dh_testdir
 
 # Compile main stuff
+	touch _allow_threads
 	env $(PERL) Makefile.PL force=1 \
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
-	pod2man	--section=1p debian/interchangeconfig > blib/man1/interchangeconfig.1p
-	pod2man --section=1p eg/te > blib/man1/te.1p
+	pod2man	debian/interchangeconfig > blib/man1/interchangeconfig.1p
+	pod2man eg/te > blib/man1/te.1p
 
 	touch build-stamp
 
@@ -49,7 +50,7 @@ clean:
 	rm -f build-stamp install-stamp
 
 	# Add here commands to clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) clean
+	-$(MAKE) clean
 
 	dh_clean
 
@@ -60,7 +61,7 @@ install: build
 	dh_installdirs
 
 # Add here commands to install the package into debian/tmp.
-	env $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man3 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1 INTERCHANGE_USER=interchange
+	env MINIVEND_FORCE_THREADS=1 $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man3 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1 INTERCHANGE_USER=interchange
 
 # Sample configuration file not needed (code in interchange.PL
 # to determine configuration file location will stop to work too)
@@ -84,7 +85,7 @@ install: build
 # Setup configuration directory
 	mkdir -p $(TMP)/etc/interchange/
 	cp debian/interchange.cfg debian/catalogs.cfg debian/makecat.cfg \
-		dist/robots.cfg dist/subdomains.cfg $(TMP)/etc/interchange    
+		dist/robots.cfg $(TMP)/etc/interchange    
 # build Interchange control program(s)
 	mkdir -p $(TMP)/usr/lib/cgi-bin/ic
 	$(PERL) scripts/compile_link \
@@ -108,6 +109,8 @@ install: build
 	rm $(TMP)/usr/lib/interchange/_session_storable
 	rm $(TMP)/usr/lib/interchange/_uid
 	rm -rf $(TMP)/usr/lib/interchange/auto/Interchange
+# remove Business::UPS manual page (conflicts with libbusiness-ups-perl)
+	rm $(TMP)/usr/share/man/man3/Business::UPS.3pm
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange

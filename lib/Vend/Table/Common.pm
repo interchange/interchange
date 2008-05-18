@@ -1,8 +1,8 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.50 2008-05-06 20:42:59 markj Exp $
+# $Id: Common.pm,v 2.45 2007-08-09 13:40:56 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -185,8 +185,9 @@ sub autonumber {
 	local($/) = "\n";
 	my $c = $s->[$CONFIG];
 	if(! defined $c->{AutoNumberCounter}) {
+		my $dot = $c->{HIDE_AUTO_FILES} ? '.' : '';
 		$c->{AutoNumberCounter} = new Vend::CounterFile
-									$cfg->{AUTO_NUMBER_FILE},
+									"$c->{DIR}/$dot$c->{name}.autonumber",
 									$start,
 									$c->{AUTO_NUMBER_DATE},
 									;
@@ -391,7 +392,7 @@ sub get_slice {
 }
 
 sub set_slice {
-	my ($s, $key, $fary, $vary) = @_;
+    my ($s, $key, $fary, $vary) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 
     if($s->[$CONFIG]{Read_only}) {
@@ -403,19 +404,11 @@ sub set_slice {
 		return undef;
 	}
 
-	my $opt;
-	if (ref ($key) eq 'ARRAY') {
-		$opt = shift @$key;
-		$key = shift @$key;
-	}
-	$opt = {}
-		unless ref ($opt) eq 'HASH';
-
-	$opt->{dml} = 'upsert'
-		unless defined $opt->{dml};
-
 	if(ref $fary ne 'ARRAY') {
 		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { $fary, $vary, @_ }
+		}
 		$vary = [ values %$href ];
 		$fary = [ keys   %$href ];
 	}
@@ -431,23 +424,8 @@ sub set_slice {
 
 	my @current;
 
-	if ($s->record_exists($key)) {
-		if ($opt->{dml} eq 'insert') {
-			$s->log_error(
-				"Duplicate key on set_slice insert for key '$key' on table %s",
-				$s->[$CONFIG]{name},
-			);
-			return undef;
-		}
-		@current = $s->row($key);
-	}
-	elsif ($opt->{dml} eq 'update') {
-		$s->log_error(
-			"No record to update set_slice for key '$key' on table %s",
-			$s->[$CONFIG]{name},
-		);
-		return undef;
-	}
+	@current = $s->row($key)
+		if $s->record_exists($key);
 
 	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
 
@@ -509,9 +487,7 @@ sub stuff_row {
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->lock_table();
-
     $s->[$TIE_HASH]{"k$key"} = join("\t", map(stuff($_), @fields));
-
 	$s->unlock_table();
 	return $key;
 }
@@ -1065,8 +1041,6 @@ sub import_ascii_delimited {
 			or die errmsg("%s %s: %s\n", errmsg("open"), $infile, $!);
 	}
 
-	new_filehandle(\*IN);
-
 	my $field_hash;
 	my $para_sep;
 	my $codere = '[\w-_#/.]+';
@@ -1238,9 +1212,6 @@ EndOfExcel
 				$fh = new IO::File "> $infile.$i[$i]";
 				die errmsg("%s %s: %s\n", errmsg("create"), "$infile.$i[$i]",
 				$!) unless defined $fh;
-
-				new_filehandle($fh);
-
 				eval {
 					unlink "$infile.$n[$i]" if -l "$infile.$n[$i]";
 					symlink "$infile.$i[$i]", "$infile.$n[$i]";
@@ -1414,12 +1385,11 @@ EndOfRoutine
 					errmsg("%s %s: %s\n", errmsg("open read/write"), $realfile, $!);
 			lockfile(\*IN, 1, 1)
 				or die errmsg("%s %s: %s\n", errmsg("lock"), $realfile, $!);
-			new_filehandle(\*IN);
 			<IN>;
 			eval $format{$format};
 			die errmsg("%s %s: %s\n", errmsg("import"), $options->{name}, $!) if $@;
 		}
-		elsif (! open(IN, ">$realfile") && new_filehandle(\*IN) ) {
+		elsif (! open(IN, ">$realfile") ) {
 				die errmsg("%s %s: %s\n", errmsg("create"), $realfile, $!);
 		} 
 		else {
@@ -1447,13 +1417,11 @@ EndOfRoutine
 			}
 			else {
 				$fh = new IO::File "$infile.$i[$i]";
-				new_filehandle($fh);
 				my (@lines) = <$fh>;
 				close $fh or die "close: $!";
 				my $option = $o[$i] || 'none';
 				@lines = sort { &{$Sort{$option}} } @lines;
 				$fh = new IO::File ">$infile.$i[$i]";
-				new_filehandle($fh);
 				print $fh @lines;
 				close $fh or die "close: $!";
 			}
@@ -1629,12 +1597,6 @@ sub log_error {
 	}
 	die $msg if $cfg->{DIE_ERROR};
 	return $cfg->{last_error} = $msg;
-}
-
-sub new_filehandle {
-	my $fh = shift;
-	binmode($fh, ":utf8") if $::Variable->{MV_UTF8};
-	return $fh;
 }
 
 1;

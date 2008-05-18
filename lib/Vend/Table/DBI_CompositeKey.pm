@@ -1,8 +1,8 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.14 2008-05-18 02:50:21 jon Exp $
+# $Id: DBI_CompositeKey.pm,v 1.11 2007-08-09 13:40:56 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use strict;
 
@@ -317,16 +317,6 @@ sub set_slice {
 		return undef;
 	}
 
-	my $opt;
-	if (ref ($key) eq 'ARRAY' && ref ($key->[0]) eq 'HASH') {
-		$opt = shift @$key;
-		$key = shift @$key;
-	}
-	$opt ||= {};
-
-	$opt->{dml} = 'upsert'
-		unless defined $opt->{dml};
-
 	my @key;
 	my $exists;
 	if($key) {
@@ -340,8 +330,14 @@ sub set_slice {
 		$fary = [@$fin];
 		$vary = [@$vin];
 	}
-	elsif (ref $fin eq 'HASH') {
-		my $href = { %$fin };
+	else {
+		my $href = $fin;
+		if(ref $href eq 'HASH') {
+			$href = { %$href };
+		}
+		else {
+			$href = { splice (@_, 2) };
+		}
 
 		if(! $key) {
 			@key = ();
@@ -407,12 +403,7 @@ sub set_slice {
 		}
     }
 
-	my $force_insert =
-		$opt->{dml} eq 'insert';
-	my $force_update =
-		$opt->{dml} eq 'update';
-
-	if ( $force_update or !$force_insert and $exists ) {
+	if ( $exists ) {
 		unless (@$fary) {
 			# as there are no data columns, we can safely skip the update
 			return $key;

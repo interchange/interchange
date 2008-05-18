@@ -5,15 +5,12 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: process.coretag,v 1.13 2007-10-31 11:25:53 kwalsh Exp $
+# $Id: process.coretag,v 1.9 2007-08-09 03:02:30 kwalsh Exp $
 
-UserTag process-target Alias     process
-UserTag process-order  Alias     process
-
-UserTag process        Order     target secure
-UserTag process        addAttr
-UserTag process        Version   $Revision: 1.13 $
-UserTag process        Routine   <<EOR
+UserTag process             Order     target secure
+UserTag process             addAttr
+UserTag process             Version   $Revision: 1.9 $
+UserTag process             Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {
 	my($target,$secure,$opt) = @_;
@@ -21,15 +18,9 @@ sub {
 	$secure = defined $secure ? $secure : $CGI::secure;
 
 	my $page = $opt->{href} || $Vend::Cfg->{ProcessPage};
-	$opt->{add_dot_html} = $::Scratch->{mv_add_dot_html} unless defined $opt->{add_dot_html};
-
 	if($opt->{download_name}) {
 		$page .= "/$opt->{download_name}";
 	}
-	elsif (Vend::Util::is_yes($opt->{add_dot_html})) {
-		$page .= '.html' unless $page =~ m{(?:/|\.html?)$};
-	}
-
 	my $url;
 	if($secure) {
 		$url = $Vend::Cfg->{SecurePostURL} || $Vend::Cfg->{SecureURL};
@@ -39,7 +30,6 @@ sub {
 	}
 	$url =~ s,/*$,/,;
 	$url .= $page;
-
 	if($Global::TolerateGet and ! $opt->{no_session}) {
 		my @args;
 		push @args, "$::VN->{mv_session_id}=$Vend::SessionID"

@@ -1,0 +1,221 @@
+Locale en_US <<EOF
+{
+'CfgMgr.pm:1',
+"CfgMgr - bad call combo_select: no name",
+
+'CfgMgr.pm:2',
+"CfgMgr - bad call combo_select: name=%s",
+
+'CfgMgr.pm:3',
+"CfgMgr: found line '%s'",
+
+'Data.pm:1',
+"Bad SQL query selector: '%s' for %s",
+
+'Data.pm:2',
+"Could not open shipping file %s: %s",
+
+'Data.pm:3',
+"Bad shipping configuration for mode %s, skipping.",
+
+'Data.pm:4',
+"Bad shipping file for zone '%s', lookup disabled.",
+
+'Data.pm:5',
+"Could not open salestax file %s: %s",
+
+'Data.pm:6',
+"Vend::Data export: non-existent database %s",
+
+'Data.pm:7',
+"Adding field %s",
+
+'Data.pm:8',
+"Deleting %s...",
+
+'Data.pm:9',
+"Deleting field %s",
+
+'Interpolate.pm:1',
+"Bad data '%s' '%s' '%s'",
+
+'Interpolate.pm:2',
+"Safe: %s\n%s\n",
+
+'Interpolate.pm:3',
+"Safe: %s\n%s\n",
+
+'Interpolate.pm:4',
+"Missing special page: %s",
+
+'Interpolate.pm:5',
+"Missing special page: %s",
+
+'Interpolate.pm:6',
+"No search page '%s' found!",
+
+'Interpolate.pm:7',
+"Missing special page: %s",
+
+'Interpolate.pm:8',
+"Missing special page: %s",
+
+'Order.pm:1',
+"CyberCash module found (CyberCash 2).",
+
+'Order.pm:2',
+"CyberCash module found (CyberCash 3).",
+
+'Order.pm:3',
+"Test CyberCash SetServer:\n%s\n",
+
+'Scan.pm:1',
+"non-existent database '%s'",
+
+'Scan.pm:2',
+"Bad search type %s: %s",
+
+'Scan.pm:3',
+"Bad search column '%s'",
+
+'Scan.pm:4',
+"Bad search column '%s'",
+
+'Server.pm:1',
+"Bad script name '%s' for reconfig.",
+
+'Server.pm:2',
+"Reconfig of %s successful, build=%s.",
+
+'Server.pm:3',
+"Error reconfiguring catalog %s from running server (%s)\n%s",
+
+'Server.pm:4',
+"INET mode error port %s: %s\n\nContinuing in UNIX MODE ONLY\n",
+
+'Server.pm:5',
+"INET mode server failed to start on port %s: %s",
+
+'Server.pm:6',
+"SERVER TERMINATING",
+
+'Server.pm:7',
+"error '%s' from select.",
+
+'Server.pm:8',
+"Died in select, retrying: %s",
+
+'Server.pm:9',
+"Can't fork: %s",
+
+'Server.pm:10',
+"Runtime error: %s",
+
+'Server.pm:11',
+"Runtime error: %s",
+
+'Server.pm:12',
+"Died in server spawn: %s",
+
+'Server.pm:13',
+"Died in housekeeping, retry.",
+
+'Server.pm:14',
+"STOP server (%s) on signal TERM",
+
+'Server.pm:15',
+"START server (%s) (%s)",
+
+'Session.pm:1',
+"Hammered session lock %s left by PID %s",
+
+'UserDB.pm:1',
+"Vend::UserDB error: %s\n",
+
+'UserDB.pm:2',
+"Vend::UserDB error: %s\n",
+
+'Util.pm:1',
+"attempt to set non-existant locale '%s'",
+
+'Util.pm:2',
+"attempt to set non-existant currency '%s'",
+
+'Util.pm:3',
+"Can't read file '%s' with NoAbsolute set",
+
+'Util.pm:4',
+"Can't read file '%s' with NoAbsolute set",
+
+'Table/DBI.pm:1',
+"table %s created: %s",
+
+'Table/DBI.pm:2',
+"table %s index failed: %s",
+
+'Table/DBI.pm:3',
+"set_row %s: field with value '%s' removed from record '%s'",
+
+'Table/Import.pm:1',
+"notes_field='%s' delimiter: %s",
+
+'bin/minivend:1',
+"Can't check HTML: No global CheckHTML defined. Contact admin.",
+
+'bin/minivend:2',
+"Difficulty interacting with browser: %s",
+
+'bin/minivend:3',
+"Missing special page: interact",
+
+'bin/minivend:4',
+"Page cache failure: %s",
+
+'bin/minivend:5',
+"Attempt to order missing product code: %s",
+
+'bin/minivend:6',
+"Attempt to order missing product code: %s",
+
+'bin/minivend:7',
+"Attempted database operation without table, fields, or key.\n" .
+					 "Table: '%s'\n" .
+					 "Fields:'%s'\n" .
+					 "Key:   '%s'\n",
+
+'bin/minivend:8',
+"Alias %s used a second time, skipping.\n",
+
+'bin/minivend:9',
+"Bad alias %s, skipping.\n",
+
+'bin/minivend:10',
+"Attempt to remove non-existant catalog %s.\n",
+
+'bin/minivend:11',
+"Can't find catalog '%s'",
+
+'bin/minivend:12',
+"Config '%s' %s",
+
+'bin/minivend:13',
+"%s config error: %s",
+
+'bin/minivend:14',
+"%s config error: %s",
+
+'bin/minivend:15',
+"Undefined catalog: %s",
+
+'bin/minivend:16',
+"Can't set group to GID %s: %s",
+
+'bin/minivend:17',
+"Can't set group to GID %s: %s",
+
+'bin/minivend:18',
+"Reconfig '%s' rebuild=%s",
+
+
+}
+EOF

@@ -1,6 +1,6 @@
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.22 2008-04-24 09:07:57 thunder Exp $
+# $Id: ContentEditor.pm,v 2.21 2007-08-09 13:40:52 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -2835,12 +2835,6 @@ sub content_modify {
 
 	my $ref = get_store($type,$name)
 		or return death('content_modify', "%s %s not found", $type, $name);
-
-       #in case of an alternative component name
-       if ($vref->{ui_destination} ne "") {
-           $name = $ref->{ui_name} = $vref->{ui_destination};
-       }
-
 
 	foreach my $op (@ops) {
 #::logDebug("content_modify: doing name=$name type=$type op=$op");

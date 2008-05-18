@@ -1,6 +1,6 @@
 # Vend::Ship::QueryUPS - Interchange shipping code
 # 
-# $Id: QueryUPS.pm,v 1.8 2008-05-14 16:21:02 mheins Exp $
+# $Id: QueryUPS.pm,v 1.7 2007-08-09 13:40:56 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,20 +29,10 @@ use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
 use Vend::Ship;
-
-my $Have_Business_UPS;
-eval {
-	require Business::UPS;
-	import Business::UPS;
-	$Have_Business_UPS = 1;
-};
+use Business::UPS;
 
 sub calculate {
 	my ($mode, $weight, $row, $opt, $tagopt, $extra) = @_;
-
-	unless($Have_Business_UPS) {
-		do_error("Ship mode %s: Requires installation of Business::UPS", $mode);
-	}
 
 	$opt->{service}         ||= $opt->{table};
 	if(! $opt->{service} and $extra =~ /^\w+$/)  {

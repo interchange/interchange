@@ -1,8 +1,8 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.91 2008-04-22 05:09:44 jon Exp $
+# $Id: Server.pm,v 2.81 2007-08-20 21:42:21 racke Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,12 +26,11 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
 use Vend::Util;
-use Vend::CharSet;
 use Fcntl;
 use Errno qw/:POSIX/;
 use Config;
@@ -247,31 +246,12 @@ EOF
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
 
-	my $request_method = "\U$CGI::request_method";
-	if ($request_method eq 'POST') {
-#::logDebug("content type header: " . $CGI::content_type);
-		## check for valid content type
-		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded)\b}i) {
-			parse_post(\$CGI::query_string)
-				if $Global::TolerateGet;
-			parse_post($h->{entity});
-		}
-		else {
-			## invalid content type for POST
-			## XXX we may want to be a little more forgiving here
-			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
-			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
-			my $len = length($msg);
-			$Vend::StatusLine = <<EOF;
-Status: 415 Unsupported Media Type
-Content-Type: $content_type
-Content-Length: $len
-EOF
-			respond('', \$msg);
-			die($msg);
-		}
+	if ("\U$CGI::request_method" eq 'POST') {
+		parse_post(\$CGI::query_string)
+			if $Global::TolerateGet;
+		parse_post($h->{entity});
 	}
-	elsif ($request_method eq 'PUT') {
+	elsif ("\U$CGI::request_method" eq 'PUT') {
 #::logDebug("Put operation.");
 		parse_post(\$CGI::query_string);
 		$CGI::put_ref = $h->{entity};
@@ -328,26 +308,15 @@ sub store_cgi_kv {
 
 sub parse_post {
 	my $sref = shift;
+	my(@pairs, $pair, $key, $value);
 	return unless length $$sref;
-
-	my (@pairs, $pair, $key, $value, $charset);
-
-	if ($CGI::content_type =~ m/\bcharset=(["']?)([-a-zA-Z0-9]+)\1/i) {
-		$charset = $2;
-	}
-	else {
-		$charset = Vend::CharSet->default_charset();
-	}
-
-	$CGI::values{mv_form_charset} = $charset;
-
-	if ($CGI::content_type =~ m{^multipart/}i) {
+	if ($CGI::content_type =~ /^multipart/i) {
 		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
 		# even though it's sent as non-multipart data
 		# Contributed by Bill Randle
-		my ($boundary) = $CGI::content_type =~ /\bboundary="?([^";]+)"?/i;
+		my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
 		$boundary = '--' . quotemeta $boundary;
 		return parse_multipart($sref) if $$sref =~ /^\s*$boundary\s+/;
 	}
@@ -363,7 +332,6 @@ sub parse_post {
 		$CGI::values_array{ISINDEX} =  [ split /\+/, $pairs[0] ];
 		@pairs = ();
 	}
-	my $request_method = "\U$CGI::request_method";
 	my $redo;
   CGIVAL: {
   	# This loop semi-duplicated in store_cgi_kv
@@ -374,7 +342,7 @@ sub parse_post {
 					$key = $pair;
 					$value = undef;
 				}
-				elsif ($request_method eq 'POST') {
+				elsif($CGI::request_method =~ /^post$/i) {
 					die ::errmsg("Syntax error in POST input: %s\n%s", $pair, $$sref);
 				}
 				else {
@@ -384,22 +352,22 @@ sub parse_post {
 
 #::logDebug("incoming --> $key");
 		$key = $::IV->{$key} if defined $::IV->{$key};
-		$key = Vend::CharSet->decode_urlencode($key, $charset);
+		$key =~ tr/+/ /;
+		$key =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
 #::logDebug("mapping  --> $key");
-		if ($key) {
-			$value = Vend::CharSet->decode_urlencode($value, $charset);
-			# Handle multiple keys
-			if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
-				$CGI::values{$key} = "$CGI::values{$key}\0$value";
-				push @{$CGI::values_array{$key}}, $value;
-			}
-			else {
-				$CGI::values{$key} = $value;
-				$CGI::values_array{$key} = [$value];
-			}
+		$value =~ tr/+/ /;
+		$value =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+		# Handle multiple keys
+		if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
+			$CGI::values{$key} = "$CGI::values{$key}\0$value";
+			push ( @{$CGI::values_array{$key}}, $value)
+		}
+		else {
+			$CGI::values{$key} = $value;
+			$CGI::values_array{$key} = [$value];
 		}
 	}
-	if (! $redo and $request_method eq 'POST') {
+	if (! $redo and "\U$CGI::request_method" eq 'POST') {
 		@pairs = split $Global::UrlSplittor, $CGI::query_string;
 		if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32}) ; /x)  {
 			my (@old) = split /;/, $pairs[0], 3;
@@ -459,16 +427,6 @@ sub parse_multipart {
 				next;
 			}
 
-			my ($content_type) = $header{'Content-Type'} =~ /^([^\s;]+)/;
-			my ($charset) = $header{'Content-Type'} =~ / charset="?([-a-zA-Z0-9]+)"?/;
-
-			$content_type ||= 'text/plain';
-			$charset ||= Vend::CharSet->default_charset();
-
-			if ($content_type =~ m{^text/}i) {
-				$data = Vend::CharSet->to_internal($charset, $data);
-			}
-
 			if($filename) {
 				$CGI::file{$param} = $data;
 				$data = $filename;
@@ -481,7 +439,6 @@ sub parse_multipart {
 	}
 	return 1;
 }
-
 
 sub create_cookie {
 	my($domain,$path) = @_;
@@ -539,8 +496,6 @@ sub respond {
 	# $body is now a reference
     my ($s, $body) = @_;
 #show_times("begin response send") if $Global::ShowTimes;
-	my $response_charset = Vend::CharSet->default_charset();
-
 	my $status;
 	return if $Vend::Sent;
 	if($Vend::StatusLine) {
@@ -561,11 +516,10 @@ sub respond {
 
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
-							? '' : "\r\nContent-Type: text/html; charset=$response_charset\r\n";
-
+							? '' : "\r\nContent-Type: text/html\r\n";
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
-			if $Vend::Track and $Vend::Cfg->{UserTrack};
+			if $Vend::Track;
 # END TRACK        
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
@@ -615,7 +569,7 @@ sub respond {
 		$| = 1;
 		select $save;
         $Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
-			if $Vend::Track and $Vend::Cfg->{UserTrack};
+			if $Vend::Track;
 # END TRACK                            
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
@@ -654,12 +608,7 @@ sub respond {
 			push (@paths, @{$ref->{alias}}) if defined $ref->{alias};
 			if ($Global::FullUrl) {
 				# remove domain from script
-				my %pathhash;
-				for (@paths) {
-					s:^[^/]+/:/: or $_ = '/';
-					$pathhash{$_} = 1;	
-				}
-				@paths = keys(%pathhash);	
+				for (@paths) { s:^[^/]+/:/: or $_ = '/'; }
 			}
 		}
 
@@ -676,10 +625,10 @@ sub respond {
 		print $fh canon_status($Vend::StatusLine);
 	}
 	elsif(! $Vend::ResponseMade) {        
-		print $fh canon_status("Content-Type: text/html; charset=$response_charset");
+		print $fh canon_status("Content-Type: text/html");
 # TRACK        
         print $fh canon_status("X-Track: " . $Vend::Track->header())
-			if $Vend::Track and $Vend::Cfg->{UserTrack};
+			if $Vend::Track;
 # END TRACK
 	}
 	print $fh canon_status("Pragma: no-cache")
@@ -700,11 +649,10 @@ sub _read {
     vec($rin,fileno($fh),1) = 1;
 
     do {
-	if (($r = select($rin, undef, undef, $Global::SocketReadTimeout || 1)) > 0) {
-	    $r = sysread($fh, $$in, $r, length($$in));
+	if (($r = select($rin, undef, undef, 1)) > 0) {
+	    $r = sysread($fh, $$in, 512, length($$in));
 	}
-    } while ((!defined($r) || $r == -1) && ($!{eintr} || $!{eagain}));
-
+    } while (!defined $r and $!{eintr});
     die "read: $!" unless defined $r;
     die "read: closed" unless $r > 0;
 }
@@ -922,9 +870,9 @@ sub read_cgi_data {
 
 
 sub connection {
-    my $show_in_ps = shift;
-
     my (%env, $entity);
+
+    my $show_in_ps = shift;
 
     set_process_name('connection');
 
@@ -934,14 +882,12 @@ sub connection {
     reset_vars();
 
     if($Global::ShowTimes) {
-        @Vend::Times = times();
-        ::logDebug ("begin connection. Summary time set to zero");
+	@Vend::Times = times();
+	::logDebug ("begin connection. Summary time set to zero");
     }
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
     show_times('end cgi read') if $Global::ShowTimes;
-
-    binmode(MESSAGE, ':utf8') if $::Variable->{MV_UTF8};
 
     my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 
@@ -1186,19 +1132,13 @@ sub housekeeping {
 
 			if ($Global::PIDcheck) {
 				for my $pid (keys %Page_pids) {
-					my $pid_stats = $Page_pids{$pid};
-					my $last_use = $check_time - $pid_stats->[0];
+					my $last_use = $check_time - $Page_pids{$pid};
 					next unless $last_use > $Global::PIDcheck;
 #::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
-					if ($pid_stats->[1]) {
-						$bad_pids{$pid} = undef;
-						delete $Page_pids{$pid};
+					$bad_pids{$pid} = undef;
+					delete $Page_pids{$pid};
 #::logDebug('scheduling %s for death', $pid);
-						--$active_count;
-					}
-					else {
-						$pid_stats->[0] = time;
-					}
+					--$active_count;
 				}
 			}
 
@@ -1758,11 +1698,9 @@ sub start_page {
 		   );
 	}
 	my $dbl_fork_pid;
-	my $in_single_fork =
-		$no_fork && $Global::PreForkSingleFork;
 
 	if (
-			$in_single_fork
+			$Global::PreForkSingleFork
 			or ! ($dbl_fork_pid = fork)
 		)
 	{
@@ -1778,7 +1716,7 @@ sub start_page {
 				$Global::Foreground = 1 if $no_fork;
 
 				local $SIG{CHLD} = 'DEFAULT'
-					if $in_single_fork;
+					if $Global::PreForkSingleFork;
 
 				local $SIG{INT} = $Routine_INT;
 				local $SIG{TERM} = $Routine_TERM;
@@ -1816,9 +1754,9 @@ sub start_page {
 				exit(0);
 			}
 			starting_pids('add',$pid)
-				if $in_single_fork;
+				if $Global::PreForkSingleFork;
 		}
-		$in_single_fork or exit(0);
+		$Global::PreForkSingleFork or exit(0);
 	}
 
 	if ($dbl_fork_pid) {
@@ -1896,23 +1834,21 @@ sub starting_pids {
 	my ($action,$pid,$n) = @_;
 
 	$n ||= 1;
-	my $in_single_fork =
-		$Global::PreFork && $Global::PreForkSingleFork;
 
 	if ( $action eq 'count' ) {
-		return $in_single_fork
+		return $Global::PreForkSingleFork
 			? scalar keys %Starting_pids
 			: $Starting_pids
 		;
 	}
 	elsif ( $action eq 'add' ) {
-		$in_single_fork
+		$Global::PreForkSingleFork
 			? ($Starting_pids{$pid} = time)
 			: ($Starting_pids += $n)
 		;
 	}
 	elsif ( $action eq 'del' ) {
-		$in_single_fork
+		$Global::PreForkSingleFork
 			? delete ($Starting_pids{$pid})
 			: ($Starting_pids -= $n)
 		;
@@ -1940,18 +1876,20 @@ sub server_page {
     for (;;) {
 
 	  my $n;
+	  $c++;
 	  my ($ok, $p, $v);
 	  my $i = 0;
 	  $c++;
 	  eval {
 		$rin = $p_vector;
 		
+my $pretty_vector = unpack('b*', $rin);
+
 		undef $spawn;
 		do {
 			$n = select($rout = $rin, undef, undef, $tick);
 		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
 
-#my $pretty_vector = unpack('b*', $rin);
 #::logDebug("pid=$$ cycle=$c handled=$handled tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
 			last if $Signal_Terminate;
@@ -2021,10 +1959,10 @@ sub server_page {
 				### Careful, returns after MaxRequests or terminate signal
 				$::Instance = {};
 #::logDebug("begin non-forked ::connection()");
-				send_ipc(sprintf ('lastused %s %s 1',$$,time))
+				send_ipc(sprintf ('lastused %s %s',$$,time))
 					if $Global::PIDcheck;
 				connection(++$handled);
-				send_ipc(sprintf ('lastused %s %s 0',$$,time))
+				send_ipc(sprintf ('lastused %s %s',$$,time))
 					if $Global::PIDcheck;
 #::logDebug("end non-forked ::connection()");
 				undef $::Instance;
@@ -2102,7 +2040,7 @@ sub server_soap {
 
 	my $c = 0;
 	my $handled = 0;
-#my $pretty_vector = unpack('b*', $s_vector);
+my $pretty_vector = unpack('b*', $s_vector);
 #::logDebug("SOAP server $$ begun, vector=$pretty_vector servers=$SOAP_servers");
     for (;;) {
 
@@ -2249,12 +2187,12 @@ sub process_ipc {
 		close $fh;
 		$Num_servers--;
 	}
-	elsif ($thing =~ /^lastused (\d+) (\d+) ([01])/) {
+	elsif ($thing =~ /^lastused (\d+) (\d+)/) {
 #::logDebug("Page pid $1 last used at $2");
-		@{ $Page_pids{$1} } = ($2, $3);
+		$Page_pids{$1} = $2;
 	}
 	elsif ($thing =~ /^register page (\d+)/) {
-		$Page_pids{$1} = [ time, 0 ];
+		$Page_pids{$1} = time;
 		starting_pids('del',$1);
 #::logDebug("registered Page pid $1");
 		$Page_servers++;
@@ -2509,7 +2447,7 @@ sub server_both {
 	}
 
 	my $master_ipc = 0;
-	if($Global::PreFork && $Global::StartServers) {
+	if($Global::StartServers) {
 		$master_ipc = 1;
 		$p_vector = $vector ^ $ipc_vector;
 		start_page(1, $Global::PreFork, $Global::StartServers);
@@ -2535,6 +2473,7 @@ sub server_both {
 			$rin = $vector;
 			$cycle = $tick;
 		}
+my $pretty_vector = unpack('b*', $rin);
 		undef $spawn;
 		undef $checked_soap;
 		do {
@@ -2543,7 +2482,6 @@ sub server_both {
 
 		undef $Vend::Cfg;
 
-#my $pretty_vector = unpack('b*', $rin);
 #::logDebug("cycle=$c tick=$cycle vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
 			last if $Signal_Terminate;

@@ -21,7 +21,7 @@ Default: true
 _Description: Create the user ${USER}?
 
 Template: interchange/usernoroot
-Type: error
+Type: note
 _Description: Impossible to run interchange as root !
  You have been warned. Either choose an appropriate user or stay with the
  default.
@@ -36,7 +36,7 @@ _Description: Group name to run the server as:
  discarded anyway.
 
 Template: interchange/groupnoroot
-Type: error
+Type: note
 _Description: Impossible to run interchange as root !
  You have been warned. Either choose an appropriate group or stay with the
  default.
@@ -50,6 +50,14 @@ Template: interchange/olduser
 Type: string
 Default: ""
 Description: 
+
+Template: interchange/webserver
+Type: select
+__Choices: Apache2, Apache
+Default: Apache2
+_Description: Which webserver are you running ?
+ This information is necessary for the makecat script. Please specify
+ which webserver you want to use for your Interchange applications.
 
 Template: interchange/docroot
 Type: string

@@ -1,8 +1,8 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.303 2008-05-13 22:33:15 jon Exp $
+# $Id: Interpolate.pm,v 2.284 2007-08-20 23:57:34 kwalsh Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.303 $, 10);
+$VERSION = substr(q$Revision: 2.284 $, 10);
 
 @EXPORT = qw (
 
@@ -178,10 +178,6 @@ sub reset_calc {
 		$ready_safe = new Safe $pkg;
 		$ready_safe->share_from('MVSAFE', ['$safe']);
 #::logDebug("new safe made=$ready_safe->{Root}");
-		
-		Vend::CharSet->utf8_safe_regex_workaround($ready_safe)
-		    if $::Variable->{MV_UTF8};
-
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
@@ -311,7 +307,6 @@ my $All = '[\000-\377]*';
 my $Some = '[\000-\377]*?';
 my $Codere = '[-\w#/.]+';
 my $Coderex = '[-\w:#=/.%]+';
-my $Filef = '(?:%20|\s)+([^]]+)';
 my $Mandx = '\s+([-\w:#=/.%]+)';
 my $Mandf = '(?:%20|\s)+([-\w#/.]+)';
 my $Spacef = '(?:%20|\s)+';
@@ -378,7 +373,6 @@ my @th = (qw!
 		_field
 		_filter
 		_header_param
-		_include
 		_increment
 		_last
 		_line
@@ -473,7 +467,6 @@ my @th = (qw!
 	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere$Optr)\]),
 	'_field'		=> qr($T{_field}$Mandf\]),
 	'_common'		=> qr($T{_common}$Mandf\]),
-	'_include'		=> qr($T{_include}$Filef\]),
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
 	'_line'			=> qr($T{_line}$Opt\]),
@@ -1013,7 +1006,7 @@ sub conditional {
 		undef $noop;
 		$status = $ready_safe->reval($comp);
 	}
-	elsif($base =~ /^var(?:iable)?$/) {
+	elsif($base eq 'variable') {
 		$op =	qq%$::Variable->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -1202,8 +1195,6 @@ sub conditional {
 			last RUNSAFE;
 		}
 
-		Vend::CharSet->utf8_safe_regex_workaround($ready_safe)
-		    if $::Variable->{MV_UTF8};
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		$status = $ready_safe->reval($op) ? 1 : 0;
@@ -1656,16 +1647,7 @@ sub tag_perl {
 		};
 	}
 
-	$Items = $Vend::Items;
-
-	$body = readfile($opt->{file}) . $body
-		if $opt->{file};
-
-	# Skip costly eval of code entirely if perl tag was called with no code,
-	# likely used only for the side-effect of opening database handles
-	return if $body !~ /\S/;
-
-	$body =~ tr/\r//d if $Global::Windows;
+	#$hole->wrap($Tag);
 
 	$MVSAFE::Safe = 1;
 	if (
@@ -1676,6 +1658,13 @@ sub tag_perl {
 	{
 		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
 	}
+
+	$body = readfile($opt->{file}) . $body
+		if $opt->{file};
+
+	$body =~ tr/\r//d if $Global::Windows;
+
+	$Items = $Vend::Items;
 
 	if(! $MVSAFE::Safe) {
 		$result = eval($body);
@@ -2170,12 +2159,6 @@ sub tag_counter {
 						$opt->{sql},
 					);
 			} 
-			elsif($seq =~ /^\s*SELECT\W/i) {
-#::logDebug("found custom SQL SELECT for sequence: $seq");
-				my $sth = $dbh->prepare($seq) or die $diemsg;
-				$sth->execute or die $diemsg;
-				($val) = $sth->fetchrow_array;
-			}
 			elsif($dsn =~ /^dbi:mysql:/i) {
 				$seq ||= $tab;
 				$dbh->do("INSERT INTO $seq VALUES (0)")		or die $diemsg;
@@ -2293,12 +2276,10 @@ sub tag_value_extended {
 		my $file = $opt->{outfile};
 		$file =~ s/^\s+//;
 		$file =~ s/\s+$//;
-
-		unless (Vend::File::allowed_file($file)) {
-			Vend::File::log_file_violation($file, 'value-extended');
+		if($file =~ m{^([A-Za-z]:)?[\\/.]}) {
+			logError("attempt to write absolute file $file");
 			return '';
 		}
-
 		if($opt->{ascii}) {
 			my $replace = $^O =~ /win32/i ? "\r\n" : "\n";
 			if($CGI::file{$var} !~ /\n/) {
@@ -2319,12 +2300,12 @@ sub tag_value_extended {
 				length($CGI::file{$var}),
 				$opt->{maxsize},
 			);
-			return $no;
+			return $opt->{no} || '';
 		}
 #::logDebug(">$file \$CGI::file{$var}" . uneval($opt)); 
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
-			and return $yes;
-		return $no;
+			and return $opt->{yes} || '';
+		return $opt->{'no'} || '';
 	}
 
 	my $joiner;
@@ -3534,14 +3515,12 @@ sub tag_labeled_data_row {
 
 sub random_elements {
 	my($ary, $wanted) = @_;
-	return (0 .. $#$ary) unless $wanted > 0;
-	$wanted = 1 if $wanted =~ /\D/;
+	$wanted = 1 if ! $wanted || $wanted =~ /\D/;
 	return undef unless ref $ary;
-
 	my %seen;
 	my ($j, @out);
 	my $count = scalar @$ary;
-	$wanted = $count if $wanted > $count;
+	return (0 .. $#$ary) if $count <= $wanted;
 	for($j = 0; $j < $wanted; $j++) {
 		my $cand = int rand($count);
 		redo if $seen{$cand}++;
@@ -3598,8 +3577,7 @@ sub labeled_list {
 	if (defined $obj->{more_in_progress} and $obj->{mv_first_match}) {
 		$i = $obj->{mv_first_match};
 	}
-	elsif (defined $opt->{random} && !is_no($opt->{random})) {
-		$opt->{random} = scalar(@$ary) if $opt->{random} =~ /^[yYtT]/;
+	elsif (defined $opt->{random}) {
 		@$ary = @$ary[random_elements($ary, $opt->{random})];
 		$i = 0; $end = $#$ary;
 		undef $obj->{mv_matchlimit};
@@ -4087,18 +4065,6 @@ sub iterate_array_list {
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . uneval($ary));
 
-	$text =~ s{
-		$B$QR{_include}
-	}{
-		my $filename = $1;
-
-		$Data_cache{"/$filename"} or do {
-		    my $content = Vend::Util::readfile($filename);
-		    vars_and_comments(\$content);
-		    $Data_cache{"/$filename"} = $content;
-		};
-	}igex;
-
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
 		my $fa = $opt->{mv_return_fields};
@@ -4241,7 +4207,7 @@ my $once = 0;
                     }
                     '' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    $Ary_code{next}->($1) != 0 ? (undef $Row, next) : '' #ixge;
+                    $Ary_code{next}->($1) != 0 ? next : '' #ixge;
 		$run =~ s/<option\s*/<option SELECTED /i
 			if $opt_select and $opt_select->($code);
 		undef $Row;
@@ -4681,9 +4647,9 @@ sub region {
 		if(! $obj) {
 			$obj = perform_search();
 			$obj = {
-				matches => 0,
-				mv_search_error => [ errmsg('No search was found') ],
-			} if ! $obj;
+						matches => 0,
+						mv_search_error => ['No search was found'],
+				} if ! $obj;
 		}
 		finish_search($obj);
 
@@ -4879,7 +4845,7 @@ sub tag_loop_list {
 			}
 
 			eval {
-				@rows = map { [ split /\Q$delim/, $_ ] } split /\Q$splittor/, $list;
+				@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
 			};
 		}
 	}
@@ -4954,10 +4920,8 @@ sub fly_page {
 	if ($subname = $Vend::Cfg->{SpecialSub}{flypage}) {
 		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname}; 
 		$listref = $sub->($code);
-		$listref = { mv_results => [[$listref]] } unless ref($listref);
 		$base = $listref;
-	}
-	else {
+	} else {
 		$base = product_code_exists_ref($code);
 		$listref = {mv_results => [[$code]]};
 	}
@@ -5583,7 +5547,6 @@ sub tax_vat {
 		}
 
 	}
-
 	return $total;
 }
 
@@ -5631,10 +5594,11 @@ sub salestax {
 	if(defined $cost) {
 		$Vend::Items = $save if $save;
 		switch_discount_space($oldspace) if defined $oldspace;
-		if($cost < 0 and $::Pragma->{no_negative_tax}) {
-			$cost = 0;
-		}
 		return Vend::Util::round_to_frac_digits($cost);
+	}
+
+	if(! $tax_hash) {
+		$cost = fly_tax();
 	}
 
 #::logDebug("got to tax function: " . uneval($tax_hash));
@@ -5687,10 +5651,6 @@ sub salestax {
 	}
 
 	$Vend::Items = $save if defined $save;
-
-	if($r < 0 and ! $::Pragma->{no_negative_tax}) {
-		$r = 0;
-	}
 
 	return Vend::Util::round_to_frac_digits($r);
 }
@@ -5958,7 +5918,7 @@ sub levies {
 							code			=> $name,
 							mode			=> $mode,
 							type			=> $type,
-							sort			=> $sort || $l->{sort},
+							sort			=> $sort,
 							cost			=> round_to_frac_digits($cost),
 							currency		=> currency($cost),
 							group			=> $group,
@@ -5996,8 +5956,8 @@ sub levies {
 
 	for(@$lcart) {
 		next if $opt->{group} and $opt->{group} ne $_->{group};
-		next if $_->{inclusive};
-		next if $_->{type} eq 'salestax' and $Vend::Cfg->{TaxInclusive};
+		next if $_->{type} eq 'salestax'
+			and $_->{inclusive} || $Vend::Cfg->{TaxInclusive};
 		$run += $_->{cost};
 	}
 

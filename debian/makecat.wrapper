@@ -1,10 +1,13 @@
 #! /bin/sh -e
 
 . /etc/interchange/init.cfg
-OPTS="--interchangeuser=$USER --linkprogram=/usr/lib/cgi-bin/ic/vlink --documentroot=$DOCROOT --catalogconf=/etc/interchange/catalogs.cfg --serverconf=/etc/apache2/apache2.conf"
+OPTS="--interchangeuser=$USER --linkprogram=/usr/lib/cgi-bin/ic/vlink --documentroot=$DOCROOT --catalogconf=/etc/interchange/catalogs.cfg"
+if [ "$WEBSERVER" = "Apache2" ]; then
+	OPTS="$OPTS --serverconf=/etc/apache2/apache2.conf"
+fi
 
 CMD="/usr/lib/interchange/bin/makecat $OPTS $@"
-if [ "`/usr/bin/id -ru`" -eq 0 ]; then
+if [ "$UID" -eq 0 ]; then
 	su -s /bin/sh -c "$CMD" $USER
 else
 	OPTS="$OPTS --nocfg --norunning"

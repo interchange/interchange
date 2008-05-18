@@ -52,12 +52,7 @@
 
 [if cgi ui_content_op]
 	[if type=explicit compare="[content-modify]"]
-		[if cgi ui_destination ne ""]
-			[warnings message="Published [cgi ui_type] [cgi ui_destination]."]
-		[else]
-			[warnings message="Published [cgi ui_type] [cgi ui_name]."]
-		[/else]
-		[/if]
+		[warnings message="Published [cgi ui_type] [cgi ui_name]."]
 	[/if]
 	[bounce page=__UI_BASE__/content]
 [/if]

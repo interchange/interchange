@@ -1,8 +1,8 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.118 2008-03-27 15:56:49 ton Exp $
+# $Id: Util.pm,v 2.107 2007-07-24 02:50:38 mheins Exp $
 # 
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -71,7 +71,6 @@ require Exporter;
 	tag_nitems
 	timecard_stamp
 	timecard_read
-	backtrace
 	uneval
 	uneval_it
 	uneval_fast
@@ -91,7 +90,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.118 $, 10);
+$VERSION = substr(q$Revision: 2.107 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -264,11 +263,10 @@ sub round_to_frac_digits {
 		$digits = 2;
 	}
 	my @frac;
-	$num =~ /^(-?)(\d*)(?:\.(\d+))?$/
+	$num =~ /^(\d*)(?:\.(\d+))?$/
 		or return $num;
-	my $sign = $1 || '';
-	my $int = $2;
-	@frac = split(m{}, ($3 || 0));
+	my $int = $1;
+	@frac = split(m{}, ($2 || 0));
 	local($^W) = 0;
 	my $frac = join "", @frac[0 .. $digits - 1];
 	if($frac[$digits] > 4) {
@@ -279,7 +277,7 @@ sub round_to_frac_digits {
 		$frac = 0 x $digits;
 	}
 	$frac .= '0' while length($frac) < $digits;
-	return "$sign$int.$frac";
+	return "$int.$frac";
 }
 
 use vars qw/%MIME_type/;
@@ -325,7 +323,6 @@ my %safe_locale = (
 						C     => 1,
 						en_US => 1,
 						en_UK => 1,
-						en_GB => 1,
 					);
 
 sub safe_sprintf {
@@ -1145,8 +1142,8 @@ sub readin {
 
 	my @dirs = ($Vend::Cfg->{PreviewDir},
 				$Vend::Cfg->{PageDir},
-				@{$Vend::Cfg->{TemplateDir} || []},
-				@{$Global::TemplateDir || []});
+				@{$Vend::Cfg->{TemplateDir}},
+				@{$Global::TemplateDir});
 
 	foreach $try (@dirs) {
 		next unless $try;
@@ -1183,7 +1180,6 @@ sub readin {
 
 		if (open(MVIN, "< $fn")) {
 			binmode(MVIN) if $Global::Windows;
-			binmode(MVIN, ":utf8") if $::Variable->{MV_UTF8};
 			undef $/;
 			$contents = <MVIN>;
 			close(MVIN);
@@ -1238,7 +1234,7 @@ sub vendUrl {
 
 	if($opt->{auto_format}) {
 		return $path if $path =~ m{^/};
-		$path =~ s:#([^/.]+)$::
+		$path =~ s:#([^/.])+$::
             and $opt->{anchor} = $1;
 		$path =~ s/\.html?$//i
 			and $opt->{add_dot_html} = 1;
@@ -1669,7 +1665,6 @@ sub logDebug {
     else {
         print caller() . ":debug: ", errmsg(@_), "\n";
     }
-    return;
 }
 
 sub errmsg {
@@ -2250,38 +2245,6 @@ sub timecard_read {
 	return unpack('N',$rtime);
 }
 
-sub backtrace {
-    my $msg = "Backtrace:\n\n";
-    my $frame = 1;
-
-    my $assertfile = '';
-    my $assertline = 0;
-
-    while (my ($package, $filename, $line, $subroutine, $hasargs, $wantarray, $evaltext, $is_require) = caller($frame++) ) {
-	$msg .= sprintf("   frame %d: $subroutine ($filename line $line)\n", $frame - 2);
-	if ($subroutine =~ /assert$/) {
-	    $assertfile = $filename;
-	    $assertline = $line;
-	}
-    }
-    if ($assertfile) {
-	open(SRC, $assertfile) and do {
-	    my $line;
-	    my $line_n = 0;
-
-	    $msg .= "\nProblem in $assertfile line $assertline:\n\n";
-
-	    while ($line = <SRC>) {
-		$line_n++;
-		$msg .= "$line_n\t$line" if (abs($assertline - $line_n) <= 10);
-	    }
-	    close(SRC);
-	};
-    }
-
-    ::logGlobal($msg);
-    undef;
-}
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File
 *canonpath = \&Vend::File::canonpath;

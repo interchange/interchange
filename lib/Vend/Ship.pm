@@ -1,8 +1,8 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.28 2008-04-11 08:44:20 danb Exp $
+# $Id: Ship.pm,v 2.26 2007-08-09 13:40:54 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -714,18 +714,6 @@ sub shipping {
 	    }
 	}
 
-	if ($field eq 'weight') {
-		if (my $callout_name = $Vend::Cfg->{SpecialSub}{weight_callout}) {
-#::logDebug("Execute weight callout '$callout_name(...)'");
-			my $weight_callout_sub = $Vend::Cfg->{Sub}{$callout_name} 
-				|| $Global::GlobalSub->{$callout_name};
-			eval {
-				$total = $weight_callout_sub->($total) || 0;
-			};
-			::logError("Weight callout '$callout_name' died: $@") if $@;
-		}
-	}
-	
 	# We will LAST this loop and go to SHIPFORMAT if a match is found
 	SHIPIT: 
 	foreach $row (@lines) {
@@ -920,16 +908,6 @@ sub shipping {
 				$::Values->{mv_handling} = $mode;
 			}
 			undef $opt->{default};
-		}
-		if (my $callout_name = $Vend::Cfg->{SpecialSub}{shipping_callout}) {
-#::logDebug("Execute shipping callout '$callout_name(...)'");
-			my $sub = $Vend::Cfg->{Sub}{$callout_name} 
-				|| $Global::GlobalSub->{$callout_name};
-			eval {
-				my $callout_result = $sub->($final, $mode, $opt, $o);
-				$final = $callout_result if defined $callout_result;
-			};
-			::logError("Shipping callout '$callout_name' died: $@") if $@;
 		}
 		return $final unless $opt->{label};
 		my $number;

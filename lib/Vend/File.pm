@@ -1,8 +1,8 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.28 2008-03-25 17:13:21 jon Exp $
+# $Id: File.pm,v 2.25 2007-08-09 13:40:53 pajamian Exp $
 # 
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -50,24 +50,15 @@ use strict;
 use Config;
 use Fcntl;
 use Errno;
-use Encode qw( is_utf8 );
 use Vend::Util;
 use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
-
-	my $is_utf8;
-	if ($::Variable->{MV_UTF8} && ref $data) {
-		$is_utf8 = is_utf8($$data);
-	}
-	else {
-		$is_utf8 = is_utf8($data);
-	}
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 	if (ref $opt and $opt->{umask}) {
@@ -91,7 +82,6 @@ sub writefile {
 			}
 			# We have checked for beginning > or | previously
 			open(MVLOGDATA, $file) or die "open\n";
-			binmode(MVLOGDATA, ":utf8") if $is_utf8;
 			lockfile(\*MVLOGDATA, 1, 1) or die "lock\n";
 			seek(MVLOGDATA, 0, 2) or die "seek\n";
 			if(ref $data) {
@@ -105,7 +95,6 @@ sub writefile {
 		else {
             my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
 			open(MVLOGDATA, "|-") || exec @args;
-			binmode(MVLOGDATA, ":utf8") if $is_utf8;
 			if(ref $data) {
 				print(MVLOGDATA $$data) or die "pipe to\n";
 			}
@@ -171,6 +160,9 @@ sub readfile_db {
 # Careful, needs the full path, or will be read relative to
 # VendRoot..and will return binary. Should be tested by
 # the user.
+
+# Will also look in the *global* TemplateDir. (No need for the
+# extra overhead of local TemplateDir, probably also insecure.)
 #
 # To ensure security in multiple catalog setups, leading /
 # is not allowed if $Global::NoAbsolute) is true and the file
@@ -196,7 +188,7 @@ sub readfile {
 		$file = $ifile;
 	}
 	else {
-		for( ".", @{$Vend::Cfg->{TemplateDir} || []}, @{$Global::TemplateDir || []}) {
+		for( ".", @{$Global::TemplateDir} ) {
 			next if ! -f "$_/$ifile";
 			$file = "$_/$ifile";
 			last;
@@ -212,7 +204,6 @@ sub readfile {
 		$Global::Variable->{MV_FILE} = $file;
 
 		binmode(READIN) if $Global::Windows;
-		binmode(READIN, ":utf8") if $::Variable->{MV_UTF8};
 		undef $/;
 		$contents = <READIN>;
 		close(READIN);

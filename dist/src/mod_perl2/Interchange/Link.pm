@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.14 2007-11-16 15:18:43 jon Exp $
+# $Id: Link.pm,v 1.13 2007-08-09 13:40:52 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,6 +27,7 @@ package Interchange::Link;
 use strict;
 use ModPerl::Registry;
 use ModPerl::Code;
+#use Apache::Const;
 use Apache2::Const -compile => qw(DECLINED OK NOT_FOUND FORBIDDEN REDIRECT HTTP_MOVED_PERMANENTLY);
 use Apache2::ServerRec ();
 require Apache2::Connection;
@@ -47,7 +48,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.14 $
+$Revision: 1.13 $
 
 =head1 SYNOPSIS
 
@@ -412,6 +413,30 @@ my $env;
 my $ent;
 
 
+# Return this message to the browser when the server is not running.
+# Log an error log entry if set to notify
+
+sub die_page {
+
+    my $r = shift;
+    my $msg;
+
+    warn "ALERT: bad pipe signal received for $ENV{SCRIPT_NAME}\n";   
+
+    $r->content_type ("text/html");
+    $r->print (<<EOF);
+<html><head><title>Interrupted</title></head>
+<body bgcolor="#FFFFFF">
+<h3>Someone pressed stop...</h3>
+<p>
+We have aborted this request because someone terminated it.
+Please try again soon.
+</p>
+</body></html>
+EOF
+
+}
+
 sub server_not_running {
 
     my $r = shift;
@@ -597,7 +622,7 @@ sub handler {
 
     my $cfg = setup_location($r);
 
-    $SIG{PIPE} = 'IGNORE';
+    $SIG{PIPE} = sub { die_page($r); };
     $SIG{ALRM} = sub { server_not_running($r); exit 1; };
 
     my ($remote, $port, $iaddr, $paddr, $proto, $line);
@@ -722,7 +747,7 @@ sub handler {
         elsif($set_status =~ /^404/) {
 #warn "404 not found status\n";
             close (SOCK)                                or die "close: $!\n";
-            return Apache2::Const::NOT_FOUND;
+            return Apache2::Const::OK;
         }
 		elsif($set_status eq 'httpd_deliver') {
 			$deliver_object = $set_status;

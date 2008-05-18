@@ -1,8 +1,8 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.37 2008-01-29 10:31:11 racke Exp $
+# $Id: Search.pm,v 2.36 2007-08-09 13:40:54 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -316,13 +316,19 @@ sub spec_check {
 		for (@specs) {
 			$passed = 1;
 		    next if length($_) >= $s->{mv_min_string};
-			$msg = ::errmsg(q{Search strings must be at least %s characters. You had '%s' as one of your search strings.}, $s->{mv_min_string}, $_);
+			$msg = <<EOF;
+Search strings must be at least $s->{mv_min_string} characters.
+You had '$_' as one of your search strings.
+EOF
 			undef $passed;
 			last;
 		}
 		$passed = 1 if ! $s->{mv_min_string};
 		if(! defined $passed) {
-			$msg = ::errmsg(q{Search strings must be at least %s characters. You had no search string specified.}, $s->{mv_min_string}) if ! $msg;
+			$msg = <<EOF if ! $msg;
+Search strings must be at least $s->{mv_min_string} characters.
+You had no search string specified.
+EOF
 			return $s->search_error($msg);
 		}
 	}

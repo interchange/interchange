@@ -1,36 +1,3 @@
-interchange (5.5.3-1) unstable; urgency=low
-
-  * new upstream release
-    - display modified date on Saved Carts / Recurring Order page in a
-      human readable format (Closes: #430338)
-  * fixed bashisms in wrapper scripts (Closes: #480600, thanks to Raphael
-    Geissert <atomo64@gmail.com>)
-  * demo catalog installation
-    - added missing dbconfig-common hooks (Closes: #465993)
-    - added defaults for database name and database user 
-  * updated French translation of Debconf templates (Closes: #440784,
-    thanks to Christian Perrier <bubulle@debian.org>)
-  * added Finnish translation of Debconf templates (Closes: #471687,
-    thanks to Esko Arajärvi <edu@iki.fi>)
-  * updated Russian translation of Debconf templates (Closes: #472684,
-    thanks to Yuri Kozlov <kozlov.y@gmail.com>)
-  * added Dutch translation of Debconf templates (Closes: #474696,
-    thanks to Bart Cornelis <cobaco@skolelinux.no>)
-  * added LSB dependency info to init scripts (Closes: #469718, thanks to
-    Petter Reinholdtsen <pere@hungry.com> for the patch)
-  * don't care about Apache 1 anymore 
-  * fix error in German translation of Debconf templates
-  * dependency on adduser added
-  * use type error for wrong Debconf input
-  * use colon style for Debconf questions
-  * lintian fixes
-    - added missing dependency on libc
-    - don't ignore errors on make clean
-    - fix section in interchangeconfig/te manual pages
-    - build dependency on po-debconf added
-  
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 15 May 2008 23:12:56 +0200
-
 interchange (5.5.1-1) unstable; urgency=low
 
   * new upstream release (Closes: #397750, #429690)

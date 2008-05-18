@@ -4,13 +4,10 @@
 
 
 Interchange is designed to be drop-in compatible in its major version.
-Briefly summarized, here's what you can expect when upgrading from the
-following versions:
 
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
-          "Known Issues" section. Your code will almost certainly fail to
-          work properly until you make the necessary changes described!
+          "Known Issues" section.
 
  5.2.x -- There should be few to no compatibility issues in
           upgrading from Interchange 5.2.x.
@@ -37,7 +34,7 @@ NOTE:    All below procedures assume you have installed in
 WARNING: BACK UP EVERYTHING BEFORE YOU START!
 
     1. Make a tar backup of your Interchange software directory, e.g.
-
+       
         tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
     2. Unpack the new version of the software to a temporary directory,
@@ -74,82 +71,7 @@ That's it. Verify your catalog's operation, and you are live.
                          K N O W N   I S S U E S
 
 
-PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
-
-In PostgreSQL 8.3 many implicit casts were removed, some of which Interchange
-relied on. By default, the Standard demo and some Interchange core SQL does
-not work with PostgreSQL 8.3.
-
-We expect to work around this in a future version of Interchange, but at the
-moment the easiest way to get things working is to manually put back the
-removed casts, as Peter Eisentraut describes here:
-
-    http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html
-
-Running his pg83-implicit-casts.sql script fixes the known problems with the
-Standard demo.
-
-This issue does not affect earlier versions of PostgreSQL.
-
-
-KNOWN ISSUES UPGRADING FROM 5.5.2
-
-1. Several old versions of CPAN modules were distributed in the extra/
-directory but have been removed:
-
-    Business::UPS - part of Bundle::InterchangeKitchenSink
-    File::Spec - now distributed with Perl itself
-    Tie::ShadowHash - part of Bundle::Interchange
-    URI::URL - part of Bundle::Interchange
-
-If you find Interchange won't start up, check to make sure you have all the
-necessary Perl modules.
-
-2. We have removed the option available in some polymorphs of the
-database abstraction layer's set_slice() routine that allowed key/value
-pairs to be passed in as a simple array. For example, this will no longer
-work:
-
-    $db->set_slice($key, $field1, $value1)
-
-But it can be rewritten as this, which has long worked:
-
-    $db->set_slice($key, [$field1], [$value1])
-
-3. The syntax of the custom SQL function for counters has changed. At the time
-of the feature's introduction on 2007-11-17, the syntax was e.g.:
-
-    UserDB  default   sql_counter  "userdb:custom_counter('userdb_username_seq')"
-
-That conflicted with MySQL pseudo-sequence functionality that used the same
-syntax. The new syntax does not conflict and has the benefit of being more
-generic, allowing any SELECT statement:
-
-    UserDB  default   sql_counter  "userdb:SELECT custom_counter('userdb_username_seq')"
-
-
-KNOWN ISSUES UPGRADING FROM 5.5.1
-
-SpecialSub catalog_init has been renamed to request_init.
-
-UserTrack now defaults to "no", so if you want the X-Track HTTP response header
-to be output, add "UserTrack yes" to your catalog.cfg.
-
-UserTrack also no longer affects TrackFile, so if you don't want TrackFile
-output, you should not have a TrackFile directive in catalog.cfg.
-
-
 KNOWN ISSUES UPGRADING FROM 5.4.x
-
-Check the "special_pages/missing.html" file, in all of your Interchange-driven
-websites, for a line that looks like the following:
-
-    [if type=explicit compare="q{[subject]} =~ m{^admin/}"]
-
-If found then replace with the following two lines:
-
-    [tmpn missing_subject][subject][/tmpn]
-    [if scratch missing_subject =~ /^admin/]
 
 Perl 5.8.0 or newer is now required. Running with threads is still not
 recommended for production installations, but is allowed under Perl 5.8.5
@@ -164,24 +86,9 @@ no configuration file line beginning with # will be parsed, including
 #ifdef, #include, etc., as was done in the past. Bare ifdef, include, etc.
 must now be used.
 
-Global ActionMaps: Previously, the path passed to a global ActionMap
-did not include the action itself, but the path passed to a catalog
-ActionMap did include the action. This discrepancy was annoying to keep
-track of. Now both kinds of ActionMaps receive a path that includes
-the action. This means that all global ActionMap code will need to be
-updated to deal with the action. Most simply, you can strip off the
-action at the beginning of the sub something like this:
+Removed RequiredFields, HTMLmirror and UseCode directives.
 
-    ActionMap your_action <<EOR
-    sub {
-        my ($path) = @_;
-        # remove action
-        $path =~ s:^[^/]+/::;
-        # your code here
-    }
-    EOR
-
-Removed SOAP_Host, RequiredFields, HTMLmirror and UseCode directives.
+Removed unused SOAP_Host directive.
 
 All previously deprecated configuration directives have been removed.
 
@@ -209,25 +116,18 @@ file into a new robots.cfg file.  If you are upgrading then you will
 need to remove any existing *Robot* directives from your interchange.cfg
 file and add "include robots.cfg" in their place.
 
-A new subdomains.cfg file has been created, and should be included into
-your interchange.cfg file with "include subdomains.cfg".  This file defines
-a list of country-specific standardised subdomains that should be taken
-into account when the DomainTail directive is in effect.
-
 The session per IP counters have been changed to the new "timecard" round-robin
 style counters.  You will need to delete the old counter files from the
 tmp/addr_ctr directory with a command similar to the following:
-
-    rm -rf catroot/tmp/addr_ctr/*
-
-...be careful with the above command. If mistyped it can seriously mess up
+	rm -rf catroot/tmp/addr_ctr/*
+...be careful with the above command, if mistyped it can seriously mess up
 your filesystem.
 
 The [error] and [formel] tags now make use of the following CSS class,
 that will need to be added to your CSS file:
 
     .mv_contrast {
-        color: #FF0000;
+	color: #FF0000;
     }
 
 The name of the class can be specified using the CSS_CONTRAST Variable,
@@ -275,7 +175,7 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
 * You will probably receive a message about "history-scan tag overrides global
   definition". See the section "PROBLEMS WITH USERTAGS" below.
-
+  
 * The static-page build capability is no longer supported in
   Interchange 5. You will receive warnings about "Directive StaticPath
   no longer supported at line XXX". 
@@ -315,7 +215,7 @@ existing one should work if you just copy it.
 
     cd /usr/lib/interchange-5
     bin/compile_link -p 7787
-
+    
 NOTE: If you use the INET mode linking method, you have to run the
       test server on a different port. Assuming you use the standard
       7786 on your live catalog, you would add to interchange.cfg:
@@ -433,14 +333,14 @@ If you have this line in interchange.cfg:
           include usertag/my_tag
 
        See the "problems with UserTags" section, below.
-
+  
 If you use CyberCash, you should replace these lines in catalog.cfg
-
+        
         Variable CYBER_MODE       mauthonly
         Variable CYBER_CONFIGFILE /path/to/your/merchant_conf
 
     with
-
+        
         Variable MV_PAYMENT_MODE        cybercash
         Variable MV_PAYMENT_CONFIGFILE  /path/to/your/merchant_conf
 

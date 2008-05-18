@@ -1,8 +1,8 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.67 2008-05-05 15:14:00 markj Exp $
+# $Id: Data.pm,v 2.63 2007-03-30 11:39:44 pajamian Exp $
 # 
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -817,10 +817,6 @@ sub import_database {
 	$obj->{ObjectType} = $class_config->{Class};
 
 	my $dot = $obj->{HIDE_AUTO_FILES} ? '.' : '';
-
-	$obj->{AUTO_NUMBER_FILE} = Vend::File::make_absolute_file(
-		$obj->{AUTO_NUMBER_FILE} || "$dir/$dot$obj->{name}.autonumber"
-	);
 
 	if($class_config->{Extension}) {
 		$database_dbm = Vend::Util::catfile(
@@ -1839,6 +1835,8 @@ sub update_data {
 	my $prikey		= $CGI::values{mv_data_key};
 	my $decode		= is_yes($CGI::values{mv_data_decode});
 
+	my %skip_for_now;
+
 	my $en_col;
 #::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
 	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/s) {
@@ -2012,6 +2010,9 @@ sub update_data {
 				if($file_oldfiles[$i]) {
 					$dref->[0] = $file_oldfiles[$i];
 				}
+				else {
+					$skip_for_now{$nm} = 1;
+				}
 				next;
 			}
 
@@ -2171,6 +2172,8 @@ sub update_data {
 #::logDebug("iteration of update_data:db=$base_db key=$prikey data=" . ::uneval(\%data));
 		@k = (); @v = ();
 		for(keys %data) {
+
+			next if $skip_for_now{$_};
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
@@ -2274,18 +2277,13 @@ sub update_data {
 				$brec->{$f} = $value if $brec;
 			}
 
-			my $dml = { dml => 'upsert' };
-			$dml->{dml} = $function
-				if $::Pragma->{dml} eq 'strict'
-					|| $function eq 'insert' && $::Pragma->{dml} eq 'preserve';
-
 			for(keys %$qd) {
 #::logDebug("update_data: Getting ready to set_slice");
 				my $k = $multikey ? undef : $key;
-				$qret = $qd->{$_}->set_slice([$dml, $k], $qf->{$_}, $qv->{$_});
+				$qret = $qd->{$_}->set_slice($k, $qf->{$_}, $qv->{$_});
 				$rows_set[$i] = $qret unless $rows_set[$i];
 			}
-			if($blob && $rows_set[$i]) {
+			if($blob) {
 				$brec->{mv_data_fields} = join " ", @fields;
 				my $string =  uneval_it($blob);
 #::logDebug("update_data: blob saving string=$string");
@@ -2301,6 +2299,8 @@ sub update_data {
 				if $CGI::values{mv_data_email};
 		}
 	}
+
+	%skip_for_now = ();
 
 	if(my $new = shift(@multis)) {
 		last SETDATA unless length $CGI::values{"${new}_$multiqual"};

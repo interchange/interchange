@@ -1,6 +1,7 @@
 #========================================================================#
 
 # interchange.cfg
+# See 'icconfig' document for details.
 
 #========================================================================#
 
@@ -14,8 +15,8 @@ Variable  UI  1
 # Set to "low", "high", or "rpc" to get different server parameters.
 Variable  TRAFFIC  low
 
-# Set to 1 to log extra debugging info and get a dump of global and
-# catalog data structures.
+# Set to 1 to send extra debugging info to file /tmp/icdebug
+# and get a dump of global and catalog data structures.
 #Variable  DEBUG  1
 
 #========================================================================#
@@ -104,13 +105,13 @@ endif
 
 ## This is only needed if you use Net::SMTP instead of
 ## sendmail or clones
-#Variable MV_SMTPHOST smtp
+Variable MV_SMTPHOST smtp
 
 # Include individual usertags.
 include usertag/*.tag
 
+# Include if you want non-English error messages. Not complete.
+# include locale.error
+
 # Include the robot recognition lists
 include robots.cfg
-
-# Include the list of country-specific standardised subdomains
-include subdomains.cfg

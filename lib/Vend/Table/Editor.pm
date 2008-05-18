@@ -1,8 +1,8 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.92 2008-05-10 14:07:40 mheins Exp $
+# $Id: Editor.pm,v 1.88 2007-08-13 11:30:47 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.92 $, 10);
+$VERSION = substr(q$Revision: 1.88 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -843,7 +843,6 @@ sub display {
 								prepend
 								table
 								type
-								type_empty
 								width
 								/;
 			for(@override) {
@@ -853,12 +852,7 @@ sub display {
 			}
 		}
 
-		if($record->{type_empty} and length($opt->{value}) == 0) {
-			$record->{type} = $record->{type_empty};
-		}
-		else {
-			$record->{type} ||= $opt->{default_widget};
-		}
+		$record->{type} ||= $opt->{default_widget};
 
 		$record->{name} ||= $column;
 #::logDebug("record now=" . ::uneval($record));
@@ -946,14 +940,6 @@ sub display {
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
 		}
 
-		if($opt->{opts}) {
-			my $r = get_option_hash(delete $opt->{opts});
-			for my $k (keys %$r) {
-				$record->{$k} = $r->{$k};
-			}
-		}
-
-
 #::logDebug("overriding defaults");
 #::logDebug("passed=$record->{passed}") if $record->{debug};
 		my %things = (
@@ -971,7 +957,7 @@ sub display {
 			$record->{$k} = $v;
 		}
 
-#::logDebug("calling Vend::Form with record=" . ::uneval($record));
+#::logDebug("calling Vend::Form");
 		if($record->{save_defaults}) {
 			my $sd = $Vend::Session->{meta_defaults} ||= {};
 			$sd = $sd->{"${table}::$column"} ||= {}; 
@@ -2350,7 +2336,6 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $meta         = $opt->{meta};
 	my $js_check     = $opt->{js_check};
 	my $maxlength    = $opt->{maxlength};
-	my $opts         = $opt->{opts};
 	my $options      = $opt->{options};
 	my $outboard     = $opt->{outboard};
 	my $override     = $opt->{override};
@@ -2529,8 +2514,7 @@ EOP
 EOF
 		$opt->{blabel} = '<span style="font-weight: normal">';
 		$opt->{elabel} = '</span>';
-		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;'
-. errmsg('<b>Bold</b> fields are required'));
+		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<b>Bold</b> fields are required');
 		$have_errors = $Tag->error( {
 									all => 1,
 									show_var => $error_show_var,
@@ -3981,7 +3965,6 @@ EOF
 							options				=> $options->{$c},
 							outboard			=> $outboard->{$c},
 							override			=> $overridden,
-							opts				=> $opts->{$c},
 							passed				=> $passed->{$c},
 							pre_filter			=> $pre_filter->{$c},
 							prepend				=> $prepend->{$c},

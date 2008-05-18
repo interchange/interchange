@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '5.5.3';
+$VERSION = '5.5.1';
 
 my @os_hints;
 eval {
@@ -154,7 +154,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2008 Interchange Development Group.
+ Copyright (C) 2002-2007 Interchange Development Group.
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
@@ -179,7 +179,43 @@ sub my_prompt {
 
 
 sub extra_libs {
+
 	my ($realdir) = @_;
+	# Do the extra library checks
+
+	my @extra_lib_dirs;
+	my @extra_lib_files;
+
+	eval {
+		require IniConf;
+	};
+	if ($@) {
+		push @extra_lib_files, 'IniConf.pm';
+	}
+
+	eval {
+		require HTML::Entities;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'HTML';
+		push @extra_lib_files, 'HTML/Entities.pm';
+	}
+
+	eval {
+		require Business::UPS;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Business';
+		push @extra_lib_files, 'Business/UPS.pm';
+	}
+
+	eval {
+		require Tie::ShadowHash;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Tie';
+		push @extra_lib_files, 'Tie/ShadowHash.pm';
+	}
 
 	eval {
 		require Storable;
@@ -227,7 +263,20 @@ EOF
 			close TSTORABLE;
 		}
 	}
-	return;
+
+	COPYEXTRA: {
+		my $cpdir = '.';
+		mkdir $cpdir, 0777 unless -d $cpdir;
+		mkdir "$cpdir/lib", 0777 unless -d "$cpdir/lib";
+		for(@extra_lib_dirs) {
+			next if -d "$cpdir/lib/$_";
+			mkdir "$cpdir/lib/$_", 0777 or die "mkdir $cpdir/lib/$_: $!\n";
+		}
+		for(@extra_lib_files) {
+			File::Copy::copy ("extra/$_", "lib/$_")
+				or die "Couldn't copy $_: $!\n";
+		}
+	}
 }
 
 sub mk_initp {
@@ -249,6 +298,7 @@ sub initialize {
 		config_prog
 		configdump
 		crontab
+		dump
 		expire
 		expireall
 		findtags
@@ -303,7 +353,7 @@ sub initialize {
 							|| $Config{useithreads}
 							|| $Config{use5005threads};
 
-	if($Global::TryingThreads and $] < 5.008_008 and ! -f '_allow_threads') {
+	if($Global::TryingThreads and ! -f '_allow_threads') {
 		print <<EOF;
 It is not recommended that you run Interchange with a thread-enabled perl,
 which you have called this installer with. Either rerun with 
@@ -837,7 +887,7 @@ WriteMakefile(
 	NAME     => "Interchange",
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
+				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {

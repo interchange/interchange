@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: file_navigator.coretag,v 1.17 2007-12-21 03:32:43 mheins Exp $
+# $Id: file_navigator.coretag,v 1.16 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag file-navigator Order    mask
 UserTag file-navigator addAttr
-UserTag file-navigator Version  $Revision: 1.17 $
+UserTag file-navigator Version  $Revision: 1.16 $
 UserTag file-navigator Routine  <<EOR
 use vars qw/$CGI $Session $Tag $Scratch/;
 eval {
@@ -18,9 +18,9 @@ eval {
         import Fcntl qw/:mode/;
 };
 if ($@) {
-        *S_ISUID = sub {return 2048};
-        *S_ISGID = sub {return 1024};
-        *S_ISVTX = sub {return 512};
+        sub S_ISUID  { return 2048 }
+        sub S_ISGID {return 1024}
+        sub S_ISVTX {return 512}
 }
 sub {
 	my ($dir_mask, $opt) = @_;
@@ -264,9 +264,9 @@ EOF
 		elsif (-d _) { $top = 'd' }
 		elsif (-f _) { $top = '-' }
 		else         { $top = '?' }
-		$ugo[0] =~ s/.$/s/ if $det[2] & S_ISUID();
-		$ugo[1] =~ s/.$/s/ if $det[2] & S_ISGID();
-		$ugo[2] =~ s/.$/t/ if $det[2] & S_ISVTX();
+		$ugo[0] =~ s/.$/s/ if $det[2] & S_ISUID;
+		$ugo[1] =~ s/.$/s/ if $det[2] & S_ISGID;
+		$ugo[2] =~ s/.$/t/ if $det[2] & S_ISVTX;
 		my $user = getpwuid($det[4]);
 		my $grp  = getgrgid($det[5]);
 		$grp = substr($grp, 0, 8) if length($grp) > 8;

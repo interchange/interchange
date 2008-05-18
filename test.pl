@@ -1,4 +1,4 @@
-# $Id: test.pl,v 2.6 2008-05-06 17:12:18 jon Exp $
+# $id$
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 #
@@ -70,12 +70,11 @@ mkdir ("$ENV{MINIVEND_ROOT}/etc", 0777);
 mkdir ("$ENV{MINIVEND_ROOT}/pages", 0777);
 mkdir ("$ENV{MINIVEND_ROOT}/products", 0777);
 mkdir ("$ENV{MINIVEND_ROOT}/session", 0777);
-my $lib = "$cur_dir/blib/lib";
-if ($ENV{PERL5LIB}) {
-	$ENV{PERL5LIB} .= ":$lib";
+if( $ENV{PERL5LIB} ) {
+	$ENV{PERL5LIB} .= ":$cur_dir/extra:$cur_dir/blib/lib";
 }
 else {
-	$ENV{PERL5LIB} = $lib;
+	$ENV{PERL5LIB} = "$cur_dir/extra:$cur_dir/blib/lib";
 }
 
 my $testnum = 1;

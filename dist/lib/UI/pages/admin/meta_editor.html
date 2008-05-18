@@ -132,7 +132,6 @@ EOF
 	   pre_filter
 	   display_filter
 	   prepend
-	   extended.type_empty
 	   append
 	   extended.restrict_allow
 	   __UI_META_ADDITIONAL__
@@ -180,7 +179,6 @@ EOF
 		'extended.js_check' => 'JavascriptCheck',
 		'extended.blank_default' => 'Default value',
 		'extended.restrict_allow' => 'Allow these ITL tags',
-		'extended.type_empty' => 'Alternate widget if no data length',
 		'display_filter' => 'Display filter',
 	},
 
@@ -199,9 +197,7 @@ EOF
 	},
 	widget => {
 		type => 'movecombo_replace',
-		type => 'movecombo_replace',
 		extended => 'textarea_5_50',
-		'extended.type_empty' => 'movecombo_replace',
 		'extended.ui_more_alpha' => 'yesno',
 		'extended.ui_sort_option' => 'select',
 		'extended.fs_no_group' => 'yesno',
@@ -216,7 +212,6 @@ EOF
 	if($Variable->{UI_WIDGET_TYPES}) {
 #Debug("Found UI_WIDGET_TYPES");
 		$me_opt{options}{type} = $Variable->{UI_WIDGET_TYPES};
-		$me_opt{options}{type_empty} = $Variable->{UI_WIDGET_TYPES};
 #Debug("me_opt{options}=" . uneval($me_opt{options}));
 	}
 
@@ -292,4 +287,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.19 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.18 $ -->

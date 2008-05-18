@@ -5,26 +5,30 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: get_url.tag,v 1.12 2007-12-05 00:38:03 racke Exp $
+# $Id: get_url.tag,v 1.10 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag get-url Order        url
 UserTag get-url AddAttr
 UserTag get-url Interpolate
-UserTag get-url Version      $Revision: 1.12 $
+UserTag get-url Version      $Revision: 1.10 $
 UserTag get-url Routine      <<EOR
 require LWP::UserAgent;
 sub {
 	my ($url, $opt) = @_;
 	my $html = '';
-	my $method;
 	
 	my $ua = LWP::UserAgent->new;
 
+	my $method = '';
 	if($opt->{method}) { 
-		$method = uc($opt->{method});
-	} else {
-		$method = 'GET';
+		$method = $opt->{method}; 
+		if("GET HEAD POST PUT" !~ /$method/) {
+			$method = "GET";
+		}
 	}
+	else { $method = "GET"; }
+
+	$method = uc $method;
 
     if($opt->{timeout}) {
 		my $to = Vend::Config::time_to_seconds($opt->{timeout});
@@ -41,15 +45,13 @@ sub {
 
 	my $do_content;
 
-	if ($opt->{content}) {
-		if ($method eq 'POST' || $method eq 'PUT') {
-			$opt->{content_type} ||= 'application/x-www-form-urlencoded';
-			$do_content = 1;
-		} 
-		else {
-			$url .= $opt->{url} =~ /\?/ ? '&' : '?';
-			$url .= $opt->{content};
-		}
+	if(($opt->{content}) && ("PUT POST" =~ /$method/)) { 
+		$opt->{content_type} ||= 'application/x-www-form-urlencoded';
+		$do_content = 1;
+	}
+	elsif($opt->{content}) {
+		$url .= $opt->{url} =~ /\?/ ? '&' : '?';
+		$url .= $opt->{content};
 	}
 
 	my $req = HTTP::Request->new($method, $url);
@@ -76,12 +78,6 @@ sub {
 		$html =~ s/.*<body[^>]*>//si;
 		$html =~ s:</body>.*::si;
 	}
-
-	if ($opt->{scratch}) {
-		$::Scratch->{$opt->{scratch}} = $html;
-		return;
-	}
-
 	return $html;
 }
 EOR

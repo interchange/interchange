@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.19 2007-11-15 00:16:16 jon Exp $
+# $Id: AuthorizeNet.pm,v 2.18 2007-08-09 13:40:55 pajamian Exp $
 #
 # Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -437,8 +437,7 @@ sub authorizenet {
 		x_Method				=> 'CC',
 		x_Card_Num				=> $actual->{mv_credit_card_number},
 		x_Exp_Date				=> $exp,
-		x_Card_Code				=> $actual->{cvv2} || $actual->{mv_credit_card_cvv2},
-		x_Customer_IP			=> $Vend::Session->{ohost},
+		x_Card_Code				=> $actual->{cvv2},
 		x_Trans_ID				=> $actual->{order_id},
 		x_Auth_Code				=> $actual->{auth_code},
 		x_Invoice_Num			=> $actual->{mv_order_number},

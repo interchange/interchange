@@ -1,4 +1,4 @@
-code	sku	o_group	o_sort	o_default	o_label	o_value	o_widget	o_height	o_width	description	price	wholesale	display_type	o_simple
+code	sku	o_group	o_sort	o_default	o_label	o_value	o_widget	o_height	o_width	description	price	wholesale	display_type
 os28066													separate
 	os28004	bristle			Bristle Type	=None,HUM=Human hair,CAM=Camel hair*,SYN=Synthetic	select	0	0		HUM=1.55,CAM=1.05,SYN=-2.70		
 	os28004	color			Handle color	WHT=White,BLK=Black	select	0	0				

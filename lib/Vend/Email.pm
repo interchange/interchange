@@ -1,6 +1,6 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.11 2007-12-28 11:47:51 racke Exp $
+# $Id: Email.pm,v 1.3 2007-05-04 09:43:26 docelic Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #
@@ -38,18 +38,13 @@
 
 package Vend::Email;
 
-my $Have_MIME_Lite;
-
-BEGIN {
-	eval {
-		require MIME::Lite;
-		$Have_MIME_Lite = 1;
-	};
-}
-
+use MIME::Lite        qw//; # Main module
+use MIME::Types       qw//;
 use Mail::Address     qw//;
 use MIME::QuotedPrint qw//; # Used by default
 use MIME::Base64      qw//; # For user-specified encodings
+#use MIME::EncWords    qw//; # Word-encode mail headers when non-ascii
+#use MIME::Charset     qw//; # Needed for EncWords
 
 use Vend::Util        qw/logError logDebug uneval/;
 
@@ -63,7 +58,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 
 ###########################################################################
@@ -89,10 +84,8 @@ $VERSION = substr(q$Revision: 1.11 $, 10);
 #   $opt->{data} || $opt->{body} || $_[1] (arg 2)
 #
 sub tag_mime_lite_email {
-	my ($optin, $body) = @_;
-	my ($opt);
-	
-	#::logDebug('mime_lite_email invoked, OPT=' .uneval($optin) . ' BODY=' . $body);
+	my ($opt, $body) = @_;
+	#::logDebug('mime_lite_email invoked, OPT=' .uneval($opt) . ' BODY=' . $body);
 
 	local $_;
 
@@ -104,11 +97,6 @@ sub tag_mime_lite_email {
 		::logError('Unable to send email, config option SendMailProgram=none.');
 		return;
 	}
-	#
-	# Copy option hash to avoid messing with caller's data
-	#
-
-	%$opt = %$optin;
 
 	#
 	# Quickly make sure that all options and header names satisfy basic rules.
@@ -149,7 +137,7 @@ sub tag_mime_lite_email {
 	my $intercept;
 	my $hdr_encoding;
 	my ($interpolate, $reparse, $hide);
-	my ($data, $encoding, $type, $charset);
+	my ($data, $encoding, $type);
 	my @extra_headers;
 
 	# Intercept
@@ -180,21 +168,15 @@ sub tag_mime_lite_email {
 	);
 
 	# Data (msg body), encoding and type
-	($data, $encoding, $type, $charset) = (
+	($data, $encoding, $type) = (
 		delete $opt->{data},
 		delete $opt->{encoding},
 		delete $opt->{type},
-		delete $opt->{charset},
 	);
 	$data     ||= $opt->{body} || $body;    delete $opt->{body};
 	$encoding ||= 'quoted-printable';
 	$type     ||= 'text/plain';
-	$charset  ||= $::Variable->{MV_EMAIL_CHARSET} || $Global::Variable->{MV_EMAIL_CHARSET};
 
-	if ($charset) {
-		$type .= "; charset=$charset";
-	}
-	
 	!(ref $data or ref $encoding or ref $type) or do {
 		::logError('Only scalar value accepted for options '.
 				'"data" ("body"), "encoding" and "type".');
@@ -301,13 +283,9 @@ sub tag_mime_lite_email {
 
 	# REPLY
 	if (!( $opt->{reply_to} and @{ $opt->{reply_to} } )) {
-		$opt->{reply_to} = [$::Values->{email}];
-		
-		if (ref($opt->{reply})) {
-			$opt->{reply_to} = $opt->{reply};
-		} elsif ($opt->{reply}) {
-			$opt->{reply_to} = [$opt->{reply}];
-		}
+		@{ $opt->{reply_to} } = 
+			( ref $opt->{reply} ? @{ $opt->{reply} } : $opt->{reply} ) ||
+			$::Values->{mv_email};
 	}
 	delete $opt->{reply};
 
@@ -335,7 +313,7 @@ sub tag_mime_lite_email {
 	$intercept ||= $::Variable->{MV_EMAIL_INTERCEPT} ||
 		$Global::Variable->{MV_EMAIL_INTERCEPT};
 
-	if ( $intercept && $Have_MIME_Lite) {
+	if ( $intercept ) {
 		for my $field (qw/to cc bcc/) {
 			if ( $opt->{$field} ) {
 				for $_ ( @{ $opt->{$field} } ) {
@@ -404,31 +382,6 @@ sub tag_mime_lite_email {
 		}
 	}
 
-	unless ($Have_MIME_Lite) {
-		my ($to, $subject, $reply_to, @extra, $header);
-
-		$to = delete $opt->{to};
-		$subject = delete $opt->{subject};
-		$reply_to = delete $opt->{reply_to};
-		
-		for (keys %$opt) {
-			$header = ucfirst($_);
-			
-			if (ref($opt->{$_}) eq 'ARRAY') {
-				push(@extra, "$header: " . join(',', @{$opt->{$_}}));
-			} else {
-				push(@extra, "$header: $opt->{$_}");
-			}
-		}
-
-		return send_mail_legacy(join(',', @$to),
-								$subject,
-								$data,
-								join(',', @$reply_to),
-								0,
-								@extra);		
-	}
-	
 	#
 	# Prepare for sending the message
 	#
@@ -473,8 +426,6 @@ sub tag_mime_lite_email {
 	# @extra_headers
 	my @headers;
 	while (my($hdr,$values) = each %$opt ) {
-		next if $hdr eq 'attach';
-		
 		if (! ref $values ) {
 			push @headers, [ $hdr, $values ];
 
@@ -882,18 +833,17 @@ sub tag_email {
 	my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
 	my $ok = 0;
 	my @extra;
-	my $att;
-	
+
 	use vars qw/ $Tag /;
-	
+
+
+	my $att = $opt->{attach};
 	ATTACH: {
+		
+		my %att_hash;
+
 		#::logDebug("Checking for attachment");
 		last ATTACH unless $opt->{attach} || $opt->{html};
-
-		unless ($Have_MIME_Lite) {
-			::logError("email tag: attachment without MIME::Lite installed.");
-			last ATTACH;
-		}
 
 		if($opt->{html}) {
 			$opt->{mimetype} ||= 'multipart/alternative';
@@ -902,20 +852,12 @@ sub tag_email {
 			$opt->{mimetype} ||= 'multipart/mixed';
 		}
 
-		my $vtype = ref($opt->{attach});
-
-		if ($vtype) {
-			if ($vtype eq 'HASH') {
-				$att = [ $opt->{attach} ];
-			}
-			elsif ($vtype eq 'ARRAY') {
-				$att = $opt->{attach};
-			}
+		if(! ref($att) ) {
+			my $fn = $att;
+			$att = [ { path => $fn } ];
 		}
-		else {
-			if ($opt->{attach}) {
-				$att = [ { path => $opt->{attach} } ];
-			}
+		elsif(ref($att) eq 'HASH') {
+			$att = [ $att ];
 		}
 
 		$att ||= [];
@@ -936,7 +878,6 @@ sub tag_email {
 		cc => $opt->{cc} || '',
 		reply => $reply || '',
 		type => $opt->{body_mime} || 'text/plain',
-		charset => $opt->{charset},
 		extra_headers => \@extra || [],
 		encoding => $opt->{body_encoding} || '8bit',
 		attach => $att || ''

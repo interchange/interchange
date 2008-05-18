@@ -500,11 +500,10 @@ A.rtitle:active,A.rtitle:link,A.rtitle:visited {
 [query list=1 sql="select * from orderline where order_number = '[loop-code]'"]
             <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
                <td style="padding: 5px">
-                [display    table=orderline
+                [display    table=transactions
                             column=status
-                            key="[sql-code]"
-                            type=display
-			    applylocale=1
+                            key="[loop-code]"
+                            arbitrary=order_view
                 ]
 [calc]
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];

@@ -1,8 +1,8 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.76 2008-05-10 14:39:53 mheins Exp $
+# $Id: Form.pm,v 2.71 2007-08-10 12:05:34 racke Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 @EXPORT = qw (
 	display
@@ -299,7 +299,7 @@ sub current_label {
 		$default = $label if $label =~ s/\*$//;
 		return ($label || $setting) if $val eq $setting;
 	}
-	return $val || $default;
+	return $default;
 }
 
 sub links {
@@ -863,19 +863,15 @@ If you want another behavior the same widget can be constructed with:
 sub yesno {
 	my $opt = shift;
 	$opt->{value} = is_yes($opt->{value});
-	my $yes = defined $opt->{yes_value} ? $opt->{yes_value} : 1;
-	my $no  = defined $opt->{no_value} ? $opt->{no_value} : '';
-	my $yes_title = defined $opt->{yes_title} ? $opt->{yes_title} : errmsg('Yes');
-	my $no_title  = defined $opt->{no_title} ? $opt->{no_title} : errmsg('No');
 	my @opts;
 	my $routine = $opt->{subwidget} || \&dropdown;
 	if($opt->{variant} eq 'checkbox') {
-		@opts = [$yes, ' '];
+		@opts = [1, ' '];
 	}
 	else {
 		@opts = (
-					[$no, $no_title],
-					[$yes, $yes_title],
+					['', errmsg('No')],
+					['1', errmsg('Yes')],
 				);
 	}
 	return $routine->($opt, \@opts);
@@ -969,7 +965,7 @@ sub box {
 		$opt->{selected} = '' if defined $opt->{value};
 
 		my $extra;
-		my $attr = { label => $label, value => $value };
+		my $attr = { label => $label };
 		if(my $p = $price->{$value}) {
 			$attr->{negative} = $p < 0 ? 1 : 0;
 			$attr->{price_noformat} = $p;
@@ -1342,7 +1338,6 @@ if($opt->{debug}) {
 
 	# Optimization for large lists, we cache the widgets
 	$Vend::UserWidget ||= Vend::Config::map_widgets();
-	$Vend::UserWidgetDefault ||= Vend::Config::map_widget_defaults();
 
 	my $sub =  $Vend::UserWidget->{$type};
 	if(! $sub and $Global::AccumulateCode) {
@@ -1352,13 +1347,6 @@ if($opt->{debug}) {
 
 	# Last in case "default" widget is removed
 	$sub ||= $Vend::UserWidget->{default} || \&template_sub;
-
-	if(my $attr = $Vend::UserWidgetDefault->{$type}) {
-		while (my ($k, $v) = each %$attr) {
-			next if defined $opt->{$k};
-			$opt->{$k} = $v;
-		}
-	}
 
 	if($opt->{variant}) {
 #::logDebug("variant='$opt->{variant}'");
@@ -1409,9 +1397,9 @@ sub parse_type {
 			$opt->{type} = 'text';
 		}
 	}
-	elsif($type =~ /^(date|time)(.*)/i) {
-		$opt->{type} = lc $1;
-		my $extra = $2;
+	elsif($type =~ /^date(.*)/i) {
+		$opt->{type} = 'date';
+		my $extra = $1;
 		if ($extra) {
 			$opt->{time} = 1 if $extra =~ /time/i;
 			$opt->{ampm} = 1 if $extra =~ /ampm/i;

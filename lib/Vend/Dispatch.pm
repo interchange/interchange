@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.101 2008-04-25 09:08:03 racke Exp $
+# $Id: Dispatch.pm,v 1.86 2007-08-12 07:00:43 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.101 $, 10);
+$VERSION = substr(q$Revision: 1.86 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -721,8 +721,6 @@ sub run_in_catalog {
 
 	logError("Run jobs group=%s pid=$$", $job || 'INTERNAL');
 
-	Vend::Server::set_process_name("job $cat $job");
-	
 	my $jobscfg = $Vend::Cfg->{Jobs};
 
 	my $dir;
@@ -731,7 +729,7 @@ sub run_in_catalog {
 		my ($d, $global_dir, $tmp);
 		my @jobdirs = ([$jobscfg->{base_directory} || 'etc/jobs', 0]);
 
-		if (is_yes($jobscfg->{use_global}) || is_yes($Global::Jobs->{UseGlobal})) {
+		if (is_yes($jobscfg->{use_global})) {
 			push (@jobdirs, ["$Global::ConfDir/jobs", 1]);
 		}
 
@@ -769,7 +767,7 @@ sub run_in_catalog {
 		push @itl, ["Passed ITL", $itl];
 	}
 
-	my (@out, $errors, $failure);
+	my (@out, $errors);
 
 	# remove bogus session created by logError
 	undef $Vend::Session;
@@ -817,7 +815,6 @@ sub run_in_catalog {
 			# job terminated due to an error
 			$errors = 1;
 
-			$failure = errmsg('Job terminated with an error: %s', $@);
 			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
 			
 			# remove flag for this job
@@ -835,9 +832,6 @@ sub run_in_catalog {
 	my $out = join "", @out;
 	my $filter = $jobscfg->{filter} || 'strip';
 	$out = Vend::Interpolate::filter_value($filter, $out);
-	if ($errors && is_no($jobscfg->{ignore_errors})) {
-		$out = join("\n\n", $failure, $out);
-	}
 	$out .= full_dump() if is_yes($jobscfg->{add_session});
 
 	logError("Finished jobs group=%s pid=$$", $job || 'INTERNAL');
@@ -890,12 +884,7 @@ sub adjust_cgi {
     $CGI::ip   = $CGI::remote_addr;
 
 	if($Global::DomainTail and $host) {
-		$host =~ /\.([A-Za-z]+)$/;
-		my $tld = $1;
-
-		my $level = (defined($Global::CountrySubdomains->{$tld}) && $host =~ $Global::CountrySubdomains->{$tld}) ? 2 : 1;
-
-		$host =~ s/.*?((?:[-A-Za-z0-9]+\.){$level}[A-Za-z]+)$/$1/;
+		$host =~ s/.*?([-A-Za-z0-9]+\.[A-Za-z]+)$/$1/;
 	}
 	elsif($Global::IpHead) {
 		$host = $Global::IpQuad == 0 ? 'nobody' : '';
@@ -1152,8 +1141,8 @@ EOF
 #show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
 
-	if (my $subname = $Vend::Cfg->{SpecialSub}{request_init}) {
-#::logDebug(errmsg("running subroutine '%s' for %s", $subname, 'request_init'));
+	if (my $subname = $Vend::Cfg->{SpecialSub}{catalog_init}) {
+#::logDebug(errmsg("running subroutine '%s' for %s", $subname, 'catalog_init'));
 		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
 		my $status;
 		eval {
@@ -1161,7 +1150,7 @@ EOF
 		};
 
 		if($@) {
-			::logError("Error running %s subroutine %s: %s", 'request_init', $subname, $@);
+			::logError("Error running %s subroutine %s: %s", 'catalog_init', $subname, $@);
 		}
 	}
 
@@ -1227,8 +1216,6 @@ sub dispatch {
 	open_cat() or return 1;
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host");
-
-	run_macro($Vend::Cfg->{Preload});
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
@@ -1496,9 +1483,8 @@ EOF
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid " . ($Vend::Session->{username} || '-') . " $Vend::FinalPath");
 
 # TRACK
-	$Vend::Track = Vend::Track->new
-		if ($Vend::Cfg->{UserTrack} or $Vend::Cfg->{TrackFile})
-			and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
+	$Vend::Track = new Vend::Track
+		if $Vend::Cfg->{UserTrack} and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
 # END TRACK
 
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
@@ -1545,7 +1531,6 @@ EOF
 		next unless $macro;
 		if (ref($macro) ne 'HASH') {
 			logError("Bad CGI filter '%s'", $macro);
-			next;
 		}
 		for(keys %$macro) {
 			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} } );
@@ -1656,6 +1641,7 @@ EOF
 #::logDebug("path=$Vend::FinalPath mv_action=$CGI::values{mv_action}");
 
   DOACTION: {
+    my @path = split('/', $Vend::FinalPath, 2);
 	if (defined $CGI::values{mv_action}) {
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
 			if ! defined $CGI::values{mv_todo}
@@ -1665,7 +1651,7 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 	}
 	else {
-		($Vend::Action) = $Vend::FinalPath =~ m{\A([^/]*)};
+		$Vend::Action = shift @path;
 	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
@@ -1676,15 +1662,15 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 		new Vend::Parse;
 	}
-	else {
-		$sub = $action{$Vend::Action};
+	elsif ( defined ($sub = $action{$Vend::Action}) )  {
+		$Vend::FinalPath = join "", @path;
 	}
 
 #show_times("end path/action resolve") if $Global::ShowTimes;
 
 	eval {
 		if(defined $sub) {
-			$status = $sub->($Vend::FinalPath);
+				$status = $sub->($Vend::FinalPath);
 #show_times("end action") if $Global::ShowTimes;
 		}
 		else {

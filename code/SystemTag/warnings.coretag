@@ -5,15 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: warnings.coretag,v 1.9 2007-09-21 16:15:48 kwalsh Exp $
+# $Id: warnings.coretag,v 1.8 2007-03-30 23:40:49 pajamian Exp $
 
-UserTag warning  Alias      warnings
-
-UserTag warnings Order      message
-UserTag warnings addAttr
-UserTag warnings PosNumber  1
-UserTag warnings Version    $Revision: 1.9 $
-UserTag warnings Routine    <<EOR
+UserTag warnings            Order        message
+UserTag warnings            addAttr
+UserTag warnings            PosNumber    1
+UserTag warnings            Version      $Revision: 1.8 $
+UserTag warnings            Routine      <<EOR
 sub {
 	my($message, $opt) = @_;
 

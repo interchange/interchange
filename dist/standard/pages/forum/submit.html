@@ -145,8 +145,7 @@ submit if you are satisfied.
 	my $code;
 
 	if($CGI->{parent}) {
-                my $existing = $db->query("select * from forum where parent = '$CGI->{parent}' or (parent = '0' and code = '$CGI->{parent}')");
-
+		my $existing = $db->query("select * from forum where parent = '$CGI->{parent}'");
 		if($existing and ! @$existing) {
 			$v{artid} = $CGI->{parent};
 			$code = $CGI->{parent};

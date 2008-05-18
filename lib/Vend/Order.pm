@@ -1,8 +1,8 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.100 2008-03-25 17:13:21 jon Exp $
+# $Id: Order.pm,v 2.94 2007-08-09 13:40:53 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.100 $, 10);
+$VERSION = substr(q$Revision: 2.94 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1780,13 +1780,11 @@ sub route_order {
 			$pagefile = $route->{'report'} || $main->{'report'};
 			$page = readfile($pagefile);
 		}
-		unless (defined $page) {
-			my $msg = errmsg("No order report %s or %s found.",
-							 $route->{'report'},
-							 $main->{'report'});
-			::logError("$msg\n");
-			die("$msg\n");
-		}
+		die errmsg(
+			"No order report %s or %s found.",
+			$route->{'report'},
+			$main->{'report'},
+			) unless defined $page;
 
 		my $use_mime;
 		undef $::Instance->{MIME};
@@ -1827,10 +1825,8 @@ sub route_order {
 			$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
 			$to		 = $route->{email};
 			my $ary = [$to, $subject, $page, $reply, $use_mime];
-			for (qw/from bcc cc/) {
-				if ($route->{$_}) {
-					push @$ary, ucfirst($_) . ": $route->{$_}";
-				}
+			if($route->{from}) {
+				push @$ary, "From: $route->{from}";
 			}
 			push @out, $ary;
 		}

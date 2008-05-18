@@ -1,8 +1,8 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.238 2008-04-22 18:54:24 jon Exp $
+# $Id: Config.pm,v 2.221 2007-08-10 08:42:09 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.238 $, 10);
+$VERSION = substr(q$Revision: 2.221 $, 10);
 
 my %CDname;
 my %CPname;
@@ -82,10 +82,10 @@ my %CPname;
 );
 
 my %DirectiveAlias = qw(
-	URL            VendURL
+	URL	           VendURL
 	DataDir        ProductDir
-	DefaultTables  ProductFiles
-	Profiles       OrderProfile
+	DefaultTables  ProductFiles 
+	Profiles       OrderProfile 
 );
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
@@ -127,21 +127,20 @@ qw/
 @Locale_directives_scalar = (
 qw/
 		AutoEnd
-		Autoload
+        Autoload
 		CategoryField
-		CommonAdjust
+        CommonAdjust
 		DescriptionField
-		HTMLsuffix
+        HTMLsuffix
 		ImageDir
 		ImageDirSecure
 		PageDir
-		Preload
 		PriceCommas
 		PriceDefault
-		PriceDivide
-		PriceField
+        PriceDivide
+        PriceField
 		SalesTax
-		SpecialPageDir
+        SpecialPageDir
 		TaxShipping
 		TaxInclusive
 /   );
@@ -266,7 +265,6 @@ for( values %extmap ) {
 	interpolate		Interpolate
 	invalidatecache	InvalidateCache
 	isendanchor		isEndAnchor
-	multiple		Multiple
 	norearrange		noRearrange
 	order			Order
 	posnumber		PosNumber
@@ -282,26 +280,25 @@ for( values %extmap ) {
 
 my %tagAry 	= ( qw! Order 1 Required 1 ! );
 my %tagHash	= ( qw!
-				attrAlias   1
-				Implicit    1
+                attrAlias   1
+                Implicit    1
 				attrDefault	1
 				! );
 my %tagBool = ( qw!
-				ActionMap   1
-				addAttr     1
-				canNest     1
-				Filter      1
-				FormAction  1
-				hasEndTag   1
-				Interpolate 1
-				isEndAnchor 1
-				isOperator  1
-				Multiple    1
-				ItemAction  1
-				noRearrange 1
+                ActionMap   1
+                addAttr     1
+                canNest     1
+                Filter      1
+                FormAction  1
+                hasEndTag   1
+                Interpolate 1
+                isEndAnchor 1
+                isOperator  1
+                ItemAction  1
+				noRearrange	1
 				NoReparse   1
-				OrderCheck  1
-				UserTag     1
+                OrderCheck  1
+                UserTag     1
 				! );
 
 my %current_dest;
@@ -338,15 +335,12 @@ sub config_error {
 	}
 
 	local($^W);
-	if ($configfile) {
-		$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
+	$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 			$msg,
 			$.,
 			$configfile,
 			$Vend::config_line,
-		);
-	}
-	
+	);
 	if ($Vend::ExternalProgram) {
 		warn "$msg\n" unless $Vend::Quiet;
 	}
@@ -442,7 +436,6 @@ sub global_directives {
 	['PIDfile',     	 'root_dir',         "etc/$Global::ExeName.pid"],
 	['SocketFile',     	 'root_dir_array',   ''],
 	['SocketPerms',      'integer',          0600],
-	['SocketReadTimeout','integer',          1],
 	['SOAP',     	     'yesno',            'No'],
 	['SOAP_Socket',       'array',            ''],
 	['SOAP_Perms',        'integer',          0600],
@@ -454,7 +447,7 @@ sub global_directives {
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Control',     'action',           ''],
-	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1 UseGlobal 0'],
+	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1'],
 	['IPCsocket',		 'root_dir',	     'etc/socket.ipc'],
 	['HouseKeeping',     'time',          60],
 	['HouseKeepingCron', 'cron',          ''],
@@ -477,7 +470,6 @@ sub global_directives {
 	['TemplateDir',      'root_dir_array', 	 ''],
 	['DebugTemplate',    undef, 	         ''],
 	['DomainTail',		 'yesno',            'Yes'],
-	['CountrySubdomains','hash',             ''],
 	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
     ['DNSBL',            'array',            ''],
@@ -584,7 +576,6 @@ sub catalog_directives {
 	['DatabaseAuto',	 'dbauto',	     	 ''],
 	['DatabaseAutoIgnore',	 'regex',	     	 ''],
 	['Database',  		 'database',     	 ''],
-	['Preload',          'routine_array',    ''],
 	['Autoload',		 'routine_array',	 ''],
 	['AutoEnd',			 'routine_array',	 ''],
 	['Replace',			 'replace',     	 ''],
@@ -707,7 +698,7 @@ sub catalog_directives {
 	['ExternalExport',	 undef,		     	 join " ", @External_directives],
 	['CartTrigger',		 'routine_array',	 ''],
 	['CartTriggerQuantity',	'yesno',		 'no'],
-    ['UserTrack',        'yesno',            'no'],
+    ['UserTrack',        'yesno',            'yes'],
 	['DebugHost',	     'ip_address_regexp',	''],
 	['BounceReferrals',  'yesno',            'no'],
 
@@ -1924,9 +1915,6 @@ GLOBLOOP:
 	# with no effect if that has been done already.
 	get_system_code() unless defined $SystemCodeDone;
 
-	# Directive post-processing
-	global_directive_postprocess();
-
 	# Do some cleanup
 	set_global_defaults();
 
@@ -2002,7 +1990,6 @@ sub watch {
 sub get_wildcard_list {
 	my($var, $value, $base) = @_;
 
-	$value =~ s/\s*#.*?$//mg;
 	$value =~ s/^\s+//;
 	$value =~ s/\s+$//;
 	return '' if ! $value;
@@ -3499,12 +3486,7 @@ sub set_default_search {
 							or return 1;
 						if ($C->{DefaultLocale}) {
 							my $def = $C->{DefaultLocale};
-							if (exists($repos->{$def})) {
-								$C->{Locale} = $repos->{$def};
-							}
-							else {
-								return (0, errmsg('Default locale %s missing', $def));
-							}
+							$C->{Locale} = $repos->{$def};
 						}
 						else {
 							for(keys %$repos) {
@@ -3580,18 +3562,6 @@ sub set_default_search {
 			chmod 0644, $Global::ExternalFile;
 		},
 );
-
-sub global_directive_postprocess {
-	$Global::CountrySubdomains ||= {};
-
-	while (my ($key,$val) = each(%$Global::CountrySubdomains)) {
-		$val =~ s/[\s,]+$//;
-		next unless $val;
-
-		$val = '\.(?:' . join('|',split('[\s,]+',$val)) . ")\\.$key";
-		$Global::CountrySubdomains->{$key} = qr/$val/i;
-	}
-}
 
 sub set_global_defaults {
 	## Nothing here currently
@@ -4141,13 +4111,10 @@ sub parse_catalog {
 	return ++$num;
 }
 
-my %Explode_ref = (  qw!
-							COLUMN_DEF    COLUMN_DEF
-!);
-
 my %Hash_ref = (  qw!
 							FILTER_FROM   FILTER_FROM
 							FILTER_TO     FILTER_TO 
+							COLUMN_DEF    COLUMN_DEF
 							LENGTH_EXCEPTION LENGTH_EXCEPTION
 							DEFAULT       DEFAULT
 							DEFAULT_SESSION       DEFAULT_SESSION
@@ -4239,44 +4206,13 @@ sub parse_config_db {
 		my($p, $val) = split /\s+/, $remain, 2;
 		$p = uc $p;
 
-		if(defined $Explode_ref{$p}) {
-			my($ak, $v);
-			my(@v) = Text::ParseWords::shellwords($val);
-			@v = grep defined $_, @v;
-			$d->{$p} = {} unless defined $d->{$p};
-			for(@v) {
-				my ($sk,$v) = split /\s*=\s*/, $_;
-				my (@k) = grep /\w/, split /\s*,\s*/, $sk;
-				for my $k (@k) {
-					if($d->{$p}->{$k}) {
-						config_warn(
-							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
-							$d->{name},
-							"$p --> $k",
-							$v,
-							$d->{$p}->{$k},
-						);
-					}
-					$d->{$p}->{$k} = $v;
-				}
-			}
-		}
-		elsif(defined $Hash_ref{$p}) {
+		if(defined $Hash_ref{$p}) {
 			my($k, $v);
 			my(@v) = Vend::Util::quoted_comma_string($val);
 			@v = grep defined $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
 				($k,$v) = split /\s*=\s*/, $_;
-				if($d->{$p}->{$k}) {
-					config_warn(
-						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
-						$d->{name},
-						"$p --> $k",
-						$v,
-						$d->{$p}->{$k},
-					);
-				}
 				$d->{$p}->{$k} = $v;
 			}
 		}
@@ -4289,7 +4225,7 @@ sub parse_config_db {
 			defined $d->{$p}
 			and ! defined $C->{DatabaseDefault}{$p}
 				and config_warn(
-						qq{Database %s scalar parameter %s redefined to "%s", was "%s".},
+						"ConfigDatabase %s scalar parameter %s redefined to '%s', was %s.",
 						$d->{name},
 						$p,
 						$val,
@@ -4427,46 +4363,13 @@ sub parse_database {
 		$p = uc $p;
 #::logDebug("parse_database: parameter $p = $val");
 
-		if(defined $Explode_ref{$p}) {
-			my($ak, $v);
-			$val =~ s/,+$//;
-			$val =~ s/^,+//;
-			my(@v) = Text::ParseWords::shellwords($val);
-			@v = grep length $_, @v;
-			$d->{$p} = {} unless defined $d->{$p};
-			for(@v) {
-				my ($sk,$v) = split /\s*=\s*/, $_;
-				my (@k) = grep /\w/, split /\s*,\s*/, $sk;
-				for my $k (@k) {
-					if($d->{$p}->{$k}) {
-						config_warn(
-							qq{Database %s explode parameter %s redefined to "%s", was "%s".},
-							$d->{name},
-							"$p --> $k",
-							$v,
-							$d->{$p}->{$k},
-						);
-					}
-					$d->{$p}->{$k} = $v;
-				}
-			}
-		}
-		elsif(defined $Hash_ref{$p}) {
+		if(defined $Hash_ref{$p}) {
 			my($k, $v);
 			my(@v) = Vend::Util::quoted_comma_string($val);
 			@v = grep defined $_, @v;
 			$d->{$p} = {} unless defined $d->{$p};
 			for(@v) {
 				($k,$v) = split /\s*=\s*/, $_;
-				if($d->{$p}->{$k}) {
-					config_warn(
-						qq{Database %s hash parameter %s redefined to "%s", was "%s".},
-						$d->{name},
-						"$p --> $k",
-						$v,
-						$d->{$p}->{$k},
-					);
-				}
 				$d->{$p}->{$k} = $v;
 			}
 		}
@@ -4511,7 +4414,7 @@ sub parse_database {
 			and ! defined $C->{DatabaseDefault}{$p}
 				and
 				config_warn(
-					qq{Database %s scalar parameter %s redefined to "%s", was "%s".},
+					"Database %s scalar parameter %s redefined to '%s', was %s.",
 					$d->{name},
 					$p,
 					$val,
@@ -4781,9 +4684,9 @@ sub save_variable {
 }
 
 sub map_widgets {
-	my $gref;
-	my $return	= ($gref = $Vend::Cfg->{CodeDef}{Widget})
-						? $gref->{Routine}
+	my $ref;
+	my $return	= ($ref = $Vend::Cfg->{CodeDef}{Widget})
+						? $ref->{Routine}
 						: {};
 	if(my $ref = $Global::CodeDef->{Widget}{Routine}) {
 		while ( my ($k, $v) = each %$ref) {
@@ -4796,27 +4699,6 @@ sub map_widgets {
 		while ( my ($k, $v) = each %$ref) {
 			next if $return->{$k};
 			$return->{$k} = \&{"$v"};
-		}
-	}
-	if(my $ref = $Global::CodeDef->{Widget}{attrDefault}) {
-		no strict 'refs';
-		while ( my ($k, $v) = each %$ref) {
-			next if $return->{$k};
-			$return->{$k} = \&{"$v"};
-		}
-	}
-	return $return;
-}
-
-sub map_widget_defaults {
-	my $gref;
-	my $return	= ($gref = $Vend::Cfg->{CodeDef}{Widget})
-						? $gref->{attrDefault}
-						: {};
-	if(my $ref = $Global::CodeDef->{Widget}{attrDefault}) {
-		while ( my ($k, $v) = each %$ref) {
-			next if $return->{$k};
-			$return->{$k} = $v;
 		}
 	}
 	return $return;
@@ -4894,7 +4776,6 @@ my %MappedInit = (
 	Widget		=> sub {
 						return unless $Vend::Cfg;
 						$Vend::UserWidget = map_widgets();
-						$Vend::UserWidgetDefault = map_widget_defaults();
 					},
 	UserTag		=> sub {
 						return if $C;
@@ -5067,8 +4948,11 @@ sub parse_tag {
 		my $fail = '';
 		{
 			local $SIG{'__WARN__'} = sub {$fail .= "$_[0]\n";};
-			package Vend::Interpolate;
-			$sub = eval $val;
+			eval {
+				package Vend::Interpolate;
+				$sub = eval $val;
+				warn $@ if $@;
+			};
 		}
 		if($@) {
 			config_warn(

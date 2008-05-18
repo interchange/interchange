@@ -5,14 +5,177 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: table_organize.tag,v 1.11 2007-11-05 20:15:27 docelic Exp $
+# $Id: table_organize.tag,v 1.9 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag table-organize Order         cols
 UserTag table-organize attrAlias     columns cols
 UserTag table-organize Interpolate
 UserTag table-organize addAttr
 UserTag table-organize hasEndTag
-UserTag table-organize Version       $Revision: 1.11 $
+UserTag table-organize Version       $Revision: 1.9 $
+UserTag table-organize Documentation <<EOD
+
+=head1 table-organize
+
+	[table-organize <options>]
+		[loop ....] <td> [loop-tags] </td> [/loop]
+	[/table-organize]
+
+Takes an unorganized set of table cells and organizes them into
+rows based on the number of columns; it will also break them into
+separate tables.
+
+If the number of cells are not on an even modulus of the number of columns,
+then "filler" cells are pushed on.
+
+Parameters:
+
+=over 4
+
+=item cols (or columns)
+
+Number of columns. This argument defaults to 2 if not present.
+
+=item rows
+
+Optional number of rows. Implies "table" parameter.
+
+=item table
+
+If present, will cause a surrounding <TABLE > </TABLE> pair with the attributes
+specified in this option.
+
+=item caption
+
+Table <CAPTION> container text, if any. Can be an array.
+
+=item td
+
+Attributes for table cells. Can be an array.
+
+=item tr
+
+Attributes for table rows. Can be an array.
+
+=item columnize
+
+Will display cells in (newspaper) column order, i.e. rotated.
+
+=item pretty
+
+Adds newline and tab characters to provide some reasonable indenting.
+
+=item filler
+
+Contents to place in empty cells put on as filler. Defaults to C<&nbsp;>.
+
+=item min_rows
+
+On small result sets, can be ugly to build more than necessary columns.
+This will guarantee a minimum number of rows -- columns will change
+as numbers change. Formula: $num_cells % $opt->{min_rows}.
+
+=item limit
+
+Maximum number of cells to use. Truncates extra cells silently.
+
+=item embed
+
+If you want to embed other tables inside, make sure they are called with
+lower case <td> elements, then set the embed tag and make the cells you wish
+to organize be <TD> elements. To switch that sense, and make the upper-case
+or mixed case be the ignored cells, set the embed parameter to C<lc>.
+
+    [table-organize embed=lc]
+		<td>
+			<TABLE>
+				<TR>
+				<TD> something 
+				</TD>
+				</TR>
+			</table>
+		</td>
+    [/table-organize
+
+or
+
+    [table-organize embed=uc]
+		<TD>
+			<table>
+				<tr>
+				<td> something 
+				</td>
+				</tr>
+			</table>
+		</TD>
+	[/table-organize]
+
+=back
+
+The C<tr>, C<td>, and C<caption> attributes can be specified with indexes;
+if they are, then they will alternate according to the modulus.
+
+The C<td> option array size should probably always equal the number of columns;
+if it is bigger, then trailing elements are ignored. If it is smaller, no attribute
+is used.
+
+For example, to produce a table that 1) alternates rows with background
+colors C<#EEEEEE> and C<#FFFFFF>, and 2) aligns the columns RIGHT CENTER
+LEFT, do:
+
+        [table-organize
+            cols=3
+            pretty=1
+            tr.0='bgcolor="#EEEEEE"'
+            tr.1='bgcolor="#FFFFFF"'
+            td.0='align=right'
+            td.1='align=center'
+            td.2='align=left'
+            ]
+            [loop list="1 2 3 1a 2a 3a 1b"] <td> [loop-code] </td> [/loop]
+        [/table-organize]
+
+which will produce:
+
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1</td>
+                <td align=center>2</td>
+                <td align=left>3</td>
+        </tr>
+        <tr bgcolor="#FFFFFF">
+                <td align=right>1a</td>
+                <td align=center>2a</td>
+                <td align=left>3a</td>
+        </tr>
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1b</td>
+                <td align=center>&nbsp;</td>
+                <td align=left>&nbsp;</td>
+        </tr>
+
+If the attribute columnize=1 is present, the result will look like:
+
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1</td>
+                <td align=center>1a</td>
+                <td align=left>1b</td>
+        </tr>
+        <tr bgcolor="#FFFFFF">
+                <td align=right>2</td>
+                <td align=center>2a</td>
+                <td align=left>&nbsp;</td>
+        </tr>
+        <tr bgcolor="#EEEEEE">
+                <td align=right>3</td>
+                <td align=center>3a</td>
+                <td align=left>&nbsp;</td>
+        </tr>
+
+See the source for more ideas on how to extend this tag.
+
+=cut
+
+EOD
 UserTag table-organize Routine <<EOR
 sub {
 	my ($cols, $opt, $body) = @_;
@@ -141,7 +304,7 @@ sub {
 				my $idx = $tmod % scalar(@{$attr{caption}});
 				#$out .= "<!-- caption index $idx -->";
 				$out .= "\n" if $pretty;
-				$out .= "<caption>" . $attr{caption}[$idx] . "</caption>";
+				$out .= "<CAPTION>" . $attr{caption}[$idx] . "</CAPTION>";
 				$out .= "\n" if $pretty;
 			}
 		}

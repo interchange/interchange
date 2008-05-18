@@ -1,8 +1,8 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.62 2008-03-25 18:58:32 greg Exp $
+# $Id: UserDB.pm,v 2.55 2007-08-11 13:54:14 mheins Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 use vars qw!
 	$VERSION
@@ -299,10 +299,6 @@ sub new {
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
 						DB_ACL		=> $options{db_acl}		|| 'db_acl',
-						CREATED_DATE_ISO		=> $options{created_date_iso},
-						CREATED_DATE_UNIX		=> $options{created_date_epoch},
-						UPDATED_DATE_ISO		=> $options{updated_date_iso},
-						UPDATED_DATE_UNIX		=> $options{updated_date_epoch},
 							},
 			STATUS		=>		0,
 			ERROR		=>		'',
@@ -881,34 +877,6 @@ sub set_values {
 					);
 		}
 	}
-
-	my $dfield;
-	my $dstring;
-	if($dfield = $self->{OPTIONS}{updated_date_iso}) {
-		if($self->{OPTIONS}{updated_date_gmtime}) {
-			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%SZ', gmtime());
-		}
-		elsif($self->{OPTIONS}{updated_date_showzone}) {
-			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S %z', localtime());
-		}
-		else {
-			$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime());
-		}
-	}
-	elsif($dfield = $self->{OPTIONS}{updated_date_epoch}) {
-		$dstring = time;
-	}
-
-	if($dfield and $dstring) {
-		if($db->test_column($dfield)) {
-			push @bfields, $dfield;
-			push @bvals, $dstring;
-		}
-		else {
-			my $msg = errmsg("updated field %s doesn't exist", $dfield);
-			Vend::Tags->warnings($msg);
-		}
-	}
 	
 	while(@extra) {
 		push @bfields, shift @extra;
@@ -1002,13 +970,6 @@ sub get_shipping_names {
 	return '';
 }
 
-sub get_shipping_hashref {
-	my $self = shift;
-	my $ref = $self->get_hash('SHIPPING');
-	return $ref if ref($ref) eq 'HASH';
-	return undef;
-}
-
 sub get_billing_names {
 	my $self = shift;
 	my $ref = $self->get_hash('BILLING');
@@ -1016,13 +977,6 @@ sub get_billing_names {
 	$::Values->{$self->{LOCATION}{BILLING}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{BILLING}} if $self->{OPTIONS}{show};
 	return '';
-}
-
-sub get_billing_hashref {
-	my $self = shift;
-	my $ref = $self->get_hash('BILLING');
-	return $ref if ref($ref) eq 'HASH';
-	return undef;
 }
 
 sub get_preferences_names {
@@ -1759,35 +1713,6 @@ sub new_account {
 				 or die errmsg("Database access error: %s", $udb->errstr) . "\n";
 		}
 
-		my $dfield;
-		my $dstring;
-		if($dfield = $self->{OPTIONS}{created_date_iso}) {
-			if($self->{OPTIONS}{created_date_gmtime}) {
-				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%SZ', gmtime());
-			}
-			elsif($self->{OPTIONS}{created_date_showzone}) {
-				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S %z', localtime());
-			}
-			else {
-				$dstring = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime());
-			}
-		}
-		elsif($dfield = $self->{OPTIONS}{created_date_epoch}) {
-			$dstring = time;
-		}
-
-		if($dfield and $dstring) {
-			$udb->set_field(
-						$self->{USERNAME},
-						$dfield,
-						$dstring,
-						)
-				or do { 
-					my $msg = errmsg('Failed to set new account creation date: %s', $udb->errstr);
-					Vend::Tags->warnings($msg);
-				};
-		}
-
 		if($options{no_login}) {
 			$Vend::Session->{auto_created_user} = $self->{USERNAME};
 		}
@@ -1950,7 +1875,7 @@ sub set_cart {
 		die errmsg('%s field not present to set %s', $field_name, $from) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
-		$d = string_to_ref( $self->{DB}->field( $self->{USERNAME}, $field_name) );
+		$d = $ready->reval( $self->{DB}->field( $self->{USERNAME}, $field_name) );
 
 		$d = {} unless $d;
 

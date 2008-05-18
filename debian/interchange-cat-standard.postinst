@@ -1,6 +1,6 @@
 #! /bin/sh -e
 #
-# Copyright 2001,2004,2005,2006,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2004,2005,2006 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,8 @@
 
 # Source debconf library
 . /usr/share/debconf/confmodule
-
-# Call dbconfig-common hook
-. /usr/share/dbconfig-common/dpkg/postinst
+# Source dbconfig-common library
+. /usr/share/dbconfig-common/dpkg/postinst.mysql 
 dbc_go interchange-cat-standard $@
 
 GOAHEAD=false

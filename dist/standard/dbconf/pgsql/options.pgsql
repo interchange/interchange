@@ -13,7 +13,6 @@ Database options COLUMN_DEF   "o_height=integer"
 Database options COLUMN_DEF   "o_width=integer"
 Database options COLUMN_DEF   "price=varchar(250)"
 Database options COLUMN_DEF   "wholesale=varchar(250)"
-Database options COLUMN_DEF   "o_simple=varchar(1)"
 
 Database options PREFER_NULL  o_height o_width
 Database options NUMERIC      o_height o_width

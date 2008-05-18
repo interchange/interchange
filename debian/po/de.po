@@ -294,7 +294,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:70
 msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring.\n"
+"Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr "Bitte das Verzeichnis für den öffentlichen Schlüsselbund für GnuPG auswählen.\n"
 
 #. Type: select

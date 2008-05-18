@@ -1,8 +1,8 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.86 2008-05-06 20:42:59 markj Exp $
+# $Id: DBI.pm,v 2.80 2007-08-14 13:42:08 kwalsh Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.86 $, 10);
+$VERSION = substr(q$Revision: 2.80 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -69,17 +69,15 @@ my %Dattr = ( qw(
 					AUTOCOMMIT     	AutoCommit
 					LONGTRUNCOK    	LongTruncOk
 					LONGREADLEN    	LongReadLen
-					PG_ENABLE_UTF8	pg_enable_utf8
-					MYSQL_ENABLE_UTF8 mysql_enable_utf8
 				) );
 my @Dattr = keys %Dattr;
 
 sub find_dsn {
 	my ($config) = @_;
-	my ($cattr, $dattr, @out);
-
+	my($param, $value, $cattr, $dattr, @out);
+	my($user,$pass,$dsn,$driver);
 	my $i = 0;
-	for my $param (qw! DSN USER PASS !) {
+	foreach $param (qw! DSN USER PASS !) {
 		$out[$i++] = $config->{ $param } || undef;
 	}
 
@@ -571,8 +569,9 @@ sub open_table {
 
     if (! $config->{AUTO_SEQUENCE} and ! defined $config->{AutoNumberCounter}) {
 	    eval {
+			my $dot = $config->{HIDE_AUTO_FILES} ? '.' : '';
 			$config->{AutoNumberCounter} = new Vend::CounterFile
-									$config->{AUTO_NUMBER_FILE},
+									"$config->{DIR}/$dot$config->{name}.autonumber",
 									$config->{AUTO_NUMBER} || '00001',
 									$config->{AUTO_NUMBER_DATE};
 		};
@@ -1213,17 +1212,6 @@ sub set_slice {
 		return undef;
 	}
 
-	my $opt;
-	if (ref ($key) eq 'ARRAY') {
-		$opt = shift @$key;
-		$key = shift @$key;
-	}
-	$opt = {}
-		unless ref ($opt) eq 'HASH';
-
-	$opt->{dml} = 'upsert'
-		unless defined $opt->{dml};
-
 	my $tkey;
 	my $sql;
 
@@ -1232,8 +1220,12 @@ sub set_slice {
 		$vary = [@$vin];
 	}
 	else {
-		$vary = [ values %$fin ];
-		$fary = [ keys   %$fin ];
+		my $href = $fin;
+		if(ref $href ne 'HASH') {
+			$href = { splice (@_, 2) };
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
 	}
 
 	if ($s->[$CONFIG]->{PREFER_NULL}) {
@@ -1264,15 +1256,8 @@ sub set_slice {
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
-	my $force_insert =
-		$opt->{dml} eq 'insert';
-	my $force_update =
-		$opt->{dml} eq 'update';
 
-	if (
-		$force_update or
-		!$force_insert and defined $tkey and $s->record_exists($key)
-	) {
+	if ( defined $tkey and $s->record_exists($key) ) {
 		unless (@$fary) {
 			# as there are no data columns, we can safely skip the update
 			return $key;

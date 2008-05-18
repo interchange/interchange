@@ -81,6 +81,9 @@ echo MODE=\"$MODE\" >> $INITCFG
 echo USER=$USER >> $INITCFG
 echo GROUP=$GROUP >> $INITCFG
 
+db_get interchange/webserver
+echo WEBSERVER=$RET >> $INITCFG
+
 db_get interchange/docroot
 echo DOCROOT=$RET >> $INITCFG
 

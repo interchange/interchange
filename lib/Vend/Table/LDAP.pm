@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.16 2008-05-05 15:14:00 markj Exp $
+# $Id: LDAP.pm,v 2.15 2007-08-09 13:40:56 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 use strict;
 
 use vars qw(
@@ -300,38 +300,9 @@ sub set_slice {
 		return undef;
 	}
 
-	my $opt;
-	if (ref ($key) eq 'ARRAY') {
-		$opt = shift @$key;
-		$key = shift @$key;
-	}
-	$opt = {}
-		unless ref ($opt) eq 'HASH';
-
-	$opt->{dml} = 'upsert'
-		unless defined $opt->{dml};
-
-	if ($s->record_exists($key)) {
-		if ($opt->{dml} eq 'insert') {
-			$s->log_error(
-				"Duplicate key on set_slice insert for key '$key' on table %s",
-				$s->[$CONFIG]{name},
-			);
-			return undef;
-		}
-	}
-	elsif ($opt->{dml} eq 'update') {
-		$s->log_error(
-			"No record to update set_slice for key '$key' on table %s",
-			$s->[$CONFIG]{name},
-		);
-		return undef;
-	}
-
 	for( my $i = 0; $i < @$fary; $i++) {
 		$s->set_field($key, $fary->[$i], $vary->[$i]);
 	}
-
 	return 1;
 }
 

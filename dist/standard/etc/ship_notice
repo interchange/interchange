@@ -75,7 +75,7 @@ Quan  Item No.    Description                            Price       Extension
 					column=stock_message
 					key="[item-data orderline sku]"
 					]};
-	if(! $mesg and $status !~ /^\s*shipped\b/i) {
+	if(!mesg and $status !~ /^\s*shipped\b/i) {
 		$status .= " ($mesg)";
 	}
 	$status .= q{ time: [convert-date][item-data orderline update_date][/convert-date]};

@@ -3,7 +3,7 @@
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 2.7 2008-04-27 12:57:50 mheins Exp $
+# $Id: restart.PL,v 2.6 2007-08-09 13:40:57 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -95,7 +95,7 @@ The name we think should run it is: $name
 If you are starting the server from /etc/rc.local or another
 startup file, you can use this:
 
-su -c $Global::VendBin/restart $name
+su -f -c $Global::VendBin/restart $name
 
 or if that fails:
 
@@ -121,7 +121,7 @@ $Global::VendBin/interchange $force -r
 EOF
 EndOfExec
 	} else {
-		exec qq{su -c "$Global::VendBin/interchange $force -r" $name};
+		exec qq{su -f -c "$Global::VendBin/interchange $force -r" $name};
 	}
 } else {
 	exec qq{$Global::VendBin/interchange $force -r};
@@ -141,11 +141,14 @@ restart -- call bin/interchange C<->r with possible su
 
 =head1 DESCRIPTION
 
-The C<restart> script just tries to execute C<interchange> C<-r> with the proper permissions. If the user is "root", a prompt will be made to see if you want to start as the guessed user ID. (This is the contents of the $Global::VendRoot/_uid file.)
+The C<restart> script just tries to execute C<interchange> C<-r> with the proper permissions. If
+the user is "root", a prompt will be made to see if you want to start as the guessed
+user ID. (This is the contents of the $Global::VendRoot/_uid file.)
 
 =head1 OPTIONS
 
-The C<-f> flag prevents the prompt for superuser and forces quiet mode; this is how you might call Interchange from a system startup script.
+The C<-f> flag prevents the prompt for superuser and forces quiet mode; this is how you might call Interchange from 
+a system startup script.
 
 =head1 SEE ALSO
 
