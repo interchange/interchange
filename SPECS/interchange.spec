@@ -1,4 +1,4 @@
-# $Id: interchange.spec,v 2.31 2008-05-06 17:14:42 jon Exp $
+# $Id: interchange.spec,v 2.32 2008-05-21 00:06:44 jon Exp $
 
 # use Perl installation in /usr/local custom built from source?
 %define localperl 1
@@ -16,7 +16,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.5.3
+Version: 5.6.0
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -30,8 +30,8 @@ Source3: interchange-logrotate
 Source4: interchange-cron
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
-Requires: perl >= 5.6.0
-BuildPrereq: perl >= 5.6.0
+Requires: perl >= 5.8.8
+BuildPrereq: perl >= 5.8.8
 
 %description
 Interchange is a complete web application platform focused on
