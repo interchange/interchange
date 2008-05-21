@@ -7,6 +7,9 @@ Interchange is designed to be drop-in compatible in its major version.
 Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
+ 5.6.x -- There are no known compatibility issues when upgrading from
+          Interchange 5.6.x.
+
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
           "Known Issues" section. Your code will almost certainly fail to

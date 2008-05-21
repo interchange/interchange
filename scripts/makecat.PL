@@ -3,9 +3,9 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.27 2007-08-09 13:40:57 pajamian Exp $
+# $Id: makecat.PL,v 2.28 2008-05-21 03:05:20 jon Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2303,7 +2303,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.27 2007-08-09 13:40:57 pajamian Exp $
+# $Id: makecat.PL,v 2.28 2008-05-21 03:05:20 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2673,11 +2673,6 @@ its web site:
 
         http://www.icdevgroup.org/
 
-Interchange requires Perl 5.6.0 or higher; more information on Perl can
-be seen at:
-
-        http://www.perl.com/
-
 =head1 SEE ALSO
 
 interchange(1)
@@ -2690,7 +2685,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 2002-2007 Interchange Development Group.
+Copyright 2002-2008 Interchange Development Group.
 Copyright 1995-2002, Red Hat, Inc.
 All rights reserved except as in the license.
 
