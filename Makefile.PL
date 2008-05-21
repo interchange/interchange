@@ -16,7 +16,7 @@ use File::Basename;
 use File::Find;
 use Data::Dumper;
 use Cwd;
-require 5.6.0;
+require 5.008;
 
 use strict;
 
