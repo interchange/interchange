@@ -8,6 +8,20 @@
 See UPGRADE document for a list of incompatible changes.
 
 
+Interchange 5.6.1 under development.
+
+Core
+----
+
+* Fixed regression in set_slice for the following usage pattern
+  (#200):
+
+  $Db{table}->set_slice('', %parms));
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 5.6.0 released on 2008-05-21.
 
 Standard
