@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.16 2008-05-05 15:14:00 markj Exp $
+# $Id: LDAP.pm,v 2.17 2008-05-26 02:30:04 markj Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 use strict;
 
 use vars qw(
@@ -310,6 +310,15 @@ sub set_slice {
 
 	$opt->{dml} = 'upsert'
 		unless defined $opt->{dml};
+
+	if(ref $fary ne 'ARRAY') {
+		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { splice (@_, 2) };
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
+	}
 
 	if ($s->record_exists($key)) {
 		if ($opt->{dml} eq 'insert') {
