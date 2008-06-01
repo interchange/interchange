@@ -1,5 +1,4 @@
-# translation of interchange_5.4.2-1_ru.po to Russian
-# translation of interchange_5.4.0-1_ru.po to Russian
+# translation of ru.po to Russian
 #
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
@@ -10,22 +9,24 @@
 #            /usr/share/doc/po-debconf/README-trans
 #         or http://www.debian.org/intl/l10n/po-debconf/README-trans#
 #    Developers do not need to manually edit POT or PO files.
+#
 # Yuriy Talakan' <yt@amur.elektra.ru>, 2006.
 # Yuriy Talakan' <yt@drsk.ru>, 2007.
-#
+# Yuri Kozlov <kozlov.y@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: interchange_5.4.2-1_ru\n"
+"Project-Id-Version: interchange 5.5.1-1\n"
 "Report-Msgid-Bugs-To: racke@linuxia.de\n"
-"POT-Creation-Date: 2007-02-07 08:48+0000\n"
-"PO-Revision-Date: 2007-03-09 11:33+0900\n"
-"Last-Translator: Yuriy Talakan' <yt@drsk.ru>\n"
+"POT-Creation-Date: 2007-08-21 15:48+0200\n"
+"PO-Revision-Date: 2008-03-24 21:02+0300\n"
+"Last-Translator: Yuri Kozlov <kozlov.y@gmail.com>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: boolean
 #. Description
@@ -41,13 +42,13 @@ msgid ""
 "manually install it with makecat."
 msgstr ""
 "Устанавливать демонстрационный каталог из стандартного шаблона или позволить "
-"Вам вручную установить его с помощью makecat."
+"вам вручную установить его с помощью makecat."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr "Удалить демонстрационный каталог при зачистке пакета?"
+msgstr "Удалить демонстрационный каталог при вычистке пакета?"
 
 #. Type: boolean
 #. Description
@@ -57,8 +58,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Надо ли удалять все файлы, принадлежащие демонстрационному каталогу "
-"Interchange, когда вы зачищаете этот пакет , например, с помощью dpkg --"
-"purge или apt-get remove --purge ?"
+"Interchange, когда вы вычищаете этот пакет, например, с помощью команды dpkg "
+"--purge или apt-get remove --purge?"
 
 #. Type: select
 #. Choices
@@ -98,7 +99,7 @@ msgstr "Похоже, что демонстрационный каталог Int
 #. Description
 #: ../interchange-cat-standard.templates:5001
 msgid "Virtual host for the demo catalog ?"
-msgstr "Виртуальный хост для демонстрационного каталога ?"
+msgstr "Виртуальный хост для демонстрационного каталога?"
 
 #. Type: string
 #. Description
@@ -107,8 +108,8 @@ msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
 msgstr ""
-"Вы используете Interchange с разрешенным \"FullURL\". Укажите "
-"виртуальный хост для демонстрационного каталога."
+"Вы используете Interchange с разрешённым \"FullURL\". Укажите виртуальный "
+"хост для демонстрационного каталога."
 
 #. Type: string
 #. Description
@@ -125,7 +126,7 @@ msgid ""
 "underscore, @ or the dot as characters."
 msgstr ""
 "Укажите имя пользователя для администрирования демонстрационного каталога. "
-"оно должно быть минимум 2 символа длиной и содержать только буквы, цифры, "
+"Оно должно быть минимум 2 символа длиной и содержать только буквы, цифры, "
 "подчеркивание, @ или точку."
 
 #. Type: password
@@ -143,10 +144,10 @@ msgid ""
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
 msgstr ""
-"Укажите пароль для администрирования стандартного демонстрационного каталога. "
-"Выберите такой, который нельзя легко угадать. Значение по умолчанию pass. "
-"Пароль должен быть минимум 4 символа длиной и содержать только буквы, цифры, "
-"подчеркивание, @ или точку."
+"Укажите пароль для администрирования стандартного демонстрационного "
+"каталога. Выберите такой, который нельзя легко угадать. Значение по "
+"умолчанию pass. Пароль должен быть минимум 4 символа длиной и содержать "
+"только буквы, цифры, подчеркивание, @ или точку."
 
 #. Type: boolean
 #. Description
@@ -171,8 +172,8 @@ msgid ""
 msgstr ""
 "Демонстрационный каталог Interchange может отображать витрину на различных "
 "языках. Каждая выбранная локаль увеличит память, занимаемую процессами "
-"сервера Interchange, так что рекомендуется выбрать только те локали, "
-"которые действительно необходимы."
+"сервера Interchange, так что рекомендуется выбрать только те локали, которые "
+"действительно необходимы."
 
 #. Type: select
 #. Description
@@ -184,7 +185,8 @@ msgstr "Локаль по умолчанию для витрины:"
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
+msgstr ""
+"Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
@@ -220,13 +222,37 @@ msgstr "Имя базы данных"
 #. Description
 #: ../interchange-cat-standard.templates:12001
 msgid "Please select the name of the database."
-msgstr "Выберите имя базы данных"
+msgstr "Выберите имя базы данных."
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:13001
+msgid "Database user"
+msgstr "Имя пользователя"
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:13001
+msgid "Please specify the username for connecting to the database."
+msgstr "Введите имя пользователя для подключения к базе данных."
+
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:14001
+msgid "Database password"
+msgstr "Пароль"
+
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:14001
+msgid "Please specify the password for connecting to the database."
+msgstr "Введите пароль для подключения к базе данных."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
-msgstr "режим unix, режим internet, оба"
+msgstr "режим unix, режим интернет, оба"
 
 #. Type: select
 #. Description
@@ -241,8 +267,8 @@ msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
-"Режим Unix это самый безопасный способ запуска Interchange, поскольку "
-"системы из интернета не смогут взаимодействовать с сервером Interchange."
+"Режим Unix -- это самый безопасный способ запуска Interchange, поскольку "
+"компьютеры из интернета не смогут взаимодействовать с сервером Interchange."
 
 #. Type: string
 #. Description
@@ -276,7 +302,7 @@ msgstr "Создать пользователя ${USER}?"
 #. Description
 #: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
-msgstr "Невозможно запустить interchange под root !"
+msgstr "Невозможно запустить interchange под root!"
 
 #. Type: note
 #. Description
@@ -339,7 +365,7 @@ msgstr "Apache"
 #. Description
 #: ../interchange.templates:9002
 msgid "Which webserver are you running ?"
-msgstr "Какой web-сервер Вы используете ?"
+msgstr "Выберите используемый веб-сервер:"
 
 #. Type: select
 #. Description
@@ -348,26 +374,26 @@ msgid ""
 "This information is necessary for the makecat script. Please specify which "
 "webserver you want to use for your Interchange applications."
 msgstr ""
-"Эта информация необходима для сценария makecat. Укажите, какой "
-"web-сервер Вы хотите использовать для Ваших приложений Interchange."
+"Эта информация необходима для сценария makecat. Укажите, какой веб-сервер вы "
+"хотите использовать для ваших приложений Interchange."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
 msgid "Static HTML files location:"
-msgstr "Размещение статичных HTML файлов:"
+msgstr "Каталог для размещения статичных HTML файлов:"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr "Установки каталога требуют директорию, где можно разместить HTML файлы."
+msgstr "Установки каталога требуют место, где можно разместить HTML файлы."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:11001
 msgid "Directory for GnuPG public keyring:"
-msgstr "Директория для публичных ключей GnuPG:"
+msgstr "Каталог для публичных ключей GnuPG:"
 
 #. Type: string
 #. Description
@@ -384,9 +410,10 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:11001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
-"Выберите директорию, используемую Interchange для хранения публичных ключей "
+"Выберите каталог, используемый Interchange для хранения публичных ключей "
 "GnuPG:"
 
 #. Type: select
@@ -410,7 +437,7 @@ msgid ""
 "Interchange server will run in PreFork mode."
 msgstr ""
 "Вы можете выбрать различный набор серверных параметров. Любой магазин, "
-"основанный на базовой демонстрации, также изменит свое поведение. Если "
+"основанный на базовой демонстрации, также изменит своё поведение. Если "
 "выбран rpc, сервер Interchange будет работать в режиме PreFork."
 
 #. Type: boolean
@@ -475,7 +502,7 @@ msgid ""
 "between robots and ordinary users."
 msgstr ""
 "Пакет Debian Interchange использует отдельный файл настроек /etc/interchange/"
-"robots.cfg для директив  RobotUA, RobotIP и RobotHost. Рекомендуется "
+"robots.cfg для директив RobotUA, RobotIP и RobotHost. Рекомендуется "
 "подключить эти настройки, чтобы Interchange мог различать роботов и обычных "
 "пользователей."
 
@@ -495,8 +522,7 @@ msgid ""
 "change this default at login time."
 msgstr ""
 "Интерфейс администратора для каталогов Interchange, называемый UI, был "
-"переведен на датский (da_DK), голландский (nl_NL), немецкий (de_DE), "
-"итальянский (it_IT) и  шведский (sv_SE) языки. Вы можете сейчас выбрать язык "
+"переведён на датский (da_DK), голландский (nl_NL), немецкий (de_DE), "
+"итальянский (it_IT) и шведский (sv_SE) языки. Вы можете сейчас выбрать язык "
 "по умолчанию. Любой пользователь может изменить язык по умолчанию во время "
 "входа."
-

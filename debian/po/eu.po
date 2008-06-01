@@ -1,26 +1,26 @@
-# SOME DESCRIPTIVE TITLE.
+# translation of interchange-eu.po to Euskara
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Piarres Beobide <pi@beobide.net>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: interchange-eu\n"
 "Report-Msgid-Bugs-To: racke@linuxia.de\n"
 "POT-Creation-Date: 2007-08-21 15:48+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2008-05-06 11:51+0200\n"
+"Last-Translator: Piarres Beobide <pi@beobide.net>\n"
+"Language-Team: Euskara <debian-l10n-basque@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:1001
 msgid "Create the Interchange demo catalog?"
-msgstr ""
+msgstr "Interchange demostrazio katalogoa sortu?"
 
 #. Type: boolean
 #. Description
@@ -29,12 +29,14 @@ msgid ""
 "Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
 msgstr ""
+"Edo demostrazio katalogoa instalatu txantiloi estandarretik edo berau "
+"makecat erabiliaz instalatzen zuri utzi."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr ""
+msgstr "Demostrazio katalogoa ezabatu paketea garbitzerakoan?"
 
 #. Type: boolean
 #. Description
@@ -43,18 +45,21 @@ msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
+"Interchange demostrazio katalogoko fitxategi guztiak ezabatu egin behar al "
+"dira paketea, adib dpkg --purge edo apt-get remove erabiliaz, "
+"garbitzerakoan ?"
 
 #. Type: select
 #. Choices
 #: ../interchange-cat-standard.templates:3001
 msgid "always, ask, never"
-msgstr ""
+msgstr "beti, galdetu, inoiz"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
-msgstr ""
+msgstr "Dagoen demostrazio katalogoaren ordezkatze politika:"
 
 #. Type: select
 #. Description
@@ -63,24 +68,26 @@ msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
 msgstr ""
+"Edo isiltasunean ordeztu demostrazio katalogo instalazioa, edo berrespena "
+"eskatu edo inoiz ez ordeztu dagoen instalazioa."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "Replace the Interchange demo catalog?"
-msgstr ""
+msgstr "Interchange demostrazio katalogoa ordeztu?"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
-msgstr ""
+msgstr "Dirudienez dagoeneko badago interchange demostrazio katalogoa."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
 msgid "Virtual host for the demo catalog ?"
-msgstr ""
+msgstr "Demostrazio katalogoaren ostalari birtuala ?"
 
 #. Type: string
 #. Description
@@ -89,12 +96,14 @@ msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
 msgstr ""
+"Interchange \"FullURL\" gaiturik dagoela exekutatzen ari zara. Mesedez "
+"zehaztu demostrazio katalogoaren ostalari birtuala."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:6001
 msgid "Username for this catalog's administration:"
-msgstr ""
+msgstr "Katalogo honen kudeaketarako erabiltzaile-izena:"
 
 #. Type: string
 #. Description
@@ -104,12 +113,15 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
+"Mesedez idatzi katalogo kudeaketarako erabiltzaile-izen bat. Erabiltzaile-"
+"izenak behintzat bi karaktere luze eduki behar du eta letrak, zenbakiak, "
+"azpimarra, @ edo puntu karaktereaz bakarrik osaturik egon daiteke."
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid "Password for this catalog's administration:"
-msgstr ""
+msgstr "Katalogo honen kudeaketarako pasahitza:"
 
 #. Type: password
 #. Description
@@ -120,18 +132,22 @@ msgid ""
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
 msgstr ""
+"Mesedez zehaztu demostrazio katalogo estandarrarentzat pasahitz bat. Erraz "
+"asmatu ezin den bat hautatu beharko zenuke. Lehenetsia pass da. Pasahitzak "
+"behintzat 4 karaktereko luzera eduki behar du eta letrak, zenbakiak, "
+"azpimarra, @ edo puntu karaktereaz bakarrik osaturik egon daiteke."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:8001
 msgid "Enable demo mode?"
-msgstr ""
+msgstr "Demostrazio modua gaitu?"
 
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-standard.templates:9001
 msgid "Additional locales for the storefront:"
-msgstr ""
+msgstr "Dendarentzat lokal gehigarriak:"
 
 #. Type: multiselect
 #. Description
@@ -142,90 +158,96 @@ msgid ""
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
 msgstr ""
+"Interchange demo katalogoa denda hizkuntz ezberdinetan bistaratzeko gai da. "
+"Hautatutako lokal bakoitzak interchange zerbitzari prozesuaren memoria "
+"beharrak handituko ditu, beraz benetan behar diren lokalak bakarrik "
+"hautatzea gomendatzen da."
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Default locale for the storefront:"
-msgstr ""
+msgstr "Dendarako lehenetsiriko lokala:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
 msgstr ""
+"Mesedez hautatu interchange demostrazio katalogoak erabiliko duen lokala."
 
 #. Type: select
 #. Choices
 #: ../interchange-cat-standard.templates:11001
 msgid "PostgreSQL"
-msgstr ""
+msgstr "PostgreSQL"
 
 #. Type: select
 #. Choices
 #: ../interchange-cat-standard.templates:11001
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Which DBMS should be used for the demo catalog ?"
 msgstr ""
+"Zein DBMS (datubase zerbitzari) erabili behar da demostrazio katalogorako ?"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Please select the database type."
-msgstr ""
+msgstr "Mesedez hautatu datubase mota."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
 msgid "Database name"
-msgstr ""
+msgstr "Datubase izena"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
 msgid "Please select the name of the database."
-msgstr ""
+msgstr "Mesedez hautatu datubasearen izena."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Database user"
-msgstr ""
+msgstr "Datubase erabiltzaile-izena"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr ""
+msgstr "Mesedez hautatu datubasea konektatzeko erabiltzaile-izena."
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Database password"
-msgstr ""
+msgstr "Datubase pasahitza"
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr ""
+msgstr "Mesedez hautatu datubaserako konektatzeko pasahitza."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
-msgstr ""
+msgstr "unix modua, internet modua, biak"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:1002
 msgid "Start mode:"
-msgstr ""
+msgstr "Abiarazte modua:"
 
 #. Type: select
 #. Description
@@ -234,12 +256,14 @@ msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
+"Unix modua interchange exekutatzeko seguruena da, honentzat ez dago "
+"interneteko sistemek zerbitzariarekin harremanak izateko modu errazik."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:2001
 msgid "Username to run the server as:"
-msgstr ""
+msgstr "Zerbitzaria exekutatzeko erabiltzaile-izena:"
 
 #. Type: string
 #. Description
@@ -250,12 +274,16 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
+"Honek interchange zerbitzariaren eta fitxategi baimenen erabiltzailea "
+"ezartzen du. Mesedez kontutan izan beste erabiltzaile bat erabiltzeak "
+"segurtasun inplikazio garratzitsuak dituela. Ez hautatu root ez da "
+"gomendagarria eta hautatuaz gero baztertua izango da."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:3001
 msgid "Create the user ${USER}?"
-msgstr ""
+msgstr "Sortu ${USER} erabiltzailea?"
 
 #. Type: note
 #. Description
@@ -263,7 +291,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
-msgstr ""
+msgstr "Ezinezkoa da interchange root gisa exekutatzea !"
 
 #. Type: note
 #. Description
@@ -272,12 +300,14 @@ msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
 msgstr ""
+"Oharturik zaude. Edo hautatu erabiltzaile egoki bat edo lehenetsiarekin "
+"gelditu."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:5001
 msgid "Group name to run the server as:"
-msgstr ""
+msgstr "Zerbitzaria exekutatzeko talde izena:"
 
 #. Type: string
 #. Description
@@ -288,6 +318,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
+"Honek interchange zerbitzariaren eta fitxategi baimenen taldea ezartzen du. "
+"Mesedez kontutan izan beste talde bat erabiltzeak segurtasun inplikazio "
+"garratzitsuak dituela. Ez hautatu root ez da gomendagarria eta hautatuaz "
+"gero baztertua izango da."
 
 #. Type: note
 #. Description
@@ -296,30 +330,31 @@ msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
 msgstr ""
+"Oharturik zaude. Edo hautatu talde egoki bat edo lehenetsiarekin gelditu."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:7001
 msgid "Create the group ${GROUP}?"
-msgstr ""
+msgstr "Sortu ${GROUP} taldea?"
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:9001
 msgid "Apache2"
-msgstr ""
+msgstr "Apache2"
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:9001
 msgid "Apache"
-msgstr ""
+msgstr "Apache"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:9002
 msgid "Which webserver are you running ?"
-msgstr ""
+msgstr "Zein web zerbitzari exekutatzen ari zara ?"
 
 #. Type: select
 #. Description
@@ -328,24 +363,27 @@ msgid ""
 "This information is necessary for the makecat script. Please specify which "
 "webserver you want to use for your Interchange applications."
 msgstr ""
+"Informazio hau beharrezkoa da makecat skriptarentzat. Mesedez zehaztu "
+"interchange aplikazioek zein web zerbitzari erabiltzea nahi duzun."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
 msgid "Static HTML files location:"
-msgstr ""
+msgstr "HTML fitxategi estatikoen kokalekua:"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
 msgid "Catalog installations need a directory where HTML files can be placed."
 msgstr ""
+"Katalogo instalazioak HTML fitxategiak kokatzeko direktorio bat behar du."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:11001
 msgid "Directory for GnuPG public keyring:"
-msgstr ""
+msgstr "GNUPG gako-eraztun publikoak erabiliko duen direktorioa:"
 
 #. Type: string
 #. Description
@@ -355,6 +393,9 @@ msgid ""
 "be encrypted and mailed to the shop owner instead of storing it on the "
 "server."
 msgstr ""
+"Segurtasuna areagotzeko, bezeroetatik jasotzen den kreditu txartel "
+"informazioa enkriptatu eta posta bidez denda jabeari bidaliko zaio "
+"zerbitzarian gorde ordez."
 
 #. Type: string
 #. Description
@@ -362,18 +403,20 @@ msgstr ""
 msgid ""
 "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
+"Mesedez hautatu Interchange zerbitzariak GnuPG gako-eraztun publikorako "
+"erabiliko duen direktorioa."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:12001
 msgid "low, high, rpc"
-msgstr ""
+msgstr "baxua, altua, rpc"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:12002
 msgid "Set of server parameters:"
-msgstr ""
+msgstr "Zerbitzari parametro bilduma:"
 
 #. Type: select
 #. Description
@@ -383,12 +426,16 @@ msgid ""
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
 msgstr ""
+"Zerbitzari parametro bilduma ezberdinen artean hautatu dezakezu. Sortze "
+"demostrazioan oinarritutako edoizen dendak bere portamoldea eraldatuko du "
+"ere. Rpc hautatzen bada Interchange zerbitzariak PreFork moduan "
+"exekutatutako da."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:13001
 msgid "Enable the FullURL directive?"
-msgstr ""
+msgstr "Gaitu FullURL direktiba?"
 
 #. Type: boolean
 #. Description
@@ -397,12 +444,14 @@ msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
 msgstr ""
+"Ezarpen honek dagokion katalogoa arakatzean URL osoa kontutan artzen den ala "
+"ez ezartzen du."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:14001
 msgid "SOAP server not available"
-msgstr ""
+msgstr "SOAP zerbitzaria ez dago eskuragarri"
 
 #. Type: note
 #. Description
@@ -412,24 +461,27 @@ msgid ""
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
+"SOAP__Lite Perl modulua instalaturik ez dagoenez, ezin duzu Interchange SOAP "
+"zerbitzaria exekutatu. Hau aldatzeko Debianeko libsoap-lite-perl paketea "
+"instalatu eta interchangeconfig SOAP=1 exekutatu."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:15001
 msgid "Enable the SOAP server?"
-msgstr ""
+msgstr "Gaitu SOAP zerbitzaria?"
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:15001
 msgid "This setting determines if the SOAP server is started or not."
-msgstr ""
+msgstr "Ezarpen honek SOAP zerbitzaria abiarazten den edo ez zehazten du."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:16001
 msgid "Enable robots settings?"
-msgstr ""
+msgstr "Gaitu robot ezarpenak?"
 
 #. Type: boolean
 #. Description
@@ -440,12 +492,16 @@ msgid ""
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
+"Interchange Debian paketeak bereziriko /etc/interchange/robots.cfg "
+"konfigurazio fitxategia erabiltzen du RobotUA, RobotIP eta RobotHost "
+"direktibentzat. Ezarpen hauek barneratzea gomendagarria da Interchange "
+"zerbitzariak errobot eta erabiltzaile arrunten artean bereizi ahal izateko."
 
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:1001
 msgid "Default language for user interface:"
-msgstr ""
+msgstr "Erabiltzaile interfazearen lehenetsiriko hizkuntza:"
 
 #. Type: select
 #. Description
@@ -456,3 +512,7 @@ msgid ""
 "and Swedish (sv_SE). You can choose the default language here. Any user may "
 "change this default at login time."
 msgstr ""
+"Interchange katalogoen kudeaketa interfazea, UI deiturikoa, Danierara "
+"(da_DK), Nederlandera (nl_NL), Alemanierara (de_DE), Italiarrera (it_IT) eta "
+"Suedierara (sv_SE) itzulia izan da. Hemen lehenetsiriko hizkuntza hautatu "
+"dezakezu. Edozein erabiltzailek ezarpen hau aldatu dezake saio hasterakoan."

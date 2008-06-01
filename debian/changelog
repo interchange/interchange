@@ -1,3 +1,28 @@
+interchange (5.5.1-1.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Add LSB-formatted headers to init script. Closes: #469718
+  * Debconf translations:
+    - German. Closes: #433846
+    - French. Closes: #440784
+    - Finnish. Closes: #471687
+    - Russian. Closes: #472684
+    - Czech. Closes: #479689
+    - Basque. Closes: #479718
+    - Vietnamese. Closes: #479755
+    - German. Closes: #479796
+    - Galician. Closes: #479842
+    - Portuguese. Closes: #480641
+  * [Lintian] No longer ignore errors from "make clean"
+  * [Lintian] Build-Depends on po-debconf
+  * [Lintian] Add correct copyright information to debian/copyright
+  * [Lintian] interchange binary package Pre-depends on adduser which
+    is used in postinst
+  * [Lintian] Add ${shlibs:Depends} to interchange's dependencies so
+    that the package properly depends on the libc package
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 25 Mar 2008 20:04:29 +0100
+
 interchange (5.5.1-1) unstable; urgency=low
 
   * new upstream release (Closes: #397750, #429690)
