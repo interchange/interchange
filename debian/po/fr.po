@@ -37,7 +37,8 @@ msgstr ""
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr "Faut-il supprimer le catalogue de démonstration lors de la purge du paquet ?"
+msgstr ""
+"Faut-il supprimer le catalogue de démonstration lors de la purge du paquet ?"
 
 #. Type: boolean
 #. Description
@@ -97,7 +98,9 @@ msgstr "Hôte virtuel pour le catalogue de démonstration d'Interchange :"
 msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
-msgstr "Interchange est utilisé avec l'option « FullURL ». Il est nécessaire d'indiquer un nom d'hôte virtuel pour le catalogue de démonstration."
+msgstr ""
+"Interchange est utilisé avec l'option « FullURL ». Il est nécessaire "
+"d'indiquer un nom d'hôte virtuel pour le catalogue de démonstration."
 
 #. Type: string
 #. Description
@@ -115,8 +118,8 @@ msgid ""
 msgstr ""
 "Veuillez indiquer l'identifiant à utiliser pour l'administration du "
 "catalogue de démonstration. Cet identifiant doit comporter deux caractères "
-"minimum : seuls lettres, chiffres, caractère de soulignement (« _ »), « @ » "
-"et le point y sont autorisés."
+"minimum : seuls lettres, chiffres, caractère de soulignement (« _ »), « @ » et "
+"le point y sont autorisés."
 
 #. Type: password
 #. Description
@@ -127,7 +130,6 @@ msgstr "Mot de passe d'administration du catalogue :"
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
-#, fuzzy
 msgid ""
 "Please provide a password for administering the standard demo catalog. "
 "Choose one which can not be easily guessed. Default is pass. The password  "
@@ -195,13 +197,17 @@ msgstr "MySQL"
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Which DBMS should be used for the demo catalog ?"
-msgstr "Gestionnaire de bases de données à utiliser pour le catalogue de démonstration :"
+msgstr ""
+"Gestionnaire de bases de données à utiliser pour le catalogue de "
+"démonstration :"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Please select the database type."
-msgstr "Veuillez choisir le type de gestionnaire de bases de données que vous souhaitez utiliser pour le catalogue de démonstration."
+msgstr ""
+"Veuillez choisir le type de gestionnaire de bases de données que vous "
+"souhaitez utiliser pour le catalogue de démonstration."
 
 #. Type: string
 #. Description
@@ -225,7 +231,9 @@ msgstr "Identifiant de connexion à la base de données :"
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr "Veuillez choisir l'identifiant à utiliser pour la connexion au gestionnaire de bases de données."
+msgstr ""
+"Veuillez choisir l'identifiant à utiliser pour la connexion au gestionnaire "
+"de bases de données."
 
 #. Type: password
 #. Description
@@ -237,7 +245,9 @@ msgstr "Mot de passe :"
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr "Veuillez indiquer le mot de passe pour l'identifiant de connexion à la base de données."
+msgstr ""
+"Veuillez indiquer le mot de passe pour l'identifiant de connexion à la base "
+"de données."
 
 #. Type: select
 #. Choices
@@ -303,7 +313,10 @@ msgstr "Impossible d'exécuter Interchange par le superutilisateur"
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr "Il n'est pas possible (et il serait dangereux pour la sécurité du système) d'exécuter Interchange avec les privilèges du superutilisateur. Veuillez choisir un utilisateur approprié ou conserver la valeur par défaut."
+msgstr ""
+"Il n'est pas possible (et il serait dangereux pour la sécurité du système) "
+"d'exécuter Interchange avec les privilèges du superutilisateur. Veuillez "
+"choisir un utilisateur approprié ou conserver la valeur par défaut."
 
 #. Type: string
 #. Description
@@ -332,7 +345,10 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
-msgstr "Il n'est pas possible (et il serait dangereux pour la sécurité du système) d'exécuter Interchange avec les privilèges du groupe du superutilisateur. Veuillez choisir un groupe approprié ou conservez la valeur par défaut."
+msgstr ""
+"Il n'est pas possible (et il serait dangereux pour la sécurité du système) "
+"d'exécuter Interchange avec les privilèges du groupe du superutilisateur. "
+"Veuillez choisir un groupe approprié ou conservez la valeur par défaut."
 
 #. Type: boolean
 #. Description
@@ -364,7 +380,10 @@ msgstr "Serveur web à utiliser :"
 msgid ""
 "This information is necessary for the makecat script. Please specify which "
 "webserver you want to use for your Interchange applications."
-msgstr "Veuillez indiquer le serveur web qui sera utilisé pour les applications Interchange. Cette information sera utilisée par le script de création de catalogues."
+msgstr ""
+"Veuillez indiquer le serveur web qui sera utilisé pour les applications "
+"Interchange. Cette information sera utilisée par le script de création de "
+"catalogues."
 
 #. Type: string
 #. Description
@@ -395,13 +414,17 @@ msgid ""
 "server."
 msgstr ""
 "Pour une meilleure sécurité, les informations sur les cartes de crédit "
-"envoyées par les clients seront chiffrées et envoyées par courriel au propriétaire du magasin virtuel sans être conservées sur le serveur."
+"envoyées par les clients seront chiffrées et envoyées par courriel au "
+"propriétaire du magasin virtuel sans être conservées sur le serveur."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:11001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Veuillez choisir le répertoire où Interchange conservera le trousseau de clés publiques GnuPG."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr ""
+"Veuillez choisir le répertoire où Interchange conservera le trousseau de "
+"clés publiques GnuPG."
 
 #. Type: select
 #. Choices
@@ -425,8 +448,7 @@ msgid ""
 msgstr ""
 "Veuillez choisir l'un des jeux de paramètres du serveur. Tout magasin "
 "construit à partir de la démonstration verra son comportement modifié "
-"également. Si « RPC » est choisi, le serveur fonctionnera en mode "
-"« PreFork »."
+"également. Si « RPC » est choisi, le serveur fonctionnera en mode « PreFork »."
 
 #. Type: boolean
 #. Description
@@ -460,8 +482,7 @@ msgid ""
 msgstr ""
 "Vous ne pouvez pas utiliser le serveur SOAP d'Interchange car le module Perl "
 "SOAP::Lite n'est pas installé. Pour corriger cela, veuillez installer le "
-"paquet libsoap-lite-perl et utiliser la commande « interchangeconfig "
-"SOAP=1 »."
+"paquet libsoap-lite-perl et utiliser la commande « interchangeconfig SOAP=1 »."
 
 #. Type: boolean
 #. Description
@@ -490,10 +511,10 @@ msgid ""
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
-"Le paquet d'Interchange utilise un fichier de configuration distinct /"
-"etc/interchange/robots.cfg pour les directives RobotUA, RobotIP et "
-"RobotHost. Vous devriez activer ces réglages afin qu'Interchange puisse "
-"faire la différence entre les robots et les utilisateurs ordinaires."
+"Le paquet d'Interchange utilise un fichier de configuration distinct /etc/"
+"interchange/robots.cfg pour les directives RobotUA, RobotIP et RobotHost. "
+"Vous devriez activer ces réglages afin qu'Interchange puisse faire la "
+"différence entre les robots et les utilisateurs ordinaires."
 
 #. Type: select
 #. Description
@@ -514,4 +535,3 @@ msgstr ""
 "traduite en danois (da_DK), néerlandais (nl_NL), allemand (de_DE), italien "
 "(it_IT) et suédois (sv_SE). Veuillez choisir la langue par défaut. Les "
 "utilisateurs pourront modifier ce réglage à la connexion."
-
