@@ -1,4 +1,4 @@
-interchange (5.6.0-1) unstable; urgency=low
+interchange (5.6.0-0.1) unstable; urgency=low
 
   * new upstream release
     - display modified date on Saved Carts / Recurring Order page in a
@@ -17,7 +17,7 @@ interchange (5.6.0-1) unstable; urgency=low
   * lintian fixes
     - fix section in interchangeconfig/te manual pages
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 15 May 2008 23:12:56 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  2 Jun 2008 15:48:41 +0200
 
 interchange (5.5.1-1.1) unstable; urgency=low
 
