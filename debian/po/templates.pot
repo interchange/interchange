@@ -1,22 +1,14 @@
-#
-#    Translators, if you are not familiar with the PO format, gettext
-#    documentation is worth reading, especially sections dedicated to
-#    this format, e.g. by running:
-#         info -n '(gettext)PO Files'
-#         info -n '(gettext)Header Entry'
-#
-#    Some information specific to po-debconf are available at
-#            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
-#    Developers do not need to manually edit POT or PO files.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-28 20:38-0800\n"
+"Report-Msgid-Bugs-To: racke@linuxia.de\n"
+"POT-Creation-Date: 2007-08-21 15:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,27 +18,27 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:4
+#: ../interchange-cat-standard.templates:1001
 msgid "Create the Interchange demo catalog?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:4
+#: ../interchange-cat-standard.templates:1001
 msgid ""
-"Whether to install the demo catalog from the foundation template or let you "
+"Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:11
+#: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:11
+#: ../interchange-cat-standard.templates:2001
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
@@ -54,19 +46,19 @@ msgstr ""
 
 #. Type: select
 #. Choices
-#: ../interchange-cat-foundation.templates:17
+#: ../interchange-cat-standard.templates:3001
 msgid "always, ask, never"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-cat-foundation.templates:19
+#: ../interchange-cat-standard.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-cat-foundation.templates:19
+#: ../interchange-cat-standard.templates:3002
 msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
@@ -74,25 +66,39 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:26
+#: ../interchange-cat-standard.templates:4001
 msgid "Replace the Interchange demo catalog?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:26
+#: ../interchange-cat-standard.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange-cat-foundation.templates:32
+#: ../interchange-cat-standard.templates:5001
+msgid "Virtual host for the demo catalog ?"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:5001
+msgid ""
+"You are running Interchange with \"FullURL\" enabled. Please specify the "
+"virtual host for the demo catalog."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:6001
 msgid "Username for this catalog's administration:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange-cat-foundation.templates:32
+#: ../interchange-cat-standard.templates:6001
 msgid ""
 "Please provide an username for administering the demo catalog. The username "
 "must be at least 2 characters long and only contain letters, digits, "
@@ -101,15 +107,15 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../interchange-cat-foundation.templates:40
+#: ../interchange-cat-standard.templates:7001
 msgid "Password for this catalog's administration:"
 msgstr ""
 
 #. Type: password
 #. Description
-#: ../interchange-cat-foundation.templates:40
+#: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the foundation demo catalog. "
+"Please provide a password for administering the standard demo catalog. "
 "Choose one which can not be easily guessed. Default is pass. The password  "
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
@@ -117,19 +123,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-foundation.templates:49
+#: ../interchange-cat-standard.templates:8001
 msgid "Enable demo mode?"
 msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../interchange-cat-foundation.templates:54
+#: ../interchange-cat-standard.templates:9001
 msgid "Additional locales for the storefront:"
 msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../interchange-cat-foundation.templates:54
+#: ../interchange-cat-standard.templates:9001
 msgid ""
 "The Interchange demo catalog is able to display the storefront in a number "
 "of different languages. Each selected locale will increase the memory "
@@ -139,31 +145,91 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-cat-foundation.templates:64
+#: ../interchange-cat-standard.templates:10001
 msgid "Default locale for the storefront:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-cat-foundation.templates:64
+#: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
 msgstr ""
 
 #. Type: select
 #. Choices
-#: ../interchange.templates:3
+#: ../interchange-cat-standard.templates:11001
+msgid "PostgreSQL"
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange-cat-standard.templates:11001
+msgid "MySQL"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:11002
+msgid "Which DBMS should be used for the demo catalog ?"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange-cat-standard.templates:11002
+msgid "Please select the database type."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:12001
+msgid "Database name"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:12001
+msgid "Please select the name of the database."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:13001
+msgid "Database user"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../interchange-cat-standard.templates:13001
+msgid "Please specify the username for connecting to the database."
+msgstr ""
+
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:14001
+msgid "Database password"
+msgstr ""
+
+#. Type: password
+#. Description
+#: ../interchange-cat-standard.templates:14001
+msgid "Please specify the password for connecting to the database."
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange.templates:5
+#: ../interchange.templates:1002
 msgid "Start mode:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange.templates:5
+#: ../interchange.templates:1002
 msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
@@ -171,13 +237,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:12
+#: ../interchange.templates:2001
 msgid "Username to run the server as:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:12
+#: ../interchange.templates:2001
 msgid ""
 "This determines the user for the interchange server and for file "
 "permissions. Please note that using another user has serious security "
@@ -187,13 +253,21 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:21
+#: ../interchange.templates:3001
 msgid "Create the user ${USER}?"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../interchange.templates:25
+#. Type: note
+#. Description
+#: ../interchange.templates:4001 ../interchange.templates:6001
+msgid "Impossible to run interchange as root !"
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../interchange.templates:4001
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
@@ -201,13 +275,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:32
+#: ../interchange.templates:5001
 msgid "Group name to run the server as:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:32
+#: ../interchange.templates:5001
 msgid ""
 "This determines the group for the interchange server and for file "
 "permissions. Please note that using another user has serious security "
@@ -217,13 +291,7 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../interchange.templates:40
-msgid "Impossible to run interchange as root !"
-msgstr ""
-
-#. Type: note
-#. Description
-#: ../interchange.templates:40
+#: ../interchange.templates:6001
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
@@ -231,45 +299,57 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:47
+#: ../interchange.templates:7001
 msgid "Create the group ${GROUP}?"
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange.templates:9001
+msgid "Apache2"
+msgstr ""
+
+#. Type: select
+#. Choices
+#: ../interchange.templates:9001
+msgid "Apache"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange.templates:9002
+msgid "Which webserver are you running ?"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../interchange.templates:9002
+msgid ""
+"This information is necessary for the makecat script. Please specify which "
+"webserver you want to use for your Interchange applications."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:57
+#: ../interchange.templates:10001
 msgid "Static HTML files location:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:57
+#: ../interchange.templates:10001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr ""
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:63
-msgid "Enable debug mode?"
-msgstr ""
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:63
-msgid ""
-"Debug mode is only useful if you modified the Interchange sources "
-"accordingly."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:70
+#: ../interchange.templates:11001
 msgid "Directory for GnuPG public keyring:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:70
+#: ../interchange.templates:11001
 msgid ""
 "For enhanced security, credit card information retrieved from customers will "
 "be encrypted and mailed to the shop owner instead of storing it on the "
@@ -278,26 +358,26 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange.templates:70
+#: ../interchange.templates:11001
 msgid ""
 "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 
 #. Type: select
 #. Choices
-#: ../interchange.templates:80
+#: ../interchange.templates:12001
 msgid "low, high, rpc"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange.templates:82
+#: ../interchange.templates:12002
 msgid "Set of server parameters:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange.templates:82
+#: ../interchange.templates:12002
 msgid ""
 "You can choose different sets of server parameters. Any store based on the "
 "foundation demo will change its behaviour too. If rpc is selected, the "
@@ -306,13 +386,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:90
+#: ../interchange.templates:13001
 msgid "Enable the FullURL directive?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:90
+#: ../interchange.templates:13001
 msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
@@ -320,13 +400,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../interchange.templates:96
+#: ../interchange.templates:14001
 msgid "SOAP server not available"
 msgstr ""
 
 #. Type: note
 #. Description
-#: ../interchange.templates:96
+#: ../interchange.templates:14001
 msgid ""
 "Because the Perl module SOAP::Lite is not installed, you are unable to run "
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
@@ -335,25 +415,25 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:104
+#: ../interchange.templates:15001
 msgid "Enable the SOAP server?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:104
+#: ../interchange.templates:15001
 msgid "This setting determines if the SOAP server is started or not."
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:110
+#: ../interchange.templates:16001
 msgid "Enable robots settings?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:110
+#: ../interchange.templates:16001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
@@ -361,33 +441,15 @@ msgid ""
 "between robots and ordinary users."
 msgstr ""
 
-#. Type: note
-#. Description
-#: ../interchange.templates:118
-msgid "Important Perl Incompatibility"
-msgstr ""
-
-#. Type: note
-#. Description
-#: ../interchange.templates:118
-msgid ""
-"The authors of Interchange strongly disencourage the use of their software "
-"on top of a thread enabled Perl. It is likely to cause serious problems, "
-"especially in high load situations, and has no benefit at all for "
-"Interchange servers. The development team asserts that the thread-safeness "
-"of Perl and the bunch of modules Interchange uses can hardly be relied upon. "
-"Please use this package only for testing and debugging purposes."
-msgstr ""
-
 #. Type: select
 #. Description
-#: ../interchange-ui.templates:5
+#: ../interchange-ui.templates:1001
 msgid "Default language for user interface:"
 msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-ui.templates:5
+#: ../interchange-ui.templates:1001
 msgid ""
 "The administration interface for Interchange catalogs, called UI, has been "
 "translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
