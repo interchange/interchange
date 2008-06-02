@@ -25,7 +25,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: boolean
 #. Description
@@ -57,8 +58,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Надо ли удалять все файлы, принадлежащие демонстрационному каталогу "
-"Interchange, когда вы вычищаете этот пакет, например, с помощью "
-"команды dpkg --purge или apt-get remove --purge?"
+"Interchange, когда вы вычищаете этот пакет, например, с помощью команды dpkg "
+"--purge или apt-get remove --purge?"
 
 #. Type: select
 #. Choices
@@ -184,7 +185,8 @@ msgstr "Локаль по умолчанию для витрины:"
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
+msgstr ""
+"Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
@@ -408,7 +410,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:11001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Выберите каталог, используемый Interchange для хранения публичных ключей "
 "GnuPG:"
@@ -523,4 +526,3 @@ msgstr ""
 "итальянский (it_IT) и шведский (sv_SE) языки. Вы можете сейчас выбрать язык "
 "по умолчанию. Любой пользователь может изменить язык по умолчанию во время "
 "входа."
-
