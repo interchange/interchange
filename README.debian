@@ -37,6 +37,16 @@ Standard Demo
 For the administration of the standard demo (interchange-cat-standard
 package) a secure webserver (https://) is required.
 
+SOAP
+====
+
+The Interchange SOAP server is disabled by default. Run the following
+commands to activate the SOAP server:
+
+apt-get install libsoap-lite-perl
+interchangeconfig SOAP=1
+/etc/init.d/interchange restart
+
 Other Notes
 ===========
 

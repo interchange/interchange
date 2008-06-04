@@ -96,18 +96,10 @@ if [ "$RET" = true ]; then
 else
 	FULL_URL=0
 fi
-db_get interchange/cansoap
-SOAP=0
-if [ "$RET" = true ]; then
-	db_get interchange/soap
-	if [ "$RET" = true ]; then
-		SOAP=1
-	fi
-fi
 db_get interchange/traffic
 TRAFFIC="$RET"
 
-/usr/sbin/interchangeconfig FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
+/usr/sbin/interchangeconfig FULL_URL=$FULL_URL TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
