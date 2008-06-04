@@ -345,6 +345,7 @@ debian/interchange-cat-standard.postinst
 debian/interchange-cat-standard.postrm
 debian/interchange-cat-standard.prerm
 debian/interchange-cat-standard.templates
+debian/interchange-ui.conf
 debian/interchange-ui.config
 debian/interchange-ui.install
 debian/interchange-ui.postinst

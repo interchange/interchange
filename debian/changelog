@@ -16,6 +16,7 @@ interchange (5.6.0-0.1) unstable; urgency=low
   * use colon style for Debconf questions
   * lintian fixes
     - fix section in interchangeconfig/te manual pages
+    - moved HTML files of interchange-ui package to /usr/share/interchange-ui
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  2 Jun 2008 15:48:41 +0200
 

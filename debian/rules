@@ -99,9 +99,12 @@ install: build
 	mkdir -p $(TMP)/usr/lib/interchange/src
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
 # UI images and stuff
-	mkdir -p $(TMP)/var/www/interchange-5
-	for dir in $(TMP)/usr/lib/interchange/share/interchange-5/*; do mv $$dir $(TMP)/var/www/interchange-5; done
+	mkdir -p $(TMP)/usr/share/interchange-ui
+	for dir in $(TMP)/usr/lib/interchange/share/interchange-5/*; do mv $$dir $(TMP)/usr/share/interchange-ui; done
 	rm -r $(TMP)/usr/lib/interchange/share/interchange-5
+	rmdir $(TMP)/usr/lib/interchange/share
+	install -m 0755 -d $(TMP)/etc/apache2/conf.d
+	install -m 0644 debian/interchange-ui.conf $(TMP)/etc/apache2/conf.d
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
 	rm $(TMP)/usr/lib/interchange/*.pl
