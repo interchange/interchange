@@ -9,8 +9,8 @@ Template: interchange-cat-standard/purge
 Type: boolean
 Default: false
 _Description: Remove demo catalog on package purge?
- Should all files belonging to the Interchange demo catalog removed when
- you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?
+ Whether to remove all files belonging to the Interchange demo catalog when
+ you purge this package, e.g. with dpkg --purge or apt-get remove --purge.
 
 Template: interchange-cat-standard/replace
 Type: select
