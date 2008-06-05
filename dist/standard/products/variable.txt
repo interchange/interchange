@@ -24,7 +24,7 @@ ENCRYPTOR		Encryption
 FAX	(765) 555-9999	Company
 FORUM_ANON_NAME	Anonymous Coward	Forums
 FORUM_EMAIL_NOTIFY	__MVC_MAILORDERTO__	Forums
-FORUM_PRODUCTS	1	Forums
+FORUM_PRODUCTS	0	Forums
 IC_DIR	__MVC_VENDROOT__	Admin Control
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LINKMODE	__MVC_LINKMODE__	Admin Control
