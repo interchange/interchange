@@ -326,7 +326,7 @@
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Subtotal[/L]</td>
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
             </tr>
-[query list=1 table=transactions sql="select * from transactions where username = '[loop-param username]'"]
+[query list=1 table=transactions sql="select * from transactions where username = '[loop-param username]' order by order_date desc"]
             <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
                <td style="padding: 5px">[page href="admin/order_status"
 			   							 form="order=[sql-code]"
@@ -394,4 +394,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.16 2005-04-23 18:10:07 pvinci Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.17 2008-06-05 15:54:42 jon Exp $ -->
