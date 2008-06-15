@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: button.tag,v 1.24 2008-03-25 15:23:10 racke Exp $
+# $Id: button.tag,v 1.25 2008-06-15 19:11:16 jure Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.24 $
+UserTag button Version   $Revision: 1.25 $
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -31,21 +31,26 @@ sub {
 	my @from_html = qw/class id style/;
 
 	if($src) {
-		my $dr = $::Variable->{DOCROOT};
-		my $id = $Tag->image( { dir_only => 1 } );
-		$id =~ s:/+$::;
-		$id =~ s:/~[^/]+::;
-		if(	$src =~ m{^https?://}i ) {
+		if( $opt->{srcliteral} || $src =~ m{^https?://}i ) {
 			$image = $src;
 		}
-		elsif( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
-			$image = $src;
-		}
-		elsif( $dr and $src =~ m{^/} and -f "$dr/$src" ) {
-			$image = "$id/$src";
+		else {
+			my $dr = $::Variable->{DOCROOT};
+			my $id = $Tag->image( { dir_only => 1 } );
+			$id =~ s:/+$::;
+			$id =~ s:/~[^/]+::;
+
+			if( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
+				$image = $src;
+			}
+			elsif( $dr and $src =~ m{^/} and -f "$dr/$src" ) {
+				$image = "$id/$src";
+			}
+			else {
+				::logError("No image file '$src' found or image file name is invalid.");
+			}
 		}
 	}
-
 	my $onclick = '';
 	my $onmouseover = '';
 	my $onmouseout = '';
