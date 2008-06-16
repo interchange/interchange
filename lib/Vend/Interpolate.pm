@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.303 2008-05-13 22:33:15 jon Exp $
+# $Id: Interpolate.pm,v 2.304 2008-06-16 14:35:56 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.303 $, 10);
+$VERSION = substr(q$Revision: 2.304 $, 10);
 
 @EXPORT = qw (
 
@@ -5923,8 +5923,21 @@ sub levies {
 			if(not $sort = $l->{sort}) {
 				$sort = $type eq 'handling' ? 100 : 500;
 			}
-			$cost = shipping($mode);
-			$l->{description} = tag_shipping_desc($mode);
+			$l->{description} = '';
+
+			my @modes = split /\0/, $mode;
+			for my $m (@modes) {
+				$cost += shipping($m);
+				if($l->{description}) {
+					if($l->{multi_description}) {
+						$l->{description} = $l->{multi_description};
+					}
+					else {
+						$l->{description} .= ', ' if $l->{description};
+						$l->{description} .= tag_shipping_desc($m);
+					}
+				}
+			}
 		}
 		elsif($type eq 'custom') {
 			my $sub;
