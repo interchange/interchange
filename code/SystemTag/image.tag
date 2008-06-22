@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: image.tag,v 1.23 2008-03-25 17:13:20 jon Exp $
+# $Id: image.tag,v 1.24 2008-06-22 02:53:11 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.23 $
+UserTag image Version   $Revision: 1.24 $
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -259,7 +259,7 @@ sub {
 	$opt->{title} = $opt->{alt} if ! defined $opt->{title} and $opt->{alt};
 
 	my $opts = '';
-	for (qw: width height alt title border hspace vspace align valign style class :) {
+	for (qw: width height alt title border hspace vspace align valign style class name id :) {
 		if (defined $opt->{$_}) {
 			my $val = $opt->{$_};
 			$val = HTML::Entities::encode($val) if $val =~ /\W/;
