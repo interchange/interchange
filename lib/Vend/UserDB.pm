@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.62 2008-03-25 18:58:32 greg Exp $
+# $Id: UserDB.pm,v 2.63 2008-06-24 16:20:00 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1481,7 +1481,7 @@ sub logout {
 	$self->{MESSAGE} = errmsg('Logged out.');
 	if ($opt->{clear_cookie}) {
 		my @cookies = split /[\s,\0]+/, $opt->{clear_cookie};
-		my $exp = time() + $Vend::Cfg->{SaveExpire};
+		my $exp = 10;
 		for(@cookies) {
 			Vend::Util::set_cookie($_, '', $exp);
 		}
