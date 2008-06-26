@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.23 2008-03-25 17:13:21 jon Exp $
+# $Id: Cart.pm,v 2.24 2008-06-26 08:45:08 docelic Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use strict;
 
@@ -258,10 +258,25 @@ sub toss_cart {
 						$col = $tab;
 						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 					}
-					$item->{mv_max_quantity} += $quantity_cache{"$tab.$col.$item->{code}"} || ($quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code}));
+					if ( $tab =~ s/^=// ) {
+						$item->{mv_max_quantity} = $quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code});
+						goto DONE_QUANTITY_ADJUST;
+					}
+					elsif ( $tab =~ s/^\?// ) {
+						if ( $item->{mv_max_quantity} ) {
+							$item->{mv_max_quantity} = $quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code}) if
+							::tag_data($tab, $col, $item->{code});
+							goto DONE_QUANTITY_ADJUST;
+						}
+					}
+					else {
+						$item->{mv_max_quantity} += $quantity_cache{"$tab.$col.$item->{code}"} || ($quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code}));
+					}
 				}
 				$item->{mv_max_quantity} -= $total_quantity{$item->{code}};
 				$item->{mv_max_quantity} = 0 if $item->{mv_max_quantity} < 0;
+
+				DONE_QUANTITY_ADJUST:
 
 				if(
 					length $item->{mv_max_quantity}
