@@ -1,15 +1,15 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2008 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: update_order_status.tag,v 1.12 2007-03-30 23:40:54 pajamian Exp $
+# $Id: update_order_status.tag,v 1.13 2008-06-26 12:43:44 mheins Exp $
 
 UserTag update-order-status Order   order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Revision: 1.12 $
+UserTag update-order-status Version $Revision: 1.13 $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -32,7 +32,13 @@ sub {
 	}
 
 	my $user       = $trec->{username};
-	my $wants_copy = $udb->field($user, 'email_copy');
+	my $wants_copy;
+	if($udb->column_exists('email_copy')) {
+		$wants_copy = $udb->field($user, 'email_copy');
+	}
+	else {
+		$wants_copy = 1;
+	}
 
 	for(qw/
 			archive
@@ -49,6 +55,17 @@ sub {
 		/)
 	{
 		$opt->{$_} = $CGI::values{$_} if ! defined $opt->{$_};
+	}
+
+	my @track_keys = grep /tracking_number__1$/, keys %CGI::values;
+	my @otracks;
+	for(@track_keys) {
+		if(m{^(\d+)_}) {
+			$otracks[$1] = $CGI::values{$_};
+		}
+		else {
+			$otracks[0] = $CGI::values{$_};
+		}
 	}
 
 	if($opt->{ship_all} == 2 or $opt->{void_transaction} or $opt->{cancel_order}) {
@@ -229,9 +246,13 @@ sub {
 
 	my $target_status = $opt->{cancel_order} ? 'canceled' : 'shipped';
 
+	my $i = 0;
 	for(@$lines_ary) {
 		my $code = $_->[$odb_keypos];
 		my $status = $odb->field($code, 'status');
+		if (@otracks) {
+			$odb->set_field($code,'tracking_number',$otracks[$i]);
+		}
 		my $line = $code;
 		push @shiplines, $line if $need_shiplines;
 		$line =~ s/.*\D//;
@@ -242,6 +263,7 @@ sub {
 		elsif($opt->{ship_all}) {
 			$shipping{$line} = 1;
 		}
+		$i++;
 	}
 
 	my $to_ship = scalar @shiplines;
