@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.87 2008-05-22 22:34:06 racke Exp $
+# $Id: DBI.pm,v 2.88 2008-06-30 23:09:53 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.87 $, 10);
+$VERSION = substr(q$Revision: 2.88 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1988,7 +1988,7 @@ sub query {
 	my @out;
 	my $db = $s->[$DBI];
 
-	$update = 1 if $query !~ /^\W*select\s+/i;
+	$update = 1 if $query !~ /^\W*(?:select|explain|show)\s+/i;
 
 	eval {
 		if($update and $s->[$CONFIG]{Read_only}) {
