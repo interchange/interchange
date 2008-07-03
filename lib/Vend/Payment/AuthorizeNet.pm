@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.19 2007-11-15 00:16:16 jon Exp $
+# $Id: AuthorizeNet.pm,v 2.20 2008-07-03 15:11:14 mheins Exp $
 #
 # Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -403,12 +403,16 @@ sub authorizenet {
 	my $order_id = gen_order_id($opt);
 
 #::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
+	my $accttype = $actual->{check_accttype};
+	my $echeck_type = 'WEB';
+	if($accttype eq 'Business Checking') { $echeck_type = 'CCD'; }
 	my %echeck_params = (
 		x_bank_aba_code    => $actual->{check_routing},
 		x_bank_acct_num    => $actual->{check_account},
 		x_bank_acct_type   => $actual->{check_accttype},
 		x_bank_name        => $actual->{check_bankname},
 		x_bank_acct_name   => $actual->{check_acctname},
+		x_echeck_type      => $echeck_type,
 		x_Method => 'ECHECK',
 	);
 
@@ -441,7 +445,7 @@ sub authorizenet {
 		x_Customer_IP			=> $Vend::Session->{ohost},
 		x_Trans_ID				=> $actual->{order_id},
 		x_Auth_Code				=> $actual->{auth_code},
-		x_Invoice_Num			=> $actual->{mv_order_number},
+		x_Invoice_Num			=> $actual->{mv_order_number} || $actual->{mv_transaction_id},
 		x_Password				=> $secret,
 		x_Login					=> $user,
 		x_Version				=> '3.1',
