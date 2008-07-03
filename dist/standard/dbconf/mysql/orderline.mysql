@@ -2,7 +2,7 @@ Database  orderline  orderline.txt __SQLDSN__
 Database  orderline  DEFAULT_TYPE varchar(128)
 Database  orderline  COLUMN_DEF   "code=varchar(32) NOT NULL PRIMARY KEY"
 Database  orderline  COLUMN_DEF   "store_id=varchar(9) DEFAULT '' NOT NULL"
-Database  orderline  COLUMN_DEF   "order_number=varchar(14) NOT NULL"
+Database  orderline  COLUMN_DEF   "order_number=varchar(24) NOT NULL"
 Database  orderline  COLUMN_DEF   "session=varchar(32) NOT NULL"
 Database  orderline  COLUMN_DEF   "username=varchar(32) default '' NOT NULL"
 Database  orderline  COLUMN_DEF   "shipmode=varchar(255) default '' NOT NULL"

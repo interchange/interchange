@@ -1,8 +1,8 @@
 Database  transactions  transactions.txt __SQLDSN__
 Database  transactions  DEFAULT_TYPE varchar(128)
-Database  transactions  COLUMN_DEF   "code=varchar(14) NOT NULL PRIMARY KEY"
+Database  transactions  COLUMN_DEF   "code=varchar(24) NOT NULL PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=varchar(9)"
-Database  transactions  COLUMN_DEF   "order_number=varchar(14) NOT NULL"
+Database  transactions  COLUMN_DEF   "order_number=varchar(24) NOT NULL"
 Database  transactions  COLUMN_DEF   "session=varchar(64) NOT NULL"
 Database  transactions  COLUMN_DEF   "username=varchar(32) DEFAULT '' NOT NULL"
 Database  transactions  COLUMN_DEF   "shipmode=varchar(255)"
