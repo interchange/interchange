@@ -98,7 +98,7 @@ function visible (selnam) {
 			  [/if]
 			  [if variable PO_ALWAYS]
 				<b>[L]P.O. Number[/L]:</b>
-					<input type=text name=po_number value="[value po_number]">
+					<input type=text name=po_number value="[evalue po_number]">
 			  [/if]
 
 			  [if scratch pay_cert_code]

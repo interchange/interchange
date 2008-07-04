@@ -5,10 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: value.coretag,v 1.6 2007-03-30 23:40:49 pajamian Exp $
+# $Id: value.coretag,v 1.7 2008-07-04 15:52:35 mheins Exp $
 
 UserTag value               Order        name
 UserTag value               addAttr
 UserTag value               PosNumber    1
-UserTag value               Version      $Revision: 1.6 $
+UserTag value               Version      $Revision: 1.7 $
 UserTag value               MapRoutine   Vend::Interpolate::tag_value
+UserTag evalue              Alias        value keep=1 filter="encode_entities" name=

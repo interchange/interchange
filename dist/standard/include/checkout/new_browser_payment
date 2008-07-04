@@ -307,7 +307,7 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
                 [error name=check_account std_label="[L]Account Number[/L]" required=1]
               </td>
               <td colspan="3 align="left" class="contentbar1">
-                <input type="text" name="check_account" size="22" value="[value check_account]">
+                <input type="text" name="check_account" size="22" value="[evalue check_account]">
               </td>
             </tr>
             <tr>
@@ -316,7 +316,7 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
                 
               </td>
               <td align="left" colspan="3" class="contentbar1">
-                <b><input type="text" name="check_routing" size="22" value="[value check_routing]"></b>
+                <b><input type="text" name="check_routing" size="22" value="[evalue check_routing]"></b>
               </td>
             </tr>
             <tr>
@@ -325,7 +325,7 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
               </td>
               <td align="left" colspan="3" class="contentbar1">
                 <b>
-                <input type="text" name="check_number" size="22" value="[value check_number]">
+                <input type="text" name="check_number" size="22" value="[evalue check_number]">
                 </b>
               </td>
                 </tr>
@@ -336,7 +336,7 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
               </td>
               <td align="left" colspan="3" class="contentbar1">
                 <b>
-                <input type="text" name="check_bank_phone" size="22" value="[value check_bank_phone]">
+                <input type="text" name="check_bank_phone" size="22" value="[evalue check_bank_phone]">
                 </b>
               </td>
                 </tr>
@@ -374,7 +374,7 @@ the card number.  Please <b>do not</b> enter your card's PIN number here.</small
               </td>
               <td align="left" colspan="3" class="contentbar1">
                 <b>
-                <input name="po_number" value="[value po_number]" size="14">
+                <input name="po_number" value="[evalue po_number]" size="14">
                 </b>
               </td>
             </tr>

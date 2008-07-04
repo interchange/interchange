@@ -63,7 +63,7 @@
 		  </td>
 		  <td align="left" class="contentbar1">
 		  <br>
-			<input type="text" name="b_fname" value="[value b_fname]" size="20" maxlength="20">
+			<input type="text" name="b_fname" value="[evalue b_fname]" size="20" maxlength="20">
 		  </td>
 		  <td align="right" class="contentbar1">
 		  <br>
@@ -71,7 +71,7 @@
 		  </td>
 		  <td align="left" class="contentbar1">
 		  <br>
-			<input type="text" name="b_lname" value="[value b_lname]" size="20">
+			<input type="text" name="b_lname" value="[evalue b_lname]" size="20">
 		  </td>
 		</tr>
 		<tr>
@@ -79,7 +79,7 @@
 			<b>[L]Company[/L]</b>
 		  </td>
 		  <td align="left" class="contentbar1" colspan="3">
-			<input type="text" name="b_company" value="[value b_company]" size="20" maxlength="44">
+			<input type="text" name="b_company" value="[evalue b_company]" size="20" maxlength="44">
 		  </td>
 		</tr>
 		<tr>
@@ -87,13 +87,13 @@
 			<b>[L]Address[/L]</b>
 		  </td>
 		  <td align="left" colspan="3" class="contentbar1">
-			<input type="text" name="b_address1" value="[value b_address1]" size=40 maxlength="64">
+			<input type="text" name="b_address1" value="[evalue b_address1]" size=40 maxlength="64">
 		  </td>
 		</tr>
 		<tr>
 		  <td class="contentbar1">&nbsp;</td>
 		  <td align="left" colspan="3" class="contentbar1">
-			<input type="text" name="b_address2" value="[value b_address2]" size=40 maxlength="64">
+			<input type="text" name="b_address2" value="[evalue b_address2]" size=40 maxlength="64">
 		  </td>
 		</tr>
 		<tr>
@@ -101,11 +101,11 @@
 			<b>[L]City[/L]</b>
 		  </td>
 		  <td class="contentbar1">
-			<input type="text" name="b_city" value="[value b_city]" size="20">
+			<input type="text" name="b_city" value="[evalue b_city]" size="20">
 		  </td>
 		  <td align="right" class="contentbar1"><b>[L]State/Province[/L]</b></td>
 		  <td class="contentbar1">
-			[display name=b_state type=state_select value="[value b_state]"]
+			[display name=b_state type=state_select value="[evalue b_state]"]
 		  </td>
 		</tr>
 		<tr>
@@ -113,7 +113,7 @@
 			<b>[L]Zip/Postal Code[/L]</b>
 		  </td>
 		  <td class="contentbar1" colspan="3">
-			<input type="text" name="b_zip" value="[value b_zip]" size="10" maxlength="10">
+			<input type="text" name="b_zip" value="[evalue b_zip]" size="10" maxlength="10">
 		  </td>
 		</tr>
 		<tr>
@@ -121,7 +121,7 @@
 			<b>[L]Country[/L]</b>
 		  </td>
 		  <td class="contentbar1" colspan="3">
-			[display name=b_country type=country_select value="[value b_country]"]
+			[display name=b_country type=country_select value="[evalue b_country]"]
 		  </td>
 		</tr>
 		<tr>
