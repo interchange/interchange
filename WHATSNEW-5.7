@@ -10,6 +10,16 @@ See UPGRADE document for a list of incompatible changes.
 
 Interchange 5.7.0 under development.
 
+Search
+------
+
+* mv_force_coordinate (fc) added to force coordinated search.  Normally, when
+the number of search field does not match the number of search strings (specs),
+coordinated mode is automatically turned off. With 'fc', number of search specs
+is adjusted to match the number of search fields, either by filling the array
+with last-set mv_searchspec, or by trimming excess values. Useful when you want
+to search for one string in multiple fields in coordinated mode.
+
 UserTag
 -------
 

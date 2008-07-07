@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.34 2007-08-09 13:40:54 pajamian Exp $
+# $Id: Scan.pm,v 2.35 2008-07-07 18:15:07 docelic Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -59,6 +59,7 @@ my @Order = ( qw(
 	mv_numeric
 	mv_column_op
 	mv_begin_string
+	mv_force_coordinate
 	mv_coordinate
 	mv_nextpage
 	mv_dict_end
@@ -136,6 +137,7 @@ my %Scan = ( qw(
 	dr  mv_record_delim
 	em  mv_exact_match
 	er  mv_spelling_errors
+	fc  mv_force_coordinate
 	ff  mv_field_file
 	fi  mv_search_file
 	ft  mv_field_title

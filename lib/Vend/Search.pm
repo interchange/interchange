@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.37 2008-01-29 10:31:11 racke Exp $
+# $Id: Search.pm,v 2.38 2008-07-07 18:15:07 docelic Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -240,8 +240,22 @@ sub spec_check {
 	my $i = 0;
 #::logDebug($s->dump_coord(\@specs, 'BEFORE'));
 
-	$s->{mv_coordinate} = ''
-		unless $s->{mv_coordinate} and @specs == @{$s->{mv_search_field}};
+	if ( $s->{mv_force_coordinate} ) {
+		# If coordinated search is forced, ensure 
+		# @specs == @{$s->{mv_search_field}}:
+		if ( $s->{mv_coordinate} ) {
+			my $last = $#{$s->{mv_search_field}};
+			my $i;
+			for ($i = @specs; $i <= $last; $i++) {
+				$specs[$i] = $specs[$#specs];
+			}
+			$#specs = $last;
+		}
+	}
+	else {
+		$s->{mv_coordinate} = ''
+			unless $s->{mv_coordinate} and @specs == @{$s->{mv_search_field}};
+	}
 
 	my $all_chars = $s->{mv_all_chars}[0];
 
