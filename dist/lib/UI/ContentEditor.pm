@@ -1,6 +1,6 @@
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.22 2008-04-24 09:07:57 thunder Exp $
+# $Id: ContentEditor.pm,v 2.23 2008-07-09 12:38:22 thunder Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -2881,12 +2881,7 @@ sub page_editor {
 
 	save_store('page', $name, $pref);
 
-	## If returns false then must be error or not editable
-	parse_page($pref, $opt)
-		or do {
-			Vend::Tags->error({ name => 'parse_page', set => "Error parsing page." });
-			return;
-		};
+	parse_page($pref, $opt);
 
 	publish_page($pref, $opt) if $opt->{new};
 
