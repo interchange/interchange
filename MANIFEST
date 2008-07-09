@@ -94,6 +94,7 @@ code/OrderCheck/always_fail.oc
 code/OrderCheck/always_pass.oc
 code/OrderCheck/email_only.oc
 code/OrderCheck/exists.oc
+code/OrderCheck/isbn.oc
 code/OrderCheck/filter.oc
 code/OrderCheck/future.oc
 code/OrderCheck/length.oc

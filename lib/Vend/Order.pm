@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.100 2008-03-25 17:13:21 jon Exp $
+# $Id: Order.pm,v 2.101 2008-07-09 13:54:20 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.100 $, 10);
+$VERSION = substr(q$Revision: 2.101 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1328,45 +1328,6 @@ sub _email {
 		return (undef, $var,
 			errmsg( "'%s' not an email address", $val )
 		);
-	}
-}
-
-# Contributed by Ton Verhagen -- April 15, 2000
-sub _isbn {
-	# $ref is to $::Values hash (well, actually ref to %CGI::values)
-	# $var is the passed name of the variable
-	# $val is current value of checked variable
-	# This routine will return 1 if isbn is ok, else returns 0
-	# Rules:
-	# isbn number must contain exactly 10 digits.
-	# isbn number:		0   9   4   0   0   1   6   3   3   8
-	# weighting factor:	10  9   8   7   6   5   4   3   2   1
-	# Values (product)	0 +81 +32 + 0 + 0 + 5 +24 + 9 + 6 + 8 --> sum is: 165
-	# Sum must be divisable by 11 without remainder: 165/11=15 (no remainder)
-	# Result: isbn 0-940016-33-8 is a valid isbn number.
-	# Note: the last "digit" could be a "X", which would be treated as 10 in the above
-	
-	my($ref, $var, $val) = @_;
-	$val =~ s/[^\dXx]//g;	# weed out non-digits
-	if( $val && length($val) == 10 ) {
-	  my @digits = split("", $val);
-	  my $sum=0;
-	  for(my $i=10; $i > 0; $i--) {
-	  	my $d = $digits[10 - $i];
-		if ($d =~ /[Xx]/) {
-		    if ($i == 1) {
-			$d = 10;
-		    }
-		    else {
-			return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
-		    }
-		}
-		$sum += $d * $i;
-	  }
-	  return ( $sum%11 ? 0 : 1, $var, '' );
-	}
-	else {
-	  return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
 	}
 }
 

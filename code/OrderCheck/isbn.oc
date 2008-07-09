@@ -1,0 +1,37 @@
+# Copyright 2008 Interchange Development Group
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: isbn.oc,v 1.1 2008-07-09 13:54:20 racke Exp $
+
+CodeDef isbn OrderCheck 1
+CodeDef isbn Description ISBN-10 check digit verification
+CodeDef isbn Routine <<EOR
+sub {
+	my($ref, $var, $val) = @_;
+	$val =~ s/[^\dXx]//g;	# weed out non-digits
+	if( $val && length($val) == 10 ) {
+		my @digits = split("", $val);
+		my $sum=0;
+		for(my $i=10; $i > 0; $i--) {
+		  	my $d = $digits[10 - $i];
+			if ($d =~ /[Xx]/) {
+				if ($i == 1) {
+					$d = 10;
+				}
+				else {
+					return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
+			    	}
+			}
+			$sum += $d * $i;
+		}
+		return ( $sum%11 ? 0 : 1, $var, '' );
+	}
+	else {
+		return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
+	}
+}
+EOR
