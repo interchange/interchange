@@ -3,7 +3,7 @@
 #
 # Interchange version 5.7.0
 #
-# $Id: interchange.PL,v 2.107 2008-05-21 03:05:20 jon Exp $
+# $Id: interchange.PL,v 2.108 2008-07-09 11:05:30 thunder Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1088,12 +1088,13 @@ Contributions to Interchange have been made by:
     Frank Bonita             Ray Desjardins
     Frederic Steinfels       Shozo Murahashi
     Gunnar Hellekson         Sonny Cook
-    Hamish Bradick           Tim Baverstock
-    Hans-Joachim Leidinger   Tom Friedel
-    Heinz Wittenbecher       Tommi Laberno
-    Hiroyuki Cozy Kojima     Troy Davis
-    Ignacio Lizarán          Victor Nolton
-    Jack Tsai                William Dan Terry
+    Hamish Bradick           Steve Graham
+    Hans-Joachim Leidinger   Tim Baverstock
+    Heinz Wittenbecher       Tom Friedel
+    Hiroyuki Cozy Kojima     Tommi Laberno
+    Ignacio Lizarán          Troy Davis
+    Jack Tsai                Victor Nolton 
+                             William Dan Terry
     and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
