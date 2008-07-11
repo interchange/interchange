@@ -5,33 +5,57 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: isbn.oc,v 1.1 2008-07-09 13:54:20 racke Exp $
+# $Id: isbn.oc,v 1.2 2008-07-11 08:37:28 racke Exp $
 
 CodeDef isbn OrderCheck 1
-CodeDef isbn Description ISBN-10 check digit verification
+CodeDef isbn Description ISBN-10/ISBN-13 check digit verification
 CodeDef isbn Routine <<EOR
 sub {
 	my($ref, $var, $val) = @_;
 	$val =~ s/[^\dXx]//g;	# weed out non-digits
-	if( $val && length($val) == 10 ) {
+	if ($val) {
 		my @digits = split("", $val);
-		my $sum=0;
-		for(my $i=10; $i > 0; $i--) {
-		  	my $d = $digits[10 - $i];
-			if ($d =~ /[Xx]/) {
-				if ($i == 1) {
-					$d = 10;
+		my $sum = 0;
+		my $check_digit = 0;
+		my $modulo;
+
+		if (@digits == 10 ) {
+			# ISBN-10 number
+			for(my $i=10; $i > 0; $i--) {
+		  		my $d = $digits[10 - $i];
+				if ($d =~ /[Xx]/) {
+					if ($i == 1) {
+						$d = 10;
+					}
+					else {
+						return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
+			    		}
 				}
-				else {
-					return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
-			    	}
+				$sum += $d * $i;
 			}
-			$sum += $d * $i;
+			return ( $sum%11 ? 0 : 1, $var, '' );
+		} elsif (@digits == 13) {
+			# ISBN-13/EAN number
+			for (my $i = 0; $i < 12; $i++) {
+				if ($i % 2) {
+					$sum += 3 * $digits[$i];
+				} 
+				else {
+					$sum += $digits[$i];
+				}
+			}
+			
+			if ($modulo = $sum % 10) {
+		                $check_digit = 10 - $modulo;
+        		}
+
+			if (pop(@digits) == $check_digit) {
+				# verification successful
+				return (1, $var, '');
+			}
 		}
-		return ( $sum%11 ? 0 : 1, $var, '' );
 	}
-	else {
-		return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
-	}
+
+	return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
 }
 EOR
