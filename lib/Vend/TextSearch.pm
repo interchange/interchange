@@ -1,10 +1,10 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.17 2007-08-09 13:40:54 pajamian Exp $
+# $Id: TextSearch.pm,v 2.18 2008-07-11 12:07:55 racke Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 use Search::Dict;
 use strict;
@@ -197,6 +197,7 @@ sub search {
 		}
 		if($field_names) {
 			$field_names =~ s/^\s+//;
+			$field_names =~ s/\s+$//;
 			my @laundry = (qw/mv_search_field mv_range_look mv_return_fields/);
 			$s->hash_fields(
 						[ split /\Q$s->{mv_index_delim}/, $field_names ],
