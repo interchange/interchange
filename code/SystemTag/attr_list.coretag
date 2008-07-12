@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: attr_list.coretag,v 1.7 2007-03-30 23:40:49 pajamian Exp $
+# $Id: attr_list.coretag,v 1.8 2008-07-12 19:27:12 docelic Exp $
 
-UserTag attr-list           addAttr
-UserTag attr-list           hasEndTag
-UserTag attr-list           PosNumber    0
-UserTag attr-list           noRearrange
-UserTag attr-list           Version      $Revision: 1.7 $
-UserTag attr-list           Routine      <<EOR
+UserTag attr_list           addAttr
+UserTag attr_list           hasEndTag
+UserTag attr_list           PosNumber    0
+UserTag attr_list           noRearrange
+UserTag attr_list           Version      $Revision: 1.8 $
+UserTag attr_list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;
 	if( ref $opt->{hash} ) {
