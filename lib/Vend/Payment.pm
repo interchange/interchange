@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.19 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Payment.pm,v 2.20 2008-07-16 00:37:32 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -613,6 +613,17 @@ sub post_data {
 	if($opt->{use_wget}) {
 		## Don't worry about OS independence with UNIX wget
 		my $bdir = "$Vend::Cfg->{ScratchDir}/wget";
+
+		unless (-d $bdir) {
+			mkdir $bdir, 0777
+				or do {
+					my $msg = "Failed to create directory %s: %s";
+					$msg = errmsg($msg, $bdir, $!);
+					logError($msg);
+					die $msg;
+				};
+		}
+
 		my $filebase = "$Vend::SessionID.wget";
 		my $statfile = Vend::File::get_filename("$filebase.stat", 1, 1, $bdir);
 		my $outfile  = Vend::File::get_filename("$filebase.out", 1, 1, $bdir);
