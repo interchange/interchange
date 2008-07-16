@@ -18,6 +18,15 @@ Core
 
   $Db{table}->set_slice('', %parms));
 
+Payment
+-------
+
+* If the tmp/wget directory (or more properly "$Vend::Cfg->{ScratchDir}/wget")
+  directory did not exist, use_wget mode would error out.
+
+  Change code to make directory if non-existent, and give better error
+  if by some strange chance a file existed there.
+
 Standard
 --------
 
