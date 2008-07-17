@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.8 2008-04-19 14:37:27 jon Exp $
+# $Id: CharSet.pm,v 2.9 2008-07-17 15:00:04 mheins Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
@@ -23,7 +23,6 @@
 package Vend::CharSet;
 
 use strict;
-use warnings;
 
 use Encode qw( decode resolve_alias is_utf8 );
 
