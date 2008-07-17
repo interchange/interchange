@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: uploadhelper.widget,v 1.5 2008-07-17 14:32:54 racke Exp $
+# $Id: uploadhelper.widget,v 1.6 2008-07-17 14:37:09 racke Exp $
 
 CodeDef uploadhelper  Widget  1
 CodeDef uploadhelper  Description File upload
@@ -13,7 +13,6 @@ CodeDef uploadhelper  Routine <<EOR
 sub {
 	# $column, $value, $record->{outboard}, $record->{width}
     my ($opt) = @_;
-::logError("Parameters for Image upload widget: " . ::uneval($opt));
 
 	my $name = $opt->{name};
 	my $val  = $opt->{value};
