@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: country_select.widget,v 1.10 2007-03-30 23:40:58 pajamian Exp $
+# $Id: country_select.widget,v 1.11 2008-07-18 20:58:35 mheins Exp $
 
 CodeDef state_select  Widget  1
 CodeDef state_select  Description State (needs country_select)
@@ -246,6 +246,7 @@ EOF
 EOF
 
 	my $sval = $CGI::values{$svar} || $::Values->{$svar};
+	$sval = HTML::Entities::encode($sval, $ESCAPE_CHARS::std);
 	$sval = $Tag->jsq($sval) || "''";
 	my $fname = $opt->{form_name} || 'nevairbe';
 
