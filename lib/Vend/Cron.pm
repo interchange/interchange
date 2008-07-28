@@ -1,6 +1,6 @@
 # Vend::Cron - Determine tasks to run based on time
 #
-# $Id: Cron.pm,v 2.2.2.1 2007-03-30 12:15:27 pajamian Exp $
+# $Id: Cron.pm,v 2.2.2.2 2008-07-28 20:49:13 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 #
@@ -22,7 +22,7 @@
 package Vend::Cron;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.2 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -31,7 +31,13 @@ use strict;
 
 no warnings qw(uninitialized);
 
-use Set::Crontab;
+BEGIN {
+  eval {
+	require Set::Crontab;
+	import Set::Crontab;
+	$Vend::Cron::Loaded = 1;
+  };
+}
 
 my @periods = (
 	[0 .. 59],
