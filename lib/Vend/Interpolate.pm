@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.261.2.8 2008-07-28 20:49:13 mheins Exp $
+# $Id: Interpolate.pm,v 2.261.2.9 2008-07-28 21:27:22 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.261.2.8 $, 10);
+$VERSION = substr(q$Revision: 2.261.2.9 $, 10);
 
 @EXPORT = qw (
 
@@ -5859,6 +5859,9 @@ sub levies {
 						$l->{description} .= ', ' if $l->{description};
 						$l->{description} .= tag_shipping_desc($m);
 					}
+				}
+				else {
+					$l->{description} = tag_shipping_desc($m);
 				}
 			}
 		}
