@@ -13,11 +13,7 @@
 	delete $Scratch->{change_payment};
 	return unless $CGI->{change_payment} eq 'do';
 	$Scratch->{change_payment} = 1;
-	for (my $i = 1; $i < 1000; $i++) {
-		last unless defined $CGI->{"cc_accepted$i"};
-		push @cc, $CGI->{"cc_accepted$i"};
-	}
-	$Scratch->{CREDIT_CARDS_ACCEPTED} = join " ", @cc;
+	$Scratch->{CREDIT_CARDS_ACCEPTED} = join " ", grep {/\S/} @{$CGI_array->{cc_accepted}};
 	$Scratch->{PO_ACCEPTED} = $CGI->{po};
 	$Scratch->{COD_ACCEPTED} = $CGI->{cod};
 	$Scratch->{POSTAL_ACCEPTED} = $CGI->{postal};
@@ -91,7 +87,7 @@ EOF
 
 <td class=rnorm>
 
-<select name="cc_accepted[loop-increment]">
+<select name="cc_accepted">
 <option value=""> [L]Not Accepted[/L]
 <option value="[loop-code]" [if-loop-pos 2]SELECTED[/if-loop-pos]> [L]Accepted[/L]
 </select>
