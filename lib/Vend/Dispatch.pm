@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.101 2008-04-25 09:08:03 racke Exp $
+# $Id: Dispatch.pm,v 1.102 2008-08-05 09:56:17 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.101 $, 10);
+$VERSION = substr(q$Revision: 1.102 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -670,7 +670,7 @@ sub do_process {
 	}
     elsif (not $sub = $form_action{$todo} ) {
 		unless ($sub = Vend::Util::codedef_routine('FormAction', $todo)) {
-		interaction_error("No action passed for processing\n");
+		interaction_error(::errmsg("Invalid action %s passed for processing.\n", $todo));
 		return;
     }
     }
