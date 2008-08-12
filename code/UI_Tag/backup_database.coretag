@@ -1,15 +1,15 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2008 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: backup_database.coretag,v 1.9 2007-03-30 23:40:54 pajamian Exp $
+# $Id: backup_database.coretag,v 1.10 2008-08-12 22:02:57 jon Exp $
 
 UserTag backup-database Order    tables
 UserTag backup-database AddAttr
-UserTag backup-database Version  $Revision: 1.9 $
+UserTag backup-database Version  $Revision: 1.10 $
 UserTag backup-database Routine  <<EOR
 sub {
 	my ($tables, $opt) = @_;
@@ -69,6 +69,7 @@ sub {
 			$status = export(
 						$table,
 						{
+							force => 1,
 							table => $table,
 							file => $file,
 							type => 'TAB',
