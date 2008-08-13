@@ -11,10 +11,22 @@
 	return $Scratch->{old_browser} ? 'Not a DHTML browser' : 'DHTML browser';
 [/calc] -->
 
-[perl tables="products"]
+[perl tables="products country"]
 
 	## This section sets the shipping, handling, taxing, and payment
 	## initializations, as well as browser check
+
+
+	# Initialize country:
+	$Values->{country} ||= $Variable->{SHIP_DEFAULT_COUNTRY};
+
+	# Initialize shipmode:
+	if ($Values->{mv_shipmode} eq 'default') {
+		my $shipmode = $Tag->data('country', 'shipmodes', $Values->{country});
+		$shipmode =~ s/^\s+//;
+		$shipmode =~ s/\s.*//;
+		$Values->{mv_shipmode} = $shipmode;
+	}
 
 	## Start with payment mode if none there
 	$Values->{mv_order_profile} ||= $Variable->{DEFAULT_PAYMENT_MODE}
