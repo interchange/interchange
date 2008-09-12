@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.306 2008-07-28 21:27:28 mheins Exp $
+# $Id: Interpolate.pm,v 2.307 2008-09-12 21:59:48 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.306 $, 10);
+$VERSION = substr(q$Revision: 2.307 $, 10);
 
 @EXPORT = qw (
 
@@ -4681,6 +4681,7 @@ sub region {
 		if(! $obj) {
 			$obj = perform_search();
 			$obj = {
+				mv_results => [],					
 				matches => 0,
 				mv_search_error => [ errmsg('No search was found') ],
 			} if ! $obj;
