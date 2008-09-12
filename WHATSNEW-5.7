@@ -27,6 +27,14 @@ to search for one string in multiple fields in coordinated mode.
 
 * remove trailing whitespace from text file headers 
 
+* Under rare circumstances the missing search can fall through in a block
+  below, which caused an internal server error in the following code line:
+
+	$obj->{matches} = scalar @{$obj->{mv_results}};
+
+  This is now mitigated by an empty mv_results array and results in a search
+  error as one would expect.
+
 UserTag
 -------
 
