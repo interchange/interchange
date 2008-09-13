@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.91 2008-04-22 05:09:44 jon Exp $
+# $Id: Server.pm,v 2.92 2008-09-13 04:28:56 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.92 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -498,7 +498,7 @@ sub create_cookie {
 		if defined $::Instance->{Cookies};
 	$out = '';
 	foreach my $cookie (@jar) {
-		my ($name, $value, $expire, $d, $p) = @$cookie;
+		my ($name, $value, $expire, $d, $p, $secure) = @$cookie;
 		$d = $domain if ! $d;
 		$p = $path   if ! $p;
 #::logDebug("create_cookie: name=$name value=$value expire=$expire");
@@ -521,6 +521,7 @@ sub create_cookie {
 			$expstring =~ s/^\s*/ /;
 			$out .= $expstring;
 		}
+		$out .= '; secure' if $secure;
 		$out .= "\r\n";
 	}
 	return $out;

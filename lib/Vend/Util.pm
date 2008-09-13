@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.118 2008-03-27 15:56:49 ton Exp $
+# $Id: Util.pm,v 2.119 2008-09-13 04:28:56 jon Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.118 $, 10);
+$VERSION = substr(q$Revision: 2.119 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1863,7 +1863,7 @@ sub logOnce {
 
 # Here for convenience in calls
 sub set_cookie {
-    my ($name, $value, $expire, $domain, $path) = @_;
+    my ($name, $value, $expire, $domain, $path, $secure) = @_;
 
     # Set expire to now + some time if expire string is something like
     # "30 days" or "7 weeks" or even "60 minutes"
@@ -1879,7 +1879,7 @@ sub set_cookie {
 		@{$::Instance->{Cookies}} =
 			grep $_->[0] ne $name, @{$::Instance->{Cookies}};
 	}
-    push @{$::Instance->{Cookies}}, [$name, $value, $expire, $domain, $path];
+    push @{$::Instance->{Cookies}}, [$name, $value, $expire, $domain, $path, $secure];
     return;
 }
 
