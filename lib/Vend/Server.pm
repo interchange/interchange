@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.91 2008-04-22 05:09:44 jon Exp $
+# $Id: Server.pm,v 2.91.2.1 2008-09-17 23:28:16 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.91.2.1 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -251,7 +251,7 @@ EOF
 	if ($request_method eq 'POST') {
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
-		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded)\b}i) {
+		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml)\b}i) {
 			parse_post(\$CGI::query_string)
 				if $Global::TolerateGet;
 			parse_post($h->{entity});
