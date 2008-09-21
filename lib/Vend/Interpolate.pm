@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.307 2008-09-12 21:59:48 racke Exp $
+# $Id: Interpolate.pm,v 2.308 2008-09-21 11:40:27 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.307 $, 10);
+$VERSION = substr(q$Revision: 2.308 $, 10);
 
 @EXPORT = qw (
 
@@ -644,6 +644,8 @@ sub vars_and_comments {
 
 sub interpolate_html {
 	my ($html, $wantref, $opt) = @_;
+
+	return undef if ! defined($html);
 	return undef if $Vend::NoInterpolate;
 	my ($name, @post);
 	my ($bit, %post);
