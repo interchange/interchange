@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.119 2008-09-13 04:28:56 jon Exp $
+# $Id: Util.pm,v 2.120 2008-09-26 14:57:58 racke Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.119 $, 10);
+$VERSION = substr(q$Revision: 2.120 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1393,6 +1393,10 @@ sub tag_nitems {
 		else {
 			$sub = sub { return $_[0] };
 		}
+	}
+
+	if($opt->{lines}) {
+		return scalar(grep {! $attr or $sub->($_->{$attr})} @$cart);
 	}
 
     $total = 0;
