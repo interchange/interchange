@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: capture_page.tag,v 1.10 2008-09-26 12:27:41 racke Exp $
+# $Id: capture_page.tag,v 1.11 2008-09-26 19:47:02 racke Exp $
 
 UserTag capture_page Order   page file
 UserTag capture_page addAttr
-UserTag capture_page Version $Revision: 1.10 $
+UserTag capture_page Version $Revision: 1.11 $
 UserTag capture_page Routine <<EOR
 sub {
 	my ($page, $file, $opt) = @_;
@@ -53,7 +53,7 @@ sub {
 		$retval = 1;
 	}
 
-	if ($file} {
+	if ($file) {
 	   $retval = Vend::File::writefile (">$file", $pageref, 
            {auto_create_dir => $opt->{auto_create_dir},
          	umask => $opt->{umask}});
