@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.9 2008-07-17 15:00:04 mheins Exp $
+# $Id: CharSet.pm,v 2.10 2008-09-26 15:38:17 jon Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
@@ -34,10 +34,8 @@ sub decode_urlencode {
 	$octets =~ tr/+/ /;
 	$octets =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
 
-	unless ($encoding || $class->validate_encoding($encoding)) {
-		return $octets;
-	}
-	
+	return $octets unless $encoding and $class->validate_encoding($encoding);
+
 	my $string = $class->to_internal($encoding, $octets);
 
 #::logDebug("decoded string: " . display_chars($string)) if $string;
