@@ -88,7 +88,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	if [ "$dbc_dbtype" = "mysql" ]; then
 		MYSQL=1
 		SQLDSN="dbi:mysql:$dbc_dbname"
-	elif [ "$dbc_dbype" = "pgsql" ]; then
+	elif [ "$dbc_dbtype" = "pgsql" ]; then
 		PGSQL=1
 		SQLDSN="dbi:Pg:dbname=$dbc_dbname"
 	fi
