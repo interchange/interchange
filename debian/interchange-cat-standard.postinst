@@ -83,6 +83,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	# determine database parameters
 	MYSQL=0
 	PGSQL=0
+	SQLITE=0
 	SQLDSN=
 	db_get interchange-cat-standard/dbtype
 	if [ "$dbc_dbtype" = "mysql" ]; then
@@ -91,10 +92,13 @@ if [ "$GOAHEAD" = "true" ]; then
 	elif [ "$dbc_dbtype" = "pgsql" ]; then
 		PGSQL=1
 		SQLDSN="dbi:Pg:dbname=$dbc_dbname"
+	elif [ "$dbc_dbtype" = "sqlite" ]; then
+		SQLITE=1
+		SQLDSN="dbi:SQLite:dbname=$dbc_dbname"
 	fi
-	
+
 	SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
-	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
+	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_SQLITE=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
 		--demotype=$CATALOG \
