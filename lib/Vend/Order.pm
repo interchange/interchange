@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.101 2008-07-09 13:54:20 racke Exp $
+# $Id: Order.pm,v 2.102 2008-10-03 15:55:40 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.101 $, 10);
+$VERSION = substr(q$Revision: 2.102 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1118,7 +1118,7 @@ EOF
 # NF = Newfoundland is deprecated and will be removed at some point;
 # use NL instead
 $state_template{CA} = <<EOF;
-| AB BC MB NB NF NL NS NT ON PE QC SK YT YK |
+| AB BC MB NB NF NL NS NT NU ON PE QC SK YT YK |
 EOF
 
 $zip_error{US} = "'%s' not a US zip code";
