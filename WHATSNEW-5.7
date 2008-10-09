@@ -39,6 +39,15 @@ to search for one string in multiple fields in coordinated mode.
   This is now mitigated by an empty mv_results array and results in a search
   error as one would expect.
 
+* Refining searches with properties in Swish search:
+
+    sf=distribution
+    se=lenny
+
+    se=postgresql
+
+  This also reverts the workaround for #111.
+
 UserTag
 -------
 

@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish.pm,v 1.14 2008-05-17 14:34:42 jon Exp $
+# $Id: Swish.pm,v 1.15 2008-10-09 14:43:42 racke Exp $
 #
 # Adapted from earlier Vend::Swish by Brian Miller <brian@endpoint.com>
 #
@@ -26,7 +26,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 use strict;
 
 use SWISH::API;
@@ -226,15 +226,7 @@ sub search {
 		}
 	}
 	
-	#
-	#	bug alert (make your own klaxon sound here)
-	#	-------------------------------------------.
-	#	uncommenting the following line causes the [on-match] and
-	#	[no-match] blocks to reverse their meaning.  This has something
-	#	to do with the resulting "matches" count, but I haven't looked
-	#	into it properly
-	#
-	# $search_string = $s->build_search(\@pats);
+	$search_string = $s->build_search(\@pats);
 
 #::logDebug("Swish search string is $search_string within " . join(', ', @sf));
 	
@@ -361,7 +353,7 @@ sub build_search {
 	for (my $i = 0; $i < $field_count; $i++) {
 		
 		# validate $group first
-		if (@sf) {
+		if (@sf > $i) {
 			push (@{$specs_by_group[$group[$i]]}, ["$sf[$i] = $pats->[$i]", $s->{mv_orsearch}->[$i]]);
 		} else {
 #			if ($su[$i]) {
