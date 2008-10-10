@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.102 2008-08-05 09:56:17 racke Exp $
+# $Id: Dispatch.pm,v 1.103 2008-10-10 15:08:19 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.102 $, 10);
+$VERSION = substr(q$Revision: 1.103 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -524,6 +524,9 @@ my %form_action = (
 							);
 						}
 					}
+
+					# Do order cleanup
+					run_macro($Vend::Cfg->{OrderCleanup});
 
 					# Remove the items
 					@$Vend::Items = ();
