@@ -10,6 +10,8 @@ interchange (5.6.0-0.1) unstable; urgency=low
     - added defaults for database name and database user 
   * added Dutch translation of Debconf templates (Closes: #474696,
     thanks to Bart Cornelis <cobaco@skolelinux.no>)
+  * added Swedish translation of Debconf templates (Closes: #501922,
+    thanks to Martin Ågren <martin.agren@gmail.com>)
   * Debconf
     - use colon style
     - remove SOAP questions
