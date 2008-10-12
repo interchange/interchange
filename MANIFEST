@@ -378,6 +378,7 @@ debian/po/nl.po
 debian/po/POTFILES.in
 debian/po/pt.po
 debian/po/ru.po
+debian/po/sv.po
 debian/po/templates.pot
 debian/po/vi.po
 debian/rules
