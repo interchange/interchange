@@ -1,4 +1,10 @@
-interchange (5.6.0-0.1) unstable; urgency=low
+interchange (5.6.1-1) unstable; urgency=low
+
+  * new upstream release
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:04:35 +0200
+
+interchange (5.6.0-1) unstable; urgency=low
 
   * new upstream release
     - display modified date on Saved Carts / Recurring Order page in a
@@ -17,13 +23,16 @@ interchange (5.6.0-0.1) unstable; urgency=low
     - remove SOAP questions
   * don't care about Apache 1 anymore 
   * fix error in German translation of Debconf templates
+  * dependency on adduser added
   * use type error for wrong Debconf input
-  * fixed POD error in interchangeconfig script
+  * use colon style for Debconf questions
   * lintian fixes
+    - added missing dependency on libc
+    - don't ignore errors on make clean
     - fix section in interchangeconfig/te manual pages
-    - moved HTML files of interchange-ui package to /usr/share/interchange-ui
+    - build dependency on po-debconf added
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  2 Jun 2008 15:48:41 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 21:12:21 +0200
 
 interchange (5.5.1-1.1) unstable; urgency=low
 
