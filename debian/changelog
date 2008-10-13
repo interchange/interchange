@@ -1,8 +1,14 @@
-interchange (5.7.0-1) unstable; urgency=low
+interchange (5.7.1-1) unstable; urgency=low
 
   * new upstream release
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:08:28 +0200
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 02 Jun 2008 12:38:11 +0200
+interchange (5.6.1-1) unstable; urgency=low
+
+  * new upstream release
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:04:35 +0200
 
 interchange (5.6.0-1) unstable; urgency=low
 
@@ -16,14 +22,23 @@ interchange (5.6.0-1) unstable; urgency=low
     - added defaults for database name and database user 
   * added Dutch translation of Debconf templates (Closes: #474696,
     thanks to Bart Cornelis <cobaco@skolelinux.no>)
+  * added Swedish translation of Debconf templates (Closes: #501922,
+    thanks to Martin Ågren <martin.agren@gmail.com>)
+  * Debconf
+    - use colon style
+    - remove SOAP questions
   * don't care about Apache 1 anymore 
   * fix error in German translation of Debconf templates
+  * dependency on adduser added
   * use type error for wrong Debconf input
   * use colon style for Debconf questions
   * lintian fixes
+    - added missing dependency on libc
+    - don't ignore errors on make clean
     - fix section in interchangeconfig/te manual pages
+    - build dependency on po-debconf added
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 15 May 2008 23:12:56 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 21:12:21 +0200
 
 interchange (5.5.1-1.1) unstable; urgency=low
 
