@@ -1,6 +1,10 @@
 interchange (5.6.1-1) unstable; urgency=low
 
   * new upstream release
+  * updated Swedish translation of Debconf templates (Closes: #502403,
+    thanks to Martin Ågren <martin.agren@gmail.com>)
+  * updated French translation of Debconf templates (Closes: #502376,
+    thanks to Christian Perrier <bubulle@debian.org>)
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:04:35 +0200
 
