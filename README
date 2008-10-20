@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 5.7.0
+Interchange 5.7.1
 
 Copyright (C) 2002-2008 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,8 +29,7 @@ display system. Features include:
   * reporting
   * possibility of web-based administration
 
-Interchange absolutely REQUIRES Perl 5.8.0 or later, on a Unix-like operating
-system.
+Interchange requires Perl 5.8.0 or later, on a Unix-like operating system.
 
 Interchange also requires some non-standard Perl modules to be installed on
 your system. Unless you are installing from distribution-specific packages
@@ -101,8 +100,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-    tar xvzf interchange-5.7.0.tar.gz
-    cd interchange-5.7.0
+    tar xvzf interchange-5.7.1.tar.gz
+    cd interchange-5.7.1
     perl Makefile.PL
     make
     make test
