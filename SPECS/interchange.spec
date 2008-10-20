@@ -1,4 +1,4 @@
-# $Id: interchange.spec,v 2.34 2008-08-13 00:24:22 jon Exp $
+# $Id: interchange.spec,v 2.35 2008-10-20 15:05:15 jon Exp $
 
 # use Perl installation in /usr/local custom built from source?
 %define localperl 0
@@ -19,7 +19,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.7.0
+Version: 5.7.1
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -383,6 +383,9 @@ fi
 
 
 %changelog
+* Mon Oct 20 2008 Jon Jensen <jon@endpoint.com> 5.7.1-1
+- Update for new release.
+
 * Tue Aug 12 2008 Jon Jensen <jon@endpoint.com> 5.7.0-1
 - (Note that there are still problems with the Standard demo and the RPM
   Perl dependency extractor that need to be worked out ...)
