@@ -9,8 +9,10 @@ interchange (5.6.1-1) unstable; urgency=low
     to Martin Sín <martin.sin@seznam.cz>)
   * added Italian translation of Debconf templates (Closes: #502466,
     thanks to vince <vinz65@gmail.com>)
+  * updated Russian translation of Debconf templates (Closes: #502890,
+    thanks to Yuri Kozlov <kozlov.y@gmail.com>)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 16 Oct 2008 21:03:07 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 24 Oct 2008 14:53:37 +0200
 
 interchange (5.6.0-1) unstable; urgency=low
 
