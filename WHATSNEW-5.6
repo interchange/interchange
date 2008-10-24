@@ -32,6 +32,11 @@ Core
   
   Thanks to Mathew Jones for the report.
 
+* Fix vulnerability where a string passed in the mv_order_item CGI variable is
+  displayed verbatim without any input sanitation if there is a valid sku in
+  mv_sku.  Thanks to Mat from Bibliopolis for discovering and reporting the
+  vulnerability.
+
 Payment
 -------
 

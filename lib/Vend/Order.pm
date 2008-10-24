@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.100.2.1 2008-10-03 15:50:45 racke Exp $
+# $Id: Order.pm,v 2.100.2.2 2008-10-24 10:19:06 pajamian Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.100.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.100.2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2325,8 +2325,9 @@ sub add_items {
 		for (@sku) {
 			$_ = $::Variable->{MV_VARIANT_JOINER} || '0' if ! length($_);
 		}
-		$skus[0]   = $items[0];
 		$items[0] = join '-', @sku;
+		my $sku_field = $Vend::Cfg->{Options_repository}{Matrix}->{sku} || 'sku';
+		$skus[0] = Vend::Data::product_field($sku_field, $items[0]);
 	}
 
 	if ($Vend::Cfg->{UseModifier}) {
