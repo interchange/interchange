@@ -36,7 +36,7 @@ Japanese (ja_JP):
 Murahashi <murahashi@ayayu.com>, Hiroyuki Cozy Kojima <kojima@redhat.com>
 
 Spanish (es_ES):
-Ignacio Lizarán <nacho@hsc.sas.junta-andalucia.es>, José Mª Revuelto <josemaria.revuelto@solgrama.com>
+Ignacio LizarÃ¡n <nacho@hsc.sas.junta-andalucia.es>, JosÃ© MÂª Revuelto <josemaria.revuelto@solgrama.com>
 
 Swedish (sv_SE):
 Tommi Labermo <tommi.labermo@surfnet.fi>
@@ -86,7 +86,7 @@ Just translate the first string.
 undef,
 
 "About Your Company",
-"Über Ihre Firma",
+"Ãœber Ihre Firma",
 
 Larger chunks of text:
 ----------------------
@@ -103,8 +103,8 @@ undef,
 # If you are uploading a large spreadsheet file, the server may take
 # several minutes to process your data.
 "WIZARD_STEP_PREVIEW_PAR_1",
-"Nach dem Betätigen des Abschließen-Buttons gedulden Sie sich bitte.
-Beim Hochladen von größeren Spreadsheetdateien benötigt der Server
+"Nach dem BetÃ¤tigen des AbschlieÃŸen-Buttons gedulden Sie sich bitte.
+Beim Hochladen von grÃ¶ÃŸeren Spreadsheetdateien benÃ¶tigt der Server
 u.U. mehrere Minuten um die Daten zu verarbeiten.",
 
 Adding new languages
