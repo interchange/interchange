@@ -2,13 +2,27 @@ interchange (5.7.1-1) unstable; urgency=low
 
   * new upstream release
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:08:28 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 02 Nov 2008 15:49:42 +0100
 
 interchange (5.6.1-1) unstable; urgency=low
 
   * new upstream release
+  * updated Swedish translation of Debconf templates (Closes: #502403,
+    thanks to Martin Ågren <martin.agren@gmail.com>)
+  * updated French translation of Debconf templates (Closes: #502376,
+    thanks to Christian Perrier <bubulle@debian.org>)
+  * updated Czech translation of Debconf templates (Closes: #502416, thanks
+    to Martin Sín <martin.sin@seznam.cz>)
+  * added Italian translation of Debconf templates (Closes: #502466,
+    thanks to vince <vinz65@gmail.com>)
+  * updated Russian translation of Debconf templates (Closes: #502890,
+    thanks to Yuri Kozlov <kozlov.y@gmail.com>)
+  * updated German translation of Debconf templates (Closes: #503394,
+    thanks to Helge Kreutzmann <debian@helgefjell.de>)
+  * updated Portuguese translation of Debconf templates (Closes: #504274,
+    thanks to ardoric@gmail.com)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Oct 2008 23:04:35 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 02 Nov 2008 15:35:01 +0100
 
 interchange (5.6.0-1) unstable; urgency=low
 
