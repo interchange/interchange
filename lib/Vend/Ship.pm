@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.28 2008-04-11 08:44:20 danb Exp $
+# $Id: Ship.pm,v 2.29 2008-11-05 22:38:52 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,8 +48,10 @@ use constant COST  => 5;
 use constant QUERY => 6;
 use constant OPT   => 7;
 
+my %Verbatim = ( qw/ PriceDivide 1 /);
 my %Ship_remap = ( qw/
 							CRITERION   CRIT
+							PRICEDIVIDE PriceDivide
 							CRITERIA    CRIT
 							MAXIMUM     MAX
 							MINIMUM     MIN
@@ -286,7 +288,7 @@ sub read_shipping {
 				}
 				else {
 					$line[OPT] = {} unless $line[OPT];
-					$k = lc $k;
+					$k = lc $k unless $Verbatim{$k};
 					$line[OPT]->{$k} = $v;
 				}
 			};
