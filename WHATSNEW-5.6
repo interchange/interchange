@@ -1,41 +1,66 @@
 ------------------------------------------------------------------------------
 
                   What's new in each version of Interchange
-                       (since the version 5.6 branch)
+                      (on the version 5.6 stable branch)
 
 ------------------------------------------------------------------------------
 
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.6.1 under development.
+Interchange 5.6.1 released 2008-11-10.
 
 Core
 ----
 
-* Fixed regression in set_slice for the following usage pattern
-  (#200):
+* Fixed regression in Vend::Table::DBI::set_slice for the following usage
+  pattern (RT #200):
 
   $Db{table}->set_slice('', %parms));
 
-* Allow XML posts by e.g. Google Checkout, which broke in Interchange 5.6.0 
-  (#219).
+* Quell bogus warnings from Encode::Alias (#224). Thanks to Andy
+  <ic@tvcables.co.uk> and Rene Hertell <icdevgroup@hertell.com>.
 
-  Thanks to Andy <ic@tvcables.co.uk> for the patch.
-
-* Quell bogus warnings from Encode::Alias (#224).
-
-  Thanks to Andy <ic@tvcables.co.uk> and Rene Hertell
-  <icdevgroup@hertell.com> for reporting. 
-
-* Added Nunavut to the list of valid Canadian provinces (#231).
-  
-  Thanks to Mathew Jones for the report.
+* Added Nunavut to the list of valid Canadian provinces (#231). Thanks to
+  Mathew Jones for the report.
 
 * Fix vulnerability where a string passed in the mv_order_item CGI variable is
   displayed verbatim without any input sanitation if there is a valid sku in
-  mv_sku.  Thanks to Mat from Bibliopolis for discovering and reporting the
+  mv_sku. Thanks to Mat from Bibliopolis for discovering and reporting the
   vulnerability.
+
+* Fixed deficiency in Levies, where multiple handling modes separated by null
+  would not work as in the old subtotal calculation model.
+
+* Allow XML posts by e.g. Google Checkout, which broke in Interchange 5.6.0
+  (RT #219). By Andy <ic@tvcables.co.uk>.
+
+* Corrected logic flaw that applied UTF-8 handling in some cases where it
+  shouldn't have. Fixed by David Christensen <david@endpoint.com>.
+
+UserTag
+-------
+
+* We are vulnerable to cross-site scripting problems any time there is a
+  <input value="[value foo]"> call. You can get around this, of course,
+  with <input value="[value name=foo keep=1 filter=encode_entities"]">
+  instead. That is a bit of a mess, though, so I added an alias for that
+  called "evalue".
+
+  You call it with [evalue address1], which is identical to
+  [value keep=1 filter="encode_entities" name=address1].
+
+Widgets
+-------
+
+* Prevent cross-site scripting problem in the country-select widget. Found and
+  fixed by Josh Lavin of Perusion.
+
+Admin UI
+--------
+
+* Fixed regression in ContentEditor.pm to make it possible again to create
+  files via the Admin interface.
 
 Payment
 -------
@@ -46,14 +71,31 @@ Payment
   Change code to make directory if non-existent, and give better error
   if by some strange chance a file existed there.
 
-Standard
---------
+Standard demo
+-------------
 
-* Disabled product comment to prevent spam showing up on default
-  installations.
+* Made userdb password field nullable for Postgres, to avoid new user creation
+  problems.
+
+* Disabled product comment to prevent spam showing up on default installations.
 
 * Provide reasonable defaults for shipping mode and country at checkout to avoid
   "not enough information" errors.
+
+* Modified include/checkout forms to use evalue. There are undoubtedly many
+  other places it should be put in. But until this is evaluated properly I
+  don't want to do it all over the place. You can do so with this one liner,
+  at least pretty reliably:
+
+     perl -pi -e 's{value="\[(value\s+[-\w]+\])}{value="[e$1}g'
+
+  I think we have gotten rid of all VALUE= uppercase kind of things,
+  but if not we should now.
+
+Packaging
+---------
+
+* Numerous Debian packaging and localization updates.
 
 
 ------------------------------------------------------------------------------
@@ -61,16 +103,5 @@ Standard
 
 Interchange 5.6.0 released on 2008-05-21.
 
-Standard
---------
-
-* Made userdb password field nullable for Postgres, to avoid new user creation
-  problems.
-
-
-Admin
------
-
-* fix ContentEditor.pm to make it possible again to create files via the Admin interface.
 
 (end)
