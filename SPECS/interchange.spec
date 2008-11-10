@@ -1,11 +1,14 @@
-# $Id: interchange.spec,v 2.31.2.1 2008-05-21 00:15:31 jon Exp $
+# $Id: interchange.spec,v 2.31.2.2 2008-11-10 06:51:21 jon Exp $
 
 # use Perl installation in /usr/local custom built from source?
-%define localperl 1
+%define localperl 0
 
 %if %localperl
 %define __perl /usr/local/bin/perl
 %endif
+
+# Don't install into /usr/lib64 on x86_64
+%define _libdir /usr/lib
 
 %define ic_user				interch
 %define ic_group			interch
@@ -16,22 +19,21 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.6.0
+Version: 5.6.1
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 URL: http://www.icdevgroup.org/
-Packager: Jon Jensen <jon@icdevgroup.org>
+Packager: Jon Jensen <jon@endpoint.com>
 Source0: http://www.icdevgroup.org/interchange/interchange-%{version}.tar.gz
-Source1: interchange-wrapper
-Source2: interchange-init
-Source3: interchange-logrotate
-Source4: interchange-cron
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
-Requires: perl >= 5.8.8
 BuildPrereq: perl >= 5.8.8
+Requires: perl >= 5.8.8
+Requires: perl(Safe::Hole)
+Requires: perl(Set::Crontab)
+Requires: interchange = %{version}-%{release}
 
 %description
 Interchange is a complete web application platform focused on
@@ -51,7 +53,7 @@ adapt to build your own store.
 %package standard-demo
 Summary: A prebuilt demonstration store for Interchange
 Group: System Environment/Daemons
-Prereq: interchange = %{version}-%{release}
+Requires: interchange = %{version}-%{release}
 
 %description standard-demo
 This demo is a prebuilt installation of the Standard Store that
@@ -85,7 +87,7 @@ ICBASE=%{_libdir}/interchange
 	rpmbuilddir=$RPM_BUILD_ROOT \
 	INTERCHANGE_USER=%ic_user \
 	PREFIX=$RPM_BUILD_ROOT$ICBASE \
-	INSTALLMAN1DIR=$RPM_BUILD_ROOT%{_mandir}/man1 \
+	INSTALLMAN1DIR=$RPM_BUILD_ROOT%{_mandir}/man8 \
 	INSTALLMAN3DIR=$RPM_BUILD_ROOT%{_mandir}/man8 \
 	force=1
 %__make
@@ -98,10 +100,23 @@ ICBASE=%{_libdir}/interchange
 %__rm -f eg/te
 
 # Copy over extra stuff that usually stays in source directory
-%__mkdir_p $RPM_BUILD_ROOT$ICBASE/build
-%__cp -p extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
-%__cp -p extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
 %__cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
+
+# Install wrapper script
+%__mkdir_p $RPM_BUILD_ROOT%{_sbindir}
+%__install -m755 SPECS/interchange-wrapper $RPM_BUILD_ROOT%{_sbindir}/interchange
+
+# Install SysV-style system startup/shutdown script
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
+%__install -m755 SPECS/interchange-init $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
+
+# Install log rotation script
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
+%__install -m644 SPECS/interchange-logrotate $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
+
+# Install expired session and tmp removal cron job
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/cron.daily
+%__install -m755 SPECS/interchange-cron $RPM_BUILD_ROOT$ETCBASE/cron.daily/interchange
 
 # Tell Perl where to find IC libraries during build time
 export PERL5LIB=$RPM_BUILD_ROOT$ICBASE/lib
@@ -118,22 +133,6 @@ bin/compile_link -build src
 %__mkdir_p $RPM_BUILD_ROOT$RUNBASE/interchange
 %__mkdir_p $RPM_BUILD_ROOT$LOGBASE/interchange
 %__mkdir_p $RPM_BUILD_ROOT$CACHEBASE/interchange
-
-# Install wrapper script
-%__mkdir_p $RPM_BUILD_ROOT%{_sbindir}
-%__install -m755 %{SOURCE1} $RPM_BUILD_ROOT%{_sbindir}/interchange
-
-# Install SysV-style system startup/shutdown script
-%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
-%__install -m755 %{SOURCE2} $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
-
-# Install log rotation script
-%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
-%__install -m644 %{SOURCE3} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
-
-# Install expired session and tmp removal cron job
-%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/cron.daily
-%__install -m755 %{SOURCE4} $RPM_BUILD_ROOT$ETCBASE/cron.daily/interchange
 
 # Build the demo catalog
 HOST=RPM_CHANGE_HOST
@@ -207,13 +206,13 @@ touch $RPM_BUILD_ROOT$RPMICLOG
 
 # I don't know of a way to exclude a subdirectory from one of the directories
 # listed in the %files section, so I have to use this monstrosity to generate
-# a list of all directories in /usr/lib/interchange except the standard demo
+# a list of all directories in %{_libdir}/interchange except the standard demo
 # directory and pass the list to %files below.
 DIRDEPTH=`echo $ICBASE | sed 's:[^/]::g' | awk '{print length + 1}'`
 cd $RPM_BUILD_ROOT
-find . -path .$ICBASE/standard -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
+find . -mindepth $DIRDEPTH -maxdepth $DIRDEPTH -path .$ICBASE/standard -prune \
 	-o -print | %__grep "^\.$ICBASE" | sed 's:^\.::' | \
-	%__sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
+	%__sed 's:^\(%{_libdir}/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
 	> %filelist
 
 
@@ -222,12 +221,14 @@ find . -path .$ICBASE/standard -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 
 %pre
 
-/sbin/service interchange stop >/dev/null 2>&1 || :
+/sbin/service interchange stop >/dev/null 2>&1
 
 # Create interch user/group if they don't already exist
-/usr/sbin/groupadd -g 52 %ic_group 2>/dev/null || :
+/usr/sbin/groupadd -g 52 %ic_group 2>/dev/null
 /usr/sbin/useradd -u 52 -g %ic_group -c "Interchange server" -s /bin/bash \
-	-r -d %{_localstatedir}/lib/interchange %ic_user 2>/dev/null || :
+	-r -d %{_localstatedir}/lib/interchange %ic_user 2>/dev/null
+
+exit 0
 
 
 %files standard
@@ -282,7 +283,7 @@ for i in error.log debug.log
 do
 	if [ ! -f %{_localstatedir}/log/interchange/$i ]; then
 		touch %{_localstatedir}/log/interchange/$i
-		%__chown %{ic_user}.%{ic_group} %{_localstatedir}/log/interchange/$i
+		%__chown %{ic_user}:%{ic_group} %{_localstatedir}/log/interchange/$i
 	fi
 done
 
@@ -291,20 +292,6 @@ done
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
-
-# Install private copies of key CPAN modules if necessary
-status=`%__perl -e "require HTML::Entities and print 1;" 2>/dev/null`
-if test "x$status" != x1
-then
-	%__mkdir_p %{_libdir}/interchange/lib/HTML 2>/dev/null
-	%__cp -p %{_libdir}/interchange/build/Entities.pm %{_libdir}/interchange/lib/HTML 2>/dev/null
-fi
-
-status=`%__perl -e "require IniConf and print 1;" 2>/dev/null`
-if test "x$status" != x1
-then
-	%__cp -p %{_libdir}/interchange/build/IniConf.pm %{_libdir}/interchange/lib 2>/dev/null
-fi
 
 # Storable is technically optional; be careful in case user
 # installed with --nodeps
@@ -396,6 +383,31 @@ fi
 
 
 %changelog
+* Sun Nov  9 2008 Jon Jensen <jon@endpoint.com> 5.6.1-1
+- Update for new release.
+
+* Tue Aug 12 2008 Jon Jensen <jon@endpoint.com> 5.7.0-1
+- (Note that there are still problems with the Standard demo and the RPM
+  Perl dependency extractor that need to be worked out ...)
+- Bundled version of HTML::Entities has been removed, so don't look for it.
+- Update syntax used for chown and find.
+- Install all man pages to section 8, so the man page for Interchange's
+  crontab script doesn't conflict with the system crontab program, and since
+  Interchange's "binaries" aren't typically in PATH anyway.
+- Stop using deprecated RPM PreReq tag.
+- Explicitly require Safe::Hole and Set::Crontab, which the RPM dependency
+  checker misses.
+- Force use of /usr/lib, not /usr/lib64, on x86_64. We're not installing
+  binaries (except the cgi-bin which is in /var/www anyway) and many things
+  depend on the /usr/lib location.
+- Thanks to Richard Siddall <richard.siddall@elirion.net> for the following
+  changes:
+- Require Perl 5.8.8 or newer for build and installation to be compatible
+  with system threaded Perl.
+- Use interchange-* helper scripts directly from SPECS/ in source tarball,
+  instead of copying. Enables use of rpmbuild -ta directly on tarball.
+- Don't check for IniConf.pm anymore as it's part of dist/lib now.
+
 * Thu Nov 10 2005 Jon Jensen <jon@icdevgroup.org> 5.3.2-1
 - Update for 5.3.2 release.
 
