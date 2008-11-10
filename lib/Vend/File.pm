@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.28 2008-03-25 17:13:21 jon Exp $
+# $Id: File.pm,v 2.29 2008-11-10 05:52:57 jon Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -56,18 +56,13 @@ use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
 
 	my $is_utf8;
-	if ($::Variable->{MV_UTF8} && ref $data) {
-		$is_utf8 = is_utf8($$data);
-	}
-	else {
-		$is_utf8 = is_utf8($data);
-	}
+	$is_utf8 = is_utf8(ref $data ? $$data : $data) if $::Variable->{MV_UTF8};
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 	if (ref $opt and $opt->{umask}) {
