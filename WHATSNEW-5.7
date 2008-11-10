@@ -1,35 +1,98 @@
 ------------------------------------------------------------------------------
 
                   What's new in each version of Interchange
-                       (since the version 5.6 branch)
+                (in development since the version 5.6 branch)
 
 ------------------------------------------------------------------------------
 
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.0 under development.
+Interchange 5.7.1 released 2008-11-10.
 
 Core
 ----
 
-* refined error message for missing actions.
+* Fixed regression in Vend::Table::DBI::set_slice for the following usage
+  pattern (RT #200):
+
+  $Db{table}->set_slice('', %parms));
+
+* Quell bogus warnings from Encode::Alias (#224). Thanks to Andy
+  <ic@tvcables.co.uk> and Rene Hertell <icdevgroup@hertell.com>.
+
+* Added Nunavut to the list of valid Canadian provinces (#231). Thanks to
+  Mathew Jones for the report.
+
+* Fix vulnerability where a string passed in the mv_order_item CGI variable is
+  displayed verbatim without any input sanitation if there is a valid sku in
+  mv_sku. Thanks to Mat from Bibliopolis for discovering and reporting the
+  vulnerability.
+
+* Refined error message for missing actions.
 
 * Vend::Interpolate::interpolate_html returns undef on undefined input text.
   This allows to determine whether $Tag->include fails or just produces an
   empty string.
 
+* Fixed deficiency in Levies, where multiple handling modes separated by null
+  would not work as in the old subtotal calculation model.
+
+* Correct cookie-clearing function in UserDB.
+
+* Extend MaxQuantityField config directive to support fields prefixed with
+  '=' or '?'.
+
+  By default, there's no behavior change and specification of
+  'MaxQuantityField f1 f2' sets max quantity to f1 + f2.
+
+  With f1 =f2, max quantity is unconditionally set to f2.
+
+  With f1 ?f2, max quantity is set to f2 only if f2 > 0.
+
+  By Cameron B. Prince <cameron@princeinternet.com>.
+
+* Allow SQL EXPLAIN and SHOW along with SELECT, for queries.
+  Thanks to Frederic Steinfels.
+
+* Allow explicit manual table exports even when NoExportExternal is enabled,
+  using the force option to &Vend::Data::export_database.
+
+* Fixed database typing problem for HIDE_FIELD. Reported by Sonny Cook.
+
+* Support "secure cookies", which are sent only over SSL connections.
+  From a patch by Frederic Steinfels <fst@highdefinition.ch>.
+
+* Allow XML posts by e.g. Google Checkout, which broke in Interchange 5.6.0
+  (RT #219). By Andy <ic@tvcables.co.uk>.
+
+* Currently the only order cleanup available, i.e., functions to run after all
+  data in the session has been used for order functions, is the bottom of the
+  receipt page, if you happen to know that is the place to do it.
+
+  Provide the new OrderCleanup catalog directive which takes a routine name
+  and is an authoritative place to perform such actions, in the same vein as
+  AutoLoad and AutoEnd. Implementation possibilites include profiles to be
+  run at the end or a SpecialSub.
+
+* Fixed problem with new-style shipping configuration reading a mixed-case
+  option.
+
+* Corrected logic flaw that applied UTF-8 handling in some cases where it
+  shouldn't have. Fixed by David Christensen <david@endpoint.com>.
+
 Search
 ------
 
-* mv_force_coordinate (fc) added to force coordinated search.  Normally, when
-the number of search field does not match the number of search strings (specs),
-coordinated mode is automatically turned off. With 'fc', number of search specs
-is adjusted to match the number of search fields, either by filling the array
-with last-set mv_searchspec, or by trimming excess values. Useful when you want
-to search for one string in multiple fields in coordinated mode.
+* mv_force_coordinate (fc) added to force coordinated search. Normally,
+  when the number of search field does not match the number of search
+  strings (specs), coordinated mode is automatically turned off. With
+  'fc', number of search specs is adjusted to match the number of search
+  fields, either by filling the array with last-set mv_searchspec, or by
+  trimming excess values. Useful when you want to search for one string in
+  multiple fields in coordinated mode.
 
-* remove trailing whitespace from text file headers 
+* Removed trailing whitespace from text file headers.
 
 * Under rare circumstances the missing search can fall through in a block
   below, which caused an internal server error in the following code line:
@@ -51,7 +114,8 @@ to search for one string in multiple fields in coordinated mode.
 UserTag
 -------
 
-* srcliteral attribute added to [button] tag. Setting srcliteral avoids the image existence check for the src attribute. 
+* srcliteral attribute added to [button] tag. Setting srcliteral avoids
+  the image existence check for the src attribute.
 
 * [run-profile] removes automatically generated profiles only.
 
@@ -61,21 +125,129 @@ UserTag
 * lines attribute added to [nitems] to show the number of lines in the shopping
   cart instead of the sum of the items (#225).
 
-* made [capture-page] aware of mapped output (#197, #226).
+* Made [capture-page] aware of mapped output (#197, #226).
+
+* Added name and id to list of [image] pass-through attributes.
+
+* We are vulnerable to cross-site scripting problems any time there is a
+  <input value="[value foo]"> call. You can get around this, of course,
+  with <input value="[value name=foo keep=1 filter=encode_entities"]">
+  instead. That is a bit of a mess, though, so I added an alias for that
+  called "evalue".
+
+  You call it with [evalue address1], which is identical to
+  [value keep=1 filter="encode_entities" name=address1].
+
+* Make backup-database tag work even when NoExportExternal is enabled.
+
+* Add [set-cookie secure=1] option for SSL-only cookies.
 
 OrderCheck
 ----------
 
-* added ISBN-13 support to isbn order check and relocated it to code/OrderCheck.
+* Added ISBN-13 support to isbn order check and relocated it to code/OrderCheck.
 
-UI
---
+Filters
+-------
 
-* prevent whitespace leaking into CREDIT_CARDS_ACCEPTED variable (#209)
+* Fixed regression in html2text filter to re-allow paragraph attributes such as
+  <p align="center">.
+
+Widgets
+-------
+
+* Prevent cross-site scripting problem in the country-select widget. Found and
+  fixed by Josh Lavin of Perusion.
+
+Admin UI
+--------
+
+* Prevent whitespace leaking into CREDIT_CARDS_ACCEPTED variable (#209).
+
+* Sort customer orders by order date, descending (was arbitrary).
+  (By Rene Hertell, RT #203.)
+
+* Someone removed email_copy field from userdb table, which meant that
+  email was not sent to customers by default on status updates. Changed
+  to default to yes if email_copy field not present in user table.
+
+* Added tracking_number field to order status if field exists in orderline,
+  and handle it in update_order_status tag.
+
+Payment
+-------
+
+* If the tmp/wget directory (or more properly "$Vend::Cfg->{ScratchDir}/wget")
+  directory did not exist, use_wget mode failed. Changed code to make
+  directory if non-existent, and give better error if by some strange chance
+  a file existed there.
+
+* Authorize.net fixes by Josh Lavin of Perusion:
+
+  Allow mv_transaction_id to be sent when mv_order_number has not yet been
+  created (the case with all newer catalogs, as they use tid.counter).
+
+  Allow Business Checking type of 'CCD' (defaults to WEB if not set or sent).
 
 Standard demo
 -------------
 
-* SQLite support
+* Added SQLite support.
+ 
+* Disabled product comment to prevent spam showing up on default installations.
+
+* Provide reasonable defaults for shipping mode and country at checkout to avoid
+  "not enough information" errors.
+
+* Increased default length of orderline.order_number to 24.
+
+* Modified include/checkout forms to use evalue. There are undoubtedly many
+  other places it should be put in. But until this is evaluated properly I
+  don't want to do it all over the place. You can do so with this one liner,
+  at least pretty reliably:
+
+     perl -pi -e 's{value="\[(value\s+[-\w]+\])}{value="[e$1}g'
+
+  I think we have gotten rid of all VALUE= uppercase kind of things,
+  but if not we should now.
+
+Packaging
+---------
+
+* Numerous Debian packaging and localization updates.
+
+* Modernize RPM packaging:
+
+  Bundled version of HTML::Entities has been removed, so don't look for it.
+
+  Update syntax used for chown and find.
+
+  Install all man pages to section 8, so the man page for Interchange's
+  crontab script doesn't conflict with the system crontab program, and since
+  Interchange's "binaries" aren't typically in PATH anyway.
+
+  Stop using deprecated RPM PreReq tag.
+
+  Explicitly require Safe::Hole and Set::Crontab, which the RPM dependency
+  checker misses.
+
+  Force use of /usr/lib, not /usr/lib64, on x86_64. We're not installing
+  binaries (except the cgi-bin which is in /var/www anyway) and many things
+  depend on the /usr/lib location.
+
+  Require Perl 5.8.8 or newer for build and installation to be compatible
+  with system threaded Perl.
+
+  Use interchange-* helper scripts directly from SPECS/ in source tarball,
+  instead of copying. Enables use of rpmbuild -ta directly on tarball.
+
+  Don't check for IniConf.pm anymore as it's part of dist/lib now.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 5.7.0 never formally released.
+
 
 (end)
