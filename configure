@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# $Id: configure,v 2.21.2.2 2007-02-02 03:08:58 jon Exp $
+# $Id: configure,v 2.21.2.3 2008-11-12 05:25:44 jon Exp $
 
 cat <<EOF
 
  Interchange
 
- Copyright 2002-2007 Interchange Development Group (http://www.icdevgroup.org/)
+ Copyright 2002-2008 Interchange Development Group (http://www.icdevgroup.org/)
  Copyright 1996-2002 Red Hat, Inc.
 
  Interchange was originally based on Vend 0.2 and 0.3

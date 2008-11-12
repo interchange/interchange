@@ -5,7 +5,8 @@
 
 ------------------------------------------------------------------------------
 
-Interchange 5.4.3 released on 2008-MM-DD.
+
+Interchange 5.4.3 released on 2008-11-13.
 
 
 Core
@@ -19,6 +20,13 @@ Core
 
 * Missing display_options routine added to Old48 module.
 
+* Fixed deficiency in Levies, where multiple handling modes separated by null
+  would not work as in the old subtotal calculation model.
+
+* Fixed bug in regex for auto_format anchor handling.
+
+* Fixed a SearchOp bug reported by Tim Good.
+
 UI
 --
 
@@ -31,16 +39,20 @@ Packaging
 
 * Remove debconf dependency from interchange-ui postrm script.
 
+* Removed mod_interchange from Debian package.
+
 Standard demo
 -------------
 
 * Fixed a security bug where an attacker could craft a URI that tricks
-  Interchange into executing arbitrary Perl code.  The Perl code would be
+  Interchange into executing arbitrary Perl code. The Perl code would be
   subject to the Safe constraints of course, but could still be devastating
   to the security of the target website.
 
 * Disabled product comment to prevent spam showing up on default
   installations.
+
+* Fixed problem with shipping notice caused by bareword.
 
 Other
 -----
@@ -52,6 +64,7 @@ Other
 
 * Fixed License inconsistencies so that all headers now specify GPL version
   2 or later.
+
 
 ------------------------------------------------------------------------------
 

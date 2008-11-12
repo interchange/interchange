@@ -360,6 +360,7 @@ debian/po/cs.po
 debian/po/de.po
 debian/po/fr.po
 debian/po/POTFILES.in
+debian/po/pt.po
 debian/po/ru.po
 debian/po/sv.po
 debian/po/templates.pot
