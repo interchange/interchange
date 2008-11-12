@@ -1,8 +1,8 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 1.5 2007-08-09 13:40:53 pajamian Exp $
+# $Id: Interchange.pm,v 1.6 2008-11-12 04:15:22 jon Exp $
 # 
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,10 +31,10 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 BEGIN {
-	require 5.005;
+	require 5.008_005;
 	($Global::VendRoot = $ENV{INTERCHANGE_ROOT})
 		if defined $ENV{INTERCHANGE_ROOT};
 	($Global::CatRoot = $ENV{INTERCHANGE_CATDIR})

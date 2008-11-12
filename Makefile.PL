@@ -16,7 +16,7 @@ use File::Basename;
 use File::Find;
 use Data::Dumper;
 use Cwd;
-require 5.008;
+require 5.008_005;
 
 use strict;
 
@@ -305,8 +305,9 @@ sub initialize {
 
 	if($Global::TryingThreads and $] < 5.008_008 and ! -f '_allow_threads') {
 		print <<EOF;
-It is not recommended that you run Interchange with a thread-enabled perl,
-which you have called this installer with. Either rerun with 
+It is not recommended that you run Interchange with a thread-enabled
+perl older than version 5.8.8, which you have called this installer with.
+Either rerun with 
 
 	/path/to/non-threaded/perl Makefile.PL
 

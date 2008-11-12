@@ -29,7 +29,7 @@ display system. Features include:
   * reporting
   * possibility of web-based administration
 
-Interchange requires Perl 5.8.0 or later, on a Unix-like operating system.
+Interchange requires Perl 5.8.5 or later, on a Unix-like operating system.
 
 Interchange also requires some non-standard Perl modules to be installed on
 your system. Unless you are installing from distribution-specific packages

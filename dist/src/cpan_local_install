@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-## This is here because Perl 5.005 installations may try to re-install
-## a whole perl if you run this! If you want to try it, then
-
 use lib './lib';
 use lib '../lib';
 use lib "$ENV{HOME}/.cpan";
@@ -10,11 +7,9 @@ use Getopt::Std;
 
 getopts('cfd:h');
 
-eval {
-	require 5.6.0;
-};
+require 5.008_005;
 
-use vars qw/$opt_c $opt_f $opt_d $opt_h $VERSION/;
+use vars qw/$opt_c $opt_d $opt_h $VERSION/;
 
 $VERSION = q{$Id};
 
@@ -22,13 +17,12 @@ my $prog = $0;
 $prog =~ s:.*/::;
 
 $::USAGE = <<EOF;
-usage: $prog [-f] [-d interchange_root] [module1 module2 module_n]
+usage: $prog [-d interchange_root] [module1 module2 module_n]
 
 [module] defaults to Bundle::Interchange.
 
 OPTIONS:
 
-    -f    Force install for Perl 5.005
     -d    Set interchange root directory (default current)
 
 EOF
@@ -38,27 +32,12 @@ if($opt_h) {
 	exit 2;
 }
 
-if($@) {
-
-	require 5.005;
-	if(! $opt_f) {
-		my $args = join " ", @ARGV;
-		print <<EOF;
-Perl 5.005 installations may try to re-install a whole perl if you run this! If
-you want to try it, then rerun with a -f flag, i.e.
-
-	$0 -f $args
-
-EOF
-	}
-}
-
 use Cwd;
 use File::Spec;
 
 use strict;
 
-my $libdir = $opt_d || $opt_d || '';
+my $libdir = $opt_d || '';
 
 my @mods_to_get = @ARGV;
 
@@ -86,13 +65,13 @@ $ENV{PERL5LIB} = join ":", @INC;
 
 use CPAN;
 
-eval {  
-                require CPAN::MyConfig
+eval {
+    require CPAN::MyConfig
 };
 if($@) {
-        eval {
-                require CPAN::Config;
-        };
+    eval {
+        require CPAN::Config;
+    };
 };
 
 if($@) {
@@ -107,17 +86,13 @@ to the Internet and have one of the following on your machine:
 		ncftp (a nice FTP program)
 		lynx  (the text-based web browser)
 
-In case you were wondering, CPAN is a worldwide network of
-over 100 FTP sites which maintain the latest Perl software.
-If you don't know a URL to use, you can try:
-
-	ftp://ftp.freesoftware.com/pub/perl/CPAN
-	ftp://ftp.funet.fi/pub/languages/perl/CPAN
+CPAN is a worldwide network of over 100 FTP sites which maintain
+the latest Perl software.
 
 You will be asked quite a few questions during the process. It is
-almost always right to accept the default by hitting ENTER. (There
-may be a couple of module tests that require you to hit 'q' to terminate
-them.)
+almost always right to accept the default by hitting ENTER.
+(There may be a couple of module tests that require you to hit 'q'
+to terminate them.)
 
 If you have errors during the process, don't worry. We will try
 real, real, hard to get all of the modules installed. If
@@ -141,7 +116,7 @@ EOF
 
 # See if we have the CPAN module
 eval { 	
-		die "Don't try this at home with Windows.\n" if $^O =~ /win32/i;
+	die "Don't try this at home with Windows.\n" if $^O =~ /win32/i;
 };
 
 if($@) {

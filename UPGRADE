@@ -7,8 +7,7 @@ Interchange is designed to be drop-in compatible in its major version.
 Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
- 5.6.x -- There are no known compatibility issues when upgrading from
-          Interchange 5.6.x.
+ 5.6.x -- Perl 5.8.5 or newer is now required to run Interchange.
 
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
@@ -77,6 +76,11 @@ That's it. Verify your catalog's operation, and you are live.
                          K N O W N   I S S U E S
 
 
+KNOWN ISSUES UPGRADING FROM 5.6
+
+Perl 5.8.5 or newer is now required.
+
+
 PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
 
 In PostgreSQL 8.3 many implicit casts were removed, some of which Interchange
@@ -84,13 +88,9 @@ relied on. By default, the Standard demo and some Interchange core SQL does
 not work with PostgreSQL 8.3.
 
 We expect to work around this in a future version of Interchange, but at the
-moment the easiest way to get things working is to manually put back the
-removed casts, as Peter Eisentraut describes here:
-
-    http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html
-
-Running his pg83-implicit-casts.sql script fixes the known problems with the
-Standard demo.
+moment the easiest way to get things working is to manually put back any
+removed casts that you need. The included eg/pg83-implicit-casts.sql script
+fixes the known problems with the Standard demo.
 
 This issue does not affect earlier versions of PostgreSQL.
 

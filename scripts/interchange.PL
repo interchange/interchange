@@ -3,7 +3,7 @@
 #
 # Interchange version 5.7.1
 #
-# $Id: interchange.PL,v 2.109 2008-10-20 15:05:15 jon Exp $
+# $Id: interchange.PL,v 2.110 2008-11-12 04:15:22 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Config;
 no Config;
 
 BEGIN {
-	require 5.008;
+	require 5.008_005;
 
 	$ENV{PERL_SIGNALS} ||= 'unsafe';
 
@@ -74,10 +74,6 @@ BEGIN {
 
 	if( ($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) ) {
 		$Global::TryingThreads = 1;
-	}
-
-	if( $Global::TryingThreads and $] < 5.008_005 ) {
-		die "Interchange will not work with a thread-enabled perl older than Perl 5.8.5.\n";
 	}
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
@@ -376,7 +372,7 @@ its web site:
 
 		http://www.icdevgroup.org/
 
-Interchange requires Perl 5.8.0 or higher; more information on Perl can
+Interchange requires Perl 5.8.5 or higher; more information on Perl can
 be seen at:
 
 		http://www.perl.com/
@@ -846,12 +842,6 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	logGlobal( "Interchange V$VERSION");
 
 	SIGNALCHECK: {
-		my $high_enough;
-		eval {
-			require 5.8.2;
-			$high_enough = 1;
-		};
-		last SIGNALCHECK unless $high_enough;
 		if($ENV{PERL_SIGNALS} and $ENV{PERL_SIGNALS} eq 'unsafe') {
 			logGlobal("Running with old signals.");
 		}
@@ -873,8 +863,9 @@ EOF
 ***************************************************************
 ***************************************************************
 ****                                                       ****
-****  You are running a Perl with threads enabled -- this  ****
-****  is not recommended for a production environment.     ****
+****  You are running a Perl older than 5.8.8 with         ****
+****  threads enabled -- this is not recommended for a     ****
+****  production environment.                              ****
 ****                                                       ****
 ****  If the Interchange daemon does not start, add this   ****
 ****  line to interchange.cfg:                             ****
