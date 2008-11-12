@@ -1058,6 +1058,7 @@ eg/news_feature/products/news.txt
 eg/news_feature/README
 eg/news_feature/templates/components/news
 eg/pcode
+eg/pg83-implicit-casts.sql
 eg/reset_order_number
 eg/survey_graph.tag
 eg/survey_wizard/code/Widget/user_uploadhelper.widget
