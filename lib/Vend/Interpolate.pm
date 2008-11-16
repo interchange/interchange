@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.308 2008-09-21 11:40:27 racke Exp $
+# $Id: Interpolate.pm,v 2.309 2008-11-16 05:01:03 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.308 $, 10);
+$VERSION = substr(q$Revision: 2.309 $, 10);
 
 @EXPORT = qw (
 
@@ -5322,11 +5322,10 @@ sub push_warning {
 
 sub taxable_amount {
 	my($cart, $dspace) = @_;
-    my($taxable, $i, $code, $item, $tmp, $quantity);
 
 	return subtotal($cart || undef, $dspace || undef) unless $Vend::Cfg->{NonTaxableField};
 
-	my($save, $oldspace);
+	my ($taxable, $i, $code, $item, $quantity, $save, $oldspace);
 
     if ($cart) {
         $save = $Vend::Items;
@@ -5342,9 +5341,8 @@ sub taxable_amount {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
 		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
-		$tmp = item_subtotal($item);
 		unless (%$::Discounts) {
-			$taxable += $tmp;
+			$taxable += item_subtotal($item);
 		}
 		else {
 			$taxable += apply_discount($item);
@@ -5711,7 +5709,7 @@ sub subtotal {
 			&& length( $Vend::Session->{assigned}{subtotal});
 	}
 
-    my ($save, $subtotal, $i, $item, $tmp, $cost, $formula, $oldspace);
+    my ($save, $subtotal, $i, $item, $cost, $formula, $oldspace);
 	if ($cart) {
 		$save = $Vend::Items;
 		tag_cart($cart);
@@ -5725,16 +5723,15 @@ sub subtotal {
 	my $discount = (ref($::Discounts) eq 'HASH' and %$::Discounts);
 
     $subtotal = 0;
-	$tmp = 0;
 
     foreach $i (0 .. $#$Vend::Items) {
         $item = $Vend::Items->[$i];
-        $tmp = Vend::Data::item_subtotal($item);
         if($discount || $item->{mv_discount}) {
-            $subtotal +=
-                apply_discount($item, $tmp);
+            $subtotal += apply_discount($item);
         }
-        else { $subtotal += $tmp }
+        else {
+            $subtotal += Vend::Data::item_subtotal($item);
+        }
 	}
 
 	if (defined $::Discounts->{ENTIRE_ORDER}) {
