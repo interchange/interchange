@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: interchange 5.6.0.1\n"
+"Project-Id-Version: interchange 5.6.1-1\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-10-13 19:15+0000\n"
-"PO-Revision-Date: 2008-10-25 17:26+0200\n"
+"POT-Creation-Date: 2008-11-14 11:20+0000\n"
+"PO-Revision-Date: 2008-11-18 20:30+0100\n"
 "Last-Translator: Helge Kreutzmann <debian@helgefjell.de>\n"
 "Language-Team: de <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -29,9 +29,8 @@ msgid ""
 "Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
 msgstr ""
-"Sie können auswählen, "
-"ob der Demokatalog aus der Standardvorlage installiert werden soll oder ob "
-"Sie ihn manuell mit makecat installieren möchten."
+"Sie können auswählen, ob der Demokatalog aus der Standardvorlage installiert "
+"werden soll oder ob Sie ihn manuell mit makecat installieren möchten."
 
 #. Type: boolean
 #. Description
@@ -45,12 +44,12 @@ msgstr ""
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid ""
-"Should all files belonging to the Interchange demo catalog removed when you "
-"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+"Whether to remove all files belonging to the Interchange demo catalog when "
+"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
 msgstr ""
-"Sollen alle Dateien des Interchange-Demokatalogs gelöscht werden, wenn "
+"Ob alle Dateien des Interchange-Demokatalogs gelöscht werden sollen, wenn "
 "dieses Paket z.B. mit »dpkg --purge« oder »apt-get remove --purge« "
-"vollständig entfernt wird?"
+"vollständig entfernt wird."
 
 #. Type: select
 #. Choices
@@ -62,7 +61,8 @@ msgstr "immer, auf Nachfrage, niemals"
 #. Description
 #: ../interchange-cat-standard.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
-msgstr "Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation:"
+msgstr ""
+"Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation:"
 
 #. Type: select
 #. Description
@@ -137,9 +137,9 @@ msgid ""
 msgstr ""
 "Bitte geben Sie ein Passwort für die Verwaltung des Standard-Demokatalogs "
 "ein. Das ausgewählte Passwort sollte nicht leicht erraten werden können. Das "
-"Wort »pass« ist die Voreinstellung. Das Passwort muss mindestens vier Zeichen "
-"lang sein und darf nur Buchstaben, Ziffern, den Unterstrich, @ oder den Punkt "
-"als Zeichen enthalten."
+"Wort »pass« ist die Voreinstellung. Das Passwort muss mindestens vier "
+"Zeichen lang sein und darf nur Buchstaben, Ziffern, den Unterstrich, @ oder "
+"den Punkt als Zeichen enthalten."
 
 #. Type: boolean
 #. Description
@@ -153,9 +153,9 @@ msgstr "Demomodus aktivieren?"
 msgid "Additional locales for the storefront:"
 msgstr "Zusätzliche Ortsanpassungen (»locales«) für die Speicheroberfläche:"
 
+# HK: Übersetzung i.O.?? (storefront)
 #. Type: multiselect
 #. Description
-#HK: Übersetzung i.O.?? (storefront)
 #: ../interchange-cat-standard.templates:9001
 msgid ""
 "The Interchange demo catalog is able to display the storefront in a number "
@@ -204,8 +204,7 @@ msgstr "DBMS für den Demo-Katalog:"
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Please select the database type used for the demo catalog."
-msgstr ""
-"Bitte wählen Sie den Datenbanktyp für den Demo-Katalog aus."
+msgstr "Bitte wählen Sie den Datenbanktyp für den Demo-Katalog aus."
 
 #. Type: string
 #. Description
@@ -374,8 +373,8 @@ msgid ""
 "server."
 msgstr ""
 "Zur Erhöhung der Sicherheit werden Kreditkarteninformationen von Kunden "
-"verschlüsselt und an den Eigentümer des Ladens per E-Mail versandt, statt auf "
-"dem Server gespeichert zu werden."
+"verschlüsselt und an den Eigentümer des Ladens per E-Mail versandt, statt "
+"auf dem Server gespeichert zu werden."
 
 #. Type: string
 #. Description
@@ -426,56 +425,23 @@ msgstr ""
 "Diese Einstellung legt fest, ob die komplette URL für die Auswahl des "
 "Katalogs herangezogen wird."
 
-#. Type: note
+#. Type: boolean
 #. Description
 #: ../interchange.templates:13001
-msgid "SOAP server not available"
-msgstr "SOAP-Server ist nicht verfügbar"
-
-#. Type: note
-#. Description
-#: ../interchange.templates:13001
-msgid ""
-"Because the Perl module SOAP::Lite is not installed, you are unable to run "
-"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
-"Debian package and run interchangeconfig SOAP=1."
-msgstr ""
-"Da das Perl-Modul SOAP::Lite nicht installiert ist, können Sie den "
-"Interchange SOAP-Server nicht ausführen. Um dies zu ändern, installieren Sie "
-"das Debian-Paket libsoap-lite-perl und führen sie »interchangeconfig SOAP=1« "
-"aus."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "Enable the SOAP server?"
-msgstr "SOAP-Server aktivieren?"
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "This setting determines if the SOAP server is started or not."
-msgstr ""
-"Mit dieser Einstellung entscheiden Sie, ob der SOAP-Server gestartet wird "
-"oder nicht."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Robot-Einstellungen aktivieren?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:13001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
-"Das Interchange-Debian-Paket benutzt eine zusätzliche Konfigurationsdatei "
-"/etc/interchange/robots.cfg für die Direktiven RobotUA, RobotIP und "
+"Das Interchange-Debian-Paket benutzt eine zusätzliche Konfigurationsdatei /"
+"etc/interchange/robots.cfg für die Direktiven RobotUA, RobotIP und "
 "RobotHost. Das Einbinden dieser Einstellungen wird empfohlen, damit "
 "Interchange zwischen normalen Benutzern und Robots unterscheiden kann."
 
@@ -495,10 +461,31 @@ msgid ""
 "change this default at login time."
 msgstr ""
 "Die Administrationsbenutzerschnittstelle für Interchange-Kataloge, UI "
-"genannt, wurde ins "
-"Dänische (da_DK), Deutsche (de_DE), Niederländische (nl_NL), Italienische "
-"(it_IT) und Schwedische (sv_SE) übersetzt. Die vordefinierte Sprache können "
-"Sie hier festlegen. Jeder Benutzer kann sie beim Anmeldevorgang ändern."
+"genannt, wurde ins Dänische (da_DK), Deutsche (de_DE), Niederländische "
+"(nl_NL), Italienische (it_IT) und Schwedische (sv_SE) übersetzt. Die "
+"vordefinierte Sprache können Sie hier festlegen. Jeder Benutzer kann sie "
+"beim Anmeldevorgang ändern."
+
+#~ msgid "SOAP server not available"
+#~ msgstr "SOAP-Server ist nicht verfügbar"
+
+#~ msgid ""
+#~ "Because the Perl module SOAP::Lite is not installed, you are unable to "
+#~ "run the Interchange SOAP server. To change this, install the libsoap-lite-"
+#~ "perl Debian package and run interchangeconfig SOAP=1."
+#~ msgstr ""
+#~ "Da das Perl-Modul SOAP::Lite nicht installiert ist, können Sie den "
+#~ "Interchange SOAP-Server nicht ausführen. Um dies zu ändern, installieren "
+#~ "Sie das Debian-Paket libsoap-lite-perl und führen sie »interchangeconfig "
+#~ "SOAP=1« aus."
+
+#~ msgid "Enable the SOAP server?"
+#~ msgstr "SOAP-Server aktivieren?"
+
+#~ msgid "This setting determines if the SOAP server is started or not."
+#~ msgstr ""
+#~ "Mit dieser Einstellung entscheiden Sie, ob der SOAP-Server gestartet wird "
+#~ "oder nicht."
 
 #~ msgid "Enable debug mode?"
 #~ msgstr "Debugmodus aktivieren?"
@@ -507,8 +494,8 @@ msgstr ""
 #~ "Debug mode is only useful if you modified the Interchange sources "
 #~ "accordingly."
 #~ msgstr ""
-#~ "Debugmodus ist nur nützlich, falls Sie die Interchange-Quellen modifiziert "
-#~ "haben."
+#~ "Debugmodus ist nur nützlich, falls Sie die Interchange-Quellen "
+#~ "modifiziert haben."
 
 #~ msgid "Important Perl Incompatibility"
 #~ msgstr "Wichtige Perl-Inkompatibilität"
