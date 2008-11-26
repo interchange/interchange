@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.103 2008-10-10 15:08:19 mheins Exp $
+# $Id: Dispatch.pm,v 1.104 2008-11-26 10:02:46 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.103 $, 10);
+$VERSION = substr(q$Revision: 1.104 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1523,6 +1523,7 @@ EOF
 	Vend::Interpolate::reset_calc() if $Global::Foreground;
 	Vend::Interpolate::init_calc();
 	new Vend::Tags;
+	new Vend::Parse;	# enable catalog usertags within dispatch routines
 # LEGACY
 	ROUTINES: {
 		last ROUTINES unless index($Vend::FinalPath, "/$Vend::Cfg->{ProcessPage}/") == 0;
