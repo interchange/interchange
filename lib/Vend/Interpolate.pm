@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.309 2008-11-16 05:01:03 jon Exp $
+# $Id: Interpolate.pm,v 2.310 2008-12-05 16:43:40 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.309 $, 10);
+$VERSION = substr(q$Revision: 2.310 $, 10);
 
 @EXPORT = qw (
 
@@ -5539,8 +5539,15 @@ sub tax_vat {
 		my @pfield = split /:+/, $pfield;
 
 		for my $item (@$Vend::Items) {
-			my $rhash = tag_data($item->{mv_ib}, undef, $item->{code}, { hash => 1});
-			my $cat = join ":", @{$rhash}{@pfield};
+			my ($tab, $col);
+			if($pfield[1]) {
+				($tab, $col) = @pfield;
+			}
+			else {
+				$tab = $item->{mv_ib};
+				$col = $pfield[0]; 
+			}
+			my $cat = tag_data($tab, $col, $item->{code});
 			my $rate = defined $tax->{$cat} ? $tax->{$cat} : $tax->{default};
 #::logDebug("item $item->{code} cat=$cat rate=$rate");
 			$rate = percent_rate($rate);
