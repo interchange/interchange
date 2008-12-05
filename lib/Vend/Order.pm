@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.103 2008-10-24 10:11:35 pajamian Exp $
+# $Id: Order.pm,v 2.104 2008-12-05 15:31:49 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.103 $, 10);
+$VERSION = substr(q$Revision: 2.104 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2375,7 +2375,23 @@ sub add_items {
 			}
 		}
 		if (! $base ) {
-			logError( "Attempt to order missing product code: %s", $code);
+			my ($subname, $sub, $ret);
+			
+			if ($subname = $Vend::Cfg->{SpecialSub}{order_missing}) {
+				$sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+				eval {
+					$ret = $sub->($code, $quantity);
+				};
+
+				if ($@) {
+					::logError("Error running %s subroutine %s: %s", 'order_missing', $subname, $@);
+				}
+			}
+
+			unless ($ret) {
+				logError( "Attempt to order missing product code: %s", $code);
+			}
+
 			next;
 		}
 
