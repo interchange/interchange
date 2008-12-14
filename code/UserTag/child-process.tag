@@ -1,0 +1,133 @@
+# Copyright 2002-2007 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+# 
+# $Id: child-process.tag,v 1.1 2008-12-14 10:06:04 ton Exp $
+
+UserTag child-process addAttr
+UserTag child-process HasEndTag
+UserTag child-process Version $Revision: 1.1 $
+UserTag child-process Documentation <<EOD
+
+=head1 NAME
+
+child_process - Execute ITL code in a forked child process
+
+=head1 SYNOPSIS
+
+[child-process] ... ITL ... [/child-process]
+
+=head1 DESCRIPTION
+
+Runs Interchange markup code in a forked child process.
+Useful for off-loading processes that take a relatively long time to complete.
+
+Options are:
+
+=over 4
+
+=item filename
+
+File name relative to catalog directory to file where output from forked
+process should be stored.
+
+=item notifyname
+
+File name relative to catalog directory where a file of zero length will
+be created if the file in option 'filename' is created successfully.
+
+This empty file could be used for notification purposes, e.g. as an
+indicator that the child process has delivered its output. When placed
+in web docroot space one could poll for the existence of this file and
+when it exists bounce to a page that will display the results.
+
+=item umask
+
+Octal umask for notification file.
+
+=back
+
+=head1 EXAMPLES
+
+ This is the parent process.
+
+ Child process starts here:<br>
+ Child PID: [child-process filename="tmp/report_[time]%Y%m%d%H%M%S[/time].txt"]
+ [query
+     list=1
+     sql="
+         ... some long-running SQL query ...
+     "
+ ][sql-line]
+ [/query]
+ [/child-process]
+ Child process ends here.
+
+ Some more parent stuff....
+
+=head1 AUTHORS
+
+Ton Verhagen <tverhagen@alamerce.nl>
+
+Jon Jensen <jon@endpoint.com>
+
+
+=cut
+
+EOD
+UserTag child-process Routine <<EOR
+sub {
+	my ($opt, $body) = @_;
+	use vars qw/ $Tag /;
+
+	return unless defined($body) and length($body);
+
+	my $pid;
+
+	FORK: {
+		if ($pid = fork) {
+			# Parent
+			# As parent we have no tasks to perform at this place
+			# we only want to off-load 'heavy' processes to a child process
+			# The main reason for this Usertag
+
+			return $pid;
+		}
+		elsif (defined $pid) {
+			# Child
+
+			Vend::Server::reset_per_fork();
+
+			my $output = interpolate_html($body, 1);
+			if (defined($$output) and length($$output)) {
+				my $filename = $opt->{filename};
+				if (defined($filename) and length($filename)) {
+					$filename = $Tag->filter('filesafe', $filename);
+					my $status = $Tag->write_relative_file($filename, $$output);
+
+					my $notifyname = $opt->{notifyname};
+					if ($status and defined($notifyname) and length($notifyname)) {
+						$notifyname = $Tag->filter('filesafe', $notifyname);
+						$Tag->write_relative_file($notifyname, $opt, '');
+					}
+
+				}
+			}
+
+			exit;
+		}
+		elsif ($! =~ /No more process/) {
+			# Supposedly recoverable fork error
+			select(undef, undef, undef, 2.00);
+			redo FORK;
+		}
+		else {
+			# Weird fork error
+			die "Can't fork: $!\n";
+		}
+	}
+}
+EOR
