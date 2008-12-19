@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.93 2008-09-17 23:25:18 jon Exp $
+# $Id: Server.pm,v 2.94 2008-12-19 04:37:44 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.93 $, 10);
+$VERSION = substr(q$Revision: 2.94 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -3065,10 +3065,10 @@ sub set_process_name {
     $base = 'interchange' if !$base or $base eq '1';
 
     if (defined $status) {
-	$0 = "$base: $status";
+        $0 = "$base: $status";
     }
     else {
-	$0 = $base;
+        $0 = $base;
     }
 
     return;
