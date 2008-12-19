@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.94 2008-12-19 04:37:44 jon Exp $
+# $Id: Server.pm,v 2.95 2008-12-19 04:47:42 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.94 $, 10);
+$VERSION = substr(q$Revision: 2.95 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -3070,6 +3070,25 @@ sub set_process_name {
     else {
         $0 = $base;
     }
+
+    return;
+}
+
+# Disconnect child process from any dangling attachments to parent process.
+# Named after similar mod_perl routine.
+sub cleanup_for_exec {
+    # Release any open sockets
+    %fh_map = %vec_map = %s_vec_map = %s_fh_map = %ipc_socket = %unix_socket
+        = ();
+
+    # Close filehandles except for STDERR, used for debug log
+    close MESSAGE;
+    close SOCK;
+    open STDIN, '<', '/dev/null';
+    open STDOUT, '>>', '/dev/null';
+
+    # Clear any cached DBI handles
+    reset_per_fork();
 
     return;
 }
