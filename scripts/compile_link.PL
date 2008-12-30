@@ -3,7 +3,7 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.8 2007-08-09 13:40:56 pajamian Exp $
+# $Id: compile_link.PL,v 2.9 2008-12-30 20:59:22 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -73,6 +73,7 @@ options:
 
   -b dir, --build=dir   Alternate build directory
                          (default $Self->{SRC_DIR})
+  -e, --error-file      File to build error message from
   -f, --force           Force compile even if already there
   -h host, --host=host  Name of host the TCP link should contact
                          (default $Self->{LINK_HOST})
@@ -81,8 +82,10 @@ options:
   -o cgifile,           Write it to a specific file as well as the
      --output=cgifile    link catalog directory
   -p port, --port=port  Port number to use (default $Self->{LINK_PORT})
+  -S status             HTTP status line to use for error (default 504 timeout)
   -s socketfile,        Location of UNIX socket (default
       --socket=file      $Self->{INSTALLARCHLIB}/etc/socket)
+  -t content-type       HTTP content-type (default text/html)
   -w N, --timeout=N     Number of seconds before timeout (default $Self->{LINK_TIMEOUT})
   -u, --unixmode        Copy the vlink file to outputfile (default)
   --nosuid              Don't change mode to suid for vlink (CGIWRAP)
@@ -97,6 +100,9 @@ my $Inet;
 my $Unix = 1;
 my $NoSUID;
 my $Nostrip;
+my $ErrorFile;
+my $Status = "504 Gateway Timeout";
+my $ContentType = 'text/html';
 my $Perl_tlink;
 my $Build_dir;
 
@@ -109,6 +115,9 @@ my %optctl = (
     'build'         => \ $Build_dir,
     'source'        => \ $Self->{SRC_DIR},
     'inetmode'      => \ $Inet,
+    'content-type'  => \ $ContentType,
+    'status'        => \ $Status,
+    'error-file'    => \ $ErrorFile,
     'unixmode'      => \ $Unix,
     'nosuid'        => \ $NoSUID,
     'nostrip'       => \ $Nostrip,
@@ -131,6 +140,9 @@ my @options = ( qw/
 	nostrip|n
 	nosuid
 	perl
+	error-file|e=s
+	content-type|t=s
+	status|S=s
 	force|f
     build|b=s
     source=s
@@ -174,6 +186,42 @@ if($Build_dir and $Build_dir ne $Self->{SRC_DIR}) {
 else {
 	chdir $Self->{SRC_DIR}
 		or die "Couldn't change to source directory: $!\n";
+}
+
+if($Status !~ /^\d+\s+\w+/) {
+		die "Misformed status value -- should be numeric code followed by message.\n";
+}
+
+$Self->{LINK_MESSAGE_HEAD}
+	= qq{Status: $Status\\r\\nContent-Type: $ContentType\\r\\n\\r\\n};
+
+if($ErrorFile) {
+	unless(-f $ErrorFile and -r $ErrorFile) {
+		die "error message file $ErrorFile missing.\n";
+	}
+
+	open ERRFILE, $ErrorFile
+		or die "Read error message file $ErrorFile: $!\n";
+	
+	for(1 .. 3) {
+		my $line = <ERRFILE>;
+		$line ||= ' ';
+		$line =~ s/\r/\\r/g;
+		$line =~ s/\n/\\n/g;
+		$line =~ s/"/\\"/g;
+		$Self->{"LINK_MESSAGE_LINE$_"} = $line;
+	}
+
+	my $line = '';
+	while(<ERRFILE>) {
+		$line .= $_;
+	}
+
+	$line ||= ' ';
+	$line =~ s/\r/\\r/g;
+	$line =~ s/\n/\\n/g;
+	$line =~ s/"/\\"/g;
+	$Self->{"LINK_MESSAGE_LINE4"} = $line;
 }
 
 if(! $Perl_tlink and ! -f "config.h" || ! -f "syscfg") {
