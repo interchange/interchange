@@ -1595,7 +1595,7 @@ EOF
             $Vend::FinalPath = $CGI::request_uri;
             # remove any trailing query string
             $Vend::FinalPath =~ s/\?.*//;
-#::logDebug("FinalPath now $Vend::FinalPath");
+#::logDebug("FinalPath now $CGI::request_uri");
         }
         else {
             $Vend::FinalPath = find_special_page('catalog');
