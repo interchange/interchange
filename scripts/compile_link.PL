@@ -3,7 +3,7 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.9 2008-12-30 20:59:22 mheins Exp $
+# $Id: compile_link.PL,v 2.10 2008-12-31 01:26:00 mheins Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -206,6 +206,7 @@ if($ErrorFile) {
 	for(1 .. 3) {
 		my $line = <ERRFILE>;
 		$line ||= ' ';
+		$line =~ s/\\/\\\\/g;
 		$line =~ s/\r/\\r/g;
 		$line =~ s/\n/\\n/g;
 		$line =~ s/"/\\"/g;
@@ -218,6 +219,7 @@ if($ErrorFile) {
 	}
 
 	$line ||= ' ';
+	$line =~ s/\\/\\\\/g;
 	$line =~ s/\r/\\r/g;
 	$line =~ s/\n/\\n/g;
 	$line =~ s/"/\\"/g;

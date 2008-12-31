@@ -2,7 +2,7 @@
  * tlink.c: runs as a CGI program and passes request to Interchange
  *          server via TCP/IP
  *
- * $Id: tlink.c,v 2.7 2008-12-30 20:59:22 mheins Exp $
+ * $Id: tlink.c,v 2.8 2008-12-31 01:26:00 mheins Exp $
  *
  * Copyright (C) 2005-2007 Interchange Development Group,
  * http://www.icdevgroup.org/
@@ -71,11 +71,11 @@ struct sockaddr_in ServAddr;
  */
 void server_not_running()
 {
-  printf(LINK_MESSAGE_HEAD);
-  printf(LINK_MESSAGE_LINE1);
-  printf(LINK_MESSAGE_LINE2);
-  printf(LINK_MESSAGE_LINE3);
-  printf(LINK_MESSAGE_LINE4);
+  printf("%s", LINK_MESSAGE_HEAD);
+  printf("%s", LINK_MESSAGE_LINE1);
+  printf("%s", LINK_MESSAGE_LINE2);
+  printf("%s", LINK_MESSAGE_LINE3);
+  printf("%s", LINK_MESSAGE_LINE4);
   exit(1);
 }
 
