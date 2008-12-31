@@ -8,6 +8,23 @@
 See UPGRADE document for a list of incompatible changes.
 
 
+Interchange 5.6.2 not yet released.
+
+Core
+----
+
+* Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
+
+  http://hostname/?somevar=1
+
+  Interchange in that case looked for a page called "/?somevar=1".
+
+  Thanks to David Christensen <david@endpoint.com> for the fix.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 5.6.1 released 2008-11-13.
 
 Core

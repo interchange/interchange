@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.101 2008-04-25 09:08:03 racke Exp $
+# $Id: Dispatch.pm,v 1.101.2.1 2008-12-31 17:48:29 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.101 $, 10);
+$VERSION = substr(q$Revision: 1.101.2.1 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1592,6 +1592,8 @@ EOF
 #::logDebug("request_uri=$CGI::request_uri script_path=$CGI::script_path");
         if($CGI::request_uri !~ /^$CGI::script_path/) {
             $Vend::FinalPath = $CGI::request_uri;
+            # remove any trailing query string
+            $Vend::FinalPath =~ s/\?.*//;
 #::logDebug("FinalPath now $CGI::request_uri");
         }
         else {
