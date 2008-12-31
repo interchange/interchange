@@ -7,18 +7,27 @@
 
 See UPGRADE document for a list of incompatible changes.
 
+
 Interchange 5.7.2 not yet released.
 
 Core
 ----
 
-* Enable catalog usertags within dispatch routines.
+* Enabled catalog usertags within dispatch routines.
 
 * SpecialSub order_missing added (#221).
 
-* Make TAX_CATEGORY_FIELD work as intended, where a colon-separated
+* Made TAX_CATEGORY_FIELD work as intended, where a colon-separated
   table and field will work as well as a simple field in the same table
   as the item.
+
+* Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
+
+  http://hostname/?somevar=1
+
+  Interchange in that case looked for a page called "/?somevar=1".
+
+  Thanks to David Christensen <david@endpoint.com> for the fix.
 
 
 ------------------------------------------------------------------------------
