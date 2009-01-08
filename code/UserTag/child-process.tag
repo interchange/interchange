@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: child-process.tag,v 1.2 2008-12-19 04:47:42 jon Exp $
+# $Id: child-process.tag,v 1.3 2009-01-08 12:05:16 markj Exp $
 
 UserTag child-process addAttr
 UserTag child-process HasEndTag
 UserTag child-process NoReparse 0
 UserTag child-process Interpolate 0
-UserTag child-process Version $Revision: 1.2 $
+UserTag child-process Version $Revision: 1.3 $
 UserTag child-process Documentation <<EOD
 
 =head1 NAME
@@ -99,6 +99,9 @@ sub {
         return;
     }
     else {
+
+        Vend::Server::sever_database();
+
         defined (my $grandkid = fork) or die "Kid cannot fork: $!\n";
         exit if $grandkid;
 

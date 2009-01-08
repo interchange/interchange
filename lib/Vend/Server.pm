@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.95 2008-12-19 04:47:42 jon Exp $
+# $Id: Server.pm,v 2.96 2009-01-08 12:05:16 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.95 $, 10);
+$VERSION = substr(q$Revision: 2.96 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -3087,8 +3087,42 @@ sub cleanup_for_exec {
     open STDIN, '<', '/dev/null';
     open STDOUT, '>>', '/dev/null';
 
+    return;
+}
+
+sub sever_database {
+    # Because all clients with a common database connection will share
+    # the same db server, we want our severed server (client) not to
+    # destroy the database server when it disconnects.
+    eval {
+        my %d = DBI->installed_drivers;
+        for my $h (values %d) {
+            $_->{InactiveDestroy} = 1
+                for grep { defined } @{ $h->{ChildHandles} };
+        }
+    };
+
+    ::logGlobal(
+        'WARNING - error setting all DBI handles to InactiveDestroy: %s',
+        $@
+    )
+        if ($@);
+
     # Clear any cached DBI handles
     reset_per_fork();
+
+    # Prep new database connections for severed server
+    Vend::Data::open_database(1);
+    while (my ($db, $db_ref) = each %Vend::Database) {
+        next unless
+            ref ($db_ref) eq 'Vend::Table::DBI'
+            &&
+            defined $db_ref->[$Vend::Table::DBI::DBI];
+
+        delete $Vend::Interpolate::Db{$db};
+        $db_ref->close_table;
+        undef $db_ref->[$Vend::Table::DBI::DBI];
+    }
 
     return;
 }
