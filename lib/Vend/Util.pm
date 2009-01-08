@@ -1111,10 +1111,17 @@ sub readin {
 		logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}
-	$file =~ s#//+#/#g;
-	$file =~ s#/+$##g;
-	($pathdir = $file) =~ s#/[^/]*$##;
-	$pathdir =~ s:^/+::;
+
+	if(index($file, '/') < 0) {
+		$pathdir = '';
+	}
+	else {
+		$file =~ s#//+#/#g;
+		$file =~ s#/+$##g;
+		($pathdir = $file) =~ s#/[^/]*$##;
+		$pathdir =~ s:^/+::;
+	}
+
 	my $try;
 	my $suffix = $Vend::Cfg->{HTMLsuffix};
 	my $db_tried;
