@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.120 2008-09-26 14:57:58 racke Exp $
+# $Id: Util.pm,v 2.121 2009-01-08 18:43:13 docelic Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -91,7 +91,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.120 $, 10);
+$VERSION = substr(q$Revision: 2.121 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1113,10 +1113,17 @@ sub readin {
 		logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}
-	$file =~ s#//+#/#g;
-	$file =~ s#/+$##g;
-	($pathdir = $file) =~ s#/[^/]*$##;
-	$pathdir =~ s:^/+::;
+
+	if(index($file, '/') < 0) {
+		$pathdir = '';
+	}
+	else {
+		$file =~ s#//+#/#g;
+		$file =~ s#/+$##g;
+		($pathdir = $file) =~ s#/[^/]*$##;
+		$pathdir =~ s:^/+::;
+	}
+
 	my $try;
 	my $suffix = $Vend::Cfg->{HTMLsuffix};
 	my $db_tried;
