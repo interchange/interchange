@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.51 2008-04-11 09:04:16 jon Exp $
+# $Id: Menu.pm,v 2.51.2.1 2009-01-09 14:45:27 thunder Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.51.2.1 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1801,7 +1801,7 @@ sub dhtml_browser {
 		$regex = $::Variable->{MV_DHTML_BROWSER}
 			and $regex = qr/$regex/;
 	};
-	$regex ||= qr/MSIE [5-9].*Windows|Mozilla.*Gecko/;
+	$regex ||= qr/MSIE [5-9].*Windows|Mozilla.*Gecko|Opera.*[7-9]/;
 	return $Vend::Session->{browser} =~ $regex;
 }
 

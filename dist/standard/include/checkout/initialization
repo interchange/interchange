@@ -2,7 +2,7 @@
 	## Browser check, standalone so syntax error will not
 	## kill init code
 	my $regex = $Variable->{MV_DHTML_BROWSER};
-	$regex ||= 'MSIE [5-9].*Windows|Mozilla.*Gecko';
+	$regex ||= 'MSIE [5-9].*Windows|Mozilla.*Gecko|Opera.*[7-9]';
 
 	$regex = qr/$regex/;
 	if($Session->{browser} =~ $regex) {
