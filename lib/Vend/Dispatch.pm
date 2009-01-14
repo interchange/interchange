@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.106 2008-12-31 20:34:53 jon Exp $
+# $Id: Dispatch.pm,v 1.107 2009-01-14 01:09:52 jon Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.106 $, 10);
+$VERSION = substr(q$Revision: 1.107 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1456,8 +1456,9 @@ EOF
 		my $form =
 			join '',
 			map { "$_=$CGI::values{$_}\n" }
-			sort keys %$CGI::values;
-		my $url = vendUrl($path, undef, undef, { form => $form, match_security => 1 });
+			grep !/^mv_(?:pc|source)$/,
+			sort keys %CGI::values;
+		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path, undef, undef, { form => $form, match_security => 1 });
 		my $msg = get_locale_message(
 			301,
 			"Redirected to %s.",
