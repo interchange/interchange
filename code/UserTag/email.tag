@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: email.tag,v 1.14 2007-03-30 23:40:56 pajamian Exp $
+# $Id: email.tag,v 1.14.2.1 2009-01-23 11:46:56 racke Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -24,7 +24,7 @@ BEGIN {
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
     my $ok = 0;
-    my @extra;
+    my ($cc, $bcc, @extra);
 
 	use vars qw/ $Tag /;
 
@@ -35,8 +35,12 @@ sub {
 		$from =~ s/,.*//;
 	}
 
+	# Use local copy to avoid mangling with caller's data
+	$cc = $opt->{cc};
+	$bcc = $opt->{bcc};
+
 	# Prevent header injections from spammers' hostile content
-	for ($to, $subject, $reply, $from) {
+	for ($to, $subject, $reply, $from, $cc, $bcc) {
 		# unfold valid RFC 2822 "2.2.3. Long Header Fields"
 		s/\r?\n([ \t]+)/$1/g;
 		# now remove any invalid extra lines left over
@@ -93,7 +97,8 @@ sub {
 					From => $from,
 					Subject => $subject,
 					Type => $opt->{mimetype},
-					Cc => $opt->{cc},
+					Cc => $cc,
+					Bcc => $bcc,
 					@extra_headers,
 				;
 		$opt->{body_mime} ||= 'text/plain';
@@ -175,6 +180,14 @@ sub {
 
 			$sent_with_attach = 1;
 		}
+	}
+
+	if ($cc) {
+		push(@extra, "Cc: $cc");
+	}
+	
+	if ($bcc) {
+		push(@extra, "Bcc: $bcc");
 	}
 
 	$ok = send_mail($to, $subject, $body, $reply, 0, @extra)
