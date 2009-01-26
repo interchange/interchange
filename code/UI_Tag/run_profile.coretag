@@ -1,21 +1,37 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2009 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: run_profile.coretag,v 1.6 2008-07-10 14:56:31 racke Exp $
+# $Id: run_profile.coretag,v 1.7 2009-01-26 09:49:11 racke Exp $
 
 UserTag run-profile Order   check cgi profile name
 UserTag run-profile addAttr
-UserTag run-profile Version $Revision: 1.6 $
+UserTag run-profile Version $Revision: 1.7 $
 UserTag run-profile Routine <<EOR
 sub {
 	my ($check, $cgi, $profile, $name, $opt) = @_;
 #::logDebug("call check $check");
-	my $ref = $cgi ? (\%CGI::values) : $::Values;
+	my $ref;
 	my $pname = $name;
+
+	if ($opt->{ref}) {
+		if (ref($opt->{ref}) eq 'HASH') {
+			$ref = $opt->{ref};
+		}
+		else {
+			# error message
+			::logError("Invalid ref parameter provided for profile %s", $pname || $check);
+		}
+	}
+	elsif ($cgi) {
+		$ref = \%CGI::values;
+	}
+	else {
+		$ref = $::Values;
+	}
 
 	unless ($pname) {
 	    # check scratch for profile if none specified
