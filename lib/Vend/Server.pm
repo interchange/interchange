@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.98 2009-01-23 03:56:36 jon Exp $
+# $Id: Server.pm,v 2.99 2009-01-27 07:14:08 jon Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.98 $, 10);
+$VERSION = substr(q$Revision: 2.99 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1396,14 +1396,14 @@ EOF
 				my ($cat, $delay, $jobname, @params) = grep /\S/, split /[\s,\0]+/, $value;
 				if ($delay && $delay < time()) {
 					# job expired
-#::logDebug ("Jobs @jobs expired ($delay vs $now)\n");
+#::logDebug ("Jobs expired ($delay vs $now)\n");
 				} elsif ($Job_servers++ >= $Global::Jobs->{MaxServers}) {
 						# no slot for job
 						$Job_servers--;
-#::logDebug ("Jobs @jobs queued, already %d jobs running/scheduled", $Job_servers);
+#::logDebug ("Jobs queued, already %d jobs running/scheduled", $Job_servers);
                         push(@queued_jobs, "$directive $value");
                 } else {
-#::logDebug ("Scheduled job @jobs for running");
+#::logDebug ("Scheduled job for running");
 					my %p;
 					for (@params) {
 					    my ($name, $value) = split /\=/, $_, 2;
