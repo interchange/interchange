@@ -1,23 +1,23 @@
-# Copyright 2005-2007 Interchange Development Group and others
+# Copyright 2005-2009 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: email_only.oc,v 1.4 2007-03-30 23:40:48 pajamian Exp $
+# $Id: email_only.oc,v 1.5 2009-01-28 07:38:26 racke Exp $
 
 CodeDef email_only OrderCheck 1
 CodeDef email_only Description Email address
 CodeDef email_only Routine <<EOR
 sub {
-	my($ref, $var, $val) = @_;
+	my($ref, $var, $val, $msg) = @_;
 	if($val and $val =~ /^[\040-\077\101-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+$/) {
 		return (1, $var, '');
 	}
 	else {
 		return (undef, $var,
-			errmsg( "'%s' not an email address", $val )
+			$msg || errmsg("'%s' not an email address", $val )
 		);
 	}
 }
