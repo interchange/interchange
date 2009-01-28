@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>[scratch page_title]</title>
+<script type="text/javascript">if (top!=self) top.location.href=self.location.href;</script>
 [scratch meta_header]
 {{MAIN_CSS}}
 </head>
