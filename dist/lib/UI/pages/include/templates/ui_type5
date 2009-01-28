@@ -1,6 +1,7 @@
 <html[scratch ui_language_direction]>
 <head>
 <title>[scratch page_title]</title>
+<script type="text/javascript">if (top!=self) top.location.href=self.location.href;</script>
 [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
 @@UI_JSLIB@@
 <link href="__UI_IMG__interchange.css" rel="stylesheet" type="text/css">
