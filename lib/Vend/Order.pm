@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.105 2009-01-29 22:52:38 danb Exp $
+# $Id: Order.pm,v 2.106 2009-01-29 23:32:30 danb Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.105 $, 10);
+$VERSION = substr(q$Revision: 2.106 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2134,14 +2134,8 @@ sub update_quantity {
 		else {
 			my $item = $line->{'code'};
 			$line->{quantity} = int $line->{quantity};
-			my $invalid_qty_error = $::Variable->{MV_INVALID_QTY_ERROR}
-				|| "'%s' for item %s is not numeric/integer";                
-			if (my $invalid_qty_label = $::Variable->{MV_INVALID_QTY_LABEL}) {
-				$Vend::Session->{errorlabels}{mv_order_quantity} 
-					= $invalid_qty_label;
-			}
         	$Vend::Session->{errors}{mv_order_quantity} =
-				errmsg($invalid_qty_error, $quantity, $item);
+				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
     	}
 
 		if($do_update and my $oe = $Vend::Cfg->{OptionsAttribute}) {
