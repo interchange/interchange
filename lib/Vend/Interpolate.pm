@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.310 2008-12-05 16:43:40 mheins Exp $
+# $Id: Interpolate.pm,v 2.311 2009-01-29 17:13:26 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.310 $, 10);
+$VERSION = substr(q$Revision: 2.311 $, 10);
 
 @EXPORT = qw (
 
@@ -1671,7 +1671,7 @@ sub tag_perl {
 
 	$MVSAFE::Safe = 1;
 	if (
-		$opt->{global}
+		( $opt->{global} or (! defined $opt->{global} and $Global::PerlAlwaysGlobal->{$Vend::Cat} ) )
 			and
 		$Global::AllowGlobal->{$Vend::Cat}
 		)
@@ -1680,7 +1680,13 @@ sub tag_perl {
 	}
 
 	if(! $MVSAFE::Safe) {
-		$result = eval($body);
+		if ($Global::PerlNoStrict->{$Vend::Cat} || $opt->{no_strict}) {
+			no strict;
+			$result = eval($body);
+		}
+		else {
+			$result = eval($body);
+		}
 	}
 	else {
 		$result = $ready_safe->reval($body);

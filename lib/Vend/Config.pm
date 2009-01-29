@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.240 2009-01-15 02:08:04 jon Exp $
+# $Id: Config.pm,v 2.241 2009-01-29 17:13:26 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.240 $, 10);
+$VERSION = substr(q$Revision: 2.241 $, 10);
 
 my %CDname;
 my %CPname;
@@ -493,6 +493,8 @@ sub global_directives {
 	['SafeTrap',         'array',            ':base_io'],
 	['NoAbsolute',		 'yesno',			 'No'],
 	['AllowGlobal',		 'boolean',			 ''],
+	['PerlNoStrict',	 'boolean',			 ''],
+	['PerlAlwaysGlobal', 'boolean',			 ''],
 	['AddDirective',	 'directive',		 ''],
 	['UserTag',			 'tag',				 ''],
 	['CodeDef',			 'mapped_code',		 ''],
@@ -2158,6 +2160,16 @@ sub parse_action {
 	}
 	my ($name, $sub) = split /\s+/, $value, 2;
 
+	## Determine if we are in a catalog config, and if 
+	## perl should be global and/or strict
+	my $nostrict;
+	my $perlglobal = 1;
+
+	if($C) {
+		$nostrict = $Global::PerlNoStrict->{$C->{CatalogName}};
+		$perlglobal = $Global::AllowGlobal->{$C->{CatalogName}};
+	}
+
 	# Untaint and strip this pup
 	$sub =~ s/^\s*([\000-\377]*\S)\s*//;
 	$sub = $1;
@@ -2198,9 +2210,15 @@ EOF
 			$c->{$name} = eval $code;
 		}
 	}
-	elsif (! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
+	elsif ($perlglobal) {
 		package Vend::Interpolate;
-		$c->{$name} = eval $sub;
+		if($nostrict) {
+			no strict;
+			$c->{$name} = eval $sub;
+		}
+		else {
+			$c->{$name} = eval $sub;
+		}
 	}
 	else {
 		package Vend::Interpolate;
@@ -2675,6 +2693,14 @@ sub parse_require {
 			unless $error_message;
 	}
 
+	my $nostrict;
+	my $perlglobal = 1;
+
+	if($C) {
+		$nostrict = $Global::PerlNoStrict->{$C->{CatalogName}};
+		$perlglobal = $Global::AllowGlobal->{$C->{CatalogName}};
+	}
+
 	my $vref = $C ? $C->{Variable} : $Global::Variable;
 	my $require;
 	my $testsub = sub { 0 };
@@ -2729,7 +2755,7 @@ sub parse_require {
 				$oldtype = '.pl';
 			}
 			$module =~ /[^\w:]/ and return undef;
-			if(! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
+			if($perlglobal) {
 				if ($pathinfo) {
 					unshift(@INC, $pathinfo);
 				}
@@ -5214,6 +5240,16 @@ sub parse_subroutine {
 		);
 	}
 
+	## Determine if we are in a catalog config, and if 
+	## perl should be global and/or strict
+	my $nostrict;
+	my $perlglobal = 1;
+
+	if($C) {
+		$nostrict = $Global::PerlNoStrict->{$C->{CatalogName}};
+		$perlglobal = $Global::AllowGlobal->{$C->{CatalogName}};
+	}
+
 	$name =~ s/\s+//g;
 
 	# Untainting
@@ -5223,9 +5259,15 @@ sub parse_subroutine {
 	if(! defined $C) {
 		$c->{$name} = eval $value;
 	}
-	elsif($Global::AllowGlobal->{$C->{CatalogName}}) {
+	elsif($perlglobal) {
 		package Vend::Interpolate;
-		$c->{$name} = eval $value;
+		if($nostrict) {
+			no strict;
+			$c->{$name} = eval $value;
+		}
+		else {
+			$c->{$name} = eval $value;
+		}
 	}
 	else {
 		package Vend::Interpolate;
