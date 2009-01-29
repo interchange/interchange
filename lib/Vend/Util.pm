@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.121 2009-01-08 18:43:13 docelic Exp $
+# $Id: Util.pm,v 2.122 2009-01-29 22:52:38 danb Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,6 +25,8 @@
 
 package Vend::Util;
 require Exporter;
+
+use Encode qw(encode_utf8);
 
 @ISA = qw(Exporter);
 
@@ -91,7 +93,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.121 $, 10);
+$VERSION = substr(q$Revision: 2.122 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -596,7 +598,7 @@ if(! $@) {
 	$Keysub = sub {
 					@_ = time() unless @_;
 					$Md->reset();
-					$Md->add(@_);
+					$Md->add(map encode_utf8($_), @_);
 					$Md->hexdigest();
 				};
 }
