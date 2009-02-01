@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.99 2009-01-27 07:14:08 jon Exp $
+# $Id: Server.pm,v 2.100 2009-02-01 17:25:04 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.99 $, 10);
+$VERSION = substr(q$Revision: 2.100 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -548,7 +548,7 @@ sub respond {
 	# so that $Document->send() will work from within Safe
 	#my $response_charset = Vend::CharSet->default_charset();
 	my $c = $Global::Selector{$CGI::script_name};
-	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET};
+	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET} || 'iso8859-1';
 
 	my $status;
 	return if $Vend::Sent;
