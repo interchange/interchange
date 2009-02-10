@@ -5,14 +5,14 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: error.coretag,v 1.10 2008-04-11 06:30:46 danb Exp $
+# $Id: error.coretag,v 1.11 2009-02-10 12:16:49 thunder Exp $
 
 ### This is in package Vend::Interpolate, and may make reference
 ### to variables in that module
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.10 $
+UserTag error               Version      $Revision: 1.11 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -141,7 +141,9 @@ EOF
 		$err =~ s/\s+$//;
 	}
 	$text = '' unless defined $text;
-	$text .= '%s' unless $text =~ /\%s/;
+	$text .= '%s' unless ($text =~ /\%s/ ||
+                                length $::Variable->{MV_ERROR_STD_LABEL});
+
 	$text = pull_else($text, $found_error);
 	$text =~ s/\%s/$err/;
 	return $text;
