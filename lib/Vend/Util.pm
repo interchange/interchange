@@ -1,8 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.118 2008-03-27 15:56:49 ton Exp $
-# 
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -1655,7 +1653,7 @@ sub logDebug {
 		$debug{tag} = $Vend::CurrentTag;
 		$debug{host} = $CGI::host || $CGI::remote_addr;
 		$debug{remote_addr} = $CGI::remote_addr;
-		$debug{catalog} = $Vend::Catalog;
+		$debug{catalog} = $Vend::Cat;
         if($tpl =~ /\{caller\d+\}/i) {
             my @caller = caller();
             for(my $i = 0; $i < @caller; $i++) {
