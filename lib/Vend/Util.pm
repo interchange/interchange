@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.122 2009-01-29 22:52:38 danb Exp $
+# $Id: Util.pm,v 2.123 2009-02-10 15:06:54 thunder Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -93,7 +93,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.122 $, 10);
+$VERSION = substr(q$Revision: 2.123 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1668,7 +1668,7 @@ sub logDebug {
 		$debug{tag} = $Vend::CurrentTag;
 		$debug{host} = $CGI::host || $CGI::remote_addr;
 		$debug{remote_addr} = $CGI::remote_addr;
-		$debug{catalog} = $Vend::Catalog;
+		$debug{catalog} = $Vend::Cat;
         if($tpl =~ /\{caller\d+\}/i) {
             my @caller = caller();
             for(my $i = 0; $i < @caller; $i++) {
