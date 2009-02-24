@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.52 2009-01-09 14:54:46 racke Exp $
+# $Id: Menu.pm,v 2.53 2009-02-24 15:29:01 jon Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.52 $, 10);
+$VERSION = substr(q$Revision: 2.53 $, 10);
 
 use Vend::Util;
 use strict;
@@ -2165,8 +2165,8 @@ sub menu {
 						href \s*=\s*
 						(["']?) # possible quote
 							([^"'>\s]+)
-						\1      # end quote}isx
-					and $page = $2;
+						\1      # end quote
+					}isx and $page = $2;
 				($page, $form) = split /\?/, $page, 2
 					if $page;
 				s{<a\s+.*?>}{}is;
