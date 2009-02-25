@@ -53,6 +53,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 use Vend::Cron;
+use Vend::CharSet ();
 
 $VERSION = substr(q$Revision: 2.246 $, 10);
 
@@ -3670,6 +3671,21 @@ sub set_defaults {
 	for(@Cleanups) {
 		push @{ $C->{CleanupRoutines} ||= [] }, $Cleanup_code{$_};
 	}
+
+    # check MV_HTTP_CHARSET against a valid encoding
+    if (my $enc = $C->{Variable}->{MV_HTTP_CHARSET}) {
+        if (my $norm_enc = Vend::CharSet->validate_encoding($enc)) {
+            if ($norm_enc ne $enc) {
+                config_warn("Provided MV_HTTP_CHARSET '$enc' resolved to '$norm_enc'.  Continuing.");
+                $C->{Variable}->{MV_HTTP_CHARSET} = $norm_enc;
+            }
+        }
+        else {
+            config_error("Unrecognized/unsupported MV_HTTP_CHARSET: '%s'.", $enc);
+            delete $C->{Variable}->{MV_HTTP_CHARSET};
+        }
+    }
+
 	$Have_set_global_defaults = 1;
 	return;
 }
