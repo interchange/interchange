@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.63 2008-06-24 16:20:00 mheins Exp $
+# $Id: UserDB.pm,v 2.64 2009-03-02 17:33:36 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.63 $, 10);
+$VERSION = substr(q$Revision: 2.64 $, 10);
 
 use vars qw!
 	$VERSION
@@ -197,6 +197,83 @@ by default the fields C<email>, C<fax>, C<phone_night>,
 and C<fax_order>. The field C<p_nickname> acts as a key to select
 the preference set.
 
+=head2 Locations
+
+There are several database locations that have special purposes. These
+fields are not saved as user values.
+
+=item USERNAME				default: username
+
+The username or key field of the database table.
+
+=item BILLING				default: accounts
+
+Billing address hash field.
+
+=item SHIPPING				default: address_book
+
+Shipping address hash field.
+
+=item PREFERENCES			default: preferences
+
+Miscellaneous information hash field.
+
+=item FEEDBACK				default: feedback
+
+Customer feedback hash field.
+
+=item PRICING				default: price_level
+
+Customer pricing level marker.
+
+=item CARTS					default: carts
+
+Saved carts hash field.
+
+=item PASSWORD				default: password
+
+Customer password info. If C<crypt> is set, may be encrypted.
+
+=item LAST					default: mod_time
+
+Last login time
+
+=item EXPIRATION			default: expiration
+
+Expiration of account.
+
+=item OUTBOARD_KEY  		default: (none)
+
+Key information for linking to another table of address or other info.
+
+=item GROUPS				default: groups
+
+Groups they should be logged into.
+
+=item SUPER					default: super
+
+Whether they are a superuser (admin).
+
+=item ACL					default: acl
+
+=item FILE_ACL				default: file_acl
+
+=item DB_ACL				default: db_acl
+
+Location of access control information.
+
+=item CREATED_DATE_ISO		default: (none)
+=item CREATED_DATE_UNIX		default: (none)
+=item UPDATED_DATE_ISO		default: (none)
+=item UPDATED_DATE_UNIX		default: (none)
+
+Date fields.
+
+=item MERGED_USER			default: (none)
+
+The user id of another account this was merged into. If present, and data (should
+be a valid user id) is present in the field, the user will be logged as that username.
+
 =cut
 
 # user name and password restrictions
@@ -295,6 +372,7 @@ sub new {
 						EXPIRATION	=> $options{expire_field} || 'expiration',
 						OUTBOARD_KEY=> $options{outboard_key_col},
 						GROUPS		=> $options{groups_field}|| 'groups',
+						MERGED_USER => $options{merged_user},
 						SUPER		=> $options{super_field}|| 'super',
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
@@ -1361,6 +1439,20 @@ sub login {
 				if ! $exp and $self->{EMPTY_EXPIRE_FATAL};
 			if($exp and $exp < $cmp) {
 				die errmsg("Expired %s.", $exp) . "\n";
+			}
+		}
+
+		if($self->{PRESENT}->{ $self->{LOCATION}{MERGED_USER} } ) {
+			my $old = $self->{USERNAME};
+			my $new = $udb->field(
+						$self->{USERNAME},
+						$self->{LOCATION}{MERGED_USER},
+						);
+			if($new) {
+				$self->{USERNAME} = $new;
+				my $msg = errmsg('%s logged in as user %s, merged.', $old, $new);
+				Vend::Tags->warnings($msg);
+				$self->log_either($msg);
 			}
 		}
 

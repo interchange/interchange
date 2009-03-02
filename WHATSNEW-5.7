@@ -32,6 +32,16 @@ Core
 * Add new SessionCookieSecure boolean catalog directive. When enabled, makes
   session cookie set in https usable only in https.
 
+* Add ability to merge user logins with merged_user field. When the
+  user logs in, their username is changed to the value of the ID in
+  that field. No default, so not operational in standard demo catalog.
+  Enabled with:
+
+  		UserDB  default   merged_user  merge_to
+
+  That would look in the database field "merge_to" for a user name
+  to change to.
+
 UserTag
 -------
 
