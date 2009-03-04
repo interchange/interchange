@@ -1144,6 +1144,7 @@ lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/NetBilling.pm
+lib/Vend/Payment/PaypalExpress.pm
 lib/Vend/Payment/PRI.pm
 lib/Vend/Payment/Protx2.pm
 lib/Vend/Payment/PSiGate.pm
