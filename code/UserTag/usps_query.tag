@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: usps_query.tag,v 1.7 2007-03-30 23:40:57 pajamian Exp $
+# $Id: usps_query.tag,v 1.8 2009-03-05 21:45:27 markj Exp $
 
 UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
-UserTag  usps-query  Version $Revision: 1.7 $
+UserTag  usps-query  Version $Revision: 1.8 $
 UserTag  usps-query  Routine <<EOR
 
 sub {
@@ -23,18 +23,15 @@ sub {
 			      'BPM'         => 1,
 			      'LIBRARY'     => 1,
 			      'MEDIA'       => 1,
-			      'GLOBAL EXPRESS GUARANTEED DOCUMENT SERVICE'     => 1,
-			      'GLOBAL EXPRESS GUARANTEED NON-DOCUMENT SERVICE' => 1,
-			      'GLOBAL EXPRESS MAIL (EMS)'                      => 1,
-			      'GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (LARGE)' => 1,
-			      'GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (SMALL)' => 1,
-			      'GLOBAL PRIORITY MAIL - VARIABLE WEIGHT (SINGLE)' => 1,
-			      'AIRMAIL LETTER-POST'                            => 1,
-			      'AIRMAIL PARCEL POST'                            => 1,
-			      'ECONOMY (SURFACE) LETTER-POST'                  => 1,
-			      'ECONOMY (SURFACE) PARCEL POST'                  => 1,
-			      'POSTCARDS - AIRMAIL'                            => 1,
-			      'AEROGRAMMES - AIRMAIL'                          => 1,
+			      'GLOBAL EXPRESS GUARANTEED'                              => 1,
+			      'GLOBAL EXPRESS GUARANTEED NON-DOCUMENT RECTANGULAR'     => 1,
+			      'GLOBAL EXPRESS GUARANTEED NON-DOCUMENT NON-RECTANGULAR' => 1,
+			      'EXPRESS MAIL INTERNATIONAL (EMS)'                       => 1,
+			      'EXPRESS MAIL INTERNATIONAL (EMS) FLAT RATE ENVELOPE'    => 1,
+			      'PRIORITY MAIL INTERNATIONAL'                            => 1,
+			      'PRIORITY MAIL INTERNATIONAL FLAT RATE ENVELOPE'         => 1,
+			      'PRIORITY MAIL INTERNATIONAL FLAT RATE BOX'              => 1,
+			      'FIRST-CLASS MAIL INTERNATIONAL'                         => 1,
 			      'MATTER FOR THE BLIND - ECONOMY MAIL'            => 1,
 			      );
     my %package_sizes = (
@@ -231,18 +228,15 @@ The USPS service you wish to get a rate quote for. Services currently supported:
     BPM
     LIBRARY
     MEDIA
-    GLOBAL EXPRESS GUARANTEED DOCUMENT SERVICE
-    GLOBAL EXPRESS GUARANTEED NON-DOCUMENT SERVICE
-    GLOBAL EXPRESS MAIL (EMS)
-    GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (LARGE)
-    GLOBAL PRIORITY MAIL - FLAT-RATE ENVELOPE (SMALL)
-    GLOBAL PRIORITY MAIL - VARIABLE WEIGHT (SINGLE)
-    AIRMAIL LETTER-POST
-    AIRMAIL PARCEL POST
-    ECONOMY (SURFACE) LETTER-POST
-    ECONOMY (SURFACE) PARCEL POST
-    POSTCARDS - AIRMAIL
-    AEROGRAMMES - AIRMAIL
+    GLOBAL EXPRESS GUARANTEED
+    GLOBAL EXPRESS GUARANTEED NON-DOCUMENT RECTANGULAR
+    GLOBAL EXPRESS GUARANTEED NON-DOCUMENT NON-RECTANGULAR
+    EXPRESS MAIL INTERNATIONAL (EMS)
+    EXPRESS MAIL INTERNATIONAL (EMS) FLAT RATE ENVELOPE
+    PRIORITY MAIL INTERNATIONAL
+    PRIORITY MAIL INTERNATIONAL FLAT RATE ENVELOPE
+    PRIORITY MAIL INTERNATIONAL FLAT RATE BOX
+    FIRST-CLASS MAIL INTERNATIONAL
     MATTER FOR THE BLIND - ECONOMY MAIL
 
 
