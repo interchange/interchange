@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: usps_query.tag,v 1.8 2009-03-05 21:45:27 markj Exp $
+# $Id: usps_query.tag,v 1.9 2009-03-06 01:38:25 markj Exp $
 
 UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
-UserTag  usps-query  Version $Revision: 1.8 $
+UserTag  usps-query  Version $Revision: 1.9 $
 UserTag  usps-query  Routine <<EOR
 
 sub {
@@ -94,13 +94,44 @@ RATEQUOTE: {
     $weight = int $weight;
     
     if ($opt->{country}) {
+        my %map = (
+            q{United Kingdom} => q{Great Britain},
+            q{Virgin Islands, British} => q{British Virgin Islands},
+            q{Viet Nam} => q{Vietnam},
+            q{Tanzania, United Republic Of} => q{Tanzania},
+            q{Slovakia} => q{Slovak Republic},
+            q{Serbia} => q{Serbia-Montenegro},
+            q{Montenegro} => q{Serbia-Montenegro},
+            q{Samoa} => q{Western Samoa},
+            q{Saint Kitts And Nevis} => q{St. Christopher and Nevis},
+            q{Russian Federation} => q{Russia},
+            q{Pitcairn} => q{Pitcairn Island},
+            q{Moldova, Republic Of} => q{Moldova},
+            q{Marshall Islands} => q{Republic of the Marshall Islands},
+            q{Macedonia, The Former Yugoslav R} => q{Macedonia, Republic of},
+            q{Libyan Arab Jamahiriya} => q{Libya},
+            q{Lao People's Democratic Republic} => q{Laos},
+            q{Korea, Republic of} => q{South Korea},
+            q{Iran, Islamic Republic Of} => q{Iran},
+            q{Holy See (Vatican City State)} => q{Vatican City},
+            q{Georgia} => q{Georgia, Republic of},
+            q{Falkland Islands (Malvinas)} => q{Falkland Islands},
+            q{Cote d'Ivoire (Ivory Coast)} => q{Cote d'Ivoire},
+            q{Congo, The Democratic Republic O} => q{Democratic Republic of the Congo},
+            q{Congo} => q{Congo, Republic of the},
+            q{Bosnia And Herzegowina} => q{Bosnia-Herzegovina},
+        );
+
+        my $usps_country = $map{ $opt->{country} }
+            || $opt->{country};
+
 	$xml = qq{API=IntlRate\&XML=<IntlRateRequest USERID="$userid" PASSWORD="$passwd">};
 	$xml .= <<EOXML;
 	<Package ID="0">
 	    <Pounds>$weight</Pounds>
 	    <Ounces>$ounces</Ounces>
 	    <MailType>$mailtype</MailType>
-	    <Country>$opt->{country}</Country>
+	    <Country>$usps_country</Country>
 	</Package>
 	</IntlRateRequest>
 EOXML
