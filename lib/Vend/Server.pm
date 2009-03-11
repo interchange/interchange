@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.100 2009-02-01 17:25:04 mheins Exp $
+# $Id: Server.pm,v 2.101 2009-03-11 20:39:04 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.100 $, 10);
+$VERSION = substr(q$Revision: 2.101 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -3122,11 +3122,6 @@ sub sever_database {
     # Prep new database connections for severed server
     Vend::Data::open_database(1);
     while (my ($db, $db_ref) = each %Vend::Database) {
-        next unless
-            ref ($db_ref) eq 'Vend::Table::DBI'
-            &&
-            defined $db_ref->[$Vend::Table::DBI::DBI];
-
         delete $Vend::Interpolate::Db{$db};
         $db_ref->close_table;
         undef $db_ref->[$Vend::Table::DBI::DBI];
