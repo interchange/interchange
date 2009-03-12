@@ -34,7 +34,6 @@ $DEBUG = 0;
 use vars qw!
 	@EXPORT @EXPORT_OK
 	$VERSION $DEBUG
-	$DECODE_CHARS
 	!;
 
 use File::Find;
@@ -42,7 +41,6 @@ use Exporter;
 use strict;
 no warnings qw(uninitialized numeric);
 use Vend::Util qw/errmsg/;
-$DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
 @EXPORT = qw(
 		list_glob
