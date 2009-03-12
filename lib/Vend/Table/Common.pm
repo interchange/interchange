@@ -1304,7 +1304,7 @@ my %format = (
         while (<IN>) {
             chomp;
 			\@fields = ();
-			s/\\r?\\n\\r?\\n([\\000-\\377]*)//
+			s/\\r?\\n\\r?\\n((?s:.)*)//
 				and \$fields[$idx] = \$1;
 
 			while(s!($codere):[ \\t]*(.*)\\n?!!) {

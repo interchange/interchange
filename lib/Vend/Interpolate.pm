@@ -69,7 +69,7 @@ the lists used in the widely employed [loop ..], [search-region ...],
 
 This module makes heavy use of precompiled regexes. You will notice variables
 being used in the regular expression constructs. For example, C<$All> is a
-a synonym for C<[\000-\377]*>, C<$Some> is equivalent to C<[\000-\377]*?>, etc.
+a synonym for C<(?s:.)*>, C<$Some> is equivalent to C<(?s:.)*?>, etc.
 This is not only for clarity of the regular expression, but for speed.
 
 =cut
@@ -304,8 +304,8 @@ $cond_op{len} = $cond_op{length};
 my %T;
 my %QR;
 
-my $All = '[\000-\377]*';
-my $Some = '[\000-\377]*?';
+my $All = '(?s:.)*';
+my $Some = '(?s:.)*?';
 my $Codere = '[-\w#/.]+';
 my $Coderex = '[-\w:#=/.%]+';
 my $Filef = '(?:%20|\s)+([^]]+)';
@@ -321,8 +321,8 @@ my $Opt = '\s*([-\w#/.]+)?';
 my $T    = '\]';
 my $D    = '[-_]';
 
-my $XAll = qr{[\000-\377]*};
-my $XSome = qr{[\000-\377]*?};
+my $XAll = qr{(?s:.)*};
+my $XSome = qr{(?s:.)*?};
 my $XCodere = qr{[-\w#/.]+};
 my $XCoderex = qr{[-\w:#=/.%]+};
 my $XMandx = qr{\s+([-\w:#=/.%]+)};
@@ -3134,7 +3134,7 @@ sub tag_search_region {
 
 sub find_sort {
 	my($text) = @_;
-	return undef unless defined $$text and $$text =~ s#\[sort(([\s\]])[\000-\377]+)#$1#io;
+	return undef unless defined $$text and $$text =~ s#\[sort(([\s\]])(?s:.)+)#$1#io;
 	my $options = find_close_square($$text);
 	$$text = substr( $$text,length($options) + 1 )
 				if defined $options;

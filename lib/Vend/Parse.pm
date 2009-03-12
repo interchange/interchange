@@ -678,7 +678,7 @@ sub start {
 		}
 		# Parse tags within tags, only works if the [ is the
 		# first character.
-		next unless $attr->{$trib} =~ /\[\w+[-\w]*\s*[\000-\377]*\]/;
+		next unless $attr->{$trib} =~ /\[\w+[-\w]*\s*(?s:.)*\]/;
 
 		my $p = new Vend::Parse;
 		$p->parse($attr->{$trib});
