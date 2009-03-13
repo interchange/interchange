@@ -47,6 +47,10 @@ Payment
 
 * Added PaypalExpress payment module from Lyn St George <info@zolotek.net>.
 
+* Removed long-defunct BoA (Bank of America) payment module. Bank of America
+  is a reseller for CyberSource so its module applies:
+  http://www.bankofamerica.com/small_business/merchant_card_processing/index.cfm?template=internet_e_commerce
+
 UserTag
 -------
 
@@ -55,13 +59,11 @@ UserTag
 * Added empty attribute for [convert-date] to display a custom string
   instead of the current date when no proper date is passed.
 
-
 SystemTag
 ---------
 
 * The error is now not anymore automatically appended to the output of [error]
   when MV_ERROR_STD_LABEL has a value.
-
 
 Checks
 ------
@@ -72,6 +74,7 @@ Checks
 
 
 Interchange 5.7.1 released 2008-11-13.
+
 
 Core
 ----

@@ -1132,7 +1132,6 @@ lib/Vend/Parse.pm
 lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
-lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/BusinessOnlinePayment.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
