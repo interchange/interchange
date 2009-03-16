@@ -1,6 +1,6 @@
 # Vend::Payment::MCVE - Interchange MCVE support
 #
-# $Id: MCVE.pm,v 1.5 2007-03-30 11:39:52 pajamian Exp $
+# $Id: MCVE.pm,v 1.6 2009-03-16 19:34:01 jon Exp $
 #
 # Author: Tom Friedel (tom@readyink.com) for Carlc Internet Services (http://www.carlc.com)
 #
@@ -22,7 +22,7 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 =head1 NAME
 
@@ -60,9 +60,7 @@ Internet Services company.
 
 The Vend::Payment::MCVE module implements the mcve() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to MCVE with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

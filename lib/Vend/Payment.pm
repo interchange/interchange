@@ -1,8 +1,8 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.20 2008-07-16 00:37:32 mheins Exp $
+# $Id: Payment.pm,v 2.21 2009-03-16 19:34:00 jon Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -34,14 +34,13 @@ $VERSION = substr(q$Revision: 2.20 $, 10);
 
 @EXPORT_OK = qw(
 				map_actual
-				);
+		);
 
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Order;
 use strict;
 
-use vars qw/%order_id_check/;
 use vars qw/$Have_LWP $Have_Net_SSLeay/;
 
 my $pay_opt;
@@ -166,7 +165,7 @@ sub map_actual {
 	);
 
 	my %map = qw(
-		cyber_mode                  mv_cyber_mode
+		cyber_mode               mv_cyber_mode
 		comment                  giftnote
 	);
 	@map{@map} = @map;
@@ -268,16 +267,6 @@ sub map_actual {
 	return %actual;
 }
 
-%order_id_check = (
-	cybercash => sub {
-					my $val = shift;
-					# The following characters are illegal in a CyberCash order ID:
-					#    : < > = + @ " % = &
-					$val =~ tr/:<>=+\@\"\%\&/_/d;
-					return $val;
-				},
-);
-
 sub gen_order_id {
 	my $opt = shift || {};
 	if( $opt->{order_id}) {
@@ -296,10 +285,6 @@ sub gen_order_id {
 		my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = @t;
 		$opt->{order_id} = POSIX::strftime("%y%m%d%H%M%S$$", @t);
 
-	}
-
-	if (my $check = $order_id_check{$opt->{gateway}}) {
-		$opt->{order_id} = $check->($opt->{order_id});
 	}
 
 	return $opt->{order_id};
@@ -342,7 +327,7 @@ sub charge {
 	my $orderID = gen_order_id($pay_opt);
 
 	### Set up the amounts. The {amount} key will have the currency prepended,
-	### ala CyberCash (i.e. "usd 19.95"). {total_cost} has just the cost.
+	### e.g. "usd 19.95". {total_cost} has just the cost.
 
 	# Uses the {currency} -> MV_PAYMENT_CURRENCY options if set
 	my $currency =  charge_param('currency')
@@ -468,18 +453,6 @@ sub charge {
 			'Card-Exp'     => $actual{mv_credit_card_exp_all}, 
 		);
 		$result{MStatus} = $status if defined $status;
-	}
-	elsif ($Vend::CC3) {
-#::logDebug("Charge legacy cybercash");
-		### Deprecated
-		eval {
-			%result = cybercash($pay_opt);
-		};
-		if($@) {
-			my $msg = errmsg( "CyberCash died: %s", $@ );
-			::logError($msg);
-			$result{MStatus} = $msg;
-		}
 	}
 	else {
 #::logDebug("Unknown charge type");

@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.20 2008-07-03 15:11:14 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.21 2009-03-16 19:34:00 jon Exp $
 #
 # Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -60,9 +60,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::AuthorizeNet module implements the authorizenet() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to Authorize.net with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

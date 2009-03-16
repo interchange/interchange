@@ -1,6 +1,6 @@
 # Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 2.8 2007-08-09 13:40:55 pajamian Exp $
+# $Id: iTransact.pm,v 2.9 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -50,9 +50,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::iTransact module implements the itransact() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to iTransact with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

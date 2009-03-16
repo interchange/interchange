@@ -3,7 +3,7 @@
 #
 # Interchange version 5.7.1
 #
-# $Id: interchange.PL,v 2.110 2008-11-12 04:15:22 jon Exp $
+# $Id: interchange.PL,v 2.111 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -783,13 +783,6 @@ sub main_loop {
 		die errmsg("The Interchange server must not be run as root.\n")
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
-
-# LEGACY
-	# Kept here for compatibility
-	eval {
-		require Vend::Payment::CyberCash;
-	};
-# END LEGACY
 
 	# These modules no longer necessary, why take up memory?
 	delete $INC{'Getopt/Long.pm'};

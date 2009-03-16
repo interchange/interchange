@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.12 2007-08-09 13:40:55 pajamian Exp $
+# $Id: Linkpoint.pm,v 1.13 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -42,9 +42,7 @@ Vend::Payment::Linkpoint - Interchange Linkpoint Support
 
 The Vend::Payment::Linkpoint module implements the linkpoint() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to Linkpoint with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

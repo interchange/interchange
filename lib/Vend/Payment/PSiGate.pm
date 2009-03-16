@@ -1,6 +1,6 @@
 # Vend::Payment::PSiGate - Interchange PSiGate support
 #
-# $Id: PSiGate.pm,v 1.7 2007-08-09 13:40:55 pajamian Exp $
+# $Id: PSiGate.pm,v 1.8 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
@@ -65,9 +65,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::PSiGate module implements the psigate() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to PSiGate.com with a few configuration
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

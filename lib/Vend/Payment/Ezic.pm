@@ -1,6 +1,6 @@
 # Vend::Payment::Ezic - Interchange Ezic support
 #
-# $Id: Ezic.pm,v 1.5 2007-08-09 13:40:55 pajamian Exp $
+# $Id: Ezic.pm,v 1.6 2009-03-16 19:34:00 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
@@ -36,7 +36,7 @@
 package Vend::Payment::Ezic;
 =head1 Interchange Ezic Support
 
-Vend::Payment::Ezic $Revision: 1.5 $
+Vend::Payment::Ezic $Revision: 1.6 $
 
 =head1 SYNOPSIS
 
@@ -60,9 +60,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::Ezic module implements the ezic() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to Authorize.net with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.9 2007-03-30 11:39:52 pajamian Exp $
+# $Id: ECHO.pm,v 1.10 2009-03-16 19:34:00 jon Exp $
 #
 # Copyright (C) 2002-2005
 # Interchange Development Group
@@ -91,9 +91,7 @@ addition to this document.
 
 The Vend::Payment::ECHO module implements the echo() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to ECHO with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

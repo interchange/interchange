@@ -1,15 +1,12 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.106 2009-01-29 23:32:30 danb Exp $
+# $Id: Order.pm,v 2.107 2009-03-16 19:34:00 jon Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
-#
-# CyberCash 3 native mode enhancements made by and
-# Copyright 1998 by Michael C. McCune <mmccune@ibm.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +26,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.106 $, 10);
+$VERSION = substr(q$Revision: 2.107 $, 10);
 
 @ISA = qw(Exporter);
 

@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.18 2007-08-09 13:40:55 pajamian Exp $
+# $Id: Signio.pm,v 2.19 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -100,9 +100,7 @@ when Interchange is started.
 
 The Vend::Payment::Signio module implements the signio() payment routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to Signio with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in F<interchange.cfg>:
 

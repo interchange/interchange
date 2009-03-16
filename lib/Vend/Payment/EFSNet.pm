@@ -1,6 +1,6 @@
 # Vend::Payment::EFSNet - Interchange EFSNet support
 #
-# $Id: EFSNet.pm,v 1.6 2007-08-09 13:40:55 pajamian Exp $
+# $Id: EFSNet.pm,v 1.7 2009-03-16 19:34:00 jon Exp $
 #
 # Connection routine for Concord EFSNet ( http://www.concordefsnet.com/ )
 #
@@ -64,9 +64,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::EFSNet module implements the efsnet() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to EFSNet with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

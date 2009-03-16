@@ -1,6 +1,6 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.10 2007-08-09 13:40:55 pajamian Exp $
+# $Id: Skipjack.pm,v 2.11 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -50,9 +50,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::Skipjack module implements the skipjack() routine for using
 Skipjack IC payment services with Interchange. It is compatible on a call level
-with the other Interchange payment modules -- in theory (and even usually in
-practice) you could switch from CyberCash to Skipjack with a few configuration
-file changes.
+with the other Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 

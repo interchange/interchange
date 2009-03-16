@@ -1,6 +1,6 @@
 # Vend::Payment::Sage - Interchange Sage Support
 #
-# $Id: Sage.pm,v 1.1 2008-03-18 16:09:16 docelic Exp $
+# $Id: Sage.pm,v 1.2 2009-03-16 19:34:01 jon Exp $
 #
 # Copyright (C) 2008 Spinlock Solutions, http://www.spinlocksolutions.com/
 # Copyright (C) 2008 Prince Services, http://www.princeinternet.com/
@@ -52,9 +52,7 @@ Only one of these need be present and working.
 
 The Vend::Payment::Sage module implements the sage() routine
 for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from CyberCash to Sage with a few configuration 
-file changes.
+Interchange payment modules.
 
 To enable this module, place this directive in C<interchange.cfg>:
 
