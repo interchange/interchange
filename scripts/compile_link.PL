@@ -3,7 +3,7 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.10 2008-12-31 01:26:00 mheins Exp $
+# $Id: compile_link.PL,v 2.11 2009-03-16 10:21:28 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -226,7 +226,7 @@ if($ErrorFile) {
 	$Self->{"LINK_MESSAGE_LINE4"} = $line;
 }
 
-if(! $Perl_tlink and ! -f "config.h" || ! -f "syscfg") {
+if(! $Perl_tlink and $Force || ! -f "config.h" || ! -f "syscfg") {
 	system "/bin/sh ./configure";
 	if($?) {
 		die "Couldn't run configure; probably no C compiler.\n";
