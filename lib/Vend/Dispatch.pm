@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.107 2009-01-14 01:09:52 jon Exp $
+# $Id: Dispatch.pm,v 1.108 2009-03-16 10:06:12 pajamian Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.107 $, 10);
+$VERSION = substr(q$Revision: 1.108 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1220,6 +1220,7 @@ sub run_macro {
 	}
 }
 
+my %source_keys_hide;
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
@@ -1442,21 +1443,56 @@ EOF
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 
 	my $new_source;
-	if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
-		$new_source = $Vend::Session->{source} = $CGI::values{mv_pc} eq 'RESET'
-											   ? ''
-											   : $CGI::values{mv_pc};
-	}
-	elsif($CGI::values{mv_source}) {
-		$new_source = $Vend::Session->{source} = $CGI::values{mv_source};
-	}
+      SOURCEPRIORITY: {
+	  if ($CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET') {
+	      $Vend::Session->{source} = '';
+	      last SOURCEPRIORITY;
+	  }
+
+	  foreach (@{$Vend::Cfg->{SourcePriority}}) {
+	      if ($_ eq 'mv_pc') {
+		  if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
+		      $new_source = $Vend::Session->{source} = $CGI::values{mv_pc};
+		      last SOURCEPRIORITY;
+		  }
+	      }
+
+	      elsif ($_ =~ /^cookie-(.+)/) {
+		  my $cookie = Vend::Util::read_cookie($1);
+		  if (length $cookie) {
+		      $Vend::Session->{source} = $cookie;
+		      last SOURCEPRIORITY;
+		  }
+	      }
+
+	      elsif ($_ eq 'session') {
+		  if ($sessionid) {
+		      last SOURCEPRIORITY;
+		  }
+	      }
+
+	      elsif (/^session-(.+)/) {
+		  if (length $Vend::Session->{$1}) {
+		      last SOURCEPRIORITY;
+		  }
+	      }
+
+	      else {
+		  if (length $CGI::values{$_}) {
+		      $new_source = $Vend::Session->{source} = $CGI::values{$_};
+		      last SOURCEPRIORITY;
+		  }
+	      }
+	  }
+      } #SOURCEPRIORITY
+
 	if ($new_source and $CGI::request_method eq 'GET' and $Vend::Cfg->{BounceReferrals}) {
 		my $path = $CGI::path_info;
 		$path =~ s:^/::;
 		my $form =
 			join '',
 			map { "$_=$CGI::values{$_}\n" }
-			grep !/^mv_(?:pc|source)$/,
+		        grep { !$Vend::Cfg->{BounceReferrals_hide}->{$_} }
 			sort keys %CGI::values;
 		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path, undef, undef, { form => $form, match_security => 1 });
 		my $msg = get_locale_message(

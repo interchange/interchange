@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.241 2009-01-29 17:13:26 mheins Exp $
+# $Id: Config.pm,v 2.242 2009-03-16 10:06:12 pajamian Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.241 $, 10);
+$VERSION = substr(q$Revision: 2.242 $, 10);
 
 my %CDname;
 my %CPname;
@@ -714,6 +714,7 @@ sub catalog_directives {
 	['BounceReferrals',  'yesno',            'no'],
 	['OrderCleanup',     'routine_array',    ''],
 	['SessionCookieSecure', 'yesno',         'no'],
+        ['SourcePriority', 'array_complete', 'mv_pc mv_source'],
 
 	];
 
@@ -1337,6 +1338,10 @@ CONFIGLOOP:
 			}
 		}
 	}
+
+	# Set up hash of keys to hide for BounceReferrals
+	$C->{BounceReferrals_hide} = { map { ($_, 1) } grep { !(/^cookie-/ or /^session(?:$|-)/) } @{$C->{SourcePriority}} };
+	@{$C->{BounceReferrals_hide}}{qw(mv_form_charset mv_session_id)} = (1) x 2;
 
 	finalize_mapped_code();
 
