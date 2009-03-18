@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.64 2009-03-02 17:33:36 mheins Exp $
+# $Id: UserDB.pm,v 2.65 2009-03-18 00:39:21 markj Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 use vars qw!
 	$VERSION
@@ -29,10 +29,52 @@ use vars qw!
 use Vend::Data;
 use Vend::Util;
 use Safe;
+use Digest::MD5;
 use strict;
 no warnings qw(uninitialized numeric);
 
 my $ready = new Safe;
+
+my $HAVE_SHA1;
+
+eval {
+    require Digest::SHA1;
+    import Digest::SHA1;
+    $HAVE_SHA1 = 1;
+};
+
+if ($@) {
+    ::logGlobal("SHA1 passwords disabled: $@");
+}
+
+my %enc_subs = (
+    default => sub {
+        my $obj = shift;
+        my ($pwd, $salt) = @_;
+        return crypt($pwd, $salt);
+    },
+    md5 => sub {
+        my $obj = shift;
+        return Digest::MD5::md5_hex(shift);
+    },
+    sha1 => sub {
+        my $obj = shift;
+        unless ($HAVE_SHA1) {
+            $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
+            return;
+        }
+        return Digest::SHA1::sha1_hex(shift);
+    },
+);
+
+# Maps the length of the encrypted data to the algorithm that
+# produces it. This method will have to be re-evaluated if competing
+# algorithms are introduced which produce the same-length value.
+my %enc_id = qw/
+    13  default
+    32  md5
+    40  sha1
+/;
 
 =head1 NAME
 
@@ -90,10 +132,10 @@ Save, restore filed user information:
 
     $obj->get_shipping();
     $obj->set_shipping();
- 
+
     $obj->get_billing();
     $obj->set_billing();
- 
+
     $obj->get_preferences();
     $obj->set_preferences();
 
@@ -1347,13 +1389,10 @@ sub login {
 				}
 				my $test;
 				if($Global::Variable->{MV_NO_CRYPT}) {
-					 $test = $self->{PASSWORD}
-				}
-				elsif ($self->{OPTIONS}{md5}) {
-					 $test = generate_key($self->{PASSWORD});
+					$test = $self->{PASSWORD};
 				}
 				else {
-					 $test = crypt($self->{PASSWORD}, $adminpass);
+					$test = $self->do_crypt($self->{PASSWORD}, $adminpass);
 				}
 				if ($test eq $adminpass) {
 					$user_data = {};
@@ -1410,13 +1449,51 @@ sub login {
 				die $stock_error, "\n";
 			}
 			$pw = $self->{PASSWORD};
-			if($self->{CRYPT}) {
-				if($self->{OPTIONS}{md5}) {
-					$self->{PASSWORD} = generate_key($pw);
+
+			if ( $self->{CRYPT} && $self->{OPTIONS}{promote} ) {
+				my ($cur_method) = grep { $self->{OPTIONS}{ $_ } } keys %enc_subs;
+				$cur_method ||= 'default';
+
+				my $stored_by = $enc_id{ length($db_pass) };
+
+				if (
+					$cur_method ne $stored_by
+					&&
+					$db_pass eq $enc_subs{$stored_by}->($self, $pw, $db_pass)
+				) {
+
+					my $newpass = $enc_subs{$cur_method}->($self, $pw, $db_pass);
+					my $db_newpass = eval {
+						$self->{DB}->set_field(
+							$self->{USERNAME},
+							$self->{LOCATION}{PASSWORD},
+							$newpass,
+						);
+					};
+
+					if ($db_newpass ne $newpass) {
+						# Usually, an error in the update will cause $db_newpass to be set to a
+						# useful error string. The usefulness is dependent on DB store itself, though.
+						my $err_msg = qq{Could not update database "%s" field "%s" with promoted password due to error:\n}
+							. "%s\n"
+							. qq{Check that field "%s" is at least %s characters wide.\n};
+						$err_msg = ::errmsg(
+							$err_msg,
+							$self->{DB_ID},
+							$self->{LOCATION}{PASSWORD},
+							$DBI::errstr,
+							$self->{LOCATION}{PASSWORD},
+							length($newpass),
+						);
+						::logError($err_msg);
+						die $err_msg;
+					} 
+					$db_pass = $newpass;
 				}
-				else {
-					$self->{PASSWORD} = crypt($pw, $db_pass);
-				}
+			}
+
+			if ($self->{CRYPT}) {
+				$self->{PASSWORD} = $self->do_crypt($pw, $db_pass);
 			}
 			unless ($self->{PASSWORD} eq $db_pass) {
 				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
@@ -1635,13 +1712,8 @@ sub change_pass {
 
 		unless ($super and $self->{USERNAME} ne $Vend::username) {
 			my $db_pass = $self->{DB}->field($self->{USERNAME}, $self->{LOCATION}{PASSWORD});
-			if($self->{CRYPT}) {
-				if($self->{OPTIONS}{md5}) {
-					$self->{OLDPASS} = generate_key($self->{OLDPASS});
-				}
-				else {
-					$self->{OLDPASS} = crypt($self->{OLDPASS}, $db_pass);
-				}
+			if ($self->{CRYPT}) {
+				$self->{OLDPASS} = $self->do_crypt($self->{OLDPASS}, $db_pass);
 			}
 			die errmsg("Must have old password.") . "\n"
 				if $self->{OLDPASS} ne $db_pass;
@@ -1653,16 +1725,11 @@ sub change_pass {
 		die errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
-		if($self->{CRYPT}) {
-				if($self->{OPTIONS}{md5}) {
-					$self->{PASSWORD} = generate_key($self->{PASSWORD});
-				}
-				else {
-					$self->{PASSWORD} = crypt(
-											$self->{PASSWORD},
-											Vend::Util::random_string(2)
-										);
-				}
+		if ( $self->{CRYPT} ) {
+			$self->{PASSWORD} = $self->do_crypt(
+				$self->{PASSWORD},
+				Vend::Util::random_string(2),
+			);
 		}
 		
 		my $pass = $self->{DB}->set_field(
@@ -1770,12 +1837,7 @@ sub new_account {
 		my $pw = $self->{PASSWORD};
 		if($self->{CRYPT}) {
 			eval {
-				if($self->{OPTIONS}{md5}) {
-					$pw = generate_key($pw);
-				}
-				else {
-					$pw = crypt( $pw, Vend::Util::random_string(2));
-				}
+				$pw = $self->do_crypt($pw, Vend::Util::random_string(2));
 			};
 		}
 	
@@ -2174,6 +2236,19 @@ sub userdb {
 	}
 	return $status unless $options{hide};
 	return;
+}
+
+sub do_crypt {
+	my ($self, $password, $salt) = @_;
+	my $sub = $self->{ENCSUB};
+	unless ($sub) {
+		for (grep { $self->{OPTIONS}{$_} } keys %enc_subs) {
+			$sub = $enc_subs{$_};
+			last;
+		}
+		$self->{ENCSUB} = $sub ||= $enc_subs{default};
+	}
+	return $sub->($self, $password, $salt);
 }
 
 1;
