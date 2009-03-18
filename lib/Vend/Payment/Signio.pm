@@ -1,8 +1,8 @@
-# Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
+# Vend::Payment::Signio - Interchange support for Payflow Pro SDK versions 2 and 3
 #
-# $Id: Signio.pm,v 2.19 2009-03-16 19:34:01 jon Exp $
+# $Id: Signio.pm,v 2.20 2009-03-18 01:59:33 jon Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,14 +24,28 @@ package Vend::Payment::Signio;
 
 =head1 NAME
 
-Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
+Vend::Payment::Signio - Interchange support for Payflow Pro SDK versions 2 and 3
+
+=head1 WARNING: THIS MODULE IS DEPRECATED!
+
+Please note that PayPal purchased the Payflow Pro business from
+Verisign, and this payment module is expected to stop functioning in
+September 2009, as it uses the v2/v3 pfpro SDK that will no longer be
+supported. Details are here:
+
+ https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/library_download_sdks
+ http://www.pdncommunity.com/pdn/board/message?board.id=payflow&thread.id=5799
+
+It is strongly recommend that you switch to using
+Vend::Payment::PayflowPro as soon as possible, and stop using this
+module.
 
 =head1 SYNOPSIS
 
     &charge=signio
- 
+
         or
- 
+
     [charge mode=signio param1=value1 param2=value2]
 
 =head1 PREREQUISITES
@@ -342,13 +356,17 @@ sub signio {
 		$opt = {};
 	}
 
+	my $bin_path = Vend::File::make_absolute_file(charge_param('bin_path'), 1);
+
 	my ($exe, $stdin);
 	unless ($PFProAPI_found) {
-		my @try = split /:/, (charge_param('bin_path') || $ENV{PATH});
-		unshift @try,
+		my @try;
+		push @try, $bin_path if $bin_path;
+		push @try,
 				"$Global::VendRoot/lib",
 				"$Global::VendRoot/bin",
 				$Global::VendRoot,
+				(grep /\S/, split /:/, $ENV{PATH}),
 				;
 
 		for(@try) {
@@ -369,13 +387,16 @@ sub signio {
 				);
 		}
 
-		# set loadable module path so not needed in /usr/lib
-		@try = split /:/, (charge_param('library_path') || $ENV{LD_LIBRARY_PATH});
-		unshift @try,
+		# set loadable module path so not needed in /etc/ld.so.conf
+		@try = ();
+		$_ = Vend::File::make_absolute_file(charge_param('library_path'), 1);
+		push @try, $_ if $_;
+		push @try,
 				"$Global::VendRoot/lib",
 				"$Global::VendRoot/bin",
 				$Global::VendRoot,
 				charge_param('bin_path') . "/../lib",
+				(grep /\S/, split /:/, $ENV{LD_LIBRARY_PATH}),
 				;
 		$ENV{LD_LIBRARY_PATH} = join ':', @try;
 	}
@@ -383,20 +404,20 @@ sub signio {
 	# set certificate path for modern pfpro
 	my $cert_path = charge_param('cert_path');
 	if($cert_path) {
-		$cert_path = "$Global::VendRoot/$cert_path"
-			unless Vend::File::file_name_is_absolute($cert_path);
+		$cert_path = Vend::File::make_absolute_file($cert_path, 1);
 		$ENV{PFPRO_CERT_PATH} ||= $cert_path;
 	}
 
 	if(! -d $ENV{PFPRO_CERT_PATH} ) {
-		my @try = (
-					$cert_path,
-					$Global::VendRoot,
-					"$Global::VendRoot/lib",
-					'/usr/local/ssl',
-					'/usr/lib/ssl',
-					charge_param('bin_path') . "/..",
-				);
+		my @try;
+		push @try, $cert_path if $cert_path;
+		push @try,
+			$Global::VendRoot,
+			"$Global::VendRoot/lib",
+			'/usr/local/ssl',
+			'/usr/lib/ssl',
+			"$bin_path/..",
+		;
 		for(@try) {
 			next unless  -d "$_/certs";
 			$ENV{PFPRO_CERT_PATH} = "$_/certs";
@@ -523,7 +544,24 @@ sub signio {
     for (keys %varmap) {
         $query{$_} = $actual{$varmap{$_}};
     }
-#::logDebug("signio query: " . ::uneval(\%query));
+
+    # Force postal codes to upper case and strip everything except
+    # upper case + digits, as the Payflow specification requires
+    # in p. 23 of PayflowPro_Guide.pdf (00000013/Rev. 7). Stripping
+    # here means values can keep spaces or dashes as they really should.
+    for my $key (qw( ZIP SHIPTOZIP )) {
+        $query{$key} =~ s/[^A-Za-z0-9]//g;
+        $query{$key} = uc $query{$key};
+    }
+
+#{
+#my %munged_query = %query;
+#$munged_query{PWD} = 'X';
+#$munged_query{ACCT} =~ s/^(\d{4})(.*)/$1 . ('X' x length($2))/e;
+#$munged_query{CVV2} =~ s/./X/g;
+#$munged_query{EXPDATE} =~ s/./X/g;
+#::logDebug("signio query: " . ::uneval(\%munged_query));
+#}
 
 	my $timeout = $opt->{timeout} || 10;
 	$timeout =~ s/\D//g
@@ -613,8 +651,8 @@ sub signio {
     if ($decline) {
         $result->{ICSTATUS} = 'failed';
 		my $msg = errmsg("Charge error: %s Reason: %s. Please call in your order or try again.",
-			$result->{RESULT},
-			$result->{RESPMSG},
+			$result->{RESULT} || 'no details available',
+			$result->{RESPMSG} || 'unknown error',
 		);
 		$result->{MErrMsg} = $result{'pop.error-message'} = $msg;
     }
