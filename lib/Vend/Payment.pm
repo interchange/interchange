@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.22 2009-03-20 16:40:34 markj Exp $
+# $Id: Payment.pm,v 2.23 2009-03-20 22:15:56 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -400,19 +400,9 @@ sub charge {
                 my $pipe = IO::Pipe->new;
 
                 unless ($pid = fork) {
-
+                    Vend::Server::child_process_dbi_prep();
                     $pipe->writer;
-
-                    eval {
-                        my %d = DBI->installed_drivers;
-                        for my $h (values %d) {
-                            $_->{InactiveDestroy} = 1
-                                for grep { defined } @{ $h->{ChildHandles} };
-                        }
-                    };
-
                     my %rv = $sub->($pay_opt);
-
                     $pipe->print( ::uneval(\%rv) );
                     exit;
                 }
@@ -420,8 +410,9 @@ sub charge {
                 $pipe->reader;
 
                 my $to_msg = $pay_opt->{global_timeout_msg}
+                    || charge_param('global_timeout_msg')
                     || 'Due to technical difficulties, your order could not be processed.';
-                local $SIG{ALRM} = sub { die $to_msg };
+                local $SIG{ALRM} = sub { die "$to_msg\n" };
 
                 alarm $timeout;
                 wait;

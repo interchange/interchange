@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.101 2009-03-11 20:39:04 markj Exp $
+# $Id: Server.pm,v 2.102 2009-03-20 22:15:56 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.101 $, 10);
+$VERSION = substr(q$Revision: 2.102 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -3099,9 +3099,28 @@ sub cleanup_for_exec {
 }
 
 sub sever_database {
+    # Keep connection closings on the client from closing the
+    # database server, too.
+    child_process_dbi_prep();
+
+    # Clear any cached DBI handles
+    reset_per_fork();
+
+    # Prep new database connections for severed server
+    Vend::Data::open_database(1);
+    while (my ($db, $db_ref) = each %Vend::Database) {
+        delete $Vend::Interpolate::Db{$db};
+        $db_ref->close_table;
+        undef $db_ref->[$Vend::Table::DBI::DBI];
+    }
+
+    return;
+}
+
+sub child_process_dbi_prep {
     # Because all clients with a common database connection will share
-    # the same db server, we want our severed server (client) not to
-    # destroy the database server when it disconnects.
+    # the same db server, we want the child process not to destroy the
+    # database server when it disconnects.
     eval {
         my %d = DBI->installed_drivers;
         for my $h (values %d) {
@@ -3115,17 +3134,6 @@ sub sever_database {
         $@
     )
         if ($@);
-
-    # Clear any cached DBI handles
-    reset_per_fork();
-
-    # Prep new database connections for severed server
-    Vend::Data::open_database(1);
-    while (my ($db, $db_ref) = each %Vend::Database) {
-        delete $Vend::Interpolate::Db{$db};
-        $db_ref->close_table;
-        undef $db_ref->[$Vend::Table::DBI::DBI];
-    }
 
     return;
 }
