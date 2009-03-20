@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.21 2009-03-16 19:34:00 jon Exp $
+# $Id: Payment.pm,v 2.22 2009-03-20 16:40:34 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -39,6 +39,7 @@ $VERSION = substr(q$Revision: 2.21 $, 10);
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Order;
+use IO::Pipe;
 use strict;
 
 use vars qw/$Have_LWP $Have_Net_SSLeay/;
@@ -389,15 +390,61 @@ sub charge {
 #::logDebug("Charge sub");
 		# Calling a defined GlobalSub payment mode
 		# Arguments are the passed option hash (if any) and the route hash
-		eval {
-			%result = $sub->($pay_opt);
-		};
+
+        my $pid;
+        my $timeout = $pay_opt->{global_timeout} || charge_param('global_timeout');
+
+        %result = eval {
+            if ($timeout > 0) {
+
+                my $pipe = IO::Pipe->new;
+
+                unless ($pid = fork) {
+
+                    $pipe->writer;
+
+                    eval {
+                        my %d = DBI->installed_drivers;
+                        for my $h (values %d) {
+                            $_->{InactiveDestroy} = 1
+                                for grep { defined } @{ $h->{ChildHandles} };
+                        }
+                    };
+
+                    my %rv = $sub->($pay_opt);
+
+                    $pipe->print( ::uneval(\%rv) );
+                    exit;
+                }
+
+                $pipe->reader;
+
+                my $to_msg = $pay_opt->{global_timeout_msg}
+                    || 'Due to technical difficulties, your order could not be processed.';
+                local $SIG{ALRM} = sub { die $to_msg };
+
+                alarm $timeout;
+                wait;
+                alarm 0;
+
+                $pid = undef;
+
+                my $rv = eval join ('', $pipe->getlines);
+
+                return %$rv;
+            }
+
+            return $sub->($pay_opt);
+        };
+
 		if($@) {
 			my $msg = errmsg(
 						"payment routine '%s' returned error: %s",
 						$charge_type,
 						$@,
 			);
+            kill (KILL => $pid)
+                if $pid && kill (0 => $pid);
 			::logError($msg);
 			$result{MStatus} = 'died';
 			$result{MErrMsg} = $msg;
