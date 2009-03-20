@@ -1,6 +1,6 @@
 # Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
 #
-# $Id: PayflowPro.pm,v 1.1 2009-03-16 15:34:29 markj Exp $
+# $Id: PayflowPro.pm,v 1.2 2009-03-20 15:44:59 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group and others
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -477,7 +477,7 @@ sub payflowpro {
     my $decline = $result->{RESULT};
 
     if (
-        $result->{RESULT}
+        $result->{RESULT} == 0
             and
         my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')
     ) {
