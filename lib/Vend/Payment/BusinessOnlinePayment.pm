@@ -1,7 +1,7 @@
 # Vend::Payment::BusinessOnlinePayment
 # Interchange wrapper for Business::OnlinePayment modules
 #
-# $Id: BusinessOnlinePayment.pm,v 1.1 2005-01-24 14:38:59 jon Exp $
+# $Id: BusinessOnlinePayment.pm,v 1.2 2009-03-22 13:06:02 mheins Exp $
 #
 # Copyright (C) 2004 Ivan Kohler.  All rights reserved.
 #
@@ -241,21 +241,18 @@ sub onlinepayment {
 
   $actual->{$_} =~ s/[\n\r]//g foreach keys %$actual;
 
-  $transaction->content(
+  my %params = (
     'type'            => 'CC',
     'login'           => $user,
     'password'        => $secret,
     'action'          => $action,
-    #'description'
     'amount'          => $amount,
     'card_number'     => $actual->{mv_credit_card_number},
     'expiration'      => $exp,
     'cvv2'            => $actual->{cvv2},
     'order_number'    => $actual->{order_id},
     'auth_code'       => $actual->{auth_code},
-    #'recurring_billing'
     'invoice_number'  => $actual->{mv_order_number},
-    #'customer_id'
     'last_name'       => $actual->{b_lname},
     'first_name'      => $actual->{b_fname},
     'name'            => $actual->{b_fname}. ' '. $actual->{b_lname},
@@ -278,6 +275,31 @@ sub onlinepayment {
     'email'           => $actual->{email},
     'phone'           => $actual->{phone_day},
   );
+
+=head Extra query params
+
+=item extra_query_params "customer_id  their_param=our_param"
+
+This allows you to map a passed parameter to the transaction query
+of your module. Obviously the module must support it.
+
+The parameter comes from the parameters passed to the [charge ..] tag
+or the route.
+
+The above id passes the customer_id parameter on with a key of the
+same name, while the second sets their param C<their_param> with 
+C<our_param>.
+
+=cut
+
+  my @extra = split /[\s,\0]+/, $opt->{extra_query_params};
+  for (@extra) {
+      my ( $k, $v ) = split /=/, $_;
+      $k ||= $v;
+      $params{$k} = $opt->{$v} || charge_param($v);
+  }
+
+  $transaction->content(%params);
 
   $transaction->submit();
 
@@ -306,6 +328,27 @@ sub onlinepayment {
       );
     }
 
+  }
+
+=head Extra result params
+
+=item extra_result_params "transid=weird.module.name"
+
+This allows you to map a returned parameter to the payment result 
+hash of Interchange.
+
+=cut
+
+  my @result_extra = split /[\s,\0]+/, $opt->{extra_result_params};
+  for (@result_extra) {
+      my ( $k, $v ) = split /=/, $_;
+      $v ||= $k;
+	  if($transaction->can($v)) {
+		  $result{$k} = $transaction->$v;
+	  }
+	  else {
+	  	  ::logError(__PACKAGE__ . " - unsupported method %s called for result params, ignored.", $v);
+	  }
   }
 
   return %result;
