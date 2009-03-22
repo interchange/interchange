@@ -21,6 +21,31 @@ Core
   table and field will work as well as a simple field in the same table
   as the item.
 
+* Add environment variable MINIVEND_DISABLE_UTF8 which allows us to
+  skip the Encode module entirely.
+
+  Since "no encoding" does not remove the tie from regexes to Encode,
+  but only disables it, you can't use that method. You have to literally
+  not include Encode in the module namespace. This environment variable
+  prevents require/import of the module if it is set true.
+
+  It also adds a Global UTF8 directive that would normally not be, but could
+  be, set by the user. This disables UTF8 with "no encoding", which should avoid
+  some of the Perl UTF8 insanity but still won't avoid a potential "require" or
+  "dofile" on a simple regex.
+
+* Change Vend::CharSet away from the quasi-object style of programming
+  (i.e. Module->routine()), since this module is only used internally.
+  This will improve performance if/when a large number of CGI parameters
+  are passed.
+
+* Pass data to be encoded by Vend::CharSet by reference. While the
+  Encode module inexplicably won't operate on references, at least we
+  can avoid slinging hundred-megabyte files by value for what ends up
+  being a no-op. Should you have to decode the data, it will still be
+  slow but it will be limited to that eventuality, not every uploaded
+  file.
+
 * Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
 
   http://hostname/?somevar=1

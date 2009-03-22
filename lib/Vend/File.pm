@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.29 2008-11-10 05:52:57 jon Exp $
+# $Id: File.pm,v 2.30 2009-03-22 19:32:31 mheins Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -50,13 +50,18 @@ use strict;
 use Config;
 use Fcntl;
 use Errno;
-use Encode qw( is_utf8 );
+
+unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
+	require Encode;
+	import Encode qw( is_utf8 );
+}
+
 use Vend::Util;
 use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;

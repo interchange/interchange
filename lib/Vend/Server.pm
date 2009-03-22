@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.102 2009-03-20 22:15:56 markj Exp $
+# $Id: Server.pm,v 2.103 2009-03-22 19:32:31 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,12 +26,12 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.102 $, 10);
+$VERSION = substr(q$Revision: 2.103 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
 use Vend::Util;
-use Vend::CharSet;
+use Vend::CharSet qw/ to_internal decode_urlencode default_charset /;
 use Fcntl;
 use Errno qw/:POSIX/;
 use Config;
@@ -336,7 +336,7 @@ sub parse_post {
 		$charset = $2;
 	}
 	else {
-		$charset = Vend::CharSet->default_charset();
+		$charset = default_charset();
 	}
 
 	$CGI::values{mv_form_charset} = $charset;
@@ -384,10 +384,12 @@ sub parse_post {
 
 #::logDebug("incoming --> $key");
 		$key = $::IV->{$key} if defined $::IV->{$key};
-		$key = Vend::CharSet->decode_urlencode($key, $charset);
+
+		Vend::CharSet::decode_urlencode(\$key, $charset);
+
 #::logDebug("mapping  --> $key");
 		if ($key) {
-			$value = Vend::CharSet->decode_urlencode($value, $charset);
+			decode_urlencode(\$value, $charset);
 			# Handle multiple keys
 			if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
 				$CGI::values{$key} = "$CGI::values{$key}\0$value";
@@ -463,10 +465,10 @@ sub parse_multipart {
 			my ($charset) = $header{'Content-Type'} =~ / charset="?([-a-zA-Z0-9]+)"?/;
 
 			$content_type ||= 'text/plain';
-			$charset ||= Vend::CharSet->default_charset();
+			$charset ||= default_charset();
 
 			if ($content_type =~ m{^text/}i) {
-				$data = Vend::CharSet->to_internal($charset, $data);
+				$charset and $Global::UTF8 and Vend::CharSet::to_internal($charset, \$data);
 			}
 
 			if($filename) {
@@ -544,9 +546,8 @@ sub respond {
     my ($s, $body) = @_;
 #show_times("begin response send") if $Global::ShowTimes;
 
-	# Safe kludge: duplicate Vend::CharSet->default_charset method here
+	# Safe kludge: duplicate Vend::CharSet::default_charset method here
 	# so that $Document->send() will work from within Safe
-	#my $response_charset = Vend::CharSet->default_charset();
 	my $c = $Global::Selector{$CGI::script_name};
 	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET} || 'iso8859-1';
 

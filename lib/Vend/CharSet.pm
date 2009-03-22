@@ -1,6 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.10 2008-09-26 15:38:17 jon Exp $
+# $Id: CharSet.pm,v 2.11 2009-03-22 19:32:31 mheins Exp $
 #
 # Copyright (C) 2008 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
@@ -22,28 +22,40 @@
 
 package Vend::CharSet;
 
+@ISA = qw( Exporter );
+
+@EXPORT_OK = qw(
+				decode_urlencode
+				default_charset
+				to_internal 
+				utf8_safe_regex_workaround
+				);
+
 use strict;
 
-use Encode qw( decode resolve_alias is_utf8 );
+unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
+	require Encode;
+	import Encode qw( decode resolve_alias is_utf8 );
+}
 
 sub decode_urlencode {
-	my ($class, $octets, $encoding) = (@_);
+	my ($octets, $encoding) = (@_);
 
 #::logDebug("decode_urlencode--octets: $octets, encoding: $encoding");
 
-	$octets =~ tr/+/ /;
-	$octets =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+	$$octets =~ tr/+/ /;
+	$$octets =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
 
-	return $octets unless $encoding and $class->validate_encoding($encoding);
+	return $octets unless $encoding and $Global::UTF8 and validate_encoding($encoding);
 
-	my $string = $class->to_internal($encoding, $octets);
+	to_internal($encoding, $octets);
 
 #::logDebug("decoded string: " . display_chars($string)) if $string;
-	return $string;
+	return $octets;
 }
 
 sub to_internal {
-	my ($class, $encoding, $octets) = @_;
+	my ($encoding, $octets) = @_;
 
 #::logDebug("to_internal - no encoding specified"),
     return $octets unless $encoding;
@@ -51,16 +63,16 @@ sub to_internal {
     return $octets if is_utf8($octets);
 
 #::logDebug("to_internal - converting octets from $encoding to internal");
-	my $string = eval {	decode($encoding, $octets, Encode::FB_CROAK) };
+	$$octets = eval {	decode($encoding, $$octets, Encode::FB_CROAK) };
 	if ($@) {
 		::logError("Unable to properly decode <%s> with encoding %s: %s", display_chars($octets), $encoding, $@);
 		return;
 	}
-	return $string;
+	return $octets;
 }
 
 sub validate_encoding {
-	my ($class, $encoding) = @_;
+	my ($encoding) = @_;
 	return resolve_alias($encoding);
 }
 
@@ -72,7 +84,7 @@ sub default_charset {
 # This is a workaround for the problem with UTF-8 regular expressions
 # implicitly trying to require UTF-8
 sub utf8_safe_regex_workaround {
-    my ($class, $compartment) = @_;
+    my ($compartment) = @_;
 
     $_ = 'workaround for the workaround';
     s/\p{SpacePerl}+$//;

@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.108 2009-03-16 10:06:12 pajamian Exp $
+# $Id: Dispatch.pm,v 1.109 2009-03-22 19:32:31 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.108 $, 10);
+$VERSION = substr(q$Revision: 1.109 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1221,11 +1221,18 @@ sub run_macro {
 }
 
 my %source_keys_hide;
+
+sub disable_encoding {
+	no encoding;
+}
+
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
 
 	adjust_cgi();
+
+	$Global::UTF8 or disable_encoding();
 
 	## If returns false then was a 404 no catalog or a delivered image
 	open_cat() or return 1;

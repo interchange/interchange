@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.123 2009-02-10 15:06:54 thunder Exp $
+# $Id: Util.pm,v 2.124 2009-03-22 19:32:31 mheins Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -93,7 +93,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.123 $, 10);
+$VERSION = substr(q$Revision: 2.124 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -598,7 +598,12 @@ if(! $@) {
 	$Keysub = sub {
 					@_ = time() unless @_;
 					$Md->reset();
-					$Md->add(map encode_utf8($_), @_);
+					if($Global::UTF8) {
+						$Md->add(map encode_utf8($_), @_);
+					}
+					else {
+						$Md->add(@_);
+					}
 					$Md->hexdigest();
 				};
 }
