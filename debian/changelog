@@ -1,3 +1,11 @@
+interchange (5.6.1-2.1) unstable; urgency=low
+
+  * updated Vietnamese translation of Debconf templates (Closes: #513664,
+    thanks to Clytie Siddall <clytie@riverland.net.au>)
+  * added homepage field to debian/control
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 23 Mar 2009 08:32:36 +0100
+
 interchange (5.6.1-2) unstable; urgency=low
 
   * updated Swedish translation of Debconf templates (Closes: #506017,
