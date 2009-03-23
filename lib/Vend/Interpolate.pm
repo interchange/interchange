@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.311 2009-01-29 17:13:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.312 2009-03-23 13:39:50 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.311 $, 10);
+$VERSION = substr(q$Revision: 2.312 $, 10);
 
 @EXPORT = qw (
 
@@ -179,7 +179,7 @@ sub reset_calc {
 		$ready_safe->share_from('MVSAFE', ['$safe']);
 #::logDebug("new safe made=$ready_safe->{Root}");
 		
-		Vend::CharSet->utf8_safe_regex_workaround($ready_safe)
+		Vend::CharSet::utf8_safe_regex_workaround($ready_safe)
 		    if $::Variable->{MV_UTF8};
 
 		$ready_safe->trap(@{$Global::SafeTrap});
@@ -1204,7 +1204,7 @@ sub conditional {
 			last RUNSAFE;
 		}
 
-		Vend::CharSet->utf8_safe_regex_workaround($ready_safe)
+		Vend::CharSet::utf8_safe_regex_workaround($ready_safe)
 		    if $::Variable->{MV_UTF8};
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
