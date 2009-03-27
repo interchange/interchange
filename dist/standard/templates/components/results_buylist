@@ -134,7 +134,7 @@ EOF
         Don't show the search string if it was empty, since it looks weird
         and the user will see the error below anyway.
 [/comment]
-[tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
+[tmp matchstring][value-extended name=mv_searchspec joiner=" | " filter=encode_entities][/tmp]
 [if scratch matchstring]
 [msg arg.0="[scratch matchstring]"]Sorry, no matches for <B>%s</B>.[/msg]
 [/if]
@@ -143,7 +143,7 @@ EOF
 <B>
 [L]Errors[/L]:
 <BR> 
-[value-extended name=mv_search_error joiner="<BR>"]
+[value-extended name=mv_search_error joiner="<BR>" filter=encode_entities]
 </B>
 [/if]
 
