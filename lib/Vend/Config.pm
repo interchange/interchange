@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.243 2009-03-22 19:32:31 mheins Exp $
+# $Id: Config.pm,v 2.244 2009-03-27 11:09:48 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.243 $, 10);
+$VERSION = substr(q$Revision: 2.244 $, 10);
 
 my %CDname;
 my %CPname;
@@ -518,6 +518,7 @@ sub global_directives {
 	['External',		 'yesno',	     	 'No'],
 	['ExternalFile',	 'root_dir',	     "$Global::RunDir/external.structure"],
 	['ExternalExport',	 undef,				 'Global::Catalog=Catalog'],
+	['DowncaseVarname',   undef,           ''],
 
 	];
 	return $directives;

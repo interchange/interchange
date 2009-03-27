@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.103 2009-03-22 19:32:31 mheins Exp $
+# $Id: Server.pm,v 2.104 2009-03-27 11:09:48 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.103 $, 10);
+$VERSION = substr(q$Revision: 2.104 $, 10);
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -315,6 +315,11 @@ EOF
 # Doesn't do unhexify
 sub store_cgi_kv {
 	my ($key, $value) = @_;
+
+	$key = lc ($key) if
+		$Global::DowncaseVarname
+		&& $Global::DowncaseVarname =~ /\b$key\b/i;
+
 	$key = $::IV->{$key} if defined $::IV->{$key};
 	if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
 		$CGI::values{$key} = "$CGI::values{$key}\0$value";
@@ -383,6 +388,10 @@ sub parse_post {
 			};
 
 #::logDebug("incoming --> $key");
+		$key = lc ($key) if
+			$Global::DowncaseVarname
+			&& $Global::DowncaseVarname =~ /\b$key\b/i;
+
 		$key = $::IV->{$key} if defined $::IV->{$key};
 
 		Vend::CharSet::decode_urlencode(\$key, $charset);
