@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.76 2008-05-10 14:39:53 mheins Exp $
+# $Id: Form.pm,v 2.77 2009-04-05 19:24:36 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.77 $, 10);
 
 @EXPORT = qw (
 	display
@@ -497,8 +497,17 @@ sub date_widget {
 	$out .= qq{</select>};
 	$out .= qq{<input type="hidden" name="$name" value="/">};
 	$out .= qq{<select name="$name"$sel_extra>};
+
+	my $cy = $t[5] + 1900;
+
+	# If year_begin or year_end are /00+/, make current year
+	for(qw/ year_begin year_end /) {
+		if( length($opt->{$_}) > 1 and $opt->{$_} == 0) {
+			$opt->{$_} = $cy;
+		}
+	}
+
 	if(my $by = $opt->{year_begin} || $::Variable->{UI_DATE_BEGIN}) {
-		my $cy = $t[5] + 1900;
 		my $ey = $opt->{year_end}  || $::Variable->{UI_DATE_END} || ($cy + 10);
 		if($by < 100) {
 			$by = $cy - abs($by);
@@ -1416,6 +1425,8 @@ sub parse_type {
 			$opt->{time} = 1 if $extra =~ /time/i;
 			$opt->{ampm} = 1 if $extra =~ /ampm/i;
 			$opt->{blank} = 1 if $extra =~ /blank/i;
+			$opt->{year_begin} = $1 if $extra =~ s/year_?begin(\d+)//i;
+			$opt->{year_end} = $1 if $extra =~ s/year_?end(\d+)//i;
 			($extra =~ /\(\s*(\s*\d+\s*(,\s*\d+\s*)+)\s*\)/i
 					and $opt->{minutes} = $1)
 			  or
