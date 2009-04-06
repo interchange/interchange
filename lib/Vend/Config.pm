@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.244 2009-03-27 11:09:48 markj Exp $
+# $Id: Config.pm,v 2.245 2009-04-06 12:23:22 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.244 $, 10);
+$VERSION = substr(q$Revision: 2.245 $, 10);
 
 my %CDname;
 my %CPname;
@@ -716,7 +716,8 @@ sub catalog_directives {
 	['BounceReferrals',  'yesno',            'no'],
 	['OrderCleanup',     'routine_array',    ''],
 	['SessionCookieSecure', 'yesno',         'no'],
-        ['SourcePriority', 'array_complete', 'mv_pc mv_source'],
+	['SourcePriority', 'array_complete', 'mv_pc mv_source'],
+	['SourceCookie', sub { &parse_ordered_attributes(@_, [qw(name expire domain path secure)]) }, '' ],
 
 	];
 
@@ -4777,6 +4778,32 @@ sub parse_profile {
 	}
 
 	return $c;
+}
+
+# Parse ordered or named attributes just like in a usertag.  Needs to have the routine specified as follows:
+# ['Foo', sub { &parse_ordered_attributes(@_, [qw(foo bar baz)]) }, 'foo bar baz'],
+# If called directly in the normal fashion then you cannot specify the attribute order, but you can
+# still use it for parsing named attributes.  The results are stored as a hashref (think $opt)
+sub parse_ordered_attributes {
+	my ($var, $value, $order) = @_;
+
+	return {} if $value !~ /\S/;
+
+	my @settings = Text::ParseWords::shellwords($value);
+	my %opt;
+	if ($settings[0] =~ /=/) {
+		%opt = map { (split /=/, $_, 2)[0, 1] } @settings;
+	}
+
+	elsif (ref $order eq 'ARRAY') {
+		@opt{@$order} = @settings;
+	}
+
+	else {
+		config_error("$var only accepts named attributes.");
+	}
+
+	return \%opt;
 }
 
 # Designed to parse catalog subroutines and all vars

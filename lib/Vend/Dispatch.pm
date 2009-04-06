@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.110 2009-03-23 13:34:19 mheins Exp $
+# $Id: Dispatch.pm,v 1.111 2009-04-06 12:23:22 markj Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.110 $, 10);
+$VERSION = substr(q$Revision: 1.111 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1220,8 +1220,6 @@ sub run_macro {
 	}
 }
 
-my %source_keys_hide;
-
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
@@ -1443,50 +1441,114 @@ EOF
 
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 
-	my $new_source;
+	my ($new_source, $already_expired);
       SOURCEPRIORITY: {
-	  if ($CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET') {
-	      $Vend::Session->{source} = '';
-	      last SOURCEPRIORITY;
-	  }
+     if ($CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET') {
+         $Vend::Session->{source} = '';
+ 
+         # Expire cookie, if applicable.
+         if ( length ($Vend::Cfg->{SourceCookie}{name}) ) {
+             my $sc = $Vend::Cfg->{SourceCookie};
+             Vend::Util::set_cookie(
+                $sc->{name},
+                '',
+                1,
+                @{$sc}{qw(domain path secure)}
+            );
+            $already_expired = 1;
+         }
+ 
+         last SOURCEPRIORITY;
+     }
 
-	  foreach (@{$Vend::Cfg->{SourcePriority}}) {
-	      if ($_ eq 'mv_pc') {
-		  if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
-		      $new_source = $Vend::Session->{source} = $CGI::values{mv_pc};
-		      last SOURCEPRIORITY;
-		  }
-	      }
+#::logDebug('$Session->{source} before SourcePriority loop: %s', $Vend::Session->{source});
+     foreach (@{$Vend::Cfg->{SourcePriority}}) {
+#::logDebug("Looking at $_");
+         if ($_ eq 'mv_pc') {
+#::logDebug('$CGI::values{mv_pc} is %s', $CGI::values{mv_pc});
+            if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
+                $new_source = $Vend::Session->{source} = $CGI::values{mv_pc};
+                last SOURCEPRIORITY;
+            }
+         }
 
-	      elsif ($_ =~ /^cookie-(.+)/) {
-		  my $cookie = Vend::Util::read_cookie($1);
-		  if (length $cookie) {
-		      $Vend::Session->{source} = $cookie;
-		      last SOURCEPRIORITY;
-		  }
-	      }
+         elsif (/^cookie-(.+)/) {
+             my $cookie_source = Vend::Util::read_cookie($1);
+#::logDebug("Cookie $1 is $cookie_source");
+             if (length $cookie_source) {
+                 $Vend::Session->{source} = $cookie_source;
+                 last SOURCEPRIORITY;
+            }
+         }
 
-	      elsif ($_ eq 'session') {
-		  if ($sessionid) {
-		      last SOURCEPRIORITY;
-		  }
-	      }
+         elsif ($_ eq 'session') {
+#::logDebug('$sessionid is %s', $sessionid);
+            if ($sessionid) {
+                last SOURCEPRIORITY;
+            }
+         }
 
-	      elsif (/^session-(.+)/) {
-		  if (length $Vend::Session->{$1}) {
-		      last SOURCEPRIORITY;
-		  }
-	      }
+         elsif (/^session-(.+)/) {
+#::logDebug('$Session->{%s} is %s', $1, $Vend::Session->{$1});
+            if (length $Vend::Session->{$1}) {
+                last SOURCEPRIORITY;
+            }
+         }
 
-	      else {
-		  if (length $CGI::values{$_}) {
-		      $new_source = $Vend::Session->{source} = $CGI::values{$_};
-		      last SOURCEPRIORITY;
-		  }
-	      }
-	  }
-      } #SOURCEPRIORITY
+         else {
+#::logDebug('$CGI::values{%s} is %s', $_, $CGI::values{$_});
+            if (length $CGI::values{$_}) {
+                $new_source = $Vend::Session->{source} = $CGI::values{$_};
+                last SOURCEPRIORITY;
+            }
+         }
+     }
+    } #SOURCEPRIORITY
+#::logDebug('$Session->{source} after SourcePriority loop: %s', $Vend::Session->{source});
 
+    # Set a cookie if applicable.
+    if (
+        # Obviously must be true
+        length ($Vend::Cfg->{SourceCookie}{name})
+        and
+
+        # and, we didn't already clear it in SOURCEPRIORITY
+        ! $already_expired
+        and
+
+            # any time we have a new source, we want to
+            # reset--even if it's unchanged from the last
+            # value to reset the expiration
+            length ($new_source)
+            ||
+
+            # or, our cookie is different from $Session->{source},
+            # whatever the reason
+            Vend::Util::read_cookie($Vend::Cfg->{SourceCookie}{name})
+                ne
+            $Vend::Session->{source}
+            ||
+
+            # or
+            (
+                # there's something in source worth preserving,
+                length ($Vend::Session->{source})
+                &&
+
+                # and we want the expiration reset with every access,
+                $Vend::Cfg->{SourceCookie}{autoreset}
+            )
+    ) {
+
+        my $sc = $Vend::Cfg->{SourceCookie};
+#::logDebug('Resetting SourceCookie %s to %s', $sc->{name}, $Vend::Session->{source});
+        Vend::Util::set_cookie(
+            $sc->{name},
+            $Vend::Session->{source},
+            @{$sc}{qw(expire domain path secure)}
+        );
+    }
+ 
 	if ($new_source and $CGI::request_method eq 'GET' and $Vend::Cfg->{BounceReferrals}) {
 		my $path = $CGI::path_info;
 		$path =~ s:^/::;
