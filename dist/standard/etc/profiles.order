@@ -216,3 +216,13 @@ email=email
 
 __END__
 
+__NAME__                              check_opt
+
+[comment]
+	This profile prevents an incomprehensible error if someone follows a bookmarked
+	link to a flypage.
+[/comment]
+
+expired=always_fail That link was expired. Please try ordering again.
+
+__END__
