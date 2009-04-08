@@ -21,7 +21,7 @@ Variable UI_STD_FILE_NAV <<EONav
 				</SMALL>
 			</td>
 			<td>
-			<FORM ACTION="[area @_MV_PAGE_@]" METHOD=GET>
+			<FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
 			<INPUT TYPE=hidden NAME=mv_action VALUE=back>
 			<INPUT TYPE=hidden NAME=action VALUE=find>
 			[msg]Find files in and under current directory:[/msg]<BR>
@@ -53,9 +53,9 @@ Variable UI_STD_FILE_NAV <<EONav
 					}
 					$Scratch->{details_coming} = $status;
 			`]
-			[page href="@_MV_PAGE_@" form="details=0"][msg]Hide file details[/msg]</A>
+			[page href="@@MV_PAGE@@" form="details=0"][msg]Hide file details[/msg]</A>
 			[else]
-			[page href="@_MV_PAGE_@" form="details=1"][msg]Show file details[/msg]</A>
+			[page href="@@MV_PAGE@@" form="details=1"][msg]Show file details[/msg]</A>
 			[/else]
 			[/if]
 			</small>
