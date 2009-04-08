@@ -237,22 +237,24 @@ ui_template_name: noleft
 						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
 						[page ord/shipping]<u><b>Ship [if value mv_same_billing]and bill[/if] to</b></u></a>:<br>
 						<blockquote>
-						[value fname] [value lname]<br>
-						[value address1]<br>
-						[if value address2][value address2]<br>[/if]
-						[value city][if value state], [value state][/if]  [value zip]<br>
-						[value country]
+						[evalue fname] [evalue lname]<br>
+						[evalue address1]<br>
+						[if value company][evalue company]<br>[/if]
+						[if value address2][evalue address2]<br>[/if]
+						[evalue city][if evalue state], [evalue state][/if]  [evalue zip]<br>
+						[evalue country]
 						</blockquote>
 						</td>
 						[if !value mv_same_billing]
 						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
 						[page ord/billing]<u><b>Bill to</b></u></a>:<br>
 						<blockquote>
-						[value b_fname] [value b_lname]<br>
-						[value b_address1]<br>
-						[if value b_address2][value b_address2]<br>[/if]
-						[value b_city][if value b_state], [value b_state][/if]  [value b_zip]<br>
-						[value b_country]
+						[evalue b_fname] [evalue b_lname]<br>
+						[if value b_company][evalue b_company]<br>[/if]
+						[evalue b_address1]<br>
+						[if value b_address2][evalue b_address2]<br>[/if]
+						[evalue b_city][if evalue b_state], [evalue b_state][/if]  [evalue b_zip]<br>
+						[evalue b_country]
 						</blockquote>
 						</td>
 						[/if]
