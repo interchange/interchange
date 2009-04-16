@@ -57,6 +57,14 @@ Core
 * Add new SessionCookieSecure boolean catalog directive. When enabled, makes
   session cookie set in https usable only in https.
 
+* Add reload of AutoModifier based on a prepended ! (exclamation point).
+  Example:
+     
+	 AutoModifier    !download  pricing:price_group
+
+  The download attribute will be recomputed for the current sku when
+  the cart is recalculated.
+
 * Add ability to merge user logins with merged_user field. When the
   user logs in, their username is changed to the value of the ID in
   that field. No default, so not operational in standard demo catalog.
