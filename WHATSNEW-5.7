@@ -60,7 +60,7 @@ Core
 * Add reload of AutoModifier based on a prepended ! (exclamation point).
   Example:
      
-	 AutoModifier    !download  pricing:price_group
+     AutoModifier    !download  pricing:price_group
 
   The download attribute will be recomputed for the current sku when
   the cart is recalculated.
@@ -70,7 +70,7 @@ Core
   that field. No default, so not operational in standard demo catalog.
   Enabled with:
 
-  		UserDB  default   merged_user  merge_to
+        UserDB  default   merged_user  merge_to
 
   That would look in the database field "merge_to" for a user name
   to change to.
@@ -84,6 +84,24 @@ Core
 
 * Shorthand added to allow beginning/ending year with date widget
   name (i.e. yearbegin1934, yearend=0000 where 0000 means current year).
+
+* Add ability to configure the number of levels and hash length for
+  the directory structure of file-based sessions. Instead of a fixed
+  value of 2 and 1 for levels and length, respectively, make two
+  configuration parameters named SessionHashLevels and SessionHashLength
+
+  Default is 2 and 1, respectively, matching the current values.
+
+  This solves the problem of session IDs passed from CGI::Session or other
+  modules that use a quasi-sequential session ID. You end up placing all
+  sessions in the S/2 directory for a long time, followed by the S/3 directory,
+  etc. A setting of:
+  
+    SessionHashLength   4
+    SessionHashLevels   1
+
+  would break sessions up into separate directories instead of putting all
+  sessions in a huge directory.
 
 Payment
 -------

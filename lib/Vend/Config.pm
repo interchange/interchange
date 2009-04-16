@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.245 2009-04-06 12:23:22 markj Exp $
+# $Id: Config.pm,v 2.246 2009-04-16 16:58:31 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -54,7 +54,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.245 $, 10);
+$VERSION = substr(q$Revision: 2.246 $, 10);
 
 my %CDname;
 my %CPname;
@@ -716,6 +716,8 @@ sub catalog_directives {
 	['BounceReferrals',  'yesno',            'no'],
 	['OrderCleanup',     'routine_array',    ''],
 	['SessionCookieSecure', 'yesno',         'no'],
+	['SessionHashLength', 'integer',         1],
+	['SessionHashLevels', 'integer',         2],
 	['SourcePriority', 'array_complete', 'mv_pc mv_source'],
 	['SourceCookie', sub { &parse_ordered_attributes(@_, [qw(name expire domain path secure)]) }, '' ],
 
