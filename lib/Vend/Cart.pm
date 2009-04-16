@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.24 2008-06-26 08:45:08 docelic Exp $
+# $Id: Cart.pm,v 2.25 2009-04-16 14:51:41 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use strict;
 
@@ -295,6 +295,12 @@ sub toss_cart {
 							$event_cartname
 						) if $quantity_raise_event;
 				}
+			}
+
+			for(@{$Vend::Cfg->{AutoModifier}}) {
+				next unless /^!/;
+				# Second passed parameter indicates it is recalculation not initial load
+				Vend::Order::auto_modifier($item, 1);
 			}
 
 			$total_quantity{$item->{code}} += $item->{quantity};

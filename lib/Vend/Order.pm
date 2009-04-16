@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.107 2009-03-16 19:34:00 jon Exp $
+# $Id: Order.pm,v 2.108 2009-04-16 14:51:41 mheins Exp $
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.107 $, 10);
+$VERSION = substr(q$Revision: 2.108 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2219,6 +2219,51 @@ sub update_quantity {
 
 }
 
+## This routine loads AutoModifier values
+## The $recalc parameter indicates it is a recalc load and not 
+## an initial load, so that you don't reload all parameters only ones
+## that should change based on an option setting (different SKU)
+
+sub auto_modifier {
+	my ($item, $recalc) = @_;
+	my $code = $item->{code};
+	for my $mod (@{$Vend::Cfg->{AutoModifier}}) {
+		my $attr;
+		my ($table,$key,$foreign) = split /:+/, $mod, 3;
+
+		if($table =~ s/^!\s*//) {
+			# This is an auto-recalculating attribute
+		}
+		elsif($recalc) {
+			# Don't want to reload non-auto-recalculating attributes
+			next;
+		}
+
+		if($table =~ /=/) {
+			($attr, $table) = split /\s*=\s*/, $table, 2;
+		}
+
+		if(! $key and ! $foreign) {
+			$attr ||= $table;
+			$item->{$attr} = item_common($item, $table);
+			next;
+		}
+
+		unless ($key) {
+			$key = $table;
+			$table = $item->{mv_ib};
+		}
+
+		$attr ||= $key;
+
+
+		my $select = $foreign ? $item->{$foreign} : $code;
+		$select ||= $code;
+
+		$item->{$attr} = ::tag_data($table, $key, $select);
+	}
+}
+
 sub add_items {
 	my($items,$quantities) = @_;
 
@@ -2449,37 +2494,8 @@ sub add_items {
 					$item->{$i} = $attr{$i}->[$j];
 				}
 			}
-			if($Vend::Cfg->{AutoModifier}) {
-				foreach $i (@{$Vend::Cfg->{AutoModifier}}) {
-					my $attr;
-					my ($table,$key,$foreign) = split /:+/, $i, 3;
 
-					if($table =~ /=/) {
-						($attr, $table) = split /\s*=\s*/, $table, 2;
-					}
-
-					if(! $key and ! $foreign) {
-						$attr ||= $table;
-						$item->{$attr} = item_common($item, $table);
-						next;
-					}
-
-					unless ($key) {
-						$key = $table;
-						$table = $item->{mv_ib};
-					}
-
-					$attr ||= $key;
-
-
-					my $select = $foreign ? $item->{$foreign} : $code;
-					$select ||= $code;
-
-#::logDebug("attr=$attr table=$table key=$key select=$select foreign=$foreign");
-					$item->{$attr} = ::tag_data($table, $key, $select);
-#::logDebug("item->$attr=$item->{$attr}");
-				}
-			}
+			auto_modifier($item) if $Vend::Cfg->{AutoModifier};
 
 			if(my $oe = $Vend::Cfg->{OptionsAttribute}) {
 			  eval {
