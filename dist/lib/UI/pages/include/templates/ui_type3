@@ -188,7 +188,7 @@
 						   	<a href="@_INTERCHANGE_URL_@" class=footer>
 								Interchange
 							</A>
-							[version] &copy; 2002-2007 Interchange Development Group&nbsp;&nbsp;&nbsp;
+							[version] &copy; 2002-2009 Interchange Development Group&nbsp;&nbsp;&nbsp;
 							&nbsp;
 							Username:
 						   <a href="[area href='__UI_BASE__/access_permissions' form='user_id=[data session username]']" class=footer>[data session username]</A> &nbsp; 
