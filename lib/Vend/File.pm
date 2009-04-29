@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.31 2009-04-27 10:00:17 racke Exp $
+# $Id: File.pm,v 2.32 2009-04-29 05:08:13 mheins Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -61,7 +61,7 @@ use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -71,7 +71,7 @@ sub writefile {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		undef $encoding if $encoding eq 'raw';
 		$fallback = $opt->{fallback};
-		$fallback = Encode::PERLQQ unless defined $fallback;
+		$fallback = Encode::PERLQQ() unless defined $fallback;
 	}
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
@@ -202,7 +202,7 @@ sub readfile {
 	if ($::Variable->{MV_UTF8}) {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		$fallback = $opt->{fallback};
-		$fallback = Encode::PERLQQ unless defined $fallback;
+		$fallback = Encode::PERLQQ() unless defined $fallback;
 		undef $encoding if $encoding eq 'raw';
 	}
 	
@@ -236,7 +236,7 @@ sub readfile {
 		binmode(READIN) if $Global::Windows;
 
         if ($encoding) {
-            local $PerlIO::encoding::fallback = Encode::PERLQQ;
+            local $PerlIO::encoding::fallback = Encode::PERLQQ();
             binmode(READIN, ":encoding($encoding)");
         }
 
