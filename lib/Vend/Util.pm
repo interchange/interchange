@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.125 2009-04-28 14:11:39 mheins Exp $
+# $Id: Util.pm,v 2.126 2009-04-30 03:50:21 mheins Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ require Exporter;
 
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
-	import Encode qw( is_utf8 );
+	import Encode qw( is_utf8 encode_utf8 );
 }
 
 @ISA = qw(Exporter);
@@ -96,7 +96,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.125 $, 10);
+$VERSION = substr(q$Revision: 2.126 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
