@@ -5,13 +5,13 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: flex_select.coretag,v 1.17 2007-07-06 08:54:20 racke Exp $
+# $Id: flex_select.coretag,v 1.18 2009-05-01 16:02:50 mheins Exp $
 
 UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.17 $
+UserTag flex-select Version    $Revision: 1.18 $
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/
@@ -661,6 +661,9 @@ EOF
 		data_row_style_odd   => '',
 		form_method => 'GET',
 		explicit_edit => '',
+		explicit_edit_page => '',
+		explicit_edit_form => '',
+		explicit_edit_anchor => '',
 		no_code_link => '',
 		group_image   => 'smindex.gif',
 		group_class   => 'rhead',
@@ -1114,7 +1117,7 @@ EOF
 		my $edit_anchor;
 		my $ee_extra;
 		if($opt->{explicit_edit}) {
-			$edit_anchor = errmsg('edit record');
+			$edit_anchor = $opt->{explicit_edit_anchor} || errmsg('edit record');
 			$edit_anchor =~ s/ /&nbsp;/g;
 			$ee_extra = '';
 			for(qw/ class style width align valign /) {
@@ -1135,6 +1138,7 @@ EOF
 			my $out = qq{<tr class="$rc">\n};
 
 			my $code_pre; my $code_post;
+			my $ep_string = '';
 			if($opt->{no_code_link} and ! $opt->{explicit_edit}) {
 				$code_pre = $code_post = '';
 			}
@@ -1149,7 +1153,7 @@ EOF
 
 				}
 
-				my $ep_string = join "\n", @what, $edit_extra;
+				$ep_string = join "\n", @what, $edit_extra;
 
 				my $edit_url = $Tag->area({
 									href => $edit_page,
@@ -1176,8 +1180,17 @@ EOF
 			}
 
 			if($opt->{explicit_edit}) {
-				$out .= qq{<td$ee_extra>&nbsp;$code_pre$edit_anchor$code_post&nbsp;</td>};
-				$opt->{no_code_link} and $code_pre = $code_post = '';
+				my $form = $opt->{explicit_edit_form} || '';
+				if($form) {
+					$form .= $ecode;
+				}
+				my $url = $Tag->area({
+									href => $opt->{explicit_edit_page} || $edit_page,
+									form => $form || $ep_string,
+								});
+				my $msg = errmsg('process %s', $ecode);
+				my $pre = qq{<a href="$url" title="$msg">};
+				$out .= qq{<td$ee_extra>&nbsp;$pre$edit_anchor$code_post&nbsp;</td>};
 			}
 
 #::logDebug("keyname=$ts->{keyname}");

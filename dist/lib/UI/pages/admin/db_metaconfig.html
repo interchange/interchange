@@ -75,8 +75,9 @@
 
 		height
 		extended.explicit_edit extended.number_list
+		extended.explicit_edit_page extended.explicit_edit_form
+		extended.explicit_edit_anchor extended.check_uncheck_all
 		extended.no_code_link extended.no_checkbox
-		extended.check_uncheck_all
 		extended.radio_box extended.user_merge
 		extended.ui_sort_field
 		extended.ui_sort_option
@@ -151,6 +152,9 @@
 		'extended.bottom_buttons'		=> 'Buttons only on bottom',
 		'extended.restrict_allow'		=> 'Allow these ITL tags',
 		'extended.explicit_edit'		=> 'Show "edit record" link',
+		'extended.explicit_edit_page'	=> 'Destination for explicit edit',
+		'extended.explicit_edit_form'	=> 'Form for explicit edit',
+		'extended.explicit_edit_anchor'	=> 'Anchor for explicit edit',
 		'extended.no_code_link'		    => "Don't link key column to editor",
 		'extended.no_checkbox'		    => "No checkbox for group ops",
 		'extended.check_uncheck_all'	=> 'Links to check/uncheck all',
@@ -250,6 +254,9 @@
 </pre>
 			</blockquote>},
 		'extended.display_type'		    => "Sets the general style of column edit areas",
+		'extended.explicit_edit_page'	=> 'Landing page when clicking explicit edit.',
+		'extended.explicit_edit_form'	=> 'Form string for explicit edit, code will be appended',
+		'extended.explicit_edit_anchor'	=> 'Anchor to link for explicit edit',
 		'extended.link_rows_blank'		=> 'default 1',
 		'extended.link_row_qual'		=> 'Default is key field, needs to be different field if auto-numbering. Must not be same as Foreign Key if in auto mode.',
 		'extended.link_blank_auto'		=> 'Requires link row qualifier be separate from primary key and foreign key in linked table.',
@@ -407,4 +414,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.23 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.24 $ -->
