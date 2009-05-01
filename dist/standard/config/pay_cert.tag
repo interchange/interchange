@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: pay_cert.tag,v 1.3 2007-08-09 13:40:53 pajamian Exp $
+# $Id: pay_cert.tag,v 1.4 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag pay-cert Order code
 UserTag pay-cert addAttr
@@ -89,12 +89,11 @@ sub {
 			@date_expires = @date_issued;
 			$date_expires[4] += $1;
 		}
-		elsif($opt->{expires} =~ /^\s*(\d+)\s*[mhdw]/) {
-			my $adder = Vend::Config::time_to_seconds($opt->{expires});
-			@date_expires = localtime($now + $adder);
+		elsif($opt->{expires} =~ /^\s*(\d+)\s*[mhdwy]/) {
+			@date_expires = localtime(adjust_time($opt->{expires}, $now));
 		}
 		elsif($opt->{expires}) {
-			::logError("Expiration date '%s' not understood, ingoring.", $opt->{expires});
+			::logError("Expiration date '%s' not understood, ignoring.", $opt->{expires});
 		}
 
 		if(@date_expires) {

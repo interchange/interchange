@@ -5,12 +5,12 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: component.tag,v 1.9 2007-03-30 23:40:56 pajamian Exp $
+# $Id: component.tag,v 1.10 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag component Order     component
 UserTag component addAttr
 UserTag component NoReparse 1
-UserTag component Version   $Revision: 1.9 $
+UserTag component Version   $Revision: 1.10 $
 UserTag component Routine   <<EOR
 sub {
 	my ($name, $opt) = @_;
@@ -105,10 +105,7 @@ sub {
 		$crecord = $cdb->row_hash($cache_it) || {};
 		$now = time;
 		
-		my $secs	= $record->{cache_interval} =~ /\D/
-					? time_to_seconds($record->{cache_interval}) 
-					: $record->{cache_interval};
-		my $exp = $crecord->{cache_time} + $secs;
+		my $exp = adjust_time($record->{cache_interval}, $crecord->{cache_time});
 		
 		if ($exp > $now) {
 			# Increment control_index as not done below

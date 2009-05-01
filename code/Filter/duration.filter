@@ -6,7 +6,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: duration.filter,v 1.6 2007-03-30 23:40:44 pajamian Exp $
+# $Id: duration.filter,v 1.7 2009-05-01 13:50:00 pajamian Exp $
 
 CodeDef duration Filter
 CodeDef duration Description Duration
@@ -30,19 +30,14 @@ sub {
 	use vars qw/$CGI/;
 	my $start = $CGI->{$startvar} || $val;
 	my $durstring = $CGI->{$durvar};
-	my $duration = 0;
 	use Time::Local;
 
 	if (!length($durstring) && $durvar =~ /^\d+$/) {
 		$durstring = join(' ', $durvar, @extra);
 	}
 
-	while($durstring =~ s/(\d+\s*[hmwd]\w*)\s*//) {
-		$duration += Vend::Config::time_to_seconds($1);
-	}
-
 	## Want to allow setting the value directly
-	return $val unless $duration;
+	return $val unless $durstring;
 
 	$start =~ s/\0+//g;
 	if($start =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):) {
@@ -73,7 +68,9 @@ sub {
 		logError("bad time value passed to duration filter: %s", $@);
 		return 0;
 	}
-	$time += $duration;
+
+	$time = adjust_time($durstring, $time);
+
 	return POSIX::strftime("%Y%m%d%H%M%S", localtime($time));
 }
 EOR

@@ -5,11 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: css.tag,v 1.8 2007-03-30 23:40:56 pajamian Exp $
+# $Id: css.tag,v 1.9 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag css Order   name
 UserTag css addAttr
-UserTag css Version $Revision: 1.8 $
+UserTag css Version $Revision: 1.9 $
 UserTag css Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
@@ -72,9 +72,7 @@ sub {
 		elsif($opt->{timed}) {
 			my $now = time();
 			$opt->{timed} .= ' min' if $opt->{timed} =~ /^\d+$/;
-			my $secs = Vend::Config::time_to_seconds($opt->{timed});
-#::logDebug("timed seconds = $secs");
-			my $fliptime = $stat[9] + $secs;
+			my $fliptime = adjust_time($opt->{timed}, $stat[9]);
 #::logDebug("fliptime=$fliptime now=$now");
 			if ($fliptime <= $now) {
 				$write = 1;

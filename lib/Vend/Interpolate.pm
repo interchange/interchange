@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.312 2009-03-23 13:39:50 mheins Exp $
+# $Id: Interpolate.pm,v 2.313 2009-05-01 13:50:00 pajamian Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.312 $, 10);
+$VERSION = substr(q$Revision: 2.313 $, 10);
 
 @EXPORT = qw (
 
@@ -2087,22 +2087,19 @@ sub mvtime {
 	my $now = $opt->{time} || time();
 	$fmt = '%Y%m%d' if $opt->{sortable};
 
-	if($opt->{adjust}) {
-		my $neg = $opt->{adjust} =~ s/^\s*-\s*//;
-		my $diff;
-		$opt->{adjust} =~ s/^\s*\+\s*//;
-		if($opt->{hours}) {
-			$diff = (60 * 60) * ($opt->{adjust} || $opt->{hours});
+	if($opt->{adjust} || $opt->{hours}) {
+		my $adjust = $opt->{adjust};
+		if ($opt->{hours}) {
+			$adjust ||= $opt->{hours};
+			$adjust .= ' hours';
 		}
-		elsif($opt->{adjust} !~ /[A-Za-z]/) {
-			$opt->{adjust} =~ s:(\d+)(\d[05])$:$1 + $2 / 60:e;
-			$opt->{adjust} =~ s/00$//;
-			$diff = (60 * 60) * $opt->{adjust};
+
+		elsif ($adjust !~ /[A-Za-z]/) {
+			$adjust =~ s/(?<=\d)(\d[05])// and $adjust += $1 / 60;
+			$adjust .= ' hours';
 		}
-		else {
-			$diff = Vend::Config::time_to_seconds($opt->{adjust});
-		}
-		$now = $neg ? $now - $diff : $now + $diff;
+
+		$now = adjust_time($adjust, $now, $opt->{compensate_dst});
 	}
 
 	$fmt ||= $opt->{format} || $opt->{fmt} || '%c';

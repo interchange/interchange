@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.126 2009-04-30 03:50:21 mheins Exp $
+# $Id: Util.pm,v 2.127 2009-05-01 13:50:01 pajamian Exp $
 # 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -34,6 +34,7 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 @ISA = qw(Exporter);
 
 @EXPORT = qw(
+	adjust_time
 	catfile
 	check_security
 	copyref
@@ -96,7 +97,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.126 $, 10);
+$VERSION = substr(q$Revision: 2.127 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1889,8 +1890,7 @@ sub set_cookie {
     # Set expire to now + some time if expire string is something like
     # "30 days" or "7 weeks" or even "60 minutes"
 	if($expire =~ /^\s*\d+[\s\0]*[A-Za-z]\S*\s*$/) {
-		my $add = Vend::Config::time_to_seconds($expire);
-		$expire = time() + $add if $add;
+	    $expire = adjust_time($expire);
 	}
 
 	if (! $::Instance->{Cookies}) {
@@ -2269,6 +2269,104 @@ sub timecard_read {
 	close FH;
 
 	return unpack('N',$rtime);
+}
+
+#
+# Adjusts a unix time stamp (2nd arg) by the amount specified in the first arg.  First arg should be
+# a number (signed integer or float) followed by one of second(s), minute(s), hour(s), day(s)
+# week(s) month(s) or year(s).  Second arg defaults to the current time.  If the third arg is true
+# the time will be compensated for daylight savings time (so that an adjustment of 6 months will
+# still cause the same time to be displayed, even if it is transgressing the DST boundary).
+#
+# This will accept multiple adjustments strung together, so you can do: "-5 days, 2 hours, 6 mins"
+# and the time will have thost amounts subtracted from it.  You can also add and subtract in the
+# same line, "+2 years -3 days".  If you specify a sign (+ or -) then that sign will remain in
+# effect until a new sign is specified on the line (so you can do,
+# "+5 years, 6 months, 3 days, -4 hours, 7 minutes").  The comma (,) between adjustments is
+# optional.
+#
+sub adjust_time {
+    my ($adjust, $time, $compensate_dst) = @_;
+    $time ||= time;
+
+    unless ($adjust =~ /^(?:\s*[+-]?\s*[\d\.]+\s*[a-z]*\s*,?)+$/i) {
+	::logError("adjust_time(): bad format: $adjust");
+	return $time;
+    }
+
+    # @times: 0: sec, 1: min, 2: hour, 3: day, 4: month, 5: year, 8: isdst
+    # 6,7: dow and doy, but mktime ignores these (and so do we).
+
+    # A note about isdst: localtime returns 1 if returned time is adjusted for dst and 0 otherwise.
+    # mktime expects the same, but if this is set to -1 mktime will determine if the date should be
+    # dst adjusted according to dst rules for the current timezone.  The way that we use this is we
+    # leave it set to the return value from locatime and we end up with a time that is adjusted by
+    # an absolute amount (so if you adjust by six months the actual time returned may be different
+    # but only because of DST).  If we want mktime to compensate for dst then we set this to -1 and
+    # mktime will make the appropriate adjustment for us (either add one hour or subtract one hour
+    # or leave the time the same).
+
+    my @times = localtime($time);
+    my $sign = 1;
+
+    foreach my $amount ($adjust =~ /([+-]?\s*[\d\.]+\s*[a-z]*)/ig) {
+	my $unit = 'seconds';
+	$amount =~ s/\s+//g;
+
+	if ($amount =~ s/^([+-])//)   { $sign = $1 eq '+' ? 1 : -1 }
+	if ($amount =~ s/([a-z]+)$//) { $unit = lc $1 }
+	$amount *= $sign;
+
+	# A week is simply 7 days.
+	if ($unit =~ /^w/) {
+	    $unit = 'days';
+	    $amount *= 7;
+	}
+
+	if ($unit =~ /^s/) { $times[0] += $amount }
+	elsif ($unit =~ /^mo/) { $times[4] += $amount } # has to come before min
+	elsif ($unit =~ /^m/) { $times[1] += $amount }
+	elsif ($unit =~ /^h/) { $times[2] += $amount }
+	elsif ($unit =~ /^d/) { $times[3] += $amount }
+	elsif ($unit =~ /^y/) { $times[5] += $amount }
+
+	else {
+	    ::logError("adjust_time(): bad unit: $unit");
+	    return $time;
+	}
+    }
+
+    if ($compensate_dst) { $times[8] = -1 }
+
+    # mktime can only handle integers, so we need to convert real numbers:
+    my @multip = (0, 60, 60, 24, 0, 12);
+    my $monfrac = 0;
+    foreach my $i (reverse 0..5) {
+	if ($times[$i] =~ /\./) {
+	    if ($multip[$i]) {
+		$times[$i-1] += ($times[$i] - int $times[$i]) * $multip[$i];
+	    }
+
+	    elsif ($i == 4) {
+		# Fractions of a month need some really extra special handling.
+		$monfrac = $times[$i] - int $times[$i];
+	    }
+
+	    $times[$i] = int $times[$i]
+	}
+    }
+
+    $time = POSIX::mktime(@times);
+
+    # This is how we handle a fraction of a month:
+    if ($monfrac) {
+	$times[4] += $monfrac > 0 ? 1 : -1;
+	my $timediff = POSIX::mktime(@times);
+	$timediff = int(abs($timediff - $time) * $monfrac);
+	$time += $timediff;
+    }
+
+    return $time;
 }
 
 sub backtrace {
