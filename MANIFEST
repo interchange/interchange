@@ -705,7 +705,6 @@ dist/standard/dbconf/sqlite/access.dbm
 dist/standard/dbconf/sqlite/affiliate.lite
 dist/standard/dbconf/sqlite/area.lite
 dist/standard/dbconf/sqlite/cat.lite
-dist/standard/dbconf/sqlite/component.dbm
 dist/standard/dbconf/sqlite/country.lite
 dist/standard/dbconf/sqlite/forum.lite
 dist/standard/dbconf/sqlite/gift_certs.lite
