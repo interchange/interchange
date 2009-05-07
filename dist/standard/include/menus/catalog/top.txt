@@ -27,5 +27,5 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 026		1					aboutus		Our Story		0								
 027		1					contact		Contact us		0								
 028		0					process/locale/en_US/index		Language		0	Choose language							
-029		1					process/locale/en_US/index		English		0	Select English							
-030		1					process/locale/de_DE/index		Deutsch		0	Select German							
+029		1					process/locale/en_US/page/index		English		0	Select English							
+030		1					process/locale/de_DE/page/index		Deutsch		0	Select German							
