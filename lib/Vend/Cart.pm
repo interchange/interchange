@@ -1,8 +1,8 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.25 2009-04-16 14:51:41 mheins Exp $
+# $Id: Cart.pm,v 2.26 2009-05-20 22:13:32 pajamian Exp $
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -25,7 +25,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 use strict;
 
@@ -247,55 +247,65 @@ sub toss_cart {
 				}
 			}
 
-			if($Vend::Cfg->{MaxQuantityField}) {
-				$item->{mv_max_quantity} = 0;
+		      MAX_QUANTITY: {
+			  last MAX_QUANTITY unless $Vend::Cfg->{MaxQuantityField};
+			  my $mv_max = \$item->{mv_max_quantity};
+			  undef $$mv_max;
 
-				foreach my $fieldspec (split('[,\s]+', $Vend::Cfg->{MaxQuantityField})) {
-					next unless $fieldspec;
+			QUANTITY_ADJUST: {
+			  QUANTITY_FIELD: foreach my $fieldspec (split('[,\s]+', $Vend::Cfg->{MaxQuantityField})) {
+			      next QUANTITY_FIELD unless $fieldspec;
 
-					my ($tab, $col) = split /:+/, $fieldspec;
-					if(! length $col) {
-						$col = $tab;
-						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
-					}
-					if ( $tab =~ s/^=// ) {
-						$item->{mv_max_quantity} = $quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code});
-						goto DONE_QUANTITY_ADJUST;
-					}
-					elsif ( $tab =~ s/^\?// ) {
-						if ( $item->{mv_max_quantity} ) {
-							$item->{mv_max_quantity} = $quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code}) if
-							::tag_data($tab, $col, $item->{code});
-							goto DONE_QUANTITY_ADJUST;
-						}
-					}
-					else {
-						$item->{mv_max_quantity} += $quantity_cache{"$tab.$col.$item->{code}"} || ($quantity_cache{"$tab.$col.$item->{code}"} = ::tag_data($tab, $col, $item->{code}));
-					}
-				}
-				$item->{mv_max_quantity} -= $total_quantity{$item->{code}};
-				$item->{mv_max_quantity} = 0 if $item->{mv_max_quantity} < 0;
+			      my ($tab, $col) = split /:+/, $fieldspec;
+			      if(! length $col) {
+				  $col = $tab;
+				  $tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+			      }
 
-				DONE_QUANTITY_ADJUST:
+			      my ($prefix) = $tab =~ s/^([=\?])//;
+			      $prefix ||= '';
 
-				if(
-					length $item->{mv_max_quantity}
-					and 
-					$item->{quantity} > $item->{mv_max_quantity}
-					)
-				{
-					$old_item = { %$item } if $quantity_raise_event;
-					$item->{quantity} = $item->{mv_max_quantity};
-					$item->{mv_max_over} = 1;
-					delete $item->{mv_min_under};
-					trigger_update(
-							$s,
-							$item,
-							$old_item,
-							$event_cartname
-						) if $quantity_raise_event;
-				}
-			}
+			      my $max = \$quantity_cache{"$tab.$col.$item->{code}"};
+			      $$max ||= ::tag_data($tab, $col, $item->{code});
+			      undef $$max unless $$max =~ /\d/;
+
+			      if ($prefix eq '=') {
+				  $$mv_max = $$max;
+				  last QUANTITY_ADJUST if defined $$max;
+				  last MAX_QUANTITY;
+			      }
+
+			      elsif ($prefix = '?') {
+				  next QUANTITY_FIELD if !defined $$max || $$max <= 0;
+				  $$mv_max = $$max;
+				  last QUANTITY_ADJUST;
+			      }
+
+			      elsif (defined $$max) {
+				  $$mv_max ||= 0;
+				  $$mv_max += $$max;
+			      }
+			  } # QUANTITY_FIELD
+
+			    last MAX_QUANTITY unless defined $$mv_max;
+
+			    $$mv_max -= $total_quantity{$item->{code}};
+			    $$mv_max = 0 if $$mv_max < 0;
+			  } # QUANTITY_ADJUST
+
+			  if($item->{quantity} > $$mv_max) {
+			      $old_item = { %$item } if $quantity_raise_event;
+			      $item->{quantity} = $$mv_max;
+			      $item->{mv_max_over} = 1;
+			      delete $item->{mv_min_under};
+			      trigger_update(
+				  $s,
+				  $item,
+				  $old_item,
+				  $event_cartname
+				  ) if $quantity_raise_event;
+			  }
+			} # MAX_QUANTITY
 
 			for(@{$Vend::Cfg->{AutoModifier}}) {
 				next unless /^!/;

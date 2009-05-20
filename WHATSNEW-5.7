@@ -111,6 +111,10 @@ Core
 
 * _set_acl() in UserDB.pm now uses adjust_time() instead of time_to_seconds().
 
+* Fix MaxQuantityField to allow a null, blank, or non-numerical entry in the
+  field to represent that no maximum quantity should be enforced for that
+  product.
+
 Payment
 -------
 
