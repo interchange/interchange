@@ -1,11 +1,11 @@
-# Copyright 2005-2007 Interchange Development Group and others
+# Copyright 2005-2009 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: user_merge.tag,v 1.3 2008-01-21 19:22:55 mheins Exp $
+# $Id: user_merge.tag,v 1.4 2009-05-20 23:37:27 pajamian Exp $
 
 UserTag user-merge Order from to
 UserTag user-merge addAttr
@@ -134,10 +134,33 @@ sub {
 
 	my $logfile = $opt->{logfile} || 'logs/merged_users.log';
 	my $done_one;
+	my $save_rec;
 
 	for my $user (@users) {
 		$Tag->log({ type => 'text', file => $logfile, body => $Tag->time() . "\n" } )
 			unless $done_one++;
+
+		my $from_urec = $udb->row_hash($user);
+
+		# If there's a user_merge specialsub run it here
+		if (my $subname = $Vend::Cfg->{SpecialSub}{user_merge}) {
+			my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+			my $status;
+			eval { $status = $sub->($user, $from_urec, $to_user, $urec, $udb, $tdb) };
+			if ($@) {
+				::logError("Error running %s subroutine %s: %s", 'user_merge', $subname, $@);
+			}
+
+			elsif ($status) {
+				# Skip further processing of this user
+				next;
+			}
+
+			else {
+				$save_rec = 1;
+			}
+		}
+
 		for(@ttab) {
 			$sth{$_}->execute($to_user, $user)
 				or $err->("%s update failed: %s", $_, $dbh{$_}->errstr);
@@ -147,12 +170,11 @@ sub {
 			push @record, $o;
 		}
 
-		my $urec = $udb->row_hash($user);
-		my $chash = string_to_ref($urec->{carts});
+		my $chash = string_to_ref($from_urec->{carts});
 		if(ref $chash) {
 			for(keys %$chash) {
 				if($cart_hash->{$_}) {
-					$Tag->log({ type => 'text', file => $logfile, body => "unable to merge cart=$_ (already exists). Contents=$urec->{carts}\n"} );
+					$Tag->log({ type => 'text', file => $logfile, body => "unable to merge cart=$_ (already exists). Contents=$from_urec->{carts}\n"} );
 				}
 				else {
 					$cart_hash->{$_} = $chash->{$_};
@@ -160,7 +182,7 @@ sub {
 				}
 			}
 		}
-		my $ustring = ::uneval($urec);
+		my $ustring = ::uneval($from_urec);
 		$Tag->log({ type => 'text', file => $logfile, body => "delete user $user=$ustring\n"} );
 		$udb->delete_record($user)
 			unless $opt->{no_delete};
@@ -168,8 +190,20 @@ sub {
 	}
 
 	if($carts_changed) {
-		$udb->set_field($to, 'carts', ::uneval($cart_hash));
+		if ($save_rec) {
+			$urec->{carts} = ::uneval($cart_hash);
+		}
+
+		else {
+			$udb->set_field($to, 'carts', ::uneval($cart_hash));
+		}
 	}
+
+	if ($save_rec) {
+		delete $urec->{$udb->[$Vend::Table::DBI::KEY]};
+		$udb->set_slice($to, $urec);
+	}
+
 	push @record, '';
 
 	$Tag->log({ type => 'text', file => $logfile, body => join("\n", @record)} );
