@@ -105,6 +105,12 @@ Core
 
 * Encoding and fallback for reading/writing files while in UTF-8 mode.
 
+* New adjust_time() function allows time adjustment based on secs, mins, hours,
+  days, weeks, months and years.  Also can string multiple adjustments together
+  and compensate for daylight savings time changes over the adjustment period.
+
+* _set_acl() in UserDB.pm now uses adjust_time() instead of time_to_seconds().
+
 Payment
 -------
 
@@ -119,6 +125,9 @@ Payment
 * Added changes from Bill Carr <bill@bottlenose-wine.com> to
   Business::OnlinePayment to allow extra parameters to be passed.
 
+* [pay-cert] tag now uses the new adjust_time() function instead of the older
+  time_to_seconds().
+
 UserTag
 -------
 
@@ -127,11 +136,24 @@ UserTag
 * Added empty attribute for [convert-date] to display a custom string
   instead of the current date when no proper date is passed.
 
+* [component], [convert-date] and [css] now use the new adjust_time() function
+  instead of the older time_to_seconds().
+
+* [convert-date] has a new compensate_dst attribute that when set to 1 will
+  compensate the adjusted time for daylight savings time changes.
+
+* fixed bug in [convert-date] that skewed the time by one hour if the starting
+  date was during daylight savings time and an adjustment was made.
+
 SystemTag
 ---------
 
 * The error is now not anymore automatically appended to the output of [error]
   when MV_ERROR_STD_LABEL has a value.
+
+* [time] now uses adjust_time() instead of the older time_to_seconds().  There
+  is also a new compensate_dst attribute that when set to 1 will compensate the
+  adjusted time for daylight savings time changes.
 
 Checks
 ------
