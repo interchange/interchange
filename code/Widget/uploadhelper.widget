@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 # 
-# $Id: uploadhelper.widget,v 1.6 2008-07-17 14:37:09 racke Exp $
+# $Id: uploadhelper.widget,v 1.7 2009-05-20 09:39:19 racke Exp $
 
 CodeDef uploadhelper  Widget  1
 CodeDef uploadhelper  Description File upload
@@ -30,7 +30,11 @@ sub {
 			$out .= qq{<A HREF="$view_url">};
 		}
 		$out .= $val;
-		$out .= "</A>" if $path;
+		if ($path) {
+			$out .= "</A>";
+			$out .= qq{<input type="checkbox" name="ui_upload_file_delete:$name" value="1">};
+			$out .= errmsg('Delete');
+		}
 		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
 <INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
 <INPUT TYPE=hidden NAME="$name" VALUE="$val">};      

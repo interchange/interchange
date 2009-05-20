@@ -1,7 +1,7 @@
 __NAME__ process_filter
 [flag type=write table="[cgi mv_data_table]"]
 [perl tables="[list-databases]"]
-# $Id: process_filter,v 2.3 2003-01-14 02:25:53 mheins Exp $
+# $Id: process_filter,v 2.4 2009-05-20 09:39:19 racke Exp $
 	my @filters = grep /^ui_filter:/, keys %$CGI;
   FILTERS: {
 	last FILTERS unless @filters;
@@ -71,6 +71,20 @@ __NAME__ process_filter
 		next unless defined $CGI->{$key};
 		$CGI->{$key} =~ s/\0(.*)//s;
 		my $old = $1;
+		if ($CGI->{"ui_upload_file_delete:$key"}) {
+			if ($Tag->if_mm({function => 'files', name => "$path/$old",
+					body => 1})) {
+				unless ($Tag->unlink_file("$path/$old", $path)) {
+					$Tag->error({name => "$path/$old",
+						set => 'Failed to delete file'});
+				}
+			} 
+			else {
+				$Tag->error({name => "$path/$old",
+					set => 'Not allowed to delete file'});
+			}
+			$old = '';
+		}
 		unless($CGI->{$key}) {
 			$CGI->{$key} = $old; 
 			next;
@@ -84,6 +98,7 @@ __NAME__ process_filter
 		$fn =~ s,.*\\,,;
 		$fn = $Tag->filter('filesafe', $fn);
 #Debug("cgi->$key now='$CGI->{$key}'");
+		$CGI->{$key} = $fn;
 		my $out = "$path/$fn";
 		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1} ) ) {
 			$Scratch->{ui_failure} .= "\nFailed to write upload file $out";
