@@ -25,8 +25,7 @@ case "$1" in
 		echo -n "Shutting down Interchange: "
 		killproc interchange
 		echo
-		rm -f /var/lock/subsys/interchange
-		rm -f /var/run/interchange/interchange.pid
+		rm -f /var/lock/subsys/interchange /var/run/interchange/interchange.pid
 		;;
 	status)
 		status interchange
