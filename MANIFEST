@@ -1062,7 +1062,6 @@ eg/pg83-implicit-casts.sql
 eg/reset_order_number
 eg/survey_graph.tag
 eg/survey_wizard/code/Widget/user_uploadhelper.widget
-eg/survey_wizard/email.tag
 eg/survey_wizard/pages/admin/overall.html
 eg/survey_wizard/pages/survey/standard.html
 eg/survey_wizard/survey_wizard.coretag
