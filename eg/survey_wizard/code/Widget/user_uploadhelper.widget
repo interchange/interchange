@@ -17,7 +17,6 @@ sub {
 	
 	$::Scratch->{"user_upload_routine_$name"} = <<'EOU';
 [perl]
-# $Id: user_uploadhelper.widget,v 1.1 2005-04-12 19:17:03 mheins Exp $
 	my @uploads = grep /^user_upload_file_path:/, keys %$CGI;
 #Debug("Check uploads: " . join ",", @uploads);
 	return unless @uploads;

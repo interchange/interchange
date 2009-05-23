@@ -1,7 +1,5 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 1.6 2008-11-12 04:15:22 jon Exp $
-# 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
