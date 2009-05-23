@@ -174,7 +174,7 @@ BIGP: {
 }
 =head1 SEE ALSO
 
-http://cvs.icdevgroup.org/cgi-bin/cvsweb/interchange/extensions/benchtimes
+extensions/benchtimes
 
 =head1 AUTHOR
 
