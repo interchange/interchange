@@ -1,5 +1,3 @@
-# $Id: interchange.spec,v 2.35 2008-10-20 15:05:15 jon Exp $
-
 # use Perl installation in /usr/local custom built from source?
 %define localperl 0
 

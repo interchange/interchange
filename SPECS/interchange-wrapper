@@ -3,7 +3,6 @@
 # Interchange control script
 # Calls Interchange with special locations of files as installed by RPM
 # http://www.icdevgroup.org/
-# $Id: interchange-wrapper,v 2.3 2005-05-09 21:36:37 jon Exp $
 
 IC=/usr/lib/interchange
 ETC=/etc
