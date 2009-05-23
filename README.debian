@@ -51,9 +51,10 @@ Other Notes
   /bin/false and the password for this user will be disabled. Use 
   su -s /bin/sh if you need to become the Interchange user.
 
-CVS
+Git
 ===
 
-You can build Debian packages directly from CVS with the following commmand:
+You can build Debian packages directly from a Git working copy with the
+following commmand:
 
 dpkg-buildpackage -rfakeroot -uc -us

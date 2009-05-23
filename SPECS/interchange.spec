@@ -184,7 +184,7 @@ done
 # Remove admin UI images now that they're in the HTML doc root
 %__rm -rf $RPM_BUILD_ROOT$ICBASE/share/interchange-5
 
-# Clean up empty placeholder files used to keep CVS from pruning away
+# Clean up empty placeholder files used to keep Git from pruning away
 # otherwise empty directories
 find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec %__rm -f \{\} \;
 
@@ -253,7 +253,7 @@ exit 0
 %doc LICENSE
 %doc README
 %doc README.rpm-dist
-%doc README.cvs
+%doc README-DEVELOPMENT
 %doc UPGRADE
 %doc WHATSNEW*
 %config(noreplace) %{_sysconfdir}/logrotate.d/interchange

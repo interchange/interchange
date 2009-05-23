@@ -1188,7 +1188,7 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README
-README.cvs
+README-DEVELOPMENT
 README.debian
 README.rpm-dist
 relocate.pl

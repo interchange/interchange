@@ -4,7 +4,7 @@
 
 Interchange 5.7.1
 
-Copyright (C) 2002-2008 Interchange Development Group
+Copyright (C) 2002-2009 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
@@ -47,19 +47,24 @@ Perl with an absolute path to the Perl binary, such as
 
 More information is in the following files and directories:
 
-LICENSE          The text of the GNU General Public License (GPL), under which
-                 the Interchange software is distributed.
+LICENSE
+The text of the GNU General Public License (GPL), under which the Interchange
+software is distributed.
 
-README.rpm-dist  Notes on using Interchange when installed from RPM packages.
+README.rpm-dist
+Notes on using Interchange when installed from RPM packages.
 
-README.debian    Notes on using Interchange when installed from Debian packages.
+README.debian
+Notes on using Interchange when installed from Debian packages.
 
-README.cvs       How to access the CVS repository to track ongoing development.
+README-DEVELOPMENT
+How to access the Git repository to track ongoing development.
 
-WHATSNEW-*       Changes per specified version family.
+WHATSNEW-*
+Changes per specified version family.
 
-UPGRADE          Instructions on how to upgrade from an earlier Interchange
-                 version.
+UPGRADE
+Instructions on how to upgrade from an earlier Interchange version.
 
 -----------------------------------------------------------------------------
 
@@ -150,7 +155,6 @@ formats. This and other information is available at the Interchange home on
 the web:
 
 http://www.icdevgroup.org/
-http://www.icdevgroup.org/xmldocs/
 
 -----------------------------------------------------------------------------
 
