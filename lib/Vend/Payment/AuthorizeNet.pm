@@ -3,9 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.21 2009-03-16 19:34:00 jon Exp $
-#
-# Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2009 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:
@@ -274,7 +272,9 @@ sub authorizenet {
 
 	my $opt;
 	my $secret;
-	
+	my $shipping;
+	my $salestax;
+
 	if(ref $user) {
 		$opt = $user;
 		$user = $opt->{id} || undef;
@@ -398,6 +398,20 @@ sub authorizenet {
         $amount = Vend::Util::round_to_frac_digits($amount,$precision);
     }
 
+	$shipping = $opt->{shipping} if $opt->{shipping};
+
+	if(! $shipping) {
+		$shipping = Vend::Interpolate::tag_shipping();
+		$shipping = Vend::Util::round_to_frac_digits($shipping,$precision);
+	}
+
+	$salestax = $opt->{salestax} if $opt->{salestax};
+
+	if(! $salestax) {
+		$salestax = Vend::Interpolate::salestax();
+		$salestax = Vend::Util::round_to_frac_digits($salestax,$precision);
+	}
+
 	my $order_id = gen_order_id($opt);
 
 #::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
@@ -413,6 +427,8 @@ sub authorizenet {
 		x_echeck_type      => $echeck_type,
 		x_Method => 'ECHECK',
 	);
+
+	my $tax_exempt = ($salestax > 0) ? 'FALSE' : 'TRUE';
 
     my %query = (
 		x_Test_Request			=> $opt->{test} || charge_param('test'),
@@ -436,6 +452,10 @@ sub authorizenet {
 		x_Phone					=> $actual->{phone_day},
 		x_Type					=> $transtype,
 		x_Amount				=> $amount,
+		x_Tax					=> $salestax,
+		x_Freight				=> $shipping,
+		x_PO_Num				=> $actual->{po_number},
+		x_Tax_Exempt			=> $tax_exempt,
 		x_Method				=> 'CC',
 		x_Card_Num				=> $actual->{mv_credit_card_number},
 		x_Exp_Date				=> $exp,
