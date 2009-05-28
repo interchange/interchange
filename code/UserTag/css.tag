@@ -1,11 +1,9 @@
-# Copyright 2003-2007 Interchange Development Group and others
+# Copyright 2003-2009 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: css.tag,v 1.9 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag css Order   name
 UserTag css addAttr
@@ -122,7 +120,7 @@ sub {
 			or logError("Error writing CSS file %s, returning in page", $fn);
 	}
 
-	return qq{<link rel="stylesheet" href="$url">}  if $success;
+	return qq{<link rel="stylesheet" href="$url"$extra>} if $success;
 	return qq{<style type="text/css">\n$css</style>};
 }
 EOR
