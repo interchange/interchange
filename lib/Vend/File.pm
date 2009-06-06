@@ -1,7 +1,5 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.32 2009-04-29 05:08:13 mheins Exp $
-# 
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -61,7 +59,7 @@ use File::Path;
 use File::Copy;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = '3.0';
 
 sub writefile {
     my($file, $data, $opt) = @_;

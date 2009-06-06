@@ -1,7 +1,5 @@
 # Vend::Payment::Signio - Interchange support for Payflow Pro SDK versions 2 and 3
 #
-# $Id: Signio.pm,v 2.20 2009-03-18 01:59:33 jon Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #

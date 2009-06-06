@@ -1,7 +1,5 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.14 2007-08-09 13:40:55 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 
@@ -23,7 +21,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = '3.0';
 
 =head1 NAME
 
@@ -60,7 +58,7 @@ Mike Heins <mikeh@perusion.net>
 
 =head1 CREDITS
 
-    Jon Jensen <jon@swelter.net>
+Jon Jensen <jon@endpoint.com>
 
 =cut
 

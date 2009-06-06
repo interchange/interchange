@@ -1,7 +1,5 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.17 2007-08-09 13:40:53 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -111,7 +109,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = '3.0';
 
 $Force = 0;
 $History = 0;

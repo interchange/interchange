@@ -1,7 +1,5 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.112 2009-04-27 10:00:17 racke Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
@@ -26,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.112 $, 10);
+$VERSION = '3.0';
 
 use POSIX qw(strftime);
 use Vend::Util;

@@ -1,7 +1,5 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.35 2008-07-07 18:15:07 docelic Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -30,7 +28,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = '3.0';
 
 use strict;
 no warnings qw(uninitialized numeric);

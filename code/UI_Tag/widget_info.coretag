@@ -1,5 +1,5 @@
 UserTag widget-info	Order	name attribute
-UserTag widget-info	Version	$Revision: 1.1 $
+UserTag widget-info	Version	3.0
 UserTag	widget-info	Routine	<<EOR
 my %wi_attr = ((map { (lc $_, $_) } qw(
 	Widget

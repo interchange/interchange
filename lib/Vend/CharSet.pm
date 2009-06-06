@@ -1,7 +1,5 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.11 2009-03-22 19:32:31 mheins Exp $
-#
 # Copyright (C) 2008 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
 #

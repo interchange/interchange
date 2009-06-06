@@ -1,7 +1,5 @@
 # Vend::Payment::EFSNet - Interchange EFSNet support
 #
-# $Id: EFSNet.pm,v 1.7 2009-03-16 19:34:00 jon Exp $
-#
 # Connection routine for Concord EFSNet ( http://www.concordefsnet.com/ )
 #
 # Based on AuthorizeNet.pm. Modified for EFSNet by Chris Wenham of Synesmedia, Inc.

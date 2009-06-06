@@ -7,7 +7,7 @@ NAME
        change
 
 VERSION
-       $Revision: 1.4 $
+       3.0
 
 SYNOPSIS
 	 <Location /foundation>

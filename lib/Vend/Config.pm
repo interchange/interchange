@@ -1,7 +1,5 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.246 2009-04-16 16:58:31 mheins Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -54,7 +52,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 
-$VERSION = substr(q$Revision: 2.246 $, 10);
+$VERSION = '3.0';
 
 my %CDname;
 my %CPname;

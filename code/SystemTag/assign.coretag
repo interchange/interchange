@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: assign.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag assign              addAttr
 UserTag assign              PosNumber    0
-UserTag assign              Version      $Revision: 1.5 $
+UserTag assign              Version      3.0
 UserTag assign              Routine      <<EOR
 my %_assignable = (qw/
 				salestax	1

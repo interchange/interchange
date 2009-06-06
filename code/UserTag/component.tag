@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: component.tag,v 1.10 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag component Order     component
 UserTag component addAttr
 UserTag component NoReparse 1
-UserTag component Version   $Revision: 1.10 $
+UserTag component Version   3.0
 UserTag component Routine   <<EOR
 sub {
 	my ($name, $opt) = @_;

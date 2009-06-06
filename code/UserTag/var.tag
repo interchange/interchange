@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: var.tag,v 1.12 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag var Order         name global filter
 UserTag var Interpolate   1
-UserTag var Version       $Revision: 1.12 $
+UserTag var Version       3.0
 UserTag var Routine       <<EOR
 sub {
 	my ($key, $global, $filter) = @_;

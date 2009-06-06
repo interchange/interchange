@@ -11,7 +11,7 @@ require 5.008_005;
 
 use vars qw/$opt_c $opt_d $opt_h $VERSION/;
 
-$VERSION = q{$Id};
+$VERSION = '3.0';
 
 my $prog = $0;
 $prog =~ s:.*/::;

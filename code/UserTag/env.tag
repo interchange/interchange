@@ -5,13 +5,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: env.tag,v 1.11 2007-03-30 23:40:57 pajamian Exp $
 
 Usertag env Order      arg
 Usertag env PosNumber  1
 UserTag env attrAlias  name arg
-UserTag env Version    $Revision: 1.11 $
+UserTag env Version    3.0
 Usertag env Routine    <<EOR
 sub {
 	my $arg = shift;

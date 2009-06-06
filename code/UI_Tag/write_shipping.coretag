@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: write_shipping.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag write-shipping Order      file
 UserTag write-shipping PosNumber  1
 UserTag write-shipping addAttr
-UserTag write-shipping Version    $Revision: 1.6 $
+UserTag write-shipping Version    3.0
 UserTag write-shipping Routine    <<EOR
 sub {
 	my ($file, $opt) = @_;

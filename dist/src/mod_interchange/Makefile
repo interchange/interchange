@@ -1,6 +1,4 @@
 #
-#	$Id: Makefile,v 2.2 2003-01-09 04:54:26 kwalsh Exp $
-#
 #	mod_interchange makefile
 #
 APXS=apxs

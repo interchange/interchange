@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: display.coretag,v 1.14 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag display Order       table column key
 UserTag display attrAlias   base table
@@ -17,5 +15,5 @@ UserTag display addAttr     1
 UserTag display Interpolate 1
 UserTag display posNumber   3
 Require Module  Vend::Table::Editor
-UserTag display Version     $Revision: 1.14 $
+UserTag display Version     3.0
 UserTag display MapRoutine  Vend::Table::Editor::display

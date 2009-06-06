@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: mm_value.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag mm-value Order     field table
 UserTag mm-value addAttr
-UserTag mm-value Version   $Revision: 1.4 $
+UserTag mm-value Version   3.0
 UserTag mm-value Routine   <<EOR
 sub {
 	my($field, $table, $opt, $text) = @_;

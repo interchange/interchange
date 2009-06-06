@@ -1,7 +1,5 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.15 2007-08-09 13:40:56 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -26,7 +24,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common qw(!config !columns);
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = '3.0';
 use strict;
 
 # 0: column names

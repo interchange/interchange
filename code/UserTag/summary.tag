@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: summary.tag,v 1.5 2007-03-30 23:40:57 pajamian Exp $
 
 # [summary  amount=n.nn
 #           name=label*
@@ -21,7 +19,7 @@
 UserTag summary Order     amount
 UserTag summary PosNumber 1
 UserTag summary addAttr
-UserTag summary Version   $Revision: 1.5 $
+UserTag summary Version   3.0
 UserTag summary Routine   <<EOF
 sub {
     my ($amount, $opt) = @_;

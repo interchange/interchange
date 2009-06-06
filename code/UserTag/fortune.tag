@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: fortune.tag,v 1.7 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag fortune Order   short
 UserTag fortune addAttr
-UserTag fortune Version $Revision: 1.7 $
+UserTag fortune Version 3.0
 UserTag fortune Routine <<EOR
 sub {
 	my ($short, $opt) = @_;

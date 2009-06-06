@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version. See the LICENSE file for details.
-# 
-# $Id: sha1.filter,v 1.1 2007-07-24 02:24:43 jon Exp $
 
 CodeDef sha1 Filter
 CodeDef sha1 Description sha1 sum

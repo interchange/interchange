@@ -4,14 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: title_bar.tag,v 1.4 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag title-bar Order        width size color
 UserTag title-bar PosNumber    3
 UserTag title-bar Interpolate  1
 UserTag title-bar HasEndTag    1
-UserTag title-bar Version      $Revision: 1.4 $
+UserTag title-bar Version      3.0
 UserTag title-bar Routine      <<EOR
 sub {
 	my ($width, $size, $color, $text) = @_;

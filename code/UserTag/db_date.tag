@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: db_date.tag,v 1.4 2007-03-30 23:40:56 pajamian Exp $
 
 # [db-date table format]
 #
@@ -15,7 +13,7 @@
 #
 UserTag  db-date  Order     table format
 UserTag  db-date  PosNumber 2
-UserTag  db-date  Version   $Revision: 1.4 $
+UserTag  db-date  Version   3.0
 UserTag  db-date  Routine   <<EOF
 sub {
     my ($db, $format) = @_;

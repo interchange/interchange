@@ -1,7 +1,5 @@
 # Vend::Payment::NetBilling - Interchange NetBilling support
 #
-# $Id: NetBilling.pm,v 1.6 2007-08-09 13:40:55 pajamian Exp $
-#
 # Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
@@ -44,7 +42,7 @@ package Vend::Payment::NetBilling;
 
 =head1 Interchange NetBilling Support
 
-Vend::Payment::NetBilling $Revision: 1.6 $
+Vend::Payment::NetBilling
 
 =head1 SYNOPSIS
 

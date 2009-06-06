@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: file_navigator.coretag,v 1.17 2007-12-21 03:32:43 mheins Exp $
 
 UserTag file-navigator Order    mask
 UserTag file-navigator addAttr
-UserTag file-navigator Version  $Revision: 1.17 $
+UserTag file-navigator Version  3.0
 UserTag file-navigator Routine  <<EOR
 use vars qw/$CGI $Session $Tag $Scratch/;
 eval {

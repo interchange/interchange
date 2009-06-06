@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: ynzero.widget,v 1.1 2007-12-02 15:45:04 mheins Exp $
 
 CodeDef ynzero Widget 1
 CodeDef ynzero attrDefault no_value 0

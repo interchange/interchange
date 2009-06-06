@@ -1,7 +1,5 @@
 # Vend::Payment::Sage - Interchange Sage Support
 #
-# $Id: Sage.pm,v 1.2 2009-03-16 19:34:01 jon Exp $
-#
 # Copyright (C) 2008 Spinlock Solutions, http://www.spinlocksolutions.com/
 # Copyright (C) 2008 Prince Services, http://www.princeinternet.com/
 # Copyright (C) 2008 Interchange Development Group, http://www.icdevgroup.org/

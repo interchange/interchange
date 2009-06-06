@@ -4,10 +4,8 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: debug.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag debug  hasEndTag
 UserTag debug  Interpolate
-UserTag debug  Version      $Revision: 1.4 $
+UserTag debug  Version      3.0
 UserTag debug  MapRoutine   Vend::Util::logDebug

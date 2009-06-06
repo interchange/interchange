@@ -4,15 +4,13 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: process.coretag,v 1.13 2007-10-31 11:25:53 kwalsh Exp $
 
 UserTag process-target Alias     process
 UserTag process-order  Alias     process
 
 UserTag process        Order     target secure
 UserTag process        addAttr
-UserTag process        Version   $Revision: 1.13 $
+UserTag process        Version   3.0
 UserTag process        Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {

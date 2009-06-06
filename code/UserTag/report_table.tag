@@ -1,18 +1,13 @@
 # Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2003 Chris Wenham of Synesmedia, Inc. - www.synesmedia.com
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: report_table.tag,v 1.5 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag report-table addAttr
 UserTag report-table Documentation <<EOD
-
-By Chris Wenham of Synesmedia, Inc. - www.synesmedia.com
-This software is distributed under the terms of the GNU Public License.
-Version 1.2, November 20, 2003.
 
 Generate an HTML table based on the results of a query, with bells and
 whistles. Can do horizontal (colspan) and vertical (rowspan) subheaders,
@@ -341,7 +336,7 @@ To get a blank column:
 
 
 EOD
-UserTag report-table Version $Revision: 1.5 $
+UserTag report-table Version 3.0
 UserTag report-table Routine <<EOR
 sub prep_cell {
 	my ($def,$datum,$linecount,$record) = @_;

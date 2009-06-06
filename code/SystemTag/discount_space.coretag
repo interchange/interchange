@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: discount_space.coretag,v 1.6 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag discount_space  Documentation <<EOF
 The discount-space is rather equivalent to the values-space functionality.
@@ -29,7 +27,7 @@ EOF
 UserTag discount_space  order      name
 UserTag discount_space  AttrAlias  space   name
 UserTag discount_space  AddAttr
-UserTag discount_space  Version    $Revision: 1.6 $
+UserTag discount_space  Version    3.0
 UserTag discount_space  Routine    <<EOF
 sub {
 	my ($namespace, $opt) = @_;

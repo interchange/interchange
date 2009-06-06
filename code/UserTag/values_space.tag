@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: values_space.tag,v 1.5 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag values-space Order   name
 UserTag values-space addAttr
-UserTag values-space Version $Revision: 1.5 $
+UserTag values-space Version 3.0
 UserTag values-space Routine <<EOR
 sub {
 	my ($name, $opt) = @_;

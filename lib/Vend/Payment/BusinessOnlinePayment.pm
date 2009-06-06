@@ -1,8 +1,6 @@
 # Vend::Payment::BusinessOnlinePayment
 # Interchange wrapper for Business::OnlinePayment modules
 #
-# $Id: BusinessOnlinePayment.pm,v 1.2 2009-03-22 13:06:02 mheins Exp $
-#
 # Copyright (C) 2004 Ivan Kohler.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it

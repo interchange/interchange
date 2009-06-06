@@ -1,7 +1,5 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.27 2008-09-06 05:22:56 mheins Exp $
-#
 # Adapted for use with Interchange from Search::TextSearch
 #
 # Copyright (C) 2002-2007 Interchange Development Group
@@ -27,7 +25,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = '3.0';
 
 use Search::Dict;
 use strict;

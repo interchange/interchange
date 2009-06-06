@@ -1,5 +1,3 @@
-# $Id: test.pl,v 2.6 2008-05-06 17:12:18 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify

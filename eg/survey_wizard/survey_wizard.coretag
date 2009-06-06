@@ -8,7 +8,7 @@
 UserTag  survey-wizard  Order     name
 UserTag  survey-wizard  AddAttr
 UserTag  survey-wizard  HasEndTag
-UserTag  survey-wizard  Version   $Revision: 1.3 $
+UserTag  survey-wizard  Version   3.0
 UserTag  survey-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;

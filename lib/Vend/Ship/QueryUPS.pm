@@ -1,7 +1,5 @@
 # Vend::Ship::QueryUPS - Interchange shipping code
 # 
-# $Id: QueryUPS.pm,v 1.8 2008-05-14 16:21:02 mheins Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #

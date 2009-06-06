@@ -1,7 +1,5 @@
 # Vend::Accounting - Interchange payment processing routines
 #
-# $Id: Accounting.pm,v 2.3 2007-03-30 11:39:43 pajamian Exp $
-#
 # Copyright (C) 2002 Mike Heins, <mike@heins.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +19,7 @@
 
 package Vend::Accounting;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = '3.0';
 
 use Vend::Util;
 use LWP::UserAgent;

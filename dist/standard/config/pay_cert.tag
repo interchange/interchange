@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: pay_cert.tag,v 1.4 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag pay-cert Order code
 UserTag pay-cert addAttr

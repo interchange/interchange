@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: order.coretag,v 1.7 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag order               Order        code quantity
 UserTag order               attrAlias    item code
@@ -18,7 +16,7 @@ UserTag order               attrAlias    href page
 UserTag order               attrAlias    variant mv_sku
 UserTag order               addAttr
 UserTag order               PosNumber    2
-UserTag order               Version      $Revision: 1.7 $
+UserTag order               Version      3.0
 UserTag order               Routine      <<EOR
 # Returns an href to place an order for the product PRODUCT_CODE.
 # If AlwaysSecure is set, goes by the page accessed, otherwise 

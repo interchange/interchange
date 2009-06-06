@@ -1,7 +1,5 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 2.16 2008-03-25 17:13:21 jon Exp $
-#
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -31,7 +29,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = '3.0';
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;

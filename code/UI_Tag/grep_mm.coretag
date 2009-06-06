@@ -4,14 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: grep_mm.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag grep-mm Order        function
 UserTag grep-mm addAttr
 UserTag grep-mm Interpolate
 UserTag grep-mm hasEndTag
-UserTag grep-mm Version      $Revision: 1.4 $
+UserTag grep-mm Version      3.0
 UserTag grep-mm Routine      <<EOR
 sub {
 	my($func, $opt, $text) = @_;

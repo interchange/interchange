@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: quick_table.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag quick_table Order        border
 UserTag quick_table HasEndTag
 UserTag quick_table Interpolate
-UserTag quick_table Version      $Revision: 1.4 $
+UserTag quick_table Version      3.0
 UserTag quick_table Routine      <<EOR
 sub {
 	my ($border,$input) = @_;

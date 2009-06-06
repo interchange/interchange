@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: run_profile.coretag,v 1.7 2009-01-26 09:49:11 racke Exp $
 
 UserTag run-profile Order   check cgi profile name
 UserTag run-profile addAttr
-UserTag run-profile Version $Revision: 1.7 $
+UserTag run-profile Version 3.0
 UserTag run-profile Routine <<EOR
 sub {
 	my ($check, $cgi, $profile, $name, $opt) = @_;
@@ -37,14 +35,14 @@ sub {
 	    # check scratch for profile if none specified
 	    $profile = $Scratch->{"profile_$check"} unless $profile;
 
-    #::logDebug("PROFILE(" . $Tag->var('MV_PAGE',1) . "):***$profile***");
+#::logDebug("PROFILE(" . $Tag->var('MV_PAGE',1) . "):***$profile***");
 	    # test passes if no profile exists
 	    return 1 if ! $profile;
 
 	    $opt->{no_error} = 1 unless defined $opt->{no_error};
 
 	    $pname = 'tmp_profile.' . $Vend::Session->{id};
-    #Debug("running check $check, pname=$pname profile=$profile");
+#::logDebug("running check $check, pname=$pname profile=$profile");
 	    $profile .= "\n&fatal=1\n";
 	    $profile = "&noerror=1\n$profile" if $opt->{no_error};
 	    $profile = "&overwrite=1\n$profile" if $opt->{overwrite_error};

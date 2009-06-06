@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: email_only.oc,v 1.5 2009-01-28 07:38:26 racke Exp $
 
 CodeDef email_only OrderCheck 1
 CodeDef email_only Description Email address

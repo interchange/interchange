@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: auto_wizard.coretag,v 1.20 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag  auto-wizard  Order     name
 UserTag  auto-wizard  AddAttr
 UserTag  auto-wizard  HasEndTag
-UserTag  auto-wizard  Version   $Revision: 1.20 $
+UserTag  auto-wizard  Version   3.0
 UserTag  auto-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;

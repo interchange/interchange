@@ -1,7 +1,5 @@
 # Vend::Payment::Getitcard - Interchange Getitcard support
 #
-# $Id: Getitcard.pm,v 1.2 2009-03-16 19:34:01 jon Exp $
-#
 # Copyright (C) 2007,2008,2009 Interchange Development Group
 # Copyright (C) 2007,2008,2009 Stefan Hornburg (Racke) <racke@linuxia.de>
 # Copyright (C) 2007,2008 Jure Kodzoman (Yure) <jure@tenalt.com>

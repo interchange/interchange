@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: base_url.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
 
-UserTag base-url Version $Revision: 1.4 $
+UserTag base-url Version 3.0
 UserTag base-url Routine sub { return $Vend::Cfg->{VendURL} }

@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: isbn.oc,v 1.2 2008-07-11 08:37:28 racke Exp $
 
 CodeDef isbn OrderCheck 1
 CodeDef isbn Description ISBN-10/ISBN-13 check digit verification

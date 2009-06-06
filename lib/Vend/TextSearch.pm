@@ -1,7 +1,5 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.18 2008-07-11 12:07:55 racke Exp $
-#
 # Adapted for use with Interchange from Search::TextSearch
 #
 # Copyright (C) 2002-2008 Interchange Development Group
@@ -29,7 +27,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = '3.0';
 
 use Search::Dict;
 use strict;

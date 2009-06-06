@@ -1,7 +1,5 @@
 #define	MODULE_VERSION	"mod_interchange/1.33"
 /*
- *	$Id: mod_interchange.c,v 2.11 2007-03-30 11:39:43 pajamian Exp $
- *
  *	Apache Module implementation of the Interchange application server's
  *	link programs.
  *

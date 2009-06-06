@@ -1,7 +1,5 @@
 # Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
 #
-# $Id: PayflowPro.pm,v 1.2 2009-03-20 15:44:59 markj Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group and others
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
@@ -16,6 +14,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Payment::PayflowPro;
+$VERSION = '3.0';
 
 =head1 NAME
 
@@ -444,7 +443,7 @@ sub payflowpro {
         'X-VPS-Timeout'                   => $timeout,
         'X-VPS-VIT-Client-Architecture'   => $Config{archname},
         'X-VPS-VIT-Client-Type'           => 'Perl',
-        'X-VPS-VIT-Client-Version'        => $VERSION,
+        'X-VPS-VIT-Client-Version'        => $Vend::Payment::PayflowPro::VERSION,
         'X-VPS-VIT-Integration-Product'   => 'Interchange',
         'X-VPS-VIT-Integration-Version'   => $::VERSION,
         'X-VPS-VIT-OS-Name'               => $Config{osname},

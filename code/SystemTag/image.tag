@@ -4,14 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: image.tag,v 1.24 2008-06-22 02:53:11 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   $Revision: 1.24 $
+UserTag image Version   3.0
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;

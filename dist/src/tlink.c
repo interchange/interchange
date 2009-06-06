@@ -2,8 +2,6 @@
  * tlink.c: runs as a CGI program and passes request to Interchange
  *          server via TCP/IP
  *
- * $Id: tlink.c,v 2.8 2008-12-31 01:26:00 mheins Exp $
- *
  * Copyright (C) 2005-2007 Interchange Development Group,
  * http://www.icdevgroup.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.

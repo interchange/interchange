@@ -1,7 +1,5 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.23 2009-03-20 22:15:56 markj Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -23,7 +21,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = '3.0';
 
 @ISA = qw(Exporter);
 

@@ -1,7 +1,5 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.20 2009-03-22 19:32:31 mheins Exp $
-#
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -35,7 +33,7 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 }
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = '3.0';
 
 sub new {
 	my ($class, $obj) = @_;

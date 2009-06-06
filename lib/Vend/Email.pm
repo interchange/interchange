@@ -1,7 +1,5 @@
 # Vend::Email - Handle Interchange email functions
 # 
-# $Id: Email.pm,v 1.11 2007-12-28 11:47:51 racke Exp $
-#
 # Copyright (C) 2007 Interchange Development Group
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -63,7 +61,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = '3.0';
 
 
 ###########################################################################

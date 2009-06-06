@@ -3,8 +3,6 @@
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 2.6 2007-08-09 13:40:56 pajamian Exp $
-#
 # Copyright 2002-2007 Interchange Development Group
 # Copyright 1999-2002 by Stefan Hornburg <racke@linuxia.de>
 #

@@ -4,15 +4,13 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: version.coretag,v 1.15 2007-08-05 08:01:03 kwalsh Exp $
 
 UserTag version Order      extended
 UserTag version attrAlias  module_test modtest
 UserTag version attrAlias  moduletest modtest
 UserTag version attrAlias  require modtest
 UserTag version addAttr
-UserTag version Version    $Revision: 1.15 $
+UserTag version Version    3.0
 UserTag version Routine    <<EOR
 sub {
 	return $::VERSION unless shift;

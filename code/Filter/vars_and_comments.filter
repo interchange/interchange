@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: vars_and_comments.filter,v 1.5 2007-03-30 23:40:45 pajamian Exp $
 
 CodeDef vars_and_comments Filter
 CodeDef vars_and_comments Description Vars/comments

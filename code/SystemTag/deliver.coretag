@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: deliver.coretag,v 1.8 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag deliver Order     type
 UserTag deliver HasEndTag
 UserTag deliver addAttr
-UserTag deliver Version   $Revision: 1.8 $
+UserTag deliver Version   3.0
 UserTag deliver Routine   <<EOR
 sub {
 	my ($type, $opt, $body) = @_;

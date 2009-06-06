@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: history_scan.tag,v 1.20 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
-UserTag history-scan Version $Revision: 1.20 $
+UserTag history-scan Version 3.0
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1

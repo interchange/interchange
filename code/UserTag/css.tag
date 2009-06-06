@@ -7,7 +7,7 @@
 
 UserTag css Order   name
 UserTag css addAttr
-UserTag css Version $Revision: 1.9 $
+UserTag css Version 3.0
 UserTag css Routine <<EOR
 sub {
 	my ($name, $opt) = @_;

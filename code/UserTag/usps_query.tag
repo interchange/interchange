@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: usps_query.tag,v 1.9 2009-03-06 01:38:25 markj Exp $
 
 UserTag  usps-query  Order   service weight
 UserTag  usps-query  addAttr
-UserTag  usps-query  Version $Revision: 1.9 $
+UserTag  usps-query  Version 3.0
 UserTag  usps-query  Routine <<EOR
 
 sub {

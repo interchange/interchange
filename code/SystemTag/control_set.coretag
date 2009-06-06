@@ -4,14 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: control_set.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag control-set         Order        index
 UserTag control-set         addAttr
 UserTag control-set         hasEndTag
 UserTag control-set         PosNumber    1
-UserTag control-set         Version      $Revision: 1.4 $
+UserTag control-set         Version      3.0
 UserTag control-set         Routine      <<EOR
 # Batch sets a set of controls without affecting Scratch
 # Increments the index afterwards unless index is defined

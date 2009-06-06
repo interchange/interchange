@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: import_fields.coretag,v 1.15 2007-08-03 18:17:24 racke Exp $
 
 UserTag import_fields Order   table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.15 $
+UserTag import_fields Version 3.0
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;

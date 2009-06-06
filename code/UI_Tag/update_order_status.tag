@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: update_order_status.tag,v 1.13 2008-06-26 12:43:44 mheins Exp $
 
 UserTag update-order-status Order   order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Revision: 1.13 $
+UserTag update-order-status Version 3.0
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;

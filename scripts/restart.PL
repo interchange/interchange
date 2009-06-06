@@ -3,8 +3,6 @@
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 2.7 2008-04-27 12:57:50 mheins Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #

@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: ups_query.tag,v 1.12 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag  ups-query  Order    mode origin zip weight country
 UserTag  ups-query  addAttr
-UserTag  ups-query  Version  $Revision: 1.12 $
+UserTag  ups-query  Version  3.0
 UserTag  ups-query  Routine  <<EOR
 sub {
  	my( $mode, $origin, $zip, $weight, $country, $opt) = @_;

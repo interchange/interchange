@@ -1,6 +1,5 @@
 # Vend::Payment::Protx2 - Interchange Protx Direct payment support
 #
-# $Id: Protx2.pm,v 1.2 2008-04-10 23:44:45 jon Exp $
 # Based on Protx2.pm, v 2.1.2, July 2007
 #
 # Copyright (C) 2008 Interchange Development Group

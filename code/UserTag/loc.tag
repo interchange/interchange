@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: loc.tag,v 1.7 2007-03-30 23:40:57 pajamian Exp $
 
 # [loc locale*] message [/loc]
 #
@@ -16,7 +14,7 @@ UserTag loc Order       locale
 UserTag l   Alias       loc
 UserTag loc hasEndTag   1
 UserTag loc Interpolate 1
-UserTag loc Version     $Revision: 1.7 $
+UserTag loc Version     3.0
 UserTag loc Routine     <<EOF
 sub {
     my ($locale, $message) = @_;

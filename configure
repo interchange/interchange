@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# $Id: configure,v 2.23 2008-05-17 14:39:48 jon Exp $
-
 cat <<EOF
 
  Interchange

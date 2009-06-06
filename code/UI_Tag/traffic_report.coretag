@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: traffic_report.coretag,v 1.6 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag traffic-report Order   save
 UserTag traffic-report addAttr
-UserTag traffic-report Version $Revision: 1.6 $
+UserTag traffic-report Version 3.0
 UserTag traffic-report Routine <<EOR
 sub {
 	my ($save, $opt) = @_;

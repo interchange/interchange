@@ -4,9 +4,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: set_cookie.coretag,v 1.7 2008-09-13 04:28:56 jon Exp $
 
 UserTag set-cookie          Order        name value expire domain path secure
-UserTag set-cookie          Version      $Revision: 1.7 $
+UserTag set-cookie          Version      3.0
 UserTag set-cookie          MapRoutine   Vend::Util::set_cookie

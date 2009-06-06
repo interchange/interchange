@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: msg.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag msg                 Order        key
 UserTag msg                 addAttr
@@ -13,7 +11,7 @@ UserTag msg                 attrAlias    lc inline
 UserTag msg                 hasEndTag
 UserTag msg                 Interpolate
 UserTag msg                 PosNumber    1
-UserTag msg                 Version      $Revision: 1.4 $
+UserTag msg                 Version      3.0
 UserTag msg                 Routine      <<EOR
 sub {
 	my ($key, $opt, $body) = @_;

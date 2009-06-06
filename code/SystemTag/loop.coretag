@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: loop.coretag,v 1.4 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag loop                Order        list
 UserTag loop                addAttr
@@ -13,5 +11,5 @@ UserTag loop                attrAlias    args list
 UserTag loop                attrAlias    arg list
 UserTag loop                hasEndTag
 UserTag loop                PosNumber    1
-UserTag loop                Version      $Revision: 1.4 $
+UserTag loop                Version      3.0
 UserTag loop                MapRoutine   Vend::Interpolate::tag_loop_list

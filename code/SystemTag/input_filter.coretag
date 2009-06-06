@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: input_filter.coretag,v 1.5 2007-03-30 23:40:49 pajamian Exp $
 
 UserTag input-filter        Order        name
 UserTag input-filter        addAttr
@@ -14,5 +12,5 @@ UserTag input-filter        attrAlias    variable name
 UserTag input-filter        attrAlias    ops op
 UserTag input-filter        hasEndTag
 UserTag input-filter        PosNumber    1
-UserTag input-filter        Version      $Revision: 1.5 $
+UserTag input-filter        Version      3.0
 UserTag input-filter        MapRoutine   Vend::Interpolate::input_filter

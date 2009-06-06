@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: forum.tag,v 1.6 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag forum-userlink PosNumber 0
 UserTag forum-userlink addAttr 
-UserTag forum-userlink Version   $Revision: 1.6 $
+UserTag forum-userlink Version   3.0
 UserTag forum-userlink Routine   <<EOR
 sub {
 	my ($row) = @_;
@@ -24,7 +22,7 @@ EOR
 UserTag forum Order     top
 UserTag forum addAttr 
 UserTag forum hasEndTag 
-UserTag forum Version   $Revision: 1.6 $
+UserTag forum Version   3.0
 UserTag forum Routine   <<EOR
 my @uls;
 my $lastlevel;

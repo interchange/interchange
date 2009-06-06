@@ -4,13 +4,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: bar_button.tag,v 1.5 2007-03-30 23:40:56 pajamian Exp $
 
 UserTag bar-button Order     page current
 UserTag bar-button PosNumber 2
 UserTag bar-button HasEndTag 1
-UserTag bar-button Version   $Revision: 1.5 $
+UserTag bar-button Version   3.0
 UserTag bar-button Routine   <<EOR
 sub {
 	use strict;

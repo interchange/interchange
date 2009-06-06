@@ -4,10 +4,8 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: meta_record.coretag,v 1.5 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag meta-record Order      item view source
 UserTag meta-record attrAlias  table item
-UserTag meta-record Version    $Revision: 1.5 $
+UserTag meta-record Version    3.0
 UserTag meta-record MapRoutine Vend::Table::Editor::meta_record

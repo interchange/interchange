@@ -1,7 +1,5 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.11 2009-03-16 19:34:01 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #

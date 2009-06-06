@@ -4,12 +4,10 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: export_database.coretag,v 1.4 2007-03-30 23:40:54 pajamian Exp $
 
 UserTag export-database Order    table file type
 UserTag export-database addAttr
-UserTag export-database Version  $Revision: 1.4 $
+UserTag export-database Version  3.0
 UserTag export-database Routine  <<EOR
 sub {
 		my($table, $file, $type, $opt) = @_;

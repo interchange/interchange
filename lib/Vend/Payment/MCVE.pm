@@ -1,7 +1,5 @@
 # Vend::Payment::MCVE - Interchange MCVE support
 #
-# $Id: MCVE.pm,v 1.6 2009-03-16 19:34:01 jon Exp $
-#
 # Author: Tom Friedel (tom@readyink.com) for Carlc Internet Services (http://www.carlc.com)
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,7 +20,7 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = '3.0';
 
 =head1 NAME
 

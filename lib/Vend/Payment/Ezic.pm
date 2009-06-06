@@ -1,7 +1,5 @@
 # Vend::Payment::Ezic - Interchange Ezic support
 #
-# $Id: Ezic.pm,v 1.6 2009-03-16 19:34:00 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -13,6 +11,10 @@
 #   Paul Delys <paul@gi.alaska.edu>
 #  Edited by Ray Desjardins <ray@dfwmicrotech.com>
 #  
+# Connection routine for Ezic version 3 using the 'ADC Direct Response'
+# method.
+# Reworked extensively to support new Interchange payment stuff by Mike Heins
+#
 #  Reworked for EziC "Native Direct Mode v.3 (SAS) Channel" support by
 #  	Mark Lipscombe <markl@gasupnow.com>
 #
@@ -30,13 +32,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
-# Connection routine for Ezic version 3 using the 'ADC Direct Response'
-# method.
-# Reworked extensively to support new Interchange payment stuff by Mike Heins
+
 package Vend::Payment::Ezic;
+
 =head1 Interchange Ezic Support
 
-Vend::Payment::Ezic $Revision: 1.6 $
+Vend::Payment::Ezic
 
 =head1 SYNOPSIS
 

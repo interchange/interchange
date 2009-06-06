@@ -1,7 +1,5 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.13 2007-08-09 13:40:53 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
 #
@@ -69,7 +67,7 @@ no warnings qw(uninitialized numeric);
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = '3.0';
 
 
 sub new
