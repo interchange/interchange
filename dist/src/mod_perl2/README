@@ -1,293 +1,280 @@
-Interchange::Link(3)  User Contributed Perl Documentation Interchange::Link(3)
-
-
-
 NAME
-       Interchange::Link -- mod_perl 1.99/2.0 module for linking to Inter-
-       change
-
-VERSION
-       $Revision: 1.4 $
+    Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 SYNOPSIS
-	 <Location /foundation>
-	   SetHandler perl-script
-	    PerlResponseHandler	 Interchange::Link
-	    PerlOptions +GlobalRequest
-	    PerlSetVar InterchangeServer /var/run/interchange/socket
-	    PerlSetVar OrdinaryFileList "/foundation/images/ /foundation/dl/"
-	 </Location>
+    <Location /foundation>
+        SetHandler perl-script
+        PerlResponseHandler  Interchange::Link
+        PerlOptions +GlobalRequest
+        PerlSetVar InterchangeServer /var/run/interchange/socket
+        PerlSetVar OrdinaryFileList "/foundation/images/ /foundation/dl/"
+    </Location>
 
 DESCRIPTION
-       Interchange::Link is designed to replace the vlink and tlink programs
-       that come with Interchange. The Interchange link protocol has been
-       implemented via an Apache mod_perl modules which saves us the (small)
-       overhead of the execution of a CGI program.
+    Interchange::Link is designed to replace the vlink and tlink programs
+    that come with Interchange. The Interchange link protocol has been
+    implemented via an Apache mod_perl modules which saves us the (small)
+    overhead of the execution of a CGI program.
 
-       In addition, it will deliver downloadable files in a streaming fashion
-       without keeping Interchange open, which cuts overhead dramatically for
-       large downloadable files. See FileDeliveryBase.
+    In addition, it will deliver downloadable files in a streaming fashion
+    without keeping Interchange open, which cuts overhead dramatically for
+    large downloadable files. See FileDeliveryBase.
 
-       Note that this module is not compatible with Apache 1.
+    Note that this module is not compatible with Apache 1.
 
 PREREQUISITES
-       You must have mod_perl 1.99 or higher installed on your Apache. On a
-       Red Hat-style Linux system, it is as simple as:
+    You must have mod_perl 1.99 or higher installed on your Apache. On a
+    Red Hat-style Linux system, it is as simple as:
 
-	   rpm -i mod_perl-1.99.XX-X.rpm
-	   service httpd restart
+        rpm -i mod_perl-1.99.XX-X.rpm
+        service httpd restart
 
-       Installation of mod_perl will vary from system to system. Consult the
-       mod_perl documentation. Sometimes it is as easy as
+    Installation of mod_perl will vary from system to system. Consult the
+    mod_perl documentation. Sometimes it is as easy as
 
-	   perl -MCPAN -e 'install ModPerl::Registry'
+        perl -MCPAN -e 'install ModPerl::Registry'
 
-       but often it is not.
+    but often it is not.
 
-       Usually you can download the package from http://perl.apache.org/ and
-       follow those instructions.
+    Usually you can download the package from http://perl.apache.org/ and
+    follow those instructions.
 
 INSTALLATION
-       You must specify that Apache use mod_perl, and you must tell it where
-       to find the Perl modules you want to use.
+    You must specify that Apache use mod_perl, and you must tell it where
+    to find the Perl modules you want to use.
 
-       On a Red Hat Linux system you might copy this file to
-       /usr/lib/httpd/perl/ via this procedure:
+    On a Red Hat Linux system you might copy this file to
+    /usr/lib/httpd/perl/ via this procedure:
 
-	   mkdir -p /usr/lib/httpd/perl/Interchange
-	   cp Link.pm /usr/lib/httpd/perl/Interchange
+        mkdir -p /usr/lib/httpd/perl/Interchange
+        cp Link.pm /usr/lib/httpd/perl/Interchange
 
-       If you have mod_perl2 1.999_21 or earlier, you should instead do:
+    If you have mod_perl2 1.999_21 or earlier, you should instead do:
 
-	   mkdir -p /usr/lib/httpd/perl/Interchange
-	   cp Link.pm.mod_perl-1.999_21_and_before /usr/lib/httpd/perl/Interchange
+        mkdir -p /usr/lib/httpd/perl/Interchange
+        cp Link.pm.mod_perl-1.999_21_and_before /usr/lib/httpd/perl/Interchange
 
-       Then you provide a startup script that tells mod_perl where its
-       libraries are:
+    Then you provide a startup script that tells mod_perl where its
+    libraries are:
 
-	   cd /usr/lib/httpd/perl
-	   echo "use lib qw(/usr/lib/httpd/perl);1;" > startup.pl
+        cd /usr/lib/httpd/perl
+        echo "use lib qw(/usr/lib/httpd/perl);1;" > startup.pl
 
-       Then you can put in your /etc/httpd/conf/httpd.conf:
+    Then you can put in your /etc/httpd/conf/httpd.conf:
 
-	   PerlModule Apache2
-	   PerlRequire /usr/lib/httpd/perl/startup.pl
+        PerlModule Apache2
+        PerlRequire /usr/lib/httpd/perl/startup.pl
 
-       Finally, you specify a location like:
+    Finally, you specify a location like:
 
-	 <Location /foundation>
-	   SetHandler perl-script
-	    PerlResponseHandler	 Interchange::Link
-	    PerlOptions +GlobalRequest
-		# Make sure you set SocketPerms to 0666 (or 0660 with appropriate
-		# setgid group ownership of the directory)
-	    PerlSetVar InterchangeServer /var/run/interchange/socket
-	    PerlSetVar OrdinaryFileList "/foundation/images/ /foundation/dl/"
-	 </Location>
+        <Location /foundation>
+            SetHandler perl-script
+            PerlResponseHandler  Interchange::Link
+            PerlOptions +GlobalRequest
+            # Make sure you set SocketPerms to 0666 (or 0660 with appropriate
+            # setgid group ownership of the directory)
+            PerlSetVar InterchangeServer /var/run/interchange/socket
+            PerlSetVar OrdinaryFileList "/foundation/images/ /foundation/dl/"
+        </Location>
 
-       Note: The Apache <Location> path should not contain a dot (.) or any
-       other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
+    Note: The Apache <Location> path should not contain a dot (.) or any
+    other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
 
-	   <Location /shop.name> is invalid, whereas:
-	   <Location /shop-name> is valid.
+        <Location /shop.name> is invalid, whereas:
+        <Location /shop-name> is valid.
 
-       The specifics of the configuration are discussed in the next section.
+    The specifics of the configuration are discussed in the next section.
 
 CONFIGURATION
-       The module understands directives set via the mod_perl "PerlSetVar"
-       directive.
+    The module understands directives set via the mod_perl "PerlSetVar"
+    directive.
 
-       InterchangeServer
-	   This specifies the way to contact the primary and possibly additio-
-	   nial Interchange servers. The InterchangeServer directive takes
-	   either a pathname to the Interchange UNIX socket or a host:port
-	   specification if you want to use INET mode.
+    InterchangeServer
+        This specifies the way to contact the primary and possibly additio-
+        nial Interchange servers. The InterchangeServer directive takes
+        either a pathname to the Interchange UNIX socket or a host:port
+        specification if you want to use INET mode.
 
-	   Normally this takes the form of:
+        Normally this takes the form of:
 
-		PerlSetVar InterchangeServer /var/run/interchange/socket
+            PerlSetVar InterchangeServer /var/run/interchange/socket
 
-	   Note that your file permissions for the socket file need to allow
-	   the Apache User uid to read and write it. This usually means "Sock-
-	   etPerms 0666" or in interchange.cfg.	 You can also do "SocketPerms
-	   0660" if you set the group of the containing directory to the
-	   Apache Group value, and change the directory permissions to enable
-	   the setgid bit. (That is accomplished with "chmod g+s <direc-
-	   tory>".)
+        Note that your file permissions for the socket file need to allow
+        the Apache User uid to read and write it. This usually means "Sock-
+        etPerms 0666" or in interchange.cfg. You can also do "SocketPerms
+        0660" if you set the group of the containing directory to the
+        Apache Group value, and change the directory permissions to enable
+        the setgid bit. (That is accomplished with "chmod g+s <directory>".)
 
-	   If you want to specify more than one so that a backup server can
-	   provide request support in case of failure:
+        If you want to specify more than one so that a backup server can
+        provide request support in case of failure:
 
-	       PerlSetVar InterchangeServer  "/var/run/interchange/socket 10.1.1.1:7786"
+            PerlSetVar InterchangeServer  "/var/run/interchange/socket 10.1.1.1:7786"
 
-	   The optional InterchangeServerBackup directive takes the same argu-
-	   ments, but should obviously point to a different Interchange server
-	   than the primary.  The InterchangeServerBackup directive is only of
-	   any use if you have multiple Interchange servers configured in a
-	   clustered environment.
+        The optional InterchangeServerBackup directive takes the same argu-
+        ments, but should obviously point to a different Interchange server
+        than the primary. The InterchangeServerBackup directive is only of
+        any use if you have multiple Interchange servers configured in a
+        clustered environment.
 
-	   If you want to randomly select from a series of clustered servers,
-	   do:
+        If you want to randomly select from a series of clustered servers,
+        do:
 
-	       PerlSetVar InterchangeServer "10.1.1.1:7786 10.1.1.2:7786 10.1.1.3:7786"
-	       PerlSetVar RandomServer 1
+            PerlSetVar InterchangeServer "10.1.1.1:7786 10.1.1.2:7786 10.1.1.3:7786"
+            PerlSetVar RandomServer 1
 
-	   Note: The Apache <Location> path should not contain a dot (.) or
-	   any other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
+        Note: The Apache <Location> path should not contain a dot (.) or
+        any other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
 
-	       <Location /shop.name> is invalid, whereas:
-	       <Location /shop-name> is valid.
+            <Location /shop.name> is invalid, whereas:
+            <Location /shop-name> is valid.
 
-	   Example of a UNIX mode local connection:
+        Example of a UNIX mode local connection:
 
-	       <Location /shop>
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar InterchangeServer /opt/interchange/etc/socket
-	       </Location>
+            <Location /shop>
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar InterchangeServer /opt/interchange/etc/socket
+            </Location>
 
-	   Example of INET mode local connection:
+        Example of INET mode local connection:
 
-	       <Location /shop>
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar InterchangeServer localhost:7786
-	       </Location>
+            <Location /shop>
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar InterchangeServer localhost:7786
+            </Location>
 
-	   UNIX mode local primary connection and INET mode remote backup con-
-	   nection:
+        UNIX mode local primary connection and INET mode remote backup
+    connection:
 
-	       <Location /shop>
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar InterchangeServer /opt/interchange/etc/socket
-	       PerlSetVar InterchangeServerBackup another.server.com:7786
-	       </Location>
+            <Location /shop>
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar InterchangeServer /opt/interchange/etc/socket
+                PerlSetVar InterchangeServerBackup another.server.com:7786
+            </Location>
 
-	   The default if not set is "127.0.0.1:7786".
+        The default if not set is "127.0.0.1:7786".
 
-       ConnectTries and ConnectRetryDelay
-	   The ConnectTries parameter specifies the number of connection
-	   attempts to make before giving up.  ConnectRetryDelay specifies the
-	   delay, in seconds, between each retry attempt.
+    ConnectTries and ConnectRetryDelay
+        The ConnectTries parameter specifies the number of connection
+        attempts to make before giving up. ConnectRetryDelay specifies the
+        delay, in seconds, between each retry attempt.
 
-	   The ConnectTries default is 10 and the ConnectRetryDelay default is
-	   2 seconds.  Here is an example:
+        The ConnectTries default is 10 and the ConnectRetryDelay default is
+        2 seconds. Here is an example:
 
-	       <Location /shop>
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar ConnectTries 10
-	       PerlSetVar ConnectRetryDelay 1
-	       </Location>
+            <Location /shop>
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar ConnectTries 10
+                PerlSetVar ConnectRetryDelay 1
+            </Location>
 
-       DropRequestList
-	   The DropRequestList allows a list of space-separated URI components
-	   to be specified.  If one of the list entries is found anywhere in
-	   the requested URI, the request will be dropped with a 404 (not
-	   found) error, without the request being passed to Interchange.
-	   This parameter is useful for blocking known Microsoft IIS attacks
-	   like "Code Red", so that we don't waste any more time processing
-	   the (bogus) requests than we have to.
+    DropRequestList
+        The DropRequestList allows a list of space-separated URI components
+        to be specified. If one of the list entries is found anywhere in
+        the requested URI, the request will be dropped with a 404 (not
+        found) error, without the request being passed to Interchange.
+        This parameter is useful for blocking known Microsoft IIS attacks
+        like "Code Red", so that we don't waste any more time processing
+        the (bogus) requests than we have to.
 
-	       <Location /shop>
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar DropRequestList "/default.ida /x.ida /cmd.exe /root.exe"
-	       </Location>
+            <Location /shop>
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar DropRequestList "/default.ida /x.ida /cmd.exe /root.exe"
+            </Location>
 
-       OrdinaryFileList
-	   The OrdinaryFileList allows a list of space-separated URI path com-
-	   ponents to be specified.  If one of the list entries is found at
-	   the start of any request then that request will not be passed to
-	   Interchange.	 Instead, the file will be directly served by Apache.
-	   For example:
+    OrdinaryFileList
+        The OrdinaryFileList allows a list of space-separated URI path com-
+        ponents to be specified. If one of the list entries is found at
+        the start of any request then that request will not be passed to
+        Interchange. Instead, the file will be directly served by Apache.
+        For example:
 
-	       <Location />
-	       SetHandler perl-script
-	       PerlResponseHandler Interchange::Link
-	       PerlSetVar OrdinaryFileList "/foundation/ /interchange-5/ /robots.txt"
-	       </Location>
+            <Location />
+                SetHandler perl-script
+                PerlResponseHandler Interchange::Link
+                PerlSetVar OrdinaryFileList "/foundation/ /interchange-5/ /robots.txt"
+            </Location>
 
-	   This will result in the following:
+        This will result in the following:
 
-	       www.example.com/index.html	   (handled by Interchange)
-	       www.example.com/ord/basket.html	   (handled by Interchange)
-	       www.example.com/foundation/images/somefile.gif (served by Apache)
-	       www.example.com/robots.txt	   (served by Apache)
+            www.example.com/index.html          (handled by Interchange)
+            www.example.com/ord/basket.html     (handled by Interchange)
+            www.example.com/foundation/images/somefile.gif  (served by Apache)
+            www.example.com/robots.txt          (served by Apache)
 
-	   You should add a trailing slash to directory names to prevent, for
-	   instance, "/images/foo.gif" from being confused with the likes of
-	   "/images.html".  If OrdinaryFileList was set to "/images" then both
-	   of those requests would be handled by Apache.  If OrdinaryFileList
-	   was set to "/images/" then "/images/foo.gif" would be handled by
-	   Apache and "/images.html" would be handled by Interchange.
+        You should add a trailing slash to directory names to prevent, for
+        instance, "/images/foo.gif" from being confused with the likes of
+        "/images.html". If OrdinaryFileList was set to "/images" then both
+        of those requests would be handled by Apache. If OrdinaryFileList
+        was set to "/images/" then "/images/foo.gif" would be handled by
+        Apache and "/images.html" would be handled by Interchange.
 
-	   If you're using "<Location />" then you will need a dummy
-	   "index.html" file in your VirtualHost's DocumentRoot directory to
-	   avoid permission problems assocated with the Apache directory index
-	   creation code.
+        If you're using "<Location />" then you will need a dummy
+        "index.html" file in your VirtualHost's DocumentRoot directory to
+        avoid permission problems assocated with the Apache directory index
+        creation code.
 
-       InterchangeScript
-	   The InterchangeScript parameter allows the SCRIPT_NAME to be dif-
-	   ferent from the <Location>.	For example:
+    InterchangeScript
+        The InterchangeScript parameter allows the SCRIPT_NAME to be dif-
+        ferent from the <Location>. For example:
 
-	       <Location /shop>
-		   ...
-	       </Location>
+            <Location /shop>
+                ...
+            </Location>
 
-	   The above will set the SCRIPT_NAME to "/shop".
+        The above will set the SCRIPT_NAME to "/shop".
 
-	       <Location /shop>
-		   ...
-	       PerlSetVar InterchangeScript /foo
-	       </Location>
+            <Location /shop>
+                ...
+                PerlSetVar InterchangeScript /foo
+            </Location>
 
-	   The above will set the SCRIPT_NAME to "/foo", instead of "/shop"
-	   before passing the request to Interchange.
+        The above will set the SCRIPT_NAME to "/foo", instead of "/shop"
+        before passing the request to Interchange.
 
-	   The appropriate SCRIPT_NAME must be configured into the "Catalog"
-	   directive in your interchange.cfg file.
+        The appropriate SCRIPT_NAME must be configured into the "Catalog"
+        directive in your interchange.cfg file.
 
-       FileDeliveryBase
-	   Interchange::Link can deliver files without needing to keep Inter-
-	   change open. To do this, you set the HTTP Status: header to
-	   "httpd_deliver".  In Interchange 5.0 or higher you can do this by
-	   putting in a page:
+    FileDeliveryBase
+        Interchange::Link can deliver files without needing to keep Inter-
+        change open. To do this, you set the HTTP Status: header to
+        "httpd_deliver". In Interchange 5.0 or higher you can do this by
+        putting in a page:
 
-	       [deliver
-		   status=httpd_deliver
-		   location=directory/file.ext
-		   type=application/octet-stream
-		  ]
+            [deliver
+                status=httpd_deliver
+                location=directory/file.ext
+                type=application/octet-stream
+            ]
 
-	   The "FileDeliveryBase" setting determines where the file will be
-	   relative to. While you can set it to "/", that is not recommended
-	   as files like "/etc/passwd" could be delivered.
+        The "FileDeliveryBase" setting determines where the file will be
+        relative to. While you can set it to "/", that is not recommended
+        as files like "/etc/passwd" could be delivered.
 
-	   The default is the document root of the Apache server. To protect
-	   files from being served directly by Apache, you can either put them
-	   under a directory at the Interchange location, or you can use nor-
-	   mal Apache exclusions.
+        The default is the document root of the Apache server. To protect
+        files from being served directly by Apache, you can either put them
+        under a directory at the Interchange location, or you can use nor-
+        mal Apache exclusions.
 
 BUGS
-       Send bug reports and suggestions to the Interchange users list, <inter-
-       change-users@icdevgroup.org>.
+    Send bug reports and suggestions to the Interchange users list,
+    <interchange-users@icdevgroup.org>.
 
 COPYRIGHT AND LICENSE
-	Copyright (C) 1996-2002 Red Hat, Inc.
-	Copyright (C) 2002-2007 Interchange Development Group
+    Copyright (C) 1996-2002 Red Hat, Inc.
+    Copyright (C) 2002-2007 Interchange Development Group
 
-       This program is free software.  You can redistribute it and/or modify
-       it under the terms of the GNU General Public License as published by
-       the Free Software Foundation.  You may refer to either version 2 of the
-       License or (at your option) any later version.
+    This program is free software. You can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation. You may refer to either version 2 of the
+    License or (at your option) any later version.
 
-       This program is distributed in the hope that it will be useful, but
-       WITHOUT ANY WARRANTY; without even the implied warranty of MER-
-       CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
-       Public License for more details.
-
-
-
-perl v5.8.8			  2006-03-28		  Interchange::Link(3)
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MER-
+    CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+    Public License for more details.
