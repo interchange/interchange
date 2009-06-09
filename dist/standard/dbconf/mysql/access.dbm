@@ -1,2 +1,3 @@
 Database            access          access.asc        TAB
-Database            access          IC_LOCKING   1
+Database            access          IC_LOCKING        1
+Database            access          EXPORT_SORT       username
