@@ -893,7 +893,6 @@ dist/standard/pages/admin/.empty
 dist/standard/pages/admin/edit_error.html
 dist/standard/pages/admin/edit_page.html
 dist/standard/pages/admin/edit_setup.html
-dist/standard/pages/admin/mass_setting.html
 dist/standard/pages/advancedsearch.html
 dist/standard/pages/affiliate/index.html
 dist/standard/pages/affiliate/login.html
