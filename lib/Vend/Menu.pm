@@ -648,7 +648,7 @@ EOF
 			if(${vpf}submenu_image_left.substr(0,1) == '<')
 				out += ${vpf}submenu_image_left;
 			else
-				out += '<img src="' + ${vpf}submenu_image_left + '" border="0">';
+				out += '<img src="' + ${vpf}submenu_image_left + '" border="0"$Vend::Xtrailer>';
 		}
 		out += '</td><td><div';
 		
@@ -691,7 +691,7 @@ EOF
 			if(${vpf}submenu_image_right.substr(0,1) == '<')
 				out += ${vpf}submenu_image_right;
 			else
-				out += '<img src="' + ${vpf}submenu_image_right + '" border="0">';
+				out += '<img src="' + ${vpf}submenu_image_right + '" border="0"$Vend::Xtrailer>';
 		}
 		out += '</td></tr>';
 
@@ -1155,7 +1155,7 @@ function ${vpf}image_link (rec) {
 		out += rec[ ${vpf}IMG_UP ];
 		out += '"';
 		out += ${vpf}image_link_extra;
-		out += '>';
+		out += '$Vend::Xtrailer>';
 // alert('img=' + out);
 	}
 	else {
@@ -1247,7 +1247,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_open;
 			tstyle = ${vpf}link_style_open;
 			if(spec_toggle > 0) {
-				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '"$Vend::Xtrailer>';
 			}
 			else {
 				tanchor = ${vpf}toggle_anchor_open;
@@ -1258,7 +1258,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_closed;
 			tstyle = ${vpf}link_style_closed;
 			if(spec_toggle > 0) {
-				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+				tanchor = '<img border="0" align="absbottom"  src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '"$Vend::Xtrailer>';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
@@ -1315,7 +1315,7 @@ function ${vpf}tree_link (idx) {
 				if(${vpf}icon[ ext ]) {
 					out += '<img border="0" align="absbottom" src="';
 					out += ${vpf}icon[ ext ];
-					out += '">';
+					out += '"$Vend::Xtrailer>';
 				}
 			}
 			if(${vpf}specific_image_link) 
@@ -1597,7 +1597,7 @@ function ${vpf}image_link (rec) {
 		out += rec[ ${vpf}IMG_UP ];
 		out += '"';
 		out += ${vpf}image_link_extra;
-		out += '>';
+		out += '$Vend::Xtrailer>';
 // alert('img=' + out);
 	}
 	else {
@@ -1644,7 +1644,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_open;
 			tstyle = ${vpf}link_style_open;
 			if(spec_toggle > 0) {
-				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '"$Vend::Xtrailer>';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
@@ -1659,7 +1659,7 @@ function ${vpf}tree_link (idx) {
 			tclass = ${vpf}link_class_closed;
 			tstyle = ${vpf}link_style_closed;
 			if(spec_toggle > 0) {
-				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+				tanchor = '<img border="0" src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '"$Vend::Xtrailer>';
 // if(alert_shown < 2) {
 // alert('tanchor=' + tanchor);
 // alert_shown = 2;
