@@ -46,7 +46,7 @@ use vars qw(
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			$SystemReposDone $ReposDest @include
 			);
-use Safe;
+use Vend::Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
@@ -969,7 +969,7 @@ sub evaluate_ifdef {
 	}
 	elsif ($cond) {
 		my $val = $var_ref->{$var} || '';
-		my $safe = new Safe;
+		my $safe = new Vend::Safe;
 		my $code = "q{$val}" . " " . $cond;
 		$status = $safe->reval($code);
 		if($@) {
@@ -3077,7 +3077,7 @@ sub parse_locale {
 		$settings =~ /^\s*{/
 			and $settings =~ /}\s*$/
 				and $eval = 1;
-		$eval and ! $safe and $safe = new Safe;
+		$eval and ! $safe and $safe = new Vend::Safe;
 		if(! defined $store->{$name} and $item eq 'Locale') {
 		    my $past = POSIX::setlocale(POSIX::LC_ALL);
 			if(POSIX::setlocale(POSIX::LC_ALL, $name) ) {
@@ -5111,7 +5111,7 @@ sub parse_tag {
 		my $sub;
 		$c->{Source}->{$tag}->{$p} = $val;
 		unless(!defined $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
-			my $safe = new Safe;
+			my $safe = new Vend::Safe;
 			my $code = $val;
 			$code =~ s'$Vend::Session->'$foo'g;
 			$code =~ s'$Vend::Cfg->'$bar'g;

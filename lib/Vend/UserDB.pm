@@ -28,12 +28,11 @@ use vars qw!
 
 use Vend::Data;
 use Vend::Util;
-use Safe;
-use Digest::MD5;
+use Vend::Safe;
 use strict;
 no warnings qw(uninitialized numeric);
 
-my $ready = new Safe;
+my $ready = new Vend::Safe;
 
 my $HAVE_SHA1;
 

@@ -31,8 +31,8 @@ use File::Copy;
 use File::Basename;
 use Sys::Hostname;
 use Vend::Util;
-require Safe;
-$Safe = new Safe;
+require Vend::Safe;
+$Safe = new Vend::Safe;
 
 require Exporter;
 @ISA = qw(Exporter);

@@ -93,7 +93,7 @@ use Fcntl;
 use Errno;
 use Text::ParseWords;
 require HTML::Entities;
-use Safe;
+use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
@@ -857,7 +857,7 @@ sub string_to_ref {
 	if($MVSAFE::Safe) {
 		return eval $string;
 	}
-	my $safe = $Vend::Interpolate::safe_safe || new Safe;
+	my $safe = $Vend::Interpolate::safe_safe || new Vend::Safe;
 	return $safe->reval($string);
 }
 

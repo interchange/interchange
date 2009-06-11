@@ -78,7 +78,7 @@ This is not only for clarity of the regular expression, but for speed.
 push @EXPORT, 'tag_sql_list';
 # END SQL
 
-use Safe;
+use Vend::Safe;
 
 my $hole;
 BEGIN {
@@ -162,7 +162,7 @@ use vars @Share_vars, @Share_routines,
 		 qw/$ready_safe $safe_safe/;
 use vars qw/%Filter %Ship_handler $Safe_data/;
 
-$ready_safe = new Safe;
+$ready_safe = new Vend::Safe;
 $ready_safe->trap(qw/:base_io/);
 $ready_safe->untrap(qw/sort ftfile/);
 
@@ -175,13 +175,10 @@ sub reset_calc {
 	else {
 		my $pkg = 'MVSAFE' . int(rand(100000));
 		undef $MVSAFE::Safe;
-		$ready_safe = new Safe $pkg;
+		$ready_safe = new Vend::Safe $pkg;
 		$ready_safe->share_from('MVSAFE', ['$safe']);
 #::logDebug("new safe made=$ready_safe->{Root}");
 		
-		Vend::CharSet::utf8_safe_regex_workaround($ready_safe)
-		    if $::Variable->{MV_UTF8};
-
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
@@ -1204,8 +1201,6 @@ sub conditional {
 			last RUNSAFE;
 		}
 
-		Vend::CharSet::utf8_safe_regex_workaround($ready_safe)
-		    if $::Variable->{MV_UTF8};
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		$status = $ready_safe->reval($op) ? 1 : 0;
@@ -1574,7 +1569,7 @@ EOF
 
 # END MVASP
 
-$safe_safe = new Safe;
+$safe_safe = new Vend::Safe;
 
 sub tag_perl {
 	my ($tables, $opt,$body) = @_;

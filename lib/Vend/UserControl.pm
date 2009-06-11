@@ -22,7 +22,7 @@ $VERSION = substr(q$Revision: 2.6 $, 10);
 require Vend::UserDB;
 use Vend::Data;
 use Vend::Util;
-use Safe;
+use Vend::Safe;
 
 @ISA = qw/ Vend::UserDB /;
 

@@ -28,10 +28,11 @@ package Vend::CharSet;
 				decode_urlencode
 				default_charset
 				to_internal 
-				utf8_safe_regex_workaround
 				);
 
 use strict;
+use utf8; eval "\$\343\201\257 = 42";  # attempt to automatically load the utf8 libraries.
+require "utf8_heavy.pl";
 
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
@@ -79,27 +80,6 @@ sub validate_encoding {
 sub default_charset {
 	my $c = $Global::Selector{$CGI::script_name};
 	return $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET};
-}
-
-# This is a workaround for the problem with UTF-8 regular expressions
-# implicitly trying to require UTF-8
-sub utf8_safe_regex_workaround {
-    my ($compartment) = @_;
-
-    $_ = 'workaround for the workaround';
-    s/\p{SpacePerl}+$//;
-
-#::logDebug("Attempting to set UTF-8 safe regex workaround");
-
-    $compartment->untrap(qw/require caller dofile sort entereval/);
-    $compartment->reval('$_ = "\x{30AE}"; s/[abc]/x/ig');
-    $@ and ::logError("Part of UTF-8 safe regex workaround failed (this may not be a problem): %s", $@);
-    $compartment->trap(qw/require caller dofile sort entereval/);
-
-    # check and see if it worked, if not, then we might have problems later
-    $compartment->reval('$_ = "\x{30AE}"; s/[abc]/x/ig');
-
-    $@ and ::logError("UTF-8 regular expressions in a Safe compartment are not working properly. This may affect code in perl or calc blocks in your pages if you are processing UTF-8 strings in them. Error: %s", $@);
 }
 
 # this sub taken from the perluniintro man page, for diagnostic purposes
