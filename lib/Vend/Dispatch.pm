@@ -719,7 +719,7 @@ sub run_in_catalog {
 	
 	$g = $Global::Catalog{$cat};
 	unless (defined $g) {
-		logGlobal( "Can't find catalog '%s'" , $cat );
+		logGlobal( "Can't find catalog '%s' for jobs group %s" , $cat, $job );
 		return undef;
 	}
 
