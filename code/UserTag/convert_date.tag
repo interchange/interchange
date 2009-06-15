@@ -32,7 +32,6 @@ sub {
 		$t[5] = $1 - 1900;
 		$t[4] = $2 - 1;
 		$t[3] = $3;
-		$t[8] = -1;
 	} 
 	elsif($text =~ /\d/) {
 					$text =~ s/\D//g;
@@ -43,7 +42,6 @@ sub {
 					$t[4] = $2 - 1;
 					$t[5] = $1;
 					$t[5] -= 1900;
-					$t[8] = -1;
 	}
 	elsif (exists $opt->{empty}) {
 		return $opt->{empty};
@@ -54,6 +52,9 @@ sub {
 	}
 
 	if ($adjust) {
+		if ($#t < 8) {
+			$t[8] = -1;
+		}
 		$now ||= POSIX::mktime(@t);
 		$adjust .= ' days' if $adjust =~ /^[-\s\d]+$/;
 		@t = localtime(adjust_time($adjust, $now, $opt->{compensate_dst}));
