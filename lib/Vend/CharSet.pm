@@ -31,12 +31,13 @@ package Vend::CharSet;
 				);
 
 use strict;
+
 use utf8; eval "\$\343\201\257 = 42";  # attempt to automatically load the utf8 libraries.
 require "utf8_heavy.pl";
 
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
-	import Encode qw( decode resolve_alias is_utf8 );
+	import Encode qw( decode is_utf8 find_encoding );
 }
 
 sub decode_urlencode {
@@ -64,7 +65,7 @@ sub to_internal {
     return $octets if is_utf8($octets);
 
 #::logDebug("to_internal - converting octets from $encoding to internal");
-	$$octets = eval {	decode($encoding, $$octets, Encode::FB_CROAK) };
+	$$octets = eval {	decode($encoding, $$octets, Encode::FB_CROAK()) };
 	if ($@) {
 		::logError("Unable to properly decode <%s> with encoding %s: %s", display_chars($octets), $encoding, $@);
 		return;
@@ -73,8 +74,10 @@ sub to_internal {
 }
 
 sub validate_encoding {
-	my ($encoding) = @_;
-	return resolve_alias($encoding);
+	my $encoding = shift;
+	my $enc = find_encoding($encoding);
+
+	return $enc && $enc->mime_name;
 }
 
 sub default_charset {
