@@ -11,11 +11,6 @@ See UPGRADE document for a list of incompatible changes.
 Interchange 5.6.2 released 2009-09-17.
 
 
-UserTag
--------
-
-* Made [email] process cc and bcc options for plain text emails (#250).
-
 Core
 ----
 
@@ -47,10 +42,21 @@ Core
 * Make sure catalog TemplateDir and ErrorFile directives are safe when
   NoAbsolute is set.
 
+* Remove CVV2 (Card Security Code) from default credit card encrypted block
+  template so that it will not even be stored in encrypted form. This makes
+  the default behavior compliant with section 3.2.2 of PCI-DSS 1.2:
+
+  https://www.pcisecuritystandards.org/security_standards/download.html?id=pci_dss_v1-2.pdf
+
+  It is of course still possible to manually supply a template that stores
+  the card security code in violation of PCI-DSS requirements, so developers
+  should review any custom credit card encryption templates to make sure that
+  the CVV2 is not included, and purge it from any historical data.
+
 Tags
 ----
 
-* Made [email] process Cc and Bcc options for plain text emails.
+* Made [email] process cc and bcc options for plain text emails (#250).
 
 UI
 --
