@@ -307,10 +307,12 @@ sub toss_cart {
 			  }
 			} # MAX_QUANTITY
 
-			for(@{$Vend::Cfg->{AutoModifier}}) {
-				next unless /^!/;
-				# Second passed parameter indicates it is recalculation not initial load
-				Vend::Order::auto_modifier($item, 1);
+			if ($Vend::Cfg->{AutoModifier}) {
+				for(@{$Vend::Cfg->{AutoModifier}}) {
+					next unless /^!/;
+					# Second passed parameter indicates it is recalculation not initial load
+					Vend::Order::auto_modifier($item, 1);
+				}
 			}
 
 			$total_quantity{$item->{code}} += $item->{quantity};
