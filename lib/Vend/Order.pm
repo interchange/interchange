@@ -443,7 +443,6 @@ sub build_cc_info {
 			{MV_CREDIT_CARD_TYPE}
 			{MV_CREDIT_CARD_NUMBER}
 			{MV_CREDIT_CARD_EXP_MONTH}/{MV_CREDIT_CARD_EXP_YEAR}
-			{MV_CREDIT_CARD_CVV2}
 		)) . "\n";
 
 	$cardinfo->{MV_CREDIT_CARD_TYPE} ||=

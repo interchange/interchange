@@ -132,6 +132,17 @@ Payment
 * [pay-cert] tag now uses the new adjust_time() function instead of the older
   time_to_seconds().
 
+* Remove CVV2 (Card Security Code) from default credit card encrypted block
+  template so that it will not even be stored in encrypted form. This makes
+  the default behavior compliant with section 3.2.2 of PCI-DSS 1.2:
+
+  https://www.pcisecuritystandards.org/security_standards/download.html?id=pci_dss_v1-2.pdf
+
+  It is of course still possible to manually supply a template that stores
+  the card security code in violation of PCI-DSS requirements, so developers
+  should review any custom credit card encryption templates to make sure that
+  the CVV2 is not included, and purge it from any historical data.
+
 UserTag
 -------
 
@@ -146,8 +157,12 @@ UserTag
 * [convert-date] has a new compensate_dst attribute that when set to 1 will
   compensate the adjusted time for daylight savings time changes.
 
-* fixed bug in [convert-date] that skewed the time by one hour if the starting
+* Fixed bug in [convert-date] that skewed the time by one hour if the starting
   date was during daylight savings time and an adjustment was made.
+
+* Fixed regression in [convert-date] that caused it to display Sunday for every
+  day of the week if a raw date was passed and the adjust attribute was not.
+  Thanks to Marty Tennison <marty@dripdepot.com> for reporting the bug.
 
 SystemTag
 ---------
