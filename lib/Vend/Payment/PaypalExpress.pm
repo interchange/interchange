@@ -250,8 +250,8 @@ BEGIN {
 	eval {
 		package Vend::Payment;
 		require SOAP::Lite or die __PACKAGE__ . " requires SOAP::Lite";
-# without this next it defaults to Net::SSL which may crash
-		require IO::Socket::SSL or die __PACKAGE__ . "requires IO::Socket::SSL";
+		# without this next it defaults to Net::SSL which may crash
+		require IO::Socket::SSL or die __PACKAGE__ . " requires IO::Socket::SSL";
 		require Net::SSLeay;
 	};
 
