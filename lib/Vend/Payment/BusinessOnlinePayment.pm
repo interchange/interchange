@@ -276,7 +276,7 @@ sub onlinepayment {
     'phone'           => $actual->{phone_day},
   );
 
-=head Extra query params
+=head1 Extra query params
 
 =item extra_query_params "customer_id  their_param=our_param"
 
@@ -330,7 +330,7 @@ C<our_param>.
 
   }
 
-=head Extra result params
+=head1 Extra result params
 
 =item extra_result_params "transid=weird.module.name"
 
