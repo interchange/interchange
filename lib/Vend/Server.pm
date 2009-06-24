@@ -578,6 +578,18 @@ sub respond {
 
 	$Vend::StatusLine =~ s/\s*$/\r\n/ if $Vend::StatusLine;
 
+    # NOTE: if we're supporting arbitrary encodings here in the
+    # response_charset, we should really be setting the binmode to
+    # :encoding($response_charset);  if we're considering the case of
+    # UTF-8 vs undeclared, we should set the response charset to UTF-8
+    # iff MV_UTF8 is set, otherwise omit the charset declaration
+    # entirely.
+
+    # also we're only setting the binmode when the output data is
+    # already declared to be text of some sort.
+
+    binmode(MESSAGE, ':utf8') if ($response_charset =~ /^utf-?8$/i and $Vend::StatusLine =~ /^Content-Type: text\//);
+
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html; charset=$response_charset\r\n";
@@ -960,7 +972,8 @@ sub connection {
     	or return 0;
     show_times('end cgi read') if $Global::ShowTimes;
 
-    binmode(MESSAGE, ':utf8') if $::Variable->{MV_UTF8};
+    # NOTE to self: this may not be necessary, but not sure of the scoping of MESSAGE
+    binmode(MESSAGE, ':raw');
 
     my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 
