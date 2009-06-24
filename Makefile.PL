@@ -739,7 +739,7 @@ sub MY::install {
 		next unless $MV::Default{$_};
 		push @args, "$_=$MV::Default{$_}";
 	}
-	push @args, 'final=$(INSTALLARCHLIB)';
+	push @args, 'final=$(DESTDIR)$(INSTALLARCHLIB)';
 
 	my $argstring = join " ", @args;
 
