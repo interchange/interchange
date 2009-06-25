@@ -1,7 +1,5 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.104 2009-03-27 11:09:48 markj Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -2929,6 +2927,9 @@ sub read_pidfile {
 sub run_server {
     my $next;
 #::logDebug("trying to run server");
+
+	@$Global::SocketFile = "$Global::VendRoot/etc/socket"
+		unless @$Global::SocketFile and $Global::SocketFile->[0];
 
 	if($Global::Variable->{MV_GETPPID_BROKEN}) {
 #::logDebug("setting getppid broken");

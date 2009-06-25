@@ -1,7 +1,5 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.246 2009-04-16 16:58:31 mheins Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -3504,11 +3502,6 @@ sub set_default_search {
 					return 1 if $Have_set_global_defaults;
 					$Global::SOAP_Socket = ['7780']
 						if $Global::SOAP and ! $Global::SOAP_Socket;
-					return 1;
-				},
-		SocketFile => sub {
-					@$Global::SocketFile = "$Global::VendRoot/etc/socket"
-						unless @$Global::SocketFile and $Global::SocketFile->[0];
 					return 1;
 				},
 		TcpMap => sub {
