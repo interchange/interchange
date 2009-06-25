@@ -30,6 +30,11 @@
 use strict;
 
 BEGIN {
+	select STDERR;
+	$| = 1;
+	select STDOUT;
+	$| = 1;
+
 	if ($ENV{INTERCHANGE_INSTALLPRIVLIB}) {
 		unshift @INC, $ENV{INTERCHANGE_INSTALLPRIVLIB};
 	}
@@ -346,7 +351,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2008 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2009 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -840,7 +845,6 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 		exit;
 	}
 
-	$| = 1;
 	logGlobal( "Interchange V$VERSION");
 
 	SIGNALCHECK: {
@@ -959,13 +963,6 @@ EOF
 		# This is all done in Vend::Server::set_process_name now.
 		Vend::Server::set_process_name($Global::VendRoot);
 
-		# We won't have much output on any of this, but if we get some
-		# we want it immediately
-		select STDERR; 
-		$| = 1;
-		select STDOUT;
-		$| = 1;
-
 		# This should never return unless killed or a catastrophic error
 		Vend::Server::run_server();
 	}
@@ -1005,7 +1002,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2008 Interchange Development Group
+    Copyright (C) 2002-2009 Interchange Development Group
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 
