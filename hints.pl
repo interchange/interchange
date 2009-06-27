@@ -43,16 +43,18 @@ sub get_hints {
 		while(<HINTIN>) {
 			print HINTOUT $_;
 		}
-		print HINTOUT <<EOF;
+		if ($^V lt 5.10.0) {
+			print HINTOUT <<EOF;
 
 ## Added because threaded Perl on linux has broken getppid() as
 ## of this distribution
 Variable MV_GETPPID_BROKEN 1
 EOF
-		close HINTIN;
-		close HINTOUT;
-		unlink "$fn.bak";
-		return 1;
+			close HINTIN;
+			close HINTOUT;
+			unlink "$fn.bak";
+			return 1;
+		}
 	};
 	push @out, [ $condition, $routine ];
 
