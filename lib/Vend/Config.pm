@@ -351,7 +351,6 @@ sub config_error {
 		warn "$msg\n" unless $Vend::Quiet;
 	}
 	else {
-		logGlobal({level => 'warn'}, $msg);
 		die "$msg\n";
 	}
 }
@@ -2672,8 +2671,8 @@ sub parse_require {
 	}
 	else {
 		$carptype = \&config_error;
-		$error_message = 'Required %s %s not present. Aborting catalog.'
-			unless $error_message;
+		$error_message ||= 'Required %s %s not present. Aborting '
+			. ($C ? 'catalog' : 'Interchange daemon') . '.';
 	}
 
 	my $vref = $C ? $C->{Variable} : $Global::Variable;
@@ -2735,11 +2734,12 @@ sub parse_require {
 					unshift(@INC, $pathinfo);
 				}
 				eval "require $module$oldtype;";
+				my $error = $@;
 				if ($pathinfo) {
 					shift(@INC);
 				}
-				::logGlobal("while eval'ing module %s got [%s]", $module, $@) if ($@);
-				return ! $@;
+				::logGlobal("while eval'ing module %s got [%s]\n", $module, $error) if $error;
+				return ! $error;
 			}
 			else {
 				# Since we aren't safe to actually require, we will 
