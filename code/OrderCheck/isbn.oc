@@ -1,17 +1,21 @@
-# Copyright 2008 Interchange Development Group
+# Copyright 2008,2009 Interchange Development Group
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: isbn.oc,v 1.2 2008-07-11 08:37:28 racke Exp $
 
 CodeDef isbn OrderCheck 1
 CodeDef isbn Description ISBN-10/ISBN-13 check digit verification
 CodeDef isbn Routine <<EOR
 sub {
-	my($ref, $var, $val) = @_;
+	my($ref, $var, $val, $msg) = @_;
+	my($len);
+
+	if ($msg =~ s/^\s*(10|13)\s*//) {
+		$len = $1;
+	}
+
 	$val =~ s/[^\dXx]//g;	# weed out non-digits
 	if ($val) {
 		my @digits = split("", $val);
@@ -21,6 +25,9 @@ sub {
 
 		if (@digits == 10 ) {
 			# ISBN-10 number
+			if ($len == 13) {
+				return (0, $var, errmsg("'%s' not a valid isbn-13 number", $val));
+			}
 			for(my $i=10; $i > 0; $i--) {
 		  		my $d = $digits[10 - $i];
 				if ($d =~ /[Xx]/) {
@@ -36,6 +43,9 @@ sub {
 			return ( $sum%11 ? 0 : 1, $var, '' );
 		} elsif (@digits == 13) {
 			# ISBN-13/EAN number
+			if ($len == 10) {
+				return (0, $var, errmsg("'%s' not a valid isbn-10 number", $val));
+			}
 			for (my $i = 0; $i < 12; $i++) {
 				if ($i % 2) {
 					$sum += 3 * $digits[$i];
