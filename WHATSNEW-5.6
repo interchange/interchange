@@ -7,6 +7,7 @@
 
 See UPGRADE document for a list of incompatible changes.
 
+
 Interchange 5.6.2 not yet released.
 
 UserTag
@@ -25,18 +26,38 @@ Core
 
   Thanks to David Christensen <david@endpoint.com> for the fix.
 
+* Fixed BounceReferrals bugs: Correctly pass through query strings, and
+  prevent redirection loops. Use DirectoryIndex for root URL instead of
+  "process". Thanks to David Christensen <david@endpoint.com>.
+
+* Various UTF-8 improvements.
+
 * Update broken getppid() detection for Perl 5.10.0.
+
+Tags
+----
+
+* Made [email] process Cc and Bcc options for plain text emails.
 
 UI
 --
 
 * Recognize Opera as DHTML browser. Thanks to Don Hathaway for the patch.
 
+* Fix broken form action quoting. Thanks to Richard Templet <richard@endpoint.com>.
+
 Standard demo
 -------------
 
 * Fixed wrong URLs in language selection (#265). Thanks to Friedrich
   Strohmaier for the report.
+
+* Fix cross site scripting error found by Josh Lavin of Perusion.
+
+Packaging
+---------
+
+* Updated Debconf templates for Vietnamese, Swedish, German, French, and Basque.
 
 
 ------------------------------------------------------------------------------
