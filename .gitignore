@@ -3,6 +3,8 @@
 .cpan.tried
 META.yml
 Makefile
+Makefile.old
+MANIFEST.bak
 _allow_threads
 _session_storable
 _uid
