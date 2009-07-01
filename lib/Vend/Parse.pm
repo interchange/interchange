@@ -26,7 +26,7 @@
 package Vend::Parse;
 require Vend::Parser;
 
-use Safe;
+use Vend::Safe;
 use Vend::Util;
 use Vend::Interpolate;
 use Text::ParseWords;

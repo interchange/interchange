@@ -44,13 +44,14 @@ use vars qw(
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			$SystemReposDone $ReposDest @include
 			);
-use Safe;
+use Vend::Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 use Vend::File;
 use Vend::Data;
 use Vend::Cron;
+use Vend::CharSet ();
 
 $VERSION = substr(q$Revision: 2.246 $, 10);
 
@@ -966,7 +967,7 @@ sub evaluate_ifdef {
 	}
 	elsif ($cond) {
 		my $val = $var_ref->{$var} || '';
-		my $safe = new Safe;
+		my $safe = new Vend::Safe;
 		my $code = "q{$val}" . " " . $cond;
 		$status = $safe->reval($code);
 		if($@) {
@@ -3075,7 +3076,7 @@ sub parse_locale {
 		$settings =~ /^\s*{/
 			and $settings =~ /}\s*$/
 				and $eval = 1;
-		$eval and ! $safe and $safe = new Safe;
+		$eval and ! $safe and $safe = new Vend::Safe;
 		if(! defined $store->{$name} and $item eq 'Locale') {
 		    my $past = POSIX::setlocale(POSIX::LC_ALL);
 			if(POSIX::setlocale(POSIX::LC_ALL, $name) ) {
@@ -3663,6 +3664,21 @@ sub set_defaults {
 	for(@Cleanups) {
 		push @{ $C->{CleanupRoutines} ||= [] }, $Cleanup_code{$_};
 	}
+
+    # check MV_HTTP_CHARSET against a valid encoding
+    if (my $enc = $C->{Variable}->{MV_HTTP_CHARSET}) {
+        if (my $norm_enc = Vend::CharSet::validate_encoding($enc)) {
+            if ($norm_enc ne $enc) {
+                config_warn("Provided MV_HTTP_CHARSET '$enc' resolved to '$norm_enc'.  Continuing.");
+                $C->{Variable}->{MV_HTTP_CHARSET} = $norm_enc;
+            }
+        }
+        else {
+            config_error("Unrecognized/unsupported MV_HTTP_CHARSET: '%s'.", $enc);
+            delete $C->{Variable}->{MV_HTTP_CHARSET};
+        }
+    }
+
 	$Have_set_global_defaults = 1;
 	return;
 }
@@ -5104,7 +5120,7 @@ sub parse_tag {
 		my $sub;
 		$c->{Source}->{$tag}->{$p} = $val;
 		unless(!defined $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
-			my $safe = new Safe;
+			my $safe = new Vend::Safe;
 			my $code = $val;
 			$code =~ s'$Vend::Session->'$foo'g;
 			$code =~ s'$Vend::Cfg->'$bar'g;

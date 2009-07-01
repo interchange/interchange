@@ -243,6 +243,10 @@ sub readfile {
 		undef $/;
 		$contents = <READIN>;
 		close(READIN);
+#::logDebug("done reading contents");
+
+        # at this point, $contents should be either raw if encoding is
+        # not specified or PerlUnicode.
 	}
 
 	if (

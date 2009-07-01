@@ -2145,7 +2145,7 @@ sub update_data {
 			$safe = $Vend::Interpolate::ready_safe;
 		}
 		else {
-			$safe = new Safe;
+			$safe = new Vend::Safe;
 		}
 		$base_db->column_exists($blob_ptr)
 			or undef $blob_ptr;
