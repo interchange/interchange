@@ -556,7 +556,7 @@ sub respond {
 	# Safe kludge: duplicate Vend::CharSet::default_charset method here
 	# so that $Document->send() will work from within Safe
 	my $c = $Global::Selector{$CGI::script_name};
-	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET} || 'iso8859-1';
+	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET} || 'iso-8859-1';
 
 	my $status;
 	return if $Vend::Sent;
