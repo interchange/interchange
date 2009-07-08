@@ -8,7 +8,8 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.6.2 not yet released.
+Interchange 5.6.2 released 2009-09-17.
+
 
 UserTag
 -------
@@ -17,6 +18,13 @@ UserTag
 
 Core
 ----
+
+* Close remote disclosure security vulnerability, and added new configuration
+  option AllowRemoteSearch to selectively re-enable remote searches on "safe"
+  tables. Defaults to products, variants and options.
+
+  Please see UPGRADE for important information on upgrading your
+  catalogs to prevent any problems.
 
 * Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
 

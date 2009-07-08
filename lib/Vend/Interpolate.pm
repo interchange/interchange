@@ -4652,7 +4652,7 @@ sub region {
 		if($CGI::values{mv_more_matches} || $CGI::values{MM}) {
 
 			### It is a more function, we need to get the parameters
-			find_search_params();
+			find_search_params(\%CGI::values);
 			delete $CGI::values{mv_more_matches};
 		}
 		elsif ($opt->{search}) {
