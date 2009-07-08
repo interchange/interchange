@@ -5,11 +5,21 @@
 
 ------------------------------------------------------------------------------
 
+See UPGRADE document for a list of incompatible changes.
 
-Interchange 5.4.4 not yet released.
+
+Interchange 5.4.4 released on 2009-09-17.
+
 
 Core
 ----
+
+* Close remote disclosure security vulnerability, and added new configuration
+  option AllowRemoteSearch to selectively re-enable remote searches on "safe"
+  tables. Defaults to products, variants and options.
+
+  Please see UPGRADE for important information on upgrading your
+  catalogs to prevent any problems.
 
 * Update broken getppid() detection for Perl 5.10.0.
 

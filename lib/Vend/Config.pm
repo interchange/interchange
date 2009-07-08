@@ -596,6 +596,7 @@ sub catalog_directives {
 	['FileDatabase',	 undef,				 ''],
 	['RequiredFields',   undef,              ''],
 	['NoSearch',         'wildcard',         'userdb'],
+	['AllowRemoteSearch',    'array_complete',     'products variants options'],
 	['OrderCounter',	 undef,     	     ''],
 	['MimeType',         'hash',             ''],
 	['AliasTable',	 	 undef,     	     ''],

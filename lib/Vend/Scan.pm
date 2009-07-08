@@ -276,10 +276,7 @@ sub create_last_search {
 sub find_search_params {
 	my($c,$param) = @_;
 	my(@args);
-	if(! $param) {
-		$c = \%CGI::values;
-	}
-	else {
+	if($param) {
 		$param =~ s/-_NULL_-/\0/g;
 		@args = split m:/:, $param;
 	}

@@ -21,6 +21,12 @@ Interchange is designed to be drop-in compatible in its major version.
           facing side should be fairly straightforward to port. See
           "UPGRADING FROM 4.6.x" below.
 
+ ALL VERSIONS -- A security vulnerability has been found that allows
+          remote searching of any table in your database configured in
+          Interchange.  To fix this vulnerability, you may need to 
+          make some adjustments to your catalog.  See "REMOTE SEARCHING"
+          below.
+
 INSTALLING INTERCHANGE IN THE SAME LOCATION
 --------------------------------------------
 
@@ -320,3 +326,160 @@ Interchange:
     UserTags, UI_Tag etc.)  The message is only a warning as your local UserTag
     will override the global one.  If you didn't mean to override the global
     tag of the same name then simply rename your tag and restart Interchange.
+
+
+REMOTE SEARCHING
+----------------
+
+A security vulnerability was recently discovered where any table configured
+in your Interchange installation could be viewed remotely by an unauthenticated
+user via a specially crafted search request.
+
+This is a serious vulnerability, and all previous versions of Interchange are
+affected. Even if you do not use the default search structure, your catalog
+is likely to still be vulnerable.
+
+To resolve this, a new configuration option, AllowRemoteSearch has been
+introduced. It should be specified in each catalog configuration, and defaults
+to:
+
+     AllowRemoteSearch products variants options
+
+Any table specified in this option will be remotely searchable, and you should
+not permit any table with sensitive information to be searched in this way. You
+should carefully consider the implications of adding any further tables to this
+configuration option.
+
+Remote searches may be used by your existing catalog. These should continue
+working without any changes as long as they only search tables that are permitted
+by the AllowRemoteSearch configuration. You should carefully examine your
+catalog for uses of the "search" form action, or pages which submit a form to
+a page called "search" or "scan". If they specify a search file other than
+products, variants or options, you should consider rewriting that page to just
+accept the search terms via CGI parameters, and not the entire search. Please
+consult the documentation on in page searches at:
+
+     http://www.icdevgroup.org/doc/icdatabase.html#In-Page%20Searches
+
+If your catalog makes use of ActionMaps that perform searches, these should
+continue to work as intended as long as they search a table allowed by 
+AllowRemoteSearch. However, you should consider updating them to use the 
+new "search" tag.  For example, an existing ActionMap that performs a search
+like this:
+
+   ActionMap old_cat <<EOR
+   sub {
+        my ($action, $class) = split('/', shift);
+
+        $class =~ s/_/ /g;
+
+        # Originally, search parameters were placed in the CGI hash.
+        $CGI->{co} = 1;
+        $CGI->{fi} = 'products';
+        $CGI->{st} = 'db';
+        $CGI->{sf} = 'category';
+        $CGI->{se} = "$class";
+        $CGI->{sp} = 'results';
+        $CGI->{tf} = 'category,description:f';
+        $CGI->{op} = 'eq';
+
+        $CGI->{mv_todo} = 'search';
+        $CGI->{mv_nextpage} = 'results';
+        # And the "update" tag was called to re-evaluate the page with
+        # the provided search parameters.
+        $Tag->update('process');
+        return 1;
+   }
+   EOR
+
+Would be updated to instead look like this:
+
+   ActionMap new_cat <<EOR
+   sub {
+        my ($action, $class) = split('/', shift);
+
+        $class =~ s/_/ /g;
+
+        # Now, you must create a hash to hold the search
+        # parameters.
+        my $search;
+        $search->{co} = 1;
+        $search->{fi} = 'products';
+        $search->{st} = 'db';
+        $search->{sf} = 'category';
+        $search->{se} = "$class";
+        $search->{sp} = 'results';
+        $search->{tf} = 'category,description:f';
+        $search->{op} = "eq";
+
+        $CGI->{mv_nextpage} = 'results';
+        # And call the new search tag, which isn't subject to the
+        # AllowRemoteSearch restrictions.
+        $Tag->search({ search => $search });
+
+        return 1;
+   }
+   EOR
+
+If you are using a modern version of the standard catalog as the basis
+for your catalog, there is a special subroutine that provides friendly
+URLs for product categories, but is not a traditional ActionMap.  Similar
+to the example above, you will need to alter your catalog.cfg, replacing
+the entire Sub ncheck_category with:
+
+Sub ncheck_category <<EOS
+sub {
+    my ($name) = @_;
+    return unless $name =~ m{^[A-Z]};
+    $name =~ s,_, ,g;
+    my ($prod_group, $category) = split m{/}, $name;
+
+    my $search;
+    $search->{co} = 1;
+    $search->{fi} = 'products';
+    $search->{st} = 'db';
+    $search->{sf} = join "\0", 'prod_group', 'category';
+    $search->{op} = join "\0", 'eq', 'eq';
+    $search->{se} = join "\0", $prod_group, $category;
+    $search->{sp} = 'results';
+    $search->{mv_todo} = 'search';
+    $Tag->search({ search => $search });
+    if (($o = $Search->{''}) && @{$o->{mv_results}}) {
+        return (1,  $Config->{Special}->{results});
+    }
+
+    return;
+}
+EOS
+
+In the standard and foundation catalogs, the "lost password" feature makes use
+of the remote search feature to be able to retrieve lost passwords. We recommend
+that you remove catalog/pages/query/get_password.html from your catalog, and
+replace catalog/pages/lost_password.html with an updated version from this
+distribution. As an alternative, you may apply the following patch to your
+existing catalog/pages/query/get_password.html:
+
+diff --git a/dist/standard/pages/query/get_password.html
+b/dist/standard/pages/query/get_password.html
+index 2d70c84..5aa51f1 100644
+--- a/dist/standard/pages/query/get_password.html
++++ b/dist/standard/pages/query/get_password.html
+@@ -32,8 +32,10 @@ ui_template_name: leftonly
+        if( $Scratch->{tried_pw_retrieve}++ > 10 ) {
+                return "No way, Jos&eacute;. Too many times.";
+        }
+     $CGI->{mv_todo} = 'search';
+        $Config->{NoSearch} = '';
++       push(@{$Config->{AllowRemoteSearch}},'userdb');
++       return;
+ [/perl]
+ [update process]
+ [search-region]
+
+This is not a recommended solution, and is only a workaround until you can
+consider the changes in the updated lost password page.
+
+If you do not wish to upgrade your Interchange installation to fix this
+vulnerability, patches for all currently supported Interchange versions are
+also available from http://www.icdevgroup.org/. You will still need to
+follow the upgrade advice contained here.

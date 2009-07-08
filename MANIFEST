@@ -164,6 +164,7 @@ code/SystemTag/row.coretag
 code/SystemTag/salestax.coretag
 code/SystemTag/scratch.coretag
 code/SystemTag/scratchd.coretag
+code/SystemTag/search.coretag
 code/SystemTag/search_region.coretag
 code/SystemTag/selected.coretag
 code/SystemTag/set.coretag
