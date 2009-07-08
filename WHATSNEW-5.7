@@ -8,10 +8,18 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.2 not yet released.
+Interchange 5.7.2 released 2009-09-17.
+
 
 Core
 ----
+
+* Close remote disclosure security vulnerability, and added new configuration
+  option AllowRemoteSearch to selectively re-enable remote searches on "safe"
+  tables. Defaults to products, variants and options.
+
+  Please see UPGRADE for important information on upgrading your
+  catalogs to prevent any problems.
 
 * Fix validate_charset to return mime charset names only.
 

@@ -164,10 +164,33 @@ sub do_page {
 	display_page();
 }
 
+sub _check_search_file {
+	my ($c) = @_;
+	my $f;
+
+	if ($c->{mv_search_file}) {
+		my(@files) = grep /\S/, split /\s*[,\0]\s*/, $c->{mv_search_file}, -1;
+		for $f (@files) {
+			unless (grep { $f eq $_ } @{$Vend::Cfg->{AllowRemoteSearch}}) {
+				::logGlobal("Security violation, trying to remote search '%s', doesn't match '%s'",
+					$_, $Vend::Cfg->{AllowRemoteSearch});
+				die "Security violation";
+			}
+		}
+	}
+}
+
 ## DO SEARCH
 sub do_search {
-	my($c) = \%CGI::values;
+	my($c) = @_;
 	::update_user();
+
+	# If search parameters not passed in via function, then safely pull them from
+	# the CGI values.
+	if (!is_hash($c)) {
+		$c = find_search_params(\%CGI::values);
+		_check_search_file($c);
+	}
 
 	if ($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
@@ -201,6 +224,8 @@ sub do_scan {
 	my $c = {};
 	$Vend::ScanPassed = "scan/$path";
 	find_search_params($c,$path);
+
+	_check_search_file($c);
 
 	if ($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
