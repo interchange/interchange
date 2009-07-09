@@ -61,27 +61,30 @@ sub new {
 }
 
 my @Map = qw/
-    authorization      AUTHORIZATION
-    content_length     CONTENT_LENGTH
-    content_type       CONTENT_TYPE
-    content_encoding   HTTP_CONTENT_ENCODING
-    cookie             HTTP_COOKIE
-    http_host          HTTP_HOST
-    path_info          PATH_INFO
-    pragma             HTTP_PRAGMA
-    query_string       QUERY_STRING
-    referer            HTTP_REFERER
-    remote_addr        REMOTE_ADDR
-    remote_host        REMOTE_HOST
-    remote_user        REMOTE_USER
-    request_method     REQUEST_METHOD
-    request_uri        REQUEST_URI
-    script_name        SCRIPT_NAME
-    secure             HTTPS
-    server_name        SERVER_NAME
-    server_host        HTTP_HOST
-    server_port        SERVER_PORT
-    useragent          HTTP_USER_AGENT
+    authorization         AUTHORIZATION
+    content_length        CONTENT_LENGTH
+    content_type          CONTENT_TYPE
+    content_encoding      HTTP_CONTENT_ENCODING
+    cookie                HTTP_COOKIE
+    http_host             HTTP_HOST
+    path_info             PATH_INFO
+    pragma                HTTP_PRAGMA
+    query_string          QUERY_STRING
+    referer               HTTP_REFERER
+    remote_addr           REMOTE_ADDR
+    remote_host           REMOTE_HOST
+    remote_user           REMOTE_USER
+    request_method        REQUEST_METHOD
+    request_uri           REQUEST_URI
+    script_name           SCRIPT_NAME
+    secure                HTTPS
+    server_name           SERVER_NAME
+    server_host           HTTP_HOST
+    server_port           SERVER_PORT
+    useragent             HTTP_USER_AGENT
+    http_x_forwarded_for  HTTP_X_FORWARDED_FOR
+
+
 /;
 
 my @RedirMap = qw/
