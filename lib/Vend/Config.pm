@@ -3666,7 +3666,8 @@ sub set_defaults {
 	}
 
     # check MV_HTTP_CHARSET against a valid encoding
-    if (my $enc = $C->{Variable}->{MV_HTTP_CHARSET}) {
+    if ( !$ENV{MINIVEND_DISABLE_UTF8} &&
+         (my $enc = $C->{Variable}->{MV_HTTP_CHARSET}) ) {
         if (my $norm_enc = Vend::CharSet::validate_encoding($enc)) {
             if ($norm_enc ne $enc) {
                 config_warn("Provided MV_HTTP_CHARSET '$enc' resolved to '$norm_enc'.  Continuing.");
