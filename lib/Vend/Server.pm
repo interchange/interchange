@@ -67,6 +67,7 @@ my @Map = qw/
     content_encoding      HTTP_CONTENT_ENCODING
     cookie                HTTP_COOKIE
     http_host             HTTP_HOST
+    http_x_forwarded_for  HTTP_X_FORWARDED_FOR
     path_info             PATH_INFO
     pragma                HTTP_PRAGMA
     query_string          QUERY_STRING
@@ -82,8 +83,6 @@ my @Map = qw/
     server_host           HTTP_HOST
     server_port           SERVER_PORT
     useragent             HTTP_USER_AGENT
-    http_x_forwarded_for  HTTP_X_FORWARDED_FOR
-
 
 /;
 
