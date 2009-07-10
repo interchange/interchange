@@ -277,7 +277,20 @@
 [search-list]
 <TR [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
 
-	<TD><INPUT TYPE=checkbox NAME=customer VALUE="[item-code]">
+	<TD><INPUT TYPE=checkbox NAME=customer VALUE="[item-code]"
+[item-calc]
+  my $string = '';
+  if(! $Scratch->{old_browser}) {
+    my $nm = 'checker[item-increment]';
+    push @els, qq{push_el('$nm', '[item-param status]');};
+    $string .= "id=$nm ";
+  }
+  return $string if $Scratch->{archive_nm} eq 'unarchive';
+  $string .= 'CHECKED' if q{[item-param status]} eq $Values->{checked_status};
+  return $string;
+[/item-calc]
+>
+
 [page href="@@MV_PAGE@@"
 	extra="title=[scratch active_nm]"
 	form="
@@ -377,6 +390,73 @@ so there's a full line across the page even if table cells are blank.
 [/if-mm]
 
 [/search-region]
+
+[output name=""]
+
+[if !scratch old_browser]
+<script>
+	var stat_array = new Array;
+	function push_el (el, status) {
+		if(stat_array[status] == undefined) {
+			stat_array[status] = new Array;
+// alert('created ' + status + ' array');
+		}
+		var els = stat_array[status];
+		els[els.length] = el;
+	}
+
+	function checkType (type, cond) {
+		var other = false;
+		if(cond == undefined) 
+			cond = true;
+		if(cond != true) 
+			other = true;
+		if(stat_array == undefined) {
+			return;
+		}
+		var i;
+		var alerted;
+		for(i in stat_array) {
+// alert("checking status of " + i);
+			var els = stat_array[i];
+			for (var j = 0; j < els.length; j++) {
+				var el = document.getElementById(els[j]);
+				if(el != undefined) {
+					if( type == 'none' ) {
+						el.checked = false;
+					}
+					else {
+						if( type == 'all' ) {
+							el.checked = true;
+						}
+						else {
+							if(i == type)
+								el.checked = cond;
+							else
+								el.checked = other;
+						}
+					}
+				}
+			}
+			var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
+			var types = ['all', 'none'];
+			for(var i = 0; i < types.length; i++) {
+				var img = document.getElementById('img_check_' + types[i]);
+				if(img != undefined) 
+					img.src= image_dir + 'box_empty.gif';
+			}
+			var img = document.getElementById('img_check_' + type);
+			img.src= image_dir + 'box_checked.gif';
+		}
+	}
+	[calc]
+		return join "\n", @els, '';
+	[/calc]
+</script>
+			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>[L]Check all[/L]</A>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<A HREF="javascript:checkType('none')"><img id="img_check_none" src="__UI_IMG__box_empty.gif" border=0>[L]Uncheck all[/L]</A>
+[/if]
 
 [output name=bottom_of_form]
 </FORM>
