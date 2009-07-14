@@ -126,6 +126,7 @@ box or in a set of links.
 @S_FIELDS = ( 
 qw!
 	s_nickname
+	company
 	name
 	fname
 	lname
