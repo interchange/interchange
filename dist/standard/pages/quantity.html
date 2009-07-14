@@ -26,64 +26,65 @@ ui_template_name: leftonly
 <!-- BEGIN CONTENT -->
 
 <br>
-				  
+
 [fly-list code="[data session arg]"]
-                    
+
 <table width="65%" border="0">
-<tr class="contentbar1"> 
-  <td>
-    <big>[item-field category] : <b>[item-description]</b></big>
-  </td>
-</tr>
+	<tr class="contentbar1">
+		<td>
+			<big>[item-field category] : <b>[item-description]</b></big>
+		</td>
+	</tr>
 </table>
-					
+
 <table width="65%" border="0">
-<tr valign="middle"> 
-  <td align=center> 
-    <table border="0" cellspacing="5" align="center">
-    <tr> 
-      <td valign="center" align="center"> 
+	<tr valign="middle">
+		<td align="center">
+			<table border="0" cellspacing="5" align="center">
+				<tr>
+					<td valign="middle" align="center">
 	[if-item-field image]
-	  <IMG SRC="items/[item-field image]" ALT="[item-description]" BORDER="0">
-	[/if-item-field]							  
-      </td>
-      <td valign="center" align="center"> 
-        <table border="0" cellpadding="3" cellspacing="0">
-        <tr> 
-          <td align="center">&nbsp;</td>
-        </tr>									
-        <tr> 
-          <td colspan="2">   
-  	    [item-field comment]
-          </td>
-        </tr>
-	<tr><td>&nbsp;</td></tr>
+	  <img src="items/[item-field image]" alt="[item-description]">
+	[else]&nbsp;[/else]
+	[/if-item-field]
+					</td>
+					<td valign="middle" align="center">
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td align="center">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									[either][item-field comment][or]&nbsp;[/either]
+								</td>
+							</tr>
+							<tr><td>&nbsp;</td></tr>
 
 [seti count][data table=inventory column=quantity key='[item-code]'][/seti]
 [if scratch count eq 0]
-        <tr> 
-          <td>
-	    <b>[L]Out Of Stock[/L]</b>
-	    <a href="[area function/stock_alert [item-code]]">[L]In Stock Notification[/L]</a>
-          </td>
-        </tr>
+							<tr>
+								<td>
+									<b>[L]Out Of Stock[/L]</b>
+									<a href="[area function/stock_alert [item-code]]">[L]In Stock Notification[/L]</a>
+								</td>
+							</tr>
 [else]
-        <tr> 
-          <td>
-	    <b>In Stock</b>
-	  </td>
-        </tr>
+							<tr>
+								<td>
+									<b>[L]In Stock[/L]</b>
+								</td>
+							</tr>
 [/else]
-[/if]									
-        </table>
-      </td>
-    </tr>
-    </table>
-  </td>
-</tr>
+[/if]
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 </table>
-					
-<br>			  
+
+<br>
 
 [set quantities]1 5 10 25[/set]
 			[calc]
@@ -97,7 +98,7 @@ ui_template_name: leftonly
 
 [loop prefix="part" list="[data session arg]"]
 
-<TABLE width="65%" cellpadding="5">
+<table width="65%" cellpadding="5">
 [table-organize
 			caption="Quantity Pricing"
 			rows="2"
@@ -106,18 +107,18 @@ ui_template_name: leftonly
 			tr.1=|class="maincontent"|
 			cols="[scratch qp_columns]"
 			]
-  <TD>
-    [L]Part No.[/L]
-  </TD>
-  <TD VALIGN=TOP>[part-code]</TD>
-  [loop list="[scratch quantities]"]
-  <TD VALIGN=BOTTOM ALIGN=RIGHT>[loop-code]</TD>
-  <TD VALIGN=TOP ALIGN=RIGHT>
-    [order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</A>	
-  </TD>
-  [/loop]
+	<td>
+		[L]Part No.[/L]
+	</td>
+	<td valign="top">[part-code]</td>
+	[loop list="[scratch quantities]"]
+	<td valign="bottom" align="right">[loop-code]</td>
+	<td valign="top" align="right">
+		[order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</a>
+	</td>
+	[/loop]
 [/table-organize]
-</TABLE>
+</table>
 
 [/loop]
 
