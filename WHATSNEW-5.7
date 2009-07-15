@@ -13,6 +13,8 @@ Interchange 5.7.2 not yet released.
 Core
 ----
 
+* Fix validate_charset to return mime charset names only.
+
 * Enabled catalog usertags within dispatch routines.
 
 * SpecialSub order_missing added (#221).
@@ -145,6 +147,9 @@ Payment
   should review any custom credit card encryption templates to make sure that
   the CVV2 is not included, and purge it from any historical data.
 
+* Send correct level 2 card data with AuthorizeNet module. This improves the
+  discount rate for a lot of card types.
+
 UserTag
 -------
 
@@ -176,6 +181,12 @@ SystemTag
   is also a new compensate_dst attribute that when set to 1 will compensate the
   adjusted time for daylight savings time changes.
 
+Filter
+------
+
+* Make code/Filter/text2html.filter output valid code.
+  Using double <br>'s instead of opening tag <p>.
+
 Checks
 ------
 
@@ -191,6 +202,8 @@ Jobs
 Admin UI
 --------
 
+* Check/uncheck all facility for customers/items (#18).
+
 * Allow file removal with uploadhelper widget (#180).
 
 * New user_merge specialsub is run from the [user-merge] tag when two users are
@@ -199,9 +212,22 @@ Admin UI
 Standard demo
 -------------
 
+* Correct update of saved company value for shipping address (#125).
+
+* Corrected min/max length for username entry to ship_addresses.html (#114).
+
+* Refurbished standard/pages/quantity.html (#204).
+
+* Added German locale translations (#40).
+
+* Fixed wrong URLs in language selection (#265).
+
 * Removed spurious SQLite database configuration file.
 
 * Removed rarely used mass_setting admininstration page.
+
+* Add company name to shipping and billing addresses and filter output 
+  with evalue.
 
 
 ------------------------------------------------------------------------------
