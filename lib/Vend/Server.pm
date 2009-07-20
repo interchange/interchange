@@ -558,7 +558,7 @@ sub respond {
 	# Safe kludge: duplicate Vend::CharSet::default_charset method here
 	# so that $Document->send() will work from within Safe
 	my $c = $Global::Selector{$CGI::script_name};
-	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET} || 'iso-8859-1';
+	my $response_charset = $c->{Variable}{MV_HTTP_CHARSET} || $Global::Variable->{MV_HTTP_CHARSET};
 
 	my $status;
 	return if $Vend::Sent;
@@ -591,8 +591,16 @@ sub respond {
     binmode(MESSAGE, ':utf8') if ($response_charset =~ /^utf-?8$/i and $Vend::StatusLine =~ /^Content-Type: text\//);
 
 	if(! $s and $Vend::StatusLine) {
-		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
-							? '' : "\r\nContent-Type: text/html; charset=$response_charset\r\n";
+	    if ($Vend::StatusLine !~ /^Content-Type:/im) {
+		$Vend::StatusLine .= "\r\nContent-Type: text/html";
+		if ($response_charset) {
+		     $Vend::StatusLine .= "; charset=$response_charset\r\n";
+		}
+
+		else {
+		     $Vend::StatusLine .= "\r\n";
+		}
+	    }
 
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
