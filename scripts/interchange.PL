@@ -999,6 +999,7 @@ Mike Heins is the primary author of Interchange.
 The Interchange Development Group is:
 
     Daniel Browning
+    David Christensen
     Davor Ocelic
     Ethan Rowe
     Gert van der Spoel
@@ -1049,34 +1050,33 @@ Contributions to Interchange have been made by:
 
 =pod
 
-    Alison Smith                        Jochen Wiedmann
-    Andreas Koenig                      Jonathan Walker
-    Andrew Rich                         Jordan Adler
-    Bill Carr                           Josh Braegger
-    Bill Dawkins                        Josh Lavin
-    Bill Randle                         José Mª Revuelto
-    Birgitt Funk                        Jurgen Botz
-    Bob Jordan                          Kaare Rasmussen
-    Brent Kelly                         Keiko
-    Brian Bullen                        Keith Oberlin
-    Brian Kosick                        Kim Lauritz Christensen
-    Brian Miller                        Larry Huffman
-    Bruce Albrecht                      Larry Leszczynski
-    Cameron Prince                      Lars Tode
-    Carl Bailey                         Lyn St George
-    Chen Naor                           Marc Austin
-    Christian Mueller                   Mark Stosberg
-    Christopher Miller                  Marty Tennison
-    Christopher Thompson                Massimiliano Ciancio
-    Christopher Wenham                  Mat Jones
-    Dan Busarow                         Matthew Schick
-    Dan Collis-Puro                     Max Cohan
-    Dan Helfman                         Michael Lehmkuhl
-    Daniel Hutchinson                   Michael McCune
-    Daniel Thompson                     Michael Wilk
-    Dave Wingate                        Mick Weiss
-    David Adams                         Mike Frager
-    David Christensen                   Neil Evans
+    Alison Smith                        Jonathan Walker
+    Andreas Koenig                      Jordan Adler
+    Andrew Rich                         Josh Braegger
+    Bill Carr                           Josh Lavin
+    Bill Dawkins                        José Mª Revuelto
+    Bill Randle                         Jurgen Botz
+    Birgitt Funk                        Kaare Rasmussen
+    Bob Jordan                          Keiko
+    Brent Kelly                         Keith Oberlin
+    Brian Bullen                        Kim Lauritz Christensen
+    Brian Kosick                        Larry Huffman
+    Brian Miller                        Larry Leszczynski
+    Bruce Albrecht                      Lars Tode
+    Cameron Prince                      Lyn St George
+    Carl Bailey                         Marc Austin
+    Chen Naor                           Mark Stosberg
+    Christian Mueller                   Marty Tennison
+    Christopher Miller                  Massimiliano Ciancio
+    Christopher Thompson                Mat Jones
+    Christopher Wenham                  Matthew Schick
+    Dan Busarow                         Max Cohan
+    Dan Collis-Puro                     Michael Lehmkuhl
+    Dan Helfman                         Michael McCune
+    Daniel Hutchinson                   Michael Wilk
+    Daniel Thompson                     Mick Weiss
+    Dave Wingate                        Mike Frager
+    David Adams                         Neil Evans
     Dennis Cronin                       Nelson Ferrari
     Don Grodecki                        Paul Delys
     Don Hathaway                        Paul Jordan
@@ -1101,6 +1101,7 @@ Contributions to Interchange have been made by:
     Jeff Carnahan                       Victor Nolton
     Jeff Fearn                          William Dan Terry
     Jeff Nappi                          Zachary Matthews
+    Jochen Wiedmann
 
     and many others.
 
