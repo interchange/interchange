@@ -1967,17 +1967,15 @@ sub route_order {
 						$main->{rollback}
 			);
 		}
+        $Vend::Session->{order_error} = $errors;
+        ::logError("ERRORS on ORDER %s:\n%s", $::Values->{mv_order_number}, $errors);
+
 		if ($main->{errors_to}) {
-			$Vend::Session->{order_error} = $errors;
 			send_mail(
 				$main->{errors_to},
 				errmsg("ERRORS on ORDER %s", $::Values->{mv_order_number}),
 				$errors
 				);
-		}
-		else {
-			$Vend::Session->{order_error} = $errors;
-			::logError("ERRORS on ORDER %s:\n%s", $::Values->{mv_order_number}, $errors);
 		}
 	}
 
