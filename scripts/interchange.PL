@@ -998,23 +998,23 @@ Mike Heins is the primary author of Interchange.
 
 The Interchange Development Group is:
 
-Dan Browning
-David Kelly
-Davor Ocelic
-Ethan Rowe
-Gert van der Spoel
-Greg Hanson
-Jon Jensen
-Jonathan Clark
-Kevin Walsh
-Mark Johnson
-Mike Heins
-Paul Vinciguerra
-Peter Ajamian
-Stefan Hornburg (aka Racke), captain
-Randy Moore
-Ron Phipps
-Ton Verhagen
+    Daniel Browning
+    David Christensen
+    Davor Ocelic
+    Ethan Rowe
+    Gert van der Spoel
+    Greg Hanson
+    Jon Jensen
+    JT Justman
+    Jure Kodzoman
+    Kevin Walsh
+    Mark Johnson
+    Mark Lipscombe
+    Mike Heins
+    Peter Ajamian
+    Ron Phipps
+    Stefan Hornburg (aka Racke), captain
+    Ton Verhagen
 
 Please do not contact the authors directly for help with the system.
 Use the Interchange mail list:
@@ -1033,6 +1033,15 @@ Andrew Wilcox <amw@wilcoxsolutions.com>. Interchange could never have
 come into being without him. Interchange was based on Vend 0.2, with
 portions from Vend 0.3; both were produced in 1995.
 
+Special thanks to Retired Core Team Members:
+
+    Brev Patterson
+    David Kelly
+    Ed LaFrance
+    Jonathan Clark
+    Paul Vinciguerra
+    Randy Moore
+
 Contributions to Interchange have been made by:
 
 =cut
@@ -1041,42 +1050,62 @@ Contributions to Interchange have been made by:
 
 =pod
 
-    Andreas Koenig           Jason Holt
-    Bill Carr                Jason Kohles
-    Bill Dawkins             Javier Martin
-    Bill Randle              Jeff Carnahan
-    Birgitt Funk             Jeff Nappi
-    Bob Jordan               Jochen Wiedmann
-    Brev Patterson           José Mª Revuelto
-    Brian Bullen             Jure Kodzoman
-    Brian Kosick             Jurgen Botz
-    Bruce Albrecht           Keiko
-    Cameron Prince           Keith Oberlin
-    Chen Naor                Kim Lauritz Christensen
-    Christian Mueller        Larry Leszczynski
-    Christopher Miller       Marc Austin
-    Christopher Thompson     Mark Stosberg
-    Dan Busarow              Massimiliano Ciancio
-    Dan Helfman              Matthew Schick
-    Daniel Thompson          Michael McCune
-    Dave Wingate             Michael Wilk
-    David Adams              Mike Frager
-    Dennis Cronin            Neil Evans
-    Don Grodecki             Nelson Ferrari
-    Ed LaFrance              Raj Goel
-    Frank Bonita             Ray Desjardins
-    Frederic Steinfels       Shozo Murahashi
-    Gunnar Hellekson         Sonny Cook
-    Hamish Bradick           Steve Graham
-    Hans-Joachim Leidinger   Tim Baverstock
-    Heinz Wittenbecher       Tom Friedel
-    Hiroyuki Cozy Kojima     Tommi Laberno
-    Ignacio Lizarán          Troy Davis
-    Jack Tsai                Victor Nolton 
-                             William Dan Terry
-    and many others
+    Alison Smith                        Jonathan Walker
+    Andreas Koenig                      Jordan Adler
+    Andrew Rich                         Josh Braegger
+    Bill Carr                           Josh Lavin
+    Bill Dawkins                        José Mª Revuelto
+    Bill Randle                         Jurgen Botz
+    Birgitt Funk                        Kaare Rasmussen
+    Bob Jordan                          Keiko
+    Brent Kelly                         Keith Oberlin
+    Brian Bullen                        Kim Lauritz Christensen
+    Brian Kosick                        Larry Huffman
+    Brian Miller                        Larry Leszczynski
+    Bruce Albrecht                      Lars Tode
+    Cameron Prince                      Lyn St George
+    Carl Bailey                         Marc Austin
+    Chen Naor                           Mark Stosberg
+    Christian Mueller                   Marty Tennison
+    Christopher Miller                  Massimiliano Ciancio
+    Christopher Thompson                Mat Jones
+    Christopher Wenham                  Matthew Schick
+    Dan Busarow                         Max Cohan
+    Dan Collis-Puro                     Michael Lehmkuhl
+    Dan Helfman                         Michael McCune
+    Daniel Hutchinson                   Michael Wilk
+    Daniel Thompson                     Mick Weiss
+    Dave Wingate                        Mike Frager
+    David Adams                         Neil Evans
+    Dennis Cronin                       Nelson Ferrari
+    Don Grodecki                        Paul Delys
+    Don Hathaway                        Paul Jordan
+    Donald Alexander                    Phil Smith
+    Eric Zarko                          Raj Goel
+    Frank Bonita                        Ray Desjardins
+    Frederic Steinfels                  Reid Sutherland
+    Gary Benson                         René Hertell
+    Gunnar Hellekson                    Ryan Perry
+    Hamish Bradick                      Sergiusz Jarczyk
+    Hans-Joachim Leidinger              Shozo Murahashi
+    Heinz Wittenbecher                  Sonny Cook
+    Hiroyuki Cozy Kojima                Spencer Christensen
+    Ignacio Lizarán                     Steve Graham
+    Ivan Kohler                         Thomas J.M. Burton
+    Jack Tsai                           Tim Baverstock
+    Jason Holt                          Tom Friedel
+    Jason Kohles                        Tom Tucker
+    Javier Martin                       Tommi Laberno
+    Jeff Barr                           Toni Mueller
+    Jeff Boes                           Troy Davis
+    Jeff Carnahan                       Victor Nolton
+    Jeff Fearn                          William Dan Terry
+    Jeff Nappi                          Zachary Matthews
+    Jochen Wiedmann
 
-and, of course, the entire Perl team without whom Interchange could not exist.
+    and many others.
+
+And, of course, the entire Perl team without whom Interchange could not exist.
 
 =cut
 
