@@ -35,7 +35,7 @@ use Getopt::Long;
 
 use vars qw/$Self/;
 
-Getopt::Long::config(qw/permute/);
+Getopt::Long::config(qw/permute no_ignore_case/);
 
 BEGIN {
 	$::Self = {
