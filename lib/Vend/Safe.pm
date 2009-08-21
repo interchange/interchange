@@ -1,7 +1,5 @@
 # Vend::Safe - utility methods for handling character encoding
 #
-# $Id$
-#
 # Copyright (C) 2009 Interchange Development Group
 # Copyright (C) 2009 David Christensen <david@endpoint.com>
 #
@@ -58,8 +56,7 @@ sub initialize_safe_compartment {
     $compartment->deny_only(); # permit everything
 
     # add custom shared variables for unicode support
-    $compartment->share_from('main',['&utf8::SWASHNEW']);
-    $compartment->share_from('main',['&utf8::SWASHGET']);
+    $compartment->share_from('main', ['&utf8::SWASHNEW', '&utf8::SWASHGET']);
 
     # preload utf-8 stuff in compartment
     $compartment->reval('qr{\x{0100}}i');
