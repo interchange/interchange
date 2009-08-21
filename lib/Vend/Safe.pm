@@ -57,8 +57,9 @@ sub initialize_safe_compartment {
     my $mask = $compartment->mask;
     $compartment->deny_only(); # permit everything
 
-    # add custom share variable for unicode support
+    # add custom shared variables for unicode support
     $compartment->share_from('main',['&utf8::SWASHNEW']);
+    $compartment->share_from('main',['&utf8::SWASHGET']);
 
     # preload utf-8 stuff in compartment
     $compartment->reval('qr{\x{0100}}i');
