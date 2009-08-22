@@ -766,7 +766,7 @@ sub handler {
 		$r->content_type($set_content);
 		my $no_blank_lines = $r->dir_config('NoBlankLines');
 		while (<SOCK>) {
-		    push @out, $_ unless $no_blank_lines and ! /\S/;
+			push @out, $_ unless $no_blank_lines and ! /\S/;
 		}
 		close (SOCK)                                or die "close: $!\n";
 		print @out;
