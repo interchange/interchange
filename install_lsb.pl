@@ -79,7 +79,7 @@ while (my ($from, $to) = each %relocate) {
 	}
 	next unless -f $from;
 	File::Copy::move($from, $to)
-		or die "Unable to move from $from to $to: $@ --> $!\n";
+		or die "Unable to move from $from to $to: $!\n";
 }
 
 my $data;
