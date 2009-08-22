@@ -2,9 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.14 2007-11-16 15:18:43 jon Exp $
-#
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -47,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.14 $
+2009-08-22
 
 =head1 SYNOPSIS
 
@@ -315,6 +313,11 @@ files from being served directly by Apache, you can either put them
 under a directory at the Interchange location, or you can use normal
 Apache exclusions.
 
+=item NoBlankLines
+
+Set C<NoBlankLines> to 1 to remove blank lines from the outputted source
+code.
+
 =back
 
 =head1 BUGS
@@ -324,8 +327,8 @@ Send bug reports and suggestions to the Interchange users list,
 
 =head1 COPYRIGHT AND LICENSE
 
+ Copyright (C) 2002-2009 Interchange Development Group
  Copyright (C) 1996-2002 Red Hat, Inc.
- Copyright (C) 2002-2007 Interchange Development Group
 
 This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -421,21 +424,19 @@ sub server_not_running {
 
     $r->content_type ("text/html");
     $r->print (<<EOF);
-<html><head><title>Interchange server not running</title></head>
-<body bgcolor="#FFFFFF">
-<h3>We're sorry, the Interchange server was not running...</h3>
+<html><head><title>Service unavailable</title></head>
+<body>
 <p>
-We are out of service or may be experiencing high system demand.
+We are temporarily out of service or may be experiencing high system demand.
 Please try again soon.
 </p>
-<h3>This is it:</h3>
-<pre>
-$arg
-$env
-$ent
-</pre>
-</body></html>
+</body>
+</html>
 EOF
+# use for debugging:
+#$arg
+#$env
+#$ent
 
 }
 
@@ -763,8 +764,9 @@ sub handler {
 	else {
 
 		$r->content_type($set_content);
-		while( <SOCK> ) {
-			push @out, $_;
+		my $no_blank_lines = $r->dir_config('NoBlankLines');
+		while (<SOCK>) {
+		    push @out, $_ unless $no_blank_lines and ! /\S/;
 		}
 		close (SOCK)                                or die "close: $!\n";
 		print @out;
