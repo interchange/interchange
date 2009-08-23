@@ -1,0 +1,31 @@
+# Copyright 2009 Interchange Development Group and others
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version. See the LICENSE file for details.
+
+CodeDef strip_html Filter
+CodeDef strip_html Description Strip HTML
+CodeDef strip_html Routine <<EOR
+sub {
+    my $val = shift;
+
+    # replace these container tags with a space
+    $val =~ s{</?(?:p|ol|ul|li|div|h[123456]|pre|dl|dd|dt|form|option|textarea|blockquote)(?:\s[^>]*)?>}{ }ig;
+
+    # replace these self-closing tags with a space
+    $val =~ s{<[bh]r(?:\s*/|\s[^>]*)?>}{ }ig;
+
+    # remove all remaining tags and leave no space
+    $val =~ s{</?\w[^>]*>}{}g;
+
+    # collapse all whitespace, as HTML does when rendering anyway,
+    # to facilitate truncating at a certain number of characters
+    $val =~ s{\A\s+}{};
+    $val =~ s{\s+\z}{};
+    $val =~ s{\s+}{ }g;
+
+    return $val;
+}
+EOR
