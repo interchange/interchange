@@ -1695,8 +1695,9 @@ sub new_account {
 			$self->{USERNAME} = lc $self->{USERNAME}
 				if $self->{OPTIONS}{ignore_case};
 		}
-		die errmsg("Can't have '%s' as username; it contains illegal characters.",
-			$self->{USERNAME}) . "\n"
+		# plain error message without user-supplied username
+		# to avoid XSS exploit (RT #306)
+		die errmsg("Username contains illegal characters.")
 			if $self->{USERNAME} !~ m{^$self->{VALIDCHARS}+$};
 		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
