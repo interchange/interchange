@@ -73,6 +73,7 @@ code/Filter/sql.filter
 code/Filter/strftime.filter
 code/Filter/strikeout.filter
 code/Filter/strip.filter
+code/Filter/strip_html.filter
 code/Filter/tabbed.filter
 code/Filter/text2html.filter
 code/Filter/textarea_get.filter
