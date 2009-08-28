@@ -127,6 +127,10 @@ Core
   because Getopt::Long ignores option case by default.  This fixes the problem
   by passing the no_ignore_case config parameter to Getopt::Long.
 
+* If the flypge SpecialSub returned a non-existent SKU then a blank flypage
+  would be displayed (with no data).  This is now fixed so that there is no
+  difference to what happens without a SpecialSub.
+
 Payment
 -------
 
