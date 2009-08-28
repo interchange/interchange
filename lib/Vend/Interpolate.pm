@@ -2683,7 +2683,7 @@ sub tag_area {
 		$Vend::Session->{$aloc}{$page} = $opt->{alias};
 	}
 
-	my $r;
+	my ($r, $subname);
 
 	if ($opt->{search}) {
 		$page = escape_scan($opt->{search});
@@ -2717,6 +2717,13 @@ sub tag_area {
 		$page = escape_scan($arg);
 		undef $arg;
 	}
+
+	elsif ($subname = $Vend::Cfg->{SpecialSub}{areapage}) {
+            my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+            my $newpage = $sub->($page, $opt);
+            $page = $newpage if defined $newpage;
+            $arg = $opt->{arg};
+        }
 
 	$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
 
