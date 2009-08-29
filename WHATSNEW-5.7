@@ -48,6 +48,28 @@ Core
   slow but it will be limited to that eventuality, not every uploaded
   file.
 
+* Vend::Interpolate::taxable_amount: Remove unnecessary calls to item_subtotal
+  and thus the database. Thanks to Josh Braegger <jbraegger@backcountry.com>.
+
+* Unit tests: Test various values access methods. Fix some [query] test
+  corner cases.
+
+* Add new child-process tag and core support routines. This tag runs
+  ITL code in a forked child process. Useful for offloading processes
+  that take a relatively long time to complete.
+
+* link programs:
+  * Make HTML just a tad more modern.
+  * Make message configurable in config.h.in.
+  * Alter compile_link.PL to allow error message to be built from a file.
+    Uses four lines, concatenating remainder of file into one big line 4.
+    Tested with 70K file with many double-quotes, newlines, and carriage
+    returns.
+  * Add status option to make compile_link.PL to make error status
+    configurable.
+  * Add status option to make compile_link.PL to make error content type
+    configurable.
+
 * Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
 
   http://hostname/?somevar=1
@@ -56,8 +78,226 @@ Core
 
   Thanks to David Christensen <david@endpoint.com> for the fix.
 
+* Correct .access functionality directly in pages/
+    
+  .access worked in subdirectories like pages/abc/, but didn't work directly
+  under pages/.
+
+* BounceReferrals changes:
+    
+  * Fix bug that kept query strings from being passed through due to use of
+  nonexistent %$CGI::Values instead of %CGI::Values.
+  
+  * Remove mv_pc and mv_source to prevent redirection loops.
+  
+  * Don't generate a "process" URL for root URL; use DirectoryIndex instead,
+    if available.
+
+* Made [email] process cc and bcc options for plain text emails (#250).
+
+* Allow catalogs to be set to have Perl always global by default.
+    
+      AllowGlobal        catname
+      PerlAlwaysGlobal   catname
+  
+    This is a global directive (i.e. interchange.cfg).
+  
+    [perl global=0] will still be honored, i.e. that will be interpreted
+    by Safe.
+  
+  * Allow catalogs to turn off "strict" in global mode by default:
+  
+      PerlNoStrict       catname
+  
+    This is a global directive (i.e. interchange.cfg).
+  
+  This is intended as an easy way to allow catalogs to work all right
+  with Vend::Charset. Sad, but can't think of any better way short of
+  maintaining our own version of the UTF8 modules. It is really sad,
+  because the Perl powers that be have totally abandoned Opcode and
+  Safe.
+  
+  NOT RECOMMENDED FOR USE BY NON-SOPHISTICATED INTERCHANGE USERS.
+
+* Correct issue with hi-bit characters in search strings.
+    
+  This corrects the "Wide character in subroutine entry" error that
+  occurs when hi-bit characters are used in a search. The failure was
+  caused by Digest::MD5's reluctance to process characters > 0xFF, so we
+  just convert any search options to UTF8 before calculating the MD5.
+
+* Add maps of country names and international shipping services needed
+  by USPS in [usps-query]. By Josh Lavin.
+
+* Add support for SHA1 encrypted userdb passwords.
+    
+  * Add new "promote" feature. When active, and passwords
+    of any of the other algorithms are present, on next
+    login the user's password will be promoted to the
+    target hashing algorithm. This way, password strength
+    can be increased organically.
+  
+  Use of SHA1 passwords can be specified in the same manner
+  as currently MD5 can be:
+  
+  UserDB  ui  sha1  1
+  
+  To utilize the promotion feature, you add a similar line
+  for the UserDB definition:
+  
+  UserDB  ui  promote 1
+  
+  Promote implies that strength is increased, but in reality
+  promotion will move in any direction desired. The requested
+  hashing algorithm is the target, and whatever the form of the
+  passwords in the database, they will be converted to the target.
+  
+  E.g., if neither sha1 nor md5 is specified, and the database
+  currently has md5 passwords, if promote is added, it will have
+  the effect of promoting to crypt(), the target hashing algorithm
+  (which happens to be the default).
+  
+  If promote is not used, the change is fully backward compatible.
+  Whatever method is specified will be used, and if the database
+  has passwords of a different algorithm, authentication will fail.
+  
+  You should not specify more than 1 hashing type. If you specify
+  both md5 and sha1, you'll be subject to the whims of hash
+  ordering from keys().
+  
+  Also note that, before promoting to a stronger hash, you should
+  ensure your database's password field is long enough to hold the
+  new, longer datum.
+  
+  Original work from Steven Jenkins <steven@endpoint.com> for
+  framework of promotion code.
+
+* Add global timeout feature for payment gateways.
+    
+  The different payment gateways all tend to implement their own timeout features
+  with varying degrees of success. In particular, LWP-based clients do not appear
+  to have any capability of passing a timeout by the developer whenever it uses
+  the https protocol. Thus, the use of LWP's timeout feature is illusory and
+  forces any activity to a 180s timeout.
+  
+  The new feature completely separates out the gateway activity with a fork,
+  giving it reliable control over the duration of the gateway request. It also
+  eliminates the need for each gateway module to implement its own timeout,
+  either because the developer chose not to, didn't consider it, or because the
+  developer discovered it was hopeless to do so using LWP.
+  
+  The feature is invoked using the "global_timeout" option in the payment route,
+  or as an opt passed to [charge]. global_timeout should be any positive integer,
+  which will define the number of seconds until the timeout is triggered. If this
+  new option is not used, the effect is a no-op, with behavior identical to that
+  prior to the feature. No changes in config means completely backward
+  compatible.
+  
+  Additionally, a new "global_timeout_msg" option is available so that the
+  message produced if the alarm fires can be customized within the payment route.
+  
+  E.g.:
+  
+      Route   payflowpro    id                 "__PAYFLOWPRO_ID__"
+      Route   payflowpro    secret             "__PAYFLOWPRO_SECRET__"
+      Route   payflowpro    partner            "__PAYFLOWPRO_PARTNER__"
+      Route   payflowpro    vendor             "__PAYFLOWPRO_VENDOR__"
+      Route   payflowpro    host               "__PAYFLOWPRO_SERVER__"
+      Route   payflowpro    transaction        A
+      Route   payflowpro    global_timeout     20
+      Route   payflowpro    global_timeout_msg "We're sorry ... [etc.]"
+
+* Add DowncaseVarname config. Given a space- or comma-delimited list of CGI
+  params, Interchange will accept those params in any case from the query
+  string and force them to lower case. Developed primarily to address affliates
+  creating URLs with "mv_pc" but using inconsistent case in the URL, and thus
+  Interchange missing it.
+
 * Add new SessionCookieSecure boolean catalog directive. When enabled, makes
   session cookie set in https usable only in https.
+
+* Added new SourcePriority catalog directive.
+
+  SourcePriority <source_list>
+  
+  <source_list> is a prioritized list of cgi variables to get the source
+  (affiliate) name from.  Can also include the following:
+  
+  mv_pc - has the current special casing of mv_pc, (ie RESET is special as
+  are values that contain only digits).
+  
+  cookie-foo check the cookie with the foo label.
+  
+  session - stop here if session already exists, do not check any further
+  variables.
+  
+  session-foo - stop here if foo session variable is set.
+  
+  Default: SourcePriority mv_pc mv_source
+  
+  Examples:
+  
+  Check the MV_SOURCE cookie for an affiliate name as well as the other defaults:
+  SourcePriority mv_pc mv_source cookie-MV_SOURCE
+  
+  ...as above, but you don't want your affiliates using mv_pc:
+  SourcePriority mv_source cookie-MV_SOURCE
+  
+  Check the cgi variable affid instead:
+  SourcePriority affid
+  
+  Say you send affiliate traffic to other sites, and you don't want
+  those sites to get credit for sales if a customer follows a banner from
+  them back to your site:
+  SourcePriority session mv_pc mv_source
+  
+  If you want affiliates who use the specialsource cgi variable instead of
+  mv_source to get special treatment and can override customers who
+  already have sessions:
+  SourcePriority specialsource session mv_pc mv_source
+  
+  If you want to allow affiliates to get credit if there is a
+  session but only if no other affiliate is already set:
+  SourcePriority session-source mv_pc mv_source
+
+* Add directive SourceCookie, support for persistent affiliate tracking.
+    
+  Setting SourceCookie defines the relevant attributes of a cookie to be
+  maintained in conjunction with the usual session-only parameter
+  $Session->{source}. Its usage eliminates the duration of the user's session as
+  the limiting factor for applying credit to a referral.
+  
+  SourceCookie and SourcePriority would be expected to typically work in tandem,
+  and thus the same cookie defined in both contexts. However, there is no such
+  requirement to do so. Defining SourceCookie by itself merely makes the cookie
+  available any time the core source routines set or manipulate
+  $Session->{source}. That cookie may, or may not, be leveraged as an element in
+  SourcePriority, which itself may look to a cookie not maintained by
+  SourceCookie.
+  
+  SourceCookie supports the following attributes:
+  
+  * name (required)
+  * expire (any format supported for [set-cookie])
+  * domain
+  * path
+  * secure
+  * autoreset
+  
+  autoreset is a boolean that, when true, will cause each request from the client
+  to reset the cookie in the response, effectively refreshing the expiration time
+  relative to the current time. Uses, for example, might include a desire to
+  ensure that the source cookie last "forever" (autoreset + sufficiently long
+  expire period) or for more obscure uses such as "Affiliate should last [value
+  of expire] from the last request".
+  
+  Attributes may be positional in order of (name expire domain path secure), but
+  it is recommended that they be expressed as key=value pairs for clarity.
+  
+  Example using both SourcePriority and SourceCookie together in catalog.cfg:
+  
+  SourcePriority mv_pc mv_source cookie-MV_SOURCE
+  SourceCookie name=MV_SOURCE expire="180 days"
 
 * Add reload of AutoModifier based on a prepended ! (exclamation point).
   Example:
@@ -77,15 +317,17 @@ Core
   That would look in the database field "merge_to" for a user name
   to change to.
 
-* Added new SourcePriority catalog directive.
-
 * Force re-configure on compile_link --force.
+
+* table_editor/flex_select: Add ability to link "edit record" to custom
+  page with custom parameter. Also can now change "edit record to
+  something else like "view user".
 
 * Fix table editor bug found by Jeff Boes <jeff@endpoint.com> which
   prevented custom widget type from working.
 
 * Shorthand added to allow beginning/ending year with date widget
-  name (i.e. yearbegin1934, yearend=0000 where 0000 means current year).
+  name (i.e. yearbegin1934, yearend0000 where 0000 means current year).
 
 * Add ability to configure the number of levels and hash length for
   the directory structure of file-based sessions. Instead of a fixed
@@ -117,15 +359,44 @@ Core
   field to represent that no maximum quantity should be enforced for that
   product.
 
+* Minor updates to default robot detection configuration.
+
+* Fix omission of media type in <link> output of [css].
+  Patch by Thomas J.M. Burton <tom@globalfocusdm.com>.
+
+* Allow synonym evalue for value in [if] checks.
+
+* Add Vend::Safe abstraction to fix problems with UTF-8 inside Safe.
+
+* Fix crash that occurred with an empty AutoModifier.
+
+* Allow Interchange daemon to start with no Catalog declarations.
+
+* Unbuffer output as soon as possible to make regular & error messages stay
+  in sequence during startup.
+
+* Abort daemon startup when required module is missing and clean up error output.
+
 * Update broken getppid() detection for Perl 5.10.0.
 
 * Do not specify a default charset if none is passed via MV_HTTP_CHARSET.
   Thanks to Raymond Cheng <rayonnet@hotmail.com> for pointing out the regression
   caused by this.
 
+* Always log route_order errors regardless of errors_to setting.
+
 * compile_link was confusing the -s socketfile option with the new -S status
-  because Getopt::Long ignores option case by default.  This fixes the problem
+  because Getopt::Long ignores option case by default. This fixes the problem
   by passing the no_ignore_case config parameter to Getopt::Long.
+
+* Various UTF-8 support fixes.
+
+* Add NoBlankLines option to and clean up error HTML in Interchange::Link.
+
+* Fix XSS exploit in account creation username check error display (RT #306).
+  Thanks to Carl Bailey for reporting the problem.
+
+* Clean up UserDB error output by excluding Perl file & line output.
 
 Payment
 -------
@@ -138,8 +409,14 @@ Payment
 
 * Removed long-defunct CyberCash payment module.
 
-* Added changes from Bill Carr <bill@bottlenose-wine.com> to
-  Business::OnlinePayment to allow extra parameters to be passed.
+* Deprecated: Signio payment module, which uses an API that current Payflow
+  Pro owner PayPal says they will no longer support after September 1, 2009.
+
+* Add new PayflowPro payment module, which replaces Signio. Based on code by
+  Tom Tucker.
+
+* Allow extra parameters to be passed to Business::OnlinePayment.
+  Changes by Bill Carr <bill@bottlenose-wine.com>.
 
 * [pay-cert] tag now uses the new adjust_time() function instead of the older
   time_to_seconds().
@@ -157,6 +434,8 @@ Payment
 
 * Send correct level 2 card data with AuthorizeNet module. This improves the
   discount rate for a lot of card types.
+
+* Linkpoint: Add CVV capability, and partial pay_cert payments
 
 UserTag
 -------
@@ -195,6 +474,13 @@ Filter
 * Make code/Filter/text2html.filter output valid code.
   Using double <br>'s instead of opening tag <p>.
 
+* Strip all remaining HTML tags (not just b/i/u tags) in html2text filter.
+
+* Require module Digest::SHA1 in the sha1 filter to raise error sooner if
+  it's missing.
+
+* Add strip_html filter.
+
 Checks
 ------
 
@@ -214,13 +500,36 @@ Admin UI
 
 * Allow file removal with uploadhelper widget (#180).
 
+* Fix default shipmode on entry page due to incomplete [either] clause.
+
+* Fix some broken HTML.
+
+* Recognize Opera as DHTML browser. Thanks to Don Hathaway & Steve Graham.
+
+* Add framekiller for clickjacking defense in template. Probably we are
+  unlikely to have problems in the standard template, but you never know.
+
+* Avoid problem of side-effect read-only variable table in file navigator.
+
 * New user_merge specialsub is run from the [user-merge] tag when two users are
   merged.
 
 Standard demo
 -------------
 
+* Correct bug in ncheck_category GlobalSub.
+
+* Recognize Opera as DHTML browser. Thanks to Don Hathaway & Steve Graham.
+
+* Require forum users to be logged in, to prevent spam.
+
+* Prevent an incomprehensible error when following an order link that was
+  created on an mv_tmp_session page or other non-connecting session.
+
 * Correct update of saved company value for shipping address (#125).
+
+* Display company name in shipping & billing addresses.
+  Thanks to Steve Graham <icdev@mrlock.com>.
 
 * Corrected min/max length for username entry to ship_addresses.html (#114).
 
@@ -230,7 +539,11 @@ Standard demo
 
 * Fixed wrong URLs in language selection (#265).
 
-* Removed spurious SQLite database configuration file.
+* Have tab-delimited files sort by primary key so it's easier to diff and
+  see real changes. Affects access, locale, mv_metadata, survey, and variable.
+* Standardized encoding of sample locale table data to UTF-8.
+
+* Removed spurious SQLite database configuration file and corrected others.
 
 * Removed rarely used mass_setting admininstration page.
 
