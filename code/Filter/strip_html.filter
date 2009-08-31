@@ -11,6 +11,9 @@ CodeDef strip_html Routine <<EOR
 sub {
     my $val = shift;
 
+	# get rid of HTML comments
+	$val =~ s/<!(?:--(?:[^-]*|-[^-]+)*--\s*)>//s;
+
     # replace these container tags with a space
     $val =~ s{</?(?:p|ol|ul|li|div|h[123456]|pre|dl|dd|dt|form|option|textarea|blockquote)(?:\s[^>]*)?>}{ }ig;
 
