@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+
+=for docs
+
+from http://www.icdevgroup.org/pipermail/interchange-users/2009-May/050480.html
+
+Date: Wed, 6 May 2009 09:14:45 -0500
+From: Josh Lavin <josh-ic@att.net>
+To: interchange-users@icdevgroup.org
+Subject: Re: [ic] Updated usps_query.tag
+
+[...]
+
+Note that I do not use this tag any longer, due to USPS WebTools being
+offline for over a week a few months ago. I made the switch to rate
+tables, which I update when new prices are posted.
+
+Below is a Perl script I wrote to grab service names from the XML
+response to a rate request. Add your WebTools user and password, then
+you can use the output of this script to update the tag. USPS seems to
+change service names often, sometimes just adding or removing a hyphen,
+and the only documentation of valid service names is found via a rate
+request.
+
+=cut
+
+require LWP::UserAgent;
+
+$userid = 'your id here';
+$passwd = 'your pass here';
+$url = 'http://Production.ShippingAPIs.com/ShippingAPI.dll';
+
+$weight = '0';
+$ounces = '10';
+$mailtype = 'Package';
+$country = 'Canada';
+
+$xml = qq{API=IntlRate\&XML=<IntlRateRequest USERID="$userid" PASSWORD="$passwd">};
+$xml .= <<EOXML;
+<Package ID="0">
+	<Pounds>$weight</Pounds>
+	<Ounces>$ounces</Ounces>
+	<MailType>$mailtype</MailType>
+	<Country>$country</Country>
+</Package>
+</IntlRateRequest>
+EOXML
+
+my $ua = new LWP::UserAgent;
+my $req = new HTTP::Request 'POST', "$url";
+$req->content_type('application/x-www-form-urlencoded');
+$req->content($xml);
+my $response = $ua->request($req);
+
+$error_msg = 'USPS: ';
+if ($response->is_success) {
+	$resp = $response->content;
+}
+else {
+	$error_msg .= 'Error obtaining rate quote from usps.com.';
+}
+
+@intl = split /<Service/, $resp;
+foreach (@intl) {
+	m|<SvcDescription>(.+)</SvcDescription>|;
+	$svc = uc $1;
+	print "$svc\n";
+}
+
+#print $resp
