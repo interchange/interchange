@@ -1020,31 +1020,20 @@ my ($Sig_inc, $Sig_dec, $Counter);
 sub sig_int_or_term {
 	$Signal_Terminate = 1;
 
-	my $term_count = 0;
-	TERM: {
-		my %seen;
-		my @pids =
-			grep { !$seen{$_}++ }
-				(keys %Page_pids, keys %Starting_pids);
+	my (%seen, $all_gone);
 
-		last TERM unless @pids;
+	my @pids =
+		grep { !$seen{$_}++ }
+			(keys %Page_pids, keys %Starting_pids);
 
-		kill TERM => $_ for @pids;
-		sleep 1;
-
-		redo TERM unless ++$term_count > 3;
+	for (1..3) {
+		$all_gone = ! kill TERM => @pids
+			and last;
+		select (undef, undef, undef, 0.5);
 	}
 
-	KILL: {
-		my %seen;
-		my @pids =
-			grep { !$seen{$_}++ }
-				(keys %Page_pids, keys %Starting_pids);
-
-		last KILL unless @pids;
-
-		kill KILL => $_ for @pids;
-	}
+	kill KILL => @pids
+		unless $all_gone;
 
 	return;
 }
