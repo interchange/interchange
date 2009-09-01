@@ -15,13 +15,12 @@ Core
 
 * Fix validate_charset to return mime charset names only.
 
-* Enabled catalog usertags within dispatch routines.
+* Enable catalog usertags within dispatch routines.
 
-* SpecialSub order_missing added (#221).
+* Add SpecialSub order_missing (#221).
 
-* Made TAX_CATEGORY_FIELD work as intended, where a colon-separated
-  table and field will work as well as a simple field in the same table
-  as the item.
+* Make TAX_CATEGORY_FIELD work as intended, where a colon-separated table and
+  field will work as well as a simple field in the same table as the item.
 
 * Add environment variable MINIVEND_DISABLE_UTF8 which allows us to
   skip the Encode module entirely.
@@ -70,7 +69,7 @@ Core
   * Add status option to make compile_link.PL to make error content type
     configurable.
 
-* Fixed rare bug that caused requests to / URL with a query string to fail, e.g.:
+* Fix rare bug that caused requests to / URL with a query string to fail, e.g.:
 
   http://hostname/?somevar=1
 
@@ -93,7 +92,7 @@ Core
   * Don't generate a "process" URL for root URL; use DirectoryIndex instead,
     if available.
 
-* Made [email] process cc and bcc options for plain text emails (#250).
+* Make [email] process cc and bcc options for plain text emails (#250).
 
 * Allow catalogs to be set to have Perl always global by default.
     
@@ -125,9 +124,6 @@ Core
   occurs when hi-bit characters are used in a search. The failure was
   caused by Digest::MD5's reluctance to process characters > 0xFF, so we
   just convert any search options to UTF8 before calculating the MD5.
-
-* Add maps of country names and international shipping services needed
-  by USPS in [usps-query]. By Josh Lavin.
 
 * Add support for SHA1 encrypted userdb passwords.
     
@@ -216,7 +212,7 @@ Core
 * Add new SessionCookieSecure boolean catalog directive. When enabled, makes
   session cookie set in https usable only in https.
 
-* Added new SourcePriority catalog directive.
+* Add new SourcePriority catalog directive.
 
   SourcePriority <source_list>
   
@@ -326,8 +322,8 @@ Core
 * Fix table editor bug found by Jeff Boes <jeff@endpoint.com> which
   prevented custom widget type from working.
 
-* Shorthand added to allow beginning/ending year with date widget
-  name (i.e. yearbegin1934, yearend0000 where 0000 means current year).
+* Add shorthand to allow beginning/ending year with date widget name
+  (i.e. yearbegin1934, yearend0000 where 0000 means current year).
 
 * Add ability to configure the number of levels and hash length for
   the directory structure of file-based sessions. Instead of a fixed
@@ -398,18 +394,21 @@ Core
 
 * Clean up UserDB error output by excluding Perl file & line output.
 
+* Fix PreFork mode daemon restart problem. Now child processes are properly
+  killed off.
+
 Payment
 -------
 
-* Added PaypalExpress payment module from Lyn St George <info@zolotek.net>.
+* Add PaypalExpress payment module from Lyn St George <info@zolotek.net>.
 
-* Removed long-defunct BoA (Bank of America) payment module. Bank of America
+* Remove long-defunct BoA (Bank of America) payment module. Bank of America
   is a reseller for CyberSource so its module applies:
   http://www.bankofamerica.com/small_business/merchant_card_processing/index.cfm?template=internet_e_commerce
 
-* Removed long-defunct CyberCash payment module.
+* Remove long-defunct CyberCash payment module.
 
-* Deprecated: Signio payment module, which uses an API that current Payflow
+* Deprecate Signio payment module, which uses an API that current Payflow
   Pro owner PayPal says they will no longer support after September 1, 2009.
 
 * Add new PayflowPro payment module, which replaces Signio. Based on code by
@@ -442,7 +441,7 @@ UserTag
 
 * [run-profile] now accepts ref attribute to check an arbitrary hash.
 
-* Added empty attribute for [convert-date] to display a custom string
+* Add empty attribute for [convert-date] to display a custom string
   instead of the current date when no proper date is passed.
 
 * [component], [convert-date] and [css] now use the new adjust_time() function
@@ -451,12 +450,15 @@ UserTag
 * [convert-date] has a new compensate_dst attribute that when set to 1 will
   compensate the adjusted time for daylight savings time changes.
 
-* Fixed bug in [convert-date] that skewed the time by one hour if the starting
+* Fix bug in [convert-date] that skewed the time by one hour if the starting
   date was during daylight savings time and an adjustment was made.
 
-* Fixed regression in [convert-date] that caused it to display Sunday for every
+* Fix regression in [convert-date] that caused it to display Sunday for every
   day of the week if a raw date was passed and the adjust attribute was not.
   Thanks to Marty Tennison <marty@dripdepot.com> for reporting the bug.
+
+* Add maps of country names and updated international shipping services needed
+  by USPS in [usps-query]. Thanks to Josh Lavin and Mat Jones.
 
 SystemTag
 ---------
@@ -491,7 +493,7 @@ Checks
 Jobs
 ----
 
-* Added job group name to error message on missing catalog.
+* Add job group name to error message on missing catalog.
 
 Admin UI
 --------
@@ -531,21 +533,22 @@ Standard demo
 * Display company name in shipping & billing addresses.
   Thanks to Steve Graham <icdev@mrlock.com>.
 
-* Corrected min/max length for username entry to ship_addresses.html (#114).
+* Correct min/max length for username entry to ship_addresses.html (#114).
 
-* Refurbished standard/pages/quantity.html (#204).
+* Refurbish standard/pages/quantity.html (#204).
 
-* Added German locale translations (#40).
+* Add German locale translations (#40).
 
-* Fixed wrong URLs in language selection (#265).
+* Fix wrong URLs in language selection (#265).
 
 * Have tab-delimited files sort by primary key so it's easier to diff and
   see real changes. Affects access, locale, mv_metadata, survey, and variable.
-* Standardized encoding of sample locale table data to UTF-8.
 
-* Removed spurious SQLite database configuration file and corrected others.
+* Standardize encoding of sample locale table data to UTF-8.
 
-* Removed rarely used mass_setting admininstration page.
+* Remove spurious SQLite database configuration file and corrected others.
+
+* Remove rarely used mass_setting admininstration page.
 
 * Add company name to shipping and billing addresses and filter output 
   with evalue.
