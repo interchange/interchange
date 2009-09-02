@@ -53,7 +53,7 @@ use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
 
-$VERSION = substr(q$Revision: 2.246 $, 10);
+$VERSION = '2.247';
 
 my %CDname;
 my %CPname;
@@ -3582,7 +3582,7 @@ sub set_default_search {
 							@{$C->{TemplateDir} || []},
 							@{$Global::TemplateDir || []};
 			my $re = join "|", @paths;
-			$C->{AllowedFileRegex} = qr{^($re)};
+			$Global::AllowedFileRegex->{$C->{CatalogName}} = qr{^($re)};
 			return 1;
 		},
 		Autoload => sub {
