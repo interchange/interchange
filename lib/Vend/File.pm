@@ -215,9 +215,11 @@ sub readfile {
 		$file = $ifile;
 	}
 	else {
-		for( ".", @{$Vend::Cfg->{TemplateDir} || []}, @{$Global::TemplateDir || []}) {
-			next if ! -f "$_/$ifile";
-			$file = "$_/$ifile";
+		for (".", @{$Vend::Cfg->{TemplateDir} || []}, @{$Global::TemplateDir || []}) {
+			my $candidate = "$_/$ifile";
+			log_file_violation($candidate), next if ! allowed_file($candidate);
+			next if ! -f $candidate;
+			$file = $candidate;
 			last;
 		}
 	}
