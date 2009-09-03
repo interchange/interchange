@@ -1,3 +1,10 @@
+interchange (5.7.1-2) unstable; urgency=low
+
+  * new upstream release (in preparation)
+    - keeps ui_new_item present in the table editor (Closes: #340077)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 03 Sep 2009 12:12:54 +0200
+
 interchange (5.7.1-1) unstable; urgency=low
 
   * new upstream release
