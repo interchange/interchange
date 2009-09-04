@@ -562,12 +562,13 @@ BEGIN {
         die __PACKAGE__ . " requires Net::SSLeay or Crypt::SSLeay";
     }
 
-::logGlobal("%s 0.8.7a payment module initialised, using %s", __PACKAGE__, $selected)
+::logGlobal("%s 0.8.8 payment module initialised, using %s", __PACKAGE__, $selected)
         unless $Vend::Quiet;
 
 }
 
 package Vend::Payment;
+use strict; 
 
 sub sagepay {
 	
@@ -575,7 +576,7 @@ sub sagepay {
 	my $date = $Tag->time({ body => "%Y%m%d%H%M%S" });
 	my $sagepaydate = $Tag->time({ body => "%A %d %B %Y, %k:%M:%S, %Z" });
 	
-	my ($vendor, $amount, $actual, $opt, $sagepayrequest);
+	my ($vendor, $amount, $actual, $opt, $sagepayrequest, $page, $vendorTxCode, $pan, $cardType);
 	
 	# Amount sent to SagePay, in 2 decimal places with cruft removed.
 	# Defaults to 'amount' from log_transaction or an invoicing system, falling back to IC input
@@ -613,8 +614,8 @@ sub sagepay {
 		$::Values->{apply3ds} = '';
 		$::Values->{applyavsvc2} = '';
 		$::Values->{account_type} = '';
-		undef $billingState;
-		undef $deliveryState;
+		my $billingState;
+		my $deliveryState;
 	
 	my %result;
 	my %query;
@@ -678,7 +679,7 @@ sub sagepay {
 	
 #::logDebug("SP".__LINE__." actual map result: " . ::uneval($actual));
 	
-	my $pan = $actual->{mv_credit_card_number} unless $pan;
+	my $pan = $actual->{mv_credit_card_number} unless defined $pan;
  	   $pan =~ s/\D//g;
 	   $actual->{mv_credit_card_exp_month}    =~ s/\D//g;
 	   $actual->{mv_credit_card_exp_year}     =~ s/\D//g;
@@ -690,7 +691,7 @@ sub sagepay {
 	my $expshow = $exp;
 	   $expshow =~ s/(\d\d)(\d\d)/$1\/$2/;
 	
-	my $cardType  = $actual->{mv_credit_card_type} || $CGI->{mv_credit_card_type} || $::Values->{mv_credit_card_type} unless $cardType;
+	my $cardType  = $actual->{mv_credit_card_type} || $CGI->{mv_credit_card_type} || $::Values->{mv_credit_card_type} unless defined $cardType;
 	   $cardType = 'MC' if ($cardType =~ /mastercard/i);
 	
 	my $mvccStartMonth = $actual->{mv_credit_card_start_month} || $::Values->{mv_credit_card_start_month} || $::Values->{start_date_month};
@@ -733,7 +734,7 @@ sub sagepay {
 	   $billingAddress2    =~ s/[^a-zA-Z0-9,. ]//gi;
 	my $billingPostCode    = $actual->{b_zip} || $actual->{zip} || ' ';
 	   $billingPostCode    =~ s/[^a-zA-Z0-9 ]//gi;
-	my $billingState       = $actual->{b_state} || $actual->{state} || '';
+	   $billingState       = $actual->{b_state} || $actual->{state} || '';
 	my $billingCity        = $actual->{b_city} || $actual->{city} || ' ';
 	   $billingCity       .= ", $billingState" unless $billingCountry =~ /US/i;
 	   $billingCity        =~ s/[^a-zA-Z0-9,. ]//gi;
@@ -755,7 +756,7 @@ sub sagepay {
 	   $deliveryAddress1   =~ s/[^a-zA-Z0-9,. ]//gi;
 	my $deliveryAddress2   = $actual->{address2};
 	   $deliveryAddress2   =~ s/[^a-zA-Z0-9,. ]//gi;
-	my $deliveryState      = $actual->{state} || '';
+	   $deliveryState      = $actual->{state} || '';
 	my $deliveryCity       = $actual->{city} || ' ';
 	   $deliveryCity      .= ", $deliveryState" unless $deliveryCountry =~ /US/i;
 	   $deliveryCity       =~ s/[^a-zA-Z0-9,. ]//gi;
@@ -774,7 +775,7 @@ sub sagepay {
 	my $clientIPAddress    = $CGI::remote_addr if $CGI::remote_addr;
 			$::Values->{authcode} = '';
 	
-::logDebug("SP".__LINE__.": bCity=$billingCity; vendorTxCode=$vendorTxCode; mvccType=$cardType; start=$mvccStartDate; issue=$issue;");
+::logDebug("SP".__LINE__.": bCity=$billingCity; mvccType=$cardType; start=$mvccStartDate; issue=$issue;");
 		
 # ISO currency code sent to SagePay, from the page or fall back to config files.
 	my $currency = $::Values->{iso_currency_code} || $::Values->{currency_code} || $Vend::Cfg->{Locale}{iso_currency_code} ||
@@ -786,9 +787,9 @@ sub sagepay {
 #--- make the initial request to SagePay and get back the values for the ACS ---------------------------
 if ($sagepayrequest eq 'post') {
    	$::Session->{sagepay}{CardRef}   = $pan;
-   	$::Session->{sagepay}{CardRef}   =~ s/^(\d\d).*(\d\d\d\d)$/****$2/;
+   	$::Session->{sagepay}{CardRef}   =~ s/^(\d\d).*(\d\d\d\d)$/$1****$2/;
 # vendorTxCode generated here in 'post', and retrieved from session later
-   	$order_id  = $Tag->time({ body => "%Y%m%d%H%M%S" }); 
+ my $order_id  = $Tag->time({ body => "%Y%m%d%H%M%S" }); 
    	$order_id .= $::Session->{id};
 	if ($txtype   =~ /RELEASE|VOID|ABORT|CANCEL/i) {
    		$::Session->{sagepay}{vendorTxCode} = $::Values->{OrigVendorTxCode}
@@ -972,7 +973,7 @@ if ($request eq 'psp') {
 
 #::logDebug("SP".__LINE__.": now for keys in query");
   my @query;
-    	foreach $key (sort keys(%query)) {
+    	foreach my $key (sort keys(%query)) {
     	::logDebug("Query to SagePay: \"$key=$query{$key}\""); # nicely readable version of the string sent
        	push @query, "$key=$query{$key}";
     	}
@@ -1135,7 +1136,7 @@ We apologise on behalf of our payment processor for the inconvenience
 EOF
  
 #::logDebug("SP".__LINE__.": $unknown\nresAuth=$result{Authorised}");
-    	 $result{MStatus} = $result{'pop.status'} = $emptysuccess;
+    	 $result{MStatus} = $result{'pop.status'};
      	 $result{'order-id'} ||= $opt->{order_id};
      	 $result{'TxType'} = 'NULL';
      	 $result{'Status'} = 'UNKNOWN status - check with SagePay before dispatching goods';
