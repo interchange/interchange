@@ -336,6 +336,7 @@ code/Widget/yesno.widget
 code/Widget/ynzero.widget
 configure
 debian/400mod_interchange.info
+debian/catalog_before.cfg
 debian/catalogs.cfg
 debian/changelog
 debian/compat
