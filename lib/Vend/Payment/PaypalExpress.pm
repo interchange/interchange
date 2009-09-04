@@ -189,6 +189,11 @@ Testing: while the obvious test choice is to use their sandbox, I've always foun
    business accounts at minimal cost to yourself, but with the confidence of knowing that test results are correct.
 
 =head1 Changelog
+
+version 1.0.6 September 2009
+	- added 'use strict' and fixed odd errors (and removed giropay vestiges that belong in next version)
+	- made itemdetails loop through basket properly
+	- added Fraud Management Filters return messages to optional charge parameters
 version 1.0.5, June 2009
 	- fixed bug with Canadian provinces: PP were sending shortened versions of 2 province names, and also 
 	  sometimes sending the 2 letter code (possibly from older a/cs) rather than the full name. Thanks to 
@@ -241,15 +246,16 @@ BEGIN {
 		die $msg;
 	}
 
-	::logGlobal("%s v1.0.5b payment module loaded",__PACKAGE__)
+	::logGlobal("%s v1.0.6 payment module loaded",__PACKAGE__)
 		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
 package Vend::Payment;
+#use SOAP::Lite +trace; # debugging only
+use strict;
 
 sub paypalexpress {
- #use SOAP::Lite +trace; # debugging only
-    my ($token, $header, $request, $method, $response, $in);
+    my ($token, $header, $request, $method, $response, $in, $opt, $actual);
 
 	foreach my $x (@_) {
 		    $in = { 
@@ -282,10 +288,11 @@ my $invoiceID          = $::Values->{inv_no} || $::Values->{mv_transaction_id} |
 my $returnURL          = $::Values->{returnurl} || charge_param('returnurl') or die "No return URL found\n"; # required
 my $cancelURL          = $::Values->{cancelurl} || charge_param('cancelurl') or die "No cancel URL found\n"; # required
 my $maxAmount          = $::Values->{maxamount} || '';  # optional
-   $maxAmount          = sprintf '%.2f', $maxamount;
+   $maxAmount          = sprintf '%.2f', $maxAmount;
 my $orderDescription   = '';
 my $address            = '';
 my $reqConfirmShipping = $::Values->{reqconfirmshipping} || charge_param('reqconfirmshipping') || ''; # you require that the customer's address must be "confirmed"
+my $returnFMFdetails   = $::Values->{returnfmfdetails} || charge_param('returnfmfdetails') || '0'; # set '1' to return FraudManagementFilter details
 my $noShipping         = $::Values->{noshipping} || charge_param('noshipping') || ''; # no shipping displayed on Paypal pages
 my $addressOverride    = $::Values->{addressoverride} || charge_param('addressoverride') || ''; # if '1', Paypal displays address given in SET request, not the one on Paypal's file
 my $localeCode         = $::Values->{localecode} || $::Session->{mv_locale} || charge_param('localecode') || 'en_US';
@@ -309,13 +316,13 @@ my $country            = $::Values->{country};
    
 # for a DO request
 my $itemTotal     = $::Values->{itemtotal} || Vend::Interpolate::subtotal() || '';
-   $itemTotal     = sprintf '%.2f', $itemtotal;
+   $itemTotal     = sprintf '%.2f', $itemTotal;
 my $shipTotal     = $::Values->{shiptotal} || Vend::Interpolate::shipping($::Values->{mv_shipmode}) || '';
-   $shipTotal     = sprintf '%.2f', $shiptotal;
+   $shipTotal     = sprintf '%.2f', $shipTotal;
 my $taxTotal      = $::Values->{taxtotal} || Vend::Interpolate::salestax() || '';
-   $taxTotal      = sprintf '%.2f', $taxtotal;
+   $taxTotal      = sprintf '%.2f', $taxTotal;
 my $handlingTotal = $::Values->{handlingtotal} || Vend::Ship::tag_handling() || '';
-   $handlingTotal = sprintf '%.2f', $handlingtotal;
+   $handlingTotal = sprintf '%.2f', $handlingTotal;
 
 my $notifyURL           = $::Values->{notifyurl} || charge_param('notifyurl') || ''; # for IPN
 my $buttonSource        = $::Values->{buttonsource} || charge_param('buttonsource') || ''; # for third party source
@@ -332,7 +339,7 @@ my $itemAmount   = $amount / $quantity;
 my $receiverType = $::Values->{receiverType} || charge_param('receivertype') || 'EmailAddress'; # used in MassPay
 my $version      = '2.0';
 #::logDebug("PP".__LINE__.": amount=$amount, itemamount=$itemAmount; tax=$taxTotal, ship=$shipTotal, hdl=$handlingTotal");
-    $order_id  = gen_order_id($opt);
+my $order_id  = gen_order_id($opt);
 
 #-----------------------------------------------------------------------------------------------
 # for operations through the payment terminal, eg 'masspay', 'refund' etc
@@ -346,7 +353,7 @@ my  $receiverEmail = $::Values->{receiveremail} || ''; # address of refund recip
 
     my $xmlns = 'urn:ebay:api:PayPalAPI';
 
-	    $service = SOAP::Lite->proxy("https://$host/2.0/")->uri($xmlns);
+	    my $service = SOAP::Lite->proxy("https://$host/2.0/")->uri($xmlns);
 	    # Ignore the paypal typecasting returned
 	    *SOAP::Deserializer::typecast = sub {shift; return shift};
 
@@ -405,12 +412,7 @@ my  $receiverEmail = $::Values->{receiveremail} || ''; # address of refund recip
                           )
                         );
                         
-            my @giropay = (
-            			SOAP::Data->name("giropaySuccessURL" => $giropaySuccessURL)->type("xs:string"),
-            			SOAP::Data->name("giropayCancelURL" => $giropayCancelURL)->type("xs:string"),
-            			SOAP::Data->name("BanktxnPendingURL" => $BanktxnPendingURL)->type("xs:string")
-            				);
-            
+          
 
 # Destroy the token here at the start of a new request, rather than after a 'dorequest' has completed,
 # as Paypal use it to reject duplicate payments resulting from clicking the final 'pay' button more
@@ -421,8 +423,6 @@ my  $receiverEmail = $::Values->{receiveremail} || ''; # address of refund recip
     if (($addressOverride == '1') and ($name)) {
     push @setreq, @setaddress;
      }
-
-	push @setreq, @giropay if $giropayaccepted =~ /1|y/;
 	
 		$request = SOAP::Data->name("SetExpressCheckoutRequest" =>
 				\SOAP::Data->value(
@@ -436,15 +436,15 @@ my  $receiverEmail = $::Values->{receiveremail} || ''; # address of refund recip
 
  	    $method = SOAP::Data->name('SetExpressCheckoutReq')->attr({xmlns=>$xmlns});
 	    $response = $service->call($header, $method => $request);
-	    	%result = %{$response->valueof('//SetExpressCheckoutResponse')};
-			$::Scratch->{token} = $result{Token};
+	    %result = %{$response->valueof('//SetExpressCheckoutResponse')};
+		$::Scratch->{token} = $result{Token};
  
    if (!$result{Token}) {
     if ($result{Ack} eq 'Failure') {
-      foreach my $i (@{$result{Errors}}) {
-        $::Session->{errors}{PaypalExpress} .= "$i->{ShortMessage}, ";
+     foreach my $i (@result{Errors}) {
+     	  $::Session->{errors}{PaypalExpress} .= "$i->{ShortMessage}, ";
         		}
-        $::Session->{errors}{PaypalExpress} =~ s/, $//;
+          $::Session->{errors}{PaypalExpress} =~ s/, $//;
              }
     else {
        my $accepted = uc($::Variable->{CREDIT_CARDS_ACCEPTED});
@@ -591,20 +591,32 @@ return $Tag->deliver({ location => $redirecturl })
                        )
                      );
 
-	    my @pdi  = (
+		  my ($item,$itm,@pdi);
+		  foreach  $item (@{$::Carts->{'main'}}) {
+			  $itm = {
+					  number => $item->{'code'},
+					  quantity => $item->{'quantity'},
+					  name => Vend::Data::item_description($item),
+					  amount => Vend::Data::item_price($item),
+					  tax => (Vend::Data::item_price($item)/$itemTotal * $taxTotal)
+					  };
+		my $pdi  = (
 	                SOAP::Data->name("PaymentDetailsItem" =>
 	                \SOAP::Data->value(
-	                 SOAP::Data->name("Name" => $name)->type("xs:string"),
-	                 SOAP::Data->name("Amount" => $itemAmount)->type("xs:string"),
-	                 SOAP::Data->name("Number" => $itemCode)->type("xs:string"),
-	                 SOAP::Data->name("Quantity" => $quantity)->type("xs:string"),
-	                 SOAP::Data->name("Tax" => $tax)->type("xs:string")
+	                 SOAP::Data->name("Name" => $itm->{name})->type("xs:string"),
+	                 SOAP::Data->name("Amount" => $itm->{amount})->type("xs:string"),
+	                 SOAP::Data->name("Number" => $itm->{number})->type("xs:string"),
+	                 SOAP::Data->name("Quantity" => $itm->{quantity})->type("xs:string"),
+	                 SOAP::Data->name("Tax" => $itm->{tax})->type("xs:string")
 	                    )
 	                  )->type("ebl:PaymentDetailsItemType")
 	                );
-            
+	push @pdi, $pdi;
+	  }
+    
 	push @doreq, SOAP::Data->name("NotifyURL" => $notifyURL )->type("xs:string") if $notifyURL;
 	push @doreq, SOAP::Data->name("ButtonSource" => $buttonSource )->type("xs:string") if $buttonSource;
+	push @doreq, SOAP::Data->name("ReturnFMFDetails" => '1' )->type("xs:boolean") if $returnFMFdetails == '1';
 	push @doreq, @sta if $addressOverride  == '1';
 	push @doreq, @pdi if $paymentDetailsItem == '1';
 
@@ -643,7 +655,6 @@ return $Tag->deliver({ location => $redirecturl })
 	    $result{ReasonCode}          = $result{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{ReasonCode};
 	    $result{FeeAmount}           = $result{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{FeeAmount};
 	    $result{ExchangeRate}        = $result{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{ExchangeRate};
-		$result{giropaytrue}         = $result{DoExpressCheckoutPaymentResponseDetails}{RedirectRequired};
 
 			    }
  	  else  {
