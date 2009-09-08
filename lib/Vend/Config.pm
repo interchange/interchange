@@ -993,6 +993,8 @@ sub config {
 	my($catalog, $dir, $confdir, $subconfig, $existing, $passed_file) = @_;
 	my($d, $parse, $var, $value, $lvar);
 
+	$Vend::Cat = $catalog;
+
 	if(ref $existing eq 'HASH') {
 #::logDebug("existing=$existing");
 		$C = $existing;
