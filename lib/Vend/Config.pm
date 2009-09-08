@@ -3440,8 +3440,9 @@ sub set_default_search {
 			my $cat_template_dirs = $C->{TemplateDir} || [];
 			if ($Global::NoAbsolute) {
 				for (@$cat_template_dirs) {
-					absolute_or_relative($_) and
+					if (absolute_or_relative($_) and ! /^$C->{VendRoot}/) {
 						config_error("TemplateDir path %s is prohibited by NoAbsolute", $_);
+					}
 				}
 			}
 			my @paths = map { quotemeta $_ }
