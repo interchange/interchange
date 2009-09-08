@@ -3859,14 +3859,13 @@ sub parse_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
 
-	$value = "$C->{VendRoot}/$value"
-		unless file_name_is_absolute($value);
-	$value =~ s./+$..;
-
 	unless (allowed_file($value)) {
 		config_error('Path %s not allowed in %s directive',
 					  $value, $var);
 	}
+	$value = "$C->{VendRoot}/$value"
+		unless file_name_is_absolute($value);
+	$value =~ s./+$..;
 
 	$C->{$var} = [] unless $C->{$var};
 	my $c = $C->{$var} || [];
