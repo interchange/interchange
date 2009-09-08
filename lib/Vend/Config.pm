@@ -3589,7 +3589,6 @@ sub set_default_search {
 			}
 			my @paths = map { quotemeta $_ }
 							$C->{VendRoot},
-							$C->{CatRoot},
 							@$cat_template_dirs,
 							@{$Global::TemplateDir || []};
 			my $re = join "|", @paths;
