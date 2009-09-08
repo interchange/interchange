@@ -1,0 +1,1 @@
+gateway_log_id	trans_type	processor	catalog	result_code	response_msg	request_id	order_number	email	session_id	request_source	request_date	request_duration	request	response

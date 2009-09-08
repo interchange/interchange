@@ -1,0 +1,16 @@
+Database  gateway_log  gateway_log.txt  __SQLDSN__
+
+Database  gateway_log  DEFAULT_TYPE   text not null default ''
+Database  gateway_log  AUTO_SEQUENCE  1
+Database  gateway_log  KEY            gateway_log_id
+Database  gateway_log  COLUMN_DEF     "order_md5=varchar(32) not null default ''"
+Database  gateway_log  COLUMN_DEF     "request_date=varchar(32) not null default ''"
+Database  gateway_log  COLUMN_DEF     "request_id=varchar(255) not null default ''"
+Database  gateway_log  COLUMN_DEF     "order_number=varchar(32) not null default ''"
+Database  gateway_log  COLUMN_DEF     "email=varchar(128) not null default ''"
+Database  gateway_log  INDEX          request_date
+Database  gateway_log  INDEX          request_id
+Database  gateway_log  INDEX          order_number
+Database  gateway_log  INDEX          email
+Database  gateway_log  INDEX          order_md5
+Database  gateway_log  NO_ASCII_INDEX 1

@@ -157,6 +157,7 @@ my %known_capability = (
 		DB2		=> 1,
 		Pg		=> 1,
 		Oracle	=> 1,
+		SQLite	=> 1,
 	},
 	HAS_DESCRIBE => {
 		mysql	=> 1,
@@ -185,6 +186,7 @@ my %known_capability = (
 	HAS_LIMIT => {
 		mysql	=> 1,
 		Pg		=> 1,
+		SQLite	=> 1,
 	},
 	ALTER_DELETE => { 
 		mysql => 'ALTER TABLE _TABLE_ DROP _COLUMN_',
@@ -225,12 +227,14 @@ my %known_capability = (
 		Pg => "SELECT nextval(_SEQUENCE_NAME_V_)",
 	},
 	SEQUENCE_VAL	 => { 
-		mysql => undef,
+		mysql	=> undef,
+		SQLite	=> undef,
 	},
 	SEQUENCE_KEY	 => { 
 		mysql	=> 'INT PRIMARY KEY AUTO_INCREMENT',
 		Pg	=> 'INT NOT NULL PRIMARY KEY',
 		Oracle	=> 'INT NOT NULL PRIMARY KEY',
+		SQLite	=> 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL',
 	},
 	SEQUENCE_VALUE_FUNCTION	 => { 
 		Pg => "SELECT currval(_SEQUENCE_NAME_V_)",
@@ -238,6 +242,7 @@ my %known_capability = (
 	},
 	SEQUENCE_LAST_FUNCTION	 => { 
 		mysql => 'select last_insert_id()',
+		SQLite => 'select last_insert_rowid()',
 		## These use explicit
 		Pg => undef,
 		Oracle => undef,

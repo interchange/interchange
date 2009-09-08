@@ -673,18 +673,23 @@ sub payflowpro {
         }
     }
 
-# Uncomment all the following block to use the debug statement. It strips
-# the arg of any sensitive credit card information and is safe
-# (and recommended) to enable in production.
-#
-#    {
-#        my %munged_query = %query;
-#        $munged_query{PWD} = 'X';
-#        $munged_query{ACCT} =~ s/^(\d{4})(.*)/$1 . ('X' x length($2))/e;
-#        $munged_query{CVV2} =~ s/./X/g;
-#        $munged_query{EXPDATE} =~ s/./X/g;
+    my $gwl =
+        Vend::Payment::PayflowPro
+            -> new({
+                Enabled => charge_param('gwl_enabled'),
+                LogTable => charge_param('gwl_table'),
+            })
+    ;
+
+    {
+        my %munged_query = %query;
+        $munged_query{PWD} = 'X';
+        $munged_query{ACCT} =~ s/^(\d{4})(.*)/$1 . ('X' x length($2))/e;
+        $munged_query{CVV2} =~ s/./X/g;
+        $munged_query{EXPDATE} =~ s/./X/g;
 #::logDebug("payflowpro query: " . ::uneval(\%munged_query));
-#    }
+        $gwl->request(\%munged_query);
+    }
 
     my $timeout = $opt->{timeout} || 45;
     die "Bad timeout value, security violation." unless $timeout && $timeout !~ /\D/;
@@ -732,18 +737,22 @@ sub payflowpro {
     my $request = HTTP::Request->new('POST', $uri, $headers, $string);
     my $ua = LWP::UserAgent->new(timeout => $timeout);
     $ua->agent('Vend::Payment::PayflowPro');
+    $gwl->start;
     my $response = $ua->request($request);
+    $gwl->stop;
     my $resultstr = $response->content;
 #::logDebug(qq{PayflowPro response:\n\t$resultstr\n--------------------});
 
     unless ( $response->is_success ) {
-        return (
+        my %return = (
             RESULT => -1,
             RESPMSG => 'System Error',
             MStatus => 'failure-hard',
             MErrMsg => 'System Error',
             lwp_response => $resultstr,
         );
+        $gwl->response(\%return);
+        return %return;
     }
 
     %$result = split /[&=]/, $resultstr;
@@ -757,6 +766,7 @@ sub payflowpro {
     }
 
     my $decline = $result->{RESULT};
+    $gwl->response($result);
 
     if (
         $result->{RESULT} =~ /^0|12[67]$/
@@ -848,5 +858,101 @@ sub payflowpro {
 }
 
 package Vend::Payment::PayflowPro;
+
+use Vend::Payment::GatewayLog;
+use base qw/Vend::Payment::GatewayLog/;
+
+# log_it() must be overridden.
+sub log_it {
+    my $self = shift;
+    my $request = $self->request
+        or ::logDebug('Cannot write to %s: no request present', $self->table),
+            return;
+
+    my $response = $self->response;
+    unless ($response) {
+
+        if ($Vend::Payment::Global_Timeout) {
+            my $msg = errmsg('No response. Global timeout triggered');
+            ::logDebug($msg);
+            $response = {
+                RESULT => -2,
+                RESPMSG => $Vend::Payment::Global_Timeout,
+            };
+        }
+        else {
+            my $msg = errmsg('No response. Reason unknown');
+            ::logDebug($msg);
+            $response = {
+                RESULT => -3,
+                RESPMSG => $msg,
+            };
+        }
+    }
+
+    eval {
+        my $table = $self->table;
+        my $db = ::database_exists_ref($table)
+            or die "'$table' not a valid Interchange table";
+        $db = $db->ref;
+
+        my %fields = (
+            trans_type => $request->{TRXTYPE} || 'x',
+            processor => 'payflowpro',
+            catalog => $Vend::Cfg->{CatalogName},
+            result_code =>
+                defined ($response->{RESULT})
+                && $response->{RESULT} =~ /^-?\d+$/
+                    ? $response->{RESULT}
+                    : undef,
+            response_msg => $response->{RESPMSG} || '',
+            request_id => $response->{PNREF} || '',
+            order_number => $request->{COMMENT1} || '',
+            request_duration => $self->duration,
+            request_date => $self->timestamp,
+            email => $request->{EMAIL} || '',
+            request => ::uneval($request) || '',
+            response => ::uneval($response) || '',
+            session_id => $::Session->{id},
+        );
+
+        my $hostname = `hostname -s`;
+        chomp $hostname;
+        $fields{request_source} = $hostname;
+
+        $fields{order_md5} =
+            Digest::MD5::md5_hex(
+                $request->{EMAIL},
+                $request->{TRXTYPE},
+                $request->{ORIGID},
+                $request->{AMT},
+                $::Session->{id},
+                map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+            )
+        ;
+
+        $db->set_slice(
+            [ { dml => 'insert' } ],
+            \%fields
+        )
+            or die "set_slice for $table failed";
+    }; # End eval
+
+    if ($@) {
+        my $err = $@;
+        ::logDebug(
+            q{Couldn't write to %s: %s -- request: %s -- response: %s},
+            $self->table,
+            $err,
+            ::uneval($request),
+            ::uneval($response)
+        );
+    }
+    else {
+        $self->clean;
+    }
+
+    return 1;
+}
 
 1;

@@ -40,7 +40,7 @@ use Vend::Order;
 use IO::Pipe;
 use strict;
 
-use vars qw/$Have_LWP $Have_Net_SSLeay/;
+use vars qw/$Have_LWP $Have_Net_SSLeay $Global_Timeout/;
 
 my $pay_opt;
 
@@ -399,17 +399,24 @@ sub charge {
                 my $pipe = IO::Pipe->new;
 
                 unless ($pid = fork) {
-                    Vend::Server::child_process_dbi_prep();
+
                     $pipe->writer;
+
+                    Vend::Server::sever_database();
+                    local $SIG{USR2} = sub {
+                        $Global_Timeout = 'Global Timeout on gateway request';
+                        exit;
+                    };  
+
                     my %rv = $sub->($pay_opt);
+
                     $pipe->print( ::uneval(\%rv) );
                     exit;
-                }
+                }   
 
                 $pipe->reader;
 
-                my $to_msg = $pay_opt->{global_timeout_msg}
-                    || charge_param('global_timeout_msg')
+                my $to_msg = charge_param('global_timeout_msg')
                     || 'Due to technical difficulties, your order could not be processed.';
                 local $SIG{ALRM} = sub { die "$to_msg\n" };
 
@@ -422,24 +429,24 @@ sub charge {
                 my $rv = eval join ('', $pipe->getlines);
 
                 return %$rv;
-            }
+            }   
 
             return $sub->($pay_opt);
-        };
+        };  
 
-		if($@) {
-			my $msg = errmsg(
-						"payment routine '%s' returned error: %s",
-						$charge_type,
-						$@,
-			);
-            kill (KILL => $pid)
+        if($@) {
+            my $msg = errmsg(
+                        "payment routine '%s' returned error: %s",
+                        $charge_type,
+                        $@, 
+            );  
+            kill (USR2 => $pid)
                 if $pid && kill (0 => $pid);
-			::logError($msg);
-			$result{MStatus} = 'died';
-			$result{MErrMsg} = $msg;
-		}
-	}
+            ::logError($msg);
+            $result{MStatus} = 'died';
+            $result{MErrMsg} = $msg;
+        }   
+    }
 	elsif($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
 #::logDebug("Charge custom");
 		# MV4 and IC4.6.x methods
