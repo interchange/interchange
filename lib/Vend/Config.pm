@@ -3913,22 +3913,12 @@ sub parse_dir_array {
 	return $c;
 }
 
-# Prepend the CatalogRoot pathname to the relative directory specified,
-# unless it already starts with a leading /.
-
 sub parse_relative_dir {
 	my($var, $value) = @_;
 
-	if ($Global::NoAbsolute) {
-		# sanity check on filenames
-		if (file_name_is_absolute($value)) {
-			config_error('Absolute path %s not allowed in %s directive',
-						 $value, $var)
-		}
-		if ($value =~ m#^\.\./.*\.\.#) {
-			config_error('Path %s outside of catalog directory not allowed in %s directive',
-						 $value, $var)
-		}
+	if (absolute_or_relative($value)) {
+		config_error('Path %s not allowed in %s directive',
+					  $value, $var);
 	}
 
 	$C->{Source}{$var} = $value;
