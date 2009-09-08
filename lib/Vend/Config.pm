@@ -3718,20 +3718,13 @@ sub parse_dir_array {
 	return $c;
 }
 
-# Prepend the CatalogRoot pathname to the relative directory specified,
-# unless it already starts with a leading /.
-
 sub parse_relative_dir {
 	my($var, $value) = @_;
 
-	config_error(
-	  "No leading / allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if file_name_is_absolute($value) and $Global::NoAbsolute;
-	config_error(
-	  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n"
-	  )
-	  if $value =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+	if (absolute_or_relative($value)) {
+		config_error('Path %s not allowed in %s directive',
+					  $value, $var);
+	}
 
 	$C->{Source}{$var} = $value;
 
