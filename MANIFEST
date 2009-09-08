@@ -1132,6 +1132,7 @@ lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
 lib/Vend/Payment/Getitcard.pm
+lib/Vend/Payment/GoogleCheckout.pm
 lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
@@ -1143,10 +1144,12 @@ lib/Vend/Payment/PRI.pm
 lib/Vend/Payment/Protx2.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Sage.pm
+lib/Vend/Payment/SagePay.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
 lib/Vend/Payment/TestPayment.pm
+lib/Vend/Payment/Worldpay.pm
 lib/Vend/RefSearch.pm
 lib/Vend/Safe.pm
 lib/Vend/Scan.pm
