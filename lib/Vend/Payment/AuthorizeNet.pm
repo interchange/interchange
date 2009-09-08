@@ -525,10 +525,34 @@ sub authorizenet {
 	## doesn't need it
 	delete $query{x_Trans_ID} if $no_trans_id{ $query{x_Type} };
 
-#::logDebug("Authorizenet query: " . ::uneval(\%query));
+    my $gwl = Vend::Payment::AuthorizeNet
+        -> new({
+            Enabled => charge_param('gwl_enabled'),
+            LogTable => charge_param('gwl_table'),
+        })
+    ;
+
+    {
+        my %munged_query = %query;
+        $munged_query{x_Card_Num} =~ s/^(\d{4})(.*)/$1 . ('X' x length($2))/e
+            if defined $munged_query{x_Card_Num};
+
+        $munged_query{$_} = 'X'
+            for grep { defined $munged_query{$_} } qw/x_Password x_Tran_Key/;
+
+        $munged_query{$_} =~ s/./X/g
+            for grep { defined $munged_query{$_} }
+                qw/x_Card_Code x_bank_aba_code x_bank_acct_num/
+        ;
+#::logDebug("Authorizenet query: " . ::uneval(\%munged_query));
+        $gwl->request(\%munged_query);
+    }
+
     $opt->{extra_headers} = { Referer => $referer };
 
+    $gwl->start;
     my $thing    = post_data($opt, \%query);
+    $gwl->stop;
     my $page     = $thing->{result_page};
     my $response = $thing->{status_line};
 	
@@ -595,6 +619,7 @@ sub authorizenet {
 		}
 		 = split (/\037/,$page);
     	
+    $gwl->response(\%result);
 #::logDebug(qq{authorizenet response_reason_text=$result{x_response_reason_text} response_code: $result{x_response_code}});    	
 
     for (keys %result_map) {
@@ -632,5 +657,75 @@ sub authorizenet {
 }
 
 package Vend::Payment::AuthorizeNet;
+
+use Vend::Payment::GatewayLog;
+use base qw/Vend::Payment::GatewayLog/;
+
+# log_it() must be overridden.
+sub log_it {
+    my $self = shift;
+
+    my $request = $self->request;
+    unless ($request) {
+        ::logDebug('Nothing to write to %s: no request present', $self->table);
+        return;
+    }
+
+    unless ($self->response) {
+
+        if ($Vend::Payment::Global_Timeout) {
+            my $msg = errmsg('No response. Global timeout triggered');
+            ::logDebug($msg);
+            $self->response({
+                x_response_code => -2,
+                x_response_reason_text => $Vend::Payment::Global_Timeout,
+            });
+        }
+        else {
+            my $msg = errmsg('No response. Reason unknown');
+            ::logDebug($msg);
+            $self->response({
+                x_response_code => -3,
+                x_response_reason_text => $msg,
+            });
+        }
+    }
+    my $response = $self->response;
+
+    my %fields = (
+        trans_type => $request->{x_Type} || 'x',
+        processor => 'authorizenet',
+        catalog => $Vend::Cfg->{CatalogName},
+        result_code => $response->{x_response_code} || '',
+        result_subcode => $response->{x_response_subcode} || '',
+        reason_code => $response->{x_response_reason_code} || '',
+        response_msg => $response->{x_response_reason_text} || '',
+        request_id => $response->{x_trans_id} || '',
+        order_number =>  $response->{x_invoice_num} || $request->{x_Invoice_Num} || '',
+        request_duration => $self->duration,
+        request_date => $self->timestamp,
+        email => $request->{x_Email} || $response->{x_email} || '',
+        request => ::uneval($request) || '',
+        response => ::uneval($response) || '',
+        session_id => $::Session->{id},
+    );
+
+    my $hostname = `hostname -s`;
+    chomp $hostname;
+    $fields{request_source} = $hostname;
+
+    $fields{order_md5} =
+        Digest::MD5::md5_hex(
+            $request->{x_Email},
+            $request->{x_Type},
+            $request->{x_Auth_Code},
+            $request->{x_Amount},
+            $::Session->{id},
+            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+        )
+    ;
+
+    $self->write(\%fields);
+}
 
 1;

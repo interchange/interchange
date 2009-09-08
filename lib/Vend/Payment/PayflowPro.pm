@@ -865,94 +865,70 @@ use base qw/Vend::Payment::GatewayLog/;
 # log_it() must be overridden.
 sub log_it {
     my $self = shift;
-    my $request = $self->request
-        or ::logDebug('Cannot write to %s: no request present', $self->table),
-            return;
 
-    my $response = $self->response;
-    unless ($response) {
+    my $request = $self->request;
+    unless ($request) {
+        ::logDebug('Nothing to write to %s: no request present', $self->table);
+        return;
+    }
+
+    unless ($self->response) {
 
         if ($Vend::Payment::Global_Timeout) {
             my $msg = errmsg('No response. Global timeout triggered');
             ::logDebug($msg);
-            $response = {
+            $self->response({
                 RESULT => -2,
                 RESPMSG => $Vend::Payment::Global_Timeout,
-            };
+            });
         }
         else {
             my $msg = errmsg('No response. Reason unknown');
             ::logDebug($msg);
-            $response = {
+            $self->response({
                 RESULT => -3,
                 RESPMSG => $msg,
-            };
+            });
         }
     }
+    my $response = $self->response;
 
-    eval {
-        my $table = $self->table;
-        my $db = ::database_exists_ref($table)
-            or die "'$table' not a valid Interchange table";
-        $db = $db->ref;
+    my %fields = (
+        trans_type => $request->{TRXTYPE} || 'x',
+        processor => 'payflowpro',
+        catalog => $Vend::Cfg->{CatalogName},
+        result_code =>
+            defined ($response->{RESULT})
+            && $response->{RESULT} =~ /^-?\d+$/
+                ? $response->{RESULT}
+                : undef,
+        response_msg => $response->{RESPMSG} || '',
+        request_id => $response->{PNREF} || '',
+        order_number => $request->{COMMENT1} || '',
+        request_duration => $self->duration,
+        request_date => $self->timestamp,
+        email => $request->{EMAIL} || '',
+        request => ::uneval($request) || '',
+        response => ::uneval($response) || '',
+        session_id => $::Session->{id},
+    );
 
-        my %fields = (
-            trans_type => $request->{TRXTYPE} || 'x',
-            processor => 'payflowpro',
-            catalog => $Vend::Cfg->{CatalogName},
-            result_code =>
-                defined ($response->{RESULT})
-                && $response->{RESULT} =~ /^-?\d+$/
-                    ? $response->{RESULT}
-                    : undef,
-            response_msg => $response->{RESPMSG} || '',
-            request_id => $response->{PNREF} || '',
-            order_number => $request->{COMMENT1} || '',
-            request_duration => $self->duration,
-            request_date => $self->timestamp,
-            email => $request->{EMAIL} || '',
-            request => ::uneval($request) || '',
-            response => ::uneval($response) || '',
-            session_id => $::Session->{id},
-        );
+    my $hostname = `hostname -s`;
+    chomp $hostname;
+    $fields{request_source} = $hostname;
 
-        my $hostname = `hostname -s`;
-        chomp $hostname;
-        $fields{request_source} = $hostname;
-
-        $fields{order_md5} =
-            Digest::MD5::md5_hex(
-                $request->{EMAIL},
-                $request->{TRXTYPE},
-                $request->{ORIGID},
-                $request->{AMT},
-                $::Session->{id},
-                map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-            )
-        ;
-
-        $db->set_slice(
-            [ { dml => 'insert' } ],
-            \%fields
+    $fields{order_md5} =
+        Digest::MD5::md5_hex(
+            $request->{EMAIL},
+            $request->{TRXTYPE},
+            $request->{ORIGID},
+            $request->{AMT},
+            $::Session->{id},
+            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
         )
-            or die "set_slice for $table failed";
-    }; # End eval
+    ;
 
-    if ($@) {
-        my $err = $@;
-        ::logDebug(
-            q{Couldn't write to %s: %s -- request: %s -- response: %s},
-            $self->table,
-            $err,
-            ::uneval($request),
-            ::uneval($response)
-        );
-    }
-    else {
-        $self->clean;
-    }
-
-    return 1;
+    $self->write(\%fields);
 }
 
 1;

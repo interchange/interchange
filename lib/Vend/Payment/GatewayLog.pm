@@ -92,6 +92,40 @@ sub log_it {
     die 'Must override log_it() in subclass';
 }
 
+sub write {
+    my $self = shift;
+    my $data = shift;
+
+    eval {
+        my $table = $self->table;
+        my $db = ::database_exists_ref($table)
+            or die "'$table' not a valid Interchange table";
+        $db = $db->ref;
+
+        $db->set_slice(
+            [ { dml => 'insert' } ],
+            $data
+        )
+            or die "set_slice for $table failed";
+    }; # End eval
+
+    if ($@) {
+        my $err = $@;
+        ::logDebug(
+            q{Couldn't write to %s: %s -- request: %s -- response: %s},
+            $self->table,
+            $err,
+            ::uneval($self->request),
+            ::uneval($self->response)
+        );
+    }
+    else {
+        $self->clean;
+    }
+
+    return 1;
+}
+
 sub table {
     return shift()->{_log_table};
 }
