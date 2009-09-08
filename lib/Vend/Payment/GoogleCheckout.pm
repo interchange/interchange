@@ -1,6 +1,6 @@
 # Vend::Payment::GoogleCheckout - Interchange Google Checkout support
 #
-# GoogleCheckout.pm, v 0.7.2, May 2009
+# GoogleCheckout.pm, v 0.7.3, September 2009
 #
 # Copyright (C) 2009 Zolotek Resources Ltd. All rights reserved.
 #
@@ -343,9 +343,14 @@ v.0.7.0, 29.01.2009
 v 0.7.1, May 2009.
 	- changed order number creation to only come after Google reports the card as charged. Initially
 	  uses the tid (from tid.counter) as a temporary order number.
+
 v0.7.2, May 2009,
 	- updated documentation, simplifed system for co-operating with other payment systems. 
-	  	
+
+v0.7.3, June 2009
+	- added code to update userdb, decrement inventory table and add more meaningful order subject (thanks to Andy Smith of tvcables.co.uk)
+	- also fixed an error whereby KDE's Kate had fooled me with incorrect bracket matching.
+		
 =cut
 
 BEGIN {
@@ -355,12 +360,13 @@ BEGIN {
 			require XML::Simple;
 			require LWP;
 			require MIME::Base64;
-            require HTTP::Request::Common;
-            import HTTP::Request::Common qw(POST);
+			require HTTP::Request::Common;
+			import HTTP::Request::Common qw(POST);
 			require Net::SSLeay;
-            require Encode;
-            import Encode qw(encode decode);
-            require Data::Dumper;
+			require HTML::Entities;
+			require Encode;
+			import Encode qw(encode decode);
+			require Data::Dumper;
 			$selected = "XML::Simple and MIME::Base64";
 		};
 
@@ -372,13 +378,13 @@ BEGIN {
 
 use XML::Simple;
 
-::logGlobal("%s v0.7.2 payment module initialised, using %s", __PACKAGE__, $selected) unless $Vend::Quiet;
+::logGlobal("%s v0.7.3 payment module initialised, using %s", __PACKAGE__, $selected) unless $Vend::Quiet;
 
 }
 
 package Vend::Payment;
-
-my ($gcourl,$merchantid,$merchantkey,$gcoserver,$xmlOut, $taxrate, $state, $header, $gcorequest);
+use strict;
+my ($gcourl,$merchantid,$merchantkey,$gcoserver,$xmlOut, $taxrate, $state, $header, $gcorequest, $actual, $orderID);
 
 sub googlecheckout {
 	my ($opt, $purchaseID, $mv_order_number, $msg, $cart, %result);
@@ -387,7 +393,7 @@ sub googlecheckout {
 	my $ordersdir   = charge_param('ordersdir') || 'orders';
 	my $currency    = $::Values->{currency} || charge_param('currency') || 'GBP';	
 	my $editbasketurl = charge_param('edit_basket_url') || $::Variable->{EDIT_BASKET_URL};
-       $editbasketurl =~ s/\.html$//i;
+	   $editbasketurl =~ s/\.html$//i;
        $editbasketurl .= ".html?id=$::Session->{id}";
 	my $continueshoppingurl = charge_param('continue_shopping_url') || $::Variable->{CONTINUE_SHOPPING_URL};
 	my $receipturl  = charge_param('receipt_url') || $::Variable->{RECEIPT_URL};
@@ -423,9 +429,12 @@ sub googlecheckout {
 	   $returnurl   .= ".html?id=$::Session->{id}";
 	my $diagnose     = $::Values->{gco_diagnose} || charge_param('gco_diagnose') || ''; # set to '1' to have GCO return the XML it receives for diagnostics
 	my $analytics_data = $::Values->{analyticsdata} || '';
-	   $analytics_data = encode('UTF-8', $analytics_data);
+	      $analytics_data = encode('UTF-8', $analytics_data);
 	my $tracking       = charge_param('tracking_script') || ''; 
 	my $without_address = charge_param('without_address') || ''; 
+	my $reporttitle = charge_param('reporttitle') || ''; 
+	my $dec_inventory = charge_param('decrement_inventory') || ''; # set to 1 to decrement inventory upon successful 'charge'
+	my $alwaystaxshipping = charge_param('alwaystaxshipping') || ''; # set to 1 to always tax shipping despite other config options
 
 #----------------------------------------------------------------------------------------
        $merchantid  = charge_param('merchantid')  || $::Variable->{MV_PAYMENT_ID};
@@ -434,10 +443,10 @@ sub googlecheckout {
 	   $::Values->{gcorequest} = '';
 			
 	if ($gcorequest eq 'post') {
-    	$gcourl = "$gcoserver/merchantCheckout/Merchant/$merchantid";
+		$gcourl = "$gcoserver/merchantCheckout/Merchant/$merchantid";
 	      }
 	else {
-    	$gcourl = "$gcoserver/request/Merchant/$merchantid";
+		$gcourl = "$gcoserver/request/Merchant/$merchantid";
 	}
     
 	$gcourl .= "/diagnose" if ($diagnose == '1');
@@ -451,8 +460,8 @@ my $gco = new(
              );
 
 my (%actual) = map_actual();
-    $actual  = \%actual;
-    $opt     = {};
+	$actual  = \%actual;
+	$opt     = {};
 #::logDebug(":GCO:".__LINE__." actual map result: " . ::uneval($actual));
 
 #----------------------------------------------------------------------------------------
@@ -468,19 +477,21 @@ if ($gcorequest eq 'post') {
 	my $shipmsg  = $::Session->{ship_message};
 	my $subtotal = $::Values->{amount} || Vend::Interpolate::subtotal();
 	my $ordertotal = charge_param('amount') || Vend::Interpolate::total_cost();
+print "GCO".__LINE__.": tax=$salestax; shipping=$shipping, $::Values->{mv_shipping}; shipmode=$shipmode\n";
 	my $defaultcountry = charge_param('defaultcountry');
 	my $defaultstate = charge_param('defaultstate');
 	my $country  = uc($actual->{country});
-       $country  = $defaultcountry unless $country; 
+              $country  = $defaultcountry unless $country; 
 	my $state    = uc($actual->{state});
-       $state    = $defaultstate unless $state;
+              $state    = $defaultstate unless $state;
 	my $zip_pattern = $actual->{zip} || $::Values->{zip};
-       $zip_pattern =~ /(\S\S\S).*/;
-       $zip_pattern = "$1"."*";
+              $zip_pattern =~ /(\S\S\S).*/;
+              $zip_pattern = "$1"."*";
     my $taxshipping = 'false';
-       $taxshipping = 'true' if ($country =~ /$::Variable->{TAXSHIPPING}/);
-#::logDebug(":GCO:".__LINE__.": shipping=$::Session->{final_shipping}, $shipping; handling=$handling; taxshipping=$::Variable->{TAXSHIPPING}; country=$country; tx=$taxshipping");
-
+              $taxshipping = 'true' if (($country =~ /$::Variable->{TAXSHIPPING}/) or ($state =~ /$::Variable->{TAXSHIPPING}/) or ($alwaystaxshipping == '1'));
+::logDebug(":GCO:".__LINE__.": shipping=$::Session->{final_shipping}, $shipping; handling=$handling; taxshipping=$::Variable->{TAXSHIPPING}; country=$country; tx=$taxshipping");
+ my $stax = Vend::Interpolate::salestax();
+ print "GCO:".__LINE__.": stax=$stax; mvst=$::Values->{mv_salestax}, $::Values->{salestax}\n";
 if ($salestax == '0') { 
          $taxrate = '0.00';
           }
@@ -493,7 +504,7 @@ if ($salestax == '0') {
   else { 
          $taxrate =  ($salestax / $subtotal || '0');
 }
-#::logDebug(":GCO:".__LINE__.": subtotal=$subtotal; taxrate=$taxrate");
+::logDebug(":GCO:".__LINE__.": subtotal=$subtotal; taxrate=$taxrate");
 
 ### Check that the currency sent to GCO is the one registered with them, or return to the checkout
 my $user_currency = $::Scratch->{iso_currency_code} || $::Values->{iso_currency_code} || $currency;
@@ -537,9 +548,8 @@ elsif ($::Carts->{'main'}) {
        $itm->{code} =~ s/</&#x3c;/g;
        $itm->{code} =~ s/>/&#x3e;/g;
        $itm->{description} =~ s/\s*$//g;
-       $itm->{description} =~ s/&\s/&#x26;\s/g;
-       $itm->{description} =~ s/</&#x3c;/g;
-       $itm->{description} =~ s/>/&#x3e;/g;
+       $itm->{description} =~ s/&\s/and /g;
+       $itm->{description} = HTML::Entities::encode_entities($itm->{description});
        $itm->{price} =~ s/\s*$//g;
        $itm->{price} /= (1 + ($itm->{taxrate} || $default_taxrate)) 
        				if ($calculate_included_tax == '1');
@@ -733,15 +743,16 @@ EOX
     my $redirecturl = $xmlin->{'redirect-url'};
 	my $gco_serial_number = $xmlin->{'serial-number'};
 #::logDebug(":GCO:".__LINE__.": return=$return, redirect=$redirecturl; gcourl=$gcourl;serial number=$gco_serial_number");
-#use Data::Dumper; # for debugging
+use Data::Dumper; # for debugging
 # print Dumper($xmlin); # for debugging
-  
+#print Dumper($::Session);  
   unless (($xmlin->{'error-message'}) or ($diagnose)) {
 
 $::Tag->tag({ op => 'header', body => <<EOB });
 Status: 302 moved
 Location: $redirecturl
 EOB
+
 
 # Fake the result so that IC can log the transaction
    $result{Status}     = 'success';
@@ -757,14 +768,14 @@ EOB
 # Now handle callbacks, eg notification of payment, risk assessment, etc
 #----------------------------------------------------------------------------------------
 
-	elsif ($gcorequest eq callback) {
+	elsif ($gcorequest eq 'callback') {
 
 #### First authenticate the message using the merchantid and merchantkey in the header, then
 #### determine type of callback and respond appropriately.  Apache does not pass HTTP_AUTHORIZATION to
 #### the environment in its default configuration for security reasons, and may need to be recompiled
 
 	my $authdata = $ENV{HTTP_AUTHORIZATION};
-	my ($id, $key, $authed);
+	my ($id, $key, $authed, $email, $locale, $company_name, $new_order_no, $date, $phone, $sendermail);
 
   unless ($bypass_auth == '1') {
 	 if (($authdata) and (substr($ENV{HTTP_AUTHORIZATION},0,6) eq 'Basic ')) {
@@ -779,7 +790,7 @@ EOB
 		        }
     	   }
   	  }
-}
+  }
 
 if (($authed eq 'yes') or ($bypass_auth == '1')) {
 
@@ -852,15 +863,6 @@ if ($$xmlIpn =~ /new-order-notification/) {
        $postal_code =~ /^(\S\S\S).*/;
     my $postal_code_short = $1;
  
-# Add IC order number to GCO admin panel
-    my $xmlOut = <<EOX;
-<?xml version="1.0" encoding="UTF-8"?>
-<add-merchant-order-number xmlns="http://checkout.google.com/schema/2" google-order-number="$gco_order_number">
-    <merchant-order-number>$mv_order_number</merchant-order-number>
-</add-merchant-order-number>
-EOX
-		sendxml($xmlOut);
-
 #::logDebug(":GCO:".__LINE__.": gsn=$gco_serial_number, gon=$gco_order_number, shipping=$shipping,  fname=$fname, lname=$lname, mvon=$mv_order_number");
 # Update IC db - update total_cost here as well, in case of penny differences in rounding methods.
 	  $sth = $dbh->prepare("UPDATE transactions SET fname='$fname',lname='$lname',address1='$address1',address2='$address2',city='$city',state='$state',zip='$postal_code',country='$country',phone_day='$phone',fax='$fax',email='$email',company='$company_name', b_fname='$fname',b_lname='$lname',b_address1='$address1',b_address2='$address2',b_city='$city',b_state='$state',b_zip='$postal_code',b_country='$country',b_phone='$phone',b_company='$company_name',total_cost='$order_total', salestax='$total_tax',shipping='$shipping', gco_order_number='$gco_order_number',txtype='GCO - $gco_financial_state',gco_fulfillment_state='$gco_fulfillment_state',gco_serial_number='$gco_serial_number',gco_buyers_id='$buyers_id',gco_timestamp='$gco_timestamp' WHERE order_number='$mv_order_number'");
@@ -880,21 +882,39 @@ elsif ($$xmlIpn =~ /order-state-change-notification/) {
        $sth->execute() or die errmsg("Cannot get data from transactions tbl");
     my @d = $sth->fetchrow_array;
     my $order_total = $d[0];
-    my $email       = $d[1];
+       $email       = $d[1];
     my $txtype      = $d[2];
     my $old_tid     = $d[3];
 
 	unless ($txtype =~ /GCO - CHARGED/i) {
 	   if ($gco_financial_state =~ /CHARGED/i) {
-	   $new_order_no  = Vend::Interpolate::tag_counter("$ordernumber") ; 
-	   $sth = $dbh->prepare("UPDATE transactions SET code='$new_order_no', order_number='$new_order_no', txtype='GCO - $gco_financial_state',gco_fulfillment_state='$gco_fulfillment_state',gco_timestamp='$gco_timestamp' WHERE gco_order_number='$gco_order_number'");
-	   $stho = $dbh->prepare("UPDATE orderline SET code=replace(code, '$old_tid', '$new_order_no'), order_number='$new_order_no' WHERE order_number='$old_tid'");
-	   $stho->execute() or die errmsg("Cannot update transactions tbl for gco '$gco_order_number'");
+	      $new_order_no  = Vend::Interpolate::tag_counter("$ordernumber") unless defined $::Values->{mv_order_number}; 
+		  $sth = $dbh->prepare("UPDATE transactions SET code='$new_order_no', order_number='$new_order_no', txtype='GCO - $gco_financial_state',gco_fulfillment_state='$gco_fulfillment_state',gco_timestamp='$gco_timestamp' WHERE gco_order_number='$gco_order_number'");
+	   my $stho = $dbh->prepare("UPDATE orderline SET status='processing', code=replace(code, '$old_tid', '$new_order_no'), order_number='$new_order_no' WHERE order_number='$old_tid'");
+		  $stho->execute() or die errmsg("Cannot update orderline tbl for gco '$gco_order_number'") unless defined $::Values->{mv_order_number};
+	# Decrement inventory here now that we know the transaction has succeeded
+	   if ($dec_inventory == '1') {
+		my $sthcart = $dbh->prepare("SELECT cart FROM transactions WHERE gco_order_number='$gco_order_number'") or die errmsg("Cannot select from transactions tbl for $gco_order_number");
+		   $sthcart->execute() or die errmsg("Cannot get data from transactions tbl");
+		my $cart = $sthcart->fetchrow_array;
+	 		$cart = eval ($cart);
+		my $dbi = dbref('inventory') or die errmsg("cannot open inventory table");
+		my $dbhi = $dbi->dbh() or die errmsg("cannot get handle for tbl 'inventory'");
+		my ($sthi, $itm, $qty);
+
+	foreach my $items (@{$cart}) { 
+					$itm = $items->{'code'};
+					$qty = $items->{'quantity'};
+					$sthi = $dbh->prepare("UPDATE inventory SET quantity = quantity -'$qty' WHERE sku = '$itm'");
+					$sthi->execute() or die errmsg("Cannot update table inventory");
+::logDebug(":GCO:".__LINE__.": Decremented inventory for $itm by $qty");
+					}
+				  }	
 	   			}
 	   	else {
        $sth = $dbh->prepare("UPDATE transactions SET txtype='GCO - $gco_financial_state', gco_fulfillment_state='$gco_fulfillment_state',gco_timestamp='$gco_timestamp' WHERE gco_order_number='$gco_order_number'");
        		}
-       $sth->execute() or die errmsg("Cannot update transactions tbl for gco '$gco_order_number'");
+       $sth->execute() or die errmsg("Cannot update transactions tbl for gco '$gco_order_number'") unless defined $::Values->{mv_order_number};
 #::logDebug(":GCO:".__LINE__.": gco_finstate=$gco_financial_state; txtype=$txtype; neworderno=$new_order_no; pID=$purchaseID");	   
        }
 
@@ -990,7 +1010,7 @@ elsif ($$xmlIpn =~ /charge-amount-notification/) {
 	my $gco_latest_charge_amount = $xmlin->{'latest-charge-amount'}->{'content'};
 	my $gco_total_charge_amount  = $xmlin->{'total-charge-amount'}->{'content'};
 
-       $sth = $dbh->prepare("SELECT total_cost,email,order_number,fname,lname,company,address1,address2,city,state,zip,country,phone_day,fax,b_fname,b_lname,b_company,b_address1,b_address2,b_city,b_state,b_zip,b_country,shipmode,handling,order_date,lead_source,referring_url,txtype,locale,currency_locale,cart FROM transactions WHERE gco_order_number='$gco_order_number'") or die errmsg("Cannot select from transactions tbl for $gco_order_number");
+       $sth = $dbh->prepare("SELECT total_cost,email,order_number,fname,lname,company,address1,address2,city,state,zip,country,phone_day,fax,b_fname,b_lname,b_company,b_address1,b_address2,b_city,b_state,b_zip,b_country,shipmode,handling,subtotal,salestax,shipping,order_date,lead_source,referring_url,txtype,locale,currency_locale,cart,username FROM transactions WHERE gco_order_number='$gco_order_number'") or die errmsg("Cannot select from transactions tbl for $gco_order_number");
        $sth->execute() or die errmsg("Cannot get data from transactions tbl");
     my @d = $sth->fetchrow_array;
     my $order_total = $::Values->{order_total} = $d[0];
@@ -1018,17 +1038,21 @@ elsif ($$xmlIpn =~ /charge-amount-notification/) {
     my $b_country = $::Values->{b_country} = $d[22];
     my $shipmode = $::Values->{shipmode} = $d[23];
     my $handling = $::Values->{handling} = $d[24];
-    my $order_date = $::Values->{order_date} = $d[25];
-    my $lead_source = $::Session->{lead_source} = $d[26];
-    my $referring_url = $::Session->{referer} = $d[27];
-	my $txtype = $::Values->{txtype} = $d[28];
-	my $mv_locale = $d[29];
-	my $mv_currency = $d[30];
-	my $cart = $d[31];
+    my $subtotal = $::Values->{subtotal} = $d[25];
+    my $salestax = $::Values->{salestax} = $d[26];
+    my $shipping = $::Values->{shipping} = $d[27];
+    my $order_date = $::Values->{order_date} = $d[28];
+    my $lead_source = $::Session->{lead_source} = $d[29];
+    my $referring_url = $::Session->{referer} = $d[30];
+	my $txtype = $::Values->{txtype} = $d[31];
+	my $mv_locale = $d[32];
+	my $mv_currency = $d[33];
+	my $cart = $d[34];
+	my $username = $d[35];
 
-       $cart =~ s/\"/\'/g;
-       $cart =~ s/\\//;
-	   @cart = eval($cart); 
+		$cart =~ s/\"/\'/g;
+		$cart =~ s/\\//;
+		$cart = eval($cart); 
 #::logDebug(":GCO:".__LINE__.": cart=$cart");	
 	   
 	   $::Values->{mv_payment} = 'GoogleCheckout';
@@ -1042,9 +1066,30 @@ elsif ($$xmlIpn =~ /charge-amount-notification/) {
  	   $sth = $dbh->prepare("UPDATE transactions SET order_number='$purchaseID', gco_latest_charge_amount='$gco_latest_charge_amount',gco_total_charge_amount='$gco_total_charge_amount',gco_timestamp='$gco_timestamp' WHERE gco_order_number='$gco_order_number'");
        $sth->execute() or die errmsg("Cannot update transactions tbl for gco '$gco_order_number'");
        }
- 
-# run custom final route which cascades 'copy_user' and 'main_entry', ie no receipt page.
-     	Vend::Order::route_order("gco_final", @cart) if @cart;
+
+# Update the customer's details in userdb
+	  $db = dbref('userdb') or die errmsg("cannot open userdb table");
+	  $dbh = $db->dbh() or die errmsg("cannot get handle for tbl 'userdb'");
+	  $sth = $dbh->prepare("UPDATE userdb SET fname='$fname',lname='$lname',address1='$address1',address2='$address2',city='$city',state='$state',zip='$zip',country='$country',phone_day='$phone',fax='$fax',email='$email',company='$company_name' WHERE username='$username'");
+	  $sth->execute() or die errmsg("Cannot update userdb tbl for user '$username'");
+
+# Add IC order number to GCO admin panel
+    my $xmlOut = <<EOX;
+<?xml version="1.0" encoding="UTF-8"?>
+<add-merchant-order-number xmlns="http://checkout.google.com/schema/2" google-order-number="$gco_order_number">
+    <merchant-order-number>$mv_order_number</merchant-order-number>
+</add-merchant-order-number>
+EOX
+		sendxml($xmlOut);
+
+# Make the order number easier to correlate with Google's
+	if ($reporttitle == '1') {
+		$::Values->{mv_order_subject} = 'Order '.$new_order_no.' : GCOID '.$gco_order_number.' : '.$txtype;
+	}  
+
+# run custom final route which cascades 'copy_user' and 'main_entry',  but no receipt page.
+		$::Values->{email_copy} = '1';
+     	Vend::Order::route_order("gco_final", $cart) if $cart;
 
     }
 
@@ -1090,8 +1135,8 @@ EOM
                 subject => "Google order $gco_order_number has been refunded",
                 body => "$mailrefund\n",
              });
-     }
-  
+       }
+    } 
  }
 
 #===================================================================================================
@@ -1105,7 +1150,7 @@ elsif ($gcorequest eq 'command') {
 	my $amount           = $::Values->{gco_amount};
 	my $reason           = $::Values->{gco_reason};
 	my $carrier          = $::Values->{gco_shipping_company};
-       $carrier = 'Other' unless ($carrier =~ /DHL|FedEx|UPS|USPS/i);
+           $carrier = 'Other' unless ($carrier =~ /DHL|FedEx|UPS|USPS/i);
 	my $tracking_number  = $::Values->{tracking_number};
 	my $send_email       = $::Values->{email_text};
 
@@ -1243,18 +1288,18 @@ EOX
 	  $::Session->{payment_result}{Terminal} = 'success' unless ($xmlin->{'error-message'});	
 	  $::Session->{errors}{GoogleCheckout} = $xmlin->{'error-message'} if ($xmlin->{'error-message'});
        
-    }
+       }
 
 #--- end of admin panel commands ----------------------------------------------------------------------------
     
     }
-  }
+ 
 }
 
 #------------------
 sub new {
   my (%args) = @_;
-  my $class = Vend::Payment::GoogleCheckout;
+  my $class = 'Vend::Payment::GoogleCheckout';
   my $self;
      $self->{__merchant_id}        = $args{merchant_id};
      $self->{__merchant_key}       = $args{merchant_key};
@@ -1279,7 +1324,7 @@ use MIME::Base64;
      $header->header('Accept'        => "application/xml");
   my $request = HTTP::Request->new(POST => $gcourl, $header, $xmlOut);
   my $response = $agent->request($request);
-#::logDebug(":GCO:".__LINE__.": sendxml: gcourl=$gcourl\nxmlOut=$xmlOut");
+::logDebug(":GCO:".__LINE__.": sendxml: gcourl=$gcourl\nxmlOut=$xmlOut");
   return $response->content;
 }
 
