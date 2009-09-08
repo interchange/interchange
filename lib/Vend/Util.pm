@@ -1818,22 +1818,29 @@ sub logError {
 	$Vend::Errors .= $msg
 		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
 
-    eval {
-		open(MVERROR, ">> $opt->{file}")
-											or die "open\n";
-		lockfile(\*MVERROR, 1, 1)		or die "lock\n";
-		seek(MVERROR, 0, 2)				or die "seek\n";
-		print(MVERROR $msg, "\n")		or die "write to\n";
-		unlockfile(\*MVERROR)			or die "unlock\n";
-		close(MVERROR)					or die "close\n";
-    };
+    my $reason;
+    if (! allowed_file($opt->{file}, 1)) {
+        $@ = 'access';
+        $reason = 'prohibited by global configuration';
+    }
+    else {
+        eval {
+            open(MVERROR, ">> $opt->{file}")
+                                        or die "open\n";
+            lockfile(\*MVERROR, 1, 1)   or die "lock\n";
+            seek(MVERROR, 0, 2)         or die "seek\n";
+            print(MVERROR $msg, "\n")   or die "write to\n";
+            unlockfile(\*MVERROR)       or die "unlock\n";
+            close(MVERROR)              or die "close\n";
+        };
+    }
     if ($@) {
 		chomp $@;
 		logGlobal ({ level => 'info' },
 					"Could not %s error file %s: %s\nto report this error: %s",
 					$@,
 					$opt->{file},
-					$!,
+					$reason || $!,
 					$msg,
 				);
     }
