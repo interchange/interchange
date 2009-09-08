@@ -3437,9 +3437,16 @@ sub set_default_search {
 		},
 		ProductFiles => \&set_default_search,
 		VendRoot => sub {
+			my $cat_template_dirs = $C->{TemplateDir} || [];
+			if ($Global::NoAbsolute) {
+				for (@$cat_template_dirs) {
+					absolute_or_relative($_) and
+						config_error("TemplateDir path %s is prohibited by NoAbsolute", $_);
+				}
+			}
 			my @paths = map { quotemeta $_ }
 							$C->{VendRoot},
-							@{$C->{TemplateDir} || []},
+							@$cat_template_dirs,
 							@{$Global::TemplateDir || []};
 			my $re = join "|", @paths;
 			$Global::AllowedFileRegex->{$C->{CatalogName}} = qr{^($re)};
