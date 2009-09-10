@@ -397,6 +397,9 @@ Core
 * Fix PreFork mode daemon restart problem. Now child processes are properly
   killed off.
 
+* Make sure catalog TemplateDir and ErrorFile directives are safe when
+  NoAbsolute is set.
+
 Payment
 -------
 
@@ -558,6 +561,14 @@ Standard demo
 
 * Add company name to shipping and billing addresses and filter output 
   with evalue.
+
+Other
+-----
+
+* Added jEdit mode files for Interchange to eg/jedit. Thanks to Justin Otten.
+
+* Added runtime dump-memory global UserTag and ActionMap for very low-level
+  troubleshooting beyond what the structure files can offer.
 
 
 ------------------------------------------------------------------------------
