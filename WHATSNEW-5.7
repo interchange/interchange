@@ -78,122 +78,122 @@ Core
   Thanks to David Christensen <david@endpoint.com> for the fix.
 
 * Correct .access functionality directly in pages/
-    
+
   .access worked in subdirectories like pages/abc/, but didn't work directly
   under pages/.
 
 * BounceReferrals changes:
-    
+
   * Fix bug that kept query strings from being passed through due to use of
   nonexistent %$CGI::Values instead of %CGI::Values.
-  
+
   * Remove mv_pc and mv_source to prevent redirection loops.
-  
+
   * Don't generate a "process" URL for root URL; use DirectoryIndex instead,
     if available.
 
 * Make [email] process cc and bcc options for plain text emails (#250).
 
 * Allow catalogs to be set to have Perl always global by default.
-    
+
       AllowGlobal        catname
       PerlAlwaysGlobal   catname
-  
+
     This is a global directive (i.e. interchange.cfg).
-  
+
     [perl global=0] will still be honored, i.e. that will be interpreted
     by Safe.
-  
+
   * Allow catalogs to turn off "strict" in global mode by default:
-  
+
       PerlNoStrict       catname
-  
+
     This is a global directive (i.e. interchange.cfg).
-  
+
   This is intended as an easy way to allow catalogs to work all right
   with Vend::Charset. Sad, but can't think of any better way short of
   maintaining our own version of the UTF8 modules. It is really sad,
   because the Perl powers that be have totally abandoned Opcode and
   Safe.
-  
+
   NOT RECOMMENDED FOR USE BY NON-SOPHISTICATED INTERCHANGE USERS.
 
 * Correct issue with hi-bit characters in search strings.
-    
+
   This corrects the "Wide character in subroutine entry" error that
   occurs when hi-bit characters are used in a search. The failure was
   caused by Digest::MD5's reluctance to process characters > 0xFF, so we
   just convert any search options to UTF8 before calculating the MD5.
 
 * Add support for SHA1 encrypted userdb passwords.
-    
+
   * Add new "promote" feature. When active, and passwords
     of any of the other algorithms are present, on next
     login the user's password will be promoted to the
     target hashing algorithm. This way, password strength
     can be increased organically.
-  
+
   Use of SHA1 passwords can be specified in the same manner
   as currently MD5 can be:
-  
+
   UserDB  ui  sha1  1
-  
+
   To utilize the promotion feature, you add a similar line
   for the UserDB definition:
-  
+
   UserDB  ui  promote 1
-  
+
   Promote implies that strength is increased, but in reality
   promotion will move in any direction desired. The requested
   hashing algorithm is the target, and whatever the form of the
   passwords in the database, they will be converted to the target.
-  
+
   E.g., if neither sha1 nor md5 is specified, and the database
   currently has md5 passwords, if promote is added, it will have
   the effect of promoting to crypt(), the target hashing algorithm
   (which happens to be the default).
-  
+
   If promote is not used, the change is fully backward compatible.
   Whatever method is specified will be used, and if the database
   has passwords of a different algorithm, authentication will fail.
-  
+
   You should not specify more than 1 hashing type. If you specify
   both md5 and sha1, you'll be subject to the whims of hash
   ordering from keys().
-  
+
   Also note that, before promoting to a stronger hash, you should
   ensure your database's password field is long enough to hold the
   new, longer datum.
-  
+
   Original work from Steven Jenkins <steven@endpoint.com> for
   framework of promotion code.
 
 * Add global timeout feature for payment gateways.
-    
+
   The different payment gateways all tend to implement their own timeout features
   with varying degrees of success. In particular, LWP-based clients do not appear
   to have any capability of passing a timeout by the developer whenever it uses
   the https protocol. Thus, the use of LWP's timeout feature is illusory and
   forces any activity to a 180s timeout.
-  
+
   The new feature completely separates out the gateway activity with a fork,
   giving it reliable control over the duration of the gateway request. It also
   eliminates the need for each gateway module to implement its own timeout,
   either because the developer chose not to, didn't consider it, or because the
   developer discovered it was hopeless to do so using LWP.
-  
+
   The feature is invoked using the "global_timeout" option in the payment route,
   or as an opt passed to [charge]. global_timeout should be any positive integer,
   which will define the number of seconds until the timeout is triggered. If this
   new option is not used, the effect is a no-op, with behavior identical to that
   prior to the feature. No changes in config means completely backward
   compatible.
-  
+
   Additionally, a new "global_timeout_msg" option is available so that the
   message produced if the alarm fires can be customized within the payment route.
-  
+
   E.g.:
-  
+
       Route   payflowpro    id                 "__PAYFLOWPRO_ID__"
       Route   payflowpro    secret             "__PAYFLOWPRO_SECRET__"
       Route   payflowpro    partner            "__PAYFLOWPRO_PARTNER__"
@@ -215,54 +215,54 @@ Core
 * Add new SourcePriority catalog directive.
 
   SourcePriority <source_list>
-  
+
   <source_list> is a prioritized list of cgi variables to get the source
   (affiliate) name from.  Can also include the following:
-  
+
   mv_pc - has the current special casing of mv_pc, (ie RESET is special as
   are values that contain only digits).
-  
+
   cookie-foo check the cookie with the foo label.
-  
+
   session - stop here if session already exists, do not check any further
   variables.
-  
+
   session-foo - stop here if foo session variable is set.
-  
+
   Default: SourcePriority mv_pc mv_source
-  
+
   Examples:
-  
+
   Check the MV_SOURCE cookie for an affiliate name as well as the other defaults:
   SourcePriority mv_pc mv_source cookie-MV_SOURCE
-  
+
   ...as above, but you don't want your affiliates using mv_pc:
   SourcePriority mv_source cookie-MV_SOURCE
-  
+
   Check the cgi variable affid instead:
   SourcePriority affid
-  
+
   Say you send affiliate traffic to other sites, and you don't want
   those sites to get credit for sales if a customer follows a banner from
   them back to your site:
   SourcePriority session mv_pc mv_source
-  
+
   If you want affiliates who use the specialsource cgi variable instead of
   mv_source to get special treatment and can override customers who
   already have sessions:
   SourcePriority specialsource session mv_pc mv_source
-  
+
   If you want to allow affiliates to get credit if there is a
   session but only if no other affiliate is already set:
   SourcePriority session-source mv_pc mv_source
 
 * Add directive SourceCookie, support for persistent affiliate tracking.
-    
+
   Setting SourceCookie defines the relevant attributes of a cookie to be
   maintained in conjunction with the usual session-only parameter
   $Session->{source}. Its usage eliminates the duration of the user's session as
   the limiting factor for applying credit to a referral.
-  
+
   SourceCookie and SourcePriority would be expected to typically work in tandem,
   and thus the same cookie defined in both contexts. However, there is no such
   requirement to do so. Defining SourceCookie by itself merely makes the cookie
@@ -270,34 +270,34 @@ Core
   $Session->{source}. That cookie may, or may not, be leveraged as an element in
   SourcePriority, which itself may look to a cookie not maintained by
   SourceCookie.
-  
+
   SourceCookie supports the following attributes:
-  
+
   * name (required)
   * expire (any format supported for [set-cookie])
   * domain
   * path
   * secure
   * autoreset
-  
+
   autoreset is a boolean that, when true, will cause each request from the client
   to reset the cookie in the response, effectively refreshing the expiration time
   relative to the current time. Uses, for example, might include a desire to
   ensure that the source cookie last "forever" (autoreset + sufficiently long
   expire period) or for more obscure uses such as "Affiliate should last [value
   of expire] from the last request".
-  
+
   Attributes may be positional in order of (name expire domain path secure), but
   it is recommended that they be expressed as key=value pairs for clarity.
-  
+
   Example using both SourcePriority and SourceCookie together in catalog.cfg:
-  
+
   SourcePriority mv_pc mv_source cookie-MV_SOURCE
   SourceCookie name=MV_SOURCE expire="180 days"
 
 * Add reload of AutoModifier based on a prepended ! (exclamation point).
   Example:
-     
+
      AutoModifier    !download  pricing:price_group
 
   The download attribute will be recomputed for the current sku when
@@ -336,7 +336,7 @@ Core
   modules that use a quasi-sequential session ID. You end up placing all
   sessions in the S/2 directory for a long time, followed by the S/3 directory,
   etc. A setting of:
-  
+
     SessionHashLength   4
     SessionHashLevels   1
 
@@ -559,7 +559,7 @@ Standard demo
 
 * Remove rarely used mass_setting admininstration page.
 
-* Add company name to shipping and billing addresses and filter output 
+* Add company name to shipping and billing addresses and filter output
   with evalue.
 
 Other
@@ -762,7 +762,7 @@ Standard demo
 -------------
 
 * Added SQLite support.
- 
+
 * Disabled product comment to prevent spam showing up on default installations.
 
 * Provide reasonable defaults for shipping mode and country at checkout to avoid
