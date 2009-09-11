@@ -1056,52 +1056,52 @@ Contributions to Interchange have been made by:
     Bill Carr                           Josh Lavin
     Bill Dawkins                        José Mª Revuelto
     Bill Randle                         Jurgen Botz
-    Birgitt Funk                        Kaare Rasmussen
-    Bob Jordan                          Keiko
-    Brent Kelly                         Keith Oberlin
-    Brian Bullen                        Kim Lauritz Christensen
-    Brian Kosick                        Larry Huffman
-    Brian Miller                        Larry Leszczynski
-    Bruce Albrecht                      Lars Tode
-    Cameron Prince                      Lyn St George
-    Carl Bailey                         Marc Austin
-    Chen Naor                           Mark Stosberg
-    Christian Mueller                   Marty Tennison
-    Christopher Miller                  Massimiliano Ciancio
-    Christopher Thompson                Mat Jones
-    Christopher Wenham                  Matthew Schick
-    Dan Busarow                         Max Cohan
-    Dan Collis-Puro                     Michael Lehmkuhl
-    Dan Helfman                         Michael McCune
-    Daniel Hutchinson                   Michael Wilk
-    Daniel Thompson                     Mick Weiss
-    Dave Wingate                        Mike Frager
-    David Adams                         Neil Evans
-    Dennis Cronin                       Nelson Ferrari
-    Don Grodecki                        Paul Delys
-    Don Hathaway                        Paul Jordan
-    Donald Alexander                    Phil Smith
-    Eric Zarko                          Raj Goel
-    Frank Bonita                        Ray Desjardins
-    Frederic Steinfels                  Reid Sutherland
-    Gary Benson                         René Hertell
-    Gunnar Hellekson                    Ryan Perry
-    Hamish Bradick                      Sergiusz Jarczyk
-    Hans-Joachim Leidinger              Shozo Murahashi
-    Heinz Wittenbecher                  Sonny Cook
-    Hiroyuki Cozy Kojima                Spencer Christensen
-    Ignacio Lizarán                     Steve Graham
-    Ivan Kohler                         Thomas J.M. Burton
-    Jack Tsai                           Tim Baverstock
-    Jason Holt                          Tom Friedel
-    Jason Kohles                        Tom Tucker
-    Javier Martin                       Tommi Laberno
-    Jeff Barr                           Toni Mueller
-    Jeff Boes                           Troy Davis
-    Jeff Carnahan                       Victor Nolton
-    Jeff Fearn                          William Dan Terry
-    Jeff Nappi                          Zachary Matthews
-    Jochen Wiedmann
+    Birgitt Funk                        Justin Otten
+    Bob Jordan                          Kaare Rasmussen
+    Brent Kelly                         Keiko
+    Brian Bullen                        Keith Oberlin
+    Brian Kosick                        Kim Lauritz Christensen
+    Brian Miller                        Larry Huffman
+    Bruce Albrecht                      Larry Leszczynski
+    Cameron Prince                      Lars Tode
+    Carl Bailey                         Lyn St George
+    Chen Naor                           Marc Austin
+    Christian Mueller                   Mark Stosberg
+    Christopher Miller                  Marty Tennison
+    Christopher Thompson                Massimiliano Ciancio
+    Christopher Wenham                  Mat Jones
+    Dan Busarow                         Matthew Schick
+    Dan Collis-Puro                     Max Cohan
+    Dan Helfman                         Michael Lehmkuhl
+    Daniel Hutchinson                   Michael McCune
+    Daniel Thompson                     Michael Wilk
+    Dave Wingate                        Mick Weiss
+    David Adams                         Mike Frager
+    Dennis Cronin                       Neil Evans
+    Don Grodecki                        Nelson Ferrari
+    Don Hathaway                        Paul Delys
+    Donald Alexander                    Paul Jordan
+    Eric Zarko                          Phil Smith
+    Frank Bonita                        Raj Goel
+    Frederic Steinfels                  Ray Desjardins
+    Gary Benson                         Reid Sutherland
+    Gunnar Hellekson                    René Hertell
+    Hamish Bradick                      Ryan Perry
+    Hans-Joachim Leidinger              Sergiusz Jarczyk
+    Heinz Wittenbecher                  Shozo Murahashi
+    Hiroyuki Cozy Kojima                Sonny Cook
+    Ignacio Lizarán                     Spencer Christensen
+    Ivan Kohler                         Steve Graham
+    Jack Tsai                           Thomas J.M. Burton
+    Jason Holt                          Tim Baverstock
+    Jason Kohles                        Tom Friedel
+    Javier Martin                       Tom Tucker
+    Jeff Barr                           Tommi Laberno
+    Jeff Boes                           Toni Mueller
+    Jeff Carnahan                       Troy Davis
+    Jeff Fearn                          Victor Nolton
+    Jeff Nappi                          William Dan Terry
+    Jochen Wiedmann                     Zachary Matthews
 
     and many others.
 
