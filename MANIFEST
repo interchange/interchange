@@ -336,6 +336,7 @@ code/Widget/yesno.widget
 code/Widget/ynzero.widget
 configure
 debian/400mod_interchange.info
+debian/catalog_before.cfg
 debian/catalogs.cfg
 debian/changelog
 debian/compat
@@ -1038,10 +1039,15 @@ dist/subdomains.cfg
 eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
+eg/dump_memory.cfg
 eg/filter/calculated.filter
 eg/gpg_display
 eg/iclint
 eg/ifdef
+eg/jedit/catalog
+eg/jedit/html.xml
+eg/jedit/interchange.xml
+eg/jedit/README
 eg/merge-tab-files
 eg/news_feature/dbconf/default_db/news.dbm
 eg/news_feature/dbconf/mysql/news.mysql
@@ -1063,6 +1069,7 @@ eg/te
 eg/usertag/benchmark.tag
 eg/usertag/isindex.tag
 eg/usertag/sleep.tag
+eg/usps/get-intl-rate-names
 eg/usps/html2tab
 eg/usps/join123local
 eg/usps/makezone
@@ -1130,6 +1137,7 @@ lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
 lib/Vend/Payment/Getitcard.pm
+lib/Vend/Payment/GoogleCheckout.pm
 lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
@@ -1141,10 +1149,12 @@ lib/Vend/Payment/PRI.pm
 lib/Vend/Payment/Protx2.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Sage.pm
+lib/Vend/Payment/SagePay.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
 lib/Vend/Payment/TestPayment.pm
+lib/Vend/Payment/Worldpay.pm
 lib/Vend/RefSearch.pm
 lib/Vend/Safe.pm
 lib/Vend/Scan.pm

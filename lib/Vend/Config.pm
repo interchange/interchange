@@ -53,7 +53,7 @@ use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
 
-$VERSION = substr(q$Revision: 2.246 $, 10);
+$VERSION = '2.247';
 
 my %CDname;
 my %CPname;
@@ -1005,6 +1005,8 @@ my($directives, $directive, %parse);
 sub config {
 	my($catalog, $dir, $confdir, $subconfig, $existing, $passed_file) = @_;
 	my($d, $parse, $var, $value, $lvar);
+
+	$Vend::Cat = $catalog;
 
 	if(ref $existing eq 'HASH') {
 #::logDebug("existing=$existing");
@@ -3577,12 +3579,20 @@ sub set_default_search {
 		},
 		ProductFiles => \&set_default_search,
 		VendRoot => sub {
+			my $cat_template_dirs = $C->{TemplateDir} || [];
+			if ($Global::NoAbsolute) {
+				for (@$cat_template_dirs) {
+					if (absolute_or_relative($_) and ! /^$C->{VendRoot}/) {
+						config_error("TemplateDir path %s is prohibited by NoAbsolute", $_);
+					}
+				}
+			}
 			my @paths = map { quotemeta $_ }
 							$C->{VendRoot},
-							@{$C->{TemplateDir} || []},
+							@$cat_template_dirs,
 							@{$Global::TemplateDir || []};
 			my $re = join "|", @paths;
-			$C->{AllowedFileRegex} = qr{^($re)};
+			$Global::AllowedFileRegex->{$C->{CatalogName}} = qr{^($re)};
 			return 1;
 		},
 		Autoload => sub {
@@ -3895,31 +3905,27 @@ sub parse_root_dir_array {
 sub parse_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
+
+	unless (allowed_file($value)) {
+		config_error('Path %s not allowed in %s directive',
+					  $value, $var);
+	}
 	$value = "$C->{VendRoot}/$value"
 		unless file_name_is_absolute($value);
 	$value =~ s./+$..;
+
 	$C->{$var} = [] unless $C->{$var};
 	my $c = $C->{$var} || [];
 	push @$c, $value;
 	return $c;
 }
 
-# Prepend the CatalogRoot pathname to the relative directory specified,
-# unless it already starts with a leading /.
-
 sub parse_relative_dir {
 	my($var, $value) = @_;
 
-	if ($Global::NoAbsolute) {
-		# sanity check on filenames
-		if (file_name_is_absolute($value)) {
-			config_error('Absolute path %s not allowed in %s directive',
-						 $value, $var)
-		}
-		if ($value =~ m#^\.\./.*\.\.#) {
-			config_error('Path %s outside of catalog directory not allowed in %s directive',
-						 $value, $var)
-		}
+	if (absolute_or_relative($value)) {
+		config_error('Path %s not allowed in %s directive',
+					  $value, $var);
 	}
 
 	$C->{Source}{$var} = $value;

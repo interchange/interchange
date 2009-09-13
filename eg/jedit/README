@@ -1,0 +1,35 @@
+from http://www.icdevgroup.org/pipermail/interchange-users/2009-March/050311.html
+
+Date: Mon, 23 Mar 2009 09:41:24 -0400
+From: Justin Otten <justino@fragrancenet.com>
+To: interchange-users@icdevgroup.org
+Subject: Re: [ic] Jedit interchange.xml language definition
+
+On Wed, Feb 11, 2009 at 4:46 PM, Sam Batschelet <sam@westbranchresort.com> wrote:
+>
+> Hello does anyone have a copy of this referenced in the IC docs
+> http://www.icdevgroup.org/doc-5.0/frames/ic_howto_cvs_43.html seems the link
+> is dead.
+>
+> Thanks
+> -Sam
+
+At some point, I updated the JEdit file that was found on the
+icdevgroup website so that jedit will properly syntax highlight CSS,
+HTML, and Javascript. It now also properly handles heredocs (makes
+working with usertags better).
+
+I had to modify the html.xml definition due to issues of sticking an
+IC tag in the middle of some html attribute. ie
+  <img src="[image-src]" alt="[image-alt]" />
+jedit refused to highlight these tags, the modification to html.xml is
+simply an addition of a delegation to interchange.xml to handle such
+tags
+
+I attached the three modified files to this email, let me know if you
+can't download them, I'll post them somewhere public.
+
+--
+Regards,
+Justin Otten
+FragranceNet.com

@@ -131,7 +131,7 @@ the C<Payment Settings> heading in the Interchange documentation for use.
 =item test
 
 Set this to C<TRUE> if you wish to operate in test mode, i.e. set the Authorize.net
-C<x_Test_Request> query paramter to TRUE.i
+C<x_Test_Request> query parameter to TRUE.
 
 Examples: 
 

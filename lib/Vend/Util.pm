@@ -206,30 +206,9 @@ sub tabbed {
                           } @_);
 }
 
-# Finds common-log-style offset
-# Unproven, authoratative code welcome
-my $Offset;
-FINDOFFSET: {
-    my $now = time;
-    my ($gm,$gh,$gd,$gy) = (gmtime($now))[1,2,5,7];
-    my ($lm,$lh,$ld,$ly) = (localtime($now))[1,2,5,7];
-    if($gy != $ly) {
-        $gy < $ly ? $lh += 24 : $gh += 24;
-    }
-    elsif($gd != $ld) {
-        $gd < $ld ? $lh += 24 : $gh += 24;
-    }
-    $gh *= 100;
-    $lh *= 100;
-    $gh += $gm;
-    $lh += $lm;
-    $Offset = sprintf("%05d", $lh - $gh);
-    $Offset =~ s/0(\d\d\d\d)/+$1/;
-}
-
 # Returns time in HTTP common log format
 sub logtime {
-    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S $Offset]", localtime());
+    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S %z]", localtime());
 }
 
 sub format_log_msg {
@@ -1840,22 +1819,29 @@ sub logError {
 	$Vend::Errors .= $msg
 		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
 
-    eval {
-		open(MVERROR, ">> $opt->{file}")
-											or die "open\n";
-		lockfile(\*MVERROR, 1, 1)		or die "lock\n";
-		seek(MVERROR, 0, 2)				or die "seek\n";
-		print(MVERROR $msg, "\n")		or die "write to\n";
-		unlockfile(\*MVERROR)			or die "unlock\n";
-		close(MVERROR)					or die "close\n";
-    };
+    my $reason;
+    if (! allowed_file($opt->{file}, 1)) {
+        $@ = 'access';
+        $reason = 'prohibited by global configuration';
+    }
+    else {
+        eval {
+            open(MVERROR, ">> $opt->{file}")
+                                        or die "open\n";
+            lockfile(\*MVERROR, 1, 1)   or die "lock\n";
+            seek(MVERROR, 0, 2)         or die "seek\n";
+            print(MVERROR $msg, "\n")   or die "write to\n";
+            unlockfile(\*MVERROR)       or die "unlock\n";
+            close(MVERROR)              or die "close\n";
+        };
+    }
     if ($@) {
 		chomp $@;
 		logGlobal ({ level => 'info' },
 					"Could not %s error file %s: %s\nto report this error: %s",
 					$@,
 					$opt->{file},
-					$!,
+					$reason || $!,
 					$msg,
 				);
     }

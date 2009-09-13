@@ -1,7 +1,5 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.112 2009-04-27 10:00:17 racke Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
@@ -26,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.112 $, 10);
+$VERSION = '1.113';
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -734,16 +732,17 @@ sub run_in_catalog {
 	my $dir;
 	my @itl;
 	if($job) {
-		my ($d, $global_dir, $tmp);
 		my @jobdirs = ([$jobscfg->{base_directory} || 'etc/jobs', 0]);
 
 		if (is_yes($jobscfg->{use_global}) || is_yes($Global::Jobs->{UseGlobal})) {
 			push (@jobdirs, ["$Global::ConfDir/jobs", 1]);
 		}
 
+		my $global_dir;
 		for my $r (@jobdirs) {
-#::logGlobal("check directory=$d for $job");
+			my $d;
 			($d, $global_dir) = @$r;
+#::logGlobal("check directory=$d for $job");
 			next unless $d;
 			next unless -d "$d/$job";
 			$dir = "$d/$job";
@@ -751,9 +750,10 @@ sub run_in_catalog {
 		}
 
 		if($dir) {
+			my $tmp;
 			if ($global_dir) {
-				$tmp = $Vend::Cfg->{AllowedFileRegex};
-				$Vend::Cfg->{AllowedFileRegex} = qr{^$dir};
+				$tmp = $Global::AllowedFileRegex->{$cat};
+				$Global::AllowedFileRegex->{$cat} = qr{^$dir};
 			}
 			
 			my @f = glob("$dir/*");
@@ -766,7 +766,7 @@ sub run_in_catalog {
 			}
 
 			if ($global_dir) {
-				$Vend::Cfg->{AllowedFileRegex} = $tmp;
+				$Global::AllowedFileRegex->{$cat} = $tmp;
 			}
 		}
 	}

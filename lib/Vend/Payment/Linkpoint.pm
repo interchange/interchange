@@ -1,8 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.13 2009-03-16 19:34:01 jon Exp $
-#
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -101,8 +99,9 @@ The type of transaction to be run. Valid values are:
 
     Interchange         Linkpoint
     ----------------    -----------------
-        auth            preauth
-        sale            sale
+        auth            PREAUTH
+        sale            SALE
+        settle_prior    POSTAUTH
 
 Default is C<sale>.
 
@@ -114,34 +113,41 @@ passed into the subroutine, and it should return true (in the Perl truth
 sense) if its checks were successful, or false if not.
 
 This can come in handy since LinkPoint has no option to decline a charge
-when AVS data come back negative. 
+when AVS or CVV data come back negative. 
 
-If you want to fail based on a bad AVS check, make sure you're only
+If you want to fail based on a bad AVS/CVV check, make sure you're only
 doing an auth -- B<not a sale>, or your customers would get charged on
-orders that fail the AVS check and never get logged in your system!
+orders that fail the AVS/CVV check and never get logged in your system!
 
 Add the parameters like this:
 
-	Route  linkpoint  check_sub  avs_check
+	Route  linkpoint  check_sub  link_check
 
 This is a matching sample subroutine you could put in interchange.cfg:
-			
+
 	GlobalSub <<EOR
-	sub avs_check {
+	sub link_check {
 		my ($result) = @_;
 		my $avs = $result->{r_avs};
-		my ($addr, $zip) = split m{}, $avs;
+		my ($addr, $zip, $nothing, $cvv) = split m{}, $avs;
+#::logDebug("avs=$avs, addr=$addr zip=$zip banks=$nothing cvv=$cvv");
 		return 1 if $addr eq 'Y' or $zip eq 'Y';
 		return 1 if $addr eq 'X' and $zip eq 'X';
+		return 1 if $cvv =~ /^[MPSUX]$/;
 		$result->{MStatus} = 'failure';
-		$result->{r_error} = $result->{MErrMsg} = "The billing address you entered does not match the cardholder's billing address";
-		return 0; 
+		if ($cvv eq 'N' || '') {
+			$result->{r_error} = "The card security code you entered does not match. Additional failed attempts may hold your available funds.";
+		}
+		else {
+			$result->{r_error} = "The billing address you entered does not match the cardholder's billing address. Additional failed attempts may hold your available funds.";
+		}
 	}
 	EOR
 
 That would work equally well as a Sub in catalog.cfg. It will succeed if
-either the address or zip is 'Y', or if both are unknown. If it fails,
-it sets the error message in the result hash.
+either the address or zip is 'Y', or if both are unknown, or if the CVV
+matches or is unknown. If it fails, it sets the error message in the
+result hash.
 
 Of course you can use this sub to do any other post-processing you
 want as well.
@@ -322,9 +328,16 @@ sub linkpoint {
 		$amount = Vend::Util::round_to_frac_digits($amount,$precision);
 	}
 
-	$shipping = Vend::Interpolate::tag_shipping();
-	$subtotal = Vend::Interpolate::subtotal();
-	$salestax = Vend::Interpolate::salestax();
+	if($Values->{use_pay_cert}) {
+		$shipping = '';
+		$subtotal = '';
+		$salestax = '';
+	}
+	else {
+		$shipping = Vend::Interpolate::tag_shipping();
+		$subtotal = Vend::Interpolate::subtotal();
+		$salestax = Vend::Interpolate::salestax();
+	}
 	$order_id = gen_order_id($opt);
 
 	my $addrnum = $actual->{b_address1};
@@ -334,6 +347,11 @@ sub linkpoint {
 	$addrnum =~ s/^(\d+).*$//g;
 	$scompany =~ s/\&/ /g;
 	$bcompany =~ s/\&/ /g;
+
+	my $cvmindicator = 'not_provided';
+	if($actual->{cvv2} || $actual->{mv_credit_card_cvv2}) {
+		$cvmindicator = 'provided';
+	}
 	
 	my %check_transaction = ( PREAUTH => 1, SALE => 1 );
 
@@ -348,6 +366,8 @@ sub linkpoint {
 						cardexpmonth
 						cardexpyear
 						addrnum
+						cvmvalue
+						cvmindicator
 						company
 					)
 			],
@@ -389,7 +409,10 @@ sub linkpoint {
 		 cardexpmonth => sprintf ("%02d", $actual->{mv_credit_card_exp_month}),
 		 cardexpyear => sprintf ("%02d", $actual->{mv_credit_card_exp_year}),
 		 addrnum => $addrnum,
-		 debbugging => $opt->{debuglevel},
+		 cvmvalue => $actual->{cvv2} || $actual->{mv_credit_card_cvv2},
+		 cvmindicator => $cvmindicator,
+		 debugging => $opt->{debuglevel},
+		 cargs => $opt->{curl_args},
 		 company => $bcompany,
 		 scompany => $scompany, # API is broken for Shipping Company per Linkpoint support
 		 oid => $order_id,
@@ -425,7 +448,7 @@ sub linkpoint {
 					   pop.auth-code  r_code
 					   pop.avs_code   r_avs
 					   pop.status     r_code
-            				   pop.error-message     r_error
+					   pop.error-message     r_error
 	/
 	);
 
@@ -467,7 +490,7 @@ sub linkpoint {
 		);
 
 		$result{MStatus} = 'failure';
-		$result{MErrMsg} = $msg;
+		$result{MErrMsg} = $result{'pop.error-message'} = $msg;
 	}
 
 #::logDebug("result given to interchange " . ::uneval(\%result));

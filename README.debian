@@ -31,6 +31,10 @@ Debian Specific Changes
 * any global usertags used locally should go into /etc/interchange/usertag
   and they'll be included if they have the extension .tag
 
+* pragma dml=insert is enabled for all catalogs in
+  /usr/lib/interchange/catalog_before.cfg to avoid data loss in the
+  table editor
+
 Standard Demo
 ===============
 
