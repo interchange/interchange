@@ -206,30 +206,9 @@ sub tabbed {
                           } @_);
 }
 
-# Finds common-log-style offset
-# Unproven, authoratative code welcome
-my $Offset;
-FINDOFFSET: {
-    my $now = time;
-    my ($gm,$gh,$gd,$gy) = (gmtime($now))[1,2,5,7];
-    my ($lm,$lh,$ld,$ly) = (localtime($now))[1,2,5,7];
-    if($gy != $ly) {
-        $gy < $ly ? $lh += 24 : $gh += 24;
-    }
-    elsif($gd != $ld) {
-        $gd < $ld ? $lh += 24 : $gh += 24;
-    }
-    $gh *= 100;
-    $lh *= 100;
-    $gh += $gm;
-    $lh += $lm;
-    $Offset = sprintf("%05d", $lh - $gh);
-    $Offset =~ s/0(\d\d\d\d)/+$1/;
-}
-
 # Returns time in HTTP common log format
 sub logtime {
-    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S $Offset]", localtime());
+    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S %z]", localtime());
 }
 
 sub format_log_msg {
