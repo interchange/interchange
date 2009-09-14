@@ -1039,10 +1039,15 @@ dist/subdomains.cfg
 eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
+eg/dump_memory.cfg
 eg/filter/calculated.filter
 eg/gpg_display
 eg/iclint
 eg/ifdef
+eg/jedit/catalog
+eg/jedit/html.xml
+eg/jedit/interchange.xml
+eg/jedit/README
 eg/merge-tab-files
 eg/news_feature/dbconf/default_db/news.dbm
 eg/news_feature/dbconf/mysql/news.mysql
