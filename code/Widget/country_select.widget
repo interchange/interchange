@@ -1,11 +1,9 @@
-# Copyright 2005-2007 Interchange Development Group and others
+# Copyright 2005-2009 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: country_select.widget,v 1.11 2008-07-18 20:58:35 mheins Exp $
 
 CodeDef state_select  Widget  1
 CodeDef state_select  Description State (needs country_select)
@@ -197,6 +195,9 @@ EOF
 	$cvar =~ s/\W+/_/g;
 
 	my $extra = $opt->{state_extra} ? " $opt->{state_extra}" : '';
+	my $state_js = $opt->{state_js} ? "; $opt->{state_js}" : '';
+	my $country_js = $opt->{country_js} ? "; $opt->{country_js}" : '';
+	for ($state_js, $country_js) { s|\bthis\.form\b|$v_formv|g }
 
 	push @pre, <<EOF;
 	function ${cvar}_widget_adjust_state (cel,sval) {
@@ -229,7 +230,7 @@ EOF
 		}
 		var stary = $v_state_tary\[country];
 
-		var str = '<select name="$svar_in" onChange="$v_formv.$svar.value = this.value">';
+		var str = '<select name="$svar_in" onChange="$v_formv.$svar.value = this.value$state_js"$extra>';
 		for(var i = 0; i < svary.length; i++) {
 			str += '<option value="' + svary[i] + '"';
 			if(svary[i] == sval)
@@ -295,7 +296,7 @@ EOF
 		$opt->{append} .= $append;
 	}
 
-	$opt->{js} = qq{ onLoad="${cvar}_widget_adjust_state(this)" onChange="${cvar}_widget_adjust_state(this)"};
+	$opt->{js} = qq{ onLoad="${cvar}_widget_adjust_state(this)" onChange="${cvar}_widget_adjust_state(this)$country_js"};
 	my @out;
 	#push @out, '<xmp>';
 	#push @out, ::uneval(\%states);
@@ -321,6 +322,7 @@ CodeDef country_select ExtraMeta <<EOM
 			country_table
 			state_table
 			state_element
+			state_js
 		/],
 	state_var => {
 		label => 'State variable',
@@ -373,6 +375,11 @@ CodeDef country_select ExtraMeta <<EOM
 		label => 'State element ID',
 		help => 'The CSS ID of the span containing the dynamic widget. The default is usually good (state_widget_container or b_state_widget_container)',
 		widget => 'text_30',
+	},
+	state_js => {
+		label => 'State javascript',
+		help => 'Runs specified javascript under onChange. E.g. "state_js=check_tax(this.form)"',
+		widget => 'text_20',
 	},
 }
 EOM

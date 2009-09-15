@@ -739,6 +739,12 @@ Widgets
 * Prevent cross-site scripting problem in the country-select widget. Found and
   fixed by Josh Lavin of Perusion.
 
+* Allow passing custom JavaScript to country_select.widget by adding country_js
+  and state_js options. It will rewrite "this.form" with the correct form name
+  at runtime. By Josh Lavin. Useful e.g. for calling check_tax like this:
+
+  state_js="check_tax(this.form)"
+
 Admin UI
 --------
 
