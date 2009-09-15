@@ -4962,13 +4962,23 @@ sub fly_page {
 	if ($subname = $Vend::Cfg->{SpecialSub}{flypage}) {
 		my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname}; 
 		$listref = $sub->($code);
-		$listref = { mv_results => [[$listref]] } unless ref($listref);
-		$code = $listref->{mv_results}[0][0] if defined $listref->{mv_results}[0][0];
+
+		return unless defined $listref;
+
+		if (ref $listref) {
+			$base = $listref;
+		}
+
+		else {
+			$code = $listref;
+			$listref = { mv_results => [[$listref]] };
+			$base = product_code_exists_ref($code);
+		}
 	}
 	else {
 		$listref = {mv_results => [[$code]]};
+		$base = product_code_exists_ref($code);
 	}
-	$base = product_code_exists_ref($code);
 	
 #::logDebug("fly_page: code=$code base=$base page=" . substr($page, 0, 100));
 	return undef unless $base || $opt->{onfly};
