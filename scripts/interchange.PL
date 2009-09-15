@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
-# Interchange version 5.7.1
+# Interchange version 5.7.2
 #
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -154,7 +154,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '5.7.1';
+	$VERSION = '5.7.2';
 }
 
 use Fcntl;
@@ -360,7 +360,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.7.1
+5.7.2
 
 =head1 DESCRIPTION
 
