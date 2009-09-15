@@ -407,6 +407,8 @@ Core
 * Make sure catalog TemplateDir and ErrorFile directives are safe when
   NoAbsolute is set.
 
+* Fix problems with applying Interchange filters to UTF-8 content (RT #258).
+
 Payment
 -------
 
@@ -449,6 +451,8 @@ Payment
 * Add SagePay and GoogleCheckout modules from Lyn St George.
 
 * Add Worldpay module from Andy Smith of tvcables.co.uk.
+
+* Remove bloat that duplicates %z functionality in Vend::Util::logtime().
 
 UserTag
 -------

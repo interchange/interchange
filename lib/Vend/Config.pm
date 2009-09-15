@@ -1394,7 +1394,7 @@ sub read_container {
 	}
 	return undef unless $foundeot;
 	#untaint
-	$value =~ /([\000-\377]*)/;
+	$value =~ /((?s:.)*)/;
 	$value = $1;
 	return $value;
 }
@@ -1414,7 +1414,7 @@ sub read_here {
 	}
 	return undef unless $foundeot;
 	#untaint
-	$value =~ /([\000-\377]*)/;
+	$value =~ /((?s:.)*)/;
 	$value = $1;
 	return $value;
 }
@@ -2181,7 +2181,7 @@ sub parse_action {
 	}
 
 	# Untaint and strip this pup
-	$sub =~ s/^\s*([\000-\377]*\S)\s*//;
+	$sub =~ s/^\s*((?s:.)*\S)\s*//;
 	$sub = $1;
 
 	if($sub !~ /\s/) {
@@ -5305,7 +5305,7 @@ sub parse_subroutine {
 	$name =~ s/\s+//g;
 
 	# Untainting
-	$value =~ /([\000-\377]*)/;
+	$value =~ /((?s:.)*)/;
 	$value = $1;
 
 	if(! defined $C) {

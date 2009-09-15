@@ -346,7 +346,7 @@ sub read_shipping {
 				$ref->{zone_name} = $zone
 					if ! $ref->{zone_name};
 			}
-			elsif ($cost =~ /^{[\000-\377]+}$/ ) {
+			elsif ($cost =~ /^{(?s:.)+}$/ ) {
 				eval { $ref = eval $cost };
 			}
 			else {

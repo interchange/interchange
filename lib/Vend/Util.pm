@@ -1,8 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.127 2009-05-01 13:50:01 pajamian Exp $
-# 
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -1032,16 +1030,16 @@ sub parse_locale {
 	
 	if($Vend::Cfg->{Locale}) {
 		my $key;
-		$$r =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
+		$$r =~ s~\[L(\s+([^\]]+))?\]((?s:.)*?)\[/L\]~
 						$key = $2 || $3;		
 						defined $Vend::Cfg->{Locale}{$key}
 						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
-		$$r =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
+		$$r =~ s~\[LC\]((?s:.)*?)\[/LC\]~
 						find_locale_bit($1) ~eg;
 		undef $Lang;
 	}
 	else {
-		$$r =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
+		$$r =~ s~\[L(?:\s+[^\]]+)?\]((?s:.)*?)\[/L\]~$1~g;
 	}
 
 	# return scalar string if one get passed initially

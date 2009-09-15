@@ -62,7 +62,7 @@ tag_accessories stuff. Allows user-added widgets.
 
 =cut
 
-my $Some = '[\000-\377]*?';
+my $Some = '(?s:.)*?';
 my $Codere = '[-\w#/.]+';
 my $Tag = new Vend::Tags;
 

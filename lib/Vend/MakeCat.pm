@@ -543,7 +543,7 @@ sub readconfig {
 				
 					([^>\n]+)
 				\s*>\s+
-					([\000-\377]*?)
+					((?s:.)*?)
 				</catalog>!
 				$virtual{$1} = $2; ''!xieg;
 
@@ -2112,7 +2112,7 @@ sub conf_parse_http {
 				\s+
 					([^>\n]+)
 				\s*>\s+
-					([\000-\377]*?)
+					((?s:.)*?)
 				</virtualhost>!
 				$virtual->{$1} = $2; ''!xieg;
 
