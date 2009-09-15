@@ -48,6 +48,9 @@ _$
 ^dist/mvmall(/|$)
 ^dist/simple(/|$)
 ^doc/.*[^d]
+^\.git(/|$)
+^\.gitignore$
+^\.gitmodules$
 ^help(/|$)
 ^lib/src/config.cache$
 ^lib/src/config.h$
