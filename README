@@ -2,9 +2,9 @@
 
                            I N T E R C H A N G E
 
-Interchange 5.4.3
+Interchange 5.4.4
 
-Copyright (C) 2002-2008 Interchange Development Group
+Copyright (C) 2002-2009 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
@@ -81,8 +81,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-5.4.3.tar.gz | tar xvf -
-cd interchange-5.4.3
+gzip -dc interchange-5.4.4.tar.gz | tar xvf -
+cd interchange-5.4.4
 perl Makefile.PL
 make
 make test
