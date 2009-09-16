@@ -1,10 +1,11 @@
-interchange (5.6.1-2.1) unstable; urgency=low
+interchange (5.6.2-1) unstable; urgency=low
 
+  * new upstream release
   * updated Vietnamese translation of Debconf templates (Closes: #513664,
     thanks to Clytie Siddall <clytie@riverland.net.au>)
   * added homepage field to debian/control
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 23 Mar 2009 08:32:36 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 16 Sep 2009 17:39:40 +0200
 
 interchange (5.6.1-2) unstable; urgency=low
 
