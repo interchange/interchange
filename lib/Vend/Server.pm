@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.104 $, 10);
+$VERSION = '2.105';
 
 use Cwd;
 use POSIX qw(setsid strftime);
