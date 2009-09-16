@@ -585,10 +585,15 @@ sub respond {
     # iff MV_UTF8 is set, otherwise omit the charset declaration
     # entirely.
 
-    # also we're only setting the binmode when the output data is
-    # already declared to be text of some sort.
-
-    binmode(MESSAGE, ':utf8') if ($response_charset =~ /^utf-?8$/i and $Vend::StatusLine =~ /^Content-Type: text\//);
+	if (
+		$response_charset =~ /^utf-?8$/i
+		and (
+			! $Vend::StatusLine
+			or $Vend::StatusLine =~ m{^Content-Type: text/}i
+		)
+	) {
+		binmode(MESSAGE, ':utf8');
+	}
 
 	if(! $s and $Vend::StatusLine) {
 	    if ($Vend::StatusLine !~ /^Content-Type:/im) {
