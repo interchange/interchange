@@ -552,7 +552,7 @@ sub canon_status {
 
 sub respond {
 	# $body is now a reference
-    my ($s, $body) = @_;
+	my ($s, $body) = @_;
 #show_times("begin response send") if $Global::ShowTimes;
 
 	# Safe kludge: duplicate Vend::CharSet::default_charset method here
@@ -578,12 +578,12 @@ sub respond {
 
 	$Vend::StatusLine =~ s/\s*$/\r\n/ if $Vend::StatusLine;
 
-    # NOTE: if we're supporting arbitrary encodings here in the
-    # response_charset, we should really be setting the binmode to
-    # :encoding($response_charset);  if we're considering the case of
-    # UTF-8 vs undeclared, we should set the response charset to UTF-8
-    # iff MV_UTF8 is set, otherwise omit the charset declaration
-    # entirely.
+	# NOTE: if we're supporting arbitrary encodings here in the
+	# response_charset, we should really be setting the binmode to
+	# :encoding($response_charset);  if we're considering the case of
+	# UTF-8 vs undeclared, we should set the response charset to UTF-8
+	# iff MV_UTF8 is set, otherwise omit the charset declaration
+	# entirely.
 
 	if (
 		$response_charset =~ /^utf-?8$/i
@@ -596,22 +596,22 @@ sub respond {
 	}
 
 	if(! $s and $Vend::StatusLine) {
-	    if ($Vend::StatusLine !~ /^Content-Type:/im) {
+		if ($Vend::StatusLine !~ /^Content-Type:/im) {
 		$Vend::StatusLine .= "\r\nContent-Type: text/html";
 		if ($response_charset) {
-		     $Vend::StatusLine .= "; charset=$response_charset\r\n";
+			$Vend::StatusLine .= "; charset=$response_charset\r\n";
 		}
 
 		else {
-		     $Vend::StatusLine .= "\r\n";
+			$Vend::StatusLine .= "\r\n";
 		}
-	    }
+	}
 
 # TRACK
-        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
+		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
-# END TRACK        
-        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+# END TRACK
+		$Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
 		print MESSAGE canon_status($Vend::StatusLine);
 		print MESSAGE "\r\n";
@@ -622,7 +622,7 @@ sub respond {
 		return;
 	}
 
-    my $fh = $s->{fh};
+	my $fh = $s->{fh};
 
 # SUNOSDIGITAL
 #	 Fix for SunOS, Ultrix, Digital UNIX
@@ -658,10 +658,10 @@ sub respond {
 		my $save = select $fh;
 		$| = 1;
 		select $save;
-        $Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
+		$Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK                            
-        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+		$Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
 		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
@@ -683,7 +683,6 @@ sub respond {
 			and $Vend::Cfg->{Cookies}
 		)
 	{
-
 		my @domains;
 		@domains = ('');
 		my @paths;
@@ -714,26 +713,26 @@ sub respond {
 			}
 		}
 		$::Instance->{CookiesSet} = delete $::Instance->{Cookies};
-    }
+	}
 
-    if (defined $Vend::StatusLine) {
+	if (defined $Vend::StatusLine) {
 		print $fh canon_status($Vend::StatusLine);
 	}
 	elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html; charset=$response_charset");
-# TRACK        
-        print $fh canon_status("X-Track: " . $Vend::Track->header())
+# TRACK
+		print $fh canon_status("X-Track: " . $Vend::Track->header())
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
 	}
 	print $fh canon_status("Pragma: no-cache")
 		if delete $::Scratch->{mv_no_cache};
 
-    print $fh "\r\n";
-    print $fh $$body;
+	print $fh "\r\n";
+	print $fh $$body;
 	print $rfh $$body if $rfh;
 #show_times("end response send") if $Global::ShowTimes;
-    $Vend::ResponseMade = 1;
+	$Vend::ResponseMade = 1;
 }
 
 sub _read {
