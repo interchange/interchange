@@ -1040,6 +1040,7 @@ eg/te
 eg/usertag/benchmark.tag
 eg/usertag/isindex.tag
 eg/usertag/sleep.tag
+eg/usps/get-intl-rate-names
 eg/usps/html2tab
 eg/usps/join123local
 eg/usps/makezone
