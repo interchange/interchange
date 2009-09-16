@@ -53,10 +53,37 @@ Core
   should review any custom credit card encryption templates to make sure that
   the CVV2 is not included, and purge it from any historical data.
 
+* Fixed rare bug that caused requests to / URL with a query string to fail.
+
+* Correct .access functionality directly in pages/
+    
+  .access worked in subdirectories like pages/abc/, but didn't work directly
+  under pages/. Instead of looking for pages/.access, it was looking for
+  pages/PAGENAME/.access
+
+* Fix catalog name not appearing in DebugTemplate output.
+
+* Fix bug which prevented custom widget type from working. Found by Jeff Boes.
+
+* Remove CVV2/CSC from default credit card encrypted block template for
+  PCI-DSS compliance.
+
+* Require Digest::SHA1 module in the sha1 filter.
+
+* Abort daemon startup when required module is missing and clean up error output.
+
+* Don't ignore case of passed options to compile_link.
+
+* Fix problem restarting daemon in PreFork mode.
+
 Tags
 ----
 
 * Made [email] process cc and bcc options for plain text emails (#250).
+
+* Updated usps-query tag with country map and latest shipmodes. By Josh Lavin.
+
+* Fix omission of media type in <link> output. By Thomas J.M. Burton.
 
 UI
 --
@@ -64,6 +91,9 @@ UI
 * Recognize Opera as DHTML browser. Thanks to Don Hathaway for the patch.
 
 * Fix broken form action quoting. Thanks to Richard Templet <richard@endpoint.com>.
+
+* Add framekiller for clickjacking defense in template. Probably we are
+  unlikely to have problems in the standard template, but you never know.
 
 Jobs
 ----
@@ -77,6 +107,24 @@ Standard demo
   Strohmaier for the report.
 
 * Fix cross site scripting error found by Josh Lavin of Perusion.
+
+* Fix default shipmode on admin/entry page.
+
+* Make forum only available for logged-in users, as spammers are exploiting it
+  constantly.
+
+* Prevent an incomprehensible error when following an order link that was
+  created on an mv_tmp_session page or other non-connecting session.
+
+* Avoid possible problem with read-only variable table by using @@MV_PAGE@@
+  instead of @_MV_PAGE_@
+
+* Removed javascript that submits the form if the user changes his
+  email preferences. By René Hertell.
+
+* Corrected min/max username length.
+
+* Correct update of saved company value for shipping address.
 
 Packaging
 ---------
