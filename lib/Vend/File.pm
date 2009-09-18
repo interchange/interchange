@@ -236,8 +236,15 @@ sub readfile {
 		binmode(READIN) if $Global::Windows;
 
         if ($encoding) {
-            local $PerlIO::encoding::fallback = Encode::PERLQQ();
-            binmode(READIN, ":encoding($encoding)");
+            if ($encoding =~ /^utf-?8$/i) {
+                # if you say you're utf-8, we'll take you at your word...
+
+                binmode(READIN, ":utf8");
+            }
+            else {
+                local $PerlIO::encoding::fallback = Encode::PERLQQ();
+                binmode(READIN, ":encoding($encoding)");
+            }
         }
 
 		undef $/;
