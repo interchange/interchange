@@ -565,8 +565,16 @@ sub respond {
 	$Vend::StatusLine =~ s/\s*$/\r\n/ if $Vend::StatusLine;
 
 	if(! $s and $Vend::StatusLine) {
-		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
-							? '' : "\r\nContent-Type: text/html; charset=$response_charset\r\n";
+	    if ($Vend::StatusLine !~ /^Content-Type:/im) {
+		$Vend::StatusLine .= "\r\nContent-Type: text/html";
+		if ($response_charset) {
+		     $Vend::StatusLine .= "; charset=$response_charset\r\n";
+		}
+
+		else {
+		     $Vend::StatusLine .= "\r\n";
+		}
+	    }
 
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
