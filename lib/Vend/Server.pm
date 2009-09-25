@@ -719,7 +719,12 @@ sub respond {
 		print $fh canon_status($Vend::StatusLine);
 	}
 	elsif(! $Vend::ResponseMade) {        
-		print $fh canon_status("Content-Type: text/html; charset=$response_charset");
+		if ($response_charset) {
+			print $fh canon_status("Content-Type: text/html; charset=$response_charset");
+		}
+		else {
+			print $fh canon_status("Content-Type: text/html");
+		}
 # TRACK
 		print $fh canon_status("X-Track: " . $Vend::Track->header())
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
