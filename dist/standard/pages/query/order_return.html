@@ -29,7 +29,7 @@ ui_template_name: leftonly
 [if session arg]
 	[seti arg][data session arg][/seti]
 [else]
-	[bounce href="[area special/violation arg_missing]"]
+	[bounce page=member/returns]
 [/else]
 
 [/if]
@@ -42,17 +42,12 @@ ui_template_name: leftonly
 	]"
 hide=1]
 
-[if value test_user]
-[else]
-	[bounce href="[area special/violation user_missing]&user=[value test_user]&arg=[scratch arg]"]
-[/else]
-[/if]
 [if type=explicit compare=`
-	return 1 if ! $Session->{username};
+	return 1 if ! $Values->{test_user} or ! $Session->{username};
 	return 0 if $Session->{username} eq $Values->{test_user};
 	return 1;
 `]
-[bounce href="[area special/user_violation username_no_match]&s=[data session username]&v=[value test_user]"]
+    [bounce page=member/returns]
 [/if]
 
 [seti order_status][data table=transactions column=status key='[scratch arg]'][/seti]
