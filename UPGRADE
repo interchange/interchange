@@ -629,7 +629,7 @@ EOS
 In the standard and foundation catalogs, the "lost password" feature makes use
 of the remote search feature to be able to retrieve lost passwords. We recommend
 that you remove catalog/pages/query/get_password.html from your catalog, and
-replace catalog/pages/lost_password.html with an updated version from this
+replace catalog/pages/query/lost_password.html with an updated version from this
 distribution. As an alternative, you may apply the following patch to your
 existing catalog/pages/query/get_password.html:
 
