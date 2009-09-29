@@ -1258,9 +1258,26 @@ EOB
 	if (($nonrp == '1') and ($pprequest ne 'modifyrp')) {
 		undef $nonrp;
 
+        my $gwl =
+            Vend::Payment::PaypalExpress
+                -> new({
+                    order_number => $opt->{order_id},
+                    email => $opt->{actual}{email},
+                    amount => $amount,
+                    Enabled => charge_param('gwl_enabled'),
+                    LogTable => charge_param('gwl_table'),
+                })
+        ;
 	    $method = SOAP::Data->name('DoExpressCheckoutPaymentReq')->attr({xmlns => $xmlns});
+
+        $gwl->request({ header => $header, request => $request, method => $method });
+
+        $gwl->start;
 	    $response = $service->call($header, $method => $request);
+        $gwl->stop;
+
 	    %result = %{$response->valueof('//DoExpressCheckoutPaymentResponse')};
+        $gwl->response(\%result);
 #::logDebug("PP".__LINE__.": nonRP=$nonrp; Do Ack=$result{Ack}; ppreq=$pprequest");
 	 my ($rpAmount, $rpPeriod, $rpFrequency, $totalBillingCycles, $trialPeriod, $trialFrequency, $trialAmount, $trialTotalBillingCycles, @setrpprofile);
   
@@ -1281,8 +1298,7 @@ EOB
 # 22.11.2012, v111b		
 		$result{'gift_note'}           = $result{'DoExpressCheckoutPaymentResponseDetails'}{'Note'};
 
-
-			    }
+	  }
  	  else  {
 	  		  $::Session->{'errors'}{'PaypalExpress'} = $result{'Errors'}{'LongMessage'}  if ($result{'Errors'} !~ /ARRAY/);
 			  for my $i (0 .. 3) {
@@ -2024,5 +2040,92 @@ sub _pplocfilter {
 }
 
 package Vend::Payment::PaypalExpress;
+
+use Vend::Payment::GatewayLog;
+use base qw/Vend::Payment::GatewayLog/;
+
+sub log_it {
+	my $self = shift
+
+    my $request = $self->request;
+    unless ($request) {
+        ::logDebug('Nothing to write to %s: no request present', $self->table);
+        return;
+    }
+
+    unless ($self->response) {
+
+        if ($Vend::Payment::Global_Timeout) {
+            my $msg = errmsg('No response. Global timeout triggered');
+            ::logDebug($msg);
+            $self->response({
+                Errors => {
+                    ErrorCode => -2,
+                    LongMessage => $Vend::Payment::Global_Timeout,
+                },
+            });
+        }
+        else {
+            my $msg = errmsg('No response. Reason unknown');
+            ::logDebug($msg);
+            $self->response({
+                Errors => {
+                    ErrorCode => -3,
+                    LongMessage => $msg,
+                },
+            });
+        }
+    }
+    my $response = $self->response;
+
+    my ($rc,$resp_msg);
+    if ( $response->{Ack} eq 'Success' ) { 
+        $rc = 0;
+        $resp_msg = $response->{Ack};
+    }   
+    else {
+        $rc = $response->{Errors}{ErrorCode};
+        # Just in case
+        $rc =~ s/[^-\d]+//g
+            if defined $rc;
+        $resp_msg = $response->{Errors}{LongMessage};
+    }   
+
+    $rc = -1
+        unless length ($rc) && $rc =~ /\d/;
+
+    my %fields = (
+        trans_type => $response->{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{TransactionType} || 'x',
+        processor => 'paypalexpress',
+        catalog => $Vend::Cfg->{CatalogName},
+        result_code => $rc,
+        response_msg => $resp_msg || '',
+        request_id => $response->{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{TransactionID} || '',
+        order_number => $self->{order_number} || '',
+        request_duration => $self->duration,
+        request_date => $self->timestamp,
+        email => $self->{email} || '',
+        request => ::uneval($request) || '',
+        response => ::uneval($response) || '',
+        session_id => $::Session->{id},
+    );
+
+    my $hostname = `hostname -s`;
+    chomp $hostname;
+    $fields{request_source} = $hostname;
+
+    $fields{order_md5} =
+        Digest::MD5::md5_hex(
+            $self->{email},
+            $response->{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{TransactionType},
+            $::Scratch->{token},
+            $self->{amount},
+            $::Session->{id},
+            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+        )
+    ;
+
+    $self->write(\%fields);
+}
 
 1;
