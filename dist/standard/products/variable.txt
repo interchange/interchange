@@ -37,7 +37,6 @@ LINKHOST	__MVC_LINKHOST__	Admin Control
 LINKPORT	__MVC_LINKPORT__	Admin Control
 LOCALES	__MVC_LOCALES__	Internationalization
 LOGO	logo.png	Template
-LUHN_10_ERRMSG  Credit card number fails LUHN-10 check. Order  
 MAILING_FROM	__MVC_COMPANY__ <__MVC_MAILORDERTO__>	Mailings
 MAILING_MAX_DIRECT	50	Mailings
 MAILING_TO	{FNAME} {LNAME} <{EMAIL}>	Mailings
