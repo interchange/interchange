@@ -1,7 +1,5 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.108 2009-04-16 14:51:41 mheins Exp $
-#
 # Copyright (C) 2002-2009 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -26,7 +24,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.108 $, 10);
+$VERSION = '2.109';
 
 @ISA = qw(Exporter);
 
