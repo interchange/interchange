@@ -79,6 +79,11 @@ Interchange 5.7.2 released 2009-09-17.
 Core
 ----
 
+* Add BounceRobotSessionURL directive to 301 redirect robots which
+  provide an explicit mv_session_id to the canonical page URL without
+  the explicit mv_session_id.  This prevents search engine urls from
+  being indexed with an explicit session_id.
+
 * Close remote disclosure security vulnerability, and added new configuration
   option AllowRemoteSearch to selectively re-enable remote searches on "safe"
   tables. Defaults to products, variants and options.

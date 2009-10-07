@@ -310,7 +310,7 @@ EOF
 		}
 	}
 
-    $CGI::values{mv_tmp_session} = 1 if $Vend::Robot;
+	$CGI::values{mv_tmp_session} = 1 if $Vend::Robot;
 }
 
 # This is called by parse_multipart

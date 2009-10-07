@@ -1244,6 +1244,9 @@ sub dispatch {
 	$sessionid = $CGI::values{mv_session_id} || undef
 		and $sessionid =~ s/\0.*//s;
 
+	# save for robot check with explicit session id
+	my $sessionid_from_cgi = $sessionid;
+
 	$::Instance->{CookieName} = $Vend::Cfg->{CookieName};
 
 	if($CGI::values{mv_tmp_session}) {
@@ -1551,13 +1554,18 @@ EOF
         );
     }
  
-	if ($new_source and $CGI::request_method eq 'GET' and $Vend::Cfg->{BounceReferrals}) {
+	if (
+		($new_source
+		and $CGI::request_method eq 'GET'
+		and $Vend::Cfg->{BounceReferrals}) or
+		($Vend::Robot and $sessionid_from_cgi and $Vend::Cfg->{BounceRobotSessionURL})
+	) {
 		my $path = $CGI::path_info;
 		$path =~ s:^/::;
 		my $form =
 			join '',
 			map { "$_=$CGI::values{$_}\n" }
-		        grep { !$Vend::Cfg->{BounceReferrals_hide}->{$_} }
+			grep { !$Vend::Cfg->{BounceReferrals_hide}->{$_} }
 			sort keys %CGI::values;
 		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path, undef, undef, { form => $form, match_security => 1 });
 		my $msg = get_locale_message(

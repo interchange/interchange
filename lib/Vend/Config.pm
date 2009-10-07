@@ -713,6 +713,7 @@ sub catalog_directives {
     ['UserTrack',        'yesno',            'no'],
 	['DebugHost',	     'ip_address_regexp',	''],
 	['BounceReferrals',  'yesno',            'no'],
+	['BounceRobotSessionURL',		 'yesno', 'no'],
 	['OrderCleanup',     'routine_array',    ''],
 	['SessionCookieSecure', 'yesno',         'no'],
 	['SessionHashLength', 'integer',         1],
@@ -1347,7 +1348,8 @@ CONFIGLOOP:
 
 	# Set up hash of keys to hide for BounceReferrals
 	$C->{BounceReferrals_hide} = { map { ($_, 1) } grep { !(/^cookie-/ or /^session(?:$|-)/) } @{$C->{SourcePriority}} };
-	@{$C->{BounceReferrals_hide}}{qw(mv_form_charset mv_session_id)} = (1) x 2;
+	my @exclude = qw( mv_form_charset mv_session_id mv_tmp_session );
+	@{$C->{BounceReferrals_hide}}{@exclude} = (1) x @exclude;
 
 	finalize_mapped_code();
 
