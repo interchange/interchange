@@ -288,7 +288,7 @@ EOF
 #::logDebug("Check robot UA=$Global::RobotUA IP=$Global::RobotIP");
 	if ($Global::RobotIP and $CGI::remote_addr =~ $Global::RobotIP) {
 #::logDebug("It is a robot by IP!");
-		$CGI::values{mv_tmp_session} = 1;
+		$Vend::Robot = 1;
 	}
 	elsif ($Global::HostnameLookups && $Global::RobotHost) {
 		if (!$CGI::remote_host && $CGI::remote_addr) {
@@ -297,18 +297,20 @@ EOF
 		}
 		if ($CGI::remote_host && $CGI::remote_host =~ $Global::RobotHost) {
 #::logDebug("It is a robot by host!");
-			$CGI::values{mv_tmp_session} = 1;
+			$Vend::Robot = 1;
 		}
 	}
-	unless ($CGI::values{mv_tmp_session}) { 
+	unless ($Vend::Robot) { 
 		if ($Global::NotRobotUA and $CGI::useragent =~ $Global::NotRobotUA) {
 			# do nothing
 		}
 		elsif ($Global::RobotUA and $CGI::useragent =~ $Global::RobotUA) {
 #::logDebug("It is a robot by UA!");
-			$CGI::values{mv_tmp_session} = 1;
+			$Vend::Robot = 1;
 		}
 	}
+
+    $CGI::values{mv_tmp_session} = 1 if $Vend::Robot;
 }
 
 # This is called by parse_multipart
