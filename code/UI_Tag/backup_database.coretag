@@ -29,16 +29,10 @@ sub {
 	my $xls;
 
 	eval {
-		require Spreadsheet::WriteExcel::Big;
-		import Spreadsheet::WriteExcel::Big;
-		$xls = Spreadsheet::WriteExcel::Big->new("$backup_dir/DBDOWNLOAD.xls");
-	} if $opt ->{xls};
-
-	eval {
 		require Spreadsheet::WriteExcel;
 		import Spreadsheet::WriteExcel;
 		$xls = Spreadsheet::WriteExcel->new("$backup_dir/DBDOWNLOAD.xls");
-	} if $opt ->{xls} and ! $xls;
+	} if $opt ->{xls};
 
 	undef $opt->{xls} unless $xls;
 
