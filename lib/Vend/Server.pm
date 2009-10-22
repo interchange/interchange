@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = '2.105';
+$VERSION = '2.106';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -251,7 +251,7 @@ EOF
 	if ($request_method eq 'POST') {
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
-		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml)\b}i) {
+		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
 			parse_post(\$CGI::query_string)
 				if $Global::TolerateGet;
 			parse_post($h->{entity});
