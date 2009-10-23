@@ -221,13 +221,11 @@ ui_template_name: noleft
 	<td>
 	[item-data products description]
 	[if-modifier size]<BR>SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
-	[if-item-data options o_enable]
-		[if-item-data !options o_modular]
+	[if-item-field option_type]
 			[table-organize cols=4 table=' ' font="size=1" pretty=1]
 				[item-options td=1 label=1 bold=1 price=1 type=display]
 			[/table-organize]
-		[/if-item-data]
-	[/if-item-data]
+	[/if-item-field]
 
 	[if-item-param pay_cert_code]
 		[tmp gc_url][area href="pay_cert/redeem"

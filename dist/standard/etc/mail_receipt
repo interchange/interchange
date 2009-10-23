@@ -40,11 +40,11 @@ Quan  Item No.    Description                            Price        Extension
 [column width=15 gutter=1 align=r]  [item-price] [/column]
 [column width=17 gutter=1 align=r] [item-subtotal] [/column]
 [/row]
-[if-item-data options o_enable][if-item-data !options o_modular][row 82]
+[if-item-field option_type][row 82]
     [column width=5 align=right][/column]
     [column width=12 gutter=1][/column]
     [column width=32 wrap=1 gutter=1][filter op="tabbed decode_entities compress_space strip"][item-options type=display report=1][/filter][/column]
-[/row][/if-item-data][/if-item-data]
+[/row][/if-item-field]
 [if-item-param pay_cert_code]
 [row 120]
 	[column width=82]URL:[area
