@@ -77,6 +77,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({DISABLED?} disabled{/DISABLED?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({MULTIPLE?} multiple{/MULTIPLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -101,6 +103,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({WRAP?} wrap="{WRAP}"{/WRAP?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -114,6 +118,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -125,6 +131,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -135,6 +143,8 @@ my $Tag = new Vend::Tags;
 		qq({PREPEND}<input type="file" name="{NAME}" value="{ENCODED}")
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
@@ -149,6 +159,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({DISABLED?} disabled{/DISABLED?})
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
@@ -161,6 +173,8 @@ my $Tag = new Vend::Tags;
 		,
 	hidden =>
 		qq({PREPEND}<input type="hidden" name="{NAME}" value="{ENCODED}")
+		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
@@ -178,13 +192,15 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
+		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
 		.
 		qq({DISABLED?} disabled{/DISABLED?})
 		.
 		qq({SELECTED?} checked{/SELECTED?})
 		.
-		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?})
+		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TEXTID?}<label for="{TEXTID}">{/TEXTID?}{TLABEL}{TEXTID?}</label>{/TEXTID?}{TTITLE?}</span>{/TTITLE?})
 		,
 	boxnbsp =>
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
@@ -197,14 +213,14 @@ my $Tag = new Vend::Tags;
 		.
 		qq({SELECTED?} checked{/SELECTED?})
 		.
-		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TLABEL}{TTITLE?}</span>{/TTITLE?}&nbsp;&nbsp;)
+		qq(>&nbsp;{TTITLE?}<span title="{TTITLE}">{/TTITLE?}{TEXTID?}<label for="{TEXTID}">{/TEXTID?}{TLABEL}{TEXTID?}</label>{/TEXTID?}{TTITLE?}</span>{/TTITLE?}&nbsp;&nbsp;)
 		,
 	boxlabel =>
 		qq(<td{TD_LABEL?} {TD_LABEL}{/TD_LABEL?}{TTITLE?} title="{TTITLE}"{/TTITLE?}>)
 		.
 		qq({FONT?}<font size="{FONT}">{/FONT?})
 		.
-		qq({TLABEL}{FONT?}</font>{/FONT?})
+		qq({TEXTID?}<label for="{TEXTID}">{/TEXTID?}{TLABEL}{TEXTID?}</label>{/TEXTID?}{FONT?}</font>{/FONT?})
 		.
 		qq(</td>)
 		,
@@ -214,6 +230,8 @@ my $Tag = new Vend::Tags;
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
 		.
 		qq({TTITLE?} title="{TTITLE}"{/TTITLE?})
+		.
+		qq({TEXTID?} id="{TEXTID}"{/TEXTID?})
 		.
 		qq({DISABLED?} disabled{/DISABLED?})
 		.
@@ -1012,6 +1030,11 @@ sub box {
 
 		$opt->{ttitle} = $help;
 
+		if($opt->{id}) {
+			$opt->{textid} = $opt->{id} . ($value eq '' ? 0 : $value);
+			$opt->{textid} =~ s/[^-\w]+//g;
+		}
+
 		$run .= attr_list($template, $opt);
 		$run .= '</tr>' if $inc && ! ($i % $inc);
 	}
@@ -1320,6 +1343,10 @@ if($opt->{debug}) {
 	elsif($opt->{values_default} and ! $opt->{override}) {
 		my $def = $::Values->{$opt->{name}};
 		$opt->{value} = $def if defined($def);
+	}
+
+	if($opt->{id}) {
+		$opt->{textid} = $opt->{id};
 	}
 
 	$opt->{value} = $opt->{default} if ! defined $opt->{value};
