@@ -1,3 +1,22 @@
+interchange (5.7.3-1) unstable; urgency=low
+
+  * new upstream release
+  * updated translations of Debconf templates 
+    - Swedish (Closes: #551948, Martin Bagge <brother@bsnet.se>)
+    - German (Closes: #548512, Helge Kreutzmann <debian@helgefjell.de>)
+    - French (Closes: #547482, Christian Perrier <bubulle@debian.org>)
+    - Czech (Closes: #530488,  Martin Sín <martin.sin@zshk.cz>)
+    - Russian (Closes: #529052, Yuri Kozlov <yuray@komyakino.ru>)
+    - Portuguese (Closes: #522496, Miguel Figueiredo <elmig@debianpt.org>)
+  * lintian fixes
+    - drop execute bit from tags in /usr/lib/interchange/usertag/standard
+    - made debhelper versioned dependency compliant with debian/compat
+    - added ${misc:Depends} for all packages
+    - added -e flag to maintainer scripts
+    - create /var/run/interchange at runtime
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 27 Oct 2009 22:30:11 +0100
+
 interchange (5.7.2-1) unstable; urgency=low
 
   * new upstream release
