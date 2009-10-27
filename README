@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 5.7.2
+Interchange 5.7.3
 
 Copyright (C) 2002-2009 Interchange Development Group
 Copyright (C) 1996-2002 Red Hat, Inc.
@@ -105,8 +105,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-    tar xvzf interchange-5.7.2.tar.gz
-    cd interchange-5.7.2
+    tar xvzf interchange-5.7.3.tar.gz
+    cd interchange-5.7.3
     perl Makefile.PL
     make
     make test

@@ -40,7 +40,7 @@ installing straight from your Git working copy. To do so:
 	$ make tardist
     # much output ...
 	$ ls interch*.tar.gz
-	interchange-5.7.1.tar.gz
+	interchange-5.7.3.tar.gz
 
 
 Unpack and install
