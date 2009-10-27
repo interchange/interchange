@@ -113,7 +113,7 @@ install: build
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
 # install global usertags for standard demo
 	mkdir -p $(TMP)/usr/lib/interchange/usertag/standard
-	install -m 0755 dist/standard/config/*.tag $(TMP)/usr/lib/interchange/usertag/standard
+	install -m 0644 dist/standard/config/*.tag $(TMP)/usr/lib/interchange/usertag/standard
 # mimic global pragma for data updates
 	cat debian/catalog_before.cfg >> $(TMP)/usr/lib/interchange/catalog_before.cfg
 
