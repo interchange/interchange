@@ -13,13 +13,14 @@
 # Yuriy Talakan' <yt@amur.elektra.ru>, 2006.
 # Yuriy Talakan' <yt@drsk.ru>, 2007.
 # Yuri Kozlov <kozlov.y@gmail.com>, 2008.
+# Yuri Kozlov <yuray@komyakino.ru>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: interchange 5.6.0-1\n"
+"Project-Id-Version: interchange 5.6.1-2\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-10-13 19:15+0000\n"
-"PO-Revision-Date: 2008-10-16 20:47+0400\n"
-"Last-Translator: Yuri Kozlov <kozlov.y@gmail.com>\n"
+"POT-Creation-Date: 2008-11-23 11:58+0000\n"
+"PO-Revision-Date: 2009-05-17 17:36+0400\n"
+"Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -53,12 +54,12 @@ msgstr "Удалить демонстрационный каталог при в
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid ""
-"Should all files belonging to the Interchange demo catalog removed when you "
-"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+"Whether to remove all files belonging to the Interchange demo catalog when "
+"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
 msgstr ""
-"Надо ли удалять все файлы, принадлежащие демонстрационному каталогу "
+"Укажите нужно ли удалять все файлы, принадлежащие демонстрационному каталогу "
 "Interchange, когда вы вычищаете этот пакет, например, с помощью команды dpkg "
-"--purge или apt-get remove --purge?"
+"--purge или apt-get remove --purge."
 
 #. Type: select
 #. Choices
@@ -97,7 +98,6 @@ msgstr "Похоже, что демонстрационный каталог Int
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-#| msgid "Virtual host for the demo catalog ?"
 msgid "Virtual host for the demo catalog:"
 msgstr "Виртуальный хост для демонстрационного каталога:"
 
@@ -202,21 +202,18 @@ msgstr "MySQL"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-#| msgid "Virtual host for the demo catalog ?"
 msgid "DBMS for the demo catalog:"
 msgstr "DBMS для демонстрационного каталога:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-#| msgid "Please select the default locale for the Interchange demo catalog."
 msgid "Please select the database type used for the demo catalog."
 msgstr "Выберите тип базы данных для демонстрационного каталога."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
-#| msgid "Database name"
 msgid "Database name:"
 msgstr "Имя базы данных:"
 
@@ -229,7 +226,6 @@ msgstr "Выберите имя базы данных."
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
-#| msgid "Database user"
 msgid "Database user:"
 msgstr "Имя пользователя:"
 
@@ -242,7 +238,6 @@ msgstr "Введите имя пользователя для подключен
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
-#| msgid "Database password"
 msgid "Database password:"
 msgstr "Пароль к базе данных:"
 
@@ -431,45 +426,15 @@ msgstr ""
 "Эта настройка определяет, будет ли изучаться весь URL во время проверки "
 "соответствующего каталога."
 
-#. Type: note
+#. Type: boolean
 #. Description
 #: ../interchange.templates:13001
-msgid "SOAP server not available"
-msgstr "Сервер SOAP недоступен"
-
-#. Type: note
-#. Description
-#: ../interchange.templates:13001
-msgid ""
-"Because the Perl module SOAP::Lite is not installed, you are unable to run "
-"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
-"Debian package and run interchangeconfig SOAP=1."
-msgstr ""
-"Поскольку не установлен Perl-модуль SOAP::Lite, вы не сможете запустить "
-"Interchange SOAP сервер. Чтобы изменить это, установите пакет Debian libsoap-"
-"lite-perl и запустите interchangeconfig SOAP=1."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "Enable the SOAP server?"
-msgstr "Разрешить сервер SOAP?"
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "This setting determines if the SOAP server is started or not."
-msgstr "Этот параметр определяет, запускать сервер SOAP или нет."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Разрешить настройки роботов?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:13001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "

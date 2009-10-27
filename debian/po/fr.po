@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-11-14 11:20+0000\n"
+"POT-Creation-Date: 2009-09-18 06:58+0000\n"
 "PO-Revision-Date: 2008-10-16 06:01+0200\n"
 "Last-Translator: Christian Perrier <bubulle@debian.org>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
@@ -45,8 +45,8 @@ msgstr ""
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid ""
-"Whether to remove all files belonging to the Interchange demo catalog when "
-"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Veuillez choisir si vous souhaitez supprimer tous les fichiers du catalogue "
 "de démonstration d'Interchange lors de la purge du paquet (« dpkg --purge » "
@@ -119,8 +119,8 @@ msgid ""
 msgstr ""
 "Veuillez indiquer l'identifiant à utiliser pour l'administration du "
 "catalogue de démonstration. Cet identifiant doit comporter deux caractères "
-"minimum : seuls lettres, chiffres, caractère de soulignement (« _ »), « @ » "
-"et le point y sont autorisés."
+"minimum : seuls lettres, chiffres, caractère de soulignement (« _ »), « @ » et "
+"le point y sont autorisés."
 
 #. Type: password
 #. Description
@@ -418,8 +418,7 @@ msgid ""
 msgstr ""
 "Veuillez choisir l'un des jeux de paramètres du serveur. Tout magasin "
 "construit à partir de la démonstration verra son comportement modifié "
-"également. Si « RPC » est choisi, le serveur fonctionnera en mode "
-"« PreFork »."
+"également. Si « RPC » est choisi, le serveur fonctionnera en mode « PreFork »."
 
 #. Type: boolean
 #. Description
@@ -437,15 +436,45 @@ msgstr ""
 "Veuillez choisir si l'URL entière est prise en compte lors de la "
 "vérification du catalogue correspondant."
 
-#. Type: boolean
+#. Type: note
 #. Description
 #: ../interchange.templates:13001
+msgid "SOAP server not available"
+msgstr "Serveur SOAP indisponible"
+
+#. Type: note
+#. Description
+#: ../interchange.templates:13001
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"Vous ne pouvez pas utiliser le serveur SOAP d'Interchange car le module Perl "
+"SOAP::Lite n'est pas installé. Pour corriger cela, veuillez installer le "
+"paquet libsoap-lite-perl et utiliser la commande « interchangeconfig SOAP=1 »."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+msgid "Enable the SOAP server?"
+msgstr "Faut-il activer le serveur SOAP ?"
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+msgid "This setting determines if the SOAP server is started or not."
+msgstr "Veuillez choisir si le serveur SOAP sera démarré."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Faut-il activer les réglages pour les robots ?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
+#: ../interchange.templates:15001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
@@ -476,22 +505,3 @@ msgstr ""
 "traduite en danois (da_DK), néerlandais (nl_NL), allemand (de_DE), italien "
 "(it_IT) et suédois (sv_SE). Veuillez choisir la langue par défaut. Les "
 "utilisateurs pourront modifier ce réglage à la connexion."
-
-#~ msgid "SOAP server not available"
-#~ msgstr "Serveur SOAP indisponible"
-
-#~ msgid ""
-#~ "Because the Perl module SOAP::Lite is not installed, you are unable to "
-#~ "run the Interchange SOAP server. To change this, install the libsoap-lite-"
-#~ "perl Debian package and run interchangeconfig SOAP=1."
-#~ msgstr ""
-#~ "Vous ne pouvez pas utiliser le serveur SOAP d'Interchange car le module "
-#~ "Perl SOAP::Lite n'est pas installé. Pour corriger cela, veuillez "
-#~ "installer le paquet libsoap-lite-perl et utiliser la commande "
-#~ "« interchangeconfig SOAP=1 »."
-
-#~ msgid "Enable the SOAP server?"
-#~ msgstr "Faut-il activer le serveur SOAP ?"
-
-#~ msgid "This setting determines if the SOAP server is started or not."
-#~ msgstr "Veuillez choisir si le serveur SOAP sera démarré."

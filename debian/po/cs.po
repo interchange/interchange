@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange 5.2.0-2\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-10-13 19:15+0000\n"
-"PO-Revision-Date: 2008-10-16 13:29+0200\n"
+"POT-Creation-Date: 2008-11-23 11:58+0000\n"
+"PO-Revision-Date: 2009-05-25 07:11+0200\n"
 "Last-Translator: Martin Sin <martin.sin@zshk.cz>\n"
 "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -49,11 +49,12 @@ msgstr "Smazat ukázkový katalog při odstranění balíčku?"
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid ""
-"Should all files belonging to the Interchange demo catalog removed when you "
-"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+"Whether to remove all files belonging to the Interchange demo catalog when "
+"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
 msgstr ""
-"Mám při odstranění tohoto balíčku také smazat všechny soubory, které na něm "
-"závisí, např. pomocí dpkg --purge nebo apt-get remove --purge ?"
+"Mám při odstranění tohoto balíčku smazat také všechny soubory závisející "
+"na demo katalogu Interchange, např. pomocí dpkg --purge nebo "
+"apt-get remove --purge ?"
 
 #. Type: select
 #. Choices
@@ -201,7 +202,6 @@ msgstr "DBMS pro ukázkový katalog:"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-#| msgid "Please select the default locale for the Interchange demo catalog."
 msgid "Please select the database type used for the demo catalog."
 msgstr "Zvolte prosím typ databáze používané pro ukázkový katalog."
 
@@ -423,45 +423,15 @@ msgstr ""
 "Tato volba určuje, zda se při kontrole odpovídajícího katalogu bude používat "
 "kompletní adresa URL."
 
-#. Type: note
+#. Type: boolean
 #. Description
 #: ../interchange.templates:13001
-msgid "SOAP server not available"
-msgstr "SOAP server není k dispozici"
-
-#. Type: note
-#. Description
-#: ../interchange.templates:13001
-msgid ""
-"Because the Perl module SOAP::Lite is not installed, you are unable to run "
-"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
-"Debian package and run interchangeconfig SOAP=1."
-msgstr ""
-"Protože není nainstalován modul Perlu SOAP::Lite, nebudete schopni spustit "
-"Interchange SOAP server. Napravit to můžete instalací balíčku libsoap-lite-"
-"perl a následným spuštěním interchangeconfig SOAP=1."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "Enable the SOAP server?"
-msgstr "Povolit server SOAP?"
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:14001
-msgid "This setting determines if the SOAP server is started or not."
-msgstr "Toto nastavení určuje, zda spustit server SOAP či nikoliv."
-
-#. Type: boolean
-#. Description
-#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Povolit nastavení robotů?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:13001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
@@ -492,6 +462,24 @@ msgstr ""
 "bylo přeloženo do dánštiny (da_DK), holandštiny (nl_NL), němčiny (de_DE), "
 "italštiny (it_IT) a švédštiny (sv_SE). Zde si můžete zvolit výchozí jazyk. "
 "Každý uživatel si pak může změnit jazyk při přihlášení."
+
+#~ msgid "SOAP server not available"
+#~ msgstr "SOAP server není k dispozici"
+
+#~ msgid ""
+#~ "Because the Perl module SOAP::Lite is not installed, you are unable to "
+#~ "run the Interchange SOAP server. To change this, install the libsoap-lite-"
+#~ "perl Debian package and run interchangeconfig SOAP=1."
+#~ msgstr ""
+#~ "Protože není nainstalován modul Perlu SOAP::Lite, nebudete schopni "
+#~ "spustit Interchange SOAP server. Napravit to můžete instalací balíčku "
+#~ "libsoap-lite-perl a následným spuštěním interchangeconfig SOAP=1."
+
+#~ msgid "Enable the SOAP server?"
+#~ msgstr "Povolit server SOAP?"
+
+#~ msgid "This setting determines if the SOAP server is started or not."
+#~ msgstr "Toto nastavení určuje, zda spustit server SOAP či nikoliv."
 
 #~ msgid "Important Perl Incompatibility"
 #~ msgstr "Důležitá nekompatibilita s Perlem"

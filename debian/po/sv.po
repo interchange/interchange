@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange_5.6.1-1_sv\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-11-14 11:20+0000\n"
-"PO-Revision-Date: 2008-11-17 20:20+0100\n"
-"Last-Translator: Martin Ågren <martin.agren@gmail.com>\n"
+"POT-Creation-Date: 2009-09-18 06:58+0000\n"
+"PO-Revision-Date: 2009-10-22 01:37+0100\n"
+"Last-Translator: Martin Bagge <brother@bsnet.se>\n"
 "Language-Team: Swedish <debian-l10n-swedish@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: Sweden\n"
 
 #. Type: boolean
 #. Description
@@ -42,12 +44,16 @@ msgstr "Ta bort demokatalogen när paketet rensas bort?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
+#| msgid ""
+#| "Whether to remove all files belonging to the Interchange demo catalog "
+#| "when you purge this package, e.g. with dpkg --purge or apt-get remove --"
+#| "purge."
 msgid ""
-"Whether to remove all files belonging to the Interchange demo catalog when "
-"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
-"Huruvida samtliga filer som hör till Interchanges demokatalog ska tas bort när du "
-"rensar bort det, t.ex. med dkpg --purge eller apt-get remove --purge."
+"Ska samtliga filer tillhörande Interchanges demokatalog tas bort när paketet "
+"tas bort. T.ex. med dpkg --purge eller apt-get remove --purge?"
 
 #. Type: select
 #. Choices
@@ -368,8 +374,10 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Välj den katalog Interchange ska användas för den publika GnuPG-nyckelringen."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr ""
+"Välj den katalog Interchange ska användas för den publika GnuPG-nyckelringen."
 
 #. Type: select
 #. Choices
@@ -411,15 +419,46 @@ msgstr ""
 "Denna inställning avgör huruvida hela URL:en undersöks när motsvarande "
 "katalog ska hittas."
 
-#. Type: boolean
+#. Type: note
 #. Description
 #: ../interchange.templates:13001
+msgid "SOAP server not available"
+msgstr "SOAP-server inte tillgänglig"
+
+#. Type: note
+#. Description
+#: ../interchange.templates:13001
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"I och med att Perlmodulen SOAP::Lite inte är installerad kan du inte "
+"anävända SOAP-servern för Interchange. Installera Debianpaketet libsoap-lite-"
+"perl och kör sedan \"interchangeconfig SOAP=1\" för att lösa detta."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+#| msgid "Enable the FullURL directive?"
+msgid "Enable the SOAP server?"
+msgstr "Aktivera SOAP-servern?"
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+msgid "This setting determines if the SOAP server is started or not."
+msgstr "Denna inställning anger om SOAP-servern är startad eller ej."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Aktivera robotinställningar?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
+#: ../interchange.templates:15001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
@@ -450,4 +489,3 @@ msgstr ""
 "översatts till danska (da_DK), nederländska (nl_NL), tyska (de_DE), "
 "italienska (it_IT) och svenska (sv_SE). Du kan välja standardspråk här. "
 "Varje användare kan ändra detta standardvärde vid inloggning."
-
