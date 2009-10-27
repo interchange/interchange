@@ -6,4 +6,3 @@ usr/share/man/man1
 var/lib/interchange/catalog.d
 var/lib/interchange/catalogs
 var/log/interchange
-var/run/interchange
