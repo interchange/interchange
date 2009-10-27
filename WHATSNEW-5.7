@@ -11,8 +11,58 @@ See UPGRADE document for a list of incompatible changes.
 Interchange 5.7.3 not yet released.
 
 
+Core
+----
+
+* Fix empty charset= lines when no $Vend::StatusLine was previously set.
+
+* Allow POST with Content-type of application/json.
+
+* Remove empty mv_arg from more-list links.
+
+Tags
+----
+
+* Remove reference to deprecated Spreadsheet::WriteExcel::Big module in
+  backup-database tag.
+
+* Allow passing of "id" to the [display] tag. It will be output in the form
+  element and a label element will be created to match, if appropriate.
+
+  Example 1:
+
+  [display id=category options=|
+  =--select--,
+  1=Junior High School,
+  2=High School,
+  3=College,
+  4=Graduate School,
+  | value="[evalue category]" type=select name=category]
+
+  Output (bring your own <label for=category>):
+  <select name="category" id="category">
+      <option value="" SELECTED>--select--
+      <option value="1">Junior High School
+      <option value="2">High School
+      <option value="3">College
+      <option value="4">Graduate School
+  </select>
+
+  Example 2 (label elements provided):
+
+  [display name=publish_email value="[evalue publish_email]" type=radio
+  passed="0=No,1=Yes" blank_default=1 id=publish_email]
+
+  Output:
+  <input type="radio" name="publish_email" value="0" id="publish_email0">
+       &nbsp;<label for="publish_email0">No</label>
+  <input type="radio" name="publish_email" value="1" id="publish_email1" checked>
+       &nbsp;<label for="publish_email1">Yes</label>
+
 Standard Demo
 -------------
+
+* Correct bounces to nonexistent error pages.
 
 * Fixed bug that causes options to not show up on the checkout reciept, or the
   order report, or the mail reciept for most or all items.
