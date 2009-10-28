@@ -1,6 +1,6 @@
 #! /bin/sh -e
 #
-# Copyright 2001,2004,2005,2006,2008 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2004,2005,2006,2008,2009 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -97,7 +97,15 @@ if [ "$GOAHEAD" = "true" ]; then
 		SQLDSN="dbi:SQLite:dbname=$dbc_dbname"
 	fi
 
-	SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
+	# with full URL enabled we use virtual host provided by the user
+	db_get interchange/full_url
+	if [ "$RET" = "true" ]; then
+		db_get interchange-cat-standard/vhost
+		SERVERNAME="$RET"
+	else
+		SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
+	fi
+
 	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_SQLITE=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
