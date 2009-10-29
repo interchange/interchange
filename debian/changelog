@@ -1,6 +1,11 @@
 interchange (5.7.3-1) unstable; urgency=low
 
   * new upstream release
+  * use virtual host instead of system hostname as server name for the
+    demo catalog if FullUrl is enabled
+  * keep virtual host name supplied by the user
+  * moved CSS and image files for UI from /var/www/interchange-5 to
+    /usr/share/interchange-ui
   * updated translations of Debconf templates 
     - Swedish (Closes: #551948, Martin Bagge <brother@bsnet.se>)
     - German (Closes: #548512, Helge Kreutzmann <debian@helgefjell.de>)
@@ -15,7 +20,7 @@ interchange (5.7.3-1) unstable; urgency=low
     - added -e flag to maintainer scripts
     - create /var/run/interchange at runtime
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 27 Oct 2009 22:30:11 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 29 Oct 2009 12:08:31 +0100
 
 interchange (5.7.2-1) unstable; urgency=low
 
