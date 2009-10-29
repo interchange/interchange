@@ -154,8 +154,6 @@ A good way to test this module is to set PRI_TEST_MODE to 3, then 2, then 1, the
 
 To generate errors in test mode (while using your test ID and regkey) simply enter transactions with bad data and see what happens.  PRI will supply you with a list of test credit card numbers and amounts that they are good for. 
 
-=over 4
-
 =item submit_url
 
 PRI uses different URLs depending on what type of transaction you are requesting, Sale, Recurring, Void etc..  The default URL for single sale transactions is
@@ -163,7 +161,7 @@ PRI uses different URLs depending on what type of transaction you are requesting
 	 https://webservices.primerchants.com/billing/TransactionCentral/processCC.asp?
 
 At this time, this is the only URL supported by this PRI module
-	 
+
 =back
 
 =head2 Troubleshooting

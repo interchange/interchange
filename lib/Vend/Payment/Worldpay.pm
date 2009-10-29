@@ -230,6 +230,8 @@ a page, then from an Interchange order Route named for the mode in catalog.cfg,
 then a default global payment variable in products/variable.txt, and finally in
 some cases a default will be hard-coded into the module.
 
+=over
+
 =item instid
 
 Your installation id supplied by Worldpay, the module cannot be used without an instid, set in
@@ -282,6 +284,8 @@ and all successfull transactions will have status processing, defaults to pendin
 
 Set to 1 for module to decrement the inventory on a sucessfull transaction, if used disable decrement via
 log_transaction.
+
+=back
 
 =head2 Testing
 

@@ -26,6 +26,8 @@ ic_mod_perl -- Run Interchange entirely inside Apache/mod_perl
 
 =head2 Benefits
 
+=over
+
 =item *
 
 Possibly better stability, especially on non-Linux platforms where
@@ -61,8 +63,11 @@ Can coexist with standalone Interchange codebase without problems.
 
 Administrative ease (for sysadmins who know Apache but not Interchange).
 
+=back
 
 =head2 Drawbacks
+
+=over
 
 =item *
 
@@ -97,6 +102,7 @@ Separate lightweight Apache (no modules) that proxies /ic requests
 
 =back
 
+=back
 
 =head2 Ideal system setup
 
@@ -107,13 +113,18 @@ PHP, etc. enabled and an empty DocRoot.
 
 =head1 CAVEATS
 
+=over
+
 =item *
 
 Watch out for differing Storable versions in sessions when switching
 between standalone and mod_perl runs!
 
+=back
 
 =head1 BUGS
+
+=over
 
 =item *
 
@@ -133,6 +144,7 @@ URIs must follow format C</ic/catalogname/page...>, where /ic is
 customizable but must only be one "directory" deep (i.e., no
 slashes).
 
+=back
 
 =head1 AUTHOR
 

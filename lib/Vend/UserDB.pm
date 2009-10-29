@@ -244,6 +244,8 @@ the preference set.
 There are several database locations that have special purposes. These
 fields are not saved as user values.
 
+=over
+
 =item USERNAME				default: username
 
 The username or key field of the database table.
@@ -305,8 +307,11 @@ Whether they are a superuser (admin).
 Location of access control information.
 
 =item CREATED_DATE_ISO		default: (none)
+
 =item CREATED_DATE_UNIX		default: (none)
+
 =item UPDATED_DATE_ISO		default: (none)
+
 =item UPDATED_DATE_UNIX		default: (none)
 
 Date fields.
@@ -315,6 +320,8 @@ Date fields.
 
 The user id of another account this was merged into. If present, and data (should
 be a valid user id) is present in the field, the user will be logged as that username.
+
+=back
 
 =cut
 

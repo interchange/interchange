@@ -29,14 +29,17 @@ package Vend::Payment::GoogleCheckout;
  Kevin Walsh's excellent Interchange site,  http://interchange.rtfm.info.
 
 =head1 AUTHORS
+
  Lyn St George <info@zolotek.net>
 
 =head1 CREDITS
+
  Steve Graham, mrlock.com, debugging and documentation
  Andy Smith, tvcables.co.uk, debugging and documentation
 
 
 =head1 PREREQUISITES
+
 XML::Simple and any of its prerequisites (eg XML::Parser or XML::SAX)
 MIME::Base64
 these should be found anyway on any well-used perl installation. This version was built especially 
@@ -47,6 +50,7 @@ Interchange.cfg should contain this line, with args extra to 'rand' for current 
 SafeUntrap  rand require caller dofile print entereval
 
 =head1 DESCRIPTION
+
 This integrates Google Checkout quite tightly into Interchange - it is expected that all coupons,
 gift certificates, discounts, tax routines and shipping will be processed by Interchange before
 sending the customer to Google. The customer will see the basket, tax, shipping and total cost
@@ -235,14 +239,14 @@ ALTER TABLE `transactions` MODIFY `order_number` varchar(32);
 ALTER TABLE `orderline` MODIFY `order_number` varchar(32);
 
 
-In etc/log_transction, immediately after the 
+In etc/log_transction, immediately after the
 [elsif variable MV_PAYMENT_MODE]
 	[calc]
-insert this line: 
+insert this line:
 	undef $Session->{payment_result}{MStatus};
 
 and leave
-[elsif variable MV_PAYMENT_MODE] 
+[elsif variable MV_PAYMENT_MODE]
 as set (contrary to earlier revisions of this document), but within the same section change the following 
 two instances of
 [var MV_PAYMENT_MODE] to [value mv_payment_route]
@@ -268,9 +272,9 @@ If your Interchange installation is 5.2.0 or older this line will not exist - se
 the payment route and allow Interchange to generate the order number instead. Note: the initial order number
 uses the username.counter number prefixed with 'GCOtmp', and a normal order number is created and the initial order number
 replaced only when Google reports that the card has been charged. This is to avoid gaps in the order
-number sequence caused by customers abandoning the transaction while at Google. 
+number sequence caused by customers abandoning the transaction while at Google.
 
-
+=over
 
 =item Failed atttempts to authorise or charge the buyer's card.
 If the card is declined by the bank then IC will be updated with the new status and a brief email sent
@@ -304,12 +308,14 @@ then the transaction will be refused and a brief email sent to the prospective b
 
 
 =item Google Analytics
+
 This page: http://code.google.com/apis/checkout/developer/checkout_analytics_integration.html will tell
 you how to integrate Analytics into the system. This module will pass the data as an 'analyticsdata' 
 value from the checkout form, encoded as UTF-8. 
 
 
 =item Error messages from GCO
+
 GCO will send error messages with a '<' in the title, which Interchange interprets as a possible attack
 and so immediately stops reading the page and throws the user to the 'violation' page (defined in your
 catalog.cfg as 'SpecialPage ../special_pages/violation' normally, though may be different).
@@ -325,14 +331,18 @@ bounce the user back to the checkout page with a suitable error message. This us
  [bounce href="[area ord/checkout]"]
  [/if]
 
-=bugs 
+=back
+
+=head1 Bugs
+
 The default CharSet.pm in Interchange 5.6 (and possibly earlier) will fail on GCO's notifications. The
 sympton is that GCO keeps repeating the 'new order notification' as though it has not received one, but
 does not return any errors. Set a variable in your catalog.cfg, thus: 
 Variable	MV_HTTP_CHARSET	UTF-8
 but  be aware that this may break the display of some upper ASCII characters, eg the GBP £ sign (use &pound; instead of £)
 
-=Changelog
+=head1 Changelog
+
 v.0.7.0, 29.01.2009
 	- added locale, currency_locale, and cart fields to transaction tbl
 	- log basket to transaction tbl to be read and inserted back into session for final order route

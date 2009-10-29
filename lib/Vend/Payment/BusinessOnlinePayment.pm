@@ -276,7 +276,9 @@ sub onlinepayment {
     'phone'           => $actual->{phone_day},
   );
 
-=head1 Extra query params
+=head1 Extra query parameters
+
+=over
 
 =item extra_query_params "customer_id  their_param=our_param"
 
@@ -289,6 +291,8 @@ or the route.
 The above id passes the customer_id parameter on with a key of the
 same name, while the second sets their param C<their_param> with 
 C<our_param>.
+
+=back
 
 =cut
 
@@ -330,12 +334,16 @@ C<our_param>.
 
   }
 
-=head1 Extra result params
+=head1 Extra result parameters
+
+=over
 
 =item extra_result_params "transid=weird.module.name"
 
 This allows you to map a returned parameter to the payment result 
 hash of Interchange.
+
+=back
 
 =cut
 

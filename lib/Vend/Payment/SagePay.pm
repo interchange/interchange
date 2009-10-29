@@ -192,6 +192,8 @@ a page, then from an Interchange order Route named for the mode in catalog.cfg,
 then a default global payment variable in products/variable.txt, and finally in
 some cases a default will be hard-coded into the module.
 
+=over
+
 =item Mode
 
 The mode can be named anything, but the C<gateway> parameter must be set
@@ -436,6 +438,7 @@ A DIRECTREFUND sends funds from your registered bank account to the nominated cr
 This does not need to refer to any previous transaction codes, and is useful if you need to
 make a refund but the customer's card has changed or the original purchase was not made by card.
 
+=back
 
 =head2 Troubleshooting
 
