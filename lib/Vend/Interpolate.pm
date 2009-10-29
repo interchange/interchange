@@ -5101,7 +5101,7 @@ sub discount_price {
 		$Vend::Interpolate::s = $return ||= $subtotal;
         $return = $ready_safe->reval($discount);
 		if($@) {
-			::logError("Bad discount code for %s: %s", $discount);
+			::logError("Bad discount code for %s: %s", $discount, $@);
 			$return = $subtotal;
 			next;
 		}
