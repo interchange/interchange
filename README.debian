@@ -41,6 +41,13 @@ Standard Demo
 For the administration of the standard demo (interchange-cat-standard
 package) a secure webserver (https://) is required.
 
+UI
+==
+
+CSS and image files are installed in /usr/share/interchange-ui.
+A configuration snippet for Apache with a corresponding alias is 
+located in /etc/apache2/conf.d/interchange-ui.conf.
+
 Other Notes
 ===========
 

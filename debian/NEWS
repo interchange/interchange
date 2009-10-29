@@ -1,0 +1,8 @@
+interchange-ui (5.7.3-1) unstable; urgency=low
+
+  * Moved CSS and image files from /var/www/interchange-5 to
+    /usr/share/interchange-ui.  A configuration snippet for Apache has
+    been added at /etc/apache2/conf.d/interchange-ui.conf.
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 29 Oct 2009 11:17:50 +0100
+
