@@ -252,7 +252,7 @@ EOF
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
-			parse_post(\$CGI::query_string)
+			parse_post(\$CGI::query_string, 1)
 				if $Global::TolerateGet;
 			parse_post($h->{entity});
 		}
@@ -332,7 +332,7 @@ sub store_cgi_kv {
 }
 
 sub parse_post {
-	my $sref = shift;
+	my ($sref, $is_get) = @_;
 	return unless length $$sref;
 
 	my (@pairs, $pair, $key, $value, $charset);
@@ -346,7 +346,7 @@ sub parse_post {
 
 	$CGI::values{mv_form_charset} = $charset;
 
-	if ($CGI::content_type =~ m{^multipart/}i) {
+	if ($CGI::content_type =~ m{^multipart/}i && ! $is_get) {
 		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
