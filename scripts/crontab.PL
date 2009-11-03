@@ -3,9 +3,7 @@
 #
 # Interchange cron editor
 #
-# $Id: crontab.PL,v 2.4 2008-08-13 00:18:51 jon Exp $
-#
-# Copyright (C) 2005-2008 Interchange Development Group
+# Copyright (C) 2005-2009 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
