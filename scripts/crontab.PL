@@ -61,6 +61,10 @@ my $safe = new Safe;
 
 my $configstring = `$FindBin::Bin/interchange -globalconfig`;
 
+if ($?) {
+	die "Error retrieving global configuration.\n";
+}
+
 chdir $Global::VendRoot
 	or die "Unable to chdir to $Global::VendRoot: $!\n";
 
