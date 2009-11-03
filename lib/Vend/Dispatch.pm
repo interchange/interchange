@@ -1309,15 +1309,14 @@ sub dispatch {
 	elsif (! $::Instance->{ExternalCookie} and $sessionid !~ /^\w+$/) {
 		my $msg = get_locale_message(
 						403,
-						"Unauthorized for that session %s. Logged.",
-						$sessionid,
+						"Malformed session identifier",
 						);
 		$Vend::StatusLine = <<EOF;
 Status: 403 Unauthorized
 Content-Type: text/plain
 EOF
 		response($msg);
-		logGlobal($msg);
+		logGlobal("$msg: $sessionid");
 		close_cat();
 		return;
 	}
