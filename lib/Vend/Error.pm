@@ -79,6 +79,11 @@ sub interaction_error {
 
     logError( "Difficulty interacting with browser: %s", $msg );
 
+	# avoid XSS problem
+	if ($msg !~ /^[\w\s\.]+$/) {
+		$msg = 'Invalid CGI input.';
+	}
+	
     $page = readin(find_special_page('interact'));
     if (defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
