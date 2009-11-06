@@ -8,16 +8,11 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.3 not yet released.
+Interchange 5.7.3 released 2009-11-05.
 
 
 Core
 ----
-
-* Add BounceRobotSessionURL directive to 301 redirect robots which
-  provide an explicit mv_session_id to the canonical page URL without
-  the explicit mv_session_id.  This prevents search engine urls from
-  being indexed with an explicit session_id.
 
 * Fix empty charset= lines when no $Vend::StatusLine was previously set.
 
@@ -25,8 +20,25 @@ Core
 
 * Remove empty mv_arg from more-list links.
 
+* Cleanup some POD documentation.
+
 * Fix crash with TolerateGet and upload forms (#325).
  
+* Show discount error message that was missing. Fixed by Jeff Boes.
+
+* Die on errors in global configuration of crontab.
+
+* Stop display of invalid user-provided session ID. Should not be XSS
+  exploitable, since displayed in text/plain context, but don't show anyway
+  in case any browser does improper content-type handling.
+
+* Avoid XSS exploit in CGI input error. Reported by Justin Otten.
+
+* Add BounceRobotSessionURL directive to 301 redirect robots which
+  provide an explicit mv_session_id to the canonical page URL without
+  the explicit mv_session_id. This prevents search engine urls from
+  being indexed with an explicit session_id.
+
 Tags
 ----
 
@@ -71,8 +83,23 @@ Standard Demo
 
 * Correct bounces to nonexistent error pages.
 
-* Fixed bug that causes options to not show up on the checkout reciept, or the
+* Fixed bug that causes options to not show up on the checkout receipt, or the
   order report, or the mail reciept for most or all items.
+
+* Fix problem that prevented unsubscribing from all mailing lists.
+
+Debian packaging
+----------------
+
+* Keep virtual host name supplied by user.
+
+* Move CSS & image files from /var/www/interchange-5 to
+  /usr/share/interchange-ui.
+
+* Use virtual host instead of system hostname as server name for demo catalog
+  if FullUrl is enabled.
+
+* Updated translations of Debconf templates.
 
 
 ------------------------------------------------------------------------------
