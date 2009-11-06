@@ -529,7 +529,7 @@ sub init_session {
 		'arg'		=> $Vend::Argument,
 		'browser'	=> $CGI::useragent,
 		'referer'	=> $CGI::referer,
-		'spider'	=> $CGI::values{mv_tmp_session},
+		'spider'	=> $Vend::Robot,
 		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}} },
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
