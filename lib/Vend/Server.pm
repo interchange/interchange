@@ -283,7 +283,6 @@ EOF
 		 parse_post(\$CGI::query_string);
 	}
 
-	return if $CGI::values{mv_tmp_session};
 
 #::logDebug("Check robot UA=$Global::RobotUA IP=$Global::RobotIP");
 	if ($Global::RobotIP and $CGI::remote_addr =~ $Global::RobotIP) {
@@ -310,7 +309,7 @@ EOF
 		}
 	}
 
-	$CGI::values{mv_tmp_session} = 1 if $Vend::Robot;
+	$CGI::values{mv_tmp_session} ||= 1 if $Vend::Robot;
 }
 
 # This is called by parse_multipart
