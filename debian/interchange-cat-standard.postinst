@@ -155,7 +155,7 @@ Catalog standard /var/lib/interchange/catalogs/standard $URLS
 EOF
 	if [ ! -f /var/run/interchange-install ]; then
 		# add catalog to running server
-		echo "Catalog standard /var/lib/interchange/catalogs/standard $URLS" | /usr/sbin/interchange --add standard
+		echo "Catalog standard /var/lib/interchange/catalogs/standard $URLS" | interchange --add standard
 	fi
 fi
 

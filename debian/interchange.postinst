@@ -107,7 +107,7 @@ fi
 db_get interchange/traffic
 TRAFFIC="$RET"
 
-/usr/sbin/interchangeconfig FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
+interchangeconfig FULL_URL=$FULL_URL SOAP=$SOAP TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
