@@ -1,4 +1,4 @@
-@_UI_STD_INIT_@[calc]
+@_UI_STD_INIT_@[calcn]
 	if ( $CGI->{showactive} ) {
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
@@ -21,7 +21,7 @@
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	return;
-[/calc]
+[/calcn]
 
 [value name=mv_data_table set=userdb hide=1]
 [if-mm !tables]
@@ -130,7 +130,7 @@
 	return;
 [/perl]
 
-[calc]
+[calcn]
 	if ($CGI->{mv_like_spec}) {
 		my @f = split /\0/, $CGI->{mv_like_field};
 		my @s = split /\0/, $CGI->{mv_like_spec};
@@ -160,7 +160,7 @@
 								},
 								);
 	return;
-[/calc]
+[/calcn]
 
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
@@ -196,13 +196,13 @@
 
 <!-- ----- Show the customer list box ----- -->
 [if cgi ui_text_qualification]
-[calc]
+[calcn]
 	return if $CGI->{mv_like_spec};
 	$Scratch->{page_banner} ||= $Scratch->{page_title};
 	my $val = $Tag->filter('encode_entities', $CGI->{ui_text_qualification});
 	$Scratch->{page_banner} .= ' -- ' . errmsg( 'entries containing "%s"', $val);
 	return;
-[/calc]
+[/calcn]
 [/if]
 <FORM ACTION="[process]">
 [form-session-id]
@@ -235,7 +235,7 @@
 		[scratch start_at][set start_at][/set]
 		rf=username,company,lname,fname,city,state,country
 "]
-[calc] 
+[calcn]
 	my $so   = $CGI->{ui_sort_option};
 	my $fld  = $CGI->{ui_sort_field};
 	$fld =~ s/[\s,\0].*//;
@@ -248,7 +248,7 @@
 		return $out . 'r';
 	}
 	return;
-[/calc]
+[/calcn]
 <br>
 <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 <tr class=rhead>
@@ -399,7 +399,6 @@ so there's a full line across the page even if table cells are blank.
 	function push_el (el, status) {
 		if(stat_array[status] == undefined) {
 			stat_array[status] = new Array;
-// alert('created ' + status + ' array');
 		}
 		var els = stat_array[status];
 		els[els.length] = el;
@@ -417,7 +416,6 @@ so there's a full line across the page even if table cells are blank.
 		var i;
 		var alerted;
 		for(i in stat_array) {
-// alert("checking status of " + i);
 			var els = stat_array[i];
 			for (var j = 0; j < els.length; j++) {
 				var el = document.getElementById(els[j]);
@@ -449,9 +447,9 @@ so there's a full line across the page even if table cells are blank.
 			img.src= image_dir + 'box_checked.gif';
 		}
 	}
-	[calc]
+	[calcn]
 		return join "\n", @els, '';
-	[/calc]
+	[/calcn]
 </script>
 			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>[L]Check all[/L]</A>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

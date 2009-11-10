@@ -1,9 +1,9 @@
 [if !cgi mv_data_table]
 [or cgi ui_scrub_table]
-[calc]
+[calcn]
 	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
 	return;
-[/calc]
+[/calcn]
 [/if]
 [if cgi mv_data_table eq 'mv_metadata']
 	[cgi name=mv_data_table set=__ProductFiles_0__ hide=1]
@@ -238,12 +238,12 @@ EOF
 [/perl]
 
 [if scratch ui_text_qualification]
-[calc]
+[calcn]
 	return if $CGI->{mv_like_spec};
 	$Scratch->{page_banner} ||= $Scratch->{page_title};
 	$Scratch->{page_banner} .= ' -- ' . $Scratch->{ui_text_qualification};
 	return;
-[/calc]
+[/calcn]
 [/if]
 
 <!-- existing item_sparams: '[scratch item_sparams]'
@@ -292,7 +292,7 @@ EOF
 [/if]
 
 [search-region more=1 sort="[scratch item_special_sort]" arg="[scratch item_sparams]"]
-[calc] 
+[calcn]
 	my $so   = $CGI->{ui_sort_option};
 	my $fld  = $CGI->{ui_sort_field};
 	$fld =~ s/[\s,\0].*//;
@@ -305,7 +305,7 @@ EOF
 		return $out . 'r';
 	}
 	return;
-[/calc]
+[/calcn]
 
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
 [form-session-id]
@@ -355,7 +355,7 @@ EOF
     </table>	
   </th>
 [/loop]
-[calc]
+[calcn]
 	my $out = '';
 	for(@special) {
 		my $display = $_;
@@ -396,7 +396,7 @@ EOF
 EOF
 	}
 	return $out;
-[/calc]
+[/calcn]
 </tr>
 [search-list]
 <tr class=[item-alternate 2]rowalt[else]rownorm[/else][/item-alternate]>
@@ -522,7 +522,7 @@ Inventory
 [output name="bottom_buttons"]
 
 [button text="[L]Edit checked items in sequence[/L]" extra="class=s3"]
-ui_sequence_edit=[calc]
+ui_sequence_edit=[calcn]
 	$CGI->{item_id_left} = $CGI->{item_id};
 	$CGI->{item_id_left} =~ s/\0+/,/g;
 	if($CGI->{item_id_left} =~ s/^(.*?),//) {
@@ -533,7 +533,7 @@ ui_sequence_edit=[calc]
 		delete $CGI->{item_id_left};
 		return '';
 	}
-[/calc]
+[/calcn]
 mv_nextpage=__UI_BASE__/item_edit
 mv_todo=return
 [/button]
@@ -561,7 +561,6 @@ mv_nextpage=@@MV_PAGE@@
 	function push_el (el, status) {
 		if(stat_array[status] == undefined) {
 			stat_array[status] = new Array;
-// alert('created ' + status + ' array');
 		}
 		var els = stat_array[status];
 		els[els.length] = el;
@@ -579,7 +578,6 @@ mv_nextpage=@@MV_PAGE@@
 		var i;
 		var alerted;
 		for(i in stat_array) {
-// alert("checking status of " + i);
 			var els = stat_array[i];
 			for (var j = 0; j < els.length; j++) {
 				var el = document.getElementById(els[j]);
@@ -611,9 +609,9 @@ mv_nextpage=@@MV_PAGE@@
 			img.src= image_dir + 'box_checked.gif';
 		}
 	}
-	[calc]
+	[calcn]
 		return join "\n", @els, '';
-	[/calc]
+	[/calcn]
 </script>
 <br/>
 			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>[L]Check all[/L]</A>
