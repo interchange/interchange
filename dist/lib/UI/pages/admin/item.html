@@ -406,11 +406,9 @@ EOF
   my $string = '';
   if(! $Scratch->{old_browser}) {
     my $nm = 'checker[item-increment]';
-    push @els, qq{push_el('$nm', '[item-param status]');};
+    push @els, qq{push_el('$nm', '');};
     $string .= "id=$nm ";
   }
-  return $string if $Scratch->{archive_nm} eq 'unarchive';
-  $string .= 'CHECKED' if q{[item-param status]} eq $Values->{checked_status};
   return $string;
 [/item-calc]
 ></TD><TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
