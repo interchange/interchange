@@ -57,10 +57,10 @@ WARNING: BACK UP EVERYTHING BEFORE YOU START!
     3. You can see the section below, "TO TEST BEFORE YOU UPGRADE", if
        you want to try it out before you switch your running catalog.
 
-    4. Install it in the same location as your current software:
+    4. Install it to the same location as your current software:
 
         ## Create the makefile
-        perl Makefile.PL prefix=/usr/local/interchange
+        perl Makefile.PL
 
         ## Make the software
         make
