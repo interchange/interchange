@@ -378,6 +378,7 @@ debian/makecat.wrapper
 debian/NEWS
 debian/po/cs.po
 debian/po/de.po
+debian/po/es.po
 debian/po/eu.po
 debian/po/fi.po
 debian/po/fr.po
