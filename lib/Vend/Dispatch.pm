@@ -1179,6 +1179,8 @@ sub close_cat {
 	put_session() if $Vend::HaveSession;
 	close_session() if $Vend::SessionOpen;
 	close_database();
+	Sys::Syslog::closelog(), undef $Vend::SysLogReady
+		if $Vend::SysLogReady;
 }
 
 sub run_macro {

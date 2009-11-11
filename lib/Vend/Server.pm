@@ -2351,7 +2351,7 @@ sub setup_debug_log {
 		open(Vend::DEBUG, ">>$Global::DebugFile");
 		select Vend::DEBUG;
 		$| = 1;
-		print "Start DEBUG at " . localtime() . "\n";
+		print "Start DEBUG at " . localtime() . "\n" unless $Global::SysLog;
 	}
 	elsif (!$Global::DEBUG) {
 		# May as well turn warnings off, not going anywhere

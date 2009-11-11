@@ -217,7 +217,7 @@ sub format_log_msg {
     push @params, ($CGI::remote_host || $CGI::remote_addr || '-');
 	push @params, ($Vend::SessionName || '-');
 	push @params, ($CGI::user || '-');
-	push @params, logtime();
+	push @params, logtime() unless $Global::SysLog;
 
 	# Catalog name
 	my $string = ! defined $Vend::Cfg ? '-' : ($Vend::Cat || '-');
@@ -1636,7 +1636,8 @@ sub find_special_page {
 # Log the error MSG to the error file.
 
 sub logDebug {
-    return unless $Global::DebugFile;
+	return unless $Global::DebugFile;
+
 	if(my $re = $Vend::Cfg->{DebugHost}) {
 		return unless
 			 Net::IP::Match::Regexp::match_ip($CGI::remote_addr, $re);
@@ -1646,10 +1647,12 @@ sub logDebug {
 		return unless $sub->();
 	}
 
-    if(my $tpl = $Global::DebugTemplate) {
-        my %debug; 
+	my $msg;
+
+	if (my $tpl = $Global::DebugTemplate) {
+		my %debug;
 		$tpl = POSIX::strftime($tpl, localtime());
-		$tpl =~ s/\s*$/\n/;
+		$tpl =~ s/\s*$//;
 		$debug{page} = $Global::Variable->{MV_PAGE};
 		$debug{tag} = $Vend::CurrentTag;
 		$debug{host} = $CGI::host || $CGI::remote_addr;
@@ -1663,12 +1666,20 @@ sub logDebug {
         }
 		$debug{message} = errmsg(@_);
 
-        print Vend::Interpolate::tag_attr_list($tpl, \%debug, 1);
-    }
-    else {
-        print caller() . ":debug: ", errmsg(@_), "\n";
-    }
-    return;
+		$msg = Vend::Interpolate::tag_attr_list($tpl, \%debug, 1);
+	}
+	else {
+		$msg = caller() . ":debug: " . errmsg(@_);
+	}
+
+	if ($Global::SysLog) {
+		logGlobal({ level => 'debug' }, $msg);
+	}
+	else {
+		print $msg, "\n";
+	}
+
+	return;
 }
 
 sub errmsg {
@@ -1705,117 +1716,156 @@ sub show_times {
 
 sub logGlobal {
 	return 1 if $Vend::ExternalProgram;
-    my($msg) = shift;
+
 	my $opt;
-	if(ref $msg) {
+	my $msg = shift;
+	if (ref $msg) {
 		$opt = $msg;
 		$msg = shift;
-	}
-	if(@_) {
-		$msg = errmsg($msg, @_);
-	}
-	my $nolock;
-
-	my $fn = $Global::ErrorFile;
-	my $flags;
-	if($opt and $Global::SysLog) {
-		$fn = "|" . ($Global::SysLog->{command} || 'logger');
-
-		my $prioritized;
-		my $tagged;
-		my $facility = 'local3';
-		if($opt->{level} and defined $Global::SysLog->{$opt->{level}}) {
-			my $stuff =  $Global::SysLog->{$opt->{level}};
-			if($stuff =~ /\./) {
-				$facility = $stuff;
-			}
-			else {
-				$facility .= ".$stuff";
-			}
-			$prioritized = 1;
-		}
-
-		my $tag = $Global::SysLog->{tag} || 'interchange';
-
-		$facility .= ".info" unless $prioritized;
-
-		$fn .= " -p $facility";
-		$fn .= " -t $tag" unless "\L$tag" eq 'none';
-
-		if($opt->{socket}) {
-			$fn .= " -u $opt->{socket}";
-		}
-	}
-
-	my $nl = ($opt and $opt->{strip}) ? '' : "\n";
-
-	print "$msg$nl" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
-
-	$fn =~ s/^([^|>])/>>$1/
-		or $nolock = 1;
-
-    $msg = format_log_msg($msg) if ! $nolock;
-
-	$Vend::Errors .= $msg if $Global::DisplayErrors;
-
-    eval {
-		# We have checked for beginning > or | previously
-		open(MVERROR, $fn) or die "open\n";
-		if(! $nolock) {
-			lockfile(\*MVERROR, 1, 1) or die "lock\n";
-			seek(MVERROR, 0, 2) or die "seek\n";
-		}
-		print(MVERROR $msg, "\n") or die "write to\n";
-		if(! $nolock) {
-			unlockfile(\*MVERROR) or die "unlock\n";
-		}
-		close(MVERROR) or die "close\n";
-    };
-    if ($@) {
-		chomp $@;
-		print "\nCould not $@ error file '";
-		print $Global::ErrorFile, "':\n$!\n";
-		print "to report this error:\n", $msg;
-		exit 1;
-    }
-}
-
-
-# Log the error MSG to the error file.
-
-sub logError {
-    my $msg = shift;
-	return unless $Vend::Cfg;
-
-	my $opt;
-	if(ref $_[0]) {
-		$opt = shift(@_);
 	}
 	else {
 		$opt = {};
 	}
 
-    if(! $opt->{file}) {
-        my $tag = $opt->{tag} || $msg;
-        if(my $dest = $Vend::Cfg->{ErrorDestination}{$tag}) {
-            $opt->{file} = $dest;
-        }
-    }
+	$msg = errmsg($msg, @_) if @_;
 
-	$opt->{file} ||= $Vend::Cfg->{ErrorFile};
+	$Vend::Errors .= $msg if $Global::DisplayErrors;
 
-	if(@_) {
-		$msg = errmsg($msg, @_);
+	my $nl = $opt->{strip} ? '' : "\n";
+	print "$msg$nl"
+		if $Global::Foreground
+			and ! $Vend::Log_suppress
+			and ! $Vend::Quiet
+			and ! $Global::SysLog;
+
+	my ($fn, $facility, $level);
+	if ($Global::SysLog) {
+		my $level_opt = $opt->{level};
+		my $level_mapped;
+		if (
+			$level_opt
+			and $level_mapped = $Global::SysLog->{$level_opt}
+			and $level_mapped =~ /(.+)\.(.+)/
+		) {
+			($facility, $level) = ($1, $2);
+		}
+		$facility ||= 'local3';
+		$level    ||= 'info';
+
+		my $tag = $Global::SysLog->{tag} || 'interchange';
+
+		my $socket = $opt->{socket} || $Global::SysLog->{socket};
+
+		if ($Global::SysLog->{internal}) {
+			unless ($Vend::SysLogReady) {
+				eval {
+					use Sys::Syslog ();
+					if ($socket) {
+						my ($socket_path, $types) = ($socket =~ /^(\S+)(?:\s+(.*))?/);
+						$types ||= 'native,tcp,udp,unix,pipe,stream,console';
+						my $type_array = [ grep /\S/, split /[,\s]+/, $types ];
+						Sys::Syslog::setlogsock($type_array, $socket_path) or die "Error calling setlogsock\n";
+					}
+					Sys::Syslog::openlog $tag, 'ndelay,pid', $facility;
+				};
+				if ($@) {
+					print "\nError opening syslog: $@\n";
+					print "to report this error:\n", $msg;
+					exit 1;
+				}
+				$Vend::SysLogReady = 1;
+			}
+		}
+		else {
+			$fn = '|' . ($Global::SysLog->{command} || 'logger');
+			$fn .= " -p $facility.$level";
+			$fn .= " -t $tag" unless lc($tag) eq 'none';
+			$fn .= " -u $socket" if $socket;
+		}
+	}
+	else {
+		$fn = $Global::ErrorFile;
 	}
 
-	print "$msg\n" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
+	if ($fn) {
+		my $lock;
+		if ($fn =~ s/^([^|>])/>>$1/) {
+			$lock = 1;
+			$msg = format_log_msg($msg);
+		}
+
+		eval {
+			# We have checked for beginning > or | previously
+			open(MVERROR, $fn) or die "open\n";
+			if ($lock) {
+				lockfile(\*MVERROR, 1, 1) or die "lock\n";
+				seek(MVERROR, 0, 2) or die "seek\n";
+			}
+			print(MVERROR $msg, "\n") or die "write to\n";
+			if ($lock) {
+				unlockfile(\*MVERROR) or die "unlock\n";
+			}
+			close(MVERROR) or die "close\n";
+		};
+	}
+	elsif ($Vend::SysLogReady) {
+		eval {
+			Sys::Syslog::syslog "$level|$facility", $msg;
+		};
+	}
+
+	if ($@) {
+		chomp $@;
+		print "\nCould not $@ error file '";
+		print $Global::ErrorFile, "':\n$!\n";
+		print "to report this error:\n", $msg, "\n";
+		exit 1;
+	}
+
+	return 1;
+}
+
+sub logError {
+	return unless $Vend::Cfg;
+
+	my $msg = shift;
+	my $opt;
+	if (ref $_[0]) {
+		$opt = shift;
+	}
+	else {
+		$opt = {};
+	}
+
+	unless ($Global::SysLog) {
+		if (! $opt->{file}) {
+			my $tag = $opt->{tag} || $msg;
+			if (my $dest = $Vend::Cfg->{ErrorDestination}{$tag}) {
+				$opt->{file} = $dest;
+			}
+		}
+		$opt->{file} ||= $Vend::Cfg->{ErrorFile};
+	}
+
+	$msg = errmsg($msg, @_) if @_;
+
+	print "$msg\n"
+		if $Global::Foreground
+			and ! $Vend::Log_suppress
+			and ! $Vend::Quiet
+			and ! $Global::SysLog;
 
 	$Vend::Session->{last_error} = $msg;
 
-    $msg = format_log_msg($msg) unless $msg =~ s/^\\//;
+	$msg = format_log_msg($msg) unless $msg =~ s/^\\//;
 
 	$Vend::Errors .= $msg
 		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
+
+	if ($Global::SysLog) {
+		logGlobal({ level => 'err' }, $msg);
+		return;
+	}
 
     my $reason;
     if (! allowed_file($opt->{file}, 1)) {
@@ -1824,7 +1874,7 @@ sub logError {
     }
     else {
         eval {
-            open(MVERROR, ">> $opt->{file}")
+            open(MVERROR, '>>', $opt->{file})
                                         or die "open\n";
             lockfile(\*MVERROR, 1, 1)   or die "lock\n";
             seek(MVERROR, 0, 2)         or die "seek\n";
@@ -1842,7 +1892,9 @@ sub logError {
 					$reason || $!,
 					$msg,
 				);
-    }
+		}
+
+	return;
 }
 
 # Front-end to log routines that ignores repeated identical
