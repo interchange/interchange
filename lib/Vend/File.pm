@@ -758,7 +758,7 @@ sub log_file_violation {
 	}
 
 	::logError($msg);
-	::logGlobal({ level => 'auth'}, $msg);
+	::logGlobal({ level => 'warning' }, $msg);
 }
 
 1;

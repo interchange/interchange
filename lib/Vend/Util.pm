@@ -1527,7 +1527,8 @@ ALERT: Attempt to %s at %s from:
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		logGlobal ({level => 'auth'}, $fmt,
+		logGlobal({ level => 'warning' },
+						$fmt,
 						$msg,
 						$CGI::script_name,
 						$CGI::host,
@@ -1548,7 +1549,7 @@ EOF
 		ne  $Vend::Cfg->{Password})
 	{
 		::logGlobal(
-				{level => 'auth'},
+				{ level => 'warning' },
 				"ALERT: Password mismatch, attempt to %s at %s from %s",
 				$msg,
 				$CGI::script_name,
@@ -1573,7 +1574,7 @@ ALERT: Attempt to %s %s per user name:
 EOF
 
 		::logGlobal(
-			{level => 'auth'},
+			{ level => 'warning' },
 			$fmt,
 			$CGI::script_name,
 			$msg,
@@ -1601,8 +1602,8 @@ Attempt to %s on %s, secure operations disabled.
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		::logGlobal (
-				{level => 'auth'},
+		::logGlobal(
+				{ level => 'warning' },
 				$fmt,
 				$msg,
 				$CGI::script_name,
