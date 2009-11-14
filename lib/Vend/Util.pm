@@ -1740,7 +1740,7 @@ sub logGlobal {
 
 	my ($fn, $facility, $level);
 	if ($Global::SysLog) {
-		$facility = 'local3';
+		$facility = $Global::SysLog->{facility} || 'local3';
 		$level    = $opt->{level} || 'info';
 
 		# remap deprecated synonyms supported by logger(1)
