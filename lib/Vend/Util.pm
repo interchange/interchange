@@ -1742,15 +1742,25 @@ sub logGlobal {
 	if ($Global::SysLog) {
 		$facility = 'local3';
 		$level    = $opt->{level} || 'info';
-		my $level_mapped;
-		if ($level_mapped = $Global::SysLog->{$level}) {
-			if ($level_mapped =~ /(.+)\.(.+)/) {
+
+		# remap deprecated synonyms supported by logger(1)
+		my %level_map = (
+			error => 'err',
+			panic => 'emerg',
+			warn  => 'warning',
+		);
+
+		# remap levels according to any user-defined global configuration
+		my $level_cfg;
+		if ($level_cfg = $Global::SysLog->{$level_map{$level} || $level}) {
+			if ($level_cfg =~ /(.+)\.(.+)/) {
 				($facility, $level) = ($1, $2);
 			}
 			else {
-				$level = $level_mapped;
+				$level = $level_cfg;
 			}
 		}
+		$level = $level_map{$level} if $level_map{$level};
 
 		my $tag = $Global::SysLog->{tag} || 'interchange';
 
