@@ -1740,17 +1740,17 @@ sub logGlobal {
 
 	my ($fn, $facility, $level);
 	if ($Global::SysLog) {
-		my $level_opt = $opt->{level};
+		$facility = 'local3';
+		$level    = $opt->{level} || 'info';
 		my $level_mapped;
-		if (
-			$level_opt
-			and $level_mapped = $Global::SysLog->{$level_opt}
-			and $level_mapped =~ /(.+)\.(.+)/
-		) {
-			($facility, $level) = ($1, $2);
+		if ($level_mapped = $Global::SysLog->{$level}) {
+			if ($level_mapped =~ /(.+)\.(.+)/) {
+				($facility, $level) = ($1, $2);
+			}
+			else {
+				$level = $level_mapped;
+			}
 		}
-		$facility ||= 'local3';
-		$level    ||= 'info';
 
 		my $tag = $Global::SysLog->{tag} || 'interchange';
 
