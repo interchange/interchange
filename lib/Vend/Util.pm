@@ -1730,7 +1730,7 @@ sub logGlobal {
 
 	$msg = errmsg($msg, @_) if @_;
 
-	$Vend::Errors .= $msg if $Global::DisplayErrors;
+	$Vend::Errors .= $msg . "\n" if $Global::DisplayErrors;
 
 	my $nl = $opt->{strip} ? '' : "\n";
 	print "$msg$nl"
@@ -1870,13 +1870,13 @@ sub logError {
 
 	$msg = format_log_msg($msg) unless $msg =~ s/^\\//;
 
-	$Vend::Errors .= $msg
-		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
-
 	if ($Global::SysLog) {
 		logGlobal({ level => 'err' }, $msg);
 		return;
 	}
+
+	$Vend::Errors .= $msg . "\n"
+		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
 
     my $reason;
     if (! allowed_file($opt->{file}, 1)) {
