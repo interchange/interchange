@@ -1807,19 +1807,19 @@ sub logGlobal {
 			}
 			close(MVERROR) or die "close\n";
 		};
+		if ($@) {
+			chomp $@;
+			print "\nCould not $@ error file '$Global::ErrorFile':\n$!\n";
+			print "to report this error:\n", $msg, "\n";
+			exit 1;
+		}
+
 	}
 	elsif ($Vend::SysLogReady) {
-		eval {
-			Sys::Syslog::syslog "$level|$facility", $msg;
-		};
-	}
-
-	if ($@) {
-		chomp $@;
-		print "\nCould not $@ error file '";
-		print $Global::ErrorFile, "':\n$!\n";
-		print "to report this error:\n", $msg, "\n";
-		exit 1;
+		# Do not call this from within an eval, because in some strange circumstances
+		# it will cause the eval inside &Sys::Syslog::xlate to fail, which then croaks.
+		# The cause of this freakish problem is still to be determined.
+		Sys::Syslog::syslog "$level|$facility", $msg;
 	}
 
 	return 1;
