@@ -1010,6 +1010,11 @@ sub connection {
     $display .= "($show_in_ps)" if $show_in_ps;
 
     set_process_name($display);
+
+    Sys::Syslog::closelog(), undef $Vend::SysLogReady
+        if $Vend::SysLogReady;
+
+    return;
 }
 
 ## Signals
