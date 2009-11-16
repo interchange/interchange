@@ -37,7 +37,6 @@ EOV
 
 Variable UI_STD_HEAD <<EOV
 [tag pragma strip_white][/tag]
-[tag pragma no_image_rewrite 0][/tag]
 @_UI_STD_INIT_@
 [if-mm !logged_in]
 	[set ui_checklist][/set]
