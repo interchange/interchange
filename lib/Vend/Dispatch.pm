@@ -1003,7 +1003,7 @@ sub update_global_actions {
 }
 
 sub open_cat {
-	my $cat = shift;
+	my ($cat, $http) = @_;
 
 	if($cat) {
 		%CGI::values = ();
@@ -1155,6 +1155,8 @@ EOF
 	set_file_permissions();
 	umask $Vend::Cfg->{Umask};
 
+	Vend::Server::parse_cgi($http) unless $Global::mod_perl;
+	
 #show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
 
@@ -1231,7 +1233,7 @@ sub dispatch {
 	adjust_cgi();
 
 	## If returns false then was a 404 no catalog or a delivered image
-	open_cat() or return 1;
+	open_cat('', $http) or return 1;
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host");
 

@@ -2321,7 +2321,8 @@ sub tag_value_extended {
 			);
 			return $no;
 		}
-#::logDebug(">$file \$CGI::file{$var}" . uneval($opt)); 
+#::logDebug(">$file \$CGI::file{$var}" . uneval($opt));
+		$opt->{encoding} ||= $CGI::file_encoding{$var};
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
 			and return $yes;
 		return $no;

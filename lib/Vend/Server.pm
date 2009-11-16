@@ -247,43 +247,6 @@ EOF
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
 
-	my $request_method = "\U$CGI::request_method";
-	if ($request_method eq 'POST') {
-#::logDebug("content type header: " . $CGI::content_type);
-		## check for valid content type
-		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
-			parse_post(\$CGI::query_string, 1)
-				if $Global::TolerateGet;
-			parse_post($h->{entity});
-		}
-		else {
-			## invalid content type for POST
-			## XXX we may want to be a little more forgiving here
-			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
-			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
-			my $len = length($msg);
-			$Vend::StatusLine = <<EOF;
-Status: 415 Unsupported Media Type
-Content-Type: $content_type
-Content-Length: $len
-EOF
-			respond('', \$msg);
-			die($msg);
-		}
-	}
-	elsif ($request_method eq 'PUT') {
-#::logDebug("Put operation.");
-		parse_post(\$CGI::query_string);
-		$CGI::put_ref = $h->{entity};
-#::logDebug("Put contents: $$CGI::put_ref");
-		$$CGI::put_ref =~ s/^\s*--+\s+begin\s+content\s+--+\r?\n//i;
-		$$CGI::put_ref =~ s/^\r?\n--+\s+end\s+content\s+--+\s*$//i;
-	}
-	else {
-		 parse_post(\$CGI::query_string);
-	}
-
-
 #::logDebug("Check robot UA=$Global::RobotUA IP=$Global::RobotIP");
 	if ($Global::RobotIP and $CGI::remote_addr =~ $Global::RobotIP) {
 #::logDebug("It is a robot by IP!");
@@ -329,6 +292,46 @@ sub store_cgi_kv {
 	else {
 		$CGI::values{$key} = $value;
 		$CGI::values_array{$key} = [$value];
+	}
+}
+
+sub parse_cgi {
+	my $h = shift;
+
+	my $request_method = "\U$CGI::request_method";
+	if ($request_method eq 'POST') {
+#::logDebug("content type header: " . $CGI::content_type);
+		## check for valid content type
+		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
+			parse_post(\$CGI::query_string, 1)
+				if $Global::TolerateGet;
+			parse_post($h->{entity});
+		}
+		else {
+			## invalid content type for POST
+			## XXX we may want to be a little more forgiving here
+			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
+			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
+			my $len = length($msg);
+			$Vend::StatusLine = <<EOF;
+Status: 415 Unsupported Media Type
+Content-Type: $content_type
+Content-Length: $len
+EOF
+			respond('', \$msg);
+			die($msg);
+		}
+	}
+	elsif ($request_method eq 'PUT') {
+#::logDebug("Put operation.");
+		parse_post(\$CGI::query_string);
+		$CGI::put_ref = $h->{entity};
+#::logDebug("Put contents: $$CGI::put_ref");
+		$$CGI::put_ref =~ s/^\s*--+\s+begin\s+content\s+--+\r?\n//i;
+		$$CGI::put_ref =~ s/^\r?\n--+\s+end\s+content\s+--+\s*$//i;
+	}
+	else {
+		 parse_post(\$CGI::query_string);
 	}
 }
 
@@ -476,13 +479,20 @@ sub parse_multipart {
 
 			$content_type ||= 'text/plain';
 			$charset ||= default_charset();
-
-			if ($content_type =~ m{^text/}i) {
-				$charset and $Global::UTF8 and Vend::CharSet::to_internal($charset, \$data);
+			
+			if ($content_type =~ m{^text/}i && $::Variable->{MV_UTF8}) {
+				Vend::CharSet::to_internal($charset, \$data);
+				# use our character set instead of the client's one
+				# to store the file
+				$charset = default_charset();
+			}
+			else {
+				$charset = 'raw';
 			}
 
 			if($filename) {
 				$CGI::file{$param} = $data;
+				$CGI::file_encoding{$param} = $charset;
 				$data = $filename;
 			}
 			else {

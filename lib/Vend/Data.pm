@@ -2067,7 +2067,6 @@ sub update_data {
 						$nm,
 						{
 							outfile => $outfile,
-							encoding => 'raw',
 							umask => $::Scratch->{mv_create_umask} || '022',
 							auto_create_dir => $::Scratch->{mv_auto_create_dir},
 							yes => '1',
