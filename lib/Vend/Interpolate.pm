@@ -1759,9 +1759,16 @@ sub show_tags {
 
 sub pragma {
 	my($pragma, $opt, $text) = @_;
-	$pragma =~ s/\W+//g;
+	my $value;
 
-	my $value = defined $opt->{value} ? $opt->{value} : 1;
+	# pragma value may come in attached to the pragma name from [tag pragma name value][/tag]
+	$pragma =~ s/^(\w+)(?:\s+(\w+))?.*/$1/ and $value = $2;
+
+	# or as a specified option [tag op=pragma arg="name" value="value"][/tag]
+	$value = defined $opt->{value} ? $opt->{value} : 1
+		unless defined $value;
+
+	# or as a tag body like [tag pragma name]value[/pragma]
 	if(! defined $opt->{value} and $text =~ /\S/) {
 		$value = $text;
 	}
