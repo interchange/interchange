@@ -87,7 +87,7 @@ body {
 	vertical-align: top
 }
 
-.cerror {
+.cerror, .mv_contrast {
 	color: red;
 	font-size: 11px;
 }
