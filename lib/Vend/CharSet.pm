@@ -73,11 +73,26 @@ sub to_internal {
 	return $octets;
 }
 
+# returns a true value (the normalized name of the encoding) if the
+# specified encoding is recognized by Encode.pm, otherwise return
+# nothing.
 sub validate_encoding {
 	my $encoding = shift;
 	my $enc = find_encoding($encoding);
 
-	return $enc && $enc->mime_name;
+    return unless $enc;
+	return $enc->can('mime_name') ? $enc->mime_name : mime_name($enc->name);
+}
+
+# fallback routine to provide a pretty-style mime_name in versions of
+# Encode which predate the actual method.  The main use would be to
+# normalize "utf8-strict" to "utf8", but there are other cases where
+# this can/will come in handy.
+sub mime_name {
+    my $encoding_name = shift;
+
+    $encoding_name =~ s/-strict//i;
+    return lc $encoding_name;
 }
 
 sub default_charset {
