@@ -18,9 +18,19 @@ sub {
 	use vars qw/$Tag/;
 	$Tag ||= new Vend::Tags;
 	if($opt->{file}) {
-		$type ||= Vend::Util::mime_type($opt->{file});
 		return undef unless -f $opt->{file};
-		my $tmp = readfile($opt->{file});
+
+		my ($tmp, %rfopt);
+
+		# determine mime type devoid of explicit value
+		$type ||= Vend::Util::mime_type($opt->{file});
+
+		# avoid encoding of binary files
+		if ($type !~ m{^text/}i) {
+			$rfopt{encoding} = 'raw';
+		}
+
+		$tmp = readfile($opt->{file}, undef, undef, \%rfopt);
 		$out = \$tmp;
 	}
 	elsif(ref $body) {
