@@ -467,6 +467,7 @@ sub global_directives {
 	['GlobalSub',		 'subroutine',       ''],
 	['Database',		 'database',         ''],
 	['FullUrl',			 'yesno',            'No'],
+	['FullUrlIgnorePort', 'yesno',           'No'],
 	['Locale',			 'locale',            ''],
 	['HitCount',		 'yesno',            'No'],
 	['IpHead',			 'yesno',            'No'],

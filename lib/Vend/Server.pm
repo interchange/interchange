@@ -181,8 +181,10 @@ sub map_misc_cgi {
 	$CGI::host = $CGI::remote_host || $CGI::remote_addr;
 	$CGI::user = $CGI::remote_user;
 
+	my $server_host_without_port = $CGI::server_host;
+	$server_host_without_port =~ s/:.*// if $Global::FullUrlIgnorePort;
 	$CGI::script_path = $CGI::script_name;
-	$CGI::script_name = $CGI::server_host . $CGI::script_path
+	$CGI::script_name = $server_host_without_port . $CGI::script_path
 		if $Global::FullUrl;
 }
 

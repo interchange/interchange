@@ -920,19 +920,21 @@ sub adjust_cgi {
 
     $CGI::host = $host || $CGI::ip;
 
-    $CGI::user = $CGI::remote_user if $CGI::remote_user;
-	undef $CGI::authorization if $CGI::remote_user;
+    $CGI::user = $CGI::remote_user, undef $CGI::authorization
+        if $CGI::remote_user;
 
-	unless ($Global::FullUrl) {
-		$CGI::script_name = $CGI::script_path;
-	}
-	else {
-		if($CGI::server_port eq '80') { $CGI::server_port = ''; }
-		else 		{ $CGI::server_port = ":$CGI::server_port"; }
-		$CGI::script_name = $CGI::server_name .
-							$CGI::server_port .
-							$CGI::script_path;
-	}
+    if ($Global::FullUrl) {
+        if ($Global::FullUrlIgnorePort or $CGI::server_port eq '80') {
+            $CGI::server_port = '';
+        }
+        else {
+            $CGI::server_port = ":$CGI::server_port";
+        }
+        $CGI::script_name = $CGI::server_name . $CGI::server_port . $CGI::script_path;
+    }
+    else {
+        $CGI::script_name = $CGI::script_path;
+    }
 }
 
 use vars qw/@NoHistory/;
