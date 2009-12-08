@@ -5,8 +5,9 @@ interchange (5.7.4-1) unstable; urgency=low
     - eliminated commands with absolute paths in maintainer scripts
   * added Spanish translation of Debconf templates (Closes: #555142,
     thanks to Francisco Javier Cuadrado <fcocuadrado@gmail.com>)
+  * depend on libdigest-sha1-perl (Closes: #557152)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 11 Nov 2009 17:00:38 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 08 Dec 2009 20:59:47 +0100
 
 interchange (5.7.3-1) unstable; urgency=low
 
