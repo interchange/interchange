@@ -8,7 +8,7 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.4 not yet released.
+Interchange 5.7.4 released 2009-12-08
 
 Core
 ----
@@ -19,6 +19,44 @@ Core
 
 * Force raw encoding for file uploads (RT #268).
 
+* Overhaul syslog support and offer much faster Sys::Syslog mechanism.
+
+* Move parsing of CGI input to Vend::Dispatch::open_cat (#268).
+
+* Fix bug related to [tag pragma name value] semantics being different
+  than [pragma name value].
+
+* Increased performance when using mv_max_matches with searches:
+
+  * Make mv_max_matches stop all further searching once the limit is
+    hit, rather than loading the entire result set into memory and
+    then truncating it.
+
+  * Add pragma max_matches, which takes precedence over user-supplied
+    mv_max_matches unless the user-supplied argument is more restrictive.
+
+* Provide a default implementation of mime_name for compatibility with
+  older versions of Encode.pm.
+
+* Recognize LWP::UserAgent as a robot.
+
+SystemTag
+---------
+
+* Avoid encoding binary data in [deliver].
+
+Debian packaging
+----------------
+
+* eliminated commands with absolute paths in maintainer scripts.
+
+* added Spanish translation of Debconf templates.
+
+
+Admin UI
+--------
+
+* Multiple cleanups and minor performance enhancements.
 
 ------------------------------------------------------------------------------
 
