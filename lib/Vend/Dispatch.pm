@@ -1657,8 +1657,7 @@ EOF
 	for my $routine (@{$Vend::Cfg->{DispatchRoutines}}) {
 		$routine->();
 	}
-
-#show_times("end dispatch routines (Autoload, etc.)") if $Global::ShowTimes;
+#show_times("end DispatchRoutines") if $Global::ShowTimes;
 
 	for my $macro ( $Vend::Cfg->{Filter}, $Vend::Session->{Filter}) {
 		next unless $macro;
