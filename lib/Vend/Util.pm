@@ -1715,6 +1715,44 @@ sub show_times {
 	logDebug("$message: " . join " ", @times);
 }
 
+# This %syslog_constant_map is an attempt to work around a strange problem
+# where the eval inside &Sys::Syslog::xlate fails, which then croaks.
+# The cause of this freakish problem is still to be determined.
+
+my %syslog_constant_map;
+
+sub setup_syslog_constant_map {
+	for (
+		(map { "local$_" } (0..7)),
+		qw(
+			auth
+			authpriv
+			cron
+			daemon
+			ftp
+			kern
+			lpr
+			mail
+			news
+			syslog
+			user
+			uucp
+
+			emerg
+			alert
+			crit
+			err
+			warning
+			notice
+			info
+			debug
+		)
+	) {
+		$syslog_constant_map{$_} = Sys::Syslog::xlate($_);
+	}
+	return;
+}
+
 sub logGlobal {
 	return 1 if $Vend::ExternalProgram;
 
@@ -1784,6 +1822,7 @@ sub logGlobal {
 					print "to report this error:\n", $msg;
 					exit 1;
 				}
+				setup_syslog_constant_map() unless %syslog_constant_map;
 				$Vend::SysLogReady = 1;
 			}
 		}
@@ -1827,10 +1866,15 @@ sub logGlobal {
 
 	}
 	elsif ($Vend::SysLogReady) {
-		# Do not call this from within an eval, because in some strange circumstances
-		# it will cause the eval inside &Sys::Syslog::xlate to fail, which then croaks.
-		# The cause of this freakish problem is still to be determined.
-		Sys::Syslog::syslog "$level|$facility", $msg;
+		eval {
+			# avoid eval in Sys::Syslog::xlate() by using cached constants where possible
+			my $level_mapped = $syslog_constant_map{$level};
+			$level_mapped = $level unless defined $level_mapped;
+			my $facility_mapped = $syslog_constant_map{$facility};
+			$facility_mapped = $facility unless defined $facility_mapped;
+			my $priority = "$level_mapped|$facility_mapped";
+			Sys::Syslog::syslog $priority, $msg;
+		};
 	}
 
 	return 1;
