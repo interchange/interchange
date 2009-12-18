@@ -6,13 +6,27 @@ use warnings;
 use Time::HiRes;
 
 sub new {
-    my ($class, $self) = @_;
-#::logDebug("Called in class $class, with initial hash %s", ::uneval($self));
-    $self = {} unless ref ($self) eq 'HASH';
-    $self->{_log_table} = $self->{LogTable} || 'gateway_log';
-    $self->{_enabled} = $self->{Enabled} || '';
+    my ($class, $opt) = @_;
+#::logDebug("Called in class $class, with opt hash %s", ::uneval($opt));
+    my $self = bless ({}, $class);
+    $self->init($opt);
     $Vend::Payment::Global_Timeout = undef;
-    bless ($self, $class);
+    return $self;
+}
+
+sub init {
+    my $self = shift;
+    my $opt = shift;
+    $self->{_log_table} = $opt->{LogTable} || 'gateway_log';
+    $self->{_enabled} = $opt->{Enabled} || '';
+    $self->{_source} = $opt->{Source} || '';
+
+    unless (length ($self->{_source})) {
+        my $host = `hostname -s`;
+        chomp ($self->{_source} = $host);
+    }
+    
+    return 1;
 }
 
 sub start {
@@ -145,6 +159,10 @@ sub _enabled {
     return shift()->{_enabled};
 }
 
+sub source {
+    return shift()->{_source};
+}
+
 sub DESTROY {
     my $self = shift;
     return 1 unless $self->_enabled;
@@ -224,15 +242,23 @@ Pass hashref to the constructor to include the following options:
 =item Enabled
 
 Boolean to indicate that actual logging should be performed. Default is false;
-thus logging must be explicitly requested. Route indicator should be
-"gwl_enabled" for consistency and so that global logging can be enabled by
-setting MV_PAYMENT_GWL_ENABLED in catalog.cfg.
+thus logging must be explicitly requested. Can be set in the constructor with
+Route param "gwl_enabled" or globally with MV_PAYMENT_GWL_ENABLED in
+catalog.cfg.
 
 =item LogTable
 
-Name of table to which logging should be directed. Default is gateway_log.
-Route indicator should be "gwl_table" for consistency and so that a global
-target table can be set through MV_PAYMENT_GWL_TABLE in catalog.cfg.
+Name of table to which logging should be directed. Default is gateway_log.  Can
+be set in the constructor with Route param "gwl_table" or globally with
+MV_PAYMENT_GWL_TABLE in catalog.cfg.
+
+=item Source
+
+Maps to the request_source field in the log table. Value is most meaningful in
+a distributed environment, where multiple servers running the Interchange
+application may be handling requests behind a load balancer. Default value
+obtained from `hostname -s`. Can be set in the constructor with Route param
+"gwl_source" or globally with MV_PAYMENT_GWL_SOURCE in catalog.cfg.
 
 =back
 
@@ -316,6 +342,10 @@ log_it() has failed to be overridden will cause the code to die.
 Returns the name of the table against which the database update is to be
 performed. Default is 'gateway_log', but can be overridden in the constructor
 using the LogTable option.
+
+=item source()
+
+Returns the value set in the constructor for the Source option.
 
 =back
 

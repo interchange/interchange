@@ -678,6 +678,7 @@ sub payflowpro {
             -> new({
                 Enabled => charge_param('gwl_enabled'),
                 LogTable => charge_param('gwl_table'),
+                Source => charge_param('gwl_source'),
             })
     ;
 
@@ -911,11 +912,8 @@ sub log_it {
         request => ::uneval($request) || '',
         response => ::uneval($response) || '',
         session_id => $::Session->{id},
+        request_source => $self->source,
     );
-
-    my $hostname = `hostname -s`;
-    chomp $hostname;
-    $fields{request_source} = $hostname;
 
     $fields{order_md5} =
         Digest::MD5::md5_hex(
