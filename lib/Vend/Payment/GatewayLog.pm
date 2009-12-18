@@ -7,6 +7,7 @@ use Time::HiRes;
 
 sub new {
     my ($class, $self) = @_;
+#::logDebug("Called in class $class, with initial hash %s", ::uneval($self));
     $self = {} unless ref ($self) eq 'HASH';
     $self->{_log_table} = $self->{LogTable} || 'gateway_log';
     $self->{_enabled} = $self->{Enabled} || '';
@@ -20,6 +21,7 @@ sub start {
     my $override = shift;
     $self->{__start} = Time::HiRes::clock_gettime()
         if $override || !$self->{__start};
+#::logDebug("Start time: $self->{__start}");
     return $self->{__start};
 }
 
@@ -29,6 +31,7 @@ sub stop {
     my $override = shift;
     $self->{__stop} = Time::HiRes::clock_gettime()
         if $override || !$self->{__stop};
+#::logDebug("Stop time: $self->{__stop}");
     return $self->{__stop};
 }
 
@@ -36,14 +39,18 @@ sub duration {
     my $self = shift;
     return unless $self->_enabled;
     my $fmt = shift || '%0.3f';
-    return sprintf ($fmt, $self->stop - $self->start);
+    my $rv = sprintf ($fmt, $self->stop - $self->start);
+#::logDebug("Duration calculated at $rv");
+    return $rv;
 }
 
 sub timestamp {
     my $self = shift;
     return unless $self->_enabled;
     my $fmt = shift || '%Y-%m-%d %T';
-    return POSIX::strftime($fmt, localtime($self->start));
+    my $rv = POSIX::strftime($fmt, localtime($self->start));
+#::logDebug("Start formatted timestamp returned $rv");
+    return $rv;
 }
 
 sub request {
@@ -60,6 +67,7 @@ sub request {
         );
         return;
     }
+#::logDebug('Setting request: %s', ::uneval($request));
     $self->{__request} = { %$request };
 }
 
@@ -77,6 +85,7 @@ sub response {
         );
         return;
     }
+#::logDebug('Setting response: %s', ::uneval($response));
     $self->{__response} = { %$response };
 }
 
@@ -85,6 +94,7 @@ sub clean {
     return unless $self->_enabled;
     delete $self->{$_}
         for grep { /^__/ } keys %$self;
+#::logDebug('Cleaned all object data');
     return 1;
 }
 
@@ -120,6 +130,7 @@ sub write {
         );
     }
     else {
+#::logDebug('Cleaning out object data after successful write to database');
         $self->clean;
     }
 
@@ -137,6 +148,7 @@ sub _enabled {
 sub DESTROY {
     my $self = shift;
     return 1 unless $self->_enabled;
+#::logDebug('Logging request to database in destructor');
     $self->log_it;
     1;
 }
