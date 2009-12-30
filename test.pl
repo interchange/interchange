@@ -33,7 +33,7 @@ die "Must be in build directory\n" unless -d 'blib';
 die "No tests defined for Windows\n" if $^O =~ /win32/i;
 
 $ENV{MINIVEND_ROOT} = "$cur_dir/blib";
-$ENV{MINIVEND_PORT} = 8786 unless defined $ENV{MINIVEND_PORT};
+$ENV{MINIVEND_PORT} = 7786 unless defined $ENV{MINIVEND_PORT};
 
 my $extra_cfg = '';
 
@@ -217,7 +217,7 @@ else {
 	print <<EOF;
 
 # When the above test fails, it may be due to your ISP or some other
-# mechanism blocking port 8786.
+# mechanism blocking port 7786.
 
 EOF
 	$failed++;
