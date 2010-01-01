@@ -1,8 +1,10 @@
 interchange (5.7.4-2) unstable; urgency=low
 
   * allowed SOAP actions in the configuration file
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 23 Dec 2009 12:28:08 +0100
+  * updated Portuguese translation of Debconf templates (Closes: #563165,
+    thanks to Américo Monteiro <a_monteiro@netcabo.pt>)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 01 Jan 2010 10:44:57 +0100
 
 interchange (5.7.4-1) unstable; urgency=low
 
