@@ -1,15 +1,13 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2010 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: forum.tag,v 1.6 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag forum-userlink PosNumber 0
-UserTag forum-userlink addAttr 
-UserTag forum-userlink Version   $Revision: 1.6 $
+UserTag forum-userlink addAttr
+UserTag forum-userlink Version   1.7
 UserTag forum-userlink Routine   <<EOR
 sub {
 	my ($row) = @_;
@@ -24,7 +22,8 @@ EOR
 UserTag forum Order     top
 UserTag forum addAttr 
 UserTag forum hasEndTag 
-UserTag forum Version   $Revision: 1.6 $
+UserTag forum NoReparse 1
+UserTag forum Version   1.7
 UserTag forum Routine   <<EOR
 my @uls;
 my $lastlevel;
