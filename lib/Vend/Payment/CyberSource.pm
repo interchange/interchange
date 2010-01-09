@@ -1783,6 +1783,16 @@ sub cybersource {
     my $cybs = Vend::Payment::CyberSource->new($opt);
     my %resp;
 
+    my $gwl = Vend::Payment::CyberSourceGWL
+        -> new({
+            trans_type => $transtype,
+            origid => $opt->{origid},
+            Enabled => charge_param('gwl_enabled'),
+            LogTable => charge_param('gwl_table'),
+            Source => charge_param('gwl_source'),
+        })
+    ;
+
     # Wrapping full call code to APIs in eval to
     # implement interaction time limit on response.
     eval {
@@ -1809,12 +1819,16 @@ sub cybersource {
             die $sigalrm_die_msg;
         };
 
-#::logDebug("cybersource Sending Request...\n%s", $debug_scrub->(\%request));
+        my $scrubbed_request = $debug_scrub->(\%request);
+#::logDebug("cybersource Sending Request...\n%s", $scrubbed_request);
+        $gwl->request(eval $scrubbed_request);
 
         my $start = time;
         alarm $timeout;
 
+        $gwl->start;
         my $rv = $cybs->send(\%request, \%resp);
+        $gwl->stop;
 
         alarm 0;
         die $sigalrm_die_msg if $should_have_died;
@@ -1822,6 +1836,7 @@ sub cybersource {
         my $end = time;
 
 #::logDebug("cybersource Response (%ds):\n%s", $end - $start, ::uneval(\%resp));
+        $gwl->response(\%resp);
 
         # Initiate a timeout payment if the gateway response
         # itself was a timeout error
@@ -1873,6 +1888,46 @@ sub cybersource {
         247 => 'You requested a credit for a capture that was previously voided',
         250 => 'The request was received, but there was a timeout at the payment processor',
         387 => 'PayPal authorization failed',
+    );
+
+    my %reason_result_map = (
+        100 => 1,
+        101 => 0,
+        102 => 0,
+        150 => -1,
+        151 => -1,
+        152 => -1,
+        200 => 0,
+        201 => 0,
+        202 => 0,
+        203 => 0,
+        204 => 0,
+        205 => 0,
+        207 => 0,
+        208 => 0,
+        209 => 0,
+        210 => 0,
+        211 => 0,
+        221 => 0,
+        223 => 0,
+        230 => 0,
+        231 => 0,
+        232 => 0,
+        233 => 0,
+        234 => -1,
+        235 => 0,
+        236 => 0,
+        237 => 0,
+        238 => 0,
+        239 => 0,
+        240 => 0,
+        241 => 0,
+        242 => 0,
+        243 => 0,
+        246 => 0,
+        247 => 0,
+        250 => -1,
+        387 => 0,
     );
 
     # Stripping out irritating prefix of each service run from each different
@@ -1946,6 +2001,9 @@ sub cybersource {
     $resp{transtype}  = $inv_trans_map{$transtype} || $transtype;
     $resp{acct_type}  = $acct_type;
     $resp{rc_msg}     = $reason_code_map{ $resp{reasonCode} } || 'Unknown';
+    $resp{result_code} = $reason_result_map{ $resp{reasonCode} } || -2;
+
+    $gwl->response(\%resp);
 
 #::logDebug("decision: $status, reason code: $resp{reasonCode}");
 
@@ -2510,6 +2568,75 @@ sub form_header {
     ;
 
     return $header;
+}
+
+package Vend::Payment::CyberSourceGWL;
+
+use Vend::Payment::GatewayLog;
+use base qw/Vend::Payment::GatewayLog/;
+
+# log_it() must be overridden.
+sub log_it {
+    my $self = shift;
+
+    my $request = $self->request;
+    unless ($request) {
+        ::logDebug('Nothing to write to %s: no request present', $self->table);
+        return;
+    }
+
+    unless ($self->response) {
+
+        if ($Vend::Payment::Global_Timeout) {
+            my $msg = errmsg('No response. Global timeout triggered');
+            ::logDebug($msg);
+            $self->response({
+                reasonCode => -2,
+                rc_msg => $Vend::Payment::Global_Timeout,
+            });
+        }
+        else {
+            my $msg = errmsg('No response. Reason unknown');
+            ::logDebug($msg);
+            $self->response({
+                reasonCode => -3,
+                rc_msg => $msg,
+            });
+        }
+    }
+    my $response = $self->response;
+
+    my %fields = (
+        trans_type => $response->{transtype} || $self->{trans_type},
+        processor => 'cybersource',
+        catalog => $Vend::Cfg->{CatalogName},
+        result_code => $response->{result_code} || '',
+        result_subcode => $response->{decision} || '',
+        reason_code => $response->{reasonCode} || '',
+        response_msg => $response->{rc_msg} || '',
+        request_id => $response->{requestID} || '',
+        order_number =>  $response->{merchantReferenceCode} || $request->{merchantReferenceCode} || '',
+        request_duration => $self->duration,
+        request_date => $self->timestamp,
+        email => $request->{billTo_email} || '',
+        request => ::uneval($request) || '',
+        response => ::uneval($response) || '',
+        session_id => $::Session->{id},
+        request_source => $self->source,
+    );
+
+    $fields{order_md5} =
+        Digest::MD5::md5_hex(
+            $request->{billTo_email},
+            $self->{trans_type},
+            $self->{origid},
+            $request->{purchaseTotals_grandTotalAmount},
+            $::Session->{id},
+            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+        )
+    ;
+
+    $self->write(\%fields);
 }
 
 1;
