@@ -1997,11 +1997,12 @@ sub cybersource {
         ? $resp{pp_redirect}
         : $resp{requestID}
     ;
-    $resp{PNREF}      = $resp{requestID};
-    $resp{transtype}  = $inv_trans_map{$transtype} || $transtype;
-    $resp{acct_type}  = $acct_type;
-    $resp{rc_msg}     = $reason_code_map{ $resp{reasonCode} } || 'Unknown';
-    $resp{result_code} = $reason_result_map{ $resp{reasonCode} } || -2;
+    $resp{PNREF}       = $resp{requestID};
+    $resp{transtype}   = $inv_trans_map{$transtype} || $transtype;
+    $resp{acct_type}   = $acct_type;
+    $resp{rc_msg}      = $reason_code_map{ $resp{reasonCode} } || 'Unknown';
+    $resp{result_code} = $reason_result_map{ $resp{reasonCode} };
+    $resp{result_code} = -2 unless length ($resp{result_code});
 
     $gwl->response(\%resp);
 
