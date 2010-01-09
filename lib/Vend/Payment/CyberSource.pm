@@ -2611,7 +2611,7 @@ sub log_it {
         trans_type => $response->{transtype} || $self->{trans_type},
         processor => 'cybersource',
         catalog => $Vend::Cfg->{CatalogName},
-        result_code => $response->{result_code} || '',
+        result_code => length ($response->{result_code}) ? $response->{result_code} : '',
         result_subcode => $response->{decision} || '',
         reason_code => $response->{reasonCode} || '',
         response_msg => $response->{rc_msg} || '',
