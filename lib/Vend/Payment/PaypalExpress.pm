@@ -1,6 +1,6 @@
 # Vend::Payment::PaypalExpress - Interchange Paypal Express Payments module
 #
-# Copyright (C) 2009 Zolotek Resources Ltd
+# Copyright (C) 2010 Zolotek Resources Ltd
 # All Rights Reserved.
 #
 # Author: Lyn St George <info@zolotek.net>
@@ -182,7 +182,8 @@ Options that may be set either in the route or in the page:
  * reqconfirmshipping - this specifies that a Paypal customer must have his address 'confirmed'
  * addressoverride - this specifies that you will ship only to the address IC has on file (including
    the name and email); your customer needs to login to IC first before going to Paypal
-   other options are also settable.
+ * use_billing_override - sends billing address instead of shipping to PayPal (use with addressoverride)
+ * other options are also settable.
 
 Testing: while the obvious test choice is to use their sandbox, I've always found it a bit of a dog's breakfast
    and never trusted it. Much better to test on the live site, and just recyle money between your personal and
@@ -190,6 +191,14 @@ Testing: while the obvious test choice is to use their sandbox, I've always foun
 
 =head1 Changelog
 
+version 1.0.7 December 2009
+	- another variation in Canadian Province names has just come to light, whereby they sometimes send
+	  the 2 letter code with periods, eg B.C. as well as BC. Thanks to Steve Graham for finding this
+	- patch to allow use of the [assign] tag in shipping
+	- patch to allow 'use_billing_override' to send billing addresses
+	- patch to display Long rather than Short PP error message to customers
+	  Thanks to Josh Lavin for these last three
+	
 version 1.0.6 September 2009
 	- added 'use strict' and fixed odd errors (and removed giropay vestiges that belong in next version)
 	- made itemdetails loop through basket properly
@@ -246,7 +255,7 @@ BEGIN {
 		die $msg;
 	}
 
-	::logGlobal("%s v1.0.6 payment module loaded",__PACKAGE__)
+	::logGlobal("%s v1.0.7 payment module loaded",__PACKAGE__)
 		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
@@ -305,19 +314,20 @@ my $paymentAction      = $::Values->{paymentaction} || charge_param('paymentacti
 my $buyerEmail         = $::Values->{buyeremail} || '';
 my $custom             = $Session->{id}; # should not be needed
 # these next taken from IC after customer has logged in, and used in '$addressOverride'
-my $name               = "$::Values->{fname} $::Values->{lname}" || '';
-my $address1           = $::Values->{address1};
-my $address2           = $::Values->{address2};
-my $city               = $::Values->{city};
-my $state              = $::Values->{state};
-my $zip                = $::Values->{zip};
-my $country            = $::Values->{country};
+my $usebill  = $::Values->{use_billing_override} || charge_param('use_billing_override');
+my $name     = $usebill ? "$::Values->{b_fname} $::Values->{b_lname}" || '' : "$::Values->{fname} $::Values->{lname}" || '';
+my $address1 = $usebill ? $::Values->{b_address1} : $::Values->{address1};
+my $address2 = $usebill ? $::Values->{b_address2} : $::Values->{address2};
+my $city     = $usebill ? $::Values->{b_city} : $::Values->{city};
+my $state    = $usebill ? $::Values->{b_state} : $::Values->{state};
+my $zip      = $usebill ? $::Values->{b_zip} : $::Values->{zip};
+my $country  = $usebill ? $::Values->{b_country} : $::Values->{country};
    $country = 'GB' if ($country eq 'UK'); # plonkers reject UK
    
 # for a DO request
 my $itemTotal     = $::Values->{itemtotal} || Vend::Interpolate::subtotal() || '';
    $itemTotal     = sprintf '%.2f', $itemTotal;
-my $shipTotal     = $::Values->{shiptotal} || Vend::Interpolate::shipping($::Values->{mv_shipmode}) || '';
+my $shipTotal     = $::Values->{shiptotal} || Vend::Interpolate::tag_shipping() || '';
    $shipTotal     = sprintf '%.2f', $shipTotal;
 my $taxTotal      = $::Values->{taxtotal} || Vend::Interpolate::salestax() || '';
    $taxTotal      = sprintf '%.2f', $taxTotal;
@@ -441,8 +451,8 @@ my  $receiverEmail = $::Values->{receiveremail} || ''; # address of refund recip
  
    if (!$result{Token}) {
     if ($result{Ack} eq 'Failure') {
-     foreach my $i (@result{Errors}) {
-     	  $::Session->{errors}{PaypalExpress} .= "$i->{ShortMessage}, ";
+     foreach my $i ($result{Errors}) {
+     	  $::Session->{errors}{PaypalExpress} .= "$i->{LongMessage}, ";
         		}
           $::Session->{errors}{PaypalExpress} =~ s/, $//;
              }
@@ -480,7 +490,7 @@ return $Tag->deliver({ location => $redirecturl })
 # another address, eg it is a wish list.
 	  if (($result{Ack} eq "Success") and ($::Values->{pp_use_billing_address} == 1)) {
 		$::Values->{b_phone_day}      = $result{GetExpressCheckoutDetailsResponseDetails}{ContactPhone};
-		$::Values->{b_email}          = $result{GetExpressCheckoutDetailsResponseDetails}{PayerInfo}{Payer};
+		$::Values->{email}          = $result{GetExpressCheckoutDetailsResponseDetails}{PayerInfo}{Payer};
 		$::Values->{payerid}          = $result{GetExpressCheckoutDetailsResponseDetails}{PayerInfo}{PayerID};
 		$::Values->{payerstatus}      = $result{GetExpressCheckoutDetailsResponseDetails}{PayerInfo}{PayerStatus};
 		$::Values->{payerbusiness}    = $result{GetExpressCheckoutDetailsResponseDetails}{PayerInfo}{PayerBusiness};
@@ -538,6 +548,7 @@ return $Tag->deliver({ location => $redirecturl })
    
        $country = $::Values->{country} || $::Values->{b_country};
        $state = $::Values->{state} || $::Values->{b_state};
+       $state =~ s/\.\s*//g; # yet another variation for Canadian Provinces includes periods, eg B.C. (waiting for B. C.)
 
 # Remap Canadian provinces rather than lookup the db, as some Paypal names are incomplete wrt the official names. 
 # It seems that some PP accounts, possibly older ones, send the 2 letter abbreviation rather than the full name.
