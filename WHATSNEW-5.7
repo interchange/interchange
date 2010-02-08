@@ -15,6 +15,22 @@ Tags
 
 * Make the [forum] tag default to NoReparse.
 
+Payment
+-------
+
+* Upgraded Vend::Payment::PaypalExpress to v1.0.7 from http://kiwi.zolotek.net.
+
+  * Fix for yet another variation in the way that Paypal handle Canadian province names. 
+    So we have 'British Columbia', 'BC', and now 'B.C.' formats.
+
+  * Allow use of the [assign] tag in shipping. 
+
+  * Allow 'use_billing_override' to send billing addresses.
+
+  * Display Long rather than Short PayPal error message to customers.
+
+  Last three changes contributed by Josh Lavin.
+
 
 ------------------------------------------------------------------------------
 
