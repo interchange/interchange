@@ -3,8 +3,11 @@ interchange (5.7.4-2) unstable; urgency=low
   * allowed SOAP actions in the configuration file
   * updated Portuguese translation of Debconf templates (Closes: #563165,
     thanks to Américo Monteiro <a_monteiro@netcabo.pt>)
+  * fix failures of fresh Interchange installs due to postinst script trying to change
+    ownership on non-existant /var/run/interchange directory (Closes: #569116)
+  * don't try to start/stop Interchange when /etc/interchange/init.cfg is missing
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 01 Jan 2010 10:44:57 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 10 Feb 2010 11:24:56 +0100
 
 interchange (5.7.4-1) unstable; urgency=low
 
