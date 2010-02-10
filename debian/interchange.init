@@ -43,6 +43,12 @@ test -f $DAEMON || exit 0
 # --unix --inetmode Unix and Internet mode
 MODE="--unix"
 USER=interchange
+
+if [ ! -f /etc/interchange/init.cfg ]; then
+	echo "ERROR: /etc/interchange/init.cfg is missing."
+	exit 1
+fi
+
 . /etc/interchange/init.cfg
 
 if [ "$GPGHOME" ]; then
