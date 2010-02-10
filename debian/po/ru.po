@@ -1,4 +1,4 @@
-# translation of ru.po to Russian
+# translation of interchange_5.7.4-1_ru.po to Russian
 #
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
@@ -13,13 +13,13 @@
 # Yuriy Talakan' <yt@amur.elektra.ru>, 2006.
 # Yuriy Talakan' <yt@drsk.ru>, 2007.
 # Yuri Kozlov <kozlov.y@gmail.com>, 2008.
-# Yuri Kozlov <yuray@komyakino.ru>, 2009.
+# Yuri Kozlov <yuray@komyakino.ru>, 2009, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: interchange 5.6.1-2\n"
+"Project-Id-Version: interchange 5.7.4-1\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2008-11-23 11:58+0000\n"
-"PO-Revision-Date: 2009-05-17 17:36+0400\n"
+"POT-Creation-Date: 2009-12-10 08:08+0000\n"
+"PO-Revision-Date: 2010-01-04 13:10+0300\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -53,13 +53,16 @@ msgstr "Удалить демонстрационный каталог при в
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
+#| msgid ""
+#| "Whether to remove all files belonging to the Interchange demo catalog "
+#| "when you purge this package, e.g. with dpkg --purge or apt-get remove --"
+#| "purge."
 msgid ""
-"Whether to remove all files belonging to the Interchange demo catalog when "
-"you purge this package, e.g. with dpkg --purge or apt-get remove --purge."
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
-"Укажите нужно ли удалять все файлы, принадлежащие демонстрационному каталогу "
-"Interchange, когда вы вычищаете этот пакет, например, с помощью команды dpkg "
-"--purge или apt-get remove --purge."
+"Удалять все файлы демонстрационного каталога Interchange при вычистке "
+"пакета, например, с помощью команды dpkg --purge или apt-get remove --purge?"
 
 #. Type: select
 #. Choices
@@ -426,15 +429,46 @@ msgstr ""
 "Эта настройка определяет, будет ли изучаться весь URL во время проверки "
 "соответствующего каталога."
 
-#. Type: boolean
+#. Type: note
 #. Description
 #: ../interchange.templates:13001
+msgid "SOAP server not available"
+msgstr "Недоступен сервер SOAP"
+
+#. Type: note
+#. Description
+#: ../interchange.templates:13001
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"Так как Perl-модуль SOAP::Lite не установлен, вы не сможете "
+"запускать сервер Interchange SOAP. Чтобы это исправить, установите "
+"пакет Debian libsoap-lite-perl и запустите команду interchangeconfig SOAP=1."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+#| msgid "Enable the FullURL directive?"
+msgid "Enable the SOAP server?"
+msgstr "Включить сервер SOAP?"
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:14001
+msgid "This setting determines if the SOAP server is started or not."
+msgstr "Данная настройка определяет, будет запускаться сервер SOAP или нет."
+
+#. Type: boolean
+#. Description
+#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Разрешить настройки роботов?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
+#: ../interchange.templates:15001
 msgid ""
 "The Interchange Debian package uses a separate configuration file /etc/"
 "interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
