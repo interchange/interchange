@@ -173,7 +173,7 @@ sub _check_search_file {
 		for $f (@files) {
 			unless (grep { $f eq $_ } @{$Vend::Cfg->{AllowRemoteSearch}}) {
 				::logGlobal("Security violation, trying to remote search '%s', doesn't match '%s'",
-					$_, $Vend::Cfg->{AllowRemoteSearch});
+					$f, join ',' => @{$Vend::Cfg->{AllowRemoteSearch}});
 				die "Security violation";
 			}
 		}
