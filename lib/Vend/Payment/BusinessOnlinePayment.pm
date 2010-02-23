@@ -226,7 +226,7 @@ sub onlinepayment {
 
   #processor options!
   my %ignore = map { $_=>1 } qw(gateway processor id secret transaction );
-  my %options = map  { $_=>1 }
+  my %options = map { $_ => ($opt->{$_} || $main::Variable->{"MV_PAYMENT_" . uc $_ }) }
                 grep { !$ignore{$_} } (
                                         keys(%$opt),
                                         map { s/^MV_PAYMENT_//; lc($_); }
