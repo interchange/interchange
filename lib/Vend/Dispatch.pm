@@ -1786,6 +1786,7 @@ EOF
 	}
 	else {
 		($Vend::Action) = $Vend::FinalPath =~ m{\A([^/]*)};
+		$Vend::Action =~ s/-/_/g; # allow hyphens as synonyms for underscores for SEO prettiness
 	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
