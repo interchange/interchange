@@ -7,8 +7,18 @@
 
 See UPGRADE document for a list of incompatible changes.
 
-Interchange 5.7.5 not yet released.
 
+Interchange 5.7.5 released on 2010-02-23.
+
+
+Core
+----
+
+* Fix bug when calling some versions of Sys::Syslog.
+
+* Multiple Debian fixes and translation updates.
+
+* SEO-friendlier ActionMaps supported; hyphens are turned resolved into underscores.
 
 Tags
 ----
@@ -31,6 +41,14 @@ Payment
 
   Last three changes contributed by Josh Lavin.
 
+* Added CyberSource SOAP toolkit payment module.  Includes payment modules for:
+  * Standard credit card
+  * Bill Me Later
+  * Paypal Express Checkout
+  * Electronic check
+
+* Corrected Vend::Payment::BusinessOnlinePayment handling/passing of
+  supplemental parameters.
 
 ------------------------------------------------------------------------------
 
