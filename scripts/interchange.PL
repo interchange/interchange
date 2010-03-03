@@ -1096,7 +1096,7 @@ Contributions to Interchange have been made by:
     Jason Holt                          Tim Baverstock
     Jason Kohles                        Tom Friedel
     Javier Martin                       Tom Tucker
-    Jeff Barr                           Tommi Laberno
+    Jeff Barr                           Tommi Labermo
     Jeff Boes                           Toni Mueller
     Jeff Carnahan                       Troy Davis
     Jeff Fearn                          Victor Nolton
