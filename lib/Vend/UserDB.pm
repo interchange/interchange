@@ -1397,7 +1397,10 @@ sub login {
 					$test = $self->{PASSWORD};
 				}
 				else {
+					my $sub = $self->{ENCSUB};
+					$self->{ENCSUB} = $enc_subs{default};
 					$test = $self->do_crypt($self->{PASSWORD}, $adminpass);
+					$self->{ENCSUB} = $sub;
 				}
 				if ($test eq $adminpass) {
 					$user_data = {};
