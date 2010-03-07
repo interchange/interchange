@@ -1190,7 +1190,8 @@ sub run_macro {
 	my $macro = shift
 		or return;
 	my $content_ref = shift;
-
+	my $inspect_sub = shift;
+		
 	my @mac;
 	if(ref $macro eq 'ARRAY') {
 		@mac = @$macro;
@@ -1203,6 +1204,8 @@ sub run_macro {
 	}
 
 	for my $m (@mac) {
+		my $ret;
+		
 		if ($m =~ /^\w+$/) {
 			my $sub = $Vend::Cfg->{Sub}{$m} || $Global::GlobalSub->{$m}
 				or do {
@@ -1217,13 +1220,19 @@ sub run_macro {
 					}
 					next;
 				};
-			$sub->($content_ref);
+			$ret = $sub->($content_ref);
 		}
 		elsif($m =~ /^\w+-\w+$/) {
-			Vend::Interpolate::tag_profile($m);
+			$ret = Vend::Interpolate::tag_profile($m);
 		}
 		else {
-			interpolate_html($m);
+			$ret = interpolate_html($m);
+		}
+
+		if ($inspect_sub) {
+			unless ($inspect_sub->($m, $ret)) {
+				last;
+			}
 		}
 	}
 }
@@ -1656,6 +1665,7 @@ EOF
 
 	for my $routine (@{$Vend::Cfg->{DispatchRoutines}}) {
 		$routine->();
+		return if $Vend::Sent;
 	}
 #show_times("end DispatchRoutines") if $Global::ShowTimes;
 

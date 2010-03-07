@@ -3238,7 +3238,13 @@ my @Cleanups;
 
 	Autoload => sub {
 #::logDebug("Doing Autoload dispatch...");
-		Vend::Dispatch::run_macro($Vend::Cfg->{Autoload});
+		my ($subname, $inspect_sub);
+
+		if ($subname = $Vend::Cfg->{SpecialSub}{autoload_inspect}) {
+			$inspect_sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		}
+		
+		Vend::Dispatch::run_macro($Vend::Cfg->{Autoload}, undef, $inspect_sub);
 	},
 
 	CookieLogin => sub {
