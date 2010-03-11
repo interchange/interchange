@@ -28,7 +28,7 @@ Description: Interchange administration interface (UI)
 
 Package: interchange
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, perl (>= 5.8.8), debconf | debconf-2.0, libdigest-md5-perl, libdigest-sha1-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl
+Depends: ${misc:Depends}, ${shlibs:Depends}, perl (>= 5.8.8), debconf | debconf-2.0, libdigest-md5-perl, libdigest-sha1-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl, libtie-shadowhash-perl
 Pre-Depends: adduser
 Conflicts: libdbi-perl (<< 1.53)
 Recommends: interchange-ui
