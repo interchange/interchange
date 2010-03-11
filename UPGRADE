@@ -86,6 +86,7 @@ KNOWN ISSUES UPGRADING FROM 5.6
 
 Perl 5.8.5 or newer is now required.
 
+AdminUser configuration directive has been removed.
 
 PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
 

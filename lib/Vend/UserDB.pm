@@ -1381,37 +1381,6 @@ sub login {
 			die $stock_error, "\n";
 		}
 
-		# Allow entry to global AdminUser without checking access database
-		ADMINUSER: {
-			if ($Global::AdminUser) {
-				my $pwinfo = $Global::AdminUser;
-				$pwinfo =~ s/^\s+//; $pwinfo =~ s/\s+$//;
-				my ($adminuser, $adminpass) = split /[\s:]+/, $pwinfo;
-				last ADMINUSER unless $adminuser eq $self->{USERNAME};
-				unless ($adminpass) {
-					$self->log_either(errmsg("Refusing to use AdminUser variable with user '%s' and empty password", $adminuser));
-					last ADMINUSER;
-				}
-				my $test;
-				if($Global::Variable->{MV_NO_CRYPT}) {
-					$test = $self->{PASSWORD};
-				}
-				else {
-					my $sub = $self->{ENCSUB};
-					$self->{ENCSUB} = $enc_subs{default};
-					$test = $self->do_crypt($self->{PASSWORD}, $adminpass);
-					$self->{ENCSUB} = $sub;
-				}
-				if ($test eq $adminpass) {
-					$user_data = {};
-					$Vend::admin = $Vend::superuser = 1;
-					$self->log_either( errmsg("Successful superuser login by AdminUser '%s'", $adminuser));
-				} else {
-					$self->log_either(errmsg("Password given with user name '%s' didn't match AdminUser password", $adminuser));
-				}
-			}
-		}
-
 		my $udb = $self->{DB};
 		my $foreign = $self->{OPTIONS}{indirect_login};
 

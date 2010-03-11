@@ -498,7 +498,6 @@ sub global_directives {
 	['UserTag',			 'tag',				 ''],
 	['CodeDef',			 'mapped_code',		 ''],
 	['HotDBI',			 'boolean',			 ''],
-	['AdminUser',		  undef,			 ''],
 	['HammerLock',		 'time',     	 30],
 	['DataTrace',		 'integer',     	 0],
 	['ShowTimes',		 'yesno',	     	 0],

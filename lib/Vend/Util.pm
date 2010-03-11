@@ -1426,16 +1426,7 @@ sub check_authorization {
 						);
 	my $cmp_pw;
 	my $use_crypt = 1;
-	if(!defined $Vend::Cfg) {
-		$pwinfo = $Global::AdminUser;
-		$pwinfo =~ s/^\s+//;
-		$pwinfo =~ s/\s+$//;
-		my (%compare) = split /[\s:]+/, $pwinfo;
-		return undef unless $compare{$user};
-		$cmp_pw = $compare{$user};
-		undef $use_crypt if $Global::Variable->{MV_NO_CRYPT};
-	}
-	elsif(	$user eq $Vend::Cfg->{RemoteUser}	and
+	if(	$user eq $Vend::Cfg->{RemoteUser}	and
 			$Vend::Cfg->{Password}					)
 	{
 		$cmp_pw = $Vend::Cfg->{Password};
