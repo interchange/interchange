@@ -829,6 +829,7 @@ sub display {
 								height
 								help
 								help_url
+								id
 								label
 								js_check
 								lookup
