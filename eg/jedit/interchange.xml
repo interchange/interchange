@@ -12,36 +12,41 @@
 	Modifiers: KEYWORD2
 	Control Structures & Container Tags: KEYWORD3
 -->
-<MODE NAME="interchange">
+<MODE>
 	<PROPS>
 		<PROPERTY NAME="commentStart" VALUE="&lt;!--" />
 		<PROPERTY NAME="commentEnd" VALUE="--&gt;" />
-		<PROPERTY NAME="filenameGlob" VALUE="*.html" />
-		<PROPERTY NAME="noWordSep" VALUE="-_" />
-		<PROPERTY NAME="tabSize" VALUE="4" />
 	</PROPS>
 	<RULES IGNORE_CASE="FALSE">
-		<!-- Set Comment Styles -->
-		<SPAN TYPE="COMMENT1">
-			<BEGIN>[comment]</BEGIN>
+		<!-- Comment Styles -->
+		<SPAN TYPE="COMMENT1" DELEGATE="INTERCHANGE_COMMENT">
+			<BEGIN>[comment</BEGIN>
 			<END>[/comment]</END>
 		</SPAN>
-		
 		<SPAN TYPE="COMMENT1">
 			<BEGIN>&lt;!--</BEGIN>
 			<END>--&gt;</END>
 		</SPAN>
 		
-		<!-- Embed Perl when in perl type blocks -->
-		<SPAN TYPE="MARKUP" DELEGATE="perl::MAIN">
+		<!-- PERL -->
+		<SPAN TYPE="FUNCTION" DELEGATE="PERL">
 			<BEGIN>[perl</BEGIN>
 			<END>[/perl]</END>
 		</SPAN>
-		<SPAN TYPE="MARKUP" DELEGATE="perl::MAIN">
-			<BEGIN>[calc]</BEGIN>
+		<SPAN TYPE="FUNCTION" DELEGATE="PERL">
+			<BEGIN>[calcn</BEGIN>
+			<END>[/calcn]</END>
+		</SPAN>
+		<SPAN TYPE="FUNCTION" DELEGATE="PERL">
+			<BEGIN>[calc</BEGIN>
 			<END>[/calc]</END>
 		</SPAN>
-		<!-- Heredoc -->
+		<SPAN TYPE="FUNCTION" DELEGATE="PERL">
+			<BEGIN>[condition</BEGIN>
+			<END>[/condition]</END>
+		</SPAN>
+		
+		<!-- Heredocs -->
 		<SPAN_REGEXP HASH_CHAR="&lt;&lt;" TYPE="LITERAL2" DELEGATE="perl::MAIN">
 			<BEGIN><![CDATA[<<\p{Space}*(['"])([\p{Space}\p{Alnum}_]*)\1;?\s*]]></BEGIN>
 			<END AT_LINE_START="TRUE">$2</END>
@@ -51,12 +56,11 @@
 			<END AT_LINE_START="TRUE">$1</END>
 		</SPAN_REGEXP>
 		
-		<!-- Interchange constructs -->
-		<SPAN TYPE="MARKUP" DELEGATE="INTERCHANGE">
+		<!-- INTERCHANGE -->
+		<SPAN TYPE="FUNCTION" DELEGATE="INTERCHANGE">
 			<BEGIN>[</BEGIN>
 			<END>]</END>
 		</SPAN>
-
 		<SPAN TYPE="LITERAL2">
 			<BEGIN>@_</BEGIN>
 			<END>_@</END>
@@ -70,25 +74,25 @@
 			<END>__</END>
 		</SPAN>
 		
-		<!-- JavaScript -->
+		<!-- JAVASCRIPT -->
 		<SPAN TYPE="MARKUP" DELEGATE="JAVASCRIPT">
 			<BEGIN>&lt;script</BEGIN>
 			<END>&lt;/script&gt;</END>
 		</SPAN>
 
-		<!-- CSS Stylr Sheet -->
+		<!-- CSS -->
 		<SPAN TYPE="MARKUP" DELEGATE="CSS">
 			<BEGIN>&lt;style</BEGIN>
 			<END>&lt;/style&gt;</END>
 		</SPAN>
 
-		<!-- DTD instructions -->
+		<!-- DTD -->
 		<SPAN TYPE="KEYWORD2" DELEGATE="xml::DTD-TAGS">
 			<BEGIN>&lt;!</BEGIN>
 			<END>&gt;</END>
 		</SPAN>
 		
-		<!-- HTML markup tags -->
+		<!-- HTML -->
 		<SPAN TYPE="MARKUP" DELEGATE="HTML">
 			<BEGIN>&lt;</BEGIN>
 			<END>&gt;</END>
@@ -104,11 +108,15 @@
 	</RULES>
 	
 	<RULES SET="HTML" DEFAULT="MARKUP">
-		<SPAN TYPE="KEYWORD1" DELEGATE="INTERCHANGE" EXCLUDE_MATCH="FALSE" NO_LINE_BREAK="FALSE" NO_WORD_BREAK="FALSE">
-			<BEGIN>[</BEGIN>
-			<END>]</END>
+		<SPAN DELEGATE="QUOTES" DEFAULT="LITERAL2">
+			<BEGIN>"</BEGIN>
+			<END>"</END>
 		</SPAN>
-		
+		<SPAN DELEGATE="QUOTES" DEFAULT="LITERAL2">
+			<BEGIN>'</BEGIN>
+			<END>'</END>
+		</SPAN>
+		<MARK_FOLLOWING TYPE="LABEL">mv_</MARK_FOLLOWING>		
 		<SPAN TYPE="LITERAL2">
 			<BEGIN>@_</BEGIN>
 			<END>_@</END>
@@ -122,110 +130,7 @@
 			<END>__</END>
 		</SPAN>
 		
-		<!-- Inline CSS -->
- 		<SPAN_REGEXP TYPE="MARKUP" DELEGATE="css::PROPERTIES" HASH_CHAR="style">
-			<BEGIN>style\s*=\s*(["'])</BEGIN>
-			<END>$1</END>
-		</SPAN_REGEXP>
-		
-		<MARK_FOLLOWING TYPE="LABEL">mv_</MARK_FOLLOWING>
-		
-		<SEQ TYPE="OPERATOR">=</SEQ>
-		
-		<KEYWORDS>
-			<!-- HTML/XHTML elements, taken from http://de.selfhtml.org/html/referenz/elemente.htm -->
-			<MARKUP>a</MARKUP>
-			<MARKUP>abbr</MARKUP>
-			<MARKUP>acronym</MARKUP>
-			<MARKUP>address</MARKUP>
-			<MARKUP>applet</MARKUP>
-			<MARKUP>area</MARKUP>
-			<MARKUP>b</MARKUP>
-			<MARKUP>base</MARKUP>
-			<MARKUP>basefont</MARKUP>
-			<MARKUP>bdo</MARKUP>
-			<MARKUP>big</MARKUP>
-			<MARKUP>blockquote</MARKUP>
-			<MARKUP>body</MARKUP>
-			<MARKUP>br</MARKUP>
-			<MARKUP>button</MARKUP>
-			<MARKUP>caption</MARKUP>
-			<MARKUP>center</MARKUP>
-			<MARKUP>cite</MARKUP>
-			<MARKUP>code</MARKUP>
-			<MARKUP>col</MARKUP>
-			<MARKUP>colgroup</MARKUP>
-			<MARKUP>dd</MARKUP>
-			<MARKUP>del</MARKUP>
-			<MARKUP>dfn</MARKUP>
-			<MARKUP>dir</MARKUP>
-			<MARKUP>div</MARKUP>
-			<MARKUP>dl</MARKUP>
-			<MARKUP>dt</MARKUP>
-			<MARKUP>em</MARKUP>
-			<MARKUP>fieldset</MARKUP>
-			<MARKUP>font</MARKUP>
-			<MARKUP>form</MARKUP>
-			<MARKUP>frame</MARKUP>
-			<MARKUP>frameset</MARKUP>
-			<MARKUP>h1</MARKUP>
-			<MARKUP>h2</MARKUP>
-			<MARKUP>h3</MARKUP>
-			<MARKUP>h4</MARKUP>
-			<MARKUP>h5</MARKUP>
-			<MARKUP>h6</MARKUP>
-			<MARKUP>head</MARKUP>
-			<MARKUP>hr</MARKUP>
-			<MARKUP>html</MARKUP>
-			<MARKUP>i</MARKUP>
-			<MARKUP>iframe</MARKUP>
-			<MARKUP>img</MARKUP>
-			<MARKUP>input</MARKUP>
-			<MARKUP>ins</MARKUP>
-			<MARKUP>isindex</MARKUP>
-			<MARKUP>kbd</MARKUP>
-			<MARKUP>label</MARKUP>
-			<MARKUP>legend</MARKUP>
-			<MARKUP>li</MARKUP>
-			<MARKUP>link</MARKUP>
-			<MARKUP>map</MARKUP>
-			<MARKUP>menu</MARKUP>
-			<MARKUP>meta</MARKUP>
-			<MARKUP>noframes</MARKUP>
-			<MARKUP>noscript</MARKUP>
-			<MARKUP>object</MARKUP>
-			<MARKUP>ol</MARKUP>
-			<MARKUP>optgroup</MARKUP>
-			<MARKUP>option</MARKUP>
-			<MARKUP>p</MARKUP>
-			<MARKUP>param</MARKUP>
-			<MARKUP>pre</MARKUP>
-			<MARKUP>q</MARKUP>
-			<MARKUP>s</MARKUP>
-			<MARKUP>samp</MARKUP>
-			<MARKUP>script</MARKUP>
-			<MARKUP>select</MARKUP>
-			<MARKUP>small</MARKUP>
-			<MARKUP>span</MARKUP>
-			<MARKUP>strike</MARKUP>
-			<MARKUP>strong</MARKUP>
-			<MARKUP>style</MARKUP>
-			<MARKUP>sub</MARKUP>
-			<MARKUP>sup</MARKUP>
-			<MARKUP>table</MARKUP>
-			<MARKUP>tbody</MARKUP>
-			<MARKUP>td</MARKUP>
-			<MARKUP>textarea</MARKUP>
-			<MARKUP>tfoot</MARKUP>
-			<MARKUP>th</MARKUP>
-			<MARKUP>thead</MARKUP>
-			<MARKUP>title</MARKUP>
-			<MARKUP>tr</MARKUP>
-			<MARKUP>tt</MARKUP>
-			<MARKUP>u</MARKUP>
-			<MARKUP>ul</MARKUP>
-			<MARKUP>var</MARKUP>
-		</KEYWORDS>
+		<IMPORT DELEGATE="html::TAGS"/>
 	</RULES>
 	
 	<RULES SET="QUOTES" DEFAULT="LITERAL2">
@@ -233,10 +138,11 @@
 			<BEGIN>[</BEGIN>
 			<END>]</END>
 		</SPAN>
+		<MARK_FOLLOWING TYPE="LABEL">mv_</MARK_FOLLOWING>
 	</RULES>
 	
-	<RULES SET="INTERCHANGE" DEFAULT="LITERAL1">
-		<!-- backtick -> PERL -->
+	<RULES SET="INTERCHANGE" DEFAULT="KEYWORD2">
+		<!-- PERL -->
 		<SPAN TYPE="MARKUP" DELEGATE="perl::MAIN">
 			<BEGIN>`</BEGIN>
 			<END>`</END>
@@ -264,76 +170,145 @@
 			<KEYWORD1>accessories</KEYWORD1>
 			<KEYWORD1>area</KEYWORD1>
 			<KEYWORD1>assign</KEYWORD1>
+			<KEYWORD1>assume-identity</KEYWORD1>
+			<KEYWORD1>backup-database</KEYWORD1>
+			<KEYWORD1>backup-file</KEYWORD1>
 			<KEYWORD1>banner</KEYWORD1>
+			<KEYWORD1>base-url</KEYWORD1>
 			<KEYWORD1>bounce</KEYWORD1>
+			<KEYWORD1>breadcrumbs</KEYWORD1>
+			<KEYWORD1>captcha</KEYWORD1>
+			<KEYWORD1>capture-page</KEYWORD1>
 			<KEYWORD1>cart</KEYWORD1>
+			<KEYWORD1>charge</KEYWORD1>
 			<KEYWORD1>cgi</KEYWORD1>
 			<KEYWORD1>checked</KEYWORD1>
+			<KEYWORD1>component</KEYWORD1>
 			<KEYWORD1>control</KEYWORD1>
 			<KEYWORD1>counter</KEYWORD1>
+			<KEYWORD1>cp</KEYWORD1>
 			<KEYWORD1>css</KEYWORD1>
 			<KEYWORD1>data</KEYWORD1>
+			<KEYWORD1>db-date</KEYWORD1>
+			<KEYWORD1>db-columns</KEYWORD1>
 			<KEYWORD1>default</KEYWORD1>
 			<KEYWORD1>delete-cart</KEYWORD1>
 			<KEYWORD1>description</KEYWORD1>
 			<KEYWORD1>discount-space</KEYWORD1>
+			<KEYWORD1>display</KEYWORD1>
 			<KEYWORD1>dump</KEYWORD1>
+			<KEYWORD1>dump-session</KEYWORD1>
 			<KEYWORD1>ecml</KEYWORD1>
 			<KEYWORD1>env</KEYWORD1>
 			<KEYWORD1>error</KEYWORD1>
+			<KEYWORD1>evalue</KEYWORD1>
 			<KEYWORD1>explicit</KEYWORD1>
 			<KEYWORD1>export</KEYWORD1>
+			<KEYWORD1>export-database</KEYWORD1>
+			<KEYWORD1>fcounter</KEYWORD1>
 			<KEYWORD1>field</KEYWORD1>
 			<KEYWORD1>file</KEYWORD1>
+			<KEYWORD1>file-info</KEYWORD1>
+			<KEYWORD1>file-navigator</KEYWORD1>
 			<KEYWORD1>flag</KEYWORD1>
+			<KEYWORD1>flag-job</KEYWORD1>
 			<KEYWORD1>fly-tax</KEYWORD1>
 			<KEYWORD1>form-session-id</KEYWORD1>
+			<KEYWORD1>formel</KEYWORD1>
+			<KEYWORD1>fortune</KEYWORD1>
+			<KEYWORD1>forum-userlink</KEYWORD1>
+			<KEYWORD1>get-gpg-keys</KEYWORD1>
 			<KEYWORD1>get-url</KEYWORD1>
+			<KEYWORD1>gloabl-value</KEYWORD1>
 			<KEYWORD1>goto</KEYWORD1>
 			<KEYWORD1>handling</KEYWORD1>
+			<KEYWORD1>history-scan</KEYWORD1>
+			<KEYWORD1>href</KEYWORD1>
 			<KEYWORD1>html_table</KEYWORD1>
 			<KEYWORD1>image</KEYWORD1>
-			<KEYWORD1>import</KEYWORD1>
+			<KEYWORD1>import-fields</KEYWORD1>
 			<KEYWORD1>include</KEYWORD1>
 			<KEYWORD1>index</KEYWORD1>
-			<KEYWORD1>input_filter</KEYWORD1>
 			<KEYWORD1>item</KEYWORD1>
 			<KEYWORD1>label</KEYWORD1>
+			<KEYWORD1>levies</KEYWORD1>
+			<KEYWORD1>list-databases</KEYWORD1>
+			<KEYWORD1>list-keys</KEYWORD1>
+			<KEYWORD1>list-glob</KEYWORD1>
+			<KEYWORD1>list-pages</KEYWORD1>
 			<KEYWORD1>load-cart</KEYWORD1>
 			<KEYWORD1>matches</KEYWORD1>
+			<KEYWORD1>menu-load</KEYWORD1>
+			<KEYWORD1>meta-info</KEYWORD1>
+			<KEYWORD1>meta-record</KEYWORD1>
+			<KEYWORD1>mm-value</KEYWORD1>
+			<KEYWORD1>mm-locale</KEYWORD1>
 			<KEYWORD1>more</KEYWORD1>
+			<KEYWORD1>newer</KEYWORD1>
 			<KEYWORD1>nitems</KEYWORD1>
+			<KEYWORD1>on-fly</KEYWORD1>
+			<KEYWORD1>options</KEYWORD1>
 			<KEYWORD1>order</KEYWORD1>
 			<KEYWORD1>page</KEYWORD1>
+			<KEYWORD1>page-meta</KEYWORD1>
+			<KEYWORD1>pay-cert</KEYWORD1>
+			<KEYWORD1>pay-cert-redeem</KEYWORD1>
 			<KEYWORD1>pragma</KEYWORD1>
 			<KEYWORD1>price</KEYWORD1>
 			<KEYWORD1>process</KEYWORD1>
+			<KEYWORD1>process-order</KEYWORD1>
+			<KEYWORD1>process-target</KEYWORD1>
+			<KEYWORD1>profile</KEYWORD1>
 			<KEYWORD1>quanity</KEYWORD1>
 			<KEYWORD1>read-cookie</KEYWORD1>
-			<KEYWORD1>restrict</KEYWORD1>
+			<KEYWORD1>read-shipping</KEYWORD1>
+			<KEYWORD1>reconfig</KEYWORD1>
+			<KEYWORD1>reconfig-time</KEYWORD1>
 			<KEYWORD1>record</KEYWORD1>
+			<KEYWORD1>report-table</KEYWORD1>
+			<KEYWORD1>restrict</KEYWORD1>
+			<KEYWORD1>return-to</KEYWORD1>
+			<KEYWORD1>run-profile</KEYWORD1>
 			<KEYWORD1>salestax</KEYWORD1>
 			<KEYWORD1>save-cart</KEYWORD1>
 			<KEYWORD1>scratch</KEYWORD1>
 			<KEYWORD1>scratchd</KEYWORD1>
-			<KEYWORD1>search-region</KEYWORD1>
+			<KEYWORD1>search</KEYWORD1>
 			<KEYWORD1>selected</KEYWORD1>
 			<KEYWORD1>set-cookie</KEYWORD1>
 			<KEYWORD1>setlocale</KEYWORD1>
 			<KEYWORD1>shipping</KEYWORD1>
 			<KEYWORD1>shipping-desc</KEYWORD1>
+			<KEYWORD1>shipping-description</KEYWORD1>
+			<KEYWORD1>soap</KEYWORD1>
+			<KEYWORD1>soap-entity</KEYWORD1>
+			<KEYWORD1>su</KEYWORD1>
 			<KEYWORD1>subtotal</KEYWORD1>
-			<KEYWORD1>timed-build</KEYWORD1>
+			<KEYWORD1>summary</KEYWORD1>
 			<KEYWORD1>total-cost</KEYWORD1>
+			<KEYWORD1>traffic-report</KEYWORD1>
 			<KEYWORD1>uneval</KEYWORD1>
+			<KEYWORD1>uninstall-feature</KEYWORD1>
+			<KEYWORD1>unlink-file</KEYWORD1>
 			<KEYWORD1>update</KEYWORD1>
+			<KEYWORD1>update-order-status</KEYWORD1>
+			<KEYWORD1>ups-query</KEYWORD1>
 			<KEYWORD1>userdb</KEYWORD1>
+			<KEYWORD1>user-merge</KEYWORD1>
 			<KEYWORD1>usertrack</KEYWORD1>
-			<KEYWORD1>value_extended</KEYWORD1>
+			<KEYWORD1>usps-query</KEYWORD1>
 			<KEYWORD1>value</KEYWORD1>
 			<KEYWORD1>value-extended</KEYWORD1>
+			<KEYWORD1>value-space</KEYWORD1>
 			<KEYWORD1>var</KEYWORD1>
 			<KEYWORD1>version</KEYWORD1>
+			<KEYWORD1>warning</KEYWORD1>
+			<KEYWORD1>warnings</KEYWORD1>
+			<KEYWORD1>weight</KEYWORD1>
+			<KEYWORD1>widget</KEYWORD1>
+			<KEYWORD1>widget-info</KEYWORD1>
+			<KEYWORD1>widget-meta</KEYWORD1>
+			<KEYWORD1>write-shipping</KEYWORD1>
 			
 			<!-- Modifiers -->
 			<KEYWORD2>alternate</KEYWORD2>
@@ -341,9 +316,9 @@
 			<KEYWORD2>code</KEYWORD2>
 			<KEYWORD2>color</KEYWORD2>
 			<KEYWORD2>compare</KEYWORD2>
-			<KEYWORD2>condition</KEYWORD2>
 			<KEYWORD2>config</KEYWORD2>
 			<KEYWORD2>increment</KEYWORD2>
+			<KEYWORD2>items</KEYWORD2>
 			<KEYWORD2>last</KEYWORD2>
 			<KEYWORD2>list</KEYWORD2>
 			<KEYWORD2>name=</KEYWORD2>
@@ -363,68 +338,109 @@
 			<KEYWORD2>reparse</KEYWORD2>
 			
 			<!-- Control Structures & Container Tags -->
+			<KEYWORD3>and</KEYWORD3>
+			<KEYWORD3>bar-button</KEYWORD3>
 			<KEYWORD3>button</KEYWORD3>
 			<KEYWORD3>calc</KEYWORD3>
 			<KEYWORD3>calcn</KEYWORD3>
 			<KEYWORD3>catch</KEYWORD3>
+			<KEYWORD3>child-process</KEYWORD3>
 			<KEYWORD3>col</KEYWORD3>
 			<KEYWORD3>column</KEYWORD3>
+			<KEYWORD3>comment</KEYWORD3>
+			<KEYWORD3>condition</KEYWORD3>
 			<KEYWORD3>control-set</KEYWORD3>
+			<KEYWORD3>convert-date</KEYWORD3>
+			<KEYWORD3>crypt</KEYWORD3>
 			<KEYWORD3>currency</KEYWORD3>
 			<KEYWORD3>debug</KEYWORD3>
+			<KEYWORD3>deliver</KEYWORD3>
 			<KEYWORD3>discount</KEYWORD3>
 			<KEYWORD3>either</KEYWORD3>
 			<KEYWORD3>else</KEYWORD3>
 			<KEYWORD3>elsif</KEYWORD3>
 			<KEYWORD3>email</KEYWORD3>
+			<KEYWORD3>email-raw</KEYWORD3>
+			<KEYWORD3>filter</KEYWORD3>
+			<KEYWORD3>flex-select</KEYWORD3>
+			<KEYWORD3>fly-list</KEYWORD3>
+			<KEYWORD3>forum</KEYWORD3>
+			<KEYWORD3>grep-mm</KEYWORD3>
+			<KEYWORD3>harness</KEYWORD3>
+			<KEYWORD3>html-table</KEYWORD3>
 			<KEYWORD3>if</KEYWORD3>
 			<KEYWORD3>if-item-data</KEYWORD3>
 			<KEYWORD3>if-item-field</KEYWORD3>
+			<KEYWORD3>if-mm</KEYWORD3>
+			<KEYWORD3>import</KEYWORD3>
+			<KEYWORD3>input-filter</KEYWORD3>
 			<KEYWORD3>item-list</KEYWORD3>
-			<KEYWORD3>filter</KEYWORD3>
-			<KEYWORD3>fly-list</KEYWORD3>
+			<KEYWORD3>jsq</KEYWORD3>
+			<KEYWORD3>jsqn</KEYWORD3>
+			<KEYWORD3>jsquote</KEYWORD3>
+			<KEYWORD3>l</KEYWORD3>
+			<KEYWORD3>levy-list</KEYWORD3>
+			<KEYWORD3>loc</KEYWORD3>
+			<KEYWORD3>local</KEYWORD3>
 			<KEYWORD3>log</KEYWORD3>
 			<KEYWORD3>loop</KEYWORD3>
+			<KEYWORD3>mail</KEYWORD3>
+			<KEYWORD3>menu</KEYWORD3>
 			<KEYWORD3>modifier</KEYWORD3>
 			<KEYWORD3>more-list</KEYWORD3>
+			<KEYWORD3>msg</KEYWORD3>
 			<KEYWORD3>mvasp</KEYWORD3>
+			<KEYWORD3>or</KEYWORD3>
+			<KEYWORD3>output-to</KEYWORD3>
+			<KEYWORD3>parse-locale</KEYWORD3>
 			<KEYWORD3>perl</KEYWORD3>
 			<KEYWORD3>query</KEYWORD3>
-			<KEYWORD3>row</KEYWORD3>			
+			<KEYWORD3>quick-table</KEYWORD3>
+			<KEYWORD3>rand</KEYWORD3>
+			<KEYWORD3>region</KEYWORD3>
+			<KEYWORD3>rotate-table</KEYWORD3>
+			<KEYWORD3>row</KEYWORD3>
+			<KEYWORD3>row-edit</KEYWORD3>
 			<KEYWORD3>search-region</KEYWORD3>
 			<KEYWORD3>set</KEYWORD3>
 			<KEYWORD3>seti</KEYWORD3>
+			<KEYWORD3>strip</KEYWORD3>
+			<KEYWORD3>substitute-file</KEYWORD3>
+			<KEYWORD3>tabbed-display</KEYWORD3>
+			<KEYWORD3>table-editor</KEYWORD3>
+			<KEYWORD3>table-organize</KEYWORD3>
 			<KEYWORD3>tag</KEYWORD3>
 			<KEYWORD3>then</KEYWORD3>
 			<KEYWORD3>time</KEYWORD3>
+			<KEYWORD3>timed-build</KEYWORD3>
+			<KEYWORD3>timed-display</KEYWORD3>
+			<KEYWORD3>title-bar</KEYWORD3>
 			<KEYWORD3>tmp</KEYWORD3>
 			<KEYWORD3>tmpn</KEYWORD3>
 			<KEYWORD3>tree</KEYWORD3>
 			<KEYWORD3>try</KEYWORD3>
-
-			<!-- Unknown -->
-			<KEYWORD3>items</KEYWORD3>			
-			<KEYWORD3>ordered</KEYWORD3>
+			<KEYWORD3>uc-attr-list</KEYWORD3>
+			<KEYWORD3>unpack</KEYWORD3>
+			<KEYWORD3>write-relative-file</KEYWORD3>
 			
 			<!-- Pragmas -->
-			<KEYWORD4>compatible_5_2</KEYWORD4>
 			<KEYWORD4>dml</KEYWORD4>
 			<KEYWORD4>download</KEYWORD4>
 			<KEYWORD4>dynamic_variables</KEYWORD4>
 			<KEYWORD4>dynamic_variables_file_only</KEYWORD4>
-			<KEYWORD4>filter_sql_no_backslash</KEYWORD4>
 			<KEYWORD4>init_page</KEYWORD4>
 			<KEYWORD4>interpolate_itl_references</KEYWORD4>
+			<KEYWORD4>max_matches</KEYWORD4>
 			<KEYWORD4>no_default_reparse</KEYWORD4>
 			<KEYWORD4>no_html_comment_embed</KEYWORD4>
 			<KEYWORD4>no_image_rewrite</KEYWORD4>
 			<KEYWORD4>no_locale_parse</KEYWORD4>
+			<KEYWORD4>no_negative_tax</KEYWORD4>
 			<KEYWORD4>perl_warnings_in_page</KEYWORD4>
 			<KEYWORD4>post_page</KEYWORD4>
 			<KEYWORD4>pre_page</KEYWORD4>
 			<KEYWORD4>safe_date</KEYWORD4>
 			<KEYWORD4>strip_white</KEYWORD4>
-			<KEYWORD4>substitute_table_image</KEYWORD4>
 		</KEYWORDS>
 			
 		<SEQ TYPE="OPERATOR">!</SEQ>
@@ -440,8 +456,24 @@
 		<OPERATOR>gt</OPERATOR>
 		<OPERATOR>lt</OPERATOR>
 		<OPERATOR>!=</OPERATOR>
+		<OPERATOR>=~</OPERATOR>
+		<OPERATOR>!~</OPERATOR>
 
 		<MARK_FOLLOWING TYPE="LABEL">mv_</MARK_FOLLOWING>
+	</RULES>
+	
+	<RULES SET="INTERCHANGE_COMMENT" DEFAULT="COMMENT1">
+		<SEQ TYPE="COMMENT1">]</SEQ>
+	</RULES>
+	
+	<RULES SET="PERL" DEFAULT="FUNCTION">
+		<SPAN TYPE="KEYWORD1" DELEGATE="INTERCHANGE" EXCLUDE_MATCH="FALSE" NO_LINE_BREAK="FALSE" NO_WORD_BREAK="FALSE">
+			<BEGIN>[</BEGIN>
+			<END>]</END>
+		</SPAN>
+		<MARK_FOLLOWING TYPE="LABEL">mv_</MARK_FOLLOWING>
+		
+		<SEQ TYPE="FUNCTION" DELEGATE="perl::MAIN">]</SEQ>
 	</RULES>
 	
 	<RULES SET="JAVASCRIPT" DEFAULT="MARKUP" IGNORE_CASE="TRUE">

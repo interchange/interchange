@@ -1,35 +1,29 @@
-from http://www.icdevgroup.org/pipermail/interchange-users/2009-March/050311.html
+jEdit Mode Files
+================
+Additional installation notes can be found here: http://jedit.org/users-guide/installing-modes.html
 
-Date: Mon, 23 Mar 2009 09:41:24 -0400
-From: Justin Otten <justino@fragrancenet.com>
-To: interchange-users@icdevgroup.org
-Subject: Re: [ic] Jedit interchange.xml language definition
+For Windows
+-------------
+Copy the files "interchange.xml" and "catalog" into the directory "C:\Documents and Settings\<username>\.jedit\modes\"
+where <username> is your login name.
 
-On Wed, Feb 11, 2009 at 4:46 PM, Sam Batschelet <sam@westbranchresort.com> wrote:
->
-> Hello does anyone have a copy of this referenced in the IC docs
-> http://www.icdevgroup.org/doc-5.0/frames/ic_howto_cvs_43.html seems the link
-> is dead.
->
-> Thanks
-> -Sam
+For *nix
+--------
+Copy the files "interchange.xml" and "catalog" into the directory "~/.jedit/modes"
 
-At some point, I updated the JEdit file that was found on the
-icdevgroup website so that jedit will properly syntax highlight CSS,
-HTML, and Javascript. It now also properly handles heredocs (makes
-working with usertags better).
+---
 
-I had to modify the html.xml definition due to issues of sticking an
-IC tag in the middle of some html attribute. ie
-  <img src="[image-src]" alt="[image-alt]" />
-jedit refused to highlight these tags, the modification to html.xml is
-simply an addition of a delegation to interchange.xml to handle such
-tags
+Restart jEdit and the interchange mode will be available.
 
-I attached the three modified files to this email, let me know if you
-can't download them, I'll post them somewhere public.
 
---
-Regards,
-Justin Otten
-FragranceNet.com
+
+What does it do?
+================
+The Interchange jEdit mode file will allow syntax highlighting for "most" interchange needs.
+It supports highlighting of HTML, CSS, Javascript, SGML Entities, Perl, and ITL.
+You can also force jEdit to highlist UserTags, ActionMaps, etc... by explicitly setting the mode
+to "interchange", it will not automagically switch to this mode upon opening the file.
+
+What does it not do?
+====================
+The Interchange jEdit mode file will not highlight configuration files properly.
