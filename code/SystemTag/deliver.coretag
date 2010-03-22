@@ -32,6 +32,10 @@ sub {
 
 	## This is a bounce, returns
 	if($opt->{location}) {
+		$type = Vend::Util::header_data_scrub($type);
+		$opt->{status} = Vend::Util::header_data_scrub($opt->{status});
+		$opt->{location} = Vend::Util::header_data_scrub($opt->{location});
+
 		$type and $Tag->tag( {
 						op => 'header',
 						name => 'Content-Type',

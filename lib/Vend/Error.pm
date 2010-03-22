@@ -56,6 +56,8 @@ sub get_locale_message {
 	}
 	if($message !~ /\s/) {
 		if($message =~ /^http:/) {
+			$message = header_data_scrub($message);
+
 			$Vend::StatusLine =~ s/([^\r\n])$/$1\r\n/;
 			$Vend::StatusLine .= "Status: 302 Moved\r\nLocation: $message\r\n";
 			$message = "Redirected to $message.";
