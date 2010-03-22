@@ -474,6 +474,7 @@ else{
 	 $redirecturl .= "&postcode=$postcode&country=$country&email=$email&tel=$tel&MC_mv_order_number=$cartId&MC_callback=$callbackurl&MC_affsubtotal=$affsubtotal";
 	
 	 $redirecturl .= "&fixContact" if ($fixcontact == 1);
+	 $redirecturl = Vend::Util::header_data_scrub($redirecturl);
 
 ::logDebug("WP:".__LINE__.": URL = $redirecturl");
  
