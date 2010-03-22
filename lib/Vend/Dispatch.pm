@@ -1456,6 +1456,7 @@ EOF
 			grep !/^mv_(?:pc|source)$/,
 			sort keys %CGI::values;
 		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path, undef, undef, { form => $form, match_security => 1 });
+		$url = header_data_scrub($url);
 		my $msg = get_locale_message(
 			301,
 			"Redirected to %s.",

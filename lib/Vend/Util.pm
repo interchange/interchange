@@ -44,6 +44,7 @@ require Exporter;
 	generate_key
 	get_option_hash
 	hash_string
+	header_data_scrub
 	hexify
 	is_hash
 	is_no
@@ -2293,6 +2294,16 @@ sub backtrace {
 
     ::logGlobal($msg);
     undef;
+}
+
+sub header_data_scrub {
+	my ($head_data) = @_;
+
+	## "HTTP Response Splitting" Exploit Fix
+	## http://www.securiteam.com/securityreviews/5WP0E2KFGK.html
+	$head_data =~ s/(?:%0[da]|[\r\n]+)+//ig;
+
+	return $head_data;
 }
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File
