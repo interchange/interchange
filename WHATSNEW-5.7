@@ -8,8 +8,23 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.6 not yet released.
+Interchange 5.7.6 released on 2010-03-23.
 
+Core
+----
+* Fix a "HTTP Response Splitting" security exploit.  This is not known
+  to be exploitable in the standard demo, but could potentially affect
+  other pages in rare circumstances.
+
+* Fix a bug in initialization of Vend::Payment::BusinessOnlinePayment
+  supplemental parameters.
+
+* Fix a bug in css.tag to properly output the css when using the
+  inline <style> block.
+
+* Allow for bounces from Autoload routines.
+
+* Fix SpecialPages directive for violation.html.
 
 Standard Demo
 -------------
@@ -17,6 +32,23 @@ Standard Demo
 * Correct comments in catalog.cfg for Limit robot_expire.
 
 * Add comments for Limit ip_session_expire.
+
+Admin UI
+--------
+
+* Remove the AdminUser configuration directive.
+
+* Allow ids to be added to form widgets built from mv_metadata.
+
+Contrib
+-------
+
+* Update jEdit syntax highlighting mode.
+
+Debian packaging
+----------------
+
+* Multiple bug/dependency fixes.
 
 ------------------------------------------------------------------------------
 
