@@ -8,6 +8,36 @@
 See UPGRADE document for a list of incompatible changes.
 
 
+Interchange 5.6.3 released 2010-03-23.
+
+
+Core
+----
+
+* Fix a "HTTP Response Splitting" security exploit.  This is not known
+  to be exploitable in the standard demo, but could potentially affect
+  other pages in rare circumstances.
+
+* Fix a bug in initialization of Vend::Payment::BusinessOnlinePayment
+  supplemental parameters.
+
+* Fix a bug in css.tag to properly output the css when using the
+  inline <style> block.
+
+* Fix a bug which could in some cases return malformed responses when
+  a default charset was not defined.  In particular, this is known to
+  have affected Internet Explorer when utilizing an IC-generated AJAX
+  response.
+
+Standard demo
+-------------
+
+* Change [forum] tag to default to NoReparse.
+
+
+
+------------------------------------------------------------------------------
+
 Interchange 5.6.2 released 2009-09-17.
 
 
