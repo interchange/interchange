@@ -97,6 +97,11 @@ sub {
 	$extra .= qq{ media="$opt->{media}"} if $opt->{media};
 
 	my $css;
+	$css = length($opt->{literal})
+				? $opt->{literal}
+				: interpolate_html($Tag->var($name));
+	$css =~ s/^\s*<style.*?>\s*//si;
+	$css =~ s:\s*</style>\s*$:\n:i;
 
 	WRITE: {
 		last WRITE unless $write;
@@ -115,11 +120,6 @@ sub {
 			last WRITE;
 		}
 		my $mode = $opt->{mode} ? oct($opt->{mode}) : 0644;
-		$css = length($opt->{literal})
-					? $opt->{literal}
-					: interpolate_html($Tag->var($name));
-		$css =~ s/^\s*<style.*?>\s*//si;
-		$css =~ s:\s*</style>\s*$:\n:i;
 		$success = $Tag->write_relative_file($fn, $css) && chmod($mode, $fn)
 			or logError("Error writing CSS file %s, returning in page", $fn);
 	}
