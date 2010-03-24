@@ -3,7 +3,7 @@
 #
 # Interchange version 5.4.4
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2010 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -342,7 +342,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2009 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2010 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -1021,7 +1021,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002-2009 Interchange Development Group
+Copyright (C) 2002-2010 Interchange Development Group
 Copyright (C) 1995-2002 Red Hat, Inc.
 All rights reserved except those granted in the license.
 
