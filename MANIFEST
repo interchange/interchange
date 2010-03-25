@@ -101,6 +101,7 @@ code/OrderCheck/isbn.oc
 code/OrderCheck/length.oc
 code/OrderCheck/match.oc
 code/OrderCheck/natural.oc
+code/OrderCheck/numeric.oc
 code/OrderCheck/regex.oc
 code/OrderCheck/relative_filename.oc
 code/OrderCheck/unique.oc
