@@ -31,7 +31,7 @@ the Interchange user ID to write/create files.
 
 Sessions and temporary files: /var/cache/interchange.
 
-Documentation: /usr/share/doc/interchange-5.6.2.
+Documentation: /usr/share/doc/interchange-5.6.3.
 
 On a dedicated production server, it is wise to segregate as many of these
 directories as possible onto their own partitions, to prevent problems if
@@ -45,7 +45,7 @@ usually come supplied with your operating system, so you will need to
 install them yourself. It's best to locate RPMs for each of the needed
 Perl modules and install them. To get a complete list of dependencies, do:
 
-rpm -qp --requires interchange-5.6.2-1.*.rpm
+rpm -qp --requires interchange-5.6.3-1.*.rpm
 
 Unfortunately, there's not currently a reliable, steady source of the latest
 CPAN modules in RPM format for most operating systems. Thus the easiest way
@@ -66,14 +66,14 @@ perl -MCPAN -e'install Bundle::InterchangeKitchenSink'
 
 INSTALL
 
-rpm -Uvh interchange-5.6.2-1.*.rpm
-rpm -Uvh interchange-standard-5.6.2-1.*.rpm
+rpm -Uvh interchange-5.6.3-1.*.rpm
+rpm -Uvh interchange-standard-5.6.3-1.*.rpm
 
 If you have installed CPAN modules from source, rather than RPM, you'll need
 to install the main interchange package without dependency checking because
 RPM doesn't know about those modules you installed:
 
-rpm -Uvh --nodeps interchange-5.6.2-1.*.rpm
+rpm -Uvh --nodeps interchange-5.6.3-1.*.rpm
 
 
 STARTING/RESTARTING INTERCHANGE
@@ -133,7 +133,7 @@ installation:
 
 INSTALL
 
-rpm -Uvh interchange-standard-demo-5.6.2-1.*.rpm
+rpm -Uvh interchange-standard-demo-5.6.3-1.*.rpm
 
 
 USING THE DEMO
