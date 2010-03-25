@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2010 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
