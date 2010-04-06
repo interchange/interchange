@@ -55,11 +55,6 @@
 	[/loop]
 	[perl tables="[cgi mv_data_table]"]
 		my $db = $Db{$CGI->{mv_data_table}} or return;
-		unless ($db->config('AUTO_SEQUENCE')) {
-			$db->config('AUTO_NUMBER', '000001')
-				unless $db->config('AUTO_NUMBER');
-			$CGI->{item_id} = $db->autonumber();
-		}
 		if ($CGI->{ui_clone_id}) {
 			$CGI->{ui_clone_tables} = '__UI_CLONE_TABLES__' || '__UI_ITEM_TABLES__';
 			my $db = $Db{$CGI->{mv_data_table}} or return;

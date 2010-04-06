@@ -2944,6 +2944,7 @@ EOF
 
 	$Vend::Session->{ui_return_stack} ||= [];
 
+
 	if($opt->{cgi} and ! $pass_return_to) {
 		my $r_ary = $Vend::Session->{ui_return_stack};
 
@@ -2962,8 +2963,18 @@ EOF
 	if(ref $opt->{hidden} or ref $opt->{hidden_all}) {
 		my ($hk, $hv);
 		my @o;
+
 		while ( ($hk, $hv) = each %$hidden ) {
-			push @o, produce_hidden($hk, $hv);
+
+##if new item, get mv_nextpage from radio buttons
+
+			if($opt->{ui_new_item}){
+				next if $hk =~ /mv_nextpage/;
+				push @o, produce_hidden($hk, $hv);
+			}
+			else {
+				push @o, produce_hidden($hk, $hv);
+			}
 		}
 		while ( ($hk, $hv) = each %$hidden_all ) {
 			push @o, produce_hidden($hk, $hv);
@@ -4215,6 +4226,20 @@ EOF
 
 	}
 
+	if($opt->{ui_new_item}) {
+		my $aa_msg = l('Add another item');
+		my $rt_msg = l('Return to table select');
+		chunk 'DO_ANOTHER', 'OUTPUT_MAP', <<EOF;
+<small>
+&nbsp;
+	<input type="radio" class="$opt->{widget_class}" name="mv_nextpage" value="admin/flex_select" CHECKED>
+	$rt_msg
+	<input type="radio" class="$opt->{widget_class}" name="mv_nextpage" value="admin/flex_editor">
+	$aa_msg
+EOF
+
+	}
+
 	chunk_alias 'HIDDEN_FIELDS', qw/
 										HIDDEN_ALWAYS
 										HIDDEN_EXTRA
@@ -4227,6 +4252,7 @@ EOF
 										OK_BOTTOM
 										CANCEL_BOTTOM
 										RESET_BOTTOM
+										DO_ANOTHER
 										/;
 	chunk_alias 'EXTRA_BUTTONS', qw/
 										AUTO_EXPORT
