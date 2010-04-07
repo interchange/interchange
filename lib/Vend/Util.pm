@@ -1316,6 +1316,11 @@ sub vendUrl {
 		$opt->{anchor} =~ s/^#//;
 		$r .= '#' . $opt->{anchor};
 	}
+
+	# return full-path portion of the URL
+	if ($opt->{path_only}) {
+		$r =~ s!^https?://[^/]*!!i;
+	}
 	return $r;
 } 
 
