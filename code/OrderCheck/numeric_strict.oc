@@ -5,19 +5,17 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version. See the LICENSE file for details.
 
-CodeDef numeric OrderCheck
-CodeDef numeric Description Numeric
-CodeDef numeric Routine <<EOR
-
+CodeDef numeric_strict OrderCheck
+CodeDef numeric_strict Description Numeric (strict)
+CodeDef numeric_strict Routine <<EOR
 sub {
     my ($ref, $name, $value, $msg) = @_;
-    use Scalar::Util qw/looks_like_number/;
 
-    if (looks_like_number($value)) {
+    if (defined($value) and $value =~ /\A-?\d+(?:\.\d+)?\z/) {
         return (1, $name, '');
     }
     else {
-        return (0, $name, defined($msg) ? $msg : 'not numeric');
+        return (0, $name, defined($msg) ? $msg : 'not strict numeric');
     }
 }
 EOR
