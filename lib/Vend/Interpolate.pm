@@ -4907,7 +4907,7 @@ sub tag_loop_list {
 			my @items = split /\s*,\s*/, $list;
 			for(@items) {
 				my ($o, $l) = split /=/, $_;
-				$l = $o unless $l;
+				$l = $o unless $l =~ /\S/;
 				push @rows, [ $o, $l ];
 			}
 		};
