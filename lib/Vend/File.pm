@@ -65,7 +65,7 @@ sub writefile {
     my($file, $data, $opt) = @_;
 	my($encoding, $fallback);
 
-	if ($::Variable->{MV_UTF8}) {
+	if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		undef $encoding if $encoding eq 'raw';
 		$fallback = $opt->{fallback};
@@ -197,7 +197,7 @@ sub readfile {
 
 	$opt ||= {};
 	
-	if ($::Variable->{MV_UTF8}) {
+	if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		$fallback = $opt->{fallback};
 		$fallback = Encode::PERLQQ() unless defined $fallback;
