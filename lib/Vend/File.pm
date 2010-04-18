@@ -60,7 +60,7 @@ sub writefile {
     my($file, $data, $opt) = @_;
 
 	my $is_utf8;
-	$is_utf8 = is_utf8(ref $data ? $$data : $data) if $::Variable->{MV_UTF8};
+	$is_utf8 = is_utf8(ref $data ? $$data : $data) if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 	if (ref $opt and $opt->{umask}) {

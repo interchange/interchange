@@ -1633,7 +1633,7 @@ sub log_error {
 
 sub new_filehandle {
 	my $fh = shift;
-	binmode($fh, ":utf8") if $::Variable->{MV_UTF8};
+	binmode($fh, ":utf8") if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 	return $fh;
 }
 

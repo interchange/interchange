@@ -1189,7 +1189,7 @@ sub readin {
 
 		if (open(MVIN, "< $fn")) {
 			binmode(MVIN) if $Global::Windows;
-			binmode(MVIN, ":utf8") if $::Variable->{MV_UTF8};
+			binmode(MVIN, ":utf8") if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 			undef $/;
 			$contents = <MVIN>;
 			close(MVIN);
