@@ -223,6 +223,10 @@ __NAME__                              check_opt
 	link to a flypage.
 [/comment]
 
+[either]
+[scratch check_opt]
+[or]
 expired=always_fail That link was expired. Please try ordering again.
+[/either]
 
 __END__
