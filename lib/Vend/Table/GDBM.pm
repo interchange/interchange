@@ -29,7 +29,11 @@ use vars qw($VERSION @ISA);
 use GDBM_File;
 use Vend::Table::Common;
 
-unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
+if ($ENV{MINIVEND_DISABLE_UTF8}) {
+	sub encode($$;$){}
+	sub decode($$;$){}
+}
+else {
 	require Encode;
 	import Encode qw( decode encode );
 }

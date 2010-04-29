@@ -49,9 +49,12 @@ use Config;
 use Fcntl;
 use Errno;
 
+my $PERLQQ = 0x0100; # from Encode(3perl)
+
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
 	import Encode qw( is_utf8 );
+	$PERLQQ = Encode::PERLQQ();
 }
 
 use Vend::Util;
@@ -69,7 +72,7 @@ sub writefile {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		undef $encoding if $encoding eq 'raw';
 		$fallback = $opt->{fallback};
-		$fallback = Encode::PERLQQ() unless defined $fallback;
+		$fallback = $PERLQQ unless defined $fallback;
 	}
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
@@ -200,7 +203,7 @@ sub readfile {
 	if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
 		$encoding = $opt->{encoding} ||= 'utf-8';
 		$fallback = $opt->{fallback};
-		$fallback = Encode::PERLQQ() unless defined $fallback;
+		$fallback = $PERLQQ unless defined $fallback;
 		undef $encoding if $encoding eq 'raw';
 	}
 	
@@ -236,7 +239,7 @@ sub readfile {
 		binmode(READIN) if $Global::Windows;
 
         if ($encoding) {
-            local $PerlIO::encoding::fallback = Encode::PERLQQ();
+            local $PerlIO::encoding::fallback = $PERLQQ;
             binmode(READIN, ":encoding($encoding)");
         }
 
