@@ -169,6 +169,8 @@ Interchange can distinguish between robots and ordinary users.
 
 Whether to enable Swish search or not.
 
+=back
+
 =over 4
 
 =item C<SOAP>
@@ -185,8 +187,6 @@ This is only available if the Perl module SOAP::Lite is installed.
 You can choose different sets of server parameters (C<low>, C<high> and
 C<rpc>). Any store based on the foundation demo will change its behaviour too.
 If C<rpc> is selected, the Interchange server will run in PreFork mode.
-
-=back
 
 =back
 
