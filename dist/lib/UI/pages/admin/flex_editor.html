@@ -3,7 +3,7 @@
 [calc]
 	if($CGI->{mv_return_table}) {
 		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
-		$CGI->{ui_return_to} = 'admin/flex_select';
+		$CGI->{ui_return_to} = $CGI->{mv_nextpage} || 'admin/flex_select';
 	}
 	return;
 [/calc]
