@@ -22,6 +22,7 @@ code/Filter/digits_dot.filter
 code/Filter/dos.filter
 code/Filter/duration.filter
 code/Filter/encode_entities.filter
+code/Filter/encode_special_entities.filter
 code/Filter/encrypt.filter
 code/Filter/filesafe.filter
 code/Filter/filter_select.filter
