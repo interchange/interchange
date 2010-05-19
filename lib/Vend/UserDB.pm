@@ -1519,7 +1519,7 @@ sub login {
 						);
 		}
 
-		username_cookies($self->{USERNAME}, $pw) 
+		username_cookies($self->{PASSED_USERNAME} || $self->{USERNAME}, $pw) 
 			if $Vend::Cfg->{CookieLogin};
 
 		if ($self->{LOCATION}{LAST} ne 'none') {

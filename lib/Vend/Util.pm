@@ -50,6 +50,7 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	generate_key
 	get_option_hash
 	hash_string
+	header_data_scrub
 	hexify
 	is_hash
 	is_no
@@ -1178,7 +1179,7 @@ sub readin {
 
 		if (open(MVIN, "< $fn")) {
 			binmode(MVIN) if $Global::Windows;
-			binmode(MVIN, ":utf8") if $::Variable->{MV_UTF8};
+			binmode(MVIN, ":utf8") if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 			undef $/;
 			$contents = <MVIN>;
 			close(MVIN);
@@ -1314,6 +1315,11 @@ sub vendUrl {
 	if($opt->{anchor}) {
 		$opt->{anchor} =~ s/^#//;
 		$r .= '#' . $opt->{anchor};
+	}
+
+	# return full-path portion of the URL
+	if ($opt->{path_only}) {
+		$r =~ s!^https?://[^/]*!!i;
 	}
 	return $r;
 } 
@@ -2482,6 +2488,16 @@ sub backtrace {
 
     ::logGlobal($msg);
     undef;
+}
+
+sub header_data_scrub {
+	my ($head_data) = @_;
+
+	## "HTTP Response Splitting" Exploit Fix
+	## http://www.securiteam.com/securityreviews/5WP0E2KFGK.html
+	$head_data =~ s/(?:%0[da]|[\r\n]+)+//ig;
+
+	return $head_data;
 }
 
 ### Provide stubs for former Vend::Util functions relocated to Vend::File

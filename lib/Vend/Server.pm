@@ -482,7 +482,7 @@ sub parse_multipart {
 			$content_type ||= 'text/plain';
 			$charset ||= default_charset();
 			
-			if ($content_type =~ m{^text/}i && $::Variable->{MV_UTF8}) {
+			if ($content_type =~ m{^text/}i && ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8})) {
 				Vend::CharSet::to_internal($charset, \$data);
 				# use our character set instead of the client's one
 				# to store the file

@@ -757,6 +757,7 @@ use Data::Dumper; # for debugging
 # print Dumper($xmlin); # for debugging
 #print Dumper($::Session);  
   unless (($xmlin->{'error-message'}) or ($diagnose)) {
+	  $redirecturl = Vend::Util::header_data_scrub($redirecturl);
 
 $::Tag->tag({ op => 'header', body => <<EOB });
 Status: 302 moved

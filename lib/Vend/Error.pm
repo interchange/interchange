@@ -56,6 +56,8 @@ sub get_locale_message {
 	}
 	if($message !~ /\s/) {
 		if($message =~ /^http:/) {
+			$message = header_data_scrub($message);
+
 			$Vend::StatusLine =~ s/([^\r\n])$/$1\r\n/;
 			$Vend::StatusLine .= "Status: 302 Moved\r\nLocation: $message\r\n";
 			$message = "Redirected to $message.";
@@ -183,7 +185,7 @@ sub do_lockout {
 	# Now we log the error after custom lockout routine gets chance
 	# to bypass 
 	my $pause = $::Limit->{lockout_reset_seconds} || 30;
-	my $msg = errmsg(
+	$msg = errmsg(
 		"WARNING: POSSIBLE BAD ROBOT. %s accesses with no %d second pause.",
 		$Vend::Session->{accesses},
 		$pause,

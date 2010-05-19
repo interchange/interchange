@@ -21,10 +21,20 @@ BEGIN {
 	};
 }
 
+sub utf8_to_other {
+	my ($string, $encoding) = @_;
+	return $string unless defined Encode::PERLQQ; # nop if no Encode
+
+	unless(Encode::is_utf8($string)){
+		$string = Encode::decode('utf-8', $string);
+	}
+	return Encode::encode($encoding, $string);
+}
+
 sub {
     my ($to, $subject, $reply, $from, $extra, $opt, $body) = @_;
     my $ok = 0;
-    my ($cc, $bcc, @extra);
+    my ($cc, $bcc, @extra, $utf8);
 
 	use vars qw/ $Tag /;
 
@@ -38,6 +48,9 @@ sub {
 	# Use local copy to avoid mangling with caller's data
 	$cc = $opt->{cc};
 	$bcc = $opt->{bcc};
+
+	# See if UTF-8 support is required
+	$utf8 = $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 
 	# Prevent header injections from spammers' hostile content
 	for ($to, $subject, $reply, $from, $cc, $bcc) {
@@ -57,6 +70,13 @@ sub {
 		::logError("Invalid header given to email tag: %s", $_);
 	}
 	unshift @extra, "From: $from" if $from;
+
+	# force utf8 email through MIME as attachment
+	unless (($opt->{attach} || $opt->{html}) && $utf8){
+		$opt->{attach} = [()];
+		$opt->{body_mime} = $opt->{mimetype};
+		$body = utf8_to_other($body, 'utf-8');
+	}	
 
 	my $sent_with_attach = 0;
 
@@ -82,14 +102,13 @@ sub {
 		my @attach;
 		my @extra_headers;
 
-		for(@extra) {
-			m{(.*?):\s+(.*)};
-			my $name = $1 or next;
-			next if lc($name) eq 'from';
-			my $content = $2 or next;
-			$name =~ s/[-_]+/-/g;
-			$name =~ s/\b(\w)/\U$1/g;
-			push @extra_headers, "$name:", $content;
+		# encode values if utf8 is supported
+		if($utf8){
+			$to = utf8_to_other($to, 'MIME-Header');
+			$from = utf8_to_other($from, 'MIME-Header');
+			$subject = utf8_to_other($subject, 'MIME-Header');
+			$cc = utf8_to_other($cc, 'MIME-Header');
+			$bcc = utf8_to_other($bcc, 'MIME-Header');
 		}
 
 		my $msg = new MIME::Lite 
@@ -99,10 +118,22 @@ sub {
 					Type => $opt->{mimetype},
 					Cc => $cc,
 					Bcc => $bcc,
-					@extra_headers,
 				;
-		$opt->{body_mime} ||= 'text/plain';
-		$opt->{body_encoding} ||= '8bit';
+
+		for(@extra) {
+			m{(.*?):\s+(.*)};
+			my $name = $1 or next;
+			next if lc($name) eq 'from';
+			my $content = $2 or next;
+			$name =~ s/[-_]+/-/g;
+			$name =~ s/\b(\w)/\U$1/g;
+			$msg->add($name, ($utf8 ? utf8_to_other($content, 'UTF-8')
+									: $content)) 
+				if $name && $content;
+		}
+
+		$opt->{body_mime} ||= 'text/plain' . ($utf8 ? '; charset=UTF-8' : '');
+		$opt->{body_encoding} ||= 'quoted-printable';
 		$msg->attach(
 				Type => $opt->{body_mime},
 				Encoding => $opt->{body_encoding},
@@ -122,15 +153,15 @@ sub {
 		$att ||= [];
 
 		if($opt->{html}) {
-			unshift @$att, {
-								type => 'text/html',
-								data => $opt->{html},
-								disposition => 'inline',
+			unshift @$att, {type => 'text/html' 
+							.($utf8 ? '; charset=UTF-8': ''),
+							data => $opt->{html},
+							disposition => 'inline',
 							};
 		}
 
 		my %encoding_types = (
-			'text/plain' => '8bit',
+			'text/plain' => ($utf8 ? 'quoted-printable' : '8bit'),
 			'text/html' => 'quoted-printable',
 		);
 
@@ -165,17 +196,15 @@ sub {
 			}
 		}
 
-		my $body = $msg->as_string;
-#::logDebug("Mail body: \n$body");
+		my $body = $msg->body_as_string;
+		my $header = $msg->header_as_string;
+#::logDebug("[email] Mail: \n$header\n$body");
 		if($opt->{test}) {
-			return $body;
+			return "$header\n$body";
 		}
 		else {
-			$body =~ s/^(.+?)(?:\r?\n){2}//s;
-			my $headers = $1;
-			last SEND unless $headers;
-			my @head = split(/\r?\n/,$headers);
-
+			last ATTACH unless $header;
+			my @head = split(/\r?\n/,$header);
 			$ok = send_mail(\@head,$body);
 
 			$sent_with_attach = 1;

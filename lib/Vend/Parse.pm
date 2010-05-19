@@ -751,6 +751,9 @@ sub start {
 			if(! $attr->{href} and $attr->{page}) {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
 			}
+
+			$attr->{href} = header_data_scrub($attr->{href});
+
 			$Vend::StatusLine = '' if ! $Vend::StatusLine;
 			$Vend::StatusLine .= "\n" if $Vend::StatusLine !~ /\n$/;
 			$Vend::StatusLine .= <<EOF if $attr->{target};

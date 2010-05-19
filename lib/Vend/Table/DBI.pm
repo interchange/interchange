@@ -56,6 +56,7 @@ my %Cattr = ( qw(
 					RAISEERROR     	RaiseError
 					PRINTERROR     	PrintError
 					AUTOCOMMIT     	AutoCommit
+					MYSQL_ENABLE_UTF8 mysql_enable_utf8
 				) );
 my @Cattr = keys %Cattr;
 

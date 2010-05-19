@@ -22,6 +22,7 @@ code/Filter/digits_dot.filter
 code/Filter/dos.filter
 code/Filter/duration.filter
 code/Filter/encode_entities.filter
+code/Filter/encode_special_entities.filter
 code/Filter/encrypt.filter
 code/Filter/filesafe.filter
 code/Filter/filter_select.filter
@@ -101,6 +102,8 @@ code/OrderCheck/isbn.oc
 code/OrderCheck/length.oc
 code/OrderCheck/match.oc
 code/OrderCheck/natural.oc
+code/OrderCheck/numeric.oc
+code/OrderCheck/numeric_strict.oc
 code/OrderCheck/regex.oc
 code/OrderCheck/relative_filename.oc
 code/OrderCheck/unique.oc
@@ -1049,7 +1052,6 @@ eg/gpg_display
 eg/iclint
 eg/ifdef
 eg/jedit/catalog
-eg/jedit/html.xml
 eg/jedit/interchange.xml
 eg/jedit/README
 eg/merge-tab-files

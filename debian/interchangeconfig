@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright 2001,2003,2004,2005,2009 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2003,2004,2005,2009,2010 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -146,6 +146,14 @@ Whether to enable debug mode or not.
 
 =over 4
 
+=item C<FULL_URL>
+
+Whether to enable FullUrl configuration directive or not.
+
+=back
+
+=over 4
+
 =item C<ROBOTS>
 
 The Interchange Debian package uses a separate configuration file
@@ -160,6 +168,8 @@ Interchange can distinguish between robots and ordinary users.
 =item C<SWISH>
 
 Whether to enable Swish search or not.
+
+=back
 
 =over 4
 
@@ -177,8 +187,6 @@ This is only available if the Perl module SOAP::Lite is installed.
 You can choose different sets of server parameters (C<low>, C<high> and
 C<rpc>). Any store based on the foundation demo will change its behaviour too.
 If C<rpc> is selected, the Interchange server will run in PreFork mode.
-
-=back
 
 =back
 
