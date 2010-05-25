@@ -133,23 +133,30 @@ my %hdrsubs = ('ADDITEM' => sub {my $href = shift; join (',', $href->{'code'}, $
 
 sub header {
 	my ($self) = @_;
-	my (@hdr, $href);
-
-	push(@hdr, "SESSION=$Vend::SessionID");
+	my @hdr = ("SESSION=$Vend::SessionID");
 	for my $aref (@{$self->{actions}}) {
-		$href = $aref->[1];
-		if (exists $hdrsubs{$aref->[0]}) {
-			push(@hdr, $aref->[0] . '=' . &{$hdrsubs{$aref->[0]}} ($aref->[1]));
+		my ($k, $v) = @$aref;
+		if (exists $hdrsubs{$k}) {
+			$v = $hdrsubs{$k}->($v);
 		}
-		else {
-			push(@hdr, "$aref->[0]=$aref->[1]");
-		}
+		push @hdr, "$k=$v";
 	}
 	for(@hdr) {
 		s/\n/<LF>/g;
 		s/\r/<CR>/g;
 	}
-	join('&',@hdr);
+	my $value = join '&', @hdr;
+
+	# arbitrarily limit header value sizes to keep entire header under about 1 kB
+	# to avoid internal server error by Apache, found by Brian Miller <brian@endpoint.com>
+	# and reported at http://www.icdevgroup.org/pipermail/interchange-users/2010-May/051990.html
+	my $max_length = 900;
+	if (length($value) > $max_length) {
+		$value = substr($value, 0, $max_length);
+		::logDebug("truncating header longer than $max_length characters in Vend::Track");
+	}
+
+	return $value;
 }
 
 sub std_log {
