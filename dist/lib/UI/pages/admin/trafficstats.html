@@ -11,6 +11,8 @@
 [set help_name]stats.traffic[/set]
 @_UI_STD_HEAD_@
 
+[if config TrackFile]
+
 <table border=0 __UI_T_PROPERTIES__ width="60%">
 <tr class=rborder height=1><td colspan=2></td></tr>
 <tr>
@@ -101,5 +103,10 @@
 
 </tr>
 </table>
+
+[else]
+<p><em>This report cannot be run until the TrackFile directive is configured in catalog.cfg.</em></p>
+[/else]
+[/if]
 
 @_UI_STD_FOOTER_@

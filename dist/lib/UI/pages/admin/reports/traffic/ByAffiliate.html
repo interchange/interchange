@@ -16,6 +16,11 @@
 
 @_UI_STD_HEAD_@
 
+[if config TrackFile]
 [traffic-report]
+[else]
+<p><em>This report cannot be run until the TrackFile directive is configured in catalog.cfg.</em></p>
+[/else]
+[/if]
 
 @_UI_STD_FOOTER_@
