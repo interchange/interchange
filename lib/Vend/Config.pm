@@ -2173,6 +2173,8 @@ sub parse_action {
 	}
 	my ($name, $sub) = split /\s+/, $value, 2;
 
+	$name =~ s/-/_/g;
+	
 	## Determine if we are in a catalog config, and if 
 	## perl should be global and/or strict
 	my $nostrict;
