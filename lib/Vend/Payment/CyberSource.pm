@@ -411,6 +411,44 @@ for payment.
 Expected maximum total amount of the entire order, including shipping costs and
 tax charges.
 
+=item B<billinginfo>
+
+Optional boolean indicator to request that PayPal return the user's billing
+information on GetRequest.
+
+0 (default): Do not return the customer's billing address.
+
+1: Return the customer's billing address.
+
+=item B<useraction>
+
+Which PayPal useraction is desired. This essentially indicates the label of the
+button for the user when coming back from PayPal to the merchant's site.
+Options are:
+
+=over
+
+=item continue
+
+Default. Standard usage when merchants expect the user to come back to their
+site and provide more data, or explicit actions, to complete checkout. Button
+user clicks is labeled "Continue".
+
+=item commit
+
+Usage option when merchant does not require to collect more data or have the
+user perform any actions on the merchant site before completing the order. The
+API behavior is the same as that for usertype continue; the only difference is
+the button the user is to click will say "Buy Now".
+
+=back
+
+Regardless of which B<useraction> is specified, the merchant's site must
+process a getrequest and dopayment in response in order to complete the sale.
+Clicking "Buy Now" doesn't actually do any such thing on PayPal's side. It just
+authorizes the merchant to immediately process payment once the user has
+returned.
+
 =item B<order_desc>
 
 Description of items the customer is purchasing.
@@ -1391,9 +1429,10 @@ sub cybersource {
         payPalAuthReversalService_paypalAuthorizationId     transaction_id
         payPalRefundService_paypalCaptureId                 transaction_id
 
-        payPalEcSetService_paypalReturn         returnurl
-        payPalEcSetService_paypalCancelReturn   cancelurl
-        payPalEcSetService_paypalMaxamt         maxamount
+        payPalEcSetService_paypalReturn             returnurl
+        payPalEcSetService_paypalCancelReturn       cancelurl
+        payPalEcSetService_paypalMaxamt             maxamount
+        payPalEcSetService_requestBillingAddress    billinginfo
 
         payPalEcSetService_paypalDesc           order_desc
         payPalEcDoPaymentService_paypalDesc     order_desc
@@ -1862,7 +1901,13 @@ sub cybersource {
             $::Session->{paypal_payer_id} = $resp{payerId};
         }
 
-        $resp{pp_redirect} = sprintf ($resp{pp_redirect}, $resp{paypalToken} || $::Session->{paypal_token});
+        $resp{pp_redirect} =
+            sprintf (
+                $resp{pp_redirect},
+                $resp{paypalToken} || $::Session->{paypal_token},
+                $opt->{useraction} || 'continue',
+            )
+        ;
     }
 
     if ($transtype =~ /^auth(?:_bill)?$/) {
@@ -2360,6 +2405,7 @@ sub resolve_reply {
         'https://'
         . $self->attr('PP_302_HOST')
         . '/cgi-bin/webscr?cmd=_express-checkout&token=%s'
+        . '&useraction=%s'
     ;
     return;
 }
