@@ -1567,11 +1567,12 @@ EOF
             @{$sc}{qw(expire domain path secure)}
         );
     }
- 
+
 	if (
 		($new_source
 		and $CGI::request_method eq 'GET'
-		and $Vend::Cfg->{BounceReferrals}) or
+		and ($Vend::Cfg->{BounceReferrals} or
+             ($Vend::Robot and $Vend::Cfg->{BounceReferralsRobot}))) or
 		($Vend::Robot and $sessionid_from_cgi and $Vend::Cfg->{BounceRobotSessionURL})
 	) {
 		my $path = $CGI::path_info;
