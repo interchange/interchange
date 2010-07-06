@@ -1,11 +1,9 @@
-# Copyright 2002-2008 Interchange Development Group and others
+# Copyright 2002-2010 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: image.tag,v 1.24 2008-06-22 02:53:11 jon Exp $
 
 UserTag image Order     src
 UserTag image AttrAlias geometry makesize
@@ -63,7 +61,8 @@ sub {
 
 	return $imagedircurrent if $opt->{dir_only};
 
-	$opt->{getsize} = 1 unless defined $opt->{getsize};
+	$opt->{getsize} = 1 unless defined $opt->{getsize}
+		or (defined($opt->{height}) and defined($opt->{width}));
 	$opt->{imagesubdir} ||= $::Scratch->{mv_imagesubdir}
 		if defined $::Scratch->{mv_imagesubdir};
 	$opt->{default} ||= $::Scratch->{mv_imagedefault}
@@ -240,8 +239,10 @@ sub {
 			eval {
 				require Image::Size;
 				my ($width, $height) = Image::Size::imgsize($path);
-				($opt->{width}, $opt->{height}) = ($width, $height)
-					if $width and $height;
+				$opt->{height} = $height
+					if defined($height) and not exists($opt->{height});
+				$opt->{width} = $width
+					if defined($width) and not exists($opt->{width});
 				if ($opt->{size_scratch_prefix}) {
 					Vend::Interpolate::set_tmp($opt->{size_scratch_prefix} . '_' . $_, $opt->{$_})
 						for qw/width height/;
