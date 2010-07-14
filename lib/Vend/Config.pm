@@ -278,6 +278,7 @@ for( values %extmap ) {
 	version			Version
 ));
 
+my %tagSkip = ( qw! Documentation 1 Version 1 !);
 
 my %tagAry 	= ( qw! Order 1 Required 1 ! );
 my %tagHash	= ( qw!
@@ -5039,6 +5040,10 @@ sub parse_mapped_code {
 
 	my $repos = $C ? ($C->{CodeDef} ||= {}) : ($Global::CodeDef ||= {});
 
+	if ($tagSkip{$p}) {
+		return $repos;
+	}
+	
 	my $dest = $valid_dest{lc $p} || $current_dest{$tag} || $CodeDest;
 
 	if(! $dest) {
@@ -5112,6 +5117,10 @@ sub parse_tag {
 	$tag =~ s/\W//g
 		and config_warn("Bad characters removed from '%s'.", $tag);
 
+	if ($tagSkip{$p}) {
+		return $c;
+	}
+	
 	if($CodeDest and $CodeDest eq 'CoreTag') {
 		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
 	}
