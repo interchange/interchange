@@ -4421,6 +4421,11 @@ sub parse_database {
 	if($new) {
 		my($file, $type) = split /[\s,]+/, $remain, 2;
 		$d->{'file'} = $file;
+		if($file eq 'AUTO_SEQUENCE') {
+			# database table missing for AUTO_SEQUENCE directive
+			config_error('Missing database %s for AUTO_SEQUENCE %s.', $database, $type);
+			return $c;
+		}
 		if(		$type =~ /^\d+$/	) {
 			$d->{'type'} = $type;
 		}
