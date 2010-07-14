@@ -5126,7 +5126,7 @@ sub parse_tag {
 				)
 			);
 		}
-		if (defined $C && defined $Global::UserTag->{Source}->{$tag}->{$p}){
+		if (defined $C && defined $Global::UserTag->{Routine}->{$tag}){
 			config_warn(
 				errmsg(
 					"Local usertag %s overrides global definition",
