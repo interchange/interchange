@@ -903,11 +903,11 @@ EOF
 			# See if catalog configuration erred in some way....
 			if ($@ or ! defined $c) {
 				my $msg = $@;
-				print "\n$msg\n\a$g->{'name'}: error in configuration. Skipping.\n";
 				$msg =~ s/\s+$//;
 				$msg = " -- $msg" if $msg;
 				logGlobal $g->{'name'} . ": config error$msg. Skipping.";
 				undef $Global::Selector{$g->{'script'}};
+				print "failed.\n"  unless $Vend::Quiet or $g->{name} =~ /^_/;
 				next;
 			}
 
