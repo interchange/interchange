@@ -5330,6 +5330,10 @@ sub parse_subroutine {
 
 	$name =~ s/\s+//g;
 
+	if (exists $c->{$name}) {
+		config_warn(errmsg("Overriding subroutine %s", $name));
+	}
+	
 	# Untainting
 	$value =~ /((?s:.)*)/;
 	$value = $1;
