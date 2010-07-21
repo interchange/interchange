@@ -5730,7 +5730,7 @@ sub salestax {
 # Returns just subtotal of items ordered, with discounts
 # applied
 sub subtotal {
-	my($cart, $dspace) = @_;
+	my($cart, $dspace, $nodiscount) = @_;
 	
 	### If the user has assigned to salestax,
 	### we use their value come what may, no rounding
@@ -5747,41 +5747,49 @@ sub subtotal {
 	}
 
 	levies() unless $Vend::Levying;
+
+	$subtotal = 0;
 	
-	# Use switch_discount_space unconditionally to guarantee existance of proper discount structures.
-	$oldspace = switch_discount_space($dspace || $Vend::DiscountSpaceName);
-	
-	my $discount = (ref($::Discounts) eq 'HASH' and %$::Discounts);
-
-    $subtotal = 0;
-
-    foreach $i (0 .. $#$Vend::Items) {
-        $item = $Vend::Items->[$i];
-        if($discount || $item->{mv_discount}) {
-            $subtotal += apply_discount($item);
-        }
-        else {
-            $subtotal += Vend::Data::item_subtotal($item);
-        }
-	}
-
-	if (defined $::Discounts->{ENTIRE_ORDER}) {
-		$formula = $::Discounts->{ENTIRE_ORDER};
-		$formula =~ s/\$q\b/tag_nitems()/eg; 
-		$formula =~ s/\$s\b/$subtotal/g; 
-		$cost = $Vend::Interpolate::ready_safe->reval($formula);
-		if($@) {
-			logError
-				"Discount ENTIRE_ORDER has bad formula. Returning normal subtotal.\n$@";
-			$cost = $subtotal;
+	if ($nodiscount) {
+		foreach $i (0 .. $#$Vend::Items) {
+			$item = $Vend::Items->[$i];
+			$subtotal += Vend::Data::item_subtotal($item);
 		}
-		$subtotal = $cost;
 	}
+	else {
+		# Use switch_discount_space unconditionally to guarantee existance of proper discount structures.
+		$oldspace = switch_discount_space($dspace || $Vend::DiscountSpaceName);
+	
+		my $discount = (ref($::Discounts) eq 'HASH' and %$::Discounts);
+
+		foreach $i (0 .. $#$Vend::Items) {
+			$item = $Vend::Items->[$i];
+			if ($discount || $item->{mv_discount}) {
+				$subtotal += apply_discount($item);
+			} else {
+				$subtotal += Vend::Data::item_subtotal($item);
+			}
+		}
+
+		if (defined $::Discounts->{ENTIRE_ORDER}) {
+			$formula = $::Discounts->{ENTIRE_ORDER};
+			$formula =~ s/\$q\b/tag_nitems()/eg; 
+			$formula =~ s/\$s\b/$subtotal/g; 
+			$cost = $Vend::Interpolate::ready_safe->reval($formula);
+			if ($@) {
+				logError
+					"Discount ENTIRE_ORDER has bad formula. Returning normal subtotal.\n$@";
+				$cost = $subtotal;
+			}
+			$subtotal = $cost;
+		}
+
+		# Switch to original discount space if an actual switch occured.
+		switch_discount_space($oldspace) if $dspace and defined $oldspace;
+	}
+	
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_subtotal} = $subtotal;
-
-	# Switch to original discount space if an actual switch occured.
-	switch_discount_space($oldspace) if $dspace and defined $oldspace;
 
     return $subtotal;
 }

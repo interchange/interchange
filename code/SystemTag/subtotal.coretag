@@ -16,7 +16,7 @@ UserTag subtotal            Version      $Revision: 1.7 $
 UserTag subtotal            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;
-	return currency( subtotal($cart, $opt->{discount_space}),
+	return currency( subtotal($cart, $opt->{discount_space}, $opt->{nodiscount}),
 		$noformat, undef, $opt);
 }
 EOR
