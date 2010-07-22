@@ -5784,12 +5784,13 @@ sub subtotal {
 			$subtotal = $cost;
 		}
 
+		$Vend::Session->{latest_subtotal} = $subtotal;
+		
 		# Switch to original discount space if an actual switch occured.
 		switch_discount_space($oldspace) if $dspace and defined $oldspace;
 	}
 	
 	$Vend::Items = $save if defined $save;
-	$Vend::Session->{latest_subtotal} = $subtotal;
 
     return $subtotal;
 }
