@@ -294,12 +294,26 @@ There was an error adding you to the customer table.
 	[tmpn tmp_compare][/tmpn]
 	[tmp tmp_username][data table=userdb col=username key="[value customer_id]"][/tmp]
 	[if !scratch tmp_username]
+		[calcn]
+			$Tag->tmp('tmp_pass');
+			for(qw/ zip phone_day phone_night /) {
+				my $pass = $Values->{$_};
+				$pass =~ s/\s+//g;
+				next if length($pass) < 4;
+				$Scratch->{tmp_pass} = $pass;
+			}
+		
+			my @lets = ('A' .. 'Z', '0 .. 9', 'a' .. 'z');
+			$Scratch->{tmp_pass} .= $lets[ rand @lets ]
+				while length($Scratch->{tmp_pass}) < 5;
+			return;
+		[/calcn]
 		[tmp hide_status][userdb
 							function=new_account
 							no-login=1
 							assign-username=1
-							password='[value zip]'
-							verify='[value zip]'
+							password='[scratch tmp_pass]'
+							verify='[scratch tmp_pass]'
 		][/tmp]
 		[tmp tmp_username][data session auto_created_user][/tmp]
 		[if scratch hide_status]
