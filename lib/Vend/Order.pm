@@ -1116,7 +1116,7 @@ $state_template{CA} = <<EOF;
 EOF
 
 $zip_error{US} = "'%s' not a US zip code";
-$zip_routine{US} = sub { $_[0] =~ /^\s*\d\d\d\d\d(?:-?\d\d\d\d)?$/ };
+$zip_routine{US} = sub { $_[0] =~ /^\s*\d\d\d\d\d(?:-?\d\d\d\d)?\s*$/ };
 
 $zip_error{CA} = "'%s' not a Canadian postal code";
 $zip_routine{CA} = sub {
