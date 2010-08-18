@@ -23,7 +23,7 @@ BEGIN {
 
 sub utf8_to_other {
 	my ($string, $encoding) = @_;
-	return $string unless defined Encode::PERLQQ; # nop if no Encode
+	return $string unless defined Encode::PERLQQ(); # nop if no Encode
 
 	unless(Encode::is_utf8($string)){
 		$string = Encode::decode('utf-8', $string);
