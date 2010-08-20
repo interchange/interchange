@@ -1,11 +1,9 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2010 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: email.tag,v 1.15 2009-01-23 11:48:51 racke Exp $
 
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
@@ -73,7 +71,6 @@ sub {
 
 	# force utf8 email through MIME as attachment
 	unless (($opt->{attach} || $opt->{html}) && $utf8){
-		$opt->{attach} = [()];
 		$opt->{body_mime} = $opt->{mimetype};
 		$body = utf8_to_other($body, 'utf-8');
 	}	
