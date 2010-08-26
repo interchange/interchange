@@ -3637,6 +3637,15 @@ sub set_default_search {
 );
 
 sub global_directive_postprocess {
+	if($Global::UrlSepChar eq '&') {
+		$Global::UrlJoiner = $Global::Variable->{MV_HTML4_COMPLIANT} ? '&amp;' : '&';
+		$Global::UrlSplittor = qr/\&/;
+	}
+	else {
+		$Global::UrlJoiner = $Global::UrlSepChar;
+		$Global::UrlSplittor = qr/[&$Global::UrlSepChar]/o;
+	}
+		
 	$Global::CountrySubdomains ||= {};
 
 	while (my ($key,$val) = each(%$Global::CountrySubdomains)) {
@@ -3728,14 +3737,6 @@ sub parse_url_sep_char {
 		config_warn("%s character value '%s' not a recommended value.", $var, $val);
 	}
 
-	if($val eq '&') {
-		$Global::UrlJoiner = $Global::Variable->{MV_HTML4_COMPLIANT} ? '&amp;' : '&';
-		$Global::UrlSplittor = qr/\&/;
-	}
-	else {
-		$Global::UrlJoiner = $val;
-		$Global::UrlSplittor = qr/[&$val]/o;
-	}
 	return $val;
 }
 
