@@ -482,7 +482,7 @@ sub resolve_args {
 	}
 	@list = @{$ref}{@{$Order{$tag}}};
 	push @list, $ref if defined $addAttr{$tag};
-	push @list, (shift || $ref->{body} || '') if $hasEndTag{$tag};
+	push @list, (shift || (defined $ref->{body} ? $ref->{body} : '')) if $hasEndTag{$tag};
 	return @list;
 }
 
