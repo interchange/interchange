@@ -4650,7 +4650,7 @@ sub parse_configdb {
 	eval {
 		($db, $table) = get_configdb($var, $value);
 	};
-
+	::logGlobal("$var $value: $@") if $@;
 	return '' if ! $db;
 
 	my ($k, @f);	# key and fields
