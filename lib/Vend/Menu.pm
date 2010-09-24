@@ -331,7 +331,7 @@ my %transform = (
 			my @parms = split $Global::UrlSplittor, $row->{$_};
 			my @out;
 			for my $p (@parms) {
-				my ($parm, $val) = split /=/, $p;
+				my ($parm, $val) = split /=/, $p, 2;
 				$val = unhexify($val);
 				$val =~ s/\[cgi\s+([^\[]+)\]/$CGI::values{$1}/g;
 				$val =~ s/\[var\s+([^\[]+)\]/$::Variable->{$1}/g;
