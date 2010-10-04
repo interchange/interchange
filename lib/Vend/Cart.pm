@@ -275,7 +275,7 @@ sub toss_cart {
 				  last MAX_QUANTITY;
 			      }
 
-			      elsif ($prefix = '?') {
+			      elsif ($prefix eq '?') {
 				  next QUANTITY_FIELD if !defined $$max || $$max <= 0;
 				  $$mv_max = $$max;
 				  last QUANTITY_ADJUST;
