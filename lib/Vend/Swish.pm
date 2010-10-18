@@ -209,6 +209,14 @@ sub search {
 			$search_string = join (' or ', map {"$search_field=$_"} @pats);
 		}
 	}
+
+    if ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
+		for my $sort_field (@{$s->{mv_sort_field}}) {
+			unless (grep {$_ eq $sort_field} @{$s->{mv_field_names}}) {
+				push @{$s->{mv_field_names}}, $sort_field;
+			}
+		}
+	}
 	
 	for (@{ $s->{'mv_field_names'} }) {
 		unless (exists $fmap{$_}) {
