@@ -1,13 +1,13 @@
-interchange (5.7.6-1.1) unstable; urgency=low
+interchange (5.7.6-2) unstable; urgency=low
 
-  * Non-maintainer upload.
-  * Fix pending l10n issues. Debconf translations:
+  * Fix pending l10n issues, thanks to Christian Perrier
+    <bubulle@debian.org> for the patch. Debconf translations:
     - Czech (Martin Sin).  Closes: #589291
     - Italian (Vincenzo Campanella).  Closes: #597310
     - Danish (Joe Hansen).  Closes: #599668
     - Finnish (Esko Arajärvi).  Closes: #600633
 
- -- Christian Perrier <bubulle@debian.org>  Tue, 19 Oct 2010 07:20:08 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 20 Oct 2010 09:25:07 +0200
 
 interchange (5.7.6-1) unstable; urgency=high
 
