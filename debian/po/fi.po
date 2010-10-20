@@ -1,16 +1,20 @@
+# Esko Arajärvi <edu@iki.fi>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: interchange\n"
-"Report-Msgid-Bugs-To: racke@linuxia.de\n"
-"POT-Creation-Date: 2007-08-21 15:48+0200\n"
-"PO-Revision-Date: 2008-03-19 16:41+0200\n"
+"Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
+"PO-Revision-Date: 2010-10-18 21:53+0300\n"
 "Last-Translator: Esko Arajärvi <edu@iki.fi>\n"
 "Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+"X-Generator: Lokalize 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Type: boolean
 #. Description
@@ -21,8 +25,12 @@ msgstr "Luodaanko Interchangen esimerkkiluettelo?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:1001
-msgid "Whether to install the demo catalog from the standard template or let you manually install it with makecat."
-msgstr "Valitse luodaanko esimerkkiluettelo standardimallista vai asennetaanko se käsin ohjelmalla makecat."
+msgid ""
+"Whether to install the demo catalog from the standard template or let you "
+"manually install it with makecat."
+msgstr ""
+"Valitse luodaanko esimerkkiluettelo standardimallista vai asennetaanko se "
+"käsin ohjelmalla makecat."
 
 #. Type: boolean
 #. Description
@@ -33,8 +41,13 @@ msgstr "Poistetaanko esimerkkiluettelo siivottaessa paketti?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-msgid "Should all files belonging to the Interchange demo catalog removed when you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
-msgstr "Tulisiko kaikki Interchangen esimerkkiluetteloon liittyvät tiedostot poistaa, kun paketti siivotaan komennolla dpkg --purge tai apt-get remove --purge?"
+msgid ""
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+msgstr ""
+"Tulisiko kaikki Interchangen esimerkkiluetteloon liittyvät tiedostot "
+"poistaa, kun paketti siivotaan komennolla dpkg --purge tai apt-get remove --"
+"purge?"
 
 #. Type: select
 #. Choices
@@ -51,8 +64,12 @@ msgstr "Olemassa olevien esimerkkiluetteloiden korvauspolitiikka:"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:3002
-msgid "Whether to silently replace an existing demo catalog installation, ask for a confirmation or never touch an existing installation."
-msgstr "Valitse korvataanko olemassa oleva esimerkkiluettelo kysymättä, kysytäänkö vahvistus vai jätetäänkö olemassa oleva asennus aina rauhaan."
+msgid ""
+"Whether to silently replace an existing demo catalog installation, ask for a "
+"confirmation or never touch an existing installation."
+msgstr ""
+"Valitse korvataanko olemassa oleva esimerkkiluettelo kysymättä, kysytäänkö "
+"vahvistus vai jätetäänkö olemassa oleva asennus aina rauhaan."
 
 #. Type: boolean
 #. Description
@@ -64,19 +81,24 @@ msgstr "Korvataanko Interchangen esimerkkiluettelo?"
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
-msgstr "Näyttää siltä, että järjestelmässä on jo Interchangen esimerkkiluettelo."
+msgstr ""
+"Näyttää siltä, että järjestelmässä on jo Interchangen esimerkkiluettelo."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-msgid "Virtual host for the demo catalog ?"
+msgid "Virtual host for the demo catalog:"
 msgstr "Esimerkkiluettelon virtuaalikone:"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-msgid "You are running Interchange with \"FullURL\" enabled. Please specify the virtual host for the demo catalog."
-msgstr "Ohjelmaa Interchange ajetaan asetuksella ”FullURL”. Anna esimerkkiluettelon virtuaalikone."
+msgid ""
+"You are running Interchange with \"FullURL\" enabled. Please specify the "
+"virtual host for the demo catalog."
+msgstr ""
+"Ohjelmaa Interchange ajetaan asetuksella ”FullURL”. Anna esimerkkiluettelon "
+"virtuaalikone."
 
 #. Type: string
 #. Description
@@ -87,8 +109,14 @@ msgstr "Luettelon ylläpitäjän käyttäjätunnus:"
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:6001
-msgid "Please provide an username for administering the demo catalog. The username must be at least 2 characters long and only contain letters, digits, underscore, @ or the dot as characters."
-msgstr "Anna käyttäjätunnus esimerkkiluettelon ylläpitoa varten. Tunnuksen pitää olla vähintään 2 merkkiä pitkä ja sallittuja merkkejä ovat kirjaimet, numerot, alaviiva, piste (.) sekä @."
+msgid ""
+"Please provide an username for administering the demo catalog. The username "
+"must be at least 2 characters long and only contain letters, digits, "
+"underscore, @ or the dot as characters."
+msgstr ""
+"Anna käyttäjätunnus esimerkkiluettelon ylläpitoa varten. Tunnuksen pitää "
+"olla vähintään 2 merkkiä pitkä ja sallittuja merkkejä ovat kirjaimet, "
+"numerot, alaviiva, piste (.) sekä @."
 
 #. Type: password
 #. Description
@@ -99,8 +127,16 @@ msgstr "Luettelon ylläpitäjän salasana:"
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
-msgid "Please provide a password for administering the standard demo catalog. Choose one which can not be easily guessed. Default is pass. The password  must be at least 4 characters long and only contain letters, digits, underscore @ or the dot as characters."
-msgstr "Anna salasana esimerkkiluettelon ylläpitoa varten. Valitse salasana, jota ei ole helppo arvata. Oletus on ”pass”. Salasanan tulee olla vähintään 4 merkkiä pitkä ja sallittuja merkkejä ovat kirjaimet, numerot, alaviiva, piste (.) sekä @."
+msgid ""
+"Please provide a password for administering the standard demo catalog. "
+"Choose one which can not be easily guessed. Default is pass. The password  "
+"must be at least 4 characters long and only contain letters, digits, "
+"underscore @ or the dot as characters."
+msgstr ""
+"Anna salasana esimerkkiluettelon ylläpitoa varten. Valitse salasana, jota ei "
+"ole helppo arvata. Oletus on ”pass”. Salasanan tulee olla vähintään 4 "
+"merkkiä pitkä ja sallittuja merkkejä ovat kirjaimet, numerot, alaviiva, "
+"piste (.) sekä @."
 
 #. Type: boolean
 #. Description
@@ -117,8 +153,15 @@ msgstr "Kauppasivun lisäkielet:"
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-standard.templates:9001
-msgid "The Interchange demo catalog is able to display the storefront in a number of different languages. Each selected locale will increase the memory footprint of the Interchange server processes, so it is recommended to choose only locales which are really needed."
-msgstr "Interchangen esimerkkiluettelo voi näyttää kauppasivun useammalla kielellä. Jokainen valittu kieli lisää Interchange-palvelinprosessien muistin käyttöä, joten on suositeltavaa valita vain kielet, joita todella tarvitaan."
+msgid ""
+"The Interchange demo catalog is able to display the storefront in a number "
+"of different languages. Each selected locale will increase the memory "
+"footprint of the Interchange server processes, so it is recommended to "
+"choose only locales which are really needed."
+msgstr ""
+"Interchangen esimerkkiluettelo voi näyttää kauppasivun useammalla kielellä. "
+"Jokainen valittu kieli lisää Interchange-palvelinprosessien muistin käyttöä, "
+"joten on suositeltavaa valita vain kielet, joita todella tarvitaan."
 
 #. Type: select
 #. Description
@@ -147,20 +190,20 @@ msgstr "MySQL"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-msgid "Which DBMS should be used for the demo catalog ?"
-msgstr "Mitä tietokantapalvelinta esimerkkiluettelon tulisi käyttää?"
+msgid "DBMS for the demo catalog:"
+msgstr "Tietokantapalvelin esimerkkiluetteloa varten:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-msgid "Please select the database type."
-msgstr "Valitse tietokannan tyyppi."
+msgid "Please select the database type used for the demo catalog."
+msgstr "Valitse esimerkkiluettelon tietokannan tyyppi."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
-msgid "Database name"
-msgstr "Tietokannan nimi"
+msgid "Database name:"
+msgstr "Tietokannan nimi:"
 
 #. Type: string
 #. Description
@@ -171,8 +214,8 @@ msgstr "Valitse nimi tietokannalle."
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
-msgid "Database user"
-msgstr "Tietokantakäyttäjä:"
+msgid "Database user:"
+msgstr "Tietokantakäyttäjä::"
 
 #. Type: string
 #. Description
@@ -183,8 +226,8 @@ msgstr "Anna käyttäjätunnus, jota käytetään otettaessa yhteyttä tietokant
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
-msgid "Database password"
-msgstr "Tietokantasalasana:"
+msgid "Database password:"
+msgstr "Tietokannan salasana:"
 
 #. Type: password
 #. Description
@@ -196,7 +239,7 @@ msgstr "Anna salasana, jota käytetään otettaessa yhteyttä tietokantaan."
 #. Choices
 #: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
-msgstr "unix-tila, internet-tila, molemmat"
+msgstr "unix-tila, Internet-tila, molemmat"
 
 #. Type: select
 #. Description
@@ -207,8 +250,13 @@ msgstr "Aloitustila:"
 #. Type: select
 #. Description
 #: ../interchange.templates:1002
-msgid "Unix mode is is the most secure way to run Interchange, for there is no way for systems on the internet to interact with the Interchange server."
-msgstr "Unix-tila on turvallisin tapa ajaa Interchangea, koska tällöin internetissä olevilla järjestelmillä ei ole mitään tapaa ottaa yhteyttä Interchange-palvelimeen."
+msgid ""
+"Unix mode is is the most secure way to run Interchange, for there is no way "
+"for systems on the internet to interact with the Interchange server."
+msgstr ""
+"Unix-tila on turvallisin tapa ajaa Interchangea, koska tällöin internetissä "
+"olevilla järjestelmillä ei ole mitään tapaa ottaa yhteyttä Interchange-"
+"palvelimeen."
 
 #. Type: string
 #. Description
@@ -219,8 +267,15 @@ msgstr "Käyttäjätunnus, jolla palvelinta ajetaan:"
 #. Type: string
 #. Description
 #: ../interchange.templates:2001
-msgid "This determines the user for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Tämä määrää interchange-palvelimen käyttäjän ja tiedostojen omistajan. Toisen käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
+msgid ""
+"This determines the user for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Tämä määrää Interchange-palvelimen käyttäjän ja tiedostojen omistajan. "
+"Toisen käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä "
+"valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
 
 #. Type: boolean
 #. Description
@@ -228,19 +283,20 @@ msgstr "Tämä määrää interchange-palvelimen käyttäjän ja tiedostojen omi
 msgid "Create the user ${USER}?"
 msgstr "Luodaanko käyttäjä ${USER}?"
 
-#. Type: note
+#. Type: error
 #. Description
-#. Type: note
+#. Type: error
 #. Description
-#: ../interchange.templates:4001
-#: ../interchange.templates:6001
+#: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
-msgstr "Ohjelmaa interchange ei voida ajaa pääkäyttäjänä!"
+msgstr "Ohjelmaa Interchange ei voida ajaa pääkäyttäjänä!"
 
-#. Type: note
+#. Type: error
 #. Description
 #: ../interchange.templates:4001
-msgid "You have been warned. Either choose an appropriate user or stay with the default."
+msgid ""
+"You have been warned. Either choose an appropriate user or stay with the "
+"default."
 msgstr "Valitse joko sopiva käyttäjätunnus tai säilytä oletusasetus."
 
 #. Type: string
@@ -252,13 +308,22 @@ msgstr "Ryhmän nimi, jolla palvelinta ajetaan."
 #. Type: string
 #. Description
 #: ../interchange.templates:5001
-msgid "This determines the group for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Tämä määrää interchange-palvelimen ryhmän ja tiedostojen ryhmän. Toisen käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
+msgid ""
+"This determines the group for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Tämä määrää Interchange-palvelimen ryhmän ja tiedostojen ryhmän. Toisen "
+"käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä valitse "
+"pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
 
-#. Type: note
+#. Type: error
 #. Description
 #: ../interchange.templates:6001
-msgid "You have been warned. Either choose an appropriate group or stay with the default."
+msgid ""
+"You have been warned. Either choose an appropriate group or stay with the "
+"default."
 msgstr "Valitse joko sopiva ryhmä tai säilytä oletusasetus."
 
 #. Type: boolean
@@ -267,125 +332,135 @@ msgstr "Valitse joko sopiva ryhmä tai säilytä oletusasetus."
 msgid "Create the group ${GROUP}?"
 msgstr "Luodaanko ryhmä ${GROUP}?"
 
-#. Type: select
-#. Choices
-#: ../interchange.templates:9001
-msgid "Apache2"
-msgstr "Apache2"
-
-#. Type: select
-#. Choices
-#: ../interchange.templates:9001
-msgid "Apache"
-msgstr "Apache"
-
-#. Type: select
-#. Description
-#: ../interchange.templates:9002
-msgid "Which webserver are you running ?"
-msgstr "Mitä verkkopalvelinta käytetään?"
-
-#. Type: select
-#. Description
-#: ../interchange.templates:9002
-msgid "This information is necessary for the makecat script. Please specify which webserver you want to use for your Interchange applications."
-msgstr "Komentosarja makecat tarvitsee tätä tietoa. Valitse mitä verkkopalvelinta käytetään Interchange-ohjelmien kanssa."
-
 #. Type: string
 #. Description
-#: ../interchange.templates:10001
+#: ../interchange.templates:9001
 msgid "Static HTML files location:"
 msgstr "Staattisten HTML-tiedostojen sijainti:"
 
 #. Type: string
 #. Description
-#: ../interchange.templates:10001
+#: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr "Luetteloiden asennus tarvitsee hakemiston, johon HTML-tiedostot voidaan laittaa."
+msgstr ""
+"Luetteloiden asennus tarvitsee hakemiston, johon HTML-tiedostot voidaan "
+"laittaa."
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
+#: ../interchange.templates:10001
 msgid "Directory for GnuPG public keyring:"
 msgstr "GnuPG:n julkisen avainrenkaan hakemisto:"
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
-msgid "For enhanced security, credit card information retrieved from customers will be encrypted and mailed to the shop owner instead of storing it on the server."
-msgstr "Turvallisuuden lisäämiseksi asiakkailta pyydetyt luottokorttitiedot salataan ja lähetetään sähköpostina kaupan omistajalle palvelimelle tallentamisen sijaan."
+#: ../interchange.templates:10001
+msgid ""
+"For enhanced security, credit card information retrieved from customers will "
+"be encrypted and mailed to the shop owner instead of storing it on the "
+"server."
+msgstr ""
+"Turvallisuuden lisäämiseksi asiakkailta pyydetyt luottokorttitiedot salataan "
+"ja lähetetään sähköpostina kaupan omistajalle palvelimelle tallentamisen "
+"sijaan."
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Anna hakemisto, jossa Interchange pitää GnuPG:n julkista avainrengasta."
+#: ../interchange.templates:10001
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr ""
+"Anna hakemisto, jossa Interchange pitää GnuPG:n julkista avainrengasta."
 
 #. Type: select
 #. Choices
-#: ../interchange.templates:12001
+#: ../interchange.templates:11001
 msgid "low, high, rpc"
 msgstr "matala, korkea, rpc"
 
 #. Type: select
 #. Description
-#: ../interchange.templates:12002
+#: ../interchange.templates:11002
 msgid "Set of server parameters:"
 msgstr "Palvelimen parametrijoukko:"
 
 #. Type: select
 #. Description
-#: ../interchange.templates:12002
-msgid "You can choose different sets of server parameters. Any store based on the foundation demo will change its behaviour too. If rpc is selected, the Interchange server will run in PreFork mode."
-msgstr "Palvelimelle voidaan valita erilaisia parametrijoukkoja. Kaikkien esimerkkikauppaan perustuvien kauppojen toiminta muuttuu myös. Valinnalla rpc Interchange-palvelin ajetaan PreFork-tilassa."
+#: ../interchange.templates:11002
+msgid ""
+"You can choose different sets of server parameters. Any store based on the "
+"foundation demo will change its behaviour too. If rpc is selected, the "
+"Interchange server will run in PreFork mode."
+msgstr ""
+"Palvelimelle voidaan valita erilaisia parametrijoukkoja. Kaikkien "
+"esimerkkikauppaan perustuvien kauppojen toiminta muuttuu myös. Valinnalla "
+"rpc Interchange-palvelin ajetaan PreFork-tilassa."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
+#: ../interchange.templates:12001
 msgid "Enable the FullURL directive?"
 msgstr "Aktivoidaanko FullURL-määre?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
-msgid "This setting determines if the whole URL is considered while checking for the corresponding catalog."
-msgstr "Tämä asetus määrää käytetäänkö koko URLia tarkistettaessa vastaavaa luetteloa."
+#: ../interchange.templates:12001
+msgid ""
+"This setting determines if the whole URL is considered while checking for "
+"the corresponding catalog."
+msgstr ""
+"Tämä asetus määrää käytetäänkö koko URL:ia tarkistettaessa vastaavaa "
+"luetteloa."
 
 #. Type: note
 #. Description
-#: ../interchange.templates:14001
+#: ../interchange.templates:13001
 msgid "SOAP server not available"
 msgstr "SOAP-palvelinta ei ole käytettävissä."
 
 #. Type: note
 #. Description
-#: ../interchange.templates:14001
-msgid "Because the Perl module SOAP::Lite is not installed, you are unable to run the Interchange SOAP server. To change this, install the libsoap-lite-perl Debian package and run interchangeconfig SOAP=1."
-msgstr "Koska Perl-moduuli SOAP::Lite ei ole asennettuna, ei Interchangen SOAP-palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla Debian-paketti libsoap-lite-perl ja ajamalla interchangeconfig SOAP=1."
+#: ../interchange.templates:13001
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"Koska Perl-moduuli SOAP::Lite ei ole asennettuna, ei Interchangen SOAP-"
+"palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla paketti libsoap-lite-"
+"perl ja ajamalla komento interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:14001
 msgid "Enable the SOAP server?"
 msgstr "Otetaanko SOAP-palvelin käyttöön?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:14001
 msgid "This setting determines if the SOAP server is started or not."
 msgstr "Tämä asetus määrittää käynnistetäänkö SOAP-palvelin."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:16001
+#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Otetaanko robots-asetukset käyttöön?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:16001
-msgid "The Interchange Debian package uses a separate configuration file /etc/interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It is recommended to include these settings so that Interchange can distinguish between robots and ordinary users."
-msgstr "Debianin Interchange-paketti käyttää erillistä asetustiedostoa /etc/interchange/robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost ohjeille. Näiden asetusten ottaminen käyttöön on suositeltavaa, jotta Interchange voi erottaa robotit tavallisista käyttäjistä."
+#: ../interchange.templates:15001
+msgid ""
+"The Interchange Debian package uses a separate configuration file /etc/"
+"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
+"is recommended to include these settings so that Interchange can distinguish "
+"between robots and ordinary users."
+msgstr ""
+"Interchange-paketti käyttää erillistä asetustiedostoa /etc/interchange/"
+"robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost ohjeille. Näiden "
+"asetusten ottaminen käyttöön on suositeltavaa, jotta Interchange voi erottaa "
+"robotit tavallisista käyttäjistä."
 
 #. Type: select
 #. Description
@@ -396,6 +471,13 @@ msgstr "Käyttöliittymän oletuskieli:"
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:1001
-msgid "The administration interface for Interchange catalogs, called UI, has been translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) and Swedish (sv_SE). You can choose the default language here. Any user may change this default at login time."
-msgstr "Interchange-luetteloiden ylläpitokäyttöliittymä, nimeltään UI, on käännetty tanskaksi (da_DK), hollanniksi (nl_NL), saksaksi (de_DE), italiaksi (it_IT) ja ruotsiksi (sv_SE). Valitse oletuskieli tässä. Käyttäjä voi muuttaa tätä oletusta kirjautuessaan."
-
+msgid ""
+"The administration interface for Interchange catalogs, called UI, has been "
+"translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
+"and Swedish (sv_SE). You can choose the default language here. Any user may "
+"change this default at login time."
+msgstr ""
+"Interchange-luetteloiden ylläpitokäyttöliittymä, nimeltään UI, on käännetty "
+"tanskaksi (da_DK), hollanniksi (nl_NL), saksaksi (de_DE), italiaksi (it_IT) "
+"ja ruotsiksi (sv_SE). Valitse oletuskieli tässä. Käyttäjä voi muuttaa tätä "
+"oletusta kirjautuessaan."

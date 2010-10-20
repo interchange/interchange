@@ -28,10 +28,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange 5.7.2-1\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2009-09-18 06:58+0000\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
 "PO-Revision-Date: 2009-10-01 16:40+0100\n"
 "Last-Translator: Francisco Javier Cuadrado <fcocuadrado@gmail.com>\n"
 "Language-Team: Debian l10n Spanish <debian-l10n-spanish@lists.debian.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,8 +46,12 @@ msgstr "¿Desea crear el catálogo de demostración de Interchange?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:1001
-msgid "Whether to install the demo catalog from the standard template or let you manually install it with makecat."
-msgstr "Puede instalar el catálogo de demostración a partir de una plantilla estándar o realizar la instalación manualmente con «makecat»."
+msgid ""
+"Whether to install the demo catalog from the standard template or let you "
+"manually install it with makecat."
+msgstr ""
+"Puede instalar el catálogo de demostración a partir de una plantilla "
+"estándar o realizar la instalación manualmente con «makecat»."
 
 #. Type: boolean
 #. Description
@@ -57,8 +62,13 @@ msgstr "¿Desea borrar el catálogo de demostración al purgar el paquete?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-msgid "Should all files belonging to the Interchange demo catalog removed when you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
-msgstr "¿Deberían borrarse todos los archivos del catálogo de demostración de Interchange cuando purgue el paquete, es decir cuando ejecute «dpkg --purge» o «apt-get remove --purge»?"
+msgid ""
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+msgstr ""
+"¿Deberían borrarse todos los archivos del catálogo de demostración de "
+"Interchange cuando purgue el paquete, es decir cuando ejecute «dpkg --purge» "
+"o «apt-get remove --purge»?"
 
 #. Type: select
 #. Choices
@@ -75,8 +85,13 @@ msgstr "Política al reemplazar los catálogos existentes de demostración:"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:3002
-msgid "Whether to silently replace an existing demo catalog installation, ask for a confirmation or never touch an existing installation."
-msgstr "Reemplazar de forma silenciosa una instalación existente de un catálogo de demostración, preguntar para confirmar o nunca tocar una instalación existente."
+msgid ""
+"Whether to silently replace an existing demo catalog installation, ask for a "
+"confirmation or never touch an existing installation."
+msgstr ""
+"Reemplazar de forma silenciosa una instalación existente de un catálogo de "
+"demostración, preguntar para confirmar o nunca tocar una instalación "
+"existente."
 
 #. Type: boolean
 #. Description
@@ -99,8 +114,12 @@ msgstr "«Virtual host» del catálogo de demostración:"
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-msgid "You are running Interchange with \"FullURL\" enabled. Please specify the virtual host for the demo catalog."
-msgstr "Está ejecutando Interchange con «FullURL» activado. Por favor, especifique el «virtual host» del catálogo de demostración."
+msgid ""
+"You are running Interchange with \"FullURL\" enabled. Please specify the "
+"virtual host for the demo catalog."
+msgstr ""
+"Está ejecutando Interchange con «FullURL» activado. Por favor, especifique "
+"el «virtual host» del catálogo de demostración."
 
 #. Type: string
 #. Description
@@ -111,8 +130,15 @@ msgstr "Nombre de usuario para la administración de este catálogo:"
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:6001
-msgid "Please provide an username for administering the demo catalog. The username must be at least 2 characters long and only contain letters, digits, underscore, @ or the dot as characters."
-msgstr "Proporcione un nombre de usuario para la administración del catálogo de demostración. El nombre de usuario debe tener al menos dos caracteres de longitud y sólo puede contener letras, números, subrayados, arrobas (@) o puntos."
+msgid ""
+"Please provide an username for administering the demo catalog. The username "
+"must be at least 2 characters long and only contain letters, digits, "
+"underscore, @ or the dot as characters."
+msgstr ""
+"Proporcione un nombre de usuario para la administración del catálogo de "
+"demostración. El nombre de usuario debe tener al menos dos caracteres de "
+"longitud y sólo puede contener letras, números, subrayados, arrobas (@) o "
+"puntos."
 
 #. Type: password
 #. Description
@@ -123,8 +149,17 @@ msgstr "Contraseña para la administración de este catálogo:"
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
-msgid "Please provide a password for administering the standard demo catalog. Choose one which can not be easily guessed. Default is pass. The password  must be at least 4 characters long and only contain letters, digits, underscore @ or the dot as characters."
-msgstr "Proporcione una contraseña para la administración del catálogo de demostración. Escoja una que no se pueda averiguar fácilmente. De forma predeterminada se utiliza «pass». La contraseña debe tener al menos cuatro caracteres de longitud y sólo puede contener letras, números, subrayados, arrobas (@) o puntos."
+msgid ""
+"Please provide a password for administering the standard demo catalog. "
+"Choose one which can not be easily guessed. Default is pass. The password  "
+"must be at least 4 characters long and only contain letters, digits, "
+"underscore @ or the dot as characters."
+msgstr ""
+"Proporcione una contraseña para la administración del catálogo de "
+"demostración. Escoja una que no se pueda averiguar fácilmente. De forma "
+"predeterminada se utiliza «pass». La contraseña debe tener al menos cuatro "
+"caracteres de longitud y sólo puede contener letras, números, subrayados, "
+"arrobas (@) o puntos."
 
 #. Type: boolean
 #. Description
@@ -141,8 +176,16 @@ msgstr "Localizaciones adicionales del escaparate:"
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-standard.templates:9001
-msgid "The Interchange demo catalog is able to display the storefront in a number of different languages. Each selected locale will increase the memory footprint of the Interchange server processes, so it is recommended to choose only locales which are really needed."
-msgstr "El catálogo de demostración de Interchange es capaz de mostrar el escaparate en varios idiomas distintos. Cada localización seleccionada incrementará la memoria utilizada de los procesos del servidor de Interchange, por lo que se recomienda escoger sólo las localizaciones realmente necesarias."
+msgid ""
+"The Interchange demo catalog is able to display the storefront in a number "
+"of different languages. Each selected locale will increase the memory "
+"footprint of the Interchange server processes, so it is recommended to "
+"choose only locales which are really needed."
+msgstr ""
+"El catálogo de demostración de Interchange es capaz de mostrar el escaparate "
+"en varios idiomas distintos. Cada localización seleccionada incrementará la "
+"memoria utilizada de los procesos del servidor de Interchange, por lo que se "
+"recomienda escoger sólo las localizaciones realmente necesarias."
 
 #. Type: select
 #. Description
@@ -154,7 +197,9 @@ msgstr "Localización predeterminada del escaparate:"
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Escoja la localización predeterminada del catálogo de demostración de Interchange."
+msgstr ""
+"Escoja la localización predeterminada del catálogo de demostración de "
+"Interchange."
 
 #. Type: select
 #. Choices
@@ -172,7 +217,8 @@ msgstr "MySQL"
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "DBMS for the demo catalog:"
-msgstr "Sistema de gestión de base de datos (DBMS) del catálogo de demostración:"
+msgstr ""
+"Sistema de gestión de base de datos (DBMS) del catálogo de demostración:"
 
 #. Type: select
 #. Description
@@ -231,8 +277,13 @@ msgstr "Modo de arranque:"
 #. Type: select
 #. Description
 #: ../interchange.templates:1002
-msgid "Unix mode is is the most secure way to run Interchange, for there is no way for systems on the internet to interact with the Interchange server."
-msgstr "El modo unix es el método más seguro de ejecutar Interchange, pero no hay forma de que los sistemas de internet interactúen con el servidor de Interchange."
+msgid ""
+"Unix mode is is the most secure way to run Interchange, for there is no way "
+"for systems on the internet to interact with the Interchange server."
+msgstr ""
+"El modo unix es el método más seguro de ejecutar Interchange, pero no hay "
+"forma de que los sistemas de internet interactúen con el servidor de "
+"Interchange."
 
 #. Type: string
 #. Description
@@ -243,8 +294,16 @@ msgstr "Nombre de usuario que ejecutará el servidor:"
 #. Type: string
 #. Description
 #: ../interchange.templates:2001
-msgid "This determines the user for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Este valor establece el usuario para el servidor de Interchange y para los permisos de los archivos. Por favor, tenga en cuenta que utilizar otro usuario tiene graves implicaciones de seguridad. No escoja «root», no está recomendado y se descartará de todos modos."
+msgid ""
+"This determines the user for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Este valor establece el usuario para el servidor de Interchange y para los "
+"permisos de los archivos. Por favor, tenga en cuenta que utilizar otro "
+"usuario tiene graves implicaciones de seguridad. No escoja «root», no está "
+"recomendado y se descartará de todos modos."
 
 #. Type: boolean
 #. Description
@@ -256,16 +315,18 @@ msgstr "¿Desea crear el usuario ${USER}?"
 #. Description
 #. Type: error
 #. Description
-#: ../interchange.templates:4001
-#: ../interchange.templates:6001
+#: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
 msgstr "¡No se puede ejecutar Interchange como «root»!"
 
 #. Type: error
 #. Description
 #: ../interchange.templates:4001
-msgid "You have been warned. Either choose an appropriate user or stay with the default."
-msgstr "Se le ha advertido. Escoja un usuario adecuado o deje el predeterminado."
+msgid ""
+"You have been warned. Either choose an appropriate user or stay with the "
+"default."
+msgstr ""
+"Se le ha advertido. Escoja un usuario adecuado o deje el predeterminado."
 
 #. Type: string
 #. Description
@@ -276,13 +337,23 @@ msgstr "Nombre del grupo con el que se ejecutará el servidor:"
 #. Type: string
 #. Description
 #: ../interchange.templates:5001
-msgid "This determines the group for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Este valor establece el grupo para el servidor de Interchange y para los permisos de los archivos. Por favor, tenga en cuenta que utilizar otro grupo tiene graves implicaciones de seguridad. No escoja «root», no está recomendado y se descartará de todos modos."
+msgid ""
+"This determines the group for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Este valor establece el grupo para el servidor de Interchange y para los "
+"permisos de los archivos. Por favor, tenga en cuenta que utilizar otro grupo "
+"tiene graves implicaciones de seguridad. No escoja «root», no está "
+"recomendado y se descartará de todos modos."
 
 #. Type: error
 #. Description
 #: ../interchange.templates:6001
-msgid "You have been warned. Either choose an appropriate group or stay with the default."
+msgid ""
+"You have been warned. Either choose an appropriate group or stay with the "
+"default."
 msgstr "Se le ha advertido. Escoja un grupo adecuado o deje el predeterminado."
 
 #. Type: boolean
@@ -301,7 +372,9 @@ msgstr "Ubicación de los archivos HTML estáticos:"
 #. Description
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr "Las instalaciones de catálogo necesitan un directorio en el que almacenar los archivos HTML."
+msgstr ""
+"Las instalaciones de catálogo necesitan un directorio en el que almacenar "
+"los archivos HTML."
 
 #. Type: string
 #. Description
@@ -312,14 +385,23 @@ msgstr "Directorio del anillo de claves público de GnuPG:"
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid "For enhanced security, credit card information retrieved from customers will be encrypted and mailed to the shop owner instead of storing it on the server."
-msgstr "Para mejorar la seguridad, la información de las tarjetas de crédito recibida de los clientes se cifrará y se enviará por correo electrónico al dueño de la tienda en lugar de almacenarla en el servidor."
+msgid ""
+"For enhanced security, credit card information retrieved from customers will "
+"be encrypted and mailed to the shop owner instead of storing it on the "
+"server."
+msgstr ""
+"Para mejorar la seguridad, la información de las tarjetas de crédito "
+"recibida de los clientes se cifrará y se enviará por correo electrónico al "
+"dueño de la tienda en lugar de almacenarla en el servidor."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Escoja el directorio que Interchange utiliza para el anillo de claves público de GnuPG."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr ""
+"Escoja el directorio que Interchange utiliza para el anillo de claves "
+"público de GnuPG."
 
 #. Type: select
 #. Choices
@@ -336,8 +418,15 @@ msgstr "Conjunto de parámetros del servidor:"
 #. Type: select
 #. Description
 #: ../interchange.templates:11002
-msgid "You can choose different sets of server parameters. Any store based on the foundation demo will change its behaviour too. If rpc is selected, the Interchange server will run in PreFork mode."
-msgstr "Puede escoger entre diferentes conjuntos de parámetros del servidor. Cualquier tienda basada en el ejemplo de la fundación cambiará también su comportamiento. Si se escoge rpc, el servidor de Interchange se ejecutará en el modo «PreFork»."
+msgid ""
+"You can choose different sets of server parameters. Any store based on the "
+"foundation demo will change its behaviour too. If rpc is selected, the "
+"Interchange server will run in PreFork mode."
+msgstr ""
+"Puede escoger entre diferentes conjuntos de parámetros del servidor. "
+"Cualquier tienda basada en el ejemplo de la fundación cambiará también su "
+"comportamiento. Si se escoge rpc, el servidor de Interchange se ejecutará en "
+"el modo «PreFork»."
 
 #. Type: boolean
 #. Description
@@ -348,8 +437,12 @@ msgstr "¿Desea activar la directiva «FullURL»?"
 #. Type: boolean
 #. Description
 #: ../interchange.templates:12001
-msgid "This setting determines if the whole URL is considered while checking for the corresponding catalog."
-msgstr "Este valor establece si se considera la URL completa mientras se comprueba el catálogo correspondiente."
+msgid ""
+"This setting determines if the whole URL is considered while checking for "
+"the corresponding catalog."
+msgstr ""
+"Este valor establece si se considera la URL completa mientras se comprueba "
+"el catálogo correspondiente."
 
 #. Type: note
 #. Description
@@ -360,8 +453,14 @@ msgstr "Servidor SOAP no disponible"
 #. Type: note
 #. Description
 #: ../interchange.templates:13001
-msgid "Because the Perl module SOAP::Lite is not installed, you are unable to run the Interchange SOAP server. To change this, install the libsoap-lite-perl Debian package and run interchangeconfig SOAP=1."
-msgstr "No puede ejecutar el servidor SOAP de Interchange, ya que el módulo SOAP::Lite de Perl no está instalado. Para arreglar esto, instale el paquete libsoap-lite-perl de Debian y ejecute «interchangeconfig SOAP=1»."
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"No puede ejecutar el servidor SOAP de Interchange, ya que el módulo SOAP::"
+"Lite de Perl no está instalado. Para arreglar esto, instale el paquete "
+"libsoap-lite-perl de Debian y ejecute «interchangeconfig SOAP=1»."
 
 #. Type: boolean
 #. Description
@@ -384,8 +483,16 @@ msgstr "¿Desea activar los ajustes de los robots?"
 #. Type: boolean
 #. Description
 #: ../interchange.templates:15001
-msgid "The Interchange Debian package uses a separate configuration file /etc/interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It is recommended to include these settings so that Interchange can distinguish between robots and ordinary users."
-msgstr "El paquete Interchange de Debian utiliza un archivo de configuración («/etc/interchange/robots.cfg») diferente para las directivas «RobotUA», «RobotIP» y «RobotHost». Se recomienda incluir estos ajustes para que Interchange pueda diferenciar entre los robots y los usuarios."
+msgid ""
+"The Interchange Debian package uses a separate configuration file /etc/"
+"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
+"is recommended to include these settings so that Interchange can distinguish "
+"between robots and ordinary users."
+msgstr ""
+"El paquete Interchange de Debian utiliza un archivo de configuración («/etc/"
+"interchange/robots.cfg») diferente para las directivas «RobotUA», «RobotIP» "
+"y «RobotHost». Se recomienda incluir estos ajustes para que Interchange "
+"pueda diferenciar entre los robots y los usuarios."
 
 #. Type: select
 #. Description
@@ -396,6 +503,13 @@ msgstr "Idioma predeterminado de la interfaz de usuario:"
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:1001
-msgid "The administration interface for Interchange catalogs, called UI, has been translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) and Swedish (sv_SE). You can choose the default language here. Any user may change this default at login time."
-msgstr "La interfaz de administración de los catálogos de Interchange, llamada UI, se ha traducido al danés (da_DK), holandés (nl_NL), alemán (de_DE), italiano (it_IT) y sueco (sv_SE). Puede escoger el idioma predeterminado aquí. Cualquier usuario lo puede cambiar al identificarse."
-
+msgid ""
+"The administration interface for Interchange catalogs, called UI, has been "
+"translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
+"and Swedish (sv_SE). You can choose the default language here. Any user may "
+"change this default at login time."
+msgstr ""
+"La interfaz de administración de los catálogos de Interchange, llamada UI, "
+"se ha traducido al danés (da_DK), holandés (nl_NL), alemán (de_DE), italiano "
+"(it_IT) y sueco (sv_SE). Puede escoger el idioma predeterminado aquí. "
+"Cualquier usuario lo puede cambiar al identificarse."

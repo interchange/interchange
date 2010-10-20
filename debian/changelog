@@ -1,3 +1,14 @@
+interchange (5.7.6-2) unstable; urgency=low
+
+  * Fix pending l10n issues, thanks to Christian Perrier
+    <bubulle@debian.org> for the patch. Debconf translations:
+    - Czech (Martin Sin).  Closes: #589291
+    - Italian (Vincenzo Campanella).  Closes: #597310
+    - Danish (Joe Hansen).  Closes: #599668
+    - Finnish (Esko Arajärvi).  Closes: #600633
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 20 Oct 2010 09:25:07 +0200
+
 interchange (5.7.6-1) unstable; urgency=high
 
   * new upstream release, fixes potential HTTP response splitting

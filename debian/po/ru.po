@@ -18,15 +18,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange 5.7.4-1\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2009-12-10 08:08+0000\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
 "PO-Revision-Date: 2010-01-04 13:10+0300\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: boolean
 #. Description
@@ -53,10 +55,6 @@ msgstr "Удалить демонстрационный каталог при в
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-#| msgid ""
-#| "Whether to remove all files belonging to the Interchange demo catalog "
-#| "when you purge this package, e.g. with dpkg --purge or apt-get remove --"
-#| "purge."
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
@@ -188,7 +186,8 @@ msgstr "Локаль по умолчанию для витрины:"
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
+msgstr ""
+"Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
@@ -384,7 +383,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Выберите каталог, используемый Interchange для хранения публичных ключей "
 "GnuPG:"
@@ -443,14 +443,13 @@ msgid ""
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
-"Так как Perl-модуль SOAP::Lite не установлен, вы не сможете "
-"запускать сервер Interchange SOAP. Чтобы это исправить, установите "
-"пакет Debian libsoap-lite-perl и запустите команду interchangeconfig SOAP=1."
+"Так как Perl-модуль SOAP::Lite не установлен, вы не сможете запускать сервер "
+"Interchange SOAP. Чтобы это исправить, установите пакет Debian libsoap-lite-"
+"perl и запустите команду interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:14001
-#| msgid "Enable the FullURL directive?"
 msgid "Enable the SOAP server?"
 msgstr "Включить сервер SOAP?"
 
@@ -500,4 +499,3 @@ msgstr ""
 "итальянский (it_IT) и шведский (sv_SE) языки. Вы можете сейчас выбрать язык "
 "по умолчанию. Любой пользователь может изменить язык по умолчанию во время "
 "входа."
-

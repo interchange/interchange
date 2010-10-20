@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange_5.6.1-1_sv\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2009-09-18 06:58+0000\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
 "PO-Revision-Date: 2009-10-22 01:37+0100\n"
 "Last-Translator: Martin Bagge <brother@bsnet.se>\n"
 "Language-Team: Swedish <debian-l10n-swedish@lists.debian.org>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -44,10 +45,6 @@ msgstr "Ta bort demokatalogen när paketet rensas bort?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-#| msgid ""
-#| "Whether to remove all files belonging to the Interchange demo catalog "
-#| "when you purge this package, e.g. with dpkg --purge or apt-get remove --"
-#| "purge."
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
@@ -440,7 +437,6 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../interchange.templates:14001
-#| msgid "Enable the FullURL directive?"
 msgid "Enable the SOAP server?"
 msgstr "Aktivera SOAP-servern?"
 
