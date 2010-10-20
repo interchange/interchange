@@ -10,6 +10,7 @@ msgstr ""
 "PO-Revision-Date: 2009-01-31 16:21+1030\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
+"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -96,8 +97,8 @@ msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
 msgstr ""
-"Bạn đang chạy Interchange với chức năng « FullURL » (địa chỉ URL đầy đủ) được "
-"hiệu lực. Hãy ghi rõ máy ảo cho phân loại minh hoạ."
+"Bạn đang chạy Interchange với chức năng « FullURL » (địa chỉ URL đầy đủ) "
+"được hiệu lực. Hãy ghi rõ máy ảo cho phân loại minh hoạ."
 
 #. Type: string
 #. Description
@@ -134,8 +135,9 @@ msgid ""
 msgstr ""
 "Hãy cung cấp một mật khẩu để quản trị phân loại minh hoạ tiêu chuẩn. Để bảo "
 "vệ máy tính thì lúc nào cũng nên chọn một mật khẩu khó đoán. Mật khẩu mặc "
-"định là « pass » (rất dễ đoán). Mật khẩu phải chứa ít nhất bốn ký tự (dài hơn "
-"thì mạnh hơn), cũng chỉ chứa được chữ cái, chữ số, gạch dưới, @ hay dấu chấm."
+"định là « pass » (rất dễ đoán). Mật khẩu phải chứa ít nhất bốn ký tự (dài "
+"hơn thì mạnh hơn), cũng chỉ chứa được chữ cái, chữ số, gạch dưới, @ hay dấu "
+"chấm."
 
 #. Type: boolean
 #. Description

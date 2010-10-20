@@ -1,16 +1,20 @@
+# Esko Arajärvi <edu@iki.fi>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: interchange\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
 "POT-Creation-Date: 2010-03-25 09:53+0000\n"
-"PO-Revision-Date: 2008-03-19 16:41+0200\n"
+"PO-Revision-Date: 2010-10-18 21:53+0300\n"
 "Last-Translator: Esko Arajärvi <edu@iki.fi>\n"
 "Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+"X-Generator: Lokalize 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Type: boolean
 #. Description
@@ -83,8 +87,6 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-#, fuzzy
-#| msgid "Virtual host for the demo catalog ?"
 msgid "Virtual host for the demo catalog:"
 msgstr "Esimerkkiluettelon virtuaalikone:"
 
@@ -188,26 +190,20 @@ msgstr "MySQL"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-#, fuzzy
-#| msgid "Virtual host for the demo catalog ?"
 msgid "DBMS for the demo catalog:"
-msgstr "Esimerkkiluettelon virtuaalikone:"
+msgstr "Tietokantapalvelin esimerkkiluetteloa varten:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-#, fuzzy
-#| msgid "Please select the default locale for the Interchange demo catalog."
 msgid "Please select the database type used for the demo catalog."
-msgstr "Valitse Interchangen esimerkkiluettelon oletuskieli."
+msgstr "Valitse esimerkkiluettelon tietokannan tyyppi."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
-#, fuzzy
-#| msgid "Database name"
 msgid "Database name:"
-msgstr "Tietokannan nimi"
+msgstr "Tietokannan nimi:"
 
 #. Type: string
 #. Description
@@ -218,10 +214,8 @@ msgstr "Valitse nimi tietokannalle."
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
-#, fuzzy
-#| msgid "Database user"
 msgid "Database user:"
-msgstr "Tietokantakäyttäjä:"
+msgstr "Tietokantakäyttäjä::"
 
 #. Type: string
 #. Description
@@ -232,10 +226,8 @@ msgstr "Anna käyttäjätunnus, jota käytetään otettaessa yhteyttä tietokant
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
-#, fuzzy
-#| msgid "Database password"
 msgid "Database password:"
-msgstr "Tietokantasalasana:"
+msgstr "Tietokannan salasana:"
 
 #. Type: password
 #. Description
@@ -247,7 +239,7 @@ msgstr "Anna salasana, jota käytetään otettaessa yhteyttä tietokantaan."
 #. Choices
 #: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
-msgstr "unix-tila, internet-tila, molemmat"
+msgstr "unix-tila, Internet-tila, molemmat"
 
 #. Type: select
 #. Description
@@ -281,7 +273,7 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Tämä määrää interchange-palvelimen käyttäjän ja tiedostojen omistajan. "
+"Tämä määrää Interchange-palvelimen käyttäjän ja tiedostojen omistajan. "
 "Toisen käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä "
 "valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
 
@@ -297,7 +289,7 @@ msgstr "Luodaanko käyttäjä ${USER}?"
 #. Description
 #: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
-msgstr "Ohjelmaa interchange ei voida ajaa pääkäyttäjänä!"
+msgstr "Ohjelmaa Interchange ei voida ajaa pääkäyttäjänä!"
 
 #. Type: error
 #. Description
@@ -322,7 +314,7 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Tämä määrää interchange-palvelimen ryhmän ja tiedostojen ryhmän. Toisen "
+"Tämä määrää Interchange-palvelimen ryhmän ja tiedostojen ryhmän. Toisen "
 "käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä valitse "
 "pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
 
@@ -417,7 +409,7 @@ msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
 msgstr ""
-"Tämä asetus määrää käytetäänkö koko URLia tarkistettaessa vastaavaa "
+"Tämä asetus määrää käytetäänkö koko URL:ia tarkistettaessa vastaavaa "
 "luetteloa."
 
 #. Type: note
@@ -435,8 +427,8 @@ msgid ""
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
 "Koska Perl-moduuli SOAP::Lite ei ole asennettuna, ei Interchangen SOAP-"
-"palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla Debian-paketti "
-"libsoap-lite-perl ja ajamalla interchangeconfig SOAP=1."
+"palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla paketti libsoap-lite-"
+"perl ja ajamalla komento interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
@@ -465,10 +457,10 @@ msgid ""
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
-"Debianin Interchange-paketti käyttää erillistä asetustiedostoa /etc/"
-"interchange/robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost ohjeille. "
-"Näiden asetusten ottaminen käyttöön on suositeltavaa, jotta Interchange voi "
-"erottaa robotit tavallisista käyttäjistä."
+"Interchange-paketti käyttää erillistä asetustiedostoa /etc/interchange/"
+"robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost ohjeille. Näiden "
+"asetusten ottaminen käyttöön on suositeltavaa, jotta Interchange voi erottaa "
+"robotit tavallisista käyttäjistä."
 
 #. Type: select
 #. Description
@@ -489,25 +481,3 @@ msgstr ""
 "tanskaksi (da_DK), hollanniksi (nl_NL), saksaksi (de_DE), italiaksi (it_IT) "
 "ja ruotsiksi (sv_SE). Valitse oletuskieli tässä. Käyttäjä voi muuttaa tätä "
 "oletusta kirjautuessaan."
-
-#~ msgid "Which DBMS should be used for the demo catalog ?"
-#~ msgstr "Mitä tietokantapalvelinta esimerkkiluettelon tulisi käyttää?"
-
-#~ msgid "Please select the database type."
-#~ msgstr "Valitse tietokannan tyyppi."
-
-#~ msgid "Apache2"
-#~ msgstr "Apache2"
-
-#~ msgid "Apache"
-#~ msgstr "Apache"
-
-#~ msgid "Which webserver are you running ?"
-#~ msgstr "Mitä verkkopalvelinta käytetään?"
-
-#~ msgid ""
-#~ "This information is necessary for the makecat script. Please specify "
-#~ "which webserver you want to use for your Interchange applications."
-#~ msgstr ""
-#~ "Komentosarja makecat tarvitsee tätä tietoa. Valitse mitä verkkopalvelinta "
-#~ "käytetään Interchange-ohjelmien kanssa."

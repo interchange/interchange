@@ -1,29 +1,26 @@
-# translation of interchange debconf to Portuguese
-# Copyright (C) 2007 the interchange's copyright holder
+# Danish translation interchange.
+# Copyright (C) 2010 interchange & nedenstående oversættere.
 # This file is distributed under the same license as the interchange package.
+# Joe Hansen <joedalton2@yahoo.dk>, 2010.
 #
-# Ricardo Silva <ardoric@gmail.com>, 2007-2008.
-# Américo Monteiro <a_monteiro@netcabo.pt>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: interchange 5.7.4-1\n"
+"Project-Id-Version: interchange\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
 "POT-Creation-Date: 2010-03-25 09:53+0000\n"
-"PO-Revision-Date: 2009-12-28 00:32+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@netcabo.pt>\n"
-"Language-Team: Portuguese <traduz@debianpt.org>\n"
-"Language: pt\n"
+"PO-Revision-Date: 2010-10-10 13:26+0100\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org> \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.0\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:1001
 msgid "Create the Interchange demo catalog?"
-msgstr "Criar o catálogo de demonstração do Interchange?"
+msgstr "Opret demokataloget til Interchange?"
 
 #. Type: boolean
 #. Description
@@ -32,14 +29,14 @@ msgid ""
 "Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
 msgstr ""
-"Instalar o catálogo de demonstração do template pré-definido ou deixar que o "
-"instale manualmente usando o makecat."
+"Hvorvidt demokataloget skal installeres fra standardskabelonen eller lade "
+"dig manuelt installere det med makecat."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr "Remover o catálogo de demonstração quando se eliminar o pacote?"
+msgstr "Fjern demokatalog ved pakkeafinstallering?"
 
 #. Type: boolean
 #. Description
@@ -48,21 +45,21 @@ msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
-"Devem ser removidos todos os ficheiros do catálogo de demonstração do "
-"Interchange quando purgar este pacote, ex. com dpkg --purge ou apt-get "
-"remove --purge ?"
+"Skal alle filer tilhørende demokataloget til Interchange fjernes, når du "
+"afinstallerer denne pakke f.eks. med dpkg --purge eller apt-get remove --"
+"purge?"
 
 #. Type: select
 #. Choices
 #: ../interchange-cat-standard.templates:3001
 msgid "always, ask, never"
-msgstr "sempre, perguntar, nunca"
+msgstr "altid, spørg, aldrig"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
-msgstr "Política para substituir catálogos de demonstração existentes:"
+msgstr "Politik for erstatning af eksisterende demokataloger:"
 
 #. Type: select
 #. Description
@@ -71,26 +68,27 @@ msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
 msgstr ""
-"Substituir silenciosamente uma instalação existente de catálogo, pedir por "
-"confirmação ou nunca tocar numa instalação existente."
+"Hvorvidt en eksisterende installation af et demokatalog skal erstattes i "
+"baggrunden, spørg efter bekræftelse eller aldrig røre en eksisterende "
+"installation."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "Replace the Interchange demo catalog?"
-msgstr "Substituir o catálogo de demonstração do Interchange?"
+msgstr "Erstat demokataloget til Interchange?"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
-msgstr "Parece já existir um catálogo de demonstração do Interchange."
+msgstr "Der ser ud til, at der allerede findes et demokatalog til Interchange."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
 msgid "Virtual host for the demo catalog:"
-msgstr "'Host' virtual para o catálogo de demonstração:"
+msgstr "Virtuel vært for demokataloget:"
 
 #. Type: string
 #. Description
@@ -99,14 +97,14 @@ msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
 msgstr ""
-"Está a correr o Interchange com \"FullURL\" activado. Por favor especifique "
-"o 'host' virtual para o catálogo de demonstração."
+"Du kører Interchange med »FullURL« aktiveret. Angiv venligst den virtuelle "
+"vært for demokataloget."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:6001
 msgid "Username for this catalog's administration:"
-msgstr "Nome de utilizador para a administração deste catálogo:"
+msgstr "Brugernavn for dette katalogs administration:"
 
 #. Type: string
 #. Description
@@ -116,15 +114,15 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
-"Por favor dê um nome de utilizador para a administração do catálogo de "
-"demonstração. O nome de utilizador deve ter pelo menos dois caracteres e "
-"apenas ter letras, digitos, underscore, @ ou ponto."
+"Angiv venligst et brugernavn for administration af demokataloget. "
+"Brugernavnet skal være på mindst 2 tegn og må kun indeholde bogstaver A-Z, "
+"tal, understregning, @ eller punktum."
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid "Password for this catalog's administration:"
-msgstr "Palavra-passe para a administração deste catálogo:"
+msgstr "Adgangskode for dette katalogs administration:"
 
 #. Type: password
 #. Description
@@ -135,22 +133,22 @@ msgid ""
 "must be at least 4 characters long and only contain letters, digits, "
 "underscore @ or the dot as characters."
 msgstr ""
-"Por favor indique uma palavra-passe para a administração do catálogo de "
-"demonstração. Escolha uma que não pode ser adivinhada com facilidade. Por "
-"omissão é pass. A palavra-passe deve ter pelo menos 4 caracteres e conter "
-"apenas letras, dígitos, underscore, @ ou ponto."
+"Angiv venligst en adgangskode for administration af standarddemokataloget. "
+"Vælg en adgangskode som ikke nemt kan gættes. Standard er pass. Adgangskoden "
+"skal være på mindst 4 tegn og må kun indeholde bogstaver A-Z, tal, "
+"understregning, @ eller punktum."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:8001
 msgid "Enable demo mode?"
-msgstr "Activar o modo demonstração?"
+msgstr "Aktiver demotilstand?"
 
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-standard.templates:9001
 msgid "Additional locales for the storefront:"
-msgstr "Locales adicionais para a montra:"
+msgstr "Yderligere sprog for butiksfladen:"
 
 #. Type: multiselect
 #. Description
@@ -161,24 +159,22 @@ msgid ""
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
 msgstr ""
-"O catálogo de demonstração do Interchange pode mostrar a montra em várias "
-"línguas. Cada locale seleccionado irá aumentar a memória usada pelos "
-"processos do servidor Interchange, portanto é recomendado que escolha apenas "
-"os locales que serão realmente necessários."
+"Demokataloget til Interchange kan vise butiksfladen i en række sprog. Hvert "
+"valgt sprog vil øge hukommelsesforbruget på processerne på "
+"Interchangeserveren, så det anbefales kun at vælge sprog som virkelig "
+"behøves."
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Default locale for the storefront:"
-msgstr "Locale por omissão da montra:"
+msgstr "Standardsprog for butiksfladen:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr ""
-"Por favor escolha o locale por omissão do catálogo de demonstração do "
-"Interchange."
+msgstr "Vælg venligst standardsproget for demokataloget til Interchange."
 
 #. Type: select
 #. Choices
@@ -196,64 +192,61 @@ msgstr "MySQL"
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "DBMS for the demo catalog:"
-msgstr "SGBD para o catálogo de demonstração:"
+msgstr "DBMS for demokataloget:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Please select the database type used for the demo catalog."
-msgstr ""
-"Por favor escolha o tipo de bases de dados usado para o catálogo de "
-"demonstração."
+msgstr "Vælg venligst databasetypen brugt for demokataloget."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
 msgid "Database name:"
-msgstr "Nome da base de dados:"
+msgstr "Databasenavn:"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
 msgid "Please select the name of the database."
-msgstr "Por favor escolha o nome da base de dados."
+msgstr "Vælg venligst navnet på databasen."
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Database user:"
-msgstr "Nome do utilizador na base de dados:"
+msgstr "Databasebruger:"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr ""
-"Por favor especifique o nome de utilizador para se ligar à base de dados."
+msgstr "Angiv venligst brugernavnet for forbindelsen til databasen."
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Database password:"
-msgstr "Palavra-passe da base de dados:"
+msgstr "Adgangskode for database:"
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr "Por favor especifique a palavra-passe para se ligar à base de dados."
+msgstr "Angiv venligst adgangskoden for forbindelsen til databasen."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:1001
 msgid "unix mode, internet mode, both"
-msgstr "modo unix, modo internet, ambos"
+msgstr "unixtilstand, internettilstand, begge"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:1002
 msgid "Start mode:"
-msgstr "Modo de início:"
+msgstr "Starttilstand:"
 
 #. Type: select
 #. Description
@@ -262,14 +255,15 @@ msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
-"O modo unix é a forma mais segura de correr o Interchange, uma vez que não "
-"há formas de sistemas na internet interagirem com o servidor Interchange."
+"Unixtilstand er den mest sikre metode til at køre Interchange. Med denne "
+"metode er der ingen mulighed for, at systemer på internettet kan kommunikere "
+"med Interchangeserveren."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:2001
 msgid "Username to run the server as:"
-msgstr "Nome do utilizador com que correr o servidor:"
+msgstr "Brugernavn at køre serveren som:"
 
 #. Type: string
 #. Description
@@ -280,16 +274,16 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Determina o utilizador usado para correr o servidor interchange e para as "
-"permissões de ficheiros. Por favor note que usar outro utilizador tem sérias "
-"implicações de segurança. Não escolha root, não é recomendado e será "
-"ignorado."
+"Dette bestemmer brugeren for interchangeserveren og for filrettigheder. "
+"Bemærk venligst at brug af en anden bruger har alvorlige "
+"sikkerhedsimplikationer. Vælg ikke root, det anbefales ikke og vil blive "
+"omgjort alligevel."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:3001
 msgid "Create the user ${USER}?"
-msgstr "Criar o utilizador ${USER}?"
+msgstr "Opret brugeren ${USER}?"
 
 #. Type: error
 #. Description
@@ -297,7 +291,7 @@ msgstr "Criar o utilizador ${USER}?"
 #. Description
 #: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
-msgstr "É impossível correr o interchange como root !"
+msgstr "Umuligt at køre interchange som root!"
 
 #. Type: error
 #. Description
@@ -306,13 +300,14 @@ msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
 msgstr ""
-"Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
+"Du er blevet advaret. Enten vælg en passende bruger eller vælg "
+"standardbrugeren."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:5001
 msgid "Group name to run the server as:"
-msgstr "Nome do grupo para correr o servidor:"
+msgstr "Gruppenavn at køre serveren som:"
 
 #. Type: string
 #. Description
@@ -323,9 +318,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Determina o grupo para o servidor do interchange e para as permissões dos "
-"ficheiros. Por favor note que usar outro utilizador tem sérias implicações "
-"de segurança. Não escolha root, não é recomendado e será ignorado."
+"Dette bestemmer gruppen til interchangeserveren og filrettigheder. Bemærk "
+"venligst at brug af en anden bruger har alvorlige sikkerhedsmæssige "
+"implikationer. Vælg ikke root, det anbefales ikke og vil blive omgjort "
+"alligevel."
 
 #. Type: error
 #. Description
@@ -334,33 +330,33 @@ msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
 msgstr ""
-"Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
+"Du er blevet advaret. Enten vælg en passende gruppe eller vælg "
+"standardgruppen."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:7001
 msgid "Create the group ${GROUP}?"
-msgstr "Criar o grupo ${GROUP}?"
+msgstr "Opret gruppen ${GROUP}?"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:9001
 msgid "Static HTML files location:"
-msgstr "Localização dos ficheiros HTML estáticos:"
+msgstr "Placering af statiske HTML-filer:"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
 msgstr ""
-"Instalações de catálogo necessitam um directório onde os ficheiros HTML são "
-"colocados."
+"Kataloginstallationer har brug for en mappe hvor HTML-filer kan placeres."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
 msgid "Directory for GnuPG public keyring:"
-msgstr "Directório para o porta-chaves público do GnuPG:"
+msgstr "Mappe til GnuPG's offentlige nøglering:"
 
 #. Type: string
 #. Description
@@ -370,9 +366,8 @@ msgid ""
 "be encrypted and mailed to the shop owner instead of storing it on the "
 "server."
 msgstr ""
-"Para melhorar a segurança, a informação de cartões de crédito obtida dos "
-"clientes irá ser cifrada e enviada para o dono da loja em vez de ser "
-"guardada no servidor."
+"For forbedret sikkerhed vil kreditkortinformation indhentet fra kunder blive "
+"krypteret og sendt til butiksejeren frem for at blive gemt på serveren."
 
 #. Type: string
 #. Description
@@ -380,20 +375,19 @@ msgstr ""
 msgid ""
 "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
-"Por favor escolha o directório que o Interchange usa para o porta-chaves "
-"público GnuPG."
+"Vælg venligst mappen som Interchange bruger til GnuPG's offentlige nøglering."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:11001
 msgid "low, high, rpc"
-msgstr "baixo, alto, rpc"
+msgstr "lav, høj, rpc"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:11002
 msgid "Set of server parameters:"
-msgstr "Escolha os parâmetros do servidor:"
+msgstr "Sæt af serverparametre:"
 
 #. Type: select
 #. Description
@@ -403,15 +397,15 @@ msgid ""
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
 msgstr ""
-"Pode escolher grupos diferentes de parâmetros. Qualquer loja baseada na "
-"demonstração irá também ter o seu comportamento alterado. Se for escolhido "
-"rpc, o servidor Interchange irá correr em modo PreFork."
+"Du kan vælge forskellige sæt af serverparametre. Alle butikker baseret på "
+"grunddemoen vil også ændre sin opførsel. Hvis rpc er valgt, vil "
+"Interchangeserveren køre i præforgreningstilstand."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:12001
 msgid "Enable the FullURL directive?"
-msgstr "Activar a directiva FullURL?"
+msgstr "Aktiver FullURL-direktivet?"
 
 #. Type: boolean
 #. Description
@@ -420,14 +414,14 @@ msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
 msgstr ""
-"Esta directiva determina se todo o URL é considerado quando à procura do "
-"catálogo correspondente."
+"Denne indstilling bestemmer om hele adressen medtages, når der tjekkes for "
+"det tilsvarende katalog."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:13001
 msgid "SOAP server not available"
-msgstr "Servidor SOAP não disponível"
+msgstr "SOAP-server ikke tilgængelig"
 
 #. Type: note
 #. Description
@@ -437,27 +431,27 @@ msgid ""
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
-"Devido ao módulo Perl SOAP::Lite não estar instalado, você não pode correr o "
-"servidor SOAP do Interchange. Para modificar isto, instale o pacote Debian "
-"libsoap-lite-perl e corra interchangeconfig SOAP=1."
+"Da Perl-modulet SOAP::Lite ikke er installeret, kan du ikke køre Interchange "
+"SOAP-serveren. For at ændre dette, installere Debianpakken libsoap-lite-perl "
+"og kør interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:14001
 msgid "Enable the SOAP server?"
-msgstr "Activar o servidor SOAP?"
+msgstr "Aktiver SOAP-serveren?"
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:14001
 msgid "This setting determines if the SOAP server is started or not."
-msgstr "Esta definição determina se o servidor SOAP é ou não iniciado."
+msgstr "Denne indstilling bestemmer om SOAP-serveren startes eller ej."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:15001
 msgid "Enable robots settings?"
-msgstr "Activar a directiva de robots?"
+msgstr "Aktiver robots opsætning?"
 
 #. Type: boolean
 #. Description
@@ -468,16 +462,16 @@ msgid ""
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
-"O pacote Interchange da Debian usa um ficheiro de configuração diferente em /"
-"etc/interchange/robots.cfg para as directivas RobotUA, RobotIP e RobotHost. "
-"É recomendado que inclua estas directivas para que o Interchange consiga "
-"distinguir entre robots e utilizadores normais."
+"Debianpakken Interchange bruger en separat konfigurationsfil /etc/"
+"interchange/robots.cfg til direktiverne RobotUA, RobotIP og RobotHost. Det "
+"anbefales at inkludere denne opsætning så, at Interchange kan skelne mellem "
+"robotter og normale brugere."
 
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:1001
 msgid "Default language for user interface:"
-msgstr "Idioma por omissão da interface com o utilizador:"
+msgstr "Standardsprog for brugergrænseflade:"
 
 #. Type: select
 #. Description
@@ -488,7 +482,7 @@ msgid ""
 "and Swedish (sv_SE). You can choose the default language here. Any user may "
 "change this default at login time."
 msgstr ""
-"A interface de administração para catálogos Interchange, chamada UI, foi "
-"traduzida para Dinamarquês (da_DK), Holandês (nl_NL), Alemão (de_DE), "
-"Italiano (it_IT) e Sueco (sv_SE). Pode escolher o idioma por omissão aqui. "
-"Qualquer utilizador pode mudar este parâmetro quando faz login."
+"Administrationsgrænsefladen for Interchangekataloger, kaldt UI, er blevet "
+"oversat til dansk (da_DK), hollandsk (nl_NL), tysk (de_DE), italiensk "
+"(it_IT) og svensk (sv_SE). Du kan vælge standardsproget her. Enhver bruger "
+"kan ændre denne standard ved logindtidspunktet."

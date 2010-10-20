@@ -1,3 +1,14 @@
+interchange (5.7.6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix pending l10n issues. Debconf translations:
+    - Czech (Martin Sin).  Closes: #589291
+    - Italian (Vincenzo Campanella).  Closes: #597310
+    - Danish (Joe Hansen).  Closes: #599668
+    - Finnish (Esko Arajärvi).  Closes: #600633
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 19 Oct 2010 07:20:08 +0200
+
 interchange (5.7.6-1) unstable; urgency=high
 
   * new upstream release, fixes potential HTTP response splitting
