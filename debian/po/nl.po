@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: interchange\n"
-"Report-Msgid-Bugs-To: racke@linuxia.de\n"
-"POT-Creation-Date: 2007-08-21 15:48+0200\n"
+"Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
 "PO-Revision-Date: 2008-03-21 10:46+0100\n"
 "Last-Translator: Bart Cornelis <cobaco@skolelinux.no>\n"
 "Language-Team: debian-l10n-dutch <debian-l10n-dutch@lists.debian.org>\n"
@@ -25,20 +25,30 @@ msgstr "Wilt u dat de Interchange demo-catalogus aangemaakt wordt?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:1001
-msgid "Whether to install the demo catalog from the standard template or let you manually install it with makecat."
-msgstr "Of u wilt dat de demo-catalogus geïnstalleerd wordt uitgaande van de standaard sjabloon, of u deze handmatig via makecat wilt installeren."
+msgid ""
+"Whether to install the demo catalog from the standard template or let you "
+"manually install it with makecat."
+msgstr ""
+"Of u wilt dat de demo-catalogus geïnstalleerd wordt uitgaande van de "
+"standaard sjabloon, of u deze handmatig via makecat wilt installeren."
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr "Wilt u dat de demo-catalogus verwijderd wordt als dit pakket gewist wordt?"
+msgstr ""
+"Wilt u dat de demo-catalogus verwijderd wordt als dit pakket gewist wordt?"
 
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-msgid "Should all files belonging to the Interchange demo catalog removed when you purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
-msgstr "Wilt u dat alle bestanden die tot de Interchange demo-catalogus behoren verwijderd worden wanneer dit pakket gewist wordt (b.v. via dpkg --purge of apt-get remove --purge)?"
+msgid ""
+"Should all files belonging to the Interchange demo catalog removed when you "
+"purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
+msgstr ""
+"Wilt u dat alle bestanden die tot de Interchange demo-catalogus behoren "
+"verwijderd worden wanneer dit pakket gewist wordt (b.v. via dpkg --purge of "
+"apt-get remove --purge)?"
 
 #. Type: select
 #. Choices
@@ -55,8 +65,13 @@ msgstr "Beleid voor vervangen van bestaande demo-catalogussen:"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:3002
-msgid "Whether to silently replace an existing demo catalog installation, ask for a confirmation or never touch an existing installation."
-msgstr "Of u een bestaande demo-catalogus zonder meer wil vervangen, of u gevraagd wilt worden om een bevestiging, of u wilt dat een bestaande installatie altijd met rust gelaten wordt."
+msgid ""
+"Whether to silently replace an existing demo catalog installation, ask for a "
+"confirmation or never touch an existing installation."
+msgstr ""
+"Of u een bestaande demo-catalogus zonder meer wil vervangen, of u gevraagd "
+"wilt worden om een bevestiging, of u wilt dat een bestaande installatie "
+"altijd met rust gelaten wordt."
 
 #. Type: boolean
 #. Description
@@ -73,14 +88,20 @@ msgstr "Er is al een Interchange demo-catalogus aanwezig."
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-msgid "Virtual host for the demo catalog ?"
+#, fuzzy
+#| msgid "Virtual host for the demo catalog ?"
+msgid "Virtual host for the demo catalog:"
 msgstr "Wat is de virtuele host voor de demo-catalogus?"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
-msgid "You are running Interchange with \"FullURL\" enabled. Please specify the virtual host for the demo catalog."
-msgstr "U draait een Interchange met de 'FullURL' geactiveerd. Welke virtuele host wilt u gebruiken voor de demo-catalogus?"
+msgid ""
+"You are running Interchange with \"FullURL\" enabled. Please specify the "
+"virtual host for the demo catalog."
+msgstr ""
+"U draait een Interchange met de 'FullURL' geactiveerd. Welke virtuele host "
+"wilt u gebruiken voor de demo-catalogus?"
 
 #. Type: string
 #. Description
@@ -91,8 +112,14 @@ msgstr "Gebruikersnaam van de beheerder van deze catalogus:"
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:6001
-msgid "Please provide an username for administering the demo catalog. The username must be at least 2 characters long and only contain letters, digits, underscore, @ or the dot as characters."
-msgstr "Wat is de gebruikersnaam voor de beheerder van de demo-catalogus? Deze gebruikersnaam dient minstens uit 2 tekens lang te  zijn, en moet bestaan uit een combinatie van letters, cijfers, _ (underscores), . (punten), en @."
+msgid ""
+"Please provide an username for administering the demo catalog. The username "
+"must be at least 2 characters long and only contain letters, digits, "
+"underscore, @ or the dot as characters."
+msgstr ""
+"Wat is de gebruikersnaam voor de beheerder van de demo-catalogus? Deze "
+"gebruikersnaam dient minstens uit 2 tekens lang te  zijn, en moet bestaan "
+"uit een combinatie van letters, cijfers, _ (underscores), . (punten), en @."
 
 #. Type: password
 #. Description
@@ -103,8 +130,16 @@ msgstr "Wachtwoord voor de beheerder van deze catalogus:"
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:7001
-msgid "Please provide a password for administering the standard demo catalog. Choose one which can not be easily guessed. Default is pass. The password  must be at least 4 characters long and only contain letters, digits, underscore @ or the dot as characters."
-msgstr "Wat is het wachtwoord voor de beheerder van de standaard demo-catalogus? Gelieve een moeilijk te raden wachtwoord te kiezen. De standaardwaarde is 'pass'. Het wachtwoord dient minstens 4 tekens lang te zijn en te bestaan uit een combinatie van cijfers, letters, _ (underscores), . (punten), en @."
+msgid ""
+"Please provide a password for administering the standard demo catalog. "
+"Choose one which can not be easily guessed. Default is pass. The password  "
+"must be at least 4 characters long and only contain letters, digits, "
+"underscore @ or the dot as characters."
+msgstr ""
+"Wat is het wachtwoord voor de beheerder van de standaard demo-catalogus? "
+"Gelieve een moeilijk te raden wachtwoord te kiezen. De standaardwaarde is "
+"'pass'. Het wachtwoord dient minstens 4 tekens lang te zijn en te bestaan "
+"uit een combinatie van cijfers, letters, _ (underscores), . (punten), en @."
 
 #. Type: boolean
 #. Description
@@ -121,8 +156,16 @@ msgstr "Aanvullende lokalisaties voor de winkel:"
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-standard.templates:9001
-msgid "The Interchange demo catalog is able to display the storefront in a number of different languages. Each selected locale will increase the memory footprint of the Interchange server processes, so it is recommended to choose only locales which are really needed."
-msgstr "De Interchange demo-catalogus kan de winkel in een aantal verschillende talen weergeven. Daar elke geselecteerde lokalisatie het geheugengebruik van de de Interchange-serverprocessen verhoogd is het aan te raden om enkel die lokalisaties te kiezen die echt nodig zijn."
+msgid ""
+"The Interchange demo catalog is able to display the storefront in a number "
+"of different languages. Each selected locale will increase the memory "
+"footprint of the Interchange server processes, so it is recommended to "
+"choose only locales which are really needed."
+msgstr ""
+"De Interchange demo-catalogus kan de winkel in een aantal verschillende "
+"talen weergeven. Daar elke geselecteerde lokalisatie het geheugengebruik van "
+"de de Interchange-serverprocessen verhoogd is het aan te raden om enkel die "
+"lokalisaties te kiezen die echt nodig zijn."
 
 #. Type: select
 #. Description
@@ -151,19 +194,25 @@ msgstr "MySQL"
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-msgid "Which DBMS should be used for the demo catalog ?"
-msgstr "Welke DBMS dient de demo-catalogus te gebruiken?"
+#, fuzzy
+#| msgid "Virtual host for the demo catalog ?"
+msgid "DBMS for the demo catalog:"
+msgstr "Wat is de virtuele host voor de demo-catalogus?"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
-msgid "Please select the database type."
-msgstr "Wat is het databasetype?"
+#, fuzzy
+#| msgid "Please select the default locale for the Interchange demo catalog."
+msgid "Please select the database type used for the demo catalog."
+msgstr "Wat is de standaard lokalisatie voor de Interchange demo-catalogus?"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:12001
-msgid "Database name"
+#, fuzzy
+#| msgid "Database name"
+msgid "Database name:"
 msgstr "Databasenaam"
 
 #. Type: string
@@ -175,26 +224,33 @@ msgstr "Wat is de naam van de database?"
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
-msgid "Database user"
+#, fuzzy
+#| msgid "Database user"
+msgid "Database user:"
 msgstr "Databasegebruiker"
 
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr "Welke gebruikersnaam moet gebruikt worden om verbinding te maken met de database?"
+msgstr ""
+"Welke gebruikersnaam moet gebruikt worden om verbinding te maken met de "
+"database?"
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
-msgid "Database password"
+#, fuzzy
+#| msgid "Database password"
+msgid "Database password:"
 msgstr "Databasewachtwoord"
 
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr "Welk wachtwoord moet gebruikt worden om verbinding te maken met de database?"
+msgstr ""
+"Welk wachtwoord moet gebruikt worden om verbinding te maken met de database?"
 
 #. Type: select
 #. Choices
@@ -211,8 +267,13 @@ msgstr "Startmodus:"
 #. Type: select
 #. Description
 #: ../interchange.templates:1002
-msgid "Unix mode is is the most secure way to run Interchange, for there is no way for systems on the internet to interact with the Interchange server."
-msgstr "Unix-modus is de meest veilige manier om Interchange te draaien aangezien systemen op het internet dan geen contact kunnen maken met de Interchange-server."
+msgid ""
+"Unix mode is is the most secure way to run Interchange, for there is no way "
+"for systems on the internet to interact with the Interchange server."
+msgstr ""
+"Unix-modus is de meest veilige manier om Interchange te draaien aangezien "
+"systemen op het internet dan geen contact kunnen maken met de Interchange-"
+"server."
 
 #. Type: string
 #. Description
@@ -223,8 +284,16 @@ msgstr "Gebruiker als wie de server moet draaien:"
 #. Type: string
 #. Description
 #: ../interchange.templates:2001
-msgid "This determines the user for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Als welke gebruiker moet het interchange-serverproces gedraaid worden (belangrijk voor bestandtoegangsrechten). OPGELET: hier een andere gebruiker aangeven heeft serieuze beveiligingsimplicaties. Geef hier nooit 'root' aan, dit is af te raden en wordt genegeerd. "
+msgid ""
+"This determines the user for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Als welke gebruiker moet het interchange-serverproces gedraaid worden "
+"(belangrijk voor bestandtoegangsrechten). OPGELET: hier een andere gebruiker "
+"aangeven heeft serieuze beveiligingsimplicaties. Geef hier nooit 'root' aan, "
+"dit is af te raden en wordt genegeerd. "
 
 #. Type: boolean
 #. Description
@@ -232,20 +301,23 @@ msgstr "Als welke gebruiker moet het interchange-serverproces gedraaid worden (b
 msgid "Create the user ${USER}?"
 msgstr "Wilt u de gebruiker ${USER} aanmaken?"
 
-#. Type: note
+#. Type: error
 #. Description
-#. Type: note
+#. Type: error
 #. Description
-#: ../interchange.templates:4001
-#: ../interchange.templates:6001
+#: ../interchange.templates:4001 ../interchange.templates:6001
 msgid "Impossible to run interchange as root !"
 msgstr "Het is niet mogelijk om Interchange als gebruiker 'root' te draaien!"
 
-#. Type: note
+#. Type: error
 #. Description
 #: ../interchange.templates:4001
-msgid "You have been warned. Either choose an appropriate user or stay with the default."
-msgstr "U bent gewaarschuwd. Als u geen toepasselijke gebruiker kiest wordt de standaardwaarde behouden."
+msgid ""
+"You have been warned. Either choose an appropriate user or stay with the "
+"default."
+msgstr ""
+"U bent gewaarschuwd. Als u geen toepasselijke gebruiker kiest wordt de "
+"standaardwaarde behouden."
 
 #. Type: string
 #. Description
@@ -256,14 +328,26 @@ msgstr "Groep als wie de server moet draaien:"
 #. Type: string
 #. Description
 #: ../interchange.templates:5001
-msgid "This determines the group for the interchange server and for file permissions. Please note that using another user has serious security implications. Don't choose root, it is not recommended and will be discarded anyway."
-msgstr "Als welke groep moet het Interchange-serverproces gedraaid worden (belangrijk voor bestandstoegangsrechten). OPGELET: hier een andere groep aangeven heeft serieuze beveiligingsimplicaties. Geef hier nooit 'root' aan, dit is af te raden en wordt genegeerd. "
+msgid ""
+"This determines the group for the interchange server and for file "
+"permissions. Please note that using another user has serious security "
+"implications. Don't choose root, it is not recommended and will be discarded "
+"anyway."
+msgstr ""
+"Als welke groep moet het Interchange-serverproces gedraaid worden "
+"(belangrijk voor bestandstoegangsrechten). OPGELET: hier een andere groep "
+"aangeven heeft serieuze beveiligingsimplicaties. Geef hier nooit 'root' aan, "
+"dit is af te raden en wordt genegeerd. "
 
-#. Type: note
+#. Type: error
 #. Description
 #: ../interchange.templates:6001
-msgid "You have been warned. Either choose an appropriate group or stay with the default."
-msgstr "U bent gewaarschuwd. Als u geen toepasselijke groep kiest wordt de standaardwaarde behouden."
+msgid ""
+"You have been warned. Either choose an appropriate group or stay with the "
+"default."
+msgstr ""
+"U bent gewaarschuwd. Als u geen toepasselijke groep kiest wordt de "
+"standaardwaarde behouden."
 
 #. Type: boolean
 #. Description
@@ -271,126 +355,137 @@ msgstr "U bent gewaarschuwd. Als u geen toepasselijke groep kiest wordt de stand
 msgid "Create the group ${GROUP}?"
 msgstr "Wilt u de groep ${GROUP} aanmaken?"
 
-#. Type: select
-#. Choices
-#: ../interchange.templates:9001
-msgid "Apache2"
-msgstr "Apache2"
-
-#. Type: select
-#. Choices
-#: ../interchange.templates:9001
-msgid "Apache"
-msgstr "Apache"
-
-#. Type: select
-#. Description
-#: ../interchange.templates:9002
-msgid "Which webserver are you running ?"
-msgstr "Welke webserver gebruikt u?"
-
-#. Type: select
-#. Description
-#: ../interchange.templates:9002
-msgid "This information is necessary for the makecat script. Please specify which webserver you want to use for your Interchange applications."
-msgstr "Deze informatie is nodig voor het script makecat. Welke webserver wilt u gebruiken voor uw Interchange-applicaties?"
-
 #. Type: string
 #. Description
-#: ../interchange.templates:10001
+#: ../interchange.templates:9001
 msgid "Static HTML files location:"
 msgstr "Locatie voor statische HTML-bestanden:"
 
 #. Type: string
 #. Description
-#: ../interchange.templates:10001
+#: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr "Catalogus-installaties hebben een map nodig waar HTML-bestanden neergezet kunnen worden."
+msgstr ""
+"Catalogus-installaties hebben een map nodig waar HTML-bestanden neergezet "
+"kunnen worden."
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
+#: ../interchange.templates:10001
 msgid "Directory for GnuPG public keyring:"
 msgstr "Map voor de publieke GnuPG-sleutelring:"
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
-msgid "For enhanced security, credit card information retrieved from customers will be encrypted and mailed to the shop owner instead of storing it on the server."
-msgstr "Voor verhoogde beveiliging wordt de door klanten aangegeven kredietkaartinformatie versleuteld niet op de server opgeslagen maar per e-mail doorgestuurd naar de winkeleigenaar."
+#: ../interchange.templates:10001
+msgid ""
+"For enhanced security, credit card information retrieved from customers will "
+"be encrypted and mailed to the shop owner instead of storing it on the "
+"server."
+msgstr ""
+"Voor verhoogde beveiliging wordt de door klanten aangegeven "
+"kredietkaartinformatie versleuteld niet op de server opgeslagen maar per e-"
+"mail doorgestuurd naar de winkeleigenaar."
 
 #. Type: string
 #. Description
-#: ../interchange.templates:11001
-msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr "Welke map dient Interchange te gebruiken voor de publieke GnuPG-sleutelring?"
+#: ../interchange.templates:10001
+msgid ""
+"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr ""
+"Welke map dient Interchange te gebruiken voor de publieke GnuPG-sleutelring?"
 
 #. Type: select
 #. Choices
-#: ../interchange.templates:12001
+#: ../interchange.templates:11001
 msgid "low, high, rpc"
 msgstr "laag, hoog, rpc"
 
 #. Type: select
 #. Description
-#: ../interchange.templates:12002
+#: ../interchange.templates:11002
 msgid "Set of server parameters:"
 msgstr "Parameterset voor de server:"
 
 #. Type: select
 #. Description
-#: ../interchange.templates:12002
-msgid "You can choose different sets of server parameters. Any store based on the foundation demo will change its behaviour too. If rpc is selected, the Interchange server will run in PreFork mode."
-msgstr "U kunt verschillende parametersets kiezen voor de server. Het gedrag van elke op de demo gebaseerde winkel zal hierdoor ook veranderen. Als rpc gekozen wordt zal de Interchange-server draaien in PreFork-modus."
+#: ../interchange.templates:11002
+msgid ""
+"You can choose different sets of server parameters. Any store based on the "
+"foundation demo will change its behaviour too. If rpc is selected, the "
+"Interchange server will run in PreFork mode."
+msgstr ""
+"U kunt verschillende parametersets kiezen voor de server. Het gedrag van "
+"elke op de demo gebaseerde winkel zal hierdoor ook veranderen. Als rpc "
+"gekozen wordt zal de Interchange-server draaien in PreFork-modus."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
+#: ../interchange.templates:12001
 msgid "Enable the FullURL directive?"
 msgstr "Wilt u de 'FullURL'-instelling activeren?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:13001
-msgid "This setting determines if the whole URL is considered while checking for the corresponding catalog."
-msgstr "Deze instelling bepaald of de hele URL in beschouwing genomen wordt bij het controleren voor de overeenkomstige catalogus."
+#: ../interchange.templates:12001
+msgid ""
+"This setting determines if the whole URL is considered while checking for "
+"the corresponding catalog."
+msgstr ""
+"Deze instelling bepaald of de hele URL in beschouwing genomen wordt bij het "
+"controleren voor de overeenkomstige catalogus."
 
 #. Type: note
 #. Description
-#: ../interchange.templates:14001
+#: ../interchange.templates:13001
 msgid "SOAP server not available"
 msgstr "SOAP-server is niet beschikbaar"
 
 #. Type: note
 #. Description
-#: ../interchange.templates:14001
-msgid "Because the Perl module SOAP::Lite is not installed, you are unable to run the Interchange SOAP server. To change this, install the libsoap-lite-perl Debian package and run interchangeconfig SOAP=1."
-msgstr "U kunt geen Interchange SOAP-server draaien omdat de Perl-module SOAP::Lite niet geïnstalleerd is. Deze module kunt u installeren via het pakket libsoap-lite-perl, vervolgens dient u nog 'interchangeconfig SOAP=1' uit te voeren."
+#: ../interchange.templates:13001
+msgid ""
+"Because the Perl module SOAP::Lite is not installed, you are unable to run "
+"the Interchange SOAP server. To change this, install the libsoap-lite-perl "
+"Debian package and run interchangeconfig SOAP=1."
+msgstr ""
+"U kunt geen Interchange SOAP-server draaien omdat de Perl-module SOAP::Lite "
+"niet geïnstalleerd is. Deze module kunt u installeren via het pakket libsoap-"
+"lite-perl, vervolgens dient u nog 'interchangeconfig SOAP=1' uit te voeren."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:14001
 msgid "Enable the SOAP server?"
 msgstr "Wilt u de SOAP-server activeren?"
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:15001
+#: ../interchange.templates:14001
 msgid "This setting determines if the SOAP server is started or not."
 msgstr "Deze instelling bepaald of de SOAP-server wel of niet gestart wordt."
 
 #. Type: boolean
 #. Description
-#: ../interchange.templates:16001
+#: ../interchange.templates:15001
 msgid "Enable robots settings?"
 msgstr "Wilt u de robots-instellingen activeren?"
 
 #  
 #. Type: boolean
 #. Description
-#: ../interchange.templates:16001
-msgid "The Interchange Debian package uses a separate configuration file /etc/interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It is recommended to include these settings so that Interchange can distinguish between robots and ordinary users."
-msgstr "Het Interchange-pakket gebruikt een apart configuratiebestand (/etc/interchange/robots.cfg) voor de 'RobotUA', 'RobotIP', en 'RobotHost' instellingen. Het is aangeraden om deze instellingen te 'include'-en; hierdoor kan Interchange onderscheid maken tussen robots en gewone gebruikers."
+#: ../interchange.templates:15001
+msgid ""
+"The Interchange Debian package uses a separate configuration file /etc/"
+"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
+"is recommended to include these settings so that Interchange can distinguish "
+"between robots and ordinary users."
+msgstr ""
+"Het Interchange-pakket gebruikt een apart configuratiebestand (/etc/"
+"interchange/robots.cfg) voor de 'RobotUA', 'RobotIP', en 'RobotHost' "
+"instellingen. Het is aangeraden om deze instellingen te 'include'-en; "
+"hierdoor kan Interchange onderscheid maken tussen robots en gewone "
+"gebruikers."
 
 #. Type: select
 #. Description
@@ -401,6 +496,35 @@ msgstr "Standaardtaal voor de interface:"
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:1001
-msgid "The administration interface for Interchange catalogs, called UI, has been translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) and Swedish (sv_SE). You can choose the default language here. Any user may change this default at login time."
-msgstr "De beheersinterface voor de Interchange-catalogussen is vertaald naar Deens (da_DK),  Duits, (de_DE), Italiaans (it_IT), Nederlands (nl_NL) en Zweeds (sv_SE). Welke taal wilt u standaard? Elke gebruiker kan tijdens het aanmelden altijd een andere taal kiezen."
+msgid ""
+"The administration interface for Interchange catalogs, called UI, has been "
+"translated to Danish (da_DK), Dutch (nl_NL), German (de_DE), Italian (it_IT) "
+"and Swedish (sv_SE). You can choose the default language here. Any user may "
+"change this default at login time."
+msgstr ""
+"De beheersinterface voor de Interchange-catalogussen is vertaald naar Deens "
+"(da_DK),  Duits, (de_DE), Italiaans (it_IT), Nederlands (nl_NL) en Zweeds "
+"(sv_SE). Welke taal wilt u standaard? Elke gebruiker kan tijdens het "
+"aanmelden altijd een andere taal kiezen."
 
+#~ msgid "Which DBMS should be used for the demo catalog ?"
+#~ msgstr "Welke DBMS dient de demo-catalogus te gebruiken?"
+
+#~ msgid "Please select the database type."
+#~ msgstr "Wat is het databasetype?"
+
+#~ msgid "Apache2"
+#~ msgstr "Apache2"
+
+#~ msgid "Apache"
+#~ msgstr "Apache"
+
+#~ msgid "Which webserver are you running ?"
+#~ msgstr "Welke webserver gebruikt u?"
+
+#~ msgid ""
+#~ "This information is necessary for the makecat script. Please specify "
+#~ "which webserver you want to use for your Interchange applications."
+#~ msgstr ""
+#~ "Deze informatie is nodig voor het script makecat. Welke webserver wilt u "
+#~ "gebruiken voor uw Interchange-applicaties?"

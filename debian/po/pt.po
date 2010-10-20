@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: interchange 5.7.4-1\n"
 "Report-Msgid-Bugs-To: interchange@packages.debian.org\n"
-"POT-Creation-Date: 2009-12-10 08:08+0000\n"
+"POT-Creation-Date: 2010-03-25 09:53+0000\n"
 "PO-Revision-Date: 2009-12-28 00:32+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@netcabo.pt>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -43,10 +43,6 @@ msgstr "Remover o catálogo de demonstração quando se eliminar o pacote?"
 #. Type: boolean
 #. Description
 #: ../interchange-cat-standard.templates:2001
-#| msgid ""
-#| "Whether to remove all files belonging to the Interchange demo catalog "
-#| "when you purge this package, e.g. with dpkg --purge or apt-get remove --"
-#| "purge."
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
@@ -447,7 +443,6 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../interchange.templates:14001
-#| msgid "Enable the FullURL directive?"
 msgid "Enable the SOAP server?"
 msgstr "Activar o servidor SOAP?"
 
@@ -496,4 +491,3 @@ msgstr ""
 "traduzida para Dinamarquês (da_DK), Holandês (nl_NL), Alemão (de_DE), "
 "Italiano (it_IT) e Sueco (sv_SE). Pode escolher o idioma por omissão aqui. "
 "Qualquer utilizador pode mudar este parâmetro quando faz login."
-

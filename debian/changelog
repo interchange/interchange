@@ -1,3 +1,12 @@
+interchange (5.7.6-1) unstable; urgency=high
+
+  * new upstream release, fixes potential HTTP response splitting
+    vulnerability (Closes: #575366)
+  * running in PreFork mode requires Tie::ShadowHash module, dependency
+    added to interchange package (Closes: #571694)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 25 Mar 2010 10:18:41 +0100
+
 interchange (5.7.4-2) unstable; urgency=low
 
   * allowed SOAP actions in the configuration file
