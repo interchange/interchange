@@ -216,6 +216,12 @@ sub {
 		push(@extra, "Bcc: $bcc");
 	}
 
+	if ($utf8 && ! $opt->{mimetype}) {
+		push(@extra, 'MIME-Version: 1.0');
+		push(@extra, 'Content-Type: text/plain; charset=UTF-8');
+		push(@extra, 'Content-Transfer-Encoding: 8bit');
+	}
+	
 	$ok = send_mail($to, $subject, $body, $reply, 0, @extra)
 			unless $sent_with_attach;
 
