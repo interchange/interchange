@@ -152,7 +152,7 @@ sub {
 		if($opt->{html}) {
 			unshift @$att, {type => 'text/html' 
 							.($utf8 ? '; charset=UTF-8': ''),
-							data => $opt->{html},
+							data => ($utf8 ? utf8_to_other($opt->{html}, 'UTF-8') : $opt->{html}),
 							disposition => 'inline',
 							};
 		}
