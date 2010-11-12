@@ -146,6 +146,21 @@ sub {
 		elsif(ref($att) eq 'HASH') {
 			$att = [ $att ];
 		}
+		elsif(ref($att) eq 'ARRAY') {
+			# turn array of file names into array of hash references
+			my $new_att = [];
+
+			for (@$att) {
+				if (ref($_)) {
+					push (@$new_att, $_);
+				}
+				else {
+					push (@$new_att, {path => $_});
+				}
+			}
+
+			$att = $new_att;
+		}
 
 		$att ||= [];
 
