@@ -21,6 +21,20 @@ sub {
 		$save_mask = umask($opt->{umask});
 	}
 	my $status = File::Copy::copy($from, $to);
+
+	if ($opt->{preserve_times}) {
+		my ($atime, $mtime);
+
+		($atime, $mtime) = (stat $from)[8,9];
+
+		if ($atime) {
+			$status = utime($atime, $mtime, $from);
+		}
+		else {
+			$status = 0;
+		}
+	}
+
 	umask($save_mask) if defined $save_mask;
 	return '' if $opt->{hide};
 	return $status;
