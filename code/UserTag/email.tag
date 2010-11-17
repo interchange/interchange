@@ -196,6 +196,7 @@ sub {
 				$msg->attach(
 					Type => $ref->{type},
 					Path => $ref->{path},
+					ReadNow => 1,
 					Data => $ref->{data},
 					Filename => $ref->{filename},
 					Encoding => $ref->{encoding},
@@ -204,7 +205,9 @@ sub {
 			};
 			if($@) {
 				::logError("email tag: failed to attach %s: %s", $ref->{path}, $@);
-				next;
+				$Tag->error({name => 'email', 
+					set => errmsg('Failed to attach %s', $ref->{path})});
+				return;
 			}
 		}
 
