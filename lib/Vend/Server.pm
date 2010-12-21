@@ -132,8 +132,9 @@ sub populate {
 		and ($CGI::remote_addr =~ $Global::TrustProxy
 			or $CGI::remote_host =~ $Global::TrustProxy)
 		and $ip = $cgivar->{HTTP_X_FORWARDED_FOR}) {
-		# trim off intermediate proxies in comma-separated list
-		$ip =~ s/,.*//;
+		# trust only the last hop's IP address before our trusted proxy
+		# when multiples are present in a comma-separated list
+		$ip =~ s/.*,//;
 		$ip =~ s/^\s+//; $ip =~ s/\s+$//;
 		if ($ip =~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
 			$CGI::remote_addr = $ip;
