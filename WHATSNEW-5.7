@@ -16,6 +16,10 @@ Core
   browsers, regardless of any toolbar matches in the User Agent
   string.
 
+* If we are running an or search and not all of the specs have equivelant sql
+  specs (WHERE clauses) then don't try to optimize the query as doing so will
+  cause records to not be returned that might match other specs.
+
 Tags
 ----
 * Allow sorting of forum entries.
