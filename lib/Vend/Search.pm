@@ -307,6 +307,18 @@ sub spec_check {
 		}
 	}
 
+        # If this is an or search and we don't have sql specs for *all* the
+	# specs then dump them alltogether otherwise we end up pre-emptively
+	# removing rows that may need to be in the results.
+        if (
+	    $s->{mv_orsearch} &&
+	    $s->{eq_specs_sql} &&
+	    @{$s->{eq_specs_sql}} &&
+	    @{$s->{eq_specs_sql}} < @specs
+	    ) {
+            delete $s->{eq_specs_sql};
+        }
+
 #::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 #::logDebug("eq_specs_sql=" . ::uneval($s->{eq_specs_sql}));
 
