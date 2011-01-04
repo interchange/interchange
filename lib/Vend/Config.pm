@@ -3637,9 +3637,15 @@ sub set_default_search {
 );
 
 sub global_directive_postprocess {
-	if($Global::UrlSepChar eq '&') {
-		$Global::UrlJoiner = $Global::Variable->{MV_HTML4_COMPLIANT} ? '&amp;' : '&';
-		$Global::UrlSplittor = qr/\&/;
+	if ($Global::UrlSepChar eq '&') {
+		if ($Global::Variable->{MV_HTML4_COMPLIANT}) {
+			$Global::UrlJoiner = '&amp;';
+			$Global::UrlSplittor = qr/\&amp;|\&/;
+		}
+		else {
+			$Global::UrlJoiner = '&';
+			$Global::UrlSplittor = qr/\&/;
+		}
 	}
 	else {
 		$Global::UrlJoiner = $Global::UrlSepChar;
