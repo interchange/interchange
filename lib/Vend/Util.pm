@@ -1277,7 +1277,7 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $opt->{no_count};
 
-	if($opt->{no_session}) {
+	if($opt->{no_session} or $::Pragma->{url_no_session_id}) {
 		undef $id;
 		undef $ct;
 	}
