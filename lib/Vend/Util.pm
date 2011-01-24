@@ -335,8 +335,10 @@ sub picture_format {
     $pic	= reverse $pic;
 	$point	= '.' unless defined $point;
 	$sep	= ',' unless defined $sep;
-	$pic =~ /(#+)\Q$point/;
-	my $len = length($1);
+	my $len = $pic =~ /(#+)\Q$point/
+		? length($1)
+		: 0
+	;
 	$amount = sprintf('%.' . $len . 'f', $amount);
 	$amount =~ tr/0-9//cd;
 	my (@dig) = split m{}, $amount;
