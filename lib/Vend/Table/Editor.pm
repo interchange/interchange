@@ -4229,7 +4229,7 @@ EOF
 	if($opt->{ui_new_item}) {
 		my $aa_msg = l('Add another item');
 		my $rt_msg = l('Return to table select');
-		chunk 'DO_ANOTHER', 'OUTPUT_MAP', <<EOF;
+		chunk 'DO_ANOTHER', 'OUTPUT_MAP', $opt->{ui_do_another} || <<EOF;
 <small>
 &nbsp;
 	<input type="radio" class="$opt->{widget_class}" name="mv_nextpage" value="admin/flex_select" CHECKED>
