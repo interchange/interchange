@@ -1740,8 +1740,9 @@ sub delete_record {
 						);
 		return undef;
 	}
-	$key = $s->[$DBI]->quote($key)
-		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
+    unless( exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]} and $key =~ /^\d+$/) {
+		$key = $s->[$WDBI]->quote($key)
+	}
     $s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $key");
 }
 
