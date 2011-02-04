@@ -1742,9 +1742,9 @@ sub delete_record {
 	}
 
 	## Rely on DBI to quote
-	$key = $s->[$WDBI]->quote($key, $s->[$KEY]);
+	$key = $s->[$DBI]->quote($key, $s->[$KEY]);
 
-    $s->[$WDBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $key");
+    $s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $key");
 }
 
 sub fields_index {
