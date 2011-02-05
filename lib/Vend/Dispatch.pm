@@ -1486,7 +1486,9 @@ EOF
          if ($_ eq 'mv_pc') {
 #::logDebug('$CGI::values{mv_pc} is %s', $CGI::values{mv_pc});
             if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
-                $new_source = $Vend::Session->{source} = $CGI::values{mv_pc};
+                $new_source = $CGI::values{mv_pc};
+		$new_source =~ s/[\r\n\t]//g;
+		$Vend::Session->{source} = $new_source;
                 last SOURCEPRIORITY;
             }
          }
@@ -1495,6 +1497,7 @@ EOF
              my $cookie_source = Vend::Util::read_cookie($1);
 #::logDebug("Cookie $1 is $cookie_source");
              if (length $cookie_source) {
+		 $cookie_source =~ s/[\r\n\t]//g;
                  $Vend::Session->{source} = $cookie_source;
                  last SOURCEPRIORITY;
             }
@@ -1517,7 +1520,9 @@ EOF
          else {
 #::logDebug('$CGI::values{%s} is %s', $_, $CGI::values{$_});
             if (length $CGI::values{$_}) {
-                $new_source = $Vend::Session->{source} = $CGI::values{$_};
+                $new_source = $CGI::values{$_};
+		$new_source =~ s/[\r\n\t]//g;
+		$Vend::Session->{source} = $new_source;
                 last SOURCEPRIORITY;
             }
          }
