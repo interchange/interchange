@@ -688,6 +688,13 @@ eval {
 	die unless $ENV{MINIVEND_STORABLE};
 	require Storable;
 	import Storable 'freeze';
+
+	if ($ENV{MINIVEND_STORABLE_CODE}) {
+		# allow code references to be stored to the session
+		 $Storable::Deparse = 1;
+		 $Storable::Eval = 1;
+	}
+
 	$Fast_uneval     = \&Storable::freeze;
 	$Fast_uneval_file  = \&Storable::store;
 	$Eval_routine    = \&Storable::thaw;
