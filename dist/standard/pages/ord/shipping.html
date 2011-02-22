@@ -61,6 +61,12 @@ ui_template_name: noleft
 [set Check_shipping]
 	&fatal=no
 	&update=yes
+	[calc]
+		if ($CGI->{state_cs_in} && !$CGI->{state}){
+			$CGI->{state} = $CGI->{state_cs_in};
+		}
+		return;
+	[/calc]
 	__COMMON_ORDER_PROFILE__
 	&fail=@@MV_PAGE@@
 	&fatal=yes

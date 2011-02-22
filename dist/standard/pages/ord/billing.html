@@ -103,6 +103,12 @@ function do_address (form, clear) {
 	&fatal=no
 	&update=yes
 	&fail=@@MV_PAGE@@
+	[calc]
+		if ($CGI->{b_state_cs_in} && !$CGI->{b_state}){
+			$CGI->{b_state} = $CGI->{b_state_cs_in};
+		}
+		return;
+	[/calc]
 	[if session logged_in]
 		[tmp tmp_save_billing][userdb function=set_billing nickname=default][/tmp]
 	[/if]
