@@ -1828,7 +1828,7 @@ sub new_account {
 		}
 		# plain error message without user-supplied username
 		# to avoid XSS exploit (RT #306)
-		die errmsg("Username contains illegal characters.\n")
+		die errmsg("Username contains illegal characters.") . "\n"
 			if $self->{USERNAME} !~ m{^$self->{VALIDCHARS}+$};
 		die errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
@@ -1836,7 +1836,7 @@ sub new_account {
 
 		if($self->{OPTIONS}{captcha}) {
 			my $status = Vend::Tags->captcha( { function => 'check' });
-			die errmsg("Must input captcha code correctly.\n") 
+			die errmsg("Must input captcha code correctly.") . "\n"
 				unless $status;
 		}
 
