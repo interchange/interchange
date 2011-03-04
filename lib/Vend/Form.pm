@@ -1272,24 +1272,18 @@ if($opt->{debug}) {
 			$ary = [['', errmsg('--no current values--')]];
 		}
 		if($opt->{lookup_exclude}) {
-			my $sub;
+			my $re;
 			eval {
-				$sub = sub { $_[0] !~ m{$opt->{lookup_exclude}} };
+				$re = qr/$opt->{lookup_exclude}/;
 			};
 			if ($@) {
 				logError(
 					"Bad lookup pattern m{%s}: %s", $opt->{lookup_exclude}, $@,
 				);
-				undef $sub;
+				undef $re;
 			}
-			if($sub) {
-				@$data = grep $_,
-							map {
-								$sub->(join '=', @$_)
-									or return undef;
-								return $_;
-							} @$data;
-			}
+
+			$re and @$data = grep "$_->[0]=$_->[1]" !~ /$re/, @$data;
 		}
 
 		unless($opt->{lookup_merge}) {
