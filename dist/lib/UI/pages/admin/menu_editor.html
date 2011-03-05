@@ -798,7 +798,7 @@ function escapeParams (parms) {
 	parms = parms.replace(/=/g, "-_EQUAL_X_-");
 	parms = parms.replace(/\n/g, "-_NEWLINE_X_-");
 	parms = escape(parms);
-	parms = parms.replace(/-_NEWLINE_X_-/g, '&');
+	parms = parms.replace(/-_NEWLINE_X_-/g, '[either]@@UrlJoiner@@[or]&[/either]');
 	parms = parms.replace(/-_EQUAL_X_-/g, '=');
 	// alert("parms=" + parms);
 	return parms;
@@ -807,7 +807,7 @@ function escapeParams (parms) {
 function unescapeParams (parms) {
 	// alert("parms=" + parms);
 	parms = parms.replace(/=/g, "-_EQUAL_X_-");
-	parms = parms.replace(/&/g, "-_NEWLINE_X_-");
+	parms = parms.replace(/[either]@@UrlJoiner@@[or]&[/either]/g, "-_NEWLINE_X_-");
 	parms = unescape(parms);
 	parms = parms.replace(/-_NEWLINE_X_-/g, "\n");
 	parms = parms.replace(/-_EQUAL_X_-/g, '=');
