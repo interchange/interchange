@@ -2031,7 +2031,7 @@ sub send_mail {
 				$to = $1;
 			}
 			elsif (/^Reply-to:\s*(.+)/si) {
-				$reply = $_;
+				$reply = $1;
 			}
 			elsif (/^subj(?:ect)?:\s*(.+)/si) {
 				$subject = $1;

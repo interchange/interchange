@@ -59,8 +59,6 @@ sub {
 			and ::logError("Header injection attempted in email tag: %s", $1);
 	}
 
-    $reply = '' unless defined $reply;
-    $reply = "Reply-to: $reply\n" if $reply;
 
 	for (grep /\S/, split /[\r\n]+/, $extra) {
 		# require header conformance with RFC 2822 section 2.2
@@ -106,6 +104,7 @@ sub {
 			$subject = utf8_to_other($subject, 'MIME-Header');
 			$cc = utf8_to_other($cc, 'MIME-Header');
 			$bcc = utf8_to_other($bcc, 'MIME-Header');
+			$reply = utf8_to_other($reply, 'MIME-Header');
 		}
 
 		my $msg = new MIME::Lite 
@@ -115,6 +114,7 @@ sub {
 					Type => $opt->{mimetype},
 					Cc => $cc,
 					Bcc => $bcc,
+					'Reply-To' => $reply,
 				;
 
 		for(@extra) {
@@ -225,6 +225,9 @@ sub {
 			$sent_with_attach = 1;
 		}
 	}
+
+    $reply = '' unless defined $reply;
+    $reply = "Reply-to: $reply\n" if $reply;
 
 	if ($cc) {
 		push(@extra, "Cc: $cc");
