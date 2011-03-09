@@ -1901,7 +1901,7 @@ sub read_cookie {
 	my ($lookfor, $string) = @_;
 	$string = $CGI::cookie
 		unless defined $string;
-	return undef unless $string =~ /\b$lookfor=([^\s;]+)/i;
+    return undef unless $string =~ /(?:^|;)\s*\Q$lookfor\E=([^\s;]+)/i;
  	return unescape_chars($1);
 }
 
