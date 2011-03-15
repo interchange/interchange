@@ -1893,7 +1893,7 @@ sub start_soap {
 #::logDebug("starting soap");
 
 	$number = $Global::SOAP_StartServers if ! $number; 
-	if ($number > 50) {
+	if ($number > 150) {
 		  die ::errmsg(
 		   "Ridiculously large number of SOAP_StartServers: %s",
 		   $number,
