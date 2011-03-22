@@ -1000,14 +1000,10 @@ The Interchange Development Group is:
 
     Daniel Browning
     David Christensen
-    Davor Ocelic
-    Ethan Rowe
     Gert van der Spoel
     Greg Hanson
     Jon Jensen
-    JT Justman
     Jure Kodzoman
-    Kevin Walsh
     Mark Johnson
     Mark Lipscombe
     Mike Heins
@@ -1037,8 +1033,12 @@ Special thanks to Retired Core Team Members:
 
     Brev Patterson
     David Kelly
+    Davor Ocelic
     Ed LaFrance
+    Ethan Rowe
     Jonathan Clark
+    JT Justman
+    Kevin Walsh
     Paul Vinciguerra
     Randy Moore
 
