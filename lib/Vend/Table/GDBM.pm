@@ -66,8 +66,6 @@ sub create {
 	my $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, $File_permission_mode)
 		or die ::errmsg("%s %s: %s\n", ::errmsg("create"), $filename, $!);
 
-	apply_utf8_filters($dbm) if $config->{GDBM_ENABLE_UTF8};
-
 	$tie->{'c'} = join("\t", @$columns);
 
 	my $s = [
