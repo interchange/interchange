@@ -3926,17 +3926,23 @@ sub parse_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
 
-	unless (allowed_file($value)) {
-		config_error('Path %s not allowed in %s directive',
-					  $value, $var);
-	}
-	$value = "$C->{VendRoot}/$value"
-		unless file_name_is_absolute($value);
-	$value =~ s./+$..;
-
 	$C->{$var} = [] unless $C->{$var};
 	my $c = $C->{$var} || [];
-	push @$c, $value;
+
+	my @dirs = grep /\S/, Text::ParseWords::shellwords($value);
+
+	foreach my $dir (@dirs) {
+                my $val;
+		unless (allowed_file($dir)) {
+			config_error('Path %s not allowed in %s directive',
+								$dir, $var);
+		}
+		$val = "$C->{VendRoot}/$dir"
+			unless file_name_is_absolute($val);
+		$val =~ s./+$..;
+		push @$c, $val;
+	}
+
 	return $c;
 }
 
