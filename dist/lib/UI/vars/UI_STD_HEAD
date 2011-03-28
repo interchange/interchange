@@ -1,5 +1,6 @@
 ## UI Header vars, version: $Id: UI_STD_HEAD,v 2.45 2009-01-06 20:26:26 racke Exp $
 Variable UI_STD_INIT <<EOV
+[tag pragma url_no_session_id 0][/tag]
 [calcn]
 	# is this browser able to grok DHTML ?
 	# (Called separately to prevent bad user value in MV_DHTML_BROWSER
