@@ -564,6 +564,25 @@ sub canon_status {
 	return "$_\r\n";
 }
 
+sub get_cache_headers {
+	my @headers;
+
+	my $cc = $::Pragma->{cache_control};
+	push @headers, "Cache-Control: $cc" if $cc;
+
+	push @headers, "Pragma: no-cache" if delete $::Scratch->{mv_no_cache};
+
+	return @headers;
+}
+
+sub add_cache_headers {
+	return unless my @headers = get_cache_headers();
+
+	$Vend::StatusLine .= "\r\n" unless $Vend::StatusLine =~ /\n\z/;
+	$Vend::StatusLine .= "$_\r\n" for @headers;
+	return 1;
+}
+
 sub respond {
 	# $body is now a reference
 	my ($s, $body) = @_;
@@ -625,8 +644,9 @@ sub respond {
 		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
-		$Vend::StatusLine .= "Pragma: no-cache\r\n"
-			if delete $::Scratch->{mv_no_cache};
+
+		add_cache_headers();
+
 		print MESSAGE canon_status($Vend::StatusLine);
 		print MESSAGE "\r\n";
 		print MESSAGE $$body;
@@ -674,9 +694,10 @@ sub respond {
 		select $save;
 		$Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
-# END TRACK                            
-		$Vend::StatusLine .= "Pragma: no-cache\r\n"
-			if delete $::Scratch->{mv_no_cache};
+# END TRACK
+
+		add_cache_headers();
+
 		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
 			$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
@@ -744,8 +765,8 @@ sub respond {
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
 	}
-	print $fh canon_status("Pragma: no-cache")
-		if delete $::Scratch->{mv_no_cache};
+
+	print $fh canon_status($_) for get_cache_headers();
 
 	print $fh "\r\n";
 	print $fh $$body;
