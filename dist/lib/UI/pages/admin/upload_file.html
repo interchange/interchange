@@ -89,6 +89,9 @@
 	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;[L]Binary[/L]
 [/else]
 [/if]
+	<BR>
+	[L]Umask default (022)[/L]&nbsp;<INPUT NAME=ui_upload_umask TYPE=text VALUE='022' size=10>
+	<BR>
 	</BLOCKQUOTE>
 <P>
 <B>[L]Backup mode[/L]</B>
@@ -124,7 +127,7 @@
 
 		$regex = q{@_UI_CONST_IMAGE_REGEX_@} || '\.(?:gif|jpe?g|png)$';
 		if( $CGI->{ui_upload_fn} =~ m{$regex}i) {
-			$CGI->{ui_upload_umask} = '022';
+			$CGI->{ui_upload_umask} ||= '022';
 		}
 		return;
 	[/calc]
