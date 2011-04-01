@@ -127,26 +127,37 @@ sub populate {
 
 	# try to get originating host's IP address if request was
 	# forwarded through a trusted proxy
-	my $ip;
-	if ($Global::TrustProxy
-		and ($CGI::remote_addr =~ $Global::TrustProxy
-			or $CGI::remote_host =~ $Global::TrustProxy)
-		and $ip = $cgivar->{HTTP_X_FORWARDED_FOR}) {
-		# trust only the last hop's IP address before our trusted proxy
-		# when multiples are present in a comma-separated list
-		$ip =~ s/.*,//;
-		$ip =~ s/^\s+//; $ip =~ s/\s+$//;
-		if ($ip =~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+	if (
+		$Global::TrustProxy
+		and (
+			$CGI::remote_addr =~ $Global::TrustProxy
+			or $CGI::remote_host =~ $Global::TrustProxy
+		)
+		and my $forwarded_for = $cgivar->{HTTP_X_FORWARDED_FOR}
+	) {
+		# multiple source IP addresses may appear in X-Forwarded-For header
+		# in a comma-separated list
+		for my $ip (reverse grep /\S/, split /\s*,\s*/, $forwarded_for) {
+			# do we have a valid-looking IP address?
+			if ($ip !~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+				# if not, log error and ignore X-Forwarded-For header
+				::logGlobal(
+					{ level => 'info' },
+					"Unknown X-Forwarded-For header set from trusted proxy %s: %s",
+					$CGI::remote_addr,
+					$forwarded_for,
+				);
+				last;
+			}
+
+			# skip any other upstream trusted proxies
+			next if $ip =~ $Global::TrustProxy;
+
+			# rightmost IP address that's not a trusted proxy is the customer IP
+			# address as far as we're concerned, so keep that and exit loop
 			$CGI::remote_addr = $ip;
 			undef $CGI::remote_host;
-		}
-		else {
-			::logGlobal(
-				{ level => 'info' },
-				"Unknown HTTP_X_FORWARDED_FOR header set from trusted proxy %s: '%s'",
-				$CGI::remote_addr,
-				$cgivar->{HTTP_X_FORWARDED_FOR},
-			);
+			last;
 		}
 	}
 }
