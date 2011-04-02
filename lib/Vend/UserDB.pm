@@ -46,6 +46,11 @@ if ($@) {
     ::logGlobal("SHA1 passwords disabled: $@");
 }
 
+# The object encryption methods take three arguments: object, password, and
+# mystery meat. If called in the context of new_account(), the mystery meat
+# is the salt (which is not always used). If called in the context of
+# login(), then the mystery meat is the entire password field from the
+# database (with salt, if applicable).
 my %enc_subs = (
     default => sub {
         my $obj = shift;
