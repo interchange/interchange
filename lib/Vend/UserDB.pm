@@ -1517,6 +1517,10 @@ sub login {
 			else {
 				$db_pass = lc $db_pass if $self->{OPTIONS}{ignore_case};
 			}
+#::logDebug(errmsg("crypt: %s", $self->{CRYPT}));
+#::logDebug(errmsg("ignore_case: %s", $self->{OPTIONS}{ignore_case}));
+#::logDebug(errmsg("given password: %s", $self->{PASSWORD}));
+#::logDebug(errmsg("stored password: %s", $db_pass));
 			unless ($self->{PASSWORD} eq $db_pass) {
 				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
 					$self->{USERNAME}));
