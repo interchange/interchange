@@ -52,52 +52,60 @@ if ($@) {
 # login(), then the mystery meat is the entire password field from the
 # database (with salt, if applicable).
 my %enc_subs = (
-    default => sub {
-        my $obj = shift;
-        my ($pwd, $salt) = @_;
-        return crypt($pwd, $salt);
-    },
-    md5 => sub {
-        my $obj = shift;
-        return Digest::MD5::md5_hex(shift);
-    },
-    # This particular md5_salted encryption stores the salt with the password
-    # in colon-separated format: /.+:(..)/. It is compatible with Zen Cart.
-    # Detecting context based on the length of the mystery meat is a little
-    # hokey; it would be more ideal to specify or detect the context 
-    # explicitly in/from the object itself (or as a named/separate parameter).
-    md5_salted => sub {
-        my ($obj, $password, $mystery_meat) = @_;
-
-        my $encrypted;
-        my $return_salt;
-        my $mystery_meat_length = length $mystery_meat;
-        if ($mystery_meat_length == 35) {
-            # Extract only the salt; we don't need the database password here.
-            my (undef, $db_salt) = split(':', $mystery_meat);
-            $encrypted = Digest::MD5::md5_hex($db_salt . $password);
-            $return_salt = $db_salt;
-        }
-        else {
-            if ($mystery_meat_length != 2) {
-                # Assume the mystery meat is a salt and soldier on anyway.
-                ::logError("Unrecognized salt for md5_salted encryption.");
-            }
-            $return_salt = $mystery_meat;
-            $encrypted = Digest::MD5::md5_hex($return_salt . $password);
-        }
-
-        return "$encrypted:$return_salt";
-    },
-    sha1 => sub {
-        my $obj = shift;
-        unless ($HAVE_SHA1) {
-            $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
-            return;
-        }
-        return Digest::SHA1::sha1_hex(shift);
-    },
+    default => \&enc_default,
+    md5 => \&enc_md5,
+    md5_salted => \&enc_md5_salted,
+    sha1 => \&enc_sha1,
 );
+
+sub enc_default {
+    my $obj = shift;
+    my ($pwd, $salt) = @_;
+    return crypt($pwd, $salt);
+}
+
+sub enc_md5 {
+    my $obj = shift;
+    return Digest::MD5::md5_hex(shift);
+}
+
+# This particular md5_salted encryption stores the salt with the password
+# in colon-separated format: /.+:(..)/. It is compatible with Zen Cart.
+# Detecting context based on the length of the mystery meat is a little
+# hokey; it would be more ideal to specify or detect the context 
+# explicitly in/from the object itself (or as a named/separate parameter).
+sub enc_md5_salted {
+    my ($obj, $password, $mystery_meat) = @_;
+
+    my $encrypted;
+    my $return_salt;
+    my $mystery_meat_length = length $mystery_meat;
+    if ($mystery_meat_length == 35) {
+        # Extract only the salt; we don't need the database password here.
+        my (undef, $db_salt) = split(':', $mystery_meat);
+        $encrypted = Digest::MD5::md5_hex($db_salt . $password);
+        $return_salt = $db_salt;
+    }
+    else {
+        if ($mystery_meat_length != 2) {
+            # Assume the mystery meat is a salt and soldier on anyway.
+            ::logError("Unrecognized salt for md5_salted encryption.");
+        }
+        $return_salt = $mystery_meat;
+        $encrypted = Digest::MD5::md5_hex($return_salt . $password);
+    }
+
+    return "$encrypted:$return_salt";
+}
+
+sub enc_sha1 {
+    my $obj = shift;
+    unless ($HAVE_SHA1) {
+        $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
+        return;
+    }
+    return Digest::SHA1::sha1_hex(shift);
+}
 
 # Maps the length of the encrypted data to the algorithm that
 # produces it. This method will have to be re-evaluated if competing
