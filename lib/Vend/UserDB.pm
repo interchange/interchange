@@ -1514,6 +1514,9 @@ sub login {
 			if ($self->{CRYPT}) {
 				$self->{PASSWORD} = $self->do_crypt($pw, $db_pass);
 			}
+			else {
+				$db_pass = lc $db_pass if $self->{OPTIONS}{ignore_case};
+			}
 			unless ($self->{PASSWORD} eq $db_pass) {
 				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
 					$self->{USERNAME}));
