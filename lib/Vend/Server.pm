@@ -478,7 +478,7 @@ sub parse_multipart {
 			}
 
 #::logDebug("Content-Disposition: " .  $header{'Content-Disposition'});
-			my($param)= $header{'Content-Disposition'}=~/ name="?([^\";]*)"?/;
+			my($param)= $header{'Content-Disposition'}=~/ name="?([^\";]+)"?/;
 
 			# Bug:  Netscape doesn't escape quotation marks in file names!!!
 			my($filename) = $header{'Content-Disposition'}=~/ filename="?([^\";]*)"?/;
