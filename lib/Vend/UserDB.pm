@@ -1704,26 +1704,36 @@ sub change_pass {
 	}
 
 	eval {
+		# Create copies so that ignore_case doesn't lc the originals.
+		my $vend_username = $Vend::username;
+		my $cgi_mv_username = $CGI::values{mv_username};
+		if ($self->{OPTIONS}{ignore_case}) {
+			$vend_username = lc $vend_username;
+			$cgi_mv_username = lc $cgi_mv_username
+				if defined $cgi_mv_username;
+		}
+
+		# Database operations still use the mixed-case original.
 		my $super = $Vend::superuser || (
 			$Vend::admin and
 			$self->{DB}->field($Vend::username, $self->{LOCATION}{SUPER})
 		);
 
-		if ($self->{USERNAME} ne $Vend::username or
-			defined $CGI::values{mv_username} and
-			$self->{USERNAME} ne $CGI::values{mv_username}
+		if ($self->{USERNAME} ne $vend_username or
+			defined $cgi_mv_username and
+			$self->{USERNAME} ne $cgi_mv_username
 		) {
 			if ($super) {
-				if ($CGI::values{mv_username} and
-					$CGI::values{mv_username} ne $self->{USERNAME}) {
+				if ($cgi_mv_username and
+					$cgi_mv_username ne $self->{USERNAME}) {
 					$original_self = $self;
-					$options{username} = $CGI::values{mv_username};
+					$options{username} = $cgi_mv_username;
 					undef $self;
 				}
 			} else {
 				errmsg("Unprivileged user '%s' attempted to change password of user '%s'",
-					$Vend::username, $self->{USERNAME}) if $options{log};
-				die errmsg("You are not allowed to change another user's password.") . "\n";
+					$vend_username, $self->{USERNAME}) if $options{log};
+				die errmsg("You are not allowed to change another user's password.");
 			}
 		}
 
