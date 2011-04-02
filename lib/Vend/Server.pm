@@ -472,7 +472,7 @@ sub parse_multipart {
 			# Bug:  Netscape doesn't escape quotation marks in file names!!!
 			my($filename) = $header{'Content-Disposition'}=~/ filename="?([^\";]*)"?/;
 #::logDebug("param='$param' filename='$filename'" );
-			if(! $param) {
+			if(not defined $param) {
 				::logGlobal({ level => 'debug' }, "unsupported multipart header: \n%s\n", $header);
 				next;
 			}
