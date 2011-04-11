@@ -127,7 +127,7 @@ sub send_environment () {
 
 sub send_entity {
 	return '' unless defined $ENV{CONTENT_LENGTH};
-	my $len = $ENV{CONTENT_LENGTH};
+	my $len = $ENV{CONTENT_LENGTH} || 0;
 	return '' unless $len > 0;
 
 	my $val = "entity\n";
