@@ -126,6 +126,7 @@ my %Parse = (
 								my($ref,$params) = @_;
 								my ($var, $value) = split /\s+/, $params, 2;
 								$::Values->{$var} = $value;
+								return 1;
 							},
 	'&setcheck'			=>	sub {		
 								my($ref,$params) = @_;

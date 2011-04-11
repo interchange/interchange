@@ -46,25 +46,66 @@ if ($@) {
     ::logGlobal("SHA1 passwords disabled: $@");
 }
 
+# The object encryption methods take three arguments: object, password, and
+# mystery meat. If called in the context of new_account(), the mystery meat
+# is the salt (which is not always used). If called in the context of
+# login(), then the mystery meat is the entire password field from the
+# database (with salt, if applicable).
 my %enc_subs = (
-    default => sub {
-        my $obj = shift;
-        my ($pwd, $salt) = @_;
-        return crypt($pwd, $salt);
-    },
-    md5 => sub {
-        my $obj = shift;
-        return Digest::MD5::md5_hex(shift);
-    },
-    sha1 => sub {
-        my $obj = shift;
-        unless ($HAVE_SHA1) {
-            $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
-            return;
-        }
-        return Digest::SHA1::sha1_hex(shift);
-    },
+    default => \&enc_default,
+    md5 => \&enc_md5,
+    md5_salted => \&enc_md5_salted,
+    sha1 => \&enc_sha1,
 );
+
+sub enc_default {
+    my $obj = shift;
+    my ($pwd, $salt) = @_;
+    return crypt($pwd, $salt);
+}
+
+sub enc_md5 {
+    my $obj = shift;
+    return Digest::MD5::md5_hex(shift);
+}
+
+# This particular md5_salted encryption stores the salt with the password
+# in colon-separated format: /.+:(..)/. It is compatible with Zen Cart.
+# Detecting context based on the length of the mystery meat is a little
+# hokey; it would be more ideal to specify or detect the context 
+# explicitly in/from the object itself (or as a named/separate parameter).
+sub enc_md5_salted {
+    my ($obj, $password, $mystery_meat) = @_;
+
+    my $encrypted;
+    my $return_salt;
+    my $mystery_meat_length = length $mystery_meat;
+    if ($mystery_meat_length == 35) {
+        # Extract only the salt; we don't need the database password here.
+        my (undef, $db_salt) = split(':', $mystery_meat);
+        $encrypted = Digest::MD5::md5_hex($db_salt . $password);
+        $return_salt = $db_salt;
+    }
+    else {
+        if ($mystery_meat_length != 2) {
+            # Assume the mystery meat is a salt and soldier on anyway.
+            ::logError("Unrecognized salt for md5_salted encryption.");
+        }
+        $return_salt = $mystery_meat;
+        $encrypted = Digest::MD5::md5_hex($return_salt . $password);
+    }
+
+    return "$encrypted:$return_salt";
+}
+
+sub enc_sha1 {
+    my $obj = shift;
+    unless ($HAVE_SHA1) {
+        $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
+        return;
+    }
+    return Digest::SHA1::sha1_hex(shift);
+}
 
 # Maps the length of the encrypted data to the algorithm that
 # produces it. This method will have to be re-evaluated if competing
@@ -72,6 +113,7 @@ my %enc_subs = (
 my %enc_id = qw/
     13  default
     32  md5
+    35  md5_salted
     40  sha1
 /;
 
@@ -1472,6 +1514,13 @@ sub login {
 			if ($self->{CRYPT}) {
 				$self->{PASSWORD} = $self->do_crypt($pw, $db_pass);
 			}
+			else {
+				$db_pass = lc $db_pass if $self->{OPTIONS}{ignore_case};
+			}
+#::logDebug(errmsg("crypt: %s", $self->{CRYPT}));
+#::logDebug(errmsg("ignore_case: %s", $self->{OPTIONS}{ignore_case}));
+#::logDebug(errmsg("given password: %s", $self->{PASSWORD}));
+#::logDebug(errmsg("stored password: %s", $db_pass));
 			unless ($self->{PASSWORD} eq $db_pass) {
 				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
 					$self->{USERNAME}));
@@ -1655,26 +1704,36 @@ sub change_pass {
 	}
 
 	eval {
+		# Create copies so that ignore_case doesn't lc the originals.
+		my $vend_username = $Vend::username;
+		my $cgi_mv_username = $CGI::values{mv_username};
+		if ($self->{OPTIONS}{ignore_case}) {
+			$vend_username = lc $vend_username;
+			$cgi_mv_username = lc $cgi_mv_username
+				if defined $cgi_mv_username;
+		}
+
+		# Database operations still use the mixed-case original.
 		my $super = $Vend::superuser || (
 			$Vend::admin and
 			$self->{DB}->field($Vend::username, $self->{LOCATION}{SUPER})
 		);
 
-		if ($self->{USERNAME} ne $Vend::username or
-			defined $CGI::values{mv_username} and
-			$self->{USERNAME} ne $CGI::values{mv_username}
+		if ($self->{USERNAME} ne $vend_username or
+			defined $cgi_mv_username and
+			$self->{USERNAME} ne $cgi_mv_username
 		) {
 			if ($super) {
-				if ($CGI::values{mv_username} and
-					$CGI::values{mv_username} ne $self->{USERNAME}) {
+				if ($cgi_mv_username and
+					$cgi_mv_username ne $self->{USERNAME}) {
 					$original_self = $self;
-					$options{username} = $CGI::values{mv_username};
+					$options{username} = $cgi_mv_username;
 					undef $self;
 				}
 			} else {
 				errmsg("Unprivileged user '%s' attempted to change password of user '%s'",
-					$Vend::username, $self->{USERNAME}) if $options{log};
-				die errmsg("You are not allowed to change another user's password.") . "\n";
+					$vend_username, $self->{USERNAME}) if $options{log};
+				die errmsg("You are not allowed to change another user's password.");
 			}
 		}
 

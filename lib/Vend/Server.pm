@@ -127,26 +127,37 @@ sub populate {
 
 	# try to get originating host's IP address if request was
 	# forwarded through a trusted proxy
-	my $ip;
-	if ($Global::TrustProxy
-		and ($CGI::remote_addr =~ $Global::TrustProxy
-			or $CGI::remote_host =~ $Global::TrustProxy)
-		and $ip = $cgivar->{HTTP_X_FORWARDED_FOR}) {
-		# trust only the last hop's IP address before our trusted proxy
-		# when multiples are present in a comma-separated list
-		$ip =~ s/.*,//;
-		$ip =~ s/^\s+//; $ip =~ s/\s+$//;
-		if ($ip =~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+	if (
+		$Global::TrustProxy
+		and (
+			$CGI::remote_addr =~ $Global::TrustProxy
+			or $CGI::remote_host =~ $Global::TrustProxy
+		)
+		and my $forwarded_for = $cgivar->{HTTP_X_FORWARDED_FOR}
+	) {
+		# multiple source IP addresses may appear in X-Forwarded-For header
+		# in a comma-separated list
+		for my $ip (reverse grep /\S/, split /\s*,\s*/, $forwarded_for) {
+			# do we have a valid-looking IP address?
+			if ($ip !~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+				# if not, log error and ignore X-Forwarded-For header
+				::logGlobal(
+					{ level => 'info' },
+					"Unknown X-Forwarded-For header set from trusted proxy %s: %s",
+					$CGI::remote_addr,
+					$forwarded_for,
+				);
+				last;
+			}
+
+			# skip any other upstream trusted proxies
+			next if $ip =~ $Global::TrustProxy;
+
+			# rightmost IP address that's not a trusted proxy is the customer IP
+			# address as far as we're concerned, so keep that and exit loop
 			$CGI::remote_addr = $ip;
 			undef $CGI::remote_host;
-		}
-		else {
-			::logGlobal(
-				{ level => 'info' },
-				"Unknown HTTP_X_FORWARDED_FOR header set from trusted proxy %s: '%s'",
-				$CGI::remote_addr,
-				$cgivar->{HTTP_X_FORWARDED_FOR},
-			);
+			last;
 		}
 	}
 }
@@ -467,12 +478,12 @@ sub parse_multipart {
 			}
 
 #::logDebug("Content-Disposition: " .  $header{'Content-Disposition'});
-			my($param)= $header{'Content-Disposition'}=~/ name="?([^\";]*)"?/;
+			my($param)= $header{'Content-Disposition'}=~/ name="?([^\";]+)"?/;
 
 			# Bug:  Netscape doesn't escape quotation marks in file names!!!
 			my($filename) = $header{'Content-Disposition'}=~/ filename="?([^\";]*)"?/;
 #::logDebug("param='$param' filename='$filename'" );
-			if(! $param) {
+			if(not defined $param) {
 				::logGlobal({ level => 'debug' }, "unsupported multipart header: \n%s\n", $header);
 				next;
 			}
@@ -564,6 +575,25 @@ sub canon_status {
 	return "$_\r\n";
 }
 
+sub get_cache_headers {
+	my @headers;
+
+	my $cc = $::Pragma->{cache_control};
+	push @headers, "Cache-Control: $cc" if $cc;
+
+	push @headers, "Pragma: no-cache" if delete $::Scratch->{mv_no_cache};
+
+	return @headers;
+}
+
+sub add_cache_headers {
+	return unless my @headers = get_cache_headers();
+
+	$Vend::StatusLine .= "\r\n" unless $Vend::StatusLine =~ /\n\z/;
+	$Vend::StatusLine .= "$_\r\n" for @headers;
+	return 1;
+}
+
 sub respond {
 	# $body is now a reference
 	my ($s, $body) = @_;
@@ -625,8 +655,9 @@ sub respond {
 		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
-		$Vend::StatusLine .= "Pragma: no-cache\r\n"
-			if delete $::Scratch->{mv_no_cache};
+
+		add_cache_headers();
+
 		print MESSAGE canon_status($Vend::StatusLine);
 		print MESSAGE "\r\n";
 		print MESSAGE $$body;
@@ -674,9 +705,10 @@ sub respond {
 		select $save;
 		$Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
-# END TRACK                            
-		$Vend::StatusLine .= "Pragma: no-cache\r\n"
-			if delete $::Scratch->{mv_no_cache};
+# END TRACK
+
+		add_cache_headers();
+
 		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
 			$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
@@ -744,8 +776,8 @@ sub respond {
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
 # END TRACK
 	}
-	print $fh canon_status("Pragma: no-cache")
-		if delete $::Scratch->{mv_no_cache};
+
+	print $fh canon_status($_) for get_cache_headers();
 
 	print $fh "\r\n";
 	print $fh $$body;

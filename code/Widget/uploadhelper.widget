@@ -16,6 +16,7 @@ sub {
 
 	my $name = $opt->{name};
 	my $val  = $opt->{value};
+	my $umask = $opt->{umask} || '022';
 	my $path = $opt->{path} || $opt->{outboard};
 	my $size = $opt->{cols} || $opt->{width};
 	
@@ -37,11 +38,13 @@ sub {
 		}
 		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
 <INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
-<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
+<INPUT TYPE=hidden NAME="$name" VALUE="$val">
+<INPUT TYPE=hidden NAME="ui_upload_umask:$name" VALUE="$umask">};      
     }
 	else {
         $out = qq{<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
-<INPUT TYPE=file NAME="$name"$size>};
+<INPUT TYPE=file NAME="$name"$size>
+<INPUT TYPE=hidden NAME="ui_upload_umask:$name" VALUE="$umask">};
     }
 	return $out;
 }

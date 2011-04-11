@@ -98,9 +98,13 @@ __NAME__ process_filter
 		$fn =~ s,.*\\,,;
 		$fn = $Tag->filter('filesafe', $fn);
 #Debug("cgi->$key now='$CGI->{$key}'");
+
+		my $umaskkey = 'ui_upload_umask:' . $key;
+		my $umask = $CGI->{$umaskkey};
+
 		$CGI->{$key} = $fn;
 		my $out = "$path/$fn";
-		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1} ) ) {
+		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1, umask => $umask} ) ) {
 			$Scratch->{ui_failure} .= "\nFailed to write upload file $out";
 		}
 	}
