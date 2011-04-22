@@ -1,3 +1,9 @@
+interchange (5.7.7-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 22 Apr 2011 11:29:36 +0200
+
 interchange (5.7.6-2) unstable; urgency=low
 
   * Fix pending l10n issues, thanks to Christian Perrier
