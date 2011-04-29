@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# Copyright (C) 2003-2009 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2011 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:
@@ -304,6 +304,10 @@ sub authorizenet {
 	
 	$secret    =  charge_param('secret') if ! $secret;
 
+    if (! defined $opt->{accept_for_review}) {
+         $opt->{accept_for_review} = charge_param('accept_for_review');
+    }
+
     $opt->{host}   ||= 'secure.authorize.net';
 
     $opt->{script} ||= '/gateway/transact.dll';
@@ -581,6 +585,10 @@ sub authorizenet {
     if ($result{x_response_code} == 1) {
     	$result{MStatus} = 'success';
 		$result{'order-id'} ||= $opt->{order_id};
+    }
+    elsif ($opt->{accept_for_review} && $result{x_response_code} == 4) {
+        $result{MStatus} = 'success';
+        $result{'order-id'} ||= $opt->{order_id};
     }
 	else {
     	$result{MStatus} = 'failure';
