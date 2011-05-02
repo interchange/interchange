@@ -262,8 +262,8 @@ sub toss_cart {
 				  $tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 			      }
 
-			      my ($prefix) = $tab =~ s/^([=\?])//;
-			      $prefix ||= '';
+			      my $prefix = '';
+			      $tab =~ s/^([=?])// and $prefix = $1;
 
 			      my $max = \$quantity_cache{"$tab.$col.$item->{code}"};
 			      $$max ||= ::tag_data($tab, $col, $item->{code});
