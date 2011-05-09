@@ -380,6 +380,7 @@ debian/makecat.cfg
 debian/makecat.wrapper
 debian/NEWS
 debian/po/cs.po
+debian/po/da.po
 debian/po/de.po
 debian/po/es.po
 debian/po/eu.po
