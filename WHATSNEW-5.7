@@ -8,7 +8,7 @@
 See UPGRADE document for a list of incompatible changes.
 
 
-Interchange 5.7.7
+Interchange 5.7.7 released on 2011-06-12.
 
 Core
 ----
@@ -32,14 +32,24 @@ Core
 
 * Remove newline from errormessages to be able to parse locale of it
 
-* Fixed a bug in the [read-cookie] tag which in very specific rare
+* Fix a bug in the [read-cookie] tag which in very specific rare
   circumstances could return the wrong value for a cookie.
 
-* Fixed a bug in parsing of TemplateDir directive with multiple directories
+* Fix a bug in parsing of TemplateDir directive with multiple directories
   on a single line (RT#318).
   Thanks to Mat Jones for the report.
 
-* Fix for processing GDBM files while using UTF8
+* Fix for processing GDBM files while using UTF8.
+
+* Add additional UserDB encryption options.
+
+* Add pragma handling for setting the Cache-Control header.
+
+* Enhance TrustProxy to handle multiple chained proxies.
+
+* Multiple bugfixes to payment modules.
+
+* Fixes when sending UTF-8 email.
 
 Tags
 ----
