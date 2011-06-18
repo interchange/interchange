@@ -2006,6 +2006,7 @@ sub read_cookie {
 	my ($lookfor, $string) = @_;
 	$string = $CGI::cookie
 		unless defined $string;
+    return cookies_hash($string) unless defined $lookfor && length($lookfor);
     return undef unless $string =~ /(?:^|;)\s*\Q$lookfor\E=([^\s;]+)/i;
  	return unescape_chars($1);
 }
