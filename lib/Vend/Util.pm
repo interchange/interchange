@@ -2010,6 +2010,15 @@ sub read_cookie {
  	return unescape_chars($1);
 }
 
+sub cookies_hash {
+    my $string = shift || $CGI::cookie;
+    my %cookies = map {
+        my ($k,$v) = split '=', $_, 2;
+        $k => unescape_chars($v)
+    } split(/;\s*/, $string);
+    return \%cookies;
+}
+
 sub send_mail {
 	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
 
