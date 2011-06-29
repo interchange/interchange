@@ -3932,15 +3932,14 @@ sub parse_dir_array {
 	my @dirs = grep /\S/, Text::ParseWords::shellwords($value);
 
 	foreach my $dir (@dirs) {
-                my $val;
-		unless (allowed_file($dir)) {
+ 		unless (allowed_file($dir)) {
 			config_error('Path %s not allowed in %s directive',
 								$dir, $var);
 		}
-		$val = "$C->{VendRoot}/$dir"
-			unless file_name_is_absolute($val);
-		$val =~ s./+$..;
-		push @$c, $val;
+		$dir = "$C->{VendRoot}/$dir"
+			unless file_name_is_absolute($dir);
+		$dir =~ s./+$..;
+		push @$c, $dir;
 	}
 
 	return $c;
