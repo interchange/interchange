@@ -5365,11 +5365,11 @@ sub taxable_amount {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
 		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
-		unless (%$::Discounts) {
-			$taxable += item_subtotal($item);
+		if (%$::Discounts or $item->{mv_discount}) {
+			$taxable += apply_discount($item);
 		}
 		else {
-			$taxable += apply_discount($item);
+			$taxable += item_subtotal($item);
 		}
     }
 
