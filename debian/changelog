@@ -1,8 +1,10 @@
 interchange (5.7.7-1) unstable; urgency=low
 
-  * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 22 Apr 2011 11:29:36 +0200
+  * New upstream release.
+  * Add patch to use Digest::SHA instead of Digest::SHA1 (Closes: #625904,
+    thanks to Salvatore Bonaccorso <carnil@debian.org> for the report)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 22 Aug 2011 11:57:41 +0200
 
 interchange (5.7.6-2) unstable; urgency=low
 
