@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Stefan Hornburg (Racke) <racke@linuxia.de>
 Standards-Version: 3.5.6.0
-Build-Depends: debhelper (>= 5), po-debconf, libdigest-md5-perl, libdigest-sha1-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, libhtml-parser-perl
+Build-Depends: debhelper (>= 5), po-debconf, libdigest-md5-perl, libdigest-sha-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, libhtml-parser-perl
 Homepage: http://www.icdevgroup.org/
 
 Package: interchange-cat-standard
@@ -28,7 +28,7 @@ Description: Interchange administration interface (UI)
 
 Package: interchange
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, perl (>= 5.8.8), debconf | debconf-2.0, libdigest-md5-perl, libdigest-sha1-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl, libtie-shadowhash-perl
+Depends: ${misc:Depends}, ${shlibs:Depends}, perl (>= 5.8.8), debconf | debconf-2.0, libdigest-md5-perl, libdigest-sha-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libstorable-perl, liburi-perl, logrotate, libwww-perl, libset-crontab-perl, libtie-shadowhash-perl
 Pre-Depends: adduser
 Conflicts: libdbi-perl (<< 1.53)
 Recommends: interchange-ui
