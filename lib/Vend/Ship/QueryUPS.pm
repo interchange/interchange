@@ -137,7 +137,7 @@ sub calculate {
 				$shipping = $ary->[0][1];
 				$updated = $ary->[0][2];
 				$now = time();
-				if($now - $updated > 86000) {
+				if($now - $updated > $Variable->{UPS_CACHE_EXPIRE} || 86000) {
 					undef $shipping;
 					$updated = $now;
 				}
