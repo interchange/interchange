@@ -29,6 +29,7 @@ use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
 use Vend::Ship;
+use POSIX qw(ceil);
 
 my $Have_Business_UPS;
 eval {
@@ -113,6 +114,7 @@ sub calculate {
 				or last CACHE;
 			my $tname = $db->name();
 			$cache = 1;
+			$weight = ceil($weight);
 			%cline = (
 				weight => $weight,
 				origin => $origin,
