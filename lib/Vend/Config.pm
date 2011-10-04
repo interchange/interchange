@@ -4241,6 +4241,7 @@ my %Ary_ref = (   qw!
 						BINARY              BINARY 
 						PRECREATE           PRECREATE 
 						POSTCREATE          POSTCREATE 
+						PREQUERY			PREQUERY
 						INDEX               INDEX 
 						ALTERNATE_DSN       ALTERNATE_DSN
 						ALTERNATE_USER      ALTERNATE_USER
