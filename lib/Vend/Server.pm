@@ -296,7 +296,7 @@ sub store_cgi_kv {
 
 	$key = lc ($key) if
 		$Global::DowncaseVarname
-		&& $Global::DowncaseVarname =~ /\b$key\b/i;
+		&& $Global::DowncaseVarname =~ /\b\Q$key\E\b/i;
 
 	$key = $::IV->{$key} if defined $::IV->{$key};
 	if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
@@ -408,7 +408,7 @@ sub parse_post {
 #::logDebug("incoming --> $key");
 		$key = lc ($key) if
 			$Global::DowncaseVarname
-			&& $Global::DowncaseVarname =~ /\b$key\b/i;
+			&& $Global::DowncaseVarname =~ /\b\Q$key\E\b/i;
 
 		$key = $::IV->{$key} if defined $::IV->{$key};
 
