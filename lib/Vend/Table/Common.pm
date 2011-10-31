@@ -1632,7 +1632,7 @@ sub log_error {
 	my $msg = errmsg($tpl, @args);
 	my $ekey = 'table ' . $s->[$CONFIG]{name};
 	my $cfg = $s->[$CONFIG];
-	unless(defined $cfg->{LOG_ERROR_CATALOG} and ! $cfg->{LOG_CATALOG}) {
+	unless(defined $cfg->{LOG_ERROR_CATALOG} and ! $cfg->{LOG_ERROR_CATALOG}) {
 		logError($msg);
 	}
 	if($cfg->{LOG_ERROR_GLOBAL}) {
