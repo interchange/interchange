@@ -1280,23 +1280,24 @@ sub dispatch {
 		$::Instance->{ExternalCookie} = $sessionid || 1;
 		$Vend::CookieID = $Vend::Cookie = 1;
 	}
-	elsif (defined $CGI::cookie and
-		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
-								[:_] (
-									(	\d{1,3}\.   # An IP ADDRESS
-										\d{1,3}\.
-										\d{1,3}\.
-										\d{1,3})
-									# A user name or domain
-									|	([A-Za-z0-9][-\@A-Za-z.0-9]+) )?
-									\b/x)
-	{
-		$sessionid = $1
-			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
-		$CGI::cookiehost = $3;
-		$CGI::cookieuser = $4;
-		$Vend::CookieID = $Vend::Cookie = 1;
-    }
+	elsif (defined $CGI::cookie and $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})[:_]([-\@.:A-Za-z0-9]+?)\b/) {
+	  SESSION_COOKIE: {
+	      my $id = $1;
+	      my $host = $2;
+	      if (is_ipv4($host) || is_ipv6($host)) {
+		  $CGI::cookiehost = $host;
+	      }
+	      elsif ($host =~ /[A-Za-z0-9][-\@A-Za-z.0-9]+/) {
+		  $CGI::cookieuser = $host;
+	      }
+	      else {
+		  last SESSION_COOKIE;
+	      }
+
+	      $sessionid = $id;
+	      $Vend::CookieID = $Vend::Cookie = 1;
+	    }
+	}
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid");
 

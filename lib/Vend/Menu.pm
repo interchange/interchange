@@ -57,21 +57,6 @@ my %transform = (
 		}
 		return 1;
 	},
-	first_line => sub {
-		my ($row, $fields) = @_;
-		return undef if ref($fields) ne 'ARRAY';
-		return 1 if $first_line;
-		my $status;
-		for(@$fields) {
-			if(s/^!\s*//) {
-				$status = $status && ! $row->{$_};
-			}
-			else {
-				$status = $status && $row->{$_};
-			}
-		}
-		return $first_line = $status;
-	},
 	last_line => sub {
 		my ($row, $fields) = @_;
 #::logDebug("last_line transform, last_line=$last_line");

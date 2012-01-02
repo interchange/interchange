@@ -165,6 +165,7 @@ sub find_sort {
 #::logDebug("called find_sort from " . scalar(caller()) . ", opt=" . ::uneval($opt));
 	$opt->{sort} = defined $opt->{sort} ? $opt->{sort} : $loc->{sort};
 	return '' unless $opt->{sort};
+	return " ORDER BY $opt->{sort}" if $opt->{rawsort} || $loc->{rawsort};
 	my @fields = split /\s*,\s*/, $opt->{sort};
 	my $map = $loc->{map} ||= {};
 	for(@fields) {
@@ -182,7 +183,7 @@ sub find_sort {
 		$_ .= $extra if $extra;
 	}
 
-	return "ORDER BY " . join(",", @fields);
+	return " ORDER BY " . join(",", @fields);
 }
 
 sub tag_options {

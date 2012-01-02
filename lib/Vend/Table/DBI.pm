@@ -654,6 +654,17 @@ sub open_table {
 	$tablename = $config->{REAL_NAME}
 		if $config->{REAL_NAME};
 
+	if (ref $config->{PREQUERY} eq 'ARRAY') {
+		for (@{$config->{PREQUERY}}) {
+			$db->do($_)
+				or ::logError(
+						"DBI: Pre-use query '%s' failed: %s" ,
+						$_,
+						$DBI::errstr,
+				);
+		}
+	}
+
 	# Used so you can do query() and nothing else
 	if($config->{HANDLE_ONLY}) {
 		return bless [$config, $tablename, undef, undef, undef, $db], $class;

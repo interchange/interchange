@@ -53,6 +53,8 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	header_data_scrub
 	hexify
 	is_hash
+	is_ipv4
+	is_ipv6
 	is_no
 	is_yes
 	l
@@ -850,6 +852,52 @@ sub string_to_ref {
 
 sub is_hash {
 	return ref($_[0]) eq 'HASH';
+}
+
+# Verify that passed string is a valid IPv4 address.
+sub is_ipv4 {
+    my $addr = shift or return;
+    my @segs = split '.', $addr;
+    return unless @segs == 4;
+    foreach (@segs) {
+	return unless /^\d{1,3}$/ && !/^0\d/;
+	return unless $_ <= 255;
+    }
+    return 1;
+}
+
+# Verify that passed string is a valid IPv6 address.
+sub is_ipv6 {
+    my $addr = shift or return;
+    my @segs = split ':', $addr;
+
+    my $quads = 8;
+    # Check for IPv4 style ending
+    if ($segs[-1] =~ /\./) {
+	return unless is_ipv4(pop @segs);
+	$quads = 6;
+    }
+
+    # Check the special case of the :: abbreviation.
+    if ($addr =~ /::/) {
+	# Three :'s together is wrong, though.
+	return if $addr =~ /:::/;
+	# Also only one set of :: is allowed.
+	return if $addr =~ /::.*::/;
+	# Check that we don't have too many quads.
+	return if @segs >= $quads;
+    }
+    else {
+	# No :: abbreviation, so the number of quads must be exact.
+	return unless @segs == $quads;
+    }
+
+    # Check the validity of each quad
+    foreach (@segs) {
+	return unless /^[0-9a-f]{1,4}$/i;
+    }
+
+    return 1;
 }
 
 sub dotted_hash {

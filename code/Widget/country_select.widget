@@ -223,14 +223,14 @@ EOF
 		var svary = $v_state_vary\[country];
 		if(! svary) {
 			var val = '';
-			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value"$extra>';
+			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" id="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value"$extra>';
 			$v_formv.$svar.value=sval;
 
 			return;
 		}
 		var stary = $v_state_tary\[country];
 
-		var str = '<select name="$svar_in" onChange="$v_formv.$svar.value = this.value$state_js"$extra>';
+		var str = '<select name="$svar_in" id="$svar_in" onChange="$v_formv.$svar.value = this.value$state_js"$extra>';
 		for(var i = 0; i < svary.length; i++) {
 			str += '<option value="' + svary[i] + '"';
 			if(svary[i] == sval)

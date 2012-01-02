@@ -34,16 +34,16 @@ no warnings qw(uninitialized numeric);
 
 my $ready = new Vend::Safe;
 
-my $HAVE_SHA1;
+my $HAVE_SHA;
 
 eval {
-    require Digest::SHA1;
-    import Digest::SHA1;
-    $HAVE_SHA1 = 1;
+    require Digest::SHA;
+    import Digest::SHA;
+    $HAVE_SHA = 1;
 };
 
 if ($@) {
-    ::logGlobal("SHA1 passwords disabled: $@");
+    ::logGlobal("SHA passwords disabled: $@");
 }
 
 # The object encryption methods take three arguments: object, password, and
@@ -100,11 +100,11 @@ sub enc_md5_salted {
 
 sub enc_sha1 {
     my $obj = shift;
-    unless ($HAVE_SHA1) {
-        $obj->log_either('SHA1 passwords unavailable. Is Digest::SHA1 installed?');
+    unless ($HAVE_SHA) {
+        $obj->log_either('SHA passwords unavailable. Is Digest::SHA installed?');
         return;
     }
-    return Digest::SHA1::sha1_hex(shift);
+    return Digest::SHA::sha1_hex(shift);
 }
 
 # Maps the length of the encrypted data to the algorithm that

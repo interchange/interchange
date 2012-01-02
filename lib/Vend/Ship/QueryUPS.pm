@@ -29,6 +29,7 @@ use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
 use Vend::Ship;
+use POSIX qw(ceil);
 
 my $Have_Business_UPS;
 eval {
@@ -113,6 +114,7 @@ sub calculate {
 				or last CACHE;
 			my $tname = $db->name();
 			$cache = 1;
+			$weight = ceil($weight);
 			%cline = (
 				weight => $weight,
 				origin => $origin,
@@ -135,7 +137,7 @@ sub calculate {
 				$shipping = $ary->[0][1];
 				$updated = $ary->[0][2];
 				$now = time();
-				if($now - $updated > 86000) {
+				if($now - $updated > $Variable->{UPS_CACHE_EXPIRE} || 86000) {
 					undef $shipping;
 					$updated = $now;
 				}
