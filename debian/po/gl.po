@@ -45,8 +45,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "¿Quere que se eliminen tódolos ficheiros que pertencen ao catálogo de "
-"demostración de Interchange ao purgar este paquete? Por exemplo, con dpkg --"
-"purge ou apt-get remove --purge."
+"demostración de Interchange ao purgar este paquete? Por exemplo, con dpkg "
+"--purge ou apt-get remove --purge."
 
 #. Type: select
 #. Choices
@@ -129,10 +129,10 @@ msgstr "Contrasinal para a administración deste catálogo:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Indique un contrasinal para administrar o catálogo de demostración. Escolla "
 "un difícil de adiviñar. O contrasinal por defecto é \"pass\". O contrasinal "
@@ -384,10 +384,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
-"Escolla o directorio que Interchange emprega para o chaveiro público GnuPG."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Escolla o directorio que Interchange emprega para o chaveiro público GnuPG."
 
 #. Type: select
 #. Choices
@@ -410,8 +408,8 @@ msgid ""
 "Interchange server will run in PreFork mode."
 msgstr ""
 "Pode escoller varios conxuntos de parámetros do servidor. As tendas baseadas "
-"na demostración tamén han cambiar o seu comportamento. Se se escolle \"rpc"
-"\", o servidor Interchange hase executar en modo PreFork."
+"na demostración tamén han cambiar o seu comportamento. Se se escolle "
+"\"rpc\", o servidor Interchange hase executar en modo PreFork."
 
 #. Type: boolean
 #. Description
@@ -469,10 +467,10 @@ msgstr "¿Activar a configuración dos robots?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
 "O paquete Debian de Interchange emprega un ficheiro de configuración "
 "separado, /etc/interchange/robots.cfg, para as directivas RobotUA, RobotIP e "
@@ -498,26 +496,3 @@ msgstr ""
 "traducida ao dinamarqués (da_DK), holandés (nl_NL), alemán (de_DE), italiano "
 "(it_IT) e sueco (sv_SE). Pode escoller o idioma por defecto aquí. Calquera "
 "usuario pode cambiar isto ao se identificar."
-
-#~ msgid "Which DBMS should be used for the demo catalog ?"
-#~ msgstr ""
-#~ "¿Que base de datos se debe empregar para o catálogo de demostración?"
-
-#~ msgid "Please select the database type."
-#~ msgstr "Escolla o tipo de base de datos."
-
-#~ msgid "Apache2"
-#~ msgstr "Apache2"
-
-#~ msgid "Apache"
-#~ msgstr "Apache"
-
-#~ msgid "Which webserver are you running ?"
-#~ msgstr "¿Que servidor web está a empregar?"
-
-#~ msgid ""
-#~ "This information is necessary for the makecat script. Please specify "
-#~ "which webserver you want to use for your Interchange applications."
-#~ msgstr ""
-#~ "Esta información é precisa para o script makecat. Indique que servidor "
-#~ "web quere empregar para as aplicacións de Interchange."

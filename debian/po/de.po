@@ -49,8 +49,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Sollen alle Dateien, die zum Interchange-Demokatalog gehören, entfernt "
-"werden, wenn diese Paket z.B. mit »dpkg --purge« oder »apt-get remove --"
-"purge« vollständig entfernt wird?"
+"werden, wenn diese Paket z.B. mit »dpkg --purge« oder »apt-get remove "
+"--purge« vollständig entfernt wird?"
 
 #. Type: select
 #. Choices
@@ -62,8 +62,7 @@ msgstr "immer, auf Nachfrage, niemals"
 #. Description
 #: ../interchange-cat-standard.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
-msgstr ""
-"Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation:"
+msgstr "Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation:"
 
 #. Type: select
 #. Description
@@ -117,9 +116,10 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
-"Bitte geben Sie einen Benutzernamen für die Verwaltung des Demokatalogs ein. "
-"Der Benutzername muss mindestens zwei Zeichen lang sein und darf nur "
-"Buchstaben, Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten."
+"Bitte geben Sie einen Benutzernamen für die Verwaltung des Demokatalogs "
+"ein. Der Benutzername muss mindestens zwei Zeichen lang sein und darf nur "
+"Buchstaben, Ziffern, den Unterstrich, @ oder den Punkt als Zeichen "
+"enthalten."
 
 #. Type: password
 #. Description
@@ -131,10 +131,10 @@ msgstr "Passwort für diese Katalogadministration:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Bitte geben Sie ein Passwort für die Verwaltung des Standard-Demokatalogs "
 "ein. Das ausgewählte Passwort sollte nicht leicht erraten werden können. Das "
@@ -280,8 +280,8 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Hier legen Sie den Benutzer für den Interchange-Server und Dateirechte fest. "
-"Wenn Sie einen anderen Benutzer auswählen, kann das zu ernsten "
+"Hier legen Sie den Benutzer für den Interchange-Server und Dateirechte "
+"fest. Wenn Sie einen anderen Benutzer auswählen, kann das zu ernsten "
 "Sicherheitsproblemen führen. Bitte nicht »root« auswählen, dies wird nicht "
 "empfohlen und würde sowieso ignoriert werden."
 
@@ -356,8 +356,8 @@ msgstr "Pfad für statische HTML-Dateien:"
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
 msgstr ""
-"Kataloginstallationen benötigen ein Verzeichnis für die Ablage von HTML-"
-"Dateien."
+"Kataloginstallationen benötigen ein Verzeichnis für die Ablage von "
+"HTML-Dateien."
 
 #. Type: string
 #. Description
@@ -380,8 +380,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Bitte wählen Sie das Verzeichnis aus, das GnuPG für den öffentlichen "
 "Schlüsselbund verwendet."
@@ -469,13 +468,13 @@ msgstr "Robot-Einstellungen aktivieren?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Das Interchange-Debian-Paket benutzt eine zusätzliche Konfigurationsdatei /"
-"etc/interchange/robots.cfg für die Direktiven RobotUA, RobotIP und "
+"Das Interchange-Debian-Paket benutzt eine zusätzliche Konfigurationsdatei "
+"/etc/interchange/robots.cfg für die Direktiven RobotUA, RobotIP und "
 "RobotHost. Das Einbinden dieser Einstellungen wird empfohlen, damit "
 "Interchange zwischen normalen Benutzern und Robots unterscheiden kann."
 
@@ -499,25 +498,3 @@ msgstr ""
 "(nl_NL), Italienische (it_IT) und Schwedische (sv_SE) übersetzt. Die "
 "vordefinierte Sprache können Sie hier festlegen. Jeder Benutzer kann sie "
 "beim Anmeldevorgang ändern."
-
-#~ msgid "Enable debug mode?"
-#~ msgstr "Debugmodus aktivieren?"
-
-#~ msgid ""
-#~ "Debug mode is only useful if you modified the Interchange sources "
-#~ "accordingly."
-#~ msgstr ""
-#~ "Debugmodus ist nur nützlich, falls Sie die Interchange-Quellen "
-#~ "modifiziert haben."
-
-#~ msgid "Important Perl Incompatibility"
-#~ msgstr "Wichtige Perl-Inkompatibilität"
-
-#~ msgid "What is the username for the administration of this catalog ?"
-#~ msgstr "Wie ist der Benutzername für die Adminstration dieses Katalogs?"
-
-#~ msgid "What is the password for the administration of this catalog ?"
-#~ msgstr "Wie ist das Passwort für die Adminstration dieses Katalogs?"
-
-#~ msgid "en_US, da_DK, de_DE, it_IT, nl_NL, sv_SE"
-#~ msgstr "en_US, da_DK, de_DE, it_IT, nl_NL, sv_SE"

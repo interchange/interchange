@@ -128,10 +128,10 @@ msgstr "Mật khẩu để quản trị phân loại này:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Hãy cung cấp một mật khẩu để quản trị phân loại minh hoạ tiêu chuẩn. Để bảo "
 "vệ máy tính thì lúc nào cũng nên chọn một mật khẩu khó đoán. Mật khẩu mặc "
@@ -349,8 +349,7 @@ msgstr "Ví trị tập tin HTML tĩnh:"
 #. Description
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr ""
-"Bản cài đặt phân loại thì cần một thư mục vào đó có thể để tập tin HTML."
+msgstr "Bản cài đặt phân loại thì cần một thư mục vào đó có thể để tập tin HTML."
 
 #. Type: string
 #. Description
@@ -373,10 +372,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
-"Hãy chọn thư mục được Interchange sử dụng cho vòng chìa khóa công GnuPG:"
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Hãy chọn thư mục được Interchange sử dụng cho vòng chìa khóa công GnuPG:"
 
 #. Type: select
 #. Choices
@@ -458,15 +455,15 @@ msgstr "Bật thiết lập rô-bốt ?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Gói phần mềm Debian Interchange dùng một tập tin cấu hình riêng « /etc/"
-"interchange/robots.cfg » cho những chỉ thị RobotUA, RobotIP và RobotHost. "
-"Khuyên bạn bao gồm những thiết lập này, để Interchange phân biệt giữa rô-bốt "
-"và người dùng bình thường."
+"Gói phần mềm Debian Interchange dùng một tập tin cấu hình riêng « "
+"/etc/interchange/robots.cfg » cho những chỉ thị RobotUA, RobotIP và "
+"RobotHost. Khuyên bạn bao gồm những thiết lập này, để Interchange phân biệt "
+"giữa rô-bốt và người dùng bình thường."
 
 #. Type: select
 #. Description

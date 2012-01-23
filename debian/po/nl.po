@@ -37,8 +37,7 @@ msgstr ""
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr ""
-"Wilt u dat de demo-catalogus verwijderd wordt als dit pakket gewist wordt?"
+msgstr "Wilt u dat de demo-catalogus verwijderd wordt als dit pakket gewist wordt?"
 
 #. Type: boolean
 #. Description
@@ -132,10 +131,10 @@ msgstr "Wachtwoord voor de beheerder van deze catalogus:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Wat is het wachtwoord voor de beheerder van de standaard demo-catalogus? "
 "Gelieve een moeilijk te raden wachtwoord te kiezen. De standaardwaarde is "
@@ -250,8 +249,7 @@ msgstr "Databasewachtwoord"
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr ""
-"Welk wachtwoord moet gebruikt worden om verbinding te maken met de database?"
+msgstr "Welk wachtwoord moet gebruikt worden om verbinding te maken met de database?"
 
 #. Type: select
 #. Choices
@@ -273,8 +271,8 @@ msgid ""
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
 "Unix-modus is de meest veilige manier om Interchange te draaien aangezien "
-"systemen op het internet dan geen contact kunnen maken met de Interchange-"
-"server."
+"systemen op het internet dan geen contact kunnen maken met de "
+"Interchange-server."
 
 #. Type: string
 #. Description
@@ -385,16 +383,14 @@ msgid ""
 "server."
 msgstr ""
 "Voor verhoogde beveiliging wordt de door klanten aangegeven "
-"kredietkaartinformatie versleuteld niet op de server opgeslagen maar per e-"
-"mail doorgestuurd naar de winkeleigenaar."
+"kredietkaartinformatie versleuteld niet op de server opgeslagen maar per "
+"e-mail doorgestuurd naar de winkeleigenaar."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
-"Welke map dient Interchange te gebruiken voor de publieke GnuPG-sleutelring?"
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Welke map dient Interchange te gebruiken voor de publieke GnuPG-sleutelring?"
 
 #. Type: select
 #. Choices
@@ -451,8 +447,9 @@ msgid ""
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
 "U kunt geen Interchange SOAP-server draaien omdat de Perl-module SOAP::Lite "
-"niet geïnstalleerd is. Deze module kunt u installeren via het pakket libsoap-"
-"lite-perl, vervolgens dient u nog 'interchangeconfig SOAP=1' uit te voeren."
+"niet geïnstalleerd is. Deze module kunt u installeren via het pakket "
+"libsoap-lite-perl, vervolgens dient u nog 'interchangeconfig SOAP=1' uit te "
+"voeren."
 
 #. Type: boolean
 #. Description
@@ -477,13 +474,13 @@ msgstr "Wilt u de robots-instellingen activeren?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Het Interchange-pakket gebruikt een apart configuratiebestand (/etc/"
-"interchange/robots.cfg) voor de 'RobotUA', 'RobotIP', en 'RobotHost' "
+"Het Interchange-pakket gebruikt een apart configuratiebestand "
+"(/etc/interchange/robots.cfg) voor de 'RobotUA', 'RobotIP', en 'RobotHost' "
 "instellingen. Het is aangeraden om deze instellingen te 'include'-en; "
 "hierdoor kan Interchange onderscheid maken tussen robots en gewone "
 "gebruikers."
@@ -507,25 +504,3 @@ msgstr ""
 "(da_DK),  Duits, (de_DE), Italiaans (it_IT), Nederlands (nl_NL) en Zweeds "
 "(sv_SE). Welke taal wilt u standaard? Elke gebruiker kan tijdens het "
 "aanmelden altijd een andere taal kiezen."
-
-#~ msgid "Which DBMS should be used for the demo catalog ?"
-#~ msgstr "Welke DBMS dient de demo-catalogus te gebruiken?"
-
-#~ msgid "Please select the database type."
-#~ msgstr "Wat is het databasetype?"
-
-#~ msgid "Apache2"
-#~ msgstr "Apache2"
-
-#~ msgid "Apache"
-#~ msgstr "Apache"
-
-#~ msgid "Which webserver are you running ?"
-#~ msgstr "Welke webserver gebruikt u?"
-
-#~ msgid ""
-#~ "This information is necessary for the makecat script. Please specify "
-#~ "which webserver you want to use for your Interchange applications."
-#~ msgstr ""
-#~ "Deze informatie is nodig voor het script makecat. Welke webserver wilt u "
-#~ "gebruiken voor uw Interchange-applicaties?"

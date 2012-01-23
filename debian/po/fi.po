@@ -46,8 +46,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Tulisiko kaikki Interchangen esimerkkiluetteloon liittyvät tiedostot "
-"poistaa, kun paketti siivotaan komennolla dpkg --purge tai apt-get remove --"
-"purge?"
+"poistaa, kun paketti siivotaan komennolla dpkg --purge tai apt-get remove "
+"--purge?"
 
 #. Type: select
 #. Choices
@@ -81,8 +81,7 @@ msgstr "Korvataanko Interchangen esimerkkiluettelo?"
 #. Description
 #: ../interchange-cat-standard.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
-msgstr ""
-"Näyttää siltä, että järjestelmässä on jo Interchangen esimerkkiluettelo."
+msgstr "Näyttää siltä, että järjestelmässä on jo Interchangen esimerkkiluettelo."
 
 #. Type: string
 #. Description
@@ -128,10 +127,10 @@ msgstr "Luettelon ylläpitäjän salasana:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Anna salasana esimerkkiluettelon ylläpitoa varten. Valitse salasana, jota ei "
 "ole helppo arvata. Oletus on ”pass”. Salasanan tulee olla vähintään 4 "
@@ -159,9 +158,10 @@ msgid ""
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
 msgstr ""
-"Interchangen esimerkkiluettelo voi näyttää kauppasivun useammalla kielellä. "
-"Jokainen valittu kieli lisää Interchange-palvelinprosessien muistin käyttöä, "
-"joten on suositeltavaa valita vain kielet, joita todella tarvitaan."
+"Interchangen esimerkkiluettelo voi näyttää kauppasivun useammalla "
+"kielellä. Jokainen valittu kieli lisää Interchange-palvelinprosessien "
+"muistin käyttöä, joten on suositeltavaa valita vain kielet, joita todella "
+"tarvitaan."
 
 #. Type: select
 #. Description
@@ -255,8 +255,8 @@ msgid ""
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
 "Unix-tila on turvallisin tapa ajaa Interchangea, koska tällöin internetissä "
-"olevilla järjestelmillä ei ole mitään tapaa ottaa yhteyttä Interchange-"
-"palvelimeen."
+"olevilla järjestelmillä ei ole mitään tapaa ottaa yhteyttä "
+"Interchange-palvelimeen."
 
 #. Type: string
 #. Description
@@ -273,9 +273,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Tämä määrää Interchange-palvelimen käyttäjän ja tiedostojen omistajan. "
-"Toisen käyttäjän valitseminen merkitsee huomattavia turvariskejä. Älä "
-"valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan hyväksytä."
+"Tämä määrää Interchange-palvelimen käyttäjän ja tiedostojen "
+"omistajan. Toisen käyttäjän valitseminen merkitsee huomattavia "
+"turvariskejä. Älä valitse pääkäyttäjää. Sitä ei suositella, eikä kuitenkaan "
+"hyväksytä."
 
 #. Type: boolean
 #. Description
@@ -367,10 +368,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
-"Anna hakemisto, jossa Interchange pitää GnuPG:n julkista avainrengasta."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Anna hakemisto, jossa Interchange pitää GnuPG:n julkista avainrengasta."
 
 #. Type: select
 #. Choices
@@ -426,9 +425,9 @@ msgid ""
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
-"Koska Perl-moduuli SOAP::Lite ei ole asennettuna, ei Interchangen SOAP-"
-"palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla paketti libsoap-lite-"
-"perl ja ajamalla komento interchangeconfig SOAP=1."
+"Koska Perl-moduuli SOAP::Lite ei ole asennettuna, ei Interchangen "
+"SOAP-palvelinta voida ajaa. Tätä voidaan muuttaa asentamalla paketti "
+"libsoap-lite-perl ja ajamalla komento interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
@@ -452,15 +451,15 @@ msgstr "Otetaanko robots-asetukset käyttöön?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Interchange-paketti käyttää erillistä asetustiedostoa /etc/interchange/"
-"robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost ohjeille. Näiden "
-"asetusten ottaminen käyttöön on suositeltavaa, jotta Interchange voi erottaa "
-"robotit tavallisista käyttäjistä."
+"Interchange-paketti käyttää erillistä asetustiedostoa "
+"/etc/interchange/robots.cfg ohjelmien RobotUA, RobotIP ja RobotHost "
+"ohjeille. Näiden asetusten ottaminen käyttöön on suositeltavaa, jotta "
+"Interchange voi erottaa robotit tavallisista käyttäjistä."
 
 #. Type: select
 #. Description
