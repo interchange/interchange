@@ -105,6 +105,8 @@ install: build
 # Apache configuration file snippet for interchange-ui package
 	mkdir -p $(TMP)/etc/apache2/conf.d
 	install -m 0644 debian/interchange-ui.conf $(TMP)/etc/apache2/conf.d 
+# remove empty man pages
+	rm $(TMP)/usr/share/man/man1/crontab.1p
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
 	rm $(TMP)/usr/lib/interchange/*.pl
