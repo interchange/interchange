@@ -46,8 +46,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Skal alle filer tilhørende demokataloget til Interchange fjernes, når du "
-"afinstallerer denne pakke f.eks. med dpkg --purge eller apt-get remove --"
-"purge?"
+"afinstallerer denne pakke f.eks. med dpkg --purge eller apt-get remove "
+"--purge?"
 
 #. Type: select
 #. Choices
@@ -114,9 +114,9 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
-"Angiv venligst et brugernavn for administration af demokataloget. "
-"Brugernavnet skal være på mindst 2 tegn og må kun indeholde bogstaver A-Z, "
-"tal, understregning, @ eller punktum."
+"Angiv venligst et brugernavn for administration af "
+"demokataloget. Brugernavnet skal være på mindst 2 tegn og må kun indeholde "
+"bogstaver A-Z, tal, understregning, @ eller punktum."
 
 #. Type: password
 #. Description
@@ -128,15 +128,15 @@ msgstr "Adgangskode for dette katalogs administration:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
-"Angiv venligst en adgangskode for administration af standarddemokataloget. "
-"Vælg en adgangskode som ikke nemt kan gættes. Standard er pass. Adgangskoden "
-"skal være på mindst 4 tegn og må kun indeholde bogstaver A-Z, tal, "
-"understregning, @ eller punktum."
+"Angiv venligst en adgangskode for administration af "
+"standarddemokataloget. Vælg en adgangskode som ikke nemt kan "
+"gættes. Standard er pass. Adgangskoden skal være på mindst 4 tegn og må kun "
+"indeholde bogstaver A-Z, tal, understregning, @ eller punktum."
 
 #. Type: boolean
 #. Description
@@ -274,8 +274,8 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Dette bestemmer brugeren for interchangeserveren og for filrettigheder. "
-"Bemærk venligst at brug af en anden bruger har alvorlige "
+"Dette bestemmer brugeren for interchangeserveren og for "
+"filrettigheder. Bemærk venligst at brug af en anden bruger har alvorlige "
 "sikkerhedsimplikationer. Vælg ikke root, det anbefales ikke og vil blive "
 "omgjort alligevel."
 
@@ -349,8 +349,7 @@ msgstr "Placering af statiske HTML-filer:"
 #. Description
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr ""
-"Kataloginstallationer har brug for en mappe hvor HTML-filer kan placeres."
+msgstr "Kataloginstallationer har brug for en mappe hvor HTML-filer kan placeres."
 
 #. Type: string
 #. Description
@@ -372,10 +371,10 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
-"Vælg venligst mappen som Interchange bruger til GnuPG's offentlige nøglering."
+"Vælg venligst mappen som Interchange bruger til GnuPG's offentlige "
+"nøglering."
 
 #. Type: select
 #. Choices
@@ -457,15 +456,15 @@ msgstr "Aktiver robots opsætning?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Debianpakken Interchange bruger en separat konfigurationsfil /etc/"
-"interchange/robots.cfg til direktiverne RobotUA, RobotIP og RobotHost. Det "
-"anbefales at inkludere denne opsætning så, at Interchange kan skelne mellem "
-"robotter og normale brugere."
+"Debianpakken Interchange bruger en separat konfigurationsfil "
+"/etc/interchange/robots.cfg til direktiverne RobotUA, RobotIP og "
+"RobotHost. Det anbefales at inkludere denne opsætning så, at Interchange kan "
+"skelne mellem robotter og normale brugere."
 
 #. Type: select
 #. Description

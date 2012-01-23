@@ -150,10 +150,10 @@ msgstr "Contraseña para la administración de este catálogo:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Proporcione una contraseña para la administración del catálogo de "
 "demostración. Escoja una que no se pueda averiguar fácilmente. De forma "
@@ -217,8 +217,7 @@ msgstr "MySQL"
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "DBMS for the demo catalog:"
-msgstr ""
-"Sistema de gestión de base de datos (DBMS) del catálogo de demostración:"
+msgstr "Sistema de gestión de base de datos (DBMS) del catálogo de demostración:"
 
 #. Type: select
 #. Description
@@ -325,8 +324,7 @@ msgstr "¡No se puede ejecutar Interchange como «root»!"
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr ""
-"Se le ha advertido. Escoja un usuario adecuado o deje el predeterminado."
+msgstr "Se le ha advertido. Escoja un usuario adecuado o deje el predeterminado."
 
 #. Type: string
 #. Description
@@ -397,8 +395,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Escoja el directorio que Interchange utiliza para el anillo de claves "
 "público de GnuPG."
@@ -423,10 +420,10 @@ msgid ""
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
 msgstr ""
-"Puede escoger entre diferentes conjuntos de parámetros del servidor. "
-"Cualquier tienda basada en el ejemplo de la fundación cambiará también su "
-"comportamiento. Si se escoge rpc, el servidor de Interchange se ejecutará en "
-"el modo «PreFork»."
+"Puede escoger entre diferentes conjuntos de parámetros del "
+"servidor. Cualquier tienda basada en el ejemplo de la fundación cambiará "
+"también su comportamiento. Si se escoge rpc, el servidor de Interchange se "
+"ejecutará en el modo «PreFork»."
 
 #. Type: boolean
 #. Description
@@ -458,8 +455,8 @@ msgid ""
 "the Interchange SOAP server. To change this, install the libsoap-lite-perl "
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
-"No puede ejecutar el servidor SOAP de Interchange, ya que el módulo SOAP::"
-"Lite de Perl no está instalado. Para arreglar esto, instale el paquete "
+"No puede ejecutar el servidor SOAP de Interchange, ya que el módulo "
+"SOAP::Lite de Perl no está instalado. Para arreglar esto, instale el paquete "
 "libsoap-lite-perl de Debian y ejecute «interchangeconfig SOAP=1»."
 
 #. Type: boolean
@@ -484,15 +481,15 @@ msgstr "¿Desea activar los ajustes de los robots?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"El paquete Interchange de Debian utiliza un archivo de configuración («/etc/"
-"interchange/robots.cfg») diferente para las directivas «RobotUA», «RobotIP» "
-"y «RobotHost». Se recomienda incluir estos ajustes para que Interchange "
-"pueda diferenciar entre los robots y los usuarios."
+"El paquete Interchange de Debian utiliza un archivo de configuración "
+"(«/etc/interchange/robots.cfg») diferente para las directivas «RobotUA», "
+"«RobotIP» y «RobotHost». Se recomienda incluir estos ajustes para que "
+"Interchange pueda diferenciar entre los robots y los usuarios."
 
 #. Type: select
 #. Description
@@ -511,5 +508,5 @@ msgid ""
 msgstr ""
 "La interfaz de administración de los catálogos de Interchange, llamada UI, "
 "se ha traducido al danés (da_DK), holandés (nl_NL), alemán (de_DE), italiano "
-"(it_IT) y sueco (sv_SE). Puede escoger el idioma predeterminado aquí. "
-"Cualquier usuario lo puede cambiar al identificarse."
+"(it_IT) y sueco (sv_SE). Puede escoger el idioma predeterminado "
+"aquí. Cualquier usuario lo puede cambiar al identificarse."

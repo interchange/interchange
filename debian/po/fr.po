@@ -39,8 +39,7 @@ msgstr ""
 #. Description
 #: ../interchange-cat-standard.templates:2001
 msgid "Remove demo catalog on package purge?"
-msgstr ""
-"Faut-il supprimer le catalogue de démonstration lors de la purge du paquet ?"
+msgstr "Faut-il supprimer le catalogue de démonstration lors de la purge du paquet ?"
 
 #. Type: boolean
 #. Description
@@ -133,10 +132,10 @@ msgstr "Mot de passe d'administration du catalogue :"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Veuillez indiquer le mot de passe d'administration du catalogue initial de "
 "démonstration. Choisissez un mot de passe qui ne puisse pas facilement être "
@@ -166,8 +165,9 @@ msgid ""
 msgstr ""
 "Le catalogue de démonstration d'Interchange peut afficher l'interface du "
 "magasin dans plusieurs langues. Chaque jeu supplémentaire de paramètres "
-"régionaux choisi ici augmente l'occupation mémoire des processus du serveur. "
-"Il est donc recommandé de se limiter aux paramètres réellement nécessaires."
+"régionaux choisi ici augmente l'occupation mémoire des processus du "
+"serveur. Il est donc recommandé de se limiter aux paramètres réellement "
+"nécessaires."
 
 #. Type: select
 #. Description
@@ -335,9 +335,9 @@ msgid ""
 msgstr ""
 "Veuillez indiquer le groupe qui servira à l'exécution du serveur Interchange "
 "et qui sera propriétaire des fichiers. Utiliser une valeur différente de la "
-"valeur par défaut peut avoir des conséquences importantes sur la sécurité. "
-"Ne choisissez pas « root », le groupe du superutilisateur car ce choix "
-"déconseillé sera de toute manière refusé."
+"valeur par défaut peut avoir des conséquences importantes sur la "
+"sécurité. Ne choisissez pas « root », le groupe du superutilisateur car ce "
+"choix déconseillé sera de toute manière refusé."
 
 #. Type: error
 #. Description
@@ -347,8 +347,9 @@ msgid ""
 "default."
 msgstr ""
 "Il n'est pas possible (et il serait dangereux pour la sécurité du système) "
-"d'exécuter Interchange avec les privilèges du groupe du superutilisateur. "
-"Veuillez choisir un groupe approprié ou conservez la valeur par défaut."
+"d'exécuter Interchange avec les privilèges du groupe du "
+"superutilisateur. Veuillez choisir un groupe approprié ou conservez la "
+"valeur par défaut."
 
 #. Type: boolean
 #. Description
@@ -391,8 +392,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Veuillez choisir le répertoire où Interchange conservera le trousseau de "
 "clés publiques GnuPG."
@@ -479,15 +479,15 @@ msgstr "Faut-il activer les réglages pour les robots ?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Le paquet d'Interchange utilise un fichier de configuration distinct /etc/"
-"interchange/robots.cfg pour les directives RobotUA, RobotIP et RobotHost. "
-"Vous devriez activer ces réglages afin qu'Interchange puisse faire la "
-"différence entre les robots et les utilisateurs ordinaires."
+"Le paquet d'Interchange utilise un fichier de configuration distinct "
+"/etc/interchange/robots.cfg pour les directives RobotUA, RobotIP et "
+"RobotHost. Vous devriez activer ces réglages afin qu'Interchange puisse "
+"faire la différence entre les robots et les utilisateurs ordinaires."
 
 #. Type: select
 #. Description

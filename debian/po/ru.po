@@ -27,8 +27,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: boolean
 #. Description
@@ -126,9 +126,9 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
-"Укажите имя пользователя для администрирования демонстрационного каталога. "
-"Оно должно быть минимум 2 символа длиной и содержать только буквы, цифры, "
-"подчёркивание, @ или точку."
+"Укажите имя пользователя для администрирования демонстрационного "
+"каталога. Оно должно быть минимум 2 символа длиной и содержать только буквы, "
+"цифры, подчёркивание, @ или точку."
 
 #. Type: password
 #. Description
@@ -140,10 +140,10 @@ msgstr "Пароль для администрирования этого кат
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Укажите пароль для администрирования стандартного демонстрационного "
 "каталога. Выберите такой, который нельзя легко угадать. Значение по "
@@ -186,8 +186,7 @@ msgstr "Локаль по умолчанию для витрины:"
 #. Description
 #: ../interchange-cat-standard.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr ""
-"Выберите локаль по умолчанию для демонстрационного каталога Interchange."
+msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
@@ -286,10 +285,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Здесь определяется пользователь-владелец сервера interchange и файлов. "
-"Запомните, что использование другого пользователя это серьёзная угроза "
-"безопасности. Не выбирайте root, это не рекомендуется и будет отклонено в "
-"любом случае."
+"Здесь определяется пользователь-владелец сервера interchange и "
+"файлов. Запомните, что использование другого пользователя это серьёзная "
+"угроза безопасности. Не выбирайте root, это не рекомендуется и будет "
+"отклонено в любом случае."
 
 #. Type: boolean
 #. Description
@@ -383,8 +382,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Выберите каталог, используемый Interchange для хранения публичных ключей "
 "GnuPG:"
@@ -444,8 +442,8 @@ msgid ""
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
 "Так как Perl-модуль SOAP::Lite не установлен, вы не сможете запускать сервер "
-"Interchange SOAP. Чтобы это исправить, установите пакет Debian libsoap-lite-"
-"perl и запустите команду interchangeconfig SOAP=1."
+"Interchange SOAP. Чтобы это исправить, установите пакет Debian "
+"libsoap-lite-perl и запустите команду interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
@@ -469,15 +467,15 @@ msgstr "Разрешить настройки роботов?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Пакет Debian Interchange использует отдельный файл настроек /etc/interchange/"
-"robots.cfg для директив RobotUA, RobotIP и RobotHost. Рекомендуется "
-"подключить эти настройки, чтобы Interchange мог различать роботов и обычных "
-"пользователей."
+"Пакет Debian Interchange использует отдельный файл настроек "
+"/etc/interchange/robots.cfg для директив RobotUA, RobotIP и "
+"RobotHost. Рекомендуется подключить эти настройки, чтобы Interchange мог "
+"различать роботов и обычных пользователей."
 
 #. Type: select
 #. Description

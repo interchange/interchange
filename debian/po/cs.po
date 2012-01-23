@@ -54,8 +54,8 @@ msgid ""
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
 msgstr ""
 "Mám při odstranění tohoto balíčku smazat také všechny soubory závisející na "
-"demo katalogu Interchange, např. pomocí dpkg --purge nebo apt-get remove --"
-"purge ?"
+"demo katalogu Interchange, např. pomocí dpkg --purge nebo apt-get remove "
+"--purge ?"
 
 #. Type: select
 #. Choices
@@ -121,9 +121,9 @@ msgid ""
 "must be at least 2 characters long and only contain letters, digits, "
 "underscore, @ or the dot as characters."
 msgstr ""
-"Zadejte prosím uživatelské jméno pro administraci ukázkového katalogu. "
-"Uživatelské jméno musí být alespoň 2 znaky dlouhé a smí obsahovat pouze "
-"písmena, číslice, podtržítko, @ nebo tečku."
+"Zadejte prosím uživatelské jméno pro administraci ukázkového "
+"katalogu. Uživatelské jméno musí být alespoň 2 znaky dlouhé a smí obsahovat "
+"pouze písmena, číslice, podtržítko, @ nebo tečku."
 
 #. Type: password
 #. Description
@@ -135,15 +135,15 @@ msgstr "Heslo pro administraci tohoto katalogu:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
-"Zadejte prosím heslo pro administraci hlavní části ukázkového katalogu. "
-"Zvolte takové, které nelze snadno uhádnout. Výchozí hodnotou je pass. Heslo "
-"musí být dlouhé alespoň 4 znaky a smí obsahovat pouze písmena, číslice, "
-"podtržítko, @ nebo tečku."
+"Zadejte prosím heslo pro administraci hlavní části ukázkového "
+"katalogu. Zvolte takové, které nelze snadno uhádnout. Výchozí hodnotou je "
+"pass. Heslo musí být dlouhé alespoň 4 znaky a smí obsahovat pouze písmena, "
+"číslice, podtržítko, @ nebo tečku."
 
 #. Type: boolean
 #. Description
@@ -166,9 +166,10 @@ msgid ""
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
 msgstr ""
-"Ukázkový katalog Interchange může zobrazovat výlohu v řadě různých jazyků. "
-"Čím více jazyků zvolíte, tím více operační paměti bude program potřebovat, "
-"takže se doporučuje vybrat pouze takové, které skutečně použijete."
+"Ukázkový katalog Interchange může zobrazovat výlohu v řadě různých "
+"jazyků. Čím více jazyků zvolíte, tím více operační paměti bude program "
+"potřebovat, takže se doporučuje vybrat pouze takové, které skutečně "
+"použijete."
 
 #. Type: select
 #. Description
@@ -354,8 +355,7 @@ msgstr "Umístění statických HTML souborů:"
 #. Description
 #: ../interchange.templates:9001
 msgid "Catalog installations need a directory where HTML files can be placed."
-msgstr ""
-"Instalace katalogu potřebuje adresář, kam je možné umístit HTML soubory."
+msgstr "Instalace katalogu potřebuje adresář, kam je možné umístit HTML soubory."
 
 #. Type: string
 #. Description
@@ -378,8 +378,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Zvolte prosím adresář, kde budou uloženy veřejné GnuPG klíče nutné pro "
 "uživatele programu Interchange."
@@ -439,8 +438,8 @@ msgid ""
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
 "Protože není nainstalován modul Perlu SOAP::Lite, nebudete schopni spustit "
-"Interchange SOAP server. Napravit to můžete instalací balíčku libsoap-lite-"
-"perl a následným spuštěním interchangeconfig SOAP=1."
+"Interchange SOAP server. Napravit to můžete instalací balíčku "
+"libsoap-lite-perl a následným spuštěním interchangeconfig SOAP=1."
 
 #. Type: boolean
 #. Description
@@ -464,15 +463,15 @@ msgstr "Povolit nastavení robotů?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
 "Debianí balíček Interchange používá pro nastavení RobotUA, RobotIP a "
-"RobotHost samostatný konfigurační soubor /etc/interchange/robots.cfg. "
-"Doporučujeme zahrnout tato nastavení tak, aby Interchange mohl rozlišit "
-"roboty a běžné uživatele."
+"RobotHost samostatný konfigurační soubor "
+"/etc/interchange/robots.cfg. Doporučujeme zahrnout tato nastavení tak, aby "
+"Interchange mohl rozlišit roboty a běžné uživatele."
 
 #. Type: select
 #. Description
@@ -491,34 +490,5 @@ msgid ""
 msgstr ""
 "Administrátorské rozhraní pro katalogy programu Interchange (nazývané UI), "
 "bylo přeloženo do dánštiny (da_DK), holandštiny (nl_NL), němčiny (de_DE), "
-"italštiny (it_IT) a švédštiny (sv_SE). Zde si můžete zvolit výchozí jazyk. "
-"Každý uživatel si pak může změnit jazyk při přihlášení."
-
-#~ msgid "Important Perl Incompatibility"
-#~ msgstr "Důležitá nekompatibilita s Perlem"
-
-#~ msgid ""
-#~ "The authors of Interchange strongly disencourage the use of their "
-#~ "software on top of a thread enabled Perl. It is likely to cause serious "
-#~ "problems, especially in high load situations, and has no benefit at all "
-#~ "for Interchange servers. The development team asserts that the thread-"
-#~ "safeness of Perl and the bunch of modules Interchange uses can hardly be "
-#~ "relied upon. Please use this package only for testing and debugging "
-#~ "purposes."
-#~ msgstr ""
-#~ "Autoři Interchange silně odrazují od použití jejich softwaru nad Perlem s "
-#~ "podporou vláken, protože to může způsobit vážné problémy, které se "
-#~ "projeví zejména u vysoce zatížených serverů, ovšem přínos pro Interchange "
-#~ "je nulový. Vývojový tým trvá na tom, že na kombinaci vláknově bezpečného "
-#~ "Perlu a hromady modulů, které Interchange používá, se nedá spoléhat. "
-#~ "Používejte prosím tyto balíčky pouze k testovacím a ladicím účelům."
-
-#~ msgid "Enable debug mode?"
-#~ msgstr "Povolit ladící mód?"
-
-#~ msgid ""
-#~ "Debug mode is only useful if you modified the Interchange sources "
-#~ "accordingly."
-#~ msgstr ""
-#~ "Ladící mód je užitečný pouze v případě pokud jste měnili zdrojové soubory "
-#~ "programu Interchange."
+"italštiny (it_IT) a švédštiny (sv_SE). Zde si můžete zvolit výchozí "
+"jazyk. Každý uživatel si pak může změnit jazyk při přihlášení."

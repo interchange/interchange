@@ -86,7 +86,6 @@ msgstr "Sostituire il catalogo dimostrativo di Interchange?"
 msgid "There seems to already exist an Interchange demo catalog."
 msgstr "Sembra che un catalogo dimostrativo di Interchange esista già."
 
-#
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:5001
@@ -131,16 +130,16 @@ msgstr "Password per l'amministrazione di questo catalogo:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Fornire una password per l'amministratore del catalogo dimostrativo "
-"standard. Scegliere una password che non possa essere facilmente indovinata. "
-"La password predefinita è pass. La password deve consistere di almeno 4 "
-"caratteri e può contenere solo lettere, numeri, sottolineature, caratteri "
-"«@» o punti."
+"standard. Scegliere una password che non possa essere facilmente "
+"indovinata. La password predefinita è pass. La password deve consistere di "
+"almeno 4 caratteri e può contenere solo lettere, numeri, sottolineature, "
+"caratteri «@» o punti."
 
 #. Type: boolean
 #. Description
@@ -194,20 +193,17 @@ msgstr "PostgreSQL"
 msgid "MySQL"
 msgstr "MySQL"
 
-#
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "DBMS for the demo catalog:"
 msgstr "DBMS per il catalogo dimostrativo:"
 
-#
 #. Type: select
 #. Description
 #: ../interchange-cat-standard.templates:11002
 msgid "Please select the database type used for the demo catalog."
-msgstr ""
-"Selezionare il tipo di database utilizzato per il catalogo dimostrativo."
+msgstr "Selezionare il tipo di database utilizzato per il catalogo dimostrativo."
 
 #. Type: string
 #. Description
@@ -221,7 +217,6 @@ msgstr "Nome del database:"
 msgid "Please select the name of the database."
 msgstr "Selezionare il nome del database."
 
-#
 #. Type: string
 #. Description
 #: ../interchange-cat-standard.templates:13001
@@ -232,10 +227,8 @@ msgstr "Utente del database:"
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr ""
-"Specificare il nome utente che sarà utilizzato per collegarsi al database."
+msgstr "Specificare il nome utente che sarà utilizzato per collegarsi al database."
 
-#
 #. Type: password
 #. Description
 #: ../interchange-cat-standard.templates:14001
@@ -246,8 +239,7 @@ msgstr "Password del database:"
 #. Description
 #: ../interchange-cat-standard.templates:14001
 msgid "Please specify the password for connecting to the database."
-msgstr ""
-"Specificare la password che sarà utilizzata per collegarsi al database."
+msgstr "Specificare la password che sarà utilizzata per collegarsi al database."
 
 #. Type: select
 #. Choices
@@ -313,9 +305,9 @@ msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
 msgstr ""
-"Come avvisato, l'esecuzione di Interchange come root non è ammessa. "
-"Scegliere un utente appropriato, o alternativamente lasciare l'utente "
-"predefinito."
+"Come avvisato, l'esecuzione di Interchange come root non è "
+"ammessa. Scegliere un utente appropriato, o alternativamente lasciare "
+"l'utente predefinito."
 
 #. Type: string
 #. Description
@@ -344,9 +336,9 @@ msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
 msgstr ""
-"Come avvisato, l'esecuzione di Interchange come root non è ammessa. "
-"Scegliere un utente appropriato, o alternativamente lasciare l'utente "
-"predefinito."
+"Come avvisato, l'esecuzione di Interchange come root non è "
+"ammessa. Scegliere un utente appropriato, o alternativamente lasciare "
+"l'utente predefinito."
 
 #. Type: boolean
 #. Description
@@ -389,10 +381,8 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
-"Scegliere la directory che Interchange userà per la chiave pubblica GnuPG."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
+msgstr "Scegliere la directory che Interchange userà per la chiave pubblica GnuPG."
 
 #. Type: select
 #. Choices
@@ -414,8 +404,8 @@ msgid ""
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
 msgstr ""
-"È possibile scegliere differenti insiemi di parametri del server. "
-"Analogamente, tutti i negozi basati sulla fondazione dimostrativa "
+"È possibile scegliere differenti insiemi di parametri del "
+"server. Analogamente, tutti i negozi basati sulla fondazione dimostrativa "
 "cambieranno il proprio comportamento. Se si sceglie «rpc», il server "
 "Interchange sarà eseguito in modalità «PreFork»."
 
@@ -476,15 +466,15 @@ msgstr "Abilitare le impostazioni robot?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Il pacchetto Debian di Interchange usa un file di configurazione separato, «/"
-"etc/interchange/robots.cfg», per le direttive RobotUA, RobotIP e RobotHost. "
-"Si raccomanda di includere queste impostazioni in modo che Interchange possa "
-"distinguere fra robot e utenti ordinari."
+"Il pacchetto Debian di Interchange usa un file di configurazione separato, "
+"«/etc/interchange/robots.cfg», per le direttive RobotUA, RobotIP e "
+"RobotHost. Si raccomanda di includere queste impostazioni in modo che "
+"Interchange possa distinguere fra robot e utenti ordinari."
 
 #. Type: select
 #. Description
@@ -506,25 +496,3 @@ msgstr ""
 "italiano (it_IT) e svedese (sv_SE). Qui si può scegliere la lingua "
 "predefinita. Ogni utente può cambiare la propria lingua predefinita al "
 "momento dell'accesso."
-
-#~ msgid "Which DBMS should be used for the demo catalog ?"
-#~ msgstr "Quale database deve essere usato per il catalogo dimostrativo?"
-
-#~ msgid "Please select the database type."
-#~ msgstr "Selezionare il tipo di database."
-
-#~ msgid "Apache2"
-#~ msgstr "Apache2"
-
-#~ msgid "Apache"
-#~ msgstr "Apache"
-
-#~ msgid "Which webserver are you running ?"
-#~ msgstr "Quale server web è in uso?"
-
-#~ msgid ""
-#~ "This information is necessary for the makecat script. Please specify "
-#~ "which webserver you want to use for your Interchange applications."
-#~ msgstr ""
-#~ "Questa informazione è necessaria per gli script di makecat. Specificare "
-#~ "quale server web si vuole utilizzare per le applicazioni di Interchange."

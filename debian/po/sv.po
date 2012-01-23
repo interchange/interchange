@@ -130,10 +130,10 @@ msgstr "Lösenord för den här katalogens administration:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Ange ett lösenord för administration av standarddemokatalogen. Välj ett som "
 "inte är enkelt att gissa. Standard är 'pass'. Lösenordet måste vara "
@@ -257,8 +257,8 @@ msgid ""
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
 "Unixläge är det säkraste sättet att köra Interchange, eftersom inte finns "
-"något sätt för internetanslutna system att interagera med Interchange-"
-"servern."
+"något sätt för internetanslutna system att interagera med "
+"Interchange-servern."
 
 #. Type: string
 #. Description
@@ -275,9 +275,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Detta specificerar användaren för interchangeservern och för filrättigheter. "
-"Notera att användande av en annan användare påverkar säkerheten allvarligt. "
-"Välj inte root, det är inte rekommenderat och kommer att ignoreras."
+"Detta specificerar användaren för interchangeservern och för "
+"filrättigheter. Notera att användande av en annan användare påverkar "
+"säkerheten allvarligt. Välj inte root, det är inte rekommenderat och kommer "
+"att ignoreras."
 
 #. Type: boolean
 #. Description
@@ -318,9 +319,10 @@ msgid ""
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
 msgstr ""
-"Detta specificerar gruppen för interchangeservern och för filrättigheter. "
-"Notera att användande av en annan användare påverkar säkerheten allvarligt. "
-"Välj inte root, det är inte rekommenderat och kommer att ignoreras."
+"Detta specificerar gruppen för interchangeservern och för "
+"filrättigheter. Notera att användande av en annan användare påverkar "
+"säkerheten allvarligt. Välj inte root, det är inte rekommenderat och kommer "
+"att ignoreras."
 
 #. Type: error
 #. Description
@@ -371,10 +373,10 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
-"Välj den katalog Interchange ska användas för den publika GnuPG-nyckelringen."
+"Välj den katalog Interchange ska användas för den publika "
+"GnuPG-nyckelringen."
 
 #. Type: select
 #. Choices
@@ -431,8 +433,9 @@ msgid ""
 "Debian package and run interchangeconfig SOAP=1."
 msgstr ""
 "I och med att Perlmodulen SOAP::Lite inte är installerad kan du inte "
-"anävända SOAP-servern för Interchange. Installera Debianpaketet libsoap-lite-"
-"perl och kör sedan \"interchangeconfig SOAP=1\" för att lösa detta."
+"anävända SOAP-servern för Interchange. Installera Debianpaketet "
+"libsoap-lite-perl och kör sedan \"interchangeconfig SOAP=1\" för att lösa "
+"detta."
 
 #. Type: boolean
 #. Description
@@ -456,15 +459,15 @@ msgstr "Aktivera robotinställningar?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"Debians Interchange-paket använder en separat konfigurationsfil, /etc/"
-"interchange/robots.cfg, för direktiven RobotUA, RobotIP och RobotHost. Du "
-"rekommenderas att inkludera dessa inställningar så att Interchange kan se "
-"skillnad på robotar och vanliga användare."
+"Debians Interchange-paket använder en separat konfigurationsfil, "
+"/etc/interchange/robots.cfg, för direktiven RobotUA, RobotIP och "
+"RobotHost. Du rekommenderas att inkludera dessa inställningar så att "
+"Interchange kan se skillnad på robotar och vanliga användare."
 
 #. Type: select
 #. Description
@@ -483,5 +486,5 @@ msgid ""
 msgstr ""
 "Administrationsgränssnittet för Interchange-kataloger, kallat UI, har "
 "översatts till danska (da_DK), nederländska (nl_NL), tyska (de_DE), "
-"italienska (it_IT) och svenska (sv_SE). Du kan välja standardspråk här. "
-"Varje användare kan ändra detta standardvärde vid inloggning."
+"italienska (it_IT) och svenska (sv_SE). Du kan välja standardspråk "
+"här. Varje användare kan ändra detta standardvärde vid inloggning."

@@ -130,10 +130,10 @@ msgstr "Palavra-passe para a administração deste catálogo:"
 #. Description
 #: ../interchange-cat-standard.templates:7001
 msgid ""
-"Please provide a password for administering the standard demo catalog. "
-"Choose one which can not be easily guessed. Default is pass. The password  "
-"must be at least 4 characters long and only contain letters, digits, "
-"underscore @ or the dot as characters."
+"Please provide a password for administering the standard demo "
+"catalog. Choose one which can not be easily guessed. Default is pass. The "
+"password  must be at least 4 characters long and only contain letters, "
+"digits, underscore @ or the dot as characters."
 msgstr ""
 "Por favor indique uma palavra-passe para a administração do catálogo de "
 "demonstração. Escolha uma que não pode ser adivinhada com facilidade. Por "
@@ -228,8 +228,7 @@ msgstr "Nome do utilizador na base de dados:"
 #. Description
 #: ../interchange-cat-standard.templates:13001
 msgid "Please specify the username for connecting to the database."
-msgstr ""
-"Por favor especifique o nome de utilizador para se ligar à base de dados."
+msgstr "Por favor especifique o nome de utilizador para se ligar à base de dados."
 
 #. Type: password
 #. Description
@@ -305,8 +304,7 @@ msgstr "É impossível correr o interchange como root !"
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr ""
-"Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
+msgstr "Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
 
 #. Type: string
 #. Description
@@ -333,8 +331,7 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
-msgstr ""
-"Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
+msgstr "Você foi avisado. Ou escolhe um utilizador apropriado ou use o pré-definido."
 
 #. Type: boolean
 #. Description
@@ -377,8 +374,7 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../interchange.templates:10001
-msgid ""
-"Please choose the directory Interchange uses for the GnuPG public keyring."
+msgid "Please choose the directory Interchange uses for the GnuPG public keyring."
 msgstr ""
 "Por favor escolha o directório que o Interchange usa para o porta-chaves "
 "público GnuPG."
@@ -463,15 +459,15 @@ msgstr "Activar a directiva de robots?"
 #. Description
 #: ../interchange.templates:15001
 msgid ""
-"The Interchange Debian package uses a separate configuration file /etc/"
-"interchange/robots.cfg for the directives RobotUA, RobotIP and RobotHost. It "
-"is recommended to include these settings so that Interchange can distinguish "
-"between robots and ordinary users."
+"The Interchange Debian package uses a separate configuration file "
+"/etc/interchange/robots.cfg for the directives RobotUA, RobotIP and "
+"RobotHost. It is recommended to include these settings so that Interchange "
+"can distinguish between robots and ordinary users."
 msgstr ""
-"O pacote Interchange da Debian usa um ficheiro de configuração diferente em /"
-"etc/interchange/robots.cfg para as directivas RobotUA, RobotIP e RobotHost. "
-"É recomendado que inclua estas directivas para que o Interchange consiga "
-"distinguir entre robots e utilizadores normais."
+"O pacote Interchange da Debian usa um ficheiro de configuração diferente em "
+"/etc/interchange/robots.cfg para as directivas RobotUA, RobotIP e "
+"RobotHost. É recomendado que inclua estas directivas para que o Interchange "
+"consiga distinguir entre robots e utilizadores normais."
 
 #. Type: select
 #. Description
@@ -490,5 +486,5 @@ msgid ""
 msgstr ""
 "A interface de administração para catálogos Interchange, chamada UI, foi "
 "traduzida para Dinamarquês (da_DK), Holandês (nl_NL), Alemão (de_DE), "
-"Italiano (it_IT) e Sueco (sv_SE). Pode escolher o idioma por omissão aqui. "
-"Qualquer utilizador pode mudar este parâmetro quando faz login."
+"Italiano (it_IT) e Sueco (sv_SE). Pode escolher o idioma por omissão "
+"aqui. Qualquer utilizador pode mudar este parâmetro quando faz login."
