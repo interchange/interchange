@@ -794,9 +794,11 @@ sub _read {
     vec($rin,fileno($fh),1) = 1;
 
     do {
-	if (($r = select($rin, undef, undef, $Global::SocketReadTimeout || 1)) > 0) {
-	    $r = sysread($fh, $$in, $r, length($$in));
-	}
+        if (($r = select($rin, undef, undef, $Global::SocketReadTimeout || 1)) > 0) {
+            # read up to an arbitrary 1 MiB at a time for efficiency
+            # (though the operating system may provide far less than that at a time anyway)
+            $r = sysread($fh, $$in, 1_048_576, length($$in));
+        }
     } while ((!defined($r) || $r == -1) && ($!{eintr} || $!{eagain}));
 
     die "read: $!" unless defined $r;
