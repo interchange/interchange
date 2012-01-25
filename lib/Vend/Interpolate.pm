@@ -4289,6 +4289,19 @@ sub iterate_hash_list {
 	$nc and local(@Hash_code{keys %$nc}) = values %$nc;
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . uneval($hash));
+
+    $text =~ s{
+        $B$QR{_include}
+    }{
+        my $filename = $1;
+
+        $Data_cache{"/$filename"} or do {
+            my $content = Vend::Util::readfile($filename);
+            vars_and_comments(\$content);
+            $Data_cache{"/$filename"} = $content;
+        };
+    }igex;
+
 	1 while $text =~ s#$IB$QR{_header_param_if}$IE[-_]header[-_]param\1\]#
 			  (defined $opt->{$3} ? $opt->{$3} : '')
 				  					?	pull_if($5,$2,$4,$opt->{$3})
