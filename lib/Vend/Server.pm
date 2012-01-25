@@ -795,7 +795,7 @@ sub _read {
 
     do {
 	if (($r = select($rin, undef, undef, $Global::SocketReadTimeout || 1)) > 0) {
-	    $r = sysread($fh, $$in, $r, length($$in));
+	    $r = sysread($fh, $$in, 1024, length($$in));
 	}
     } while ((!defined($r) || $r == -1) && ($!{eintr} || $!{eagain}));
 
