@@ -2,8 +2,9 @@
 <!DOCTYPE MODE SYSTEM "xmode.dtd">
 <!--
 	Interchange (IC) mode by Chris Jesseman (chris@sitemajic.net)
-	Extended by Justin Otten (justino@fragrancenet.com)
-	Works on IC 4.6.x, should be backwards compatible with Minivend 4.04x
+	Extended by Justin La Sotten (justin [dot] lasotten [at] gmail [dot] com)
+	    formerly Justin Otten (same great person, new upgraded name!)
+	Works on IC 5.7.7, should be backwards compatible with Minivend 4.04x
 	This is a work in progress!
 	
 	Interchange tags in jEdit:
@@ -45,6 +46,10 @@
 			<BEGIN>[condition</BEGIN>
 			<END>[/condition]</END>
 		</SPAN>
+		<SPAN_REGEXP HASH_CHAR="[" TYPE="FUNCTION" DELEGATE="PERL">
+		    <BEGIN>\[(.+)\-calc</BEGIN>
+		    <END>[/$1-calc]</END>
+		</SPAN_REGEXP>
 		
 		<!-- Heredocs -->
 		<SPAN_REGEXP HASH_CHAR="&lt;&lt;" TYPE="LITERAL2" DELEGATE="perl::MAIN">
