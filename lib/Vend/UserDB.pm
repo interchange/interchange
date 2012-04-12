@@ -29,15 +29,12 @@ use vars qw!
 use Vend::Data;
 use Vend::Util;
 use Vend::Safe;
-#use Safe;
 use strict;
 no warnings qw(uninitialized numeric);
 
 my $ready = new Vend::Safe;
-#my $ready = new Safe;
 
 my $HAVE_SHA;
-
 
 eval {
     require Digest::SHA;
@@ -59,7 +56,6 @@ my %enc_subs = (
     md5 => \&enc_md5,
     md5_salted => \&enc_md5_salted,
     sha1 => \&enc_sha1,
-    sha256 => \&enc_sha256,
 );
 
 sub enc_default {
@@ -111,33 +107,6 @@ sub enc_sha1 {
     return Digest::SHA::sha1_hex(shift);
 }
 
-sub enc_sha256 {
-    my ($obj, $password, $mystery_meat, $sha256Id) = @_;
-    unless ($sha256Id) {$sha256Id = '6';}
-    unless ($HAVE_SHA) {
-        $obj->log_either('SHA passwords unavailable. Is Digest::SHA installed?');
-        return;
-    }
-    my $encrypted;
-    my $return_salt;
-    my $mystery_meat_length = length $mystery_meat;
-    if ($mystery_meat_length == 98){
-    	    # Extract only the salt; we don't need the database password here.
-    	    my (undef, undef, $db_salt) = split('\$', $mystery_meat);
-    	    return crypt($password, '$'.$sha256Id.'$'.$db_salt );
-    	    $return_salt = $db_salt;
-    }else{
-        if ($mystery_meat_length != 8) {
-            # Assume the mystery meat is a salt and soldier on anyway.
-            ::logError("Unrecognized salt for sha256 encryption.");
-        }
-        $return_salt = $mystery_meat;
-        return crypt($password, '$'.$sha256Id.'$'.$return_salt );
-    }
-    return '$'.$sha256Id.'$'.$return_salt.'$'.$encrypted;
-}
-
-
 # Maps the length of the encrypted data to the algorithm that
 # produces it. This method will have to be re-evaluated if competing
 # algorithms are introduced which produce the same-length value.
@@ -146,7 +115,6 @@ my %enc_id = qw/
     32  md5
     35  md5_salted
     40  sha1
-    95  sha256
 /;
 
 =head1 NAME
@@ -1504,16 +1472,13 @@ sub login {
 			if ( $self->{CRYPT} && $self->{OPTIONS}{promote} ) {
 				my ($cur_method) = grep { $self->{OPTIONS}{ $_ } } keys %enc_subs;
 				$cur_method ||= 'default';
-				::logError("Current method is $cur_method.");
 
 				my $stored_by = $enc_id{ length($db_pass) };
-			::logError("Stored by is " . $stored_by || 'N/A');
+
 				if (
 					$cur_method ne $stored_by
-						    &&
-				        ((! $stored_by && $db_pass eq $pw)
-					 ||
-					 ($db_pass eq $enc_subs{$stored_by}->($self, $pw, $db_pass)))
+					&&
+					$db_pass eq $enc_subs{$stored_by}->($self, $pw, $db_pass)
 				) {
 
 					my $newpass = $enc_subs{$cur_method}->($self, $pw, $db_pass);
@@ -1552,12 +1517,10 @@ sub login {
 			else {
 				$db_pass = lc $db_pass if $self->{OPTIONS}{ignore_case};
 			}
-			
 #::logDebug(errmsg("crypt: %s", $self->{CRYPT}));
 #::logDebug(errmsg("ignore_case: %s", $self->{OPTIONS}{ignore_case}));
 #::logDebug(errmsg("given password: %s", $self->{PASSWORD}));
 #::logDebug(errmsg("stored password: %s", $db_pass));
-
 			unless ($self->{PASSWORD} eq $db_pass) {
 				$self->log_either(errmsg("Denied attempted login by user '%s' with incorrect password",
 					$self->{USERNAME}));
@@ -1799,18 +1762,9 @@ sub change_pass {
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
 		if ( $self->{CRYPT} ) {
-			
-			my ($cur_method) = grep { $self->{OPTIONS}{ $_ } } keys %enc_subs;
-			$cur_method ||= 'default';
-			my $salt_length;
-			if ($cur_method eq 'sha256'){
-				$salt_length = 8
-			}else{
-				$salt_length = 2
-			}
 			$self->{PASSWORD} = $self->do_crypt(
 				$self->{PASSWORD},
-				Vend::Util::random_string($salt_length),
+				Vend::Util::random_string(2),
 			);
 		}
 		
@@ -1918,16 +1872,8 @@ sub new_account {
 
 		my $pw = $self->{PASSWORD};
 		if($self->{CRYPT}) {
-			my ($cur_method) = grep { $self->{OPTIONS}{ $_ } } keys %enc_subs;
-			$cur_method ||= 'default';
-			my $salt_length;
-			if ($cur_method eq 'sha256'){
-				$salt_length = 8
-			}else{
-				$salt_length = 2
-			}
 			eval {
-				$pw = $self->do_crypt($pw, Vend::Util::random_string($salt_length));
+				$pw = $self->do_crypt($pw, Vend::Util::random_string(2));
 			};
 		}
 	
@@ -2330,8 +2276,8 @@ sub userdb {
 }
 
 sub do_crypt {
-	my ($self, $password, $salt, $sha256Id) = @_;
-	my $sub = $self->{ENCSUB}; 
+	my ($self, $password, $salt) = @_;
+	my $sub = $self->{ENCSUB};
 	unless ($sub) {
 		for (grep { $self->{OPTIONS}{$_} } keys %enc_subs) {
 			$sub = $enc_subs{$_};
@@ -2339,7 +2285,7 @@ sub do_crypt {
 		}
 		$self->{ENCSUB} = $sub ||= $enc_subs{default};
 	}
-	return $sub->($self, $password, $salt, $sha256Id);
+	return $sub->($self, $password, $salt);
 }
 
 1;

@@ -136,7 +136,6 @@ sub {
 				@trylist = ($try);
 			}
 			for (@trylist) {
-Log("Id $id Dir $dr Loop $_.");
 				if ($id and m{^[^/]}) {
 					if ($opt->{force} or ($dr and -f "$dr$id/$_")) {
 						$image = $_;
