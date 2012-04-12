@@ -176,7 +176,7 @@ Worldpay will suck the wpcallback page back to their server and display it for y
 The page will interpolate before being sucked to Worldpay so most items such as fname lname adress fields etc are usuable on the page.
 To display banners and logos they need to be pre-loaded onto the Worldpay server
 
-At the top of the callback page just below the [charge route="worldpay" worldpayrequest="callback"] you can test for a sucessful transaction as follows:-
+At the top of the callback page just below the [charge route="worldpay" worldpayrequest="callback"] you can test for a successful transaction as follows:-
 
 [if type="cgi" term="transStatus" op="eq" compare="Y"] 
 [and type="cgi" term="callbackPW" op="eq" compare="yourcallbackpassword"] 
@@ -245,12 +245,12 @@ the Worldpay payment server. The customers details and cart is logged in the dat
 before going to Worldpay with a temporary order number of the form WPtmpUxxxx where Uxxxx
 is derived from the username counter
 
-If the transaction is sucessful the module processes the callback response from Worlday, if
-sucessfull the temporary order number is converted to an Interchange order number and a final
+If the transaction is successful the module processes the callback response from Worlday, if
+successful the temporary order number is converted to an Interchange order number and a final
 route is run to send out the report and customer emails. Cancelled transactions remain in the
 database with the temporary order numbers but are automatically archived.
 
-The module will also optionally decrement the inventory on a sucessfull transaction, if used
+The module will also optionally decrement the inventory on a successful, if used
 the inventory decrement in log transaction should be disabled by setting the appropriate variable
 
 =head1 The active settings.
@@ -308,12 +308,12 @@ standard report email title
 
 =item update_status
 
-Allows the order status to be set to any desired value after a sucessfull transaction, eg set to processing
+Allows the order status to be set to any desired value after a successful transaction, eg set to processing
 and all successfull transactions will have status processing, defaults to pending
 
 =item dec_inventory
 
-Set to 1 for module to decrement the inventory on a sucessful transaction, if used disable decrement via
+Set to 1 for module to decrement the inventory on a successful transaction, if used disable decrement via
 log_transaction.
 
 

@@ -1,4 +1,4 @@
-interchange (5.7.7-2) unstable; urgency=low
+interchange (5.7.7-2.1) unstable; urgency=low
   
   * Remove superfluous space before question mark from Debconf template
     (Closes: #584513, thanks to Helge Kreutzmann <debian@helgefjell.de>

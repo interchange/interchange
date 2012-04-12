@@ -526,13 +526,25 @@ sub paypalexpress {
 	   $account     =~ s/getbalance_//;
 	   $account     .= '_' if length $account;
 	   $sandbox     = "sandbox." if $account =~ /sandbox/;
-	my $username    = charge_param($account . 'id') or die "Bad credentials" unless length $sandbox;
-	   $username	= charge_param('sandbox_id') if length $sandbox;
-	my $password    = charge_param($account . 'password') or die "Bad credentials" unless length $sandbox;
-	   $password	= charge_param('sandbox_password') if length $sandbox;
-	my $signature   = charge_param($account . 'signature') or die "Bad credentials" unless length $sandbox; # use this as certificate is broken
-	   $signature	= charge_param('sandbox_signature') if length $sandbox;
+    my ($username, $password, $signature);
+    if (length $sandbox && charge_param('sandbox_id')) {
+        $username   = charge_param('sandbox_id');
+        $password   = charge_param('sandbox_password');
+        $signature  = charge_param('sandbox_signature');
+    }
+    else {
+        $username    = charge_param($account . 'id');
+        $password    = charge_param($account . 'password');
+        $signature   = charge_param($account . 'signature');
+    }
 
+    unless ($username && $password && $signature) {
+         return (
+			MStatus => 'failure-hard',
+			MErrMsg => errmsg('Bad credentials'),
+		);
+    }
+    
 	my $ppcheckreturn = $::Values->{'ppcheckreturn'} || 'ord/checkout';
 	my $checkouturl = $::Tag->area({ href => "$ppcheckreturn" });
 #::logDebug("PP".__LINE__.": req=$pprequest; sandbox=$sandbox;");
