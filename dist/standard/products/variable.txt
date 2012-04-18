@@ -22,6 +22,7 @@ CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
 ENTRY_CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
 DECREMENT_INVENTORY	1	Order
 DEFAULT_LOCALE	en_US	Internationalization
+DEFAULT_PAYMENT_MODE	credit_card	Payment
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 EMAIL_INFO	__MVC_MAILORDERTO__	Company
 EMAIL_SERVICE	__MVC_MAILORDERTO__	Company
