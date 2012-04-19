@@ -22,7 +22,7 @@ Affiliates	Affiliates	Zweigstellen / weitere Fillialen.			Partneri	Partnerji
 all categories	all categories				sve kategorije	vse kategorije
 all fields		Alle Felder		alle velden	sva polja	sva polja
 Allowed HTML	Allowed HTML	Erlauptes HTML code		Toegestane HTML code	HTML dozvoljen	HTML dovoljen
-Also see...	Also see...	Sehe auch...		Zie ook...	Pogledajte i...	Oglejte si tudi...
+Also see...	Also see...	Siehe auch...		Zie ook...	Pogledajte i...	Oglejte si tudi...
 Amount of gift	Amount of gift	Höhe des Geschenkgutscheins.		Bedrag van het kado	Vrijednost dara	Vrednost darila
 Apache Web Server	Apache Web Server	Apache Web Server			Apache Web poslužitelj	Apache spletni strežnik
 Approximate Credit	Approximate Credit	Ungefähres Guthaben		Credit circa	Približno stanje	Približno stanje
@@ -38,7 +38,7 @@ Below are our automated customer service options. If you need to talk to someone
 Best sellers...	Best sellers...	Bestseller		Best verkopende...	Najprodavaniji...	Najbolj prodajani...
 Billing Address	Billing Address	Ihre Rechnungsadresse		Faktuuradres	Adresa za naplatu	Adresa plačnika
 Billing Address (if different)	Billing Address (if different)				Adresa za naplatu (ako se razlikuje)	Adresa plačnika (če se razlikuje)
-Billing is same as this address					Ovo je ujedno i adresa naručitelja	Ta naslov je isti kot naslov naročnika
+Billing is same as this address		Rechnungsadresse ist Lieferadresse			Ovo je ujedno i adresa naručitelja	Ta naslov je isti kot naslov naročnika
 Billing Name	Billing Name	Rechnungsname		Faktuurnaam	Ime uplatitelja	Ime plačnika
 Business name	Business name	Firmenname		Bedrijfsnaam		
 Buy	Buy	Kaufen		Kopen	Kupnja	Nakup
@@ -54,8 +54,9 @@ CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button 
 CANCELED_MSG1	If you wish to order another item, we would like you to do so, but	Wenn Sie einen weiteren Artikel bestellen möchten, beachten Sie bitte…				
 Card Number	Card Number	Kartennummer		Kaartnummer	Broj kartice	Številka kartice
 Cart		Warenkorb			Košarica	Košarica
-Cart Contents	Cart Contents	Warenkorb-Inhalt		Inhoud winkelwagen	Sadržaj košarice	Vsebina košarice
+Cart Contents	Cart Contents	Ihr Warenkorb		Inhoud winkelwagen	Sadržaj košarice	Vsebina košarice
 CART_MSG1	You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.	Speichern Sie vor dem Verlassen des Warenkorbs Ihre Bestellung in einem "Cookie". Ansonsten wird Ihre Bestellung unwiderruflich gelöscht.		Om de winkelwagen te kunnen verlaten dient het ontvangen van cookies te zijn ingesteld. Controleer dat alstublieft nu, anders gaat uw winkelwagen definitief verloren.	Morate uključiti kolačiče da bi napustili košaricu. Idite na blagajnu ili će se Vaši podaci o kupovini izgubiti.	Piškotki morajo biti vključeni da bi lahko zapustili košarico. Lahko greste na blagajno, v nasprotnem bodo  podatki o nakupu izgubljeni.
+Cash in Advance		Vorkasse				
 Catalog Reconfigured	Catalog Reconfigured	Katalog rekofiguriert		Catalogus opnieuw geconfigureerd	Katalog rekonfiguriran	Katalog rekonfiguriran
 catalog with the buttonbar.						
 CC_NOT_VALID_MSG1	Please go BACK and check the information you entered and see					
@@ -123,7 +124,7 @@ Existing account holders					Postojeći korisnici	Obstoječi uporabniki
 Expiration	Expiration	Verfallsdatum		Expiratiedatum	Datum isteka	Datum poteka
 Explode tree					Prikaži stablo	Prikaži drevo
 Express					Odmah	Takoj
-Extension	Extension	Verlängerung		Bedrag	Iznos	Znesek
+Extension	Extension	Summe		Bedrag	Iznos	Znesek
 FAILED_MSG1	We're sorry, but your order could not be processed at this time due to	Wir bitten um Entschuldigung. Aber Ihre Bestellung konnte nicht bearbeitet werden, aufgrunds von				
 Fax	Fax	Fax		Fax	Fax	Fax
 February		Februar	F&eacute;vrier	Februari	veljača	februar
@@ -271,7 +272,7 @@ PAYMENT<BR>METHOD	PAYMENT<BR>METHOD	ZAHLUNGSMETHODE		BETALINGS<BR>METHODE	NAČIN
 Perl Information	Perl Information	Perl Information		Perl informatie	Informacije o Perlu	Perl informacije
 Phone	Phone	Telefonnummer         		Telefoon	Telefon	Telefon
 Place one-click test order	Place one-click test order	Mit einem Klick Testbestellung ordern.		Plaats een-klik testorder		
-Place Order					Zaključi narudžbu	Zaključi naročilo
+Place Order		Bestellen			Zaključi narudžbu	Zaključi naročilo
 Plain Old Text	Plain Old Text			Puur tekst	Samo tekst	Samo tekst
 Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.	Bitte %skontaktieren%s Sie uns, wenn Sie Fragen haben		Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.	Slobodno nam se %sjavite%s s Vašim pitanjima.	Če imate vprašanja v zvezi s trgovino, lahko %snas kontaktirate%s.
 Please contact %sCustomer Service%s for assistance.	Please contact %sCustomer Service%s for assistance.	Bitte wenden Sie sich an unseren %sKundenservice%s für weitere Unterstützung.		Voor hulp kunt U contact opnemen met %sklantenservice%s.	Molimo javite se službi %skorisničke podrške%s za pomoć	Prosimo kontaktirajte službo %uporabniške podpore% za pomoč
@@ -286,7 +287,7 @@ Please verify the information below and click the <b>'Place Order'</b> button to
 Please wait					Molimo pričekajte	Prosimo počakajte
 PO Number	PO Number	Auftrag Nummer		Inkooporder nummer		
 Post Anonymously	Post Anonymously	Annonym		Anoniem verzenden	Pošalji anonimno	Pošlji anonimno
-Postal Billing	Postal Billing	bezahlen per Rechnung			Pouzećem	Pri prevzemu
+Postal Billing	Postal Billing	Rechnung			Pouzećem	Pri prevzemu
 Posted on	Posted on	ausgestellt am			Poslano	Poslano
 Powered by Interchange	Powered by Interchange				Powered by Interchange	Powered by Interchange
 Preview	Preview	Vorschau			Pregled	Predogled
@@ -313,7 +314,7 @@ Quantity	Quantity	Menge		Aantal	Količina	Količina
 Quantity Discounts	Quantity Discounts	Mengenrabatt		Kwantumkortingen	Količinski popust	Količinski popust
 QUANTITY PRICING	QUANTITY PRICING	MENGEN PREISANGABE		KWANTUMPRIJZEN	KOLIČINSKA CIJENA	KOLIČINSKA CENA
 Read more	Read more	weitere Informationen				
-Recalculate					Preračunaj	Preračunaj
+Recalculate		Neu berechnen			Preračunaj	Preračunaj
 Recurring Orders	Recurring Orders	Widerholende Bestellung		Herhalingsorders	Trajne narudžbe	Trajna naročila
 Regular price	Regular price	regulärer Preis		Normale prijs	Redovna cijena	Redna cena
 Remove	Remove	Löschen		Verwijder	Ukloni	Odstrani
@@ -349,7 +350,7 @@ Search Go	Search Go	SUCHEN		Zoek nu	Pretraži	Išči
 Search results	Search results	Suchergebnis		Zoekresultaten	Rezultati pretraživanja	Rezultati iskanja
 SECURITY PROBLEM	SECURITY PROBLEM	SICHERHEITSPROBLEM		BEVEILIGINGSPROBLEEM	SIGURNOSNI PROBLEM	VARNOSTNA TEŽAVA
 See also	See also	Besuchen Sie auch		Zie ook	Pogledajte i	Oglejte si tudi
-See also...	See also...	Sehe auch...		Zie ook...	Pogledajte i...	Oglejte si tudi...
+See also...	See also...	Siehe auch...		Zie ook...	Pogledajte i...	Oglejte si tudi...
 See...	See...	sehen		Zie...	Pogledajte...	Oglejte si...
 Select country					Izbor države	Izbira države
 Select Shipping					Izbor dostave	Izbira dostave
@@ -370,9 +371,9 @@ Shipping Addresses	Shipping Addresses	Lieferadresse		Verzendadressen	Adrese za d
 Shipping Country	Shipping Country	Wählen Sie ein Land aus		Verzendland	Država za dostavu	Država za dostavo
 Shipping Method	Shipping Method	Versandmethode		Verzendmethode	Način dostave	Način dostave
 Shipping method	Shipping method	Versandmethode		Verzendwijze	Način dostave	Način dostave
-Shipping selection					Izbor dostave	Izbira dostave
+Shipping selection		Versandart wählen			Izbor dostave	Izbira dostave
 Shipping Weight	Shipping Weight	Versandgewicht		Verzendgewicht	Težina za dostavu	Dostavna teža
-Shipping weight					Težina za dostavu	Dostavna teža
+Shipping weight		Versandgewicht		Verzendgewicht	Težina za dostavu	Dostavna teža
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING	VERSAND und KOSTEN		VERZENDING<BR>BEHANDELING	DOSTAVA<BR>OTPREMA	DOSTAVA<BR>ODPREMA
 Shopping Cart	Shopping Cart	Warenkorb		Winkelwagen	Košarica	Nakupovalna košarica
 Show All Subcategories	Show All Subcategories	Alle Unterkategorien anzeigen.		Toon alle sub-categorieen	Prikaži sve podkategorije	Prikaži vse podkategorije
@@ -485,7 +486,7 @@ You are logged in as user	You are logged in as user	Sie sind als  Benutzer einge
 You can contact us the following ways	You can contact us the following ways	Sie können uns auf folgende Weise kontaktieren/erreichen		U kunt ons als volgt bereiken	Možete nas kontaktirati	Lahko nas kontaktirate
 You can log in at	You can log in at	Sie können sich einloggen an		U kunt zich hier aanmelden	Prijava je moguća	Prijava je mogoča
 You have accessed a page that requires authorization.	You have accessed a page that requires authorization.	Sie haben keine Zugangsberechtigung für diese Seite.			Pristupili ste stranici za koju je potrebna autorizacija	Za to stran je potrebna avtorizacija
-You have been logged out.	You have been logged out.	Sie wurden agbemeldet.		U bent afgemeld.	Uspješno ste se odjavili	Uspešno ste odjavljeni
+You have been logged out.	You have been logged out.	Sie haben sich abgemeldet.		U bent afgemeld.	Uspješno ste se odjavili	Uspešno ste odjavljeni
 You may not return more items than you originally purchased.	You may not return more items than you originally purchased.	Sie können nicht mehr Artikel umtauschen, als sie gekauft haben.		Het is niet toegestaan om meer artikelen te retourneren dan U hebt gekocht.	Nije moguće vratiti više proizvoda nego što je naručeno	Ni mogoče povrniti več izdelkov kot je naročeno
 You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.	You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.	 		U kunt nu het toegevoegde verzendadres gebruiken door het te selecteren in de winkelwagen of op de herhalingsorder pagina.		
 You may only return items from orders that have been fully shipped.	You may only return items from orders that have been fully shipped.	Sie können nur Produkte aus vollständig versandten Lieferungen umtauschen. 		U kunt alleen producten retourneren van volledig uitgeleverde orders.	Vratiti možete samo artikle iz potpuno dostavljenih narudžbi.	Povračilo lahko zahtevate samo za artikle iz popolnoma dostavljenih naročil.
