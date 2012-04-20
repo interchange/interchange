@@ -293,7 +293,6 @@ Powered by Interchange	Powered by Interchange				Powered by Interchange	Powered 
 Preview	Preview	Vorschau			Pregled	Predogled
 Previous	Previous	Vorherig		Vorige	Prethodna	Prejšnja
 Price	Price	Preis		Prijs	Cijena	Cena
-PriceDivide	1	0.5409	0.1632		0.1701	0.7906
 primary	primary	hauptsächlich		primair	prvo	prvo
 Privacy Policy	Privacy Policy	Datenschutz			Privatnost podataka	Varovanje osebnih podatkov
 Problem	Problem	Problem		Probleem	Problem	Problem
