@@ -1460,6 +1460,12 @@ sub tag_nitems {
     $total = 0;
     foreach $item (@$cart) {
 		next if $attr and ! $sub->($item->{$attr});
+
+                if ($opt->{gift_cert} && $item->{$opt->{gift_cert}}) {
+                    $total++;
+                    next;
+                }
+
 		$total += $item->{'quantity'};
     }
     $total;
