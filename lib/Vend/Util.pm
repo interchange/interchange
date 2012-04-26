@@ -655,6 +655,7 @@ sub uneval_it {
     } elsif ($r eq 'HASH') {
 	$s = "{";
 	while (($key, $value) = each %$o) {
+	    $key =~ s/(['\\])/\\$1/g;
 	    $s .= "'$key' => " . uneval_it($value) . ",";
 	}
 	$s .= "}";
