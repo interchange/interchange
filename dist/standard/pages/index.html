@@ -99,12 +99,14 @@ ui_template_name: leftright
 </tr>
 [/if]
 
+[if var MV_DEMO_MODE]
 <tr> 
   <td>    
     <p>[L]Generate test order to fill the sample order database[/L]:
 		<a href="[area href="test_order"]">[L]Do test order[/L]</a>.<br><br></p>
   </td>
 </tr>
+[/if]
 </table>
 <!-- END CONTENT -->
 @_LEFTRIGHT_BOTTOM_@
