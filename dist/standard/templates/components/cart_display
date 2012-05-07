@@ -13,7 +13,7 @@ ui_label: Smaller cart for display in content area
   <table width="100%" border="0" cellspacing="0" cellpadding="3">
 		<tr class="titletab_small" valign=top>
 			<td colspan=6 class="titletab_small"> 
-				<b>[L]&nbsp;Your Cart[/L]:</b>
+				<b>&nbsp;[L]Your Cart[/L]:</b>
 			</td>
 		</tr>
 		<TR class="titletab_small" VALIGN=TOP>
