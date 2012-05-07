@@ -223,7 +223,7 @@ ui_template_name: noleft
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
 		<td class="titletab_large">
-			Payment and submit order
+			[L]Payment and submit order[/L]
 		</td>
 	  </tr>
 	  <tr>
@@ -235,7 +235,7 @@ ui_template_name: noleft
 					<table width="100%">
 					<tr>
 						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
-						[page ord/shipping]<u><b>Ship [if value mv_same_billing]and bill[/if] to</b></u></a>:<br>
+						[page ord/shipping]<u><b>[if value mv_same_billing][L]Ship and bill to[/L][else][L]Ship to[/L][/else][/if]</b></u></a>:<br>
 						<blockquote>
 						[evalue fname] [evalue lname]<br>
 						[evalue address1]<br>
@@ -247,7 +247,7 @@ ui_template_name: noleft
 						</td>
 						[if !value mv_same_billing]
 						<td style="[if scratch dhtml_browser]padding: 5px[/if]" width="50%">
-						[page ord/billing]<u><b>Bill to</b></u></a>:<br>
+						[page ord/billing]<u><b>[L]Bill to[/L]</b></u></a>:<br>
 						<blockquote>
 						[evalue b_fname] [evalue b_lname]<br>
 						[if value b_company][evalue b_company]<br>[/if]
@@ -299,7 +299,7 @@ ui_template_name: noleft
 					this.form.submit();
 				"
 				value="&lt;-- [L]Back[/L]" class=button3>
-				[button text="[L]Place Order[/L]" wait-text="-- Wait --"  class=button3 id=placebutton style="font-weight: bold"]
+				[button text="[L]Place Order[/L]" wait-text="-- [L]Please wait[/L] --"  class=button3 id=placebutton style="font-weight: bold"]
 					mv_todo=submit
 				[/button]
 		</div>

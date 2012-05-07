@@ -135,7 +135,7 @@ function do_address (form, clear) {
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
 		<td class="titletab_large">
-			Billing Address <small>[scratch get_message]</small>
+			[L]Billing Address[/L] <small>[scratch get_message]</small>
 		</td>
 	  </tr>
 	  <tr>
@@ -147,7 +147,7 @@ function do_address (form, clear) {
 		  </td>
 		  <td align=left colspan=3>
 		  	<br>
-			<input type=checkbox name=mv_same_billing value=1 onClick="do_address(this.form,this.checked)"> <b>Same as shipping address</b>
+			<input type=checkbox name=mv_same_billing value=1 onClick="do_address(this.form,this.checked)"> <b>[L]Same as shipping address[/L]</b>
 			<br>&nbsp;
 		  </td>
 		</tr>
@@ -251,7 +251,7 @@ function do_address (form, clear) {
 					this.form.submit();
 				"
 				value="&lt;-- [L]Back[/L]" class=button3>
-				<input type=submit value="Next --&gt;" class=button3 style="font-weight: bold">
+				<input type=submit value="[L]Next[/L] --&gt;" class=button3 style="font-weight: bold">
 		</td>
 	  </tr>
 	  [if scratch error_display]
