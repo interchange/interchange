@@ -105,7 +105,7 @@ Your Business::OnlinePayment login.
 
 =item secret
 
-Your Busienss::OnlinePayment password.
+Your Business::OnlinePayment password.
 
 =item transaction
 
