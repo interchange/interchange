@@ -299,7 +299,7 @@ C<our_param>.
   my @extra = split /[\s,\0]+/, $opt->{extra_query_params};
   for (@extra) {
       my ( $k, $v ) = split /=/, $_;
-      $k ||= $v;
+      $v ||= $k;
       $params{$k} = $opt->{$v} || charge_param($v);
   }
 
