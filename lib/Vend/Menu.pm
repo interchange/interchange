@@ -1498,6 +1498,7 @@ EOF
 		my @o;
 		for(@{$o{object}{mv_results}}) {
 			next if $_->{deleted};
+            $_->{page} = $_->{uri};
 			push @o, $_ unless $_->{deleted};
 			$main .= tree_line(undef, $_, \%o);
 		}
