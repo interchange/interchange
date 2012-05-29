@@ -418,7 +418,7 @@ EOF
 	my %defaults = (
 				start       => $opt->{tree_selector} || 'Products',
 				table       => $::Variable->{MV_TREE_TABLE} || 'tree',
-				master      => 'parent_fld',
+				master      => $opt->{tree_master} || 'parent_fld',
 				subordinate => 'code',
 				autodetect  => '1',
 				sort        => 'code',
@@ -551,7 +551,7 @@ EOF
 			start       => $opt->{tree_selector} || $opt->{name},
 			file		=> $opt->{file},
 			table       => $opt->{table} || $::Variable->{MV_TREE_TABLE} || 'tree',
-			master      => 'parent_fld',
+			master      => $opt->{tree_master} || 'parent_fld',
 			subordinate => 'code',
 			autodetect  => '1',
 			no_open		=> 1,
@@ -946,7 +946,7 @@ EOF
 	my %o = (
 			start       => $opt->{tree_selector} || 'Products',
 			table       => $opt->{table} || $::Variable->{MV_TREE_TABLE} || 'tree',
-			master      => 'parent_fld',
+			master      => $opt->{tree_master} || 'parent_fld',
 			file		=> $opt->{file},
 			subordinate => 'code',
 			autodetect  => '1',
@@ -1466,7 +1466,7 @@ EOF
 	my %o = (
 			start       => $opt->{tree_selector} || 'Products',
 			table       => $opt->{table} || $::Variable->{MV_TREE_TABLE} || 'tree',
-			master      => 'parent_fld',
+			master      => $opt->{tree_master} || 'parent_fld',
 			file		=> $opt->{file},
 			subordinate => 'code',
 			autodetect  => '1',
