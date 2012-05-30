@@ -1,4 +1,4 @@
-# Copyright 2002-2010 Interchange Development Group and others
+# Copyright 2002-2012 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,17 +11,21 @@ UserTag email addAttr
 UserTag email Interpolate
 UserTag email Routine <<EOR
 
-my $Have_mime_lite;
+my ($Have_mime_lite, $Have_encode);
 BEGIN {
 	eval {
 		require MIME::Lite;
 		$Have_mime_lite = 1;
 	};
+	eval {
+		require Encode::PERLQQ;
+		$Have_encode = 1;
+	};
 }
 
 sub utf8_to_other {
 	my ($string, $encoding) = @_;
-	return $string unless defined Encode::PERLQQ(); # nop if no Encode
+	return $string unless $Have_encode; # nop if no Encode
 
 	unless(Encode::is_utf8($string)){
 		$string = Encode::decode('utf-8', $string);
