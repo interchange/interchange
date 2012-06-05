@@ -224,7 +224,7 @@ Set order number in values: [value
 								name=`	
 										$Session->{current_route}{counter_name}
 										|| $Session->{current_route}{counter}
-										|| 'etc/order.number'
+										|| $Config->{OrderCounter}
 									`
 								sql=`$Session->{current_route}{sql_counter}`
 								start=`$Session->{current_route}{first_order_number}`
