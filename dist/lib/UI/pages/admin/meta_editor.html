@@ -7,16 +7,20 @@
 [calc]
 	my $location = $CGI->{item_id};
 	my @parts = split /::/, $location;
+
+        $Tag->tmp('m_table');
+        $Tag->tmp('m_view');
+
 	if($Config->{Database}{$parts[0]}) {
-		($m_table, $m_col, $m_key) = @parts;
+		($Scratch->{m_table}, $m_col, $m_key) = @parts;
 	}
 	else {
-		($m_view, $m_table, $m_col, $m_key) = @parts;
+		($Scratch->{m_view}, $Scratch->{m_table}, $m_col, $m_key) = @parts;
 	}
 	my @frags;
 	push(@frags,errmsg('Meta field edit') . ':');
-    push(@frags,errmsg('view=%s', $m_view)) if $m_view;
-    push(@frags,errmsg('table=%s column=%s', $m_table, $m_col));
+    push(@frags,errmsg('view=%s', $Scratch->{m_view})) if $Scratch->{m_view};
+    push(@frags,errmsg('table=%s column=%s', $Scratch->{m_table}, $m_col));
 	push(@frags,errmsg('key=%s', $m_key)) if $m_key;
 	$Scratch->{page_title} = join(' ',@frags);
 
@@ -25,17 +29,17 @@
 	<table>
 EOF
 
-	$string .= <<EOF if $m_view;
+	$string .= <<EOF if $Scratch->{m_view};
 	<tr>
 	<td align=right>view:</td>
-	<td><B>$m_view</b></td>
+	<td><B>$Scratch->{m_view}</b></td>
 	</tr>
 EOF
 
 	$string .= <<EOF;
 	<tr>
 	<td align=right>table:</td>
-	<td><B>$m_table</b></td>
+	<td><B>$Scratch->{m_table}</b></td>
 	</tr>
 	<tr>
 	<td align=right>column:</td>
@@ -75,7 +79,9 @@ EOF
 		$extra_meta = $Tag->widget_meta($sneak_type);
 	}
 
-	%me_opt = (
+	$Tag->tmp('me_opt');
+
+        $Scratch->{me_opt} = {
 	ui_data_fields => qq{
 		=Typical
 
@@ -140,7 +146,7 @@ EOF
 
 	options	=> {
 		'extended.ui_sort_option' => qq{=--default--,f=Case insensitive, fr=Case insensitive/Reverse, n=Numeric, nr=Reverse Numeric},
-		'field' => qq{columns::$m_table},
+		'field' => qq{columns::$Scratch->{m_table}},
 		'extended.js_check' => qq{codedef::JavascriptCheck},
 		'filter' => 'codedef:filter:empty',
 		'type' => 'codedef:widget',
@@ -211,13 +217,13 @@ EOF
 		'extended.check' => 'textarea_2_50',
 		'extended.js_check' => 'checkbox_nbsp',
 	},
-	);
+	};
 
 	if($Variable->{UI_WIDGET_TYPES}) {
 #Debug("Found UI_WIDGET_TYPES");
-		$me_opt{options}{type} = $Variable->{UI_WIDGET_TYPES};
-		$me_opt{options}{type_empty} = $Variable->{UI_WIDGET_TYPES};
-#Debug("me_opt{options}=" . uneval($me_opt{options}));
+		$Scratch->{me_opt}{options}{type} = $Variable->{UI_WIDGET_TYPES};
+		$Scratch->{me_opt}{options}{type_empty} = $Variable->{UI_WIDGET_TYPES};
+#Debug("me_opt{options}=" . uneval($Scratch->{me_opt}{options}));
 	}
 
 	if($extra_meta) {
@@ -239,22 +245,22 @@ EOF
 			next unless ref($v) eq 'HASH';
 			$extra_fields .= "extended.$k\n";
 			while(my ($key, $val) = each %$v) {
-				$me_opt{$key}{"extended.$k"} = $val;
+				$Scratch->{me_opt}{$key}{"extended.$k"} = $val;
 			}
 		}
 		if($extra_fields) {
-			$me_opt{ui_data_fields} =~ s/\s*$/\n\n=Special for $sneak_type widget\n\n$extra_fields/;
+			$Scratch->{me_opt}{ui_data_fields} =~ s/\s*$/\n\n=Special for $sneak_type widget\n\n$extra_fields/;
 		}
 	}
 
-#Debug(uneval(\%me_opt));
+#Debug(uneval($Scratch->{me_opt}));
 	### If there is a view, set defaults from non-view record
 	### for this item
 	
 	# Always want this removed first, don't proceed if no view
 	$Tag->tmp('tmp_defaults');
 #Debug("meta_view=$CGI->{ui_meta_view}, item_id=$CGI->{item_id}");
-	return unless $m_view;
+	return unless $Scratch->{m_view};
 
 	my $db = $Db{$CGI->{mv_data_table}};
 
@@ -278,14 +284,14 @@ EOF
 	no-meta=1
 	start-at="[cgi start_at]"
 	default=`$Scratch->{tmp_defaults}`
-	ui_data_fields=`$me_opt{ui_data_fields}`
-	options=`$me_opt{options}`
-	filter=`$me_opt{filter}`
-	label=`$me_opt{label}`
-	height=`$me_opt{height}`
-	width=`$me_opt{width}`
-	help=`$me_opt{help}`
-	widget=`$me_opt{widget}`
+	ui_data_fields=`$Scratch->{me_opt}{ui_data_fields}`
+	options=`$Scratch->{me_opt}{options}`
+	filter=`$Scratch->{me_opt}{filter}`
+	label=`$Scratch->{me_opt}{label}`
+	height=`$Scratch->{me_opt}{height}`
+	width=`$Scratch->{me_opt}{width}`
+	help=`$Scratch->{me_opt}{help}`
+	widget=`$Scratch->{me_opt}{widget}`
 	ui_style=1
 	output_map=1
 	tabbed=1
