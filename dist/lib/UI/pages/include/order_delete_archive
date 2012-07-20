@@ -41,12 +41,6 @@
 			$db->set_field($_, $action_col, $value);
 		}
 	}
-	if(@errors) {
-		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
-				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
-	}
 	if($CGI->{viewnext}) {
 		my $ordnum = $CGI->{order};
 		$ordnum =~ s/[\0,\s].*//;
