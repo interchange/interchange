@@ -163,7 +163,7 @@ In-Stock Notification	In-Stock Notification	Benachrichtigung		Op voorraadmelding
 int_currency_symbol	$	EUR	EUR	EUR	HRK	EUR
 Interchange Documentation	Interchange Documentation	Interchange Dokumenten		Interchange Documentie	Interchange dokumentacija	Interchange dokumentacija
 Interchange server not running. Usually one of	Interchange server not running. Usually one of	Interchange Server ist nicht am laufen. Meistens ein von		Interchange server loopt niet. Meestal een van	Interchange server nije pokrenut. Obično jedan od	Interchange server ni zagnan. Ponavadi eden izmed
-Invalid username or password.					Pogrešno ste upisali korisničko ime ili lozinku.	Vnesli ste napačno uporabniško ime ali geslo.
+Invalid user name or password.		Benutzername oder Passwort ungültig.			Pogrešno ste upisali korisničko ime ili lozinku.	Vnesli ste napačno uporabniško ime ali geslo.
 Is that really a phone number?	Is that really a phone number?	Ist das eine gültige Telefonnummer?		Is dat werkelijk een telefoonnummer?	Da li je to zaista telefonski broj?	Ali je to res telefonska številka?
 Item is discounted %s	Item is discounted %s	Der Artikel ist/wurde heruntergesetzt %s			Proizvod je snižen %s	Izdelek je znižan %s
 Item No.	Item No.	Artikelnummer		Artikelnr.	Proizvod br.	Izdelek št.
