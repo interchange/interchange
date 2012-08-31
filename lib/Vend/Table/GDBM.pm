@@ -150,10 +150,10 @@ sub apply_utf8_filters {
 	my $out_filter = sub { $_ = encode('utf-8', $_) };
 	my $in_filter  = sub { $_ = decode('utf-8', $_) };
 
-	$handle->filter_store_key($out_filter);
-	$handle->filter_store_value($out_filter);
-	$handle->filter_fetch_key($in_filter);
-	$handle->filter_fetch_value($in_filter);
+	$handle->filter_store_key($out_filter)   unless $handle->filter_store_key();
+	$handle->filter_store_value($out_filter) unless $handle->filter_store_value();
+	$handle->filter_fetch_key($in_filter)    unless $handle->filter_fetch_key();
+	$handle->filter_fetch_value($in_filter)  unless $handle->filter_fetch_value();
 
 	return $handle;
 }
