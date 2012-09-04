@@ -253,8 +253,8 @@ Order Number	Order Number	Bestellnummer		Ordernummer	Broj narudžbe	Številka na
 Order Processed -- Thank You!	Order Processed -- Thank You!	Bestellung in Bearbeitung -- Danke!		Order verwerkt -- Dank U!	Narudžba obrađena -- Hvala!	Naročilo obdelano -- Hvala!
 Order Returns	Order Returns	Rückgabe von Artikeln		Retourzendingen	Povrat narudžbe	Povračilo naročila
 Order this	Order this	Jetzt bestellen / kaufen.		Koop dit product	Naruči	Naroči
-ORDER TOTAL	ORDER TOTAL	Gesamt  Bestellung		ORDER TOTAAL	UKUPNO	SKUPAJ
-Order Total	Order Total	Gesamtbetrag / Gesamtbestellwert		Ordertotaal	Ukupno naručeno	Skupaj naročeno
+ORDER TOTAL	ORDER TOTAL	Rechnungsbetrag		ORDER TOTAAL	UKUPNO	SKUPAJ
+Order Total	Order Total	Rechnungsbetrag		Ordertotaal	Ukupno naručeno	Skupaj naročeno
 Order total %s exceeds credit limit, please call.	Order total %s exceeds credit limit, please call.	Die Bestellung überschreitet Ihren (Warenkredit) Kreditrahmen. Bitte wenden Sie sich telefonisch an uns.		Het totaal van uw bestelling (%s) overschrijdt uw kredietlimiet. Bel ons alstublieft.	Skupna cijena narudžbe (%s) prelazi ograničenje, molimo nazovite.	Skupna cena naročila (%s) presega omejitev, prosimo pokličite
 Order Tracking	Order Tracking	Auftrag verfolgen		Traceren orders	Praćenje narudžbi	Spremljanje naročil
 ORDER_RETURN_PAR1	Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.	Bitte bestätigen Sie die unten aufgeführten Angaben und wählen Sie die umzutauschenden Produkte, Hilfe der Kästchen aus und ändern Sie die Stückzahl nach (Ihrem) Bedarf um.		Controleert U alstublieft onderstaande informatie en selecteer de artikelen die U wenst te retourneren door het aanvinken van de corresponderende vakjes. Pas de aantallen zonodig aan.	Potvrdite da su dolje navedeni podaci točni i odaberite artikle koje želite vratiti.	Potrdite spodaj navedene podatke in izberite izdelke ki jih želite vrniti.
@@ -439,7 +439,7 @@ To save this cart, give it a nickname, then press 'Save Cart'.	To save this cart
 To save this recurring order, give it a nickname, then press 'Save Cart'.	To save this recurring order, give it a nickname, then press 'Save Cart'.	Um diese Bestellung auch in Zukunft zu wiederholen, können Sie sie unter einem Namen Ihrer Wahl mit "jetzt speichern" abspeichern.		Geef deze herhalingsorder een korte naam om hem op te slaan en klik daarna 'Herhalingsorder opslaan'.	Ako želite spremiti ovu trajnu narudžbu, dodijelite joj nadimak i izaberite 'Spremi košaricu'.	Če želite shraniti to trajno naročilo, dodelite mu vzdevek in izberite 'Shrani košarico'.
 Toll free	Toll free	kostenfreie Nummer			Besplatni broj	Brezplačna številka
 Toll-free	Toll-free	Gebührenfrei		Gratis nummer	Besplatni broj	Brezplačna številka
-TOTAL	TOTAL	Gesamtsumme		TOTAAL	ZA NAPLATU	ZA PLAČILO
+TOTAL	TOTAL	Rechnungsbetrag		TOTAAL	ZA NAPLATU	ZA PLAČILO
 Trying to retrieve....	Trying to retrieve....	Versuchen zu erhalten...		Probeert op te halen....		
 Trying to unsub you from the <b>%s</b> list....	Trying to unsub you from the <b>%s</b> list....			Probeert U te verwijderen van de <b>%s</b> lijst....		
 Trying to unsub....	Trying to unsub....			Probeert te verwijderen....		
