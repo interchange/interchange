@@ -89,14 +89,6 @@ sub {
 		}
 
 		my $att1_format;
-		if($opt->{html}) {
-			$opt->{mimetype} ||= 'multipart/alternative';
-			$att1_format = 'flowed';
-		}
-		else {
-			$opt->{mimetype} ||= 'multipart/mixed';
-		}
-
 		my $att = $opt->{attach};
 		my @attach;
 		my @extra_headers;
@@ -111,16 +103,33 @@ sub {
 			$reply = utf8_to_other($reply, 'MIME-Header');
 		}
 
-		my $msg = new MIME::Lite 
-					To => $to,
-					From => $from,
-					Subject => $subject,
-					Type => $opt->{mimetype},
-					Cc => $cc,
-					Bcc => $bcc,
-					'Reply-To' => $reply,
-				;
+        my %msg_args = (To => $to,
+                        From => $from,
+                        Subject => $subject,
+                        Type => $opt->{mimetype},
+                        Cc => $cc,
+                        Bcc => $bcc,
+                        'Reply-To' => $reply,
+                           );
 
+
+        if($opt->{html}) {
+            if ($body =~ /\S/) {
+                $msg_args{Type} ||= 'multipart/alternative';
+            }
+            else {
+                $msg_args{Type} ||= 'text/html'  . ($utf8 ? '; charset=UTF-8' : '');
+                $msg_args{Data} ||= $opt->{html};
+            }
+
+			$att1_format = 'flowed';
+		}
+		else {
+			$msg_args{Type} ||= 'multipart/mixed';
+		}
+
+        my $msg = MIME::Lite->new(%msg_args);
+        
 		for(@extra) {
 			m{(.*?):\s+(.*)};
 			my $name = $1 or next;
@@ -133,15 +142,17 @@ sub {
 				if $name && $content;
 		}
 
-		$opt->{body_mime} ||= 'text/plain' . ($utf8 ? '; charset=UTF-8' : '');
-		$opt->{body_encoding} ||= 'quoted-printable';
-		$msg->attach(
-				Type => $opt->{body_mime},
-				Encoding => $opt->{body_encoding},
-				Data => $body,
-				Disposition => $opt->{body_disposition} || 'inline',
-				Format => $opt->{body_format} || $att1_format,
-			);
+        if ($body =~ /\S/) {
+            $opt->{body_mime} ||= 'text/plain' . ($utf8 ? '; charset=UTF-8' : '');
+            $opt->{body_encoding} ||= 'quoted-printable';
+            $msg->attach(
+                         Type => $opt->{body_mime},
+                         Encoding => $opt->{body_encoding},
+                         Data => $body,
+                         Disposition => $opt->{body_disposition} || 'inline',
+                         Format => $opt->{body_format} || $att1_format,
+                        );
+        }
 
 		if(! ref($att) ) {
 			my $fn = $att;
@@ -168,7 +179,7 @@ sub {
 
 		$att ||= [];
 
-		if($opt->{html}) {
+		if($opt->{html} && $body =~ /\S/) {
 			unshift @$att, {type => 'text/html' 
 							.($utf8 ? '; charset=UTF-8': ''),
 							data => ($utf8 ? utf8_to_other($opt->{html}, 'UTF-8') : $opt->{html}),
