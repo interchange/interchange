@@ -1265,11 +1265,11 @@ sub readin {
 }
 
 sub is_yes {
-    return( defined($_[0]) && ($_[0] =~ /^[yYtT1]/));
+    return scalar( defined($_[0]) && ($_[0] =~ /^[yYtT1]/));
 }
 
 sub is_no {
-	return( !defined($_[0]) || ($_[0] =~ /^[nNfF0]/));
+	return scalar( !defined($_[0]) || ($_[0] =~ /^[nNfF0]/));
 }
 
 # Returns a URL which will run the ordering system again.  Each URL
