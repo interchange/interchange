@@ -17,9 +17,8 @@ BEGIN {
 		require MIME::Lite;
 		$Have_mime_lite = 1;
 	};
-	eval {
-		require Encode::PERLQQ;
-		$Have_encode = 1;
+    unless ($ENV{MINIVEND_DISABLE_UTF8}) {
+        $Have_encode = 1;
 	};
 }
 
