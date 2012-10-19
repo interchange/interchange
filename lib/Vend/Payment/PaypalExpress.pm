@@ -736,6 +736,7 @@ sub paypalexpress {
 		push @setreq,  SOAP::Data->name("SurveyQuestion" => $surveyQuestion)->type("xs:string") if $surveyQuestion; # max 50 chars
 		push @setreq,  SOAP::Data->name("SurveyChoice" => $surveyChoice)->type("xs:string") if $surveyChoice; # max 15 chars
 		push @setreq,  SOAP::Data->name("LocaleCode" => $localeCode)->type("xs:string") if $localeCode;
+		push @setreq,  SOAP::Data->name("AllowNote" => $allowNote)->type("xs:string") if defined $allowNote; # 0 or 1
 #		push @setreq,  SOAP::Data->name("TotalType" => $totalType)->type("") if $totalType; # ### crashes ... ###
 
 
