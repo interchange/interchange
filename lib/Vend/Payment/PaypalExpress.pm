@@ -1088,7 +1088,7 @@ return $Tag->deliver({ location => $redirecturl });
 					  description => Vend::Data::item_description($item),
 					  amount => Vend::Data::item_price($item),
 					  comment => Vend::Data::item_field($item, 'comment'),
-					  tax => (Vend::Data::item_price($item)/$itemTotal * $taxTotal),
+					  tax => exists $item->{'tax'} ? $item->{'tax'} : (Vend::Data::item_price($item)/$itemTotal * $taxTotal),
 					  rpAmount => Vend::Data::item_field($item, 'rpamount'),
 					  };
   
