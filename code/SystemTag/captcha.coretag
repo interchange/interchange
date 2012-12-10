@@ -96,6 +96,9 @@ sub {
 		}
 	}
 	else {
+		# Used for [captcha-refresh] if requested
+		$::Instance->{last_captcha_build_opt} = { %$opt };
+
 	    my $save_u = umask($::Variable->{CAPTCHA_UMASK} || 2);
 
 		if($opt->{reset}) {
