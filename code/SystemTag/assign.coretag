@@ -34,11 +34,13 @@ sub {
 			$Vend::Session->{assigned}{$_} = $value;
 		}
 		else {
-			logError(
-				"Attempted assign of non-numeric '%s' to %s. Deleted.",
-				$value,
-				$_,
-			);
+            if ($value) {
+    			logError(
+	    			"Attempted assign of non-numeric '%s' to %s. Deleted.",
+		    		$value,
+			    	$_,
+			    );
+            }
 			delete $Vend::Session->{assigned}{$_};
 		}
 	}
