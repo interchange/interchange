@@ -1568,7 +1568,7 @@ sub login {
 						);
 		}
 
-		username_cookies($self->{PASSED_USERNAME} || $self->{USERNAME}, $pw) 
+		username_cookies($self->{PASSED_USERNAME} || $self->{USERNAME}, $pw, $self->{OPTIONS}{secure_cookies}) 
 			if $Vend::Cfg->{CookieLogin};
 
 		if ($self->{LOCATION}{LAST} ne 'none') {
@@ -1985,7 +1985,7 @@ sub new_account {
 		else {
 			$self->set_values() unless $self->{OPTIONS}{no_set};
 			$self->{USERNAME} = $foreign if $foreign;
-			username_cookies($self->{USERNAME}, $pw) 
+			username_cookies($self->{USERNAME}, $pw, $self->{OPTIONS}{secure_cookies}) 
 				if $Vend::Cfg->{CookieLogin};
 
 			$self->log('new account') if $options{'log'};
@@ -2013,7 +2013,7 @@ sub new_account {
 }
 
 sub username_cookies {
-		my ($user, $pw) = @_;
+		my ($user, $pw, $secure) = @_;
 		return unless
 			 $CGI::values{mv_cookie_password}		or
 			 $CGI::values{mv_cookie_username}		or
@@ -2021,13 +2021,14 @@ sub username_cookies {
 			 Vend::Util::read_cookie('MV_USERNAME');
 		$::Instance->{Cookies} = [] unless defined $::Instance->{Cookies};
 		my $exp = time() + $Vend::Cfg->{SaveExpire};
+		$secure ||= $CGI::secure;
 		push @{$::Instance->{Cookies}},
 			['MV_USERNAME', $user, $exp];
 		return unless
 			$CGI::values{mv_cookie_password}		or
 			Vend::Util::read_cookie('MV_PASSWORD');
 		push @{$::Instance->{Cookies}},
-			['MV_PASSWORD', $pw, $exp];
+			['MV_PASSWORD', $pw, $exp, undef, undef, $secure];
 		return;
 }
 
