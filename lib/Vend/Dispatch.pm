@@ -723,7 +723,7 @@ sub run_in_catalog {
 
 	open_cat($cat);
 
-	logError("Run jobs group=%s pid=$$", $job || 'INTERNAL');
+	logError("Run jobs group=%s pid=%s", $job || 'INTERNAL', $$);
 
 	Vend::Server::set_process_name("job $cat $job");
 	
@@ -824,7 +824,7 @@ sub run_in_catalog {
 			$errors = 1;
 
 			$failure = errmsg('Job terminated with an error: %s', $@);
-			logError ("Job group=%s pid=$$ terminated with an error: %s", $job || 'INTERNAL', $@);
+			logError ("Job group=%s pid=%s terminated with an error: %s", $job || 'INTERNAL', $$, $@);
 			
 			# remove flag for this job
 			Vend::Server::flag_job($$, $cat, 'furl');
@@ -846,7 +846,7 @@ sub run_in_catalog {
 	}
 	$out .= full_dump() if is_yes($jobscfg->{add_session});
 
-	logError("Finished jobs group=%s pid=$$", $job || 'INTERNAL');
+	logError("Finished jobs group=%s pid=%s", $job || 'INTERNAL', $$);
 	
 	close_cat();
 
