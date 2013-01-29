@@ -951,6 +951,12 @@ sub set_values {
 	my %scratch;
 	my %constant;
 	my %session_hash;
+    my %read_only;
+
+	if ($self->{OPTIONS}{read_only}) {
+		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{read_only} ;
+		$read_only{$_} = 1 for @s;
+	}
 
 	if($self->{OPTIONS}->{scratch}) {
 		my (@s) = grep /\w/, split /[\s,]+/, $self->{OPTIONS}{scratch} ;
@@ -1013,6 +1019,10 @@ sub set_values {
 #::logDebug("set_values saving $_ as $valref->{$_}\n");
 		my $val;
 		my $k;
+        if ($read_only{$_}) {
+            # Pull from get_values only; never write through set_values
+            next;
+        }
 		if ($k = $scratch{$_}) {
 			$val = $scratchref->{$k}
 				if defined $scratchref->{$k};	
