@@ -5,8 +5,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: commify.filter,v 1.4 2007-03-30 23:40:44 pajamian Exp $
 
 CodeDef commify Filter
 CodeDef commify Description Commify
@@ -14,7 +12,7 @@ CodeDef commify Routine <<EOR
 sub {
 	my ($val, $tag, $places) = @_;
 	$places = 2 unless defined $places;
-	$val = sprintf("%.${places}f", $val) if $places;
+	$val = sprintf("%.${places}f", $val) if defined $places;
 	return Vend::Util::commify($val);
 }
 EOR
