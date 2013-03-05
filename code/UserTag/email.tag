@@ -118,7 +118,7 @@ sub {
             }
             else {
                 $msg_args{Type} ||= 'text/html'  . ($utf8 ? '; charset=UTF-8' : '');
-                $msg_args{Data} ||= $opt->{html};
+                $msg_args{Data} ||=  ($utf8 ? utf8_to_other($opt->{html}, 'utf-8') : $opt->{html});
             }
 
 			$att1_format = 'flowed';
