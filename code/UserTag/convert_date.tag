@@ -77,7 +77,7 @@ sub {
 	if ($locale) {
 		$current = POSIX::setlocale(&POSIX::LC_TIME);
         if (($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8})
-            && $locale !~ /\.utf8$/) {
+            && $locale !~ /\.utf-?8$/i) {
             POSIX::setlocale(&POSIX::LC_TIME, "$locale.utf8");
         }
         else {
