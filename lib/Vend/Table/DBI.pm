@@ -1515,6 +1515,40 @@ sub row {
 	return @{ $sth->fetchrow_arrayref() || [] };
 }
 
+sub foreign_hash {
+    my ($s, $col, $key) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+	my $q = "select * from $s->[$TABLE] where $col = ?";
+    my $sth = $s->[$DBI]->prepare($q)
+		or $s->log_error("%s prepare error for %s: %s", 'row_hash', $q, $DBI::errstr)
+		and return undef;
+    $sth->execute($key)
+		or $s->log_error("%s execute error for %s: %s", 'row_hash', $q, $DBI::errstr)
+		and return undef;
+
+	return $sth->fetchrow_hashref()
+		unless $s->[$TYPE];
+	my $ref;
+	if($s->config('UPPERCASE')) {
+		my $aref = $sth->fetchrow_arrayref()
+			or return undef;
+		$ref = {};
+		my @nm = @{$sth->{NAME}};
+		for ( my $i = 0; $i < @$aref; $i++) {
+			$ref->{$nm[$i]} = $ref->{lc $nm[$i]} = $aref->[$i];
+		}
+	}
+	else {
+		$ref = $sth->fetchrow_hashref();
+	}
+	return $ref unless $s->[$CONFIG]{FIELD_ALIAS};
+	my ($k, $v);
+	while ( ($k, $v) = each %{ $s->[$CONFIG]{FIELD_ALIAS} } ) {
+		$ref->{$v} = $ref->{$k};
+	}
+	return $ref;
+}
+
 sub row_hash {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
