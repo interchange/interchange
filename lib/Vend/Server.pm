@@ -561,6 +561,7 @@ sub create_cookie {
 			$out .= $expstring;
 		}
 		$out .= '; secure' if $secure;
+		$out .= '; HttpOnly' if $::Pragma->{set_httponly};
 		$out .= "\r\n";
 	}
 	return $out;
