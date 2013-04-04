@@ -883,6 +883,12 @@ sub get_values {
 		my $hash = get_option_hash($row->{$field});
 		if($hash and $hash = $hash->{$loc} and ref($hash) eq 'HASH') {
 			for(@s) {
+				if($scratch{$_} ) {
+					$::Scratch->{$_} = $hash->{$_};
+				}
+				else {
+					$::Values->{$_} = $hash->{$_};
+				}
 				$::Values->{$_} = $hash->{$_};
 			}
 		}
@@ -1008,7 +1014,7 @@ sub set_values {
 
 		my $subhash = $hash->{$loc} ||= {};
 		for(@s) {
-			$subhash->{$_} = $valref->{$_};
+			$subhash->{$_} = $scratch{$_} ? $scratchref->{$_} : $valref->{$_};
 		}
 
 		push @extra, $field;
