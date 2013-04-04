@@ -889,7 +889,6 @@ sub get_values {
 				else {
 					$::Values->{$_} = $hash->{$_};
 				}
-				$::Values->{$_} = $hash->{$_};
 			}
 		}
 	}
