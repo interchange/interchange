@@ -1372,6 +1372,80 @@ sub get_hash {
 	return $self->{$name}{$nick};
 }
 
+=over 4
+
+=item enclair_db
+
+Using set_enclair() allows logging of enclair password to separate
+database table. Designed to allow administration personnel to look
+at passwords, without allowing access to web-connected systems. Or
+perhaps more properly, to check prior MD5-encrypted password values 
+for repeat passwords.
+
+Designed to log to an insert-only handle on a table, with a database
+structure such as:
+
+  create table enclair (
+    username varchar(32),
+     password varchar(32),
+     update_date timestamp
+    )
+
+Then a program on a secure behind-firewall no-select write-only
+database can access the table, logged via request and username.
+
+Configured:
+
+	UserDB   default  enclair_db   some_table
+
+You can set the following, which have the defaults shown in the
+setting. You can also insert %M, which is the MD5 of the password, or
+%D which is a datetime localtime value in the form YYYYmmddHHMMSS.
+
+	#UserDB   default  enclair_key_field   username
+	#UserDB   default  enclair_field       password
+	#UserDB   default  enclair_query_template "INSERT INTO %t (%U,%P) values (%u,%p)"
+
+String substitutions:
+
+	%u  value of username
+	%p  value of password
+	%U  field of username
+	%P  field of password
+	%t  enclair table name
+	%D  datetime value of form YYYYmmddHHMMSS
+	%M  MD5 hashed value of password
+
+=back
+
+=cut
+
+sub set_enclair {
+	my $self = shift;
+	if( my $tab = $self->{OPTIONS}{enclair_db} ) {
+		eval {
+			my $dbh = dbref($tab)->dbh();
+			my $field = $self->{OPTIONS}{enclair_field} || 'password';
+			my $key   = $self->{OPTIONS}{enclair_key_field} || 'username';
+			my $datetime = POSIX::strftime('%Y%m%d%H%M%S', localtime());
+			my $md5 = generate_key($self->{PASSWORD});
+			my $q = $self->{OPTIONS}{enclair_query_template} || "INSERT INTO %t (%U,%P) values (%u,%p)";
+			$q =~ s/\%M/$dbh->quote($md5)/eg;
+			$q =~ s/\%D/$dbh->quote($datetime)/eg;
+			$q =~ s/\%t/$tab/g;
+			$q =~ s/\%U/$key/g;
+			$q =~ s/\%P/$field/g;
+			$q =~ s/\%u/$dbh->quote($self->{USERNAME})/eg;
+			$q =~ s/\%p/$dbh->quote($self->{PASSWORD})/eg;
+			$dbh->do($q);
+		};
+		if($@) {
+			$self->log_either("Failed to set enclair password for $self->{USERNAME}: $@");
+		}
+	}
+}
+
+
 sub login {
 	my $self;
 
@@ -1776,6 +1850,8 @@ sub change_pass {
 		die errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
+		$self->{OPTIONS}{enclair_db} and $self->set_enclair();
+
 		if ( $self->{CRYPT} ) {
 			$self->{PASSWORD} = $self->do_crypt(
 				$self->{PASSWORD},
@@ -1945,6 +2021,8 @@ sub new_account {
 						)
 				or die errmsg("Database access error.");
 		}
+
+		$self->{OPTIONS}{enclair_db} and $self->set_enclair();
 
 		my $pass = $udb->set_field(
 						$self->{USERNAME},
