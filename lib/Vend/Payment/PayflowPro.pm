@@ -1,8 +1,6 @@
 # Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
 #
-# $Id: PayflowPro.pm,v 1.2 2009-03-20 15:44:59 markj Exp $
-#
-# Copyright (C) 2002-2009 Interchange Development Group and others
+# Copyright (C) 2002-2013 Interchange Development Group and others
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is distributed in the hope that it will be useful,
@@ -19,7 +17,7 @@ package Vend::Payment::PayflowPro;
 
 =head1 NAME
 
-Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
+Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST and PayPal Express Checkout
 
 =head1 SYNOPSIS
 
@@ -45,10 +43,15 @@ shared library that was used for the Verisign Payflow Pro service.
 =head1 DESCRIPTION
 
 The Vend::Payment::PayflowPro module implements the payflowpro() payment routine
-for use with Interchange. It is compatible on a call level with the other
-Interchange payment modules -- in theory (and even usually in practice) you
-could switch from a different payment module to PayflowPro with a few
-configuration file changes.
+for use with Interchange.
+
+It also allows you to accept PayPal via their Express Checkout (your
+PayPal account must be linked to your PayPal Manager account to do so).
+
+It is compatible on a call level with the other Interchange payment
+modules -- in theory (and even usually in practice) you could switch
+from a different payment module to PayflowPro with a few configuration
+file changes.
 
 To enable this module, place this directive in F<interchange.cfg>:
 
@@ -118,21 +121,14 @@ The type of transaction to be run. Valid values are:
 
 Default is C<auth>.
 
-=back
+=item accept_for_review
 
-The following should rarely be used, as the supplied defaults are
-usually correct.
+When using Fraud Protection Service, controls whether to accept orders
+that triggered filters. Set to 1 to accept. You should also consider
+changing the C<status> column of the transactions table to show that the
+order was flagged. Something like this in F<etc/log_transaction>:
 
-=over 4
-
-=item remap
-
-This remaps the form variable names to the ones needed by PayPal. See
-the C<Payment Settings> heading in the Interchange documentation for use.
-
-=item host
-
-The payment gateway host to use, to override the default.
+    status: [calc]return $Session->{payment_result}{RESULT} =~ /^12[67]$/ ? 'flagged' : 'pending';[/calc]
 
 =item check_sub
 
@@ -171,11 +167,154 @@ This is a matching sample subroutine you could put in interchange.cfg:
 That would work equally well as a Sub in catalog.cfg. It will succeed if
 either the address or zip is 'Y', or if both are unknown. If it fails,
 it sets the result code and error message in the result hash using
-PayPal's own (otherwise unused) 112 result code, meaning "Failed AVS
-check".
+PayPal's own (otherwise unused) 112 result code, meaning C<Failed AVS
+check>.
 
 Of course you can use this sub to do any other post-processing you
 want as well.
+
+=back
+
+B<The following are specific to PayPal Express Checkout:>
+
+=over 4
+
+=item returnurl
+
+B<Required.> URL where the buyer will return to. Usually set to something like:
+
+    __SECURE_SERVER____CGI_URL__/ord/paypalgetrequest
+
+Create the page in F<pages/ord/paypalgetrequest.html> with contents of:
+
+    [charge route="payflowpro" action="get"]
+    [if value country eq GB]
+        [value name=country set="UK" hide=1]
+    [/if]
+    [bounce href="[area href=ord/paypalcheckout]"]
+
+also, set up F<pages/ord/paypalsetrequest.html>, with contents of:
+
+    [charge route="payflowpro" action="set"]
+
+    [if session paypal_token]
+        [bounce href="https://www.[if variable INDEV]sandbox.[/if]paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=[data session paypal_token]"]
+    [else]
+        [bounce href="[area href=__CHECKOUT_PAGE__]"]
+    [/else]
+    [/if]
+
+Then add the PayPal Checkout button to your basket page:
+
+    <a href="[area ord/paypalsetrequest]"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Checkout with PayPal"></a>
+
+Add a F<pages/ord/paypalcheckout.html> page similar to your regular
+checout page, but you may want to disable the editing of the address
+fields. In addition, you should remove the
+F<include/checkout/payment_method> and
+F<include/checout/*_browser_payment> includes, and change the final
+C<Place Order> button to include the order profile:
+
+    [button 
+        name="mv_click"
+        text="[L]Place Order[/L]"
+        wait-text="-- [L]Wait[/L] --"
+        form=checkout
+    ]
+        mv_order_profile=paypal
+        mv_todo=submit
+    [/button]
+
+In F<etc/log_transction>, immediately after the 
+[elsif variable MV_PAYMENT_MODE]
+line, look for the [charge] tag, and alter it to include the C<action>
+parameter, like so:
+
+    [charge route="[var MV_PAYMENT_MODE]" action="[if value mv_order_profile eq paypal]do[/if]" amount="...
+
+Add into the end of the C<[import table=transactions type=LINE continue=NOTES no-commit=1]> section of F<etc/log_transaction>:
+
+    pptransactionid: [calc]$Session->{payment_result}{TRANSACTIONID}[/calc]
+    pppaymenttype: [calc]$Session->{payment_result}{PAYMENTTYPE}[/calc]
+    pppendingreason: [calc]$Session->{payment_result}{PENDINGREASON}[/calc]
+    ppcorrelationid: [calc]$Session->{payment_result}{CORRELATIONID}[/calc]
+    pppayerstatus: [value pppayer_status]
+    ppaddressstatus: [value ppaddress_status]
+
+and add these 6 new columns into your transactions table as type
+varchar(256). The CorrelationID is the one you need in any dispute with
+them. The payerstatus and addressstatus results may be useful in the
+order fulfillment process.
+
+Add to F<etc/profiles.order>, something like:
+
+    __NAME__                            paypal
+
+    __COMMON_ORDER_PROFILE__
+    email=required
+    email=email
+    &fatal = yes
+    &setcheck = end_profile 1
+
+    &set = mv_payment Incomplete
+
+    [if variable MV_PAYMENT_MODE]
+    [value name=mv_payment_realtime set=""]
+    &set=mv_payment PayPal ([var MV_PAYMENT_MODE])
+    &set=mv_payment_realtime 1
+    [else]
+    &set=mv_payment PayPal
+    [/else]
+    [/if]
+
+    &final = yes
+    &setcheck = end_profile 1
+    &setcheck = payment_method paypal
+
+    __END__
+
+=item cancelurl
+
+B<Required.> URL to go to if the buyer cancels. Usually set to your checkout page:
+
+    __SECURE_SERVER____CGI_URL__/__CHECKOUT_PAGE__
+
+=item headerimg
+
+URL to your custom image to show the buyer during their PayPal.com session.
+
+=item reqconfirmshipping
+
+This specifies that a Paypal customer must have his address 'confirmed'
+
+=item addressoverride
+
+This specifies that you will ship only to the address IC has on file
+(including the name and email); your customer needs to login to IC first
+before going to Paypal
+
+=item use_billing_override
+
+Sends billing address instead of shipping to PayPal (use with
+addressoverride)
+
+=back
+
+B<End PayPal>
+
+The following should rarely be used, as the supplied defaults are
+usually correct.
+
+=over 4
+
+=item remap
+
+This remaps the form variable names to the ones needed by PayPal. See
+the C<Payment Settings> heading in the Interchange documentation for use.
+
+=item host
+
+The payment gateway host to use, to override the default.
 
 =back
 
@@ -231,11 +370,18 @@ C<interchange-biz@icdevgroup.org> mailing list.
 
 =head1 NOTE
 
+See this URL for Payflow Pro documentation:
+    https://developer.paypal.com/webapps/developer/docs/classic/payflow/gs_payflow/
+
+See this URL for PayPal Express Checkout documentation:
+    https://developer.paypal.com/webapps/developer/docs/classic/express-checkout/gs_expresscheckout/
+
 There is actually nothing in the package Vend::Payment::PayflowPro.
 It changes packages to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
+    Josh Lavin <josh@perusion.com>
     Tom Tucker <tom@ttucker.com>
     Mark Johnson <mark@endpoint.com>
     Jordan Adler
@@ -249,7 +395,6 @@ It changes packages to Vend::Payment and places things there.
 package Vend::Payment;
 
 use Config;
-use Time::HiRes;
 
 BEGIN {
     eval {
@@ -307,6 +452,8 @@ sub payflowpro {
             );
     }
 
+    my $accept_for_review = $opt->{accept_for_review} || charge_param('accept_for_review');
+
 #::logDebug("payflowpro OrderID: |$opt->{order_id}|");
 
     my ($server, $port);
@@ -361,47 +508,159 @@ sub payflowpro {
                 MErrMsg => errmsg('Unrecognized transaction: %s', $transtype),
             );
 
+    my $order_id = gen_order_id($opt);
 
-    my $orderID = $opt->{order_id};
+    my $precision = $opt->{precision} || charge_param('precision') || 2;
+
     $amount = $opt->{total_cost} if ! $amount;
 
     if (! $amount) {
-        my $precision = $opt->{precision} || charge_param('precision') || 2;
-        my $cost = Vend::Interpolate::total_cost();
-        $amount = Vend::Util::round_to_frac_digits($cost, $precision);
+        $amount = Vend::Interpolate::total_cost();
+        $amount = Vend::Util::round_to_frac_digits($amount, $precision);
     }
 
+    my $shipping = $opt->{shipping} || '';
+
+    if (! $shipping) {
+        $shipping = Vend::Interpolate::tag_shipping();
+        $shipping = Vend::Util::round_to_frac_digits($shipping, $precision);
+    }
+
+    my $salestax = $opt->{salestax} || '';
+
+    if (! $salestax) {
+        $salestax = Vend::Interpolate::salestax();
+        $salestax = Vend::Util::round_to_frac_digits($salestax, $precision);
+    }
+
+    my $subtotal = $opt->{subtotal} || '';
+
+    if (! $subtotal) {
+        $subtotal = Vend::Interpolate::subtotal();
+        $subtotal = Vend::Util::round_to_frac_digits($subtotal, $precision);
+    }
+
+    my $phone = $actual{phone_day} || $actual{phone_night};
+    $phone =~ s/\D//g;
+
     my %varmap = (qw/
-        ACCT        mv_credit_card_number
-        CVV2        mv_credit_card_cvv2
-        ZIP         b_zip
-        STREET      b_address
-        SHIPTOZIP   zip
-        EMAIL       email
-        COMMENT1    comment1
-        COMMENT2    comment2
+        ACCT             mv_credit_card_number
+        CVV2             mv_credit_card_cvv2
+        BILLTOFIRSTNAME  b_fname
+        BILLTOLASTNAME   b_lname
+        BILLTOSTREET     b_address
+        BILLTOCITY       b_city
+        BILLTOSTATE      b_state
+        BILLTOZIP        b_zip
+        SHIPTOFIRSTNAME  fname
+        SHIPTOLASTNAME   lname
+        SHIPTOSTREET     address
+        SHIPTOCITY       city
+        SHIPTOSTATE      state
+        SHIPTOZIP        zip
+        BILLTOEMAIL      email
+        EMAIL            email
+        COMMENT1         comment1
+        COMMENT2         comment2
     /);
 
+    my $action = $opt->{action};
+    $action =~ s/set/S/;
+    $action =~ s/get/G/;
+    $action =~ s/do/D/;
+
+    my $tender;
+    $tender = $action ? 'P' : 'C';   # tender must be P for PayPal
+
+    my $tdb = dbref('transactions') or die errmsg("cannot open transactions table");
+    my $existing_trans = $tdb->foreign($order_id, 'order_id');  # lookup order_id in transactions, to see what payment_method was.
+    if($existing_trans) {
+        my $pay_method = $tdb->field($existing_trans, 'payment_method');
+        $tender = 'P' if $pay_method =~ /^PayPal/i;
+    }
+
     my %query = (
-        AMT         => $amount,
-        EXPDATE     => $exp,
-        TENDER      => 'C',
-        PWD         => $secret,
-        USER        => $user,
-        TRXTYPE     => $transtype,
+        AMT            => $amount,
+        CURRENCY       => 'USD',
+        TENDER         => $tender,
+        PWD            => $secret,
+        USER           => $user,
+        TRXTYPE        => $transtype,
+        CUSTIP         => $Vend::Session->{ohost},
+        TAXAMT         => $salestax,
+        TAXEXEMPT      => ($salestax > 0) ? 'N' : 'Y',
+        FREIGHTAMT     => $shipping,
+        BILLTOPHONENUM => $phone,
+        BILLTOCOUNTRY  => ($actual{b_country} eq 'UK') ? 'GB' : $actual{b_country},
+        SHIPTOCOUNTRY  => ($actual{country} eq 'UK') ? 'GB' : $actual{country},
     );
+    my %paypal_query = (
+        ACTION               => $action,
+        RETURNURL            => charge_param('returnurl'),
+        CANCELURL            => charge_param('cancelurl'),
+        TOKEN                => ($action eq 'S' ? '' : $Vend::Session->{paypal_token}),
+        ALLOWNOTE            => charge_param('allow_note'),
+        REQBILLINGADDRESS    => charge_param('reqbillingaddress'),
+        REQCONFIRMSHIPPING   => charge_param('reqconfirmshipping'),
+        PAGESTYLE            => charge_param('pagestyle'),
+        HDRIMG               => charge_param('headerimg'),
+        HDRBORDERCOLOR       => charge_param('headerbordercolor'),
+        HDRBACKCOLOR         => charge_param('headerbackcolor'),
+        PAYFLOWCOLOR         => charge_param('payflowcolor'),
+        ITEMAMT              => $subtotal,
+        PAYERID              => $CGI::values{payerid} || $::Values->{pppayerid},
+        NOTETOBUYER          => charge_param('note_to_buyer') || '*** Discounts and coupons will be shown and applied before final payment',
+        PAYMENTREQUEST_0_AMT => $amount,
+    );
+    if($tender eq 'P') {
+        @query{keys %paypal_query} = values %paypal_query;
+        my $i = 0;
+        for my $it (@{$::Carts->{main}}) {
+            $query{'L_PAYMENTREQUEST_0_NAME'    .$i} = $it->{description} || Vend::Data::item_description($it);
+            $query{'L_PAYMENTREQUEST_0_NUMBER'  .$i} = $it->{code};
+            $query{'L_PAYMENTREQUEST_0_DESC'    .$i} = Vend::Data::item_description($it);
+            $query{'L_PAYMENTREQUEST_0_AMT'     .$i} = Vend::Data::item_price($it);
+            $query{'L_PAYMENTREQUEST_0_QTY'     .$i} = $it->{quantity};
+            ##$query{'L_PAYMENTREQUEST_0_TAXAMT'.$i} = (Vend::Data::item_price($it)/$itemTotal * $taxTotal);
+            $i++;
+        }
+        $opt->{check_sub} = undef;
+    }
+    else {
+        my $i = 1;
+        for my $it (@{$::Carts->{main}}) {
+            $query{'L_NAME' . $i} = $it->{description} || Vend::Data::item_description($it);
+            $query{'L_COST' . $i} = Vend::Data::item_price($it);
+            $query{'L_QTY'  . $i} = $it->{quantity};
+            $query{'L_SKU'  . $i} = $it->{code};
+            ##$query{'L_TAXAMT'.$i} = (Vend::Data::item_price($it)/$itemTotal * $taxTotal);
+            $i++;
+        }
+    }
 
-    $query{PARTNER} = $opt->{partner} || charge_param('partner');
-    $query{VENDOR}  = $opt->{vendor}  || charge_param('vendor');
-    $query{ORIGID} = $orderID if $orderID;
+    $query{PARTNER}  = $opt->{partner} || charge_param('partner');
+    $query{VENDOR}   = $opt->{vendor}  || charge_param('vendor');
+    $query{COMMENT1} = $order_id if ! $actual{comment1};
 
-    # We want a unique orderID for each call, to better than second granularity
-    ( $opt->{order_id} = Time::HiRes::clock_gettime() ) =~ s/\D//g;
-    $orderID = gen_order_id($opt);
-#::logDebug("payflowpro AUTH gen_order_id: " . $orderID);
-
-    for (keys %varmap) {
-        $query{$_} = $actual{$varmap{$_}} if defined $actual{$varmap{$_}};
+    if($action =~ /[SG]/) {
+        ## if a PayPal set/get, don't want address, just email.
+        $query{EMAIL} = $actual{$varmap{EMAIL}} if defined $actual{$varmap{EMAIL}};
+    }
+    elsif($action eq 'D') {
+        ## don't want some.
+        delete $query{ACCT};
+        delete $query{CVV2};
+        for (keys %varmap) {
+            $query{$_} = $actual{$varmap{$_}} if defined $actual{$varmap{$_}};
+        }
+    }
+    else {
+        ## these not for PayPal authorizations, only capture/void (and credit cards):
+        $query{ORIGID} = $order_id;
+        $query{EXPDATE} = $exp;
+        for (keys %varmap) {
+            $query{$_} = $actual{$varmap{$_}} if defined $actual{$varmap{$_}};
+        }
     }
 
 # Uncomment all the following block to use the debug statement. It strips
@@ -417,7 +676,7 @@ sub payflowpro {
 #::logDebug("payflowpro query: " . ::uneval(\%munged_query));
 #    }
 
-    my $timeout = $opt->{timeout} || 10;
+    my $timeout = $opt->{timeout} || 45;
     die "Bad timeout value, security violation." unless $timeout && $timeout !~ /\D/;
     die "Bad port value, security violation." unless $port && $port !~ /\D/;
     die "Bad server value, security violation." unless $server && $server !~ /[^-\w.]/;
@@ -438,9 +697,12 @@ sub payflowpro {
     my $string = join '&', @query;
     my $debug_string = join '&', @debug_query;
 
+	my $reqid = $transtype =~ /^[DVC]$/ ? ($order_id . int(rand(100))) : $order_id;
+#::logDebug("payflowpro using X-VPS-Request-Id = $reqid");
+
     my %headers = (
         'Content-Type'                    => 'text/namevalue',
-        'X-VPS-Request-Id'                => $orderID,
+        'X-VPS-Request-Id'                => $reqid,
         'X-VPS-Timeout'                   => $timeout,
         'X-VPS-VIT-Client-Architecture'   => $Config{archname},
         'X-VPS-VIT-Client-Type'           => 'Perl',
@@ -449,11 +711,12 @@ sub payflowpro {
         'X-VPS-VIT-Integration-Version'   => $::VERSION,
         'X-VPS-VIT-OS-Name'               => $Config{osname},
         'X-VPS-VIT-OS-Version'            => $Config{osvers},
+        'PAYPAL-NVP'                      => ($tender eq 'P' ? 'Y' : ''),
     );
 # Debug statement is stripped of any sensitive card data and is safe (and
 # recommended) to enable in production.
 #
-#::logDebug(qq{--------------------\nPosting to PayflowPro: \n\t$orderID\n\t$uri "$debug_string"});
+#::logDebug(qq{--------------------\nPosting to PayflowPro: \n\t$order_id\n\t$uri "$debug_string"});
 
     my $headers = HTTP::Headers->new(%headers);
     my $request = HTTP::Request->new('POST', $uri, $headers, $string);
@@ -474,10 +737,19 @@ sub payflowpro {
     }
 
     %$result = split /[&=]/, $resultstr;
+    if($tender eq 'P') {
+        for(keys %$result) {
+            my $v = delete $result->{$_};
+            $_ =~ s|\[\d+\]$||;   # remove length tags for NVP
+            $_ =~ s|^PAYMENTINFO_0_||;  # also strip 'paymentinfo_0'
+            $result->{$_} = $v;
+        }
+    }
+
     my $decline = $result->{RESULT};
 
     if (
-        $result->{RESULT} == 0
+        $result->{RESULT} =~ /^0|12[67]$/
             and
         my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')
     ) {
@@ -507,7 +779,10 @@ sub payflowpro {
         pop.avs_addr   AVSADDR
     /);
 
-    if ($decline) {
+    if ($accept_for_review and $decline =~ /^12[67]$/) {   ## flagged for review, or not screened by filters
+        $result->{ICSTATUS} = 'success';
+    }
+    elsif ($decline) {
         $result->{ICSTATUS} = 'failed';
         my $msg = errmsg("Charge error: %s Reason: %s. Please call in your order or try again.",
             $result->{RESULT} || 'no details available',
@@ -517,6 +792,40 @@ sub payflowpro {
     }
     else {
         $result->{ICSTATUS} = 'success';
+        if($result->{TOKEN}) {
+            ## PayPal transaction.
+            $Vend::Session->{paypal_token} = $result->{TOKEN};
+            if($action eq 'G') {
+                ## save address details in Values...
+                my %val_map = (qw/
+                    email             EMAIL
+                    pppayerid         PAYERID
+                    pppayer_status    PAYERSTATUS
+                    gift_note         NOTE
+                    fname             FIRSTNAME
+                    lname             LASTNAME
+                    address1          SHIPTOSTREET
+                    address2          SHIPTOSTREET2
+                    city              SHIPTOCITY
+                    state             SHIPTOSTATE
+                    zip               SHIPTOZIP
+                    country           SHIPTOCOUNTRY
+                    company           SHIPTOBUSINESS
+                    phone_day         PHONENUM
+                    b_address1        STREET
+                    b_address2        STREET2
+                    b_city            CITY
+                    b_state           STATE
+                    b_zip             ZIP
+                    b_country         COUNTRYCODE
+                    ppaddress_status  ADDRESSSTATUS
+                /);
+                for (keys %val_map) {
+                    $::Values->{$_} = $result->{$val_map{$_}}
+                        if defined $result->{$val_map{$_}};
+                }
+            }
+        }
     }
 
     for (keys %result_map) {
