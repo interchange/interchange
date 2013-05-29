@@ -64,7 +64,7 @@ The Interchange UI is an interface to configure and administer Interchange catal
 
 =cut
 
-my $ui_safe = new Safe;
+my $ui_safe = new Vend::Safe;
 $ui_safe->untrap(@{$Global::SafeUntrap});
 
 sub is_super {
