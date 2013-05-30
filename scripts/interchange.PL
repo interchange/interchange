@@ -36,7 +36,7 @@ BEGIN {
 	$| = 1;
 
 	if ($ENV{INTERCHANGE_INSTALLPRIVLIB}) {
-		unshift @INC, $ENV{INTERCHANGE_INSTALLPRIVLIB};
+		unshift @INC, split /:+/, $ENV{INTERCHANGE_INSTALLPRIVLIB};
 	}
 	else {
 		unshift @INC, '/usr/local/interchange/lib';
@@ -44,7 +44,7 @@ BEGIN {
 	}
 
 	if ($ENV{INTERCHANGE_INSTALLARCHLIB}) {
-		unshift @INC, $ENV{INTERCHANGE_INSTALLARCHLIB};
+		unshift @INC, split /:+/, $ENV{INTERCHANGE_INSTALLARCHLIB};
 	}
 	else {
 		unshift @INC, '/usr/local/interchange';
