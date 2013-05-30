@@ -1147,6 +1147,7 @@ lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
 lib/Vend/Payment/Getitcard.pm
 lib/Vend/Payment/GoogleCheckout.pm
+lib/Vend/Payment/HSBC.pm
 lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
