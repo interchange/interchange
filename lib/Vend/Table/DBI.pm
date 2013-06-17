@@ -1416,9 +1416,6 @@ sub set_row {
 	if ($cfg->{PREFER_NULL}) {
 		for (keys %{$cfg->{PREFER_NULL}}) {
 			my $i = $cfg->{COLUMN_INDEX}{$_};
-
-			## We should not autovivify @fields.
-			next unless exists $fields[$i];
 			undef $fields[$i] if $fields[$i] eq '';
 		}
 	}
