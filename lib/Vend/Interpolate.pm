@@ -3175,16 +3175,39 @@ sub find_sort {
 		$more_id,
 		$session,
 		$link_template,
+		$pretty_url,
+		$incl_pageno,
 		);
 
 sub more_link_template {
-	my ($anchor, $arg, $form_arg) = @_;
+	my ($anchor, $arg, $form_arg, $pageno) = @_;
 
-	my $url = tag_area(undef, undef, {
-	    search         => "MM=$arg",
-	    form           => $form_arg,
-	    match_security => 1,
-	});
+#::logDebug('$pretty_url is %s', $pretty_url);
+    my $this_pretty = $pretty_url || '';
+
+    if ($incl_pageno && $pageno) {
+        my $pg_tmpl = $incl_pageno eq '1' ? 'page %d' : $incl_pageno;
+        $this_pretty .= sprintf ("/$pg_tmpl", $pageno);
+    }
+
+    for ($this_pretty) {
+        s{[^\w/]+}{-}g;
+        s{/{2,}}{/}g;
+        s{^[-/]+}{}g;
+        s{[-/]+$}{}g;
+    }
+
+#::logDebug('$this_pretty after regexes: %s', $this_pretty);
+    $this_pretty &&= "$this_pretty/";
+
+    my $url = tag_area(
+        "scan/${this_pretty}MM=$arg",
+        undef,
+        {
+            form           => $form_arg,
+            match_security => 1,
+        }
+    );
 
 	my $lt = $link_template;
 	$lt =~ s/\$URL\$/$url/g;
@@ -3215,7 +3238,7 @@ sub more_link {
 	else {
 		$pa =~ s/__BORDER__/$border/e;
 		$arg = "$session:$next:$last:$chunk$perm";
-		$list .= more_link_template($pa, $arg, $form_arg) . ' ';
+		$list .= more_link_template($pa, $arg, $form_arg, $inc) . ' ';
 	}
 	return $list;
 }
@@ -3245,6 +3268,14 @@ sub tag_more_list {
 	my($first_anchor,$last_anchor);
 	my %hash;
 
+    ($pretty_url, $incl_pageno) = ();
+    if ($r =~ m{\[more[-_]pretty[-_]url\]}i) {
+#::logDebug('$r matched on more-pretty-url');
+        $r =~ s{\[more[-_]pretty[-_]url\]($All)\[/more[-_]pretty[-_]url\]}{}i
+            and $pretty_url = $q->{more_pretty_url} ||= ::interpolate_html($1);
+        $r =~ s{\[more[-_]incl[-_]pageno\]($All)\[/more[-_]incl[-_]pageno\]}{}i
+            and $incl_pageno = $q->{more_incl_pageno} ||= $1 || '1';
+    }
 
 	$session = $q->{mv_cache_key};
 	my $first = $q->{mv_first_match} || 0;
@@ -3310,7 +3341,7 @@ sub tag_more_list {
 			$arg .= ':0:';
 			$arg .= $chunk - 1;
 			$arg .= ":$chunk$perm";
-			$hash{first_link} = more_link_template($first_anchor, $arg, $form_arg);
+			$hash{first_link} = more_link_template($first_anchor, $arg, $form_arg, 1);
 		}
 
 		unless ($prev_anchor) {
@@ -3331,7 +3362,7 @@ sub tag_more_list {
 			$arg .= ':';
 			$arg .= $first - 1;
 			$arg .= ":$chunk$perm";
-			$hash{prev_link} = more_link_template($prev_anchor, $arg, $form_arg);
+			$hash{prev_link} = more_link_template($prev_anchor, $arg, $form_arg, $current && $current - 1);
 		}
 
 	}
@@ -3355,7 +3386,7 @@ sub tag_more_list {
 		$last = $next + $chunk - 1;
 		$last = $last > ($total - 1) ? $total - 1 : $last;
 		$arg = "$session:$next:$last:$chunk$perm";
-		$hash{next_link} = more_link_template($next_anchor, $arg, $form_arg);
+		$hash{next_link} = more_link_template($next_anchor, $arg, $form_arg, $current && $current + 1);
 
  		# Last link can appear when next link is valid
 		if($r =~ s:\[last[-_]anchor\]($All)\[/last[-_]anchor\]::i) {
@@ -3368,7 +3399,7 @@ sub tag_more_list {
 			$last = $total - 1;
 			my $last_beg_idx = $total - ($total % $chunk || $chunk);
 			$arg = "$session:$last_beg_idx:$last:$chunk$perm";
-			$hash{last_link} = more_link_template($last_anchor, $arg, $form_arg);
+			$hash{last_link} = more_link_template($last_anchor, $arg, $form_arg, $chunk && ceil($total / $chunk));
 		}
 	}
 	else {
@@ -4738,6 +4769,7 @@ sub region {
 
 #::logDebug("region: opt:\n" . uneval($opt) . "\npage:" . substr($page,0,100));
 
+	my $save_more;
 	if($opt->{ml} and ! defined $obj->{mv_matchlimit} ) {
 		$obj->{mv_matchlimit} = $opt->{ml};
 		$obj->{mv_more_decade} = $opt->{md};
@@ -4747,9 +4779,7 @@ sub region {
 		$obj->{mv_first_match} = $opt->{fm} if $opt->{fm};
 		$obj->{mv_search_page} = $opt->{sp} if $opt->{sp};
 		$obj->{prefix} = $opt->{prefix} if $opt->{prefix};
-		my $out = delete $obj->{mv_results};
-		Vend::Search::save_more($obj, $out);
-		$obj->{mv_results} = $out;
+		$save_more = 1;
 	}
 
 	$opt->{prefix} = $obj->{prefix} if $obj->{prefix};
@@ -4787,6 +4817,11 @@ sub region {
 	$page =~ s:\[($lprefix)\]($Some)\[/\1\]:labeled_list($opt,$2,$obj):ige
 		or $page = labeled_list($opt,$page,$obj);
 #::logDebug("past labeled_list");
+    if ($save_more) {
+        my $out = delete $obj->{mv_results};
+        Vend::Search::save_more($obj, $out);
+        $obj->{mv_results} = $out;
+    }
 
     return $page;
 }
