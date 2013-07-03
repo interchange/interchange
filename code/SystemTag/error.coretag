@@ -37,6 +37,10 @@ sub tag_error {
 	if($opt->{set}) {
 		$opt->{keep} = 1 unless defined $opt->{keep};
 		my $error = delete $opt->{set};
+		if($opt->{param}) {
+			$opt->{param} = [ $opt->{param} ] unless ref($opt->{param} );
+			$error = sprintf($error, @{$opt->{param}});
+		}
 		return set_error($error, $var, $opt);
 	}
 	my $err_ref = $Vend::Session->{errors};
