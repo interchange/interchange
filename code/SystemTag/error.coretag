@@ -38,7 +38,7 @@ sub tag_error {
 		$opt->{keep} = 1 unless defined $opt->{keep};
 		my $error = delete $opt->{set};
 		if($opt->{param}) {
-			$opt->{param} = [ $opt->{param} ] unless ref($opt->{param} );
+			$opt->{param} = [ $opt->{param} ] unless ref($opt->{param}) eq 'ARRAY';
 			$error = sprintf($error, @{$opt->{param}});
 		}
 		return set_error($error, $var, $opt);
