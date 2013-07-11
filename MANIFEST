@@ -295,6 +295,7 @@ code/UserTag/get_url.tag
 code/UserTag/history_scan.tag
 code/UserTag/load_cart.tag
 code/UserTag/loc.tag
+code/UserTag/make_password.tag
 code/UserTag/page_meta.tag
 code/UserTag/rand.tag
 code/UserTag/report_table.tag
@@ -1044,6 +1045,7 @@ dist/standard/variables/LINE_MENU
 dist/standard/variables/PAGE_INIT
 dist/standard/variables/THEME_CSS
 dist/subdomains.cfg
+eg/captcha_refresh.cfg
 eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
