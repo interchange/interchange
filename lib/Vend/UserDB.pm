@@ -34,18 +34,6 @@ no warnings qw(uninitialized numeric);
 
 my $ready = new Vend::Safe;
 
-my $HAVE_SHA;
-
-eval {
-    require Digest::SHA;
-    import Digest::SHA;
-    $HAVE_SHA = 1;
-};
-
-if ($@) {
-    ::logGlobal("SHA passwords disabled: $@");
-}
-
 # The object encryption methods take three arguments: object, password, and
 # mystery meat. If called in the context of new_account(), the mystery meat
 # is the salt (which is not always used). If called in the context of
