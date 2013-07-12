@@ -1,0 +1,49 @@
+-----------------------------------------------------------------------------
+
+ Needed RPM packages for Red Hat Linux and compatible operating systems
+
+-----------------------------------------------------------------------------
+
+In order to work with RHEL and CentOS, among other RPM distribution
+systems, you can install various RPM packages to get the required software.
+You can install Perl and a SQL in a base installation, then use CPAN to
+install Bundle::Interchange, or you can install needed modules via RPM.
+Many of those are not available in the base distribution, but
+are available at EPEL or rpmforge, extended package distributions.
+
+List of needed Modules to get interchange to build and start:
+
+    make (for installation)
+    gcc (for compling links or b
+    mysql and mysql-server (installs perl-DBI and perl-DBD-mysql)
+       or
+    postgresql and postgresql-server  (installs perl-DBI and perl-DBD-Pg)
+    perl-MIME-Lite
+    perl-libwww-perl
+    perl-HTML-Parser
+    perl-Image-Size-3.2-4.el6.noarch
+    perl-Safe-Hole-0.10-1.el6.rf.i686
+    perl-Set-Crontab-1.02-1.el6.rf.noarch
+
+(Some of the above install multiple members of the Bundle::Interchange set.)
+
+An incomplete list of additional modules needed for other things:
+
+    perl-Digest-SHA (for stronger passwords)
+    perl-Date-Calc  (certain date support)
+    perl-Spreadsheet-ParseExcel (import XLS files)
+    perl-Spreadsheet-WriteExcel (export XLS files)
+    perl-Archive-Tar (backup function)
+    perl-Archive-Zip (backup function)
+    perl-Crypt-SSLeay (payment interfaces)
+        and/or
+    perl-Net-SSLeay (payment interfaces)
+    perl-Time-HiRes (benchmarks)
+
+Optional modules typically unavailable in repositories:
+
+    Business::UPS
+    Authen::Captcha
+    Net::IP::Match::Regexp
+    Text::Query
+    Tie::ShadowHash
