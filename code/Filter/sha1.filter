@@ -5,15 +5,11 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version. See the LICENSE file for details.
 
-Require module Digest::SHA
-
 CodeDef sha1 Filter
 CodeDef sha1 Description sha1 sum
 CodeDef sha1 Routine <<EOR
 
-use Digest::SHA;
-
 sub {
-	return Digest::SHA::sha1_hex($_[0]);
+	return Vend::Util::sha1_hex($_[0]);
 }
 EOR

@@ -577,6 +577,28 @@ sub random_string {
 my $Md;
 my $Keysub;
 
+use vars qw($SHA1);
+
+##  This block defines &Vend::Util::sha1_hex and $Vend::Util::SHA1
+BEGIN {
+
+	$SHA1 = 1;
+	  FINDSHA: {
+		eval {
+			require Digest::SHA;
+			*sha1_hex = \&Digest::SHA::sha1_hex;
+		};
+		last FINDSHA if defined &sha1_hex;
+		eval {
+			require Digest::SHA1;
+			*sha1_hex = \&Digest::SHA1::sha1_hex;
+		};
+		last FINDSHA if defined &sha1_hex;
+		$SHA1 = 0;
+		*sha1_hex = sub { ::logError("Unknown filter or key routine sha1, no SHA modules."); return $_[0] };
+	  }
+}
+
 eval {require Digest::MD5 };
 
 if(! $@) {
