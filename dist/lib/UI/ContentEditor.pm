@@ -756,7 +756,7 @@ sub read_template {
 			my $q = join " ", @atoms;
 			my $ary = $db->query({ sql => $q, hashref => 1 });
 			for(@$ary) {
-				push @data, [ $_->{comp_text}, "$table::$spec" ];
+				push @data, [ $_->{comp_text}, "$tname::$spec" ];
 			}
 		}
 	}
@@ -884,7 +884,7 @@ sub read_component {
 			my $q = join " ", @atoms;
 			my $ary = $db->query({ sql => $q, hashref => 1 });
 			for(@$ary) {
-				push @data, [ $_->{comp_text}, "$table::$spec" ];
+				push @data, [ $_->{comp_text}, "$tname::$spec" ];
 			}
 		}
 	}
@@ -1146,7 +1146,7 @@ sub available_components {
 		my $q = join " ", @atoms;
 		my $ary = $db->query({ sql => $q, hashref => 1 });
 		for(@$ary) {
-			push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
+			push @data, [ $_->{comp_text}, "$tname::$_->{code}" ];
 		}
 	}
 	my @out;
@@ -1201,7 +1201,7 @@ sub available_templates {
 		my $q = join " ", @atoms;
 		my $ary = $db->query({ sql => $q, hashref => 1 });
 		for(@$ary) {
-			push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
+			push @data, [ $_->{comp_text}, "$tname::$_->{code}" ];
 		}
 	}
 	my @out;
@@ -1333,7 +1333,7 @@ sub read_page {
 		my $q = join " ", @atoms;
 		my $ary = $db->query({ sql => $q, hashref => 1 });
 		for(@$ary) {
-			push @data, [ $_->{comp_text}, "$table::$spec" ];
+			push @data, [ $_->{comp_text}, "$tname::$spec" ];
 		}
 	}
 	else {
