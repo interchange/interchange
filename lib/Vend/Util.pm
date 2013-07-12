@@ -571,15 +571,9 @@ sub random_string {
     $r;
 }
 
-# To generate a unique key for caching
-# Not very good without MD5
-#
-my $Md;
-my $Keysub;
-
+##  This block defines &Vend::Util::sha1_hex and $Vend::Util::SHA1
 use vars qw($SHA1);
 
-##  This block defines &Vend::Util::sha1_hex and $Vend::Util::SHA1
 BEGIN {
 
 	$SHA1 = 1;
@@ -598,6 +592,12 @@ BEGIN {
 		*sha1_hex = sub { ::logError("Unknown filter or key routine sha1, no SHA modules."); return $_[0] };
 	  }
 }
+
+# To generate a unique key for caching
+# Not very good without MD5
+#
+my $Md;
+my $Keysub;
 
 eval {require Digest::MD5 };
 

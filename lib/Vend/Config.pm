@@ -3481,9 +3481,13 @@ sub set_default_search {
 		UserDB => sub {
 					my $set = $C->{UserDB_repository};
 					for(keys %$set) {
-						next unless defined $set->{$_}{admin};
-						$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
-						$C->{AdminUserDB}{$_} = $set->{$_}{admin};
+						if( defined $set->{$_}{admin} ) {
+							$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
+							$C->{AdminUserDB}{$_} = $set->{$_}{admin};
+						}
+						if($set->{$_}{encsub} =~ /sha1/i and ! $Vend::Util::SHA1) {
+							return(undef, "Unable to use SHA1 encryption for UserDB, no Digest::SHA or Digest::SHA1 module.");
+						}
 					}
 					return 1;
 				},

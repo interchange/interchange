@@ -100,11 +100,11 @@ sub enc_md5_salted {
 
 sub enc_sha1 {
     my $obj = shift;
-    unless ($HAVE_SHA) {
+    unless ($Vend::Util::SHA1) {
         $obj->log_either('SHA passwords unavailable. Is Digest::SHA installed?');
         return;
     }
-    return Digest::SHA::sha1_hex(shift);
+    return Vend::Util::sha1_hex(shift);
 }
 
 # Maps the length of the encrypted data to the algorithm that
