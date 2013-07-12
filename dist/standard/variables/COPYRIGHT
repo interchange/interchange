@@ -2,6 +2,6 @@
     [if variable MV_DEMO_MODE]
       <p>[page admin/index][L]Admin[/L]</a></p>
     [/if]
-	<p style="font-size: 10px; color: #000000">Portions copyright 2002-2011 Interchange Development Group, freely redistributable under GPL</p>
+	<p style="font-size: 10px; color: #000000">Portions copyright 2002-2013 Interchange Development Group, freely redistributable under GPL</p>
   </div>
 
