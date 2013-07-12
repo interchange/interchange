@@ -7,7 +7,8 @@ Interchange is designed to be drop-in compatible in its major version.
 Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
- 5.6.x -- Perl 5.8.5 or newer is now required to run Interchange.
+ 5.6.x -- Perl 5.8.8 or newer is now generally required to run Interchange.
+          See "Known Issues" below.
 
  5.4.x -- A number of incompatible changes were made. Most of them will be
           simple to deal with, but please consult the list below in the
@@ -82,24 +83,32 @@ That's it. Verify your catalog's operation, and you are live.
                          K N O W N   I S S U E S
 
 
-KNOWN ISSUES UPGRADING FROM 5.6
+KNOWN ISSUES UPGRADING FROM 5.6.x
 
-Perl 5.8.5 or newer is now required.
+1. Perl 5.8.5 (unthreaded) or Perl 5.8.8 (threaded) or newer is now required.
 
-AdminUser configuration directive has been removed.
+2. The AdminUser configuration directive has been removed.
 
-PROBLEM WORKAROUND FOR POSTGRESQL 8.3 USERS
+3. In PostgreSQL 8.3 many implicit type casts were removed, some of
+which Interchange or your code may have relied on. You may find that some
+features in the Standard demo and some Interchange core SQL may not work
+with PostgreSQL 8.3 or newer, though recent testing with PostgreSQL 9.2
+did not reveal any problems.
 
-In PostgreSQL 8.3 many implicit casts were removed, some of which Interchange
-relied on. By default, the Standard demo and some Interchange core SQL does
-not work with PostgreSQL 8.3.
+If you run into problems, the easiest way to get things working is
+to manually put back any removed casts that you need. The included
+eg/pg83-implicit-casts.sql script fixes the known problems with the
+Standard demo.
 
-We expect to work around this in a future version of Interchange, but at the
-moment the easiest way to get things working is to manually put back any
-removed casts that you need. The included eg/pg83-implicit-casts.sql script
-fixes the known problems with the Standard demo.
+4. Digest::SHA from CPAN is now a recommended module. If it is not
+available, Digest::SHA1 will still be used as a fallback.
 
-This issue does not affect earlier versions of PostgreSQL.
+5. IPv6 incompatibility: Some of the session IP address verification
+functions do not work correctly for traffic coming from IPv6 sources,
+resulting in lost sessions. You can use catalog directive "WideOpen Yes"
+as a workaround but see the documentation to be aware of tradeoffs:
+
+http://docs.icdevgroup.org/cgi-bin/online/confs/WideOpen.html.
 
 
 KNOWN ISSUES UPGRADING FROM 5.5.2
