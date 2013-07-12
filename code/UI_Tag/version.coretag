@@ -150,6 +150,7 @@ sub {
 			Crypt::SSLeay
 			DBI
 			Digest::MD5
+			Digest::SHA
 			Image::Size
 			LWP::Simple
 			MIME::Base64
@@ -173,6 +174,7 @@ sub {
 			'Crypt::SSLeay' => q{Payment interface links via HTTPS/SSL.},
 			'DBI' => q{Most people want to use SQL with Interchange, and this is a requirement.  You will also need the appropriate DBD module, i.e. DBD::mysql to support MySQL.},
 			'Digest::MD5' => q{IMPORTANT: cache keys and other search-related functions will not work.},
+			'Digest::SHA' => q{Used by sha1 filter, optional UserDB functionality, and some payment modules.},
 			'Image::Size' => q{Optional but recommended for [image ...] tag.},
 			'LWP::Simple'  => q{External UPS lookup and other internet-related functions will not work.},
 			'MIME::Base64' => q{Provides HTTP services for internal HTTP server and basic authentication.},
