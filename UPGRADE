@@ -31,7 +31,7 @@ following versions:
           facing side should be fairly straightforward to port. See
           "UPGRADING FROM 4.6.x" below.
 
- ALL VERSIONS -- A security vulnerability has been found that allows
+ BEFORE 5.7.2 -- A security vulnerability has been found that allows
           remote searching of any table in your database configured in
           Interchange.  To fix this vulnerability, you may need to 
           make some adjustments to your catalog.  See "REMOTE SEARCHING"
@@ -108,7 +108,7 @@ functions do not work correctly for traffic coming from IPv6 sources,
 resulting in lost sessions. You can use catalog directive "WideOpen Yes"
 as a workaround but see the documentation to be aware of tradeoffs:
 
-http://docs.icdevgroup.org/cgi-bin/online/confs/WideOpen.html.
+http://docs.icdevgroup.org/cgi-bin/online/confs/WideOpen.html
 
 
 KNOWN ISSUES UPGRADING FROM 5.5.2
