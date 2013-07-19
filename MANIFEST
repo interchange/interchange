@@ -1050,6 +1050,7 @@ eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
 eg/dump_memory.cfg
+eg/emacs/itl.el
 eg/filter/calculated.filter
 eg/gpg_display
 eg/iclint
@@ -1206,6 +1207,7 @@ MANIFEST.SKIP
 README
 README-DEVELOPMENT
 README.debian
+README.rhel
 README.rpm-dist
 relocate.pl
 scripts/compile_link.PL
