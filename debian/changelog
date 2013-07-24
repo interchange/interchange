@@ -1,3 +1,9 @@
+interchange (5.8.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 24 Jul 2013 10:48:52 +0200
+
 interchange (5.7.7-2.1) unstable; urgency=low
   
   * Remove superfluous space before question mark from Debconf template
