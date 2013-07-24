@@ -92,7 +92,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	elif [ "$dbc_dbtype" = "pgsql" ]; then
 		PGSQL=1
 		SQLDSN="dbi:Pg:dbname=$dbc_dbname"
-	elif [ "$dbc_dbtype" = "sqlite" ]; then
+	elif [ "$dbc_dbtype" = "sqlite3" ]; then
 		SQLITE=1
 		SQLDSN="dbi:SQLite:dbname=$dbc_dbname"
 	fi
