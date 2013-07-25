@@ -43,6 +43,9 @@ sub tag_error {
 		}
 		return set_error($error, $var, $opt);
 	}
+	unless(defined $opt->{filter}) {
+		$opt->{filter} = 'encode_entities';
+	}
 	my $err_ref = $Vend::Session->{errors};
 	my $text;
 	my @errors;
