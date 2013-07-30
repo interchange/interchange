@@ -168,6 +168,9 @@ sub {
 			$Tag->userdb('load');
 		}
 
+		## Reconnect session variables
+		Vend::Interpolate::init_calc;
+
 		my $dest = $Tag->if_mm('logged_in') ? 'admin user' : 'regular user';
 		logError(
 			"superuser %s switched user to %s %s",
