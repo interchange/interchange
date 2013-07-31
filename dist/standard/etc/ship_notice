@@ -45,6 +45,8 @@ Quan  Item No.    Description                            Price       Extension
 		st=db
 		sf=order_number
 		se=[loop-code]
+		co=1
+		op=eq
 		ml=1000
 	"][row 82]
 [column width=5 gutter=1 align=right]  [item-data orderline quantity] [/column]
