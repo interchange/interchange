@@ -197,7 +197,13 @@ A possible block of code in a virtual terminal would be this:
 
 
 =head1 Changelog
-v0.9.7, February 2013, various updates during 3 months of heavy live use.
+090: release candidate
+
+098: following the split of LloydsTSB into two separate banks and the issue of new cards,
+apparently using Royal Bank of Scotland BIN ranges, Cardsave are returning the issuer for
+these cards only as a string whereas all other issuers are returned as a hash, contrary
+to their API. This update handles that situation. 
+
 
 =head1 AUTHORS
 
@@ -225,7 +231,7 @@ BEGIN {
 		die $msg;
 	}
 
-	::logGlobal("%s v0.9.6p 20130201 payment module loaded",__PACKAGE__)
+	::logGlobal("%s v0.9.8 20130730 payment module loaded",__PACKAGE__)
 		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
@@ -236,7 +242,7 @@ use strict;
   my ($host, $host1, $host2, $host3, $host4);
 
 sub cardsave {
-    my ($method, $response, $in, $opt, $actual, %result, $passoutdata, $orderdescription, $db, $dbh, $sth);
+    my ($response, $in, $opt, $actual, %result, $passoutdata, $orderdescription, $db, $dbh, $sth);
     my $subtotal = Vend::Interpolate::subtotal();
 #::logDebug("TDSbounced=$::Scratch->{tdsbounced}; subtotal=$subtotal");
     return if ($::Scratch->{'tdsbounced'} > '1');
@@ -276,7 +282,7 @@ sub cardsave {
 	   $host1   = charge_param('host1') || 'https://gw1.cardsaveonlinepayments.com:4430';   
 	   $host2   = charge_param('host2') || 'https://gw2.cardsaveonlinepayments.com:4430';   
 	   $host3   = charge_param('host3') || 'https://gw3.cardsaveonlinepayments.com:4430';   
-	   $host4   = charge_param('host4') || 'https://gw4.cardsaveonlinepayments.com:4430'; ### NB TESTING only; does not exist
+	   $host4   = charge_param('host4') || 'https://gw4.cardsaveonlinepayments.com:4430'; ### NB testing only  
 	   
 	my $address1 = $::Values->{'b_address1'} || $::Values->{'address1'};
 	my $address2 = $::Values->{'b_address2'} || $::Values->{'address2'};
@@ -311,7 +317,8 @@ sub cardsave {
 	   $actual->{'mv_credit_card_exp_year'}     =~ s/\D//g;
 	   $actual->{'mv_credit_card_exp_year'}     =~ s/\d\d(\d\d)/$1/;
 	my $cardref  = $pan;
-	   $cardref  =~ s/^(\d\d).*(\d\d\d\d)$/$1****$2/;
+	   $cardref  =~ s/^(\d\d\d\d).*(\d\d\d\d)$/$1****$2/;
+	   $::Session->{'CardRef'} = $cardref;
 	   
 	my $cardholder         = "$actual->{b_fname} $actual->{b_lname}" || "$actual->{fname} $actual->{lname}";
 	   $cardholder         =~ s/[^a-zA-Z0-9,.\- ]//gi;
@@ -339,7 +346,7 @@ sub cardsave {
 
 #::logDebug("Cardsave".__LINE__.": on=$::Values->{mv_order_number}; valtxtype=$::Values->{txtype};  pan=$pan; cardholder=$cardholder; expm=$mvccexpmonth; expy=$mvccexpyear; issue=$issuenumber; cv2=$cv2; address=$address");
 
-	my $echocardtype = charge_param('echocardtype') || 'TRUE';
+my $echocardtype = charge_param('echocardtype') || 'TRUE';
 	my $echoavscheckresult = charge_param('echoavscheckresult') || 'TRUE';
 	my $echocv2checkresult = charge_param('echocv2checkresult') || 'TRUE';
 	my $echoamountreceived = charge_param('echoamountreceived') || 'TRUE';
@@ -470,10 +477,11 @@ EOX
 	my $card = getcardtypeCardsave($pan, $username, $password);
 	  
 	   $::Session->{'CardType'} = $result{'CardType'} = $card->{'CardType'} if $card->{'CardType'};
-	   $::Session->{'CardIssuer'} = $result{'CardIssuer'} = $card->{'Issuer'}->{'content'} if $card->{'Issuer'}->{'content'};
-	   $::Session->{'CardIssuerCode'} = $result{'CardIssuerCode'} = $card->{'Issuer'}->{'ISOCode'} if $card->{'Issuer'}->{'ISOCode'};
+	   $::Session->{'CardIssuer'} = $result{'CardIssuer'} = $card->{'Issuer'}->{'content'} if $card->{'Issuer'} =~ /HASH/;
+	   $::Session->{'CardIssuer'} = $result{'CardIssuer'} = $card->{'Issuer'} if $card->{'Issuer'} !~ /HASH/;
+	   $::Session->{'CardIssuerCode'} = $result{'CardIssuerCode'} = $card->{'Issuer'}->{'ISOCode'} if $card->{'Issuer'} =~ /HASH/;
 	   $::Session->{'CardInfo'} = "$result{'CardType'}, $::Session->{'CardRef'}, $expshow" if $card->{'CardType'};
-#::logDebug("Cardsave".__LINE__.": xmlOut=$xmlOut\ncardinfo=$::Session->{CardInfo}; issuer=$::Session->{CardIssuer}");	 
+###::logDebug("Cardsave".__LINE__.": xmlOut=$xmlOut\ncardinfo=$::Session->{CardInfo}; issuer=$::Session->{CardIssuer}");	 
 #::logDebug("Cardsave".__LINE__.": card-xmlback=".::uneval($card));
 
 	my $msg = postCardsave($xmlOut);
@@ -486,7 +494,7 @@ EOX
 	   $result{'TDScheck'} = $data->{'TransactionOutputData'}->{'ThreeDSecureAuthenticationCheckResult'};
 	   $result{'MD'}       = $data->{'TransactionOutputData'}->{'CrossReference'};
 	   $result{'CardType'} = $data->{'TransactionOutputData'}->{'CardTypeData'}->{'CardType'};
-	   $result{'Issuer'}   = $data->{'TransactionOutputData'}->{'CardTypeData'}->{'Issuer'}->{'content'};
+###	   $result{'Issuer'}   = $data->{'TransactionOutputData'}->{'CardTypeData'}->{'Issuer'}->{'content'};
 	   $result{'StatusCode'}  = $data->{'CardDetailsTransactionResult'}->{'StatusCode'};
 	   $result{'AuthAttempt'} = $data->{'CardDetailsTransactionResult'}->{'AuthorisationAttempted'};
 	   $result{'TDSmessage'}  = $data->{'CardDetailsTransactionResult'}->{'Message'};
@@ -510,7 +518,7 @@ EOX
 			}
 	  }
 
-#::logDebug("Cardsave".__LINE__.": issuer=$result{Issuer}; type=$result{CardType}; errors = $::Session->{'errors'}{'Payment error'}");
+#::logDebug("Cardsave".__LINE__.": type=$result{CardType}; errors = $::Session->{'errors'}{'Payment error'}");
 
 #::logDebug("Cardsave".__LINE__.": authcode=$result{TxAuthNo}, cardref=$result{CardRef}; cardinfo=$result{CardInfo}; xref-md=$result{MD}; stcode=$result{statuscode}; TDSattmp=$result{AuthAttempt}; TDSmsg=$result{TDSmessage}");
 
@@ -622,7 +630,7 @@ EOX
 	       $result{'CardType'} = $::Session->{'CardType'};
 		   $result{'CardInfo'} = $::Session->{'CardInfo'};
 		   $result{'CardRef'}  = $::Session->{'CardRef'};
-		   $result{'CardIssuer'} = $::Session->{'CardIssuer'};
+###		   $result{'CardIssuer'} = $::Session->{'CardIssuer'};
 		   $result{'CardIssuerCode'} = $::Session->{'CardIssuerCode'};
 		   $::Scratch->{'mstatus'} = 'success';
 		   $::Scratch->{'order_id'} = $result{'order-id'};
@@ -798,7 +806,7 @@ Logged Error: $result{'TDSmessage'}\n"
 				 });
 #::logDebug("Cardsave".__LINE__.": txn error of \"$result{TDSmessage}\" emailed to $mailto"); 
 	}
-
+	
 #::logDebug("Cardsave".__LINE__." result:" .::uneval(\%result));
 
 		return (%result);
@@ -815,8 +823,8 @@ sub postCardsave {
 	 my $self = shift;
 	 my $ua = LWP::UserAgent->new;
 	    $ua->timeout(30);
-#	 my $gw = $::Session->{'CardsaveHost'} || $host2;
-	 my $gw = $host4;
+	 my $gw = $::Session->{'CardsaveHost'} || $host3;
+#	 my $gw = $host4; # TESTING - this does not exist
 	 my $req = HTTP::Request->new('POST' => $gw);
 		$req->content_type('text/xml');
 		$req->content_length( length($self) );
@@ -884,12 +892,14 @@ sub getcardtypeCardsave {
 </soap:Body>
 </soap:Envelope>
 EOX
-#::logDebug("Cardsave".__LINE__.": username=$username;");
+#::logDebug("\n===============================Cardsave".__LINE__.": cardtype xmlout=$xmlOut");
 my $msg = postCardsave($xmlOut);
 	my $xml = new XML::Simple();
 	my $data = $xml->XMLin("$msg");
+#::logDebug("Cardsave".__LINE__.": cardref=$::Session->{CardRef}");
+#::logDebug("Cardsave".__LINE__.": cardref=$::Session->{CardRef} : uneval cardtype=".::uneval($data));
 	   $data = $data->{'soap:Body'}->{'GetCardTypeResponse'}->{'GetCardTypeOutputData'}->{'CardTypeData'};
-
+#::logDebug("Cardsave".__LINE__.": card type data=$data\n===================================================\n");
 		return($data);
 
 }
