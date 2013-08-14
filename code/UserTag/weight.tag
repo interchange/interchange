@@ -159,6 +159,46 @@ sub {
 		next unless $osub;
 		$total += $_->{quantity} * $osub->($_);
 	}
+
+	if(my $adder_thing = $opt->{tot_adder}) {
+		my $adder = 0;
+		my $calc_range = sub {
+			my $current = shift;
+			my $range = shift;
+			my $add = shift;
+			my ($l,$h) = split /[-:_]+/, $range;
+			$l =~ s/^k//g;
+			if($l < $current && $h >= $current){
+				return $add;
+			}
+			else {
+				return 0;
+			}
+		};
+
+		eval {
+			if(ref($adder_thing) eq 'HASH') {
+				for(keys %$adder_thing) {
+					$adder = $calc_range->($total, $_, $adder_thing->{$_});
+					last if $adder != 0;
+				}
+			}
+			elsif ($adder_thing =~ /=/) {
+				my ($k, $v) = split /=/, $adder_thing;
+				$adder = $calc_range->($total, $k, $v);
+			}
+			else {
+				$adder = $adder_thing;
+			}
+		};
+
+		if($@) {
+			::logError("Bad weight adder option: %s", ::uneval($adder_thing));
+		}
+		else {
+			$total += $adder;
+		}
+	}
 	
 	unless($opt->{no_set}) {
 		$::Scratch->{$opt->{weight_scratch} ||= 'total_weight'} = $total;
@@ -301,6 +341,39 @@ Same as C<exclude-attribute> except that a zero weight is returned
 unless B<all> items match the expression. This allows you to do
 something like only offer Book Rate shipping when all items have
 a prod_group of "Books".
+
+=item totadder
+
+Similar to 'adder' in shipping.asc, except that it allows you to add
+lbs vs dollars to the total weight. There are 3 ways to add
+
+1. Simply add X lbs per cart
+
+[weight tot_adder=1]
+
+Will add 1 lb to total_weight after all other weight calcs.
+
+2. Add X lbs depending on a range of weight
+
+[weight tot_adder.k0_25=2]
+
+Will add 2 lbs to total_weight if weight between 0 and including 25, after all other weight calcs.
+
+3. Add X lbs depending on multiple ranges of weight
+
+[weight tot_adder.k0_3=1
+		tot_adder.k3_6=2 
+		tot_adder.k6_10=3 
+		tot_adder.k10_16=4
+		tot_adder.k16_25=5
+	]
+
+Will add 1 lbs to total_weight if weight greater than 0 and including 3, after all other weight calcs.
+Will add 2 lbs to total_weight if weight greater than 3 and including 6, after all other weight calcs.
+Will add 3 lbs to total_weight if weight greater than 6 and including 10, after all other weight calcs.
+Will add 4 lbs to total_weight if weight greater than 10 and including 16, after all other weight calcs.
+Will add 5 lbs to total_weight if weight greater than 16 and including 25, after all other weight calcs.
+
 
 =back
 
