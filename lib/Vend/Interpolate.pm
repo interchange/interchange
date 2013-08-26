@@ -3653,6 +3653,7 @@ sub labeled_list {
 	}
 	elsif (defined $opt->{fm}) {
 		$i = $opt->{fm} - 1;
+		$obj->{mv_first_match} = $i;
 	}
 
 	$count = $obj->{mv_first_match} || $i;
