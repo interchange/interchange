@@ -1,18 +1,25 @@
 ------------------------------------------------------------------------------
 
                   What's new in each version of Interchange
-                (in development since the version 5.6 branch)
+                       (since the version 5.6 branch)
+
+          See UPGRADE document for a list of incompatible changes.
 
 ------------------------------------------------------------------------------
 
-See UPGRADE document for a list of incompatible changes.
+
+Interchange 5.8.1 not yet released.
 
 
-Interchange 5.8.0 released on _____
+------------------------------------------------------------------------------
+
+
+Interchange 5.8.0 released on 2013-07-19.
 
 
 Core
 ----
+
 * Increase SEO value of more links.
 
 * Allow passing params to error tag, which are replaced (same functionality as [warnings]). Useful for localization.
@@ -101,9 +108,9 @@ Core
 
 * Allow gift certificates to be counted correctly as one item by [nitems] tag.
 
-
 Payment
 -------
+
 * Add HSBC payment module.
 
 * Update Payflow payment module.
@@ -122,9 +129,9 @@ Payment
 
 * Update credit card type detection.
 
-
 Standard Demo
 -------------
+
 * Improved localization support for standard's receipt and order pages.
 
 * Apply fixes and updates to German translation for standard store.
@@ -139,25 +146,28 @@ Standard Demo
 
 * Add DEFAULT_PAYMENT_MODE variable to standard's variable database.
 
-
 Admin UI
 --------
+
 * Fix undeclared variables in meta editor admin page.
 
 * Fix hardcoded path to order counter file in standard's log_transaction.
 
-
 External tool support
 ---------------------
-* Added jEdit support for [PREFIX-calc] blocks, now syntax highlights contents as perl code
+
+* Added jEdit support for [PREFIX-calc] blocks, now syntax highlights contents as perl code.
 
 
 ------------------------------------------------------------------------------
 
+
 Interchange 5.7.7 released on 2011-06-12.
+
 
 Core
 ----
+
 * Ensure users were always assigned sessions when using major
   browsers, regardless of any toolbar matches in the User Agent
   string.
@@ -199,10 +209,12 @@ Core
 
 Tags
 ----
+
 * Allow sorting of forum entries.
 
 Standard Demo
 -------------
+
 * Fix for adding items to cart with options shows expired page message.  Thanks
   to Steve Graham <icdev@mrlock.com>.
 
@@ -212,12 +224,16 @@ Standard Demo
 * Fix for state selection drop down for Ireland.
   Thanks to Paul Jordan <paul@gishnetwork.com>.
 
+
 ------------------------------------------------------------------------------
+
 
 Interchange 5.7.6 released on 2010-03-23.
 
+
 Core
 ----
+
 * Fix a "HTTP Response Splitting" security exploit.  This is not known
   to be exploitable in the standard demo, but could potentially affect
   other pages in rare circumstances.
@@ -258,6 +274,7 @@ Debian packaging
 ----------------
 
 * Multiple bug/dependency fixes.
+
 
 ------------------------------------------------------------------------------
 
@@ -303,6 +320,7 @@ Payment
 
 * Corrected Vend::Payment::BusinessOnlinePayment handling/passing of
   supplemental parameters.
+
 
 ------------------------------------------------------------------------------
 
