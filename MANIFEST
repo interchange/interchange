@@ -293,6 +293,7 @@ code/UserTag/fortune.tag
 code/UserTag/forum.tag
 code/UserTag/get_url.tag
 code/UserTag/history_scan.tag
+code/UserTag/if_not_volatile.tag
 code/UserTag/load_cart.tag
 code/UserTag/loc.tag
 code/UserTag/make_password.tag
@@ -1050,6 +1051,7 @@ eg/check_perl_itl
 eg/compact
 eg/cvv2.svg
 eg/dump_memory.cfg
+eg/emacs/itl.el
 eg/filter/calculated.filter
 eg/gpg_display
 eg/iclint
@@ -1203,9 +1205,12 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+MYMETA.json
+MYMETA.yml
 README
 README-DEVELOPMENT
 README.debian
+README.rhel
 README.rpm-dist
 relocate.pl
 scripts/compile_link.PL
