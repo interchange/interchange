@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# Copyright (C) 2002-2011 Interchange Development Group
+# Copyright (C) 2002-2013 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -53,7 +53,7 @@ use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
 
-$VERSION = '2.247';
+$VERSION = '2.248';
 
 my %CDname;
 my %CPname;
@@ -722,6 +722,8 @@ sub catalog_directives {
 	['SessionHashLevels', 'integer',         2],
 	['SourcePriority', 'array_complete', 'mv_pc mv_source'],
 	['SourceCookie', sub { &parse_ordered_attributes(@_, [qw(name expire domain path secure)]) }, '' ],
+	['SuppressCachedCookies', 'yesno',       'no'],
+	['OutputCookieHook', undef,              ''],
 
 	];
 

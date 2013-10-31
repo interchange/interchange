@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2013 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = '2.106';
+$VERSION = '2.107';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -314,6 +314,7 @@ sub parse_cgi {
 
 	my $request_method = "\U$CGI::request_method";
 	if ($request_method eq 'POST') {
+        $::Instance->{Volatile} = 1;
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
@@ -522,7 +523,20 @@ sub parse_multipart {
 sub create_cookie {
 	my($domain,$path) = @_;
 	my  $out;
-	return '' if $Vend::tmp_session;
+
+	if ($Vend::suppress_cookies) {
+#::logDebug('explicitly clearing the cookie jar (nom nom nom)');
+		undef $::Instance->{Cookies};
+	}
+
+	return '' if $Vend::tmp_session || $Vend::suppress_cookies;
+
+	if (my $sub = $Vend::Cfg->{Sub}{$Vend::Cfg->{OutputCookieHook}}
+				  || $Global::GlobalSub->{$Vend::Cfg->{OutputCookieHook}}
+	) {
+		$sub->();
+	}
+
 	my @jar;
 	push @jar, [
 				($::Instance->{CookieName} || 'MV_SESSION_ID'),
@@ -721,13 +735,43 @@ sub respond {
 		else { print $fh "HTTP/1.0 $status\r\n"; }
 	}
 
+	# Here we decide if we are going to suppress cookie output for the
+	# page; note that this is more-or-less equivalent to saying that
+	# this content is cacheable, and thus we expect (and enforce) that
+	# the effect of hitting this page both with and without a session
+	# (i.e., cache miss or cache hit).  We enforce this by ensuring
+	# that a cacheable page does not set cookies (even if it tries),
+	# and by additionally preventing a session write.
+
+	# The rationale here is that since a user with a session who
+	# fetches from the cache would not have their session altered at
+	# all, we should ensure that the same (lack of) effect will befall
+	# the user who happens to hit the page itself.
+
+	# We ensure that POSTs are never suppressed (i.e., cacheable), and
+	# we also allow this option to be configured per catalog, as not
+	# every catalog may be be setup to properly handle these
+	# assumptions and affects.
+
+	$Vend::suppress_cookies =
+		$CGI::request_method !~ /POST/i &&
+		$Vend::Cfg->{SuppressCachedCookies} &&
+		(
+			(defined $::Pragma->{cache_control} && ($::Pragma->{cache_control} !~ /no-cache/i)) ||
+			($Vend::StatusLine =~ /^Cache-Control:\s+(?!no-cache)\s*$/im)
+		)
+	;
+
 	if ( ! $Vend::tmp_session
 		and (
 			! $Vend::CookieID && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
+			or $Vend::Cfg->{OutputCookieHook}
 		  )
 			and $Vend::Cfg->{Cookies}
+			and !$Vend::suppress_cookies
+			and $status !~ /^4\d\d/
 		)
 	{
 		my @domains;

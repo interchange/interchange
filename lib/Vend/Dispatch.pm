@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2013 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = '1.113';
+$VERSION = '1.114';
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -581,6 +581,7 @@ $form_action{go} = $form_action{return};
 # Process the completed order or search page.
 
 sub do_process {
+	$::Instance->{Volatile} = 1 if ! defined $::Instance->{Volatile}; # Allow non-volatility if previously defined
 
 	# Prevent using keys operation more than once
     my @cgikeys = keys %CGI::values;

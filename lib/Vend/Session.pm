@@ -1,8 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.31 2007-08-20 18:29:10 kwalsh Exp $
-# 
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2013 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -27,7 +25,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = '2.32';
 
 @ISA = qw(Exporter);
 
@@ -348,6 +346,12 @@ sub close_session {
 }
 
 sub write_session {
+
+    if ($Vend::suppress_cookies) {
+#::logDebug('Skipping session write on cacheable resource');
+        return $Vend::Session->{'user'};
+    }
+
     my($s);
 #::logDebug ("write session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $time = time;

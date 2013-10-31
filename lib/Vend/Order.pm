@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2013 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = '2.109';
+$VERSION = '2.110';
 
 @ISA = qw(Exporter);
 
@@ -2012,6 +2012,8 @@ sub route_order {
 
 # Order an item
 sub do_order {
+	$::Instance->{Volatile} = 1 if ! defined $::Instance->{Volatile}; # Allow non-volatility if previously defined
+
     my($path) = @_;
 	my $code        = $CGI::values{mv_arg};
 #::logDebug("do_order: path=$path");
