@@ -647,7 +647,7 @@ sub start {
 		if(defined $Alias{$tag}) {
 			$aliasname = $tag;
 			my $alias = $Alias{$tag};
-			$alias =~ tr/-/_/;
+			$alias =~ s{^(\S+)}{ $_ = $1; tr/-/_/; $_ }e;
 			$tag =~ s/_/[-_]/g;
 #::logDebug("origtext: $origtext tag=$tag alias=$alias");
 			$origtext =~ s/$tag/$alias/i
