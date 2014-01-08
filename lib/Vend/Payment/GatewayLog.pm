@@ -25,7 +25,7 @@ sub init {
         my $host = `hostname -s`;
         chomp ($self->{_source} = $host);
     }
-    
+
     return 1;
 }
 
@@ -73,7 +73,7 @@ sub request {
     my $request = shift;
     return $self->{__request}
         unless $request;
-    unless (ref ($request) eq 'HASH') {
+    unless (UNIVERSAL::isa($request, 'HASH')) {
         ::logDebug(
             'Skipping non-HASH request set: received %s (unevals to %s)',
             $request,
@@ -91,7 +91,7 @@ sub response {
     my $response = shift;
     return $self->{__response}
         unless $response;
-    unless (ref ($response) eq 'HASH') {
+    unless (UNIVERSAL::isa($response, 'HASH')) {
         ::logDebug(
             'Skipping non-HASH response set: received %s (unevals to %s)',
             $response,
@@ -135,7 +135,7 @@ sub write {
 
     if ($@) {
         my $err = $@;
-        ::logDebug(
+        ::logGlobal(
             q{Couldn't write to %s: %s -- request: %s -- response: %s},
             $self->table,
             $err,
@@ -152,22 +152,33 @@ sub write {
 }
 
 sub table {
-    return shift()->{_log_table};
+    return shift->{_log_table};
 }
 
 sub _enabled {
-    return shift()->{_enabled};
+    return shift->{_enabled};
 }
 
 sub source {
-    return shift()->{_source};
+    return shift->{_source};
 }
 
 sub DESTROY {
     my $self = shift;
+
     return 1 unless $self->_enabled;
-#::logDebug('Logging request to database in destructor');
-    $self->log_it;
+
+    # Unexpected order of operations causes any evals
+    # within DESTROY to execute after any eval that may
+    # contain the DESTROYed object. Effect is that $@ upon
+    # exit of the containing eval is *not* controlled by
+    # that eval. Localization contains the effect.
+    local $@;
+
+    eval { $self->log_it };
+    ::logGlobal("log_it eval died: $@")
+        if $@;
+
     1;
 }
 
