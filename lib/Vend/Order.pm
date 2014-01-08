@@ -379,6 +379,13 @@ sub validate_whole_cc {
 		$expire = $_ if m:/: ;
 	}
 	return 0 unless valid_exp_date($expire);
+
+	# UnionPay (cards that /^62/) does not enforce Luhn
+	# References:
+	# - http://code.google.com/p/chromium/issues/detail?id=242274
+	# - http://en.wikipedia.org/wiki/Bank_card_number
+	return 1 if $num =~ /^62/;
+
 	return luhn($num);
 
 }
@@ -633,7 +640,11 @@ sub encrypt_standard_cc {
 		return @return;
 	}
 
-	unless ($valid = luhn($num) || $force ) {
+	# UnionPay (cards that /^62/) does not enforce Luhn
+	# References:
+	# - http://code.google.com/p/chromium/issues/detail?id=242274
+	# - http://en.wikipedia.org/wiki/Bank_card_number
+	unless ($valid = luhn($num) || $force || $num =~ /^62/) {
 		my $msg = errmsg("Credit card number fails LUHN-10 check.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
