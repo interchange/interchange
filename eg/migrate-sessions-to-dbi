@@ -1,0 +1,202 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use DBI;
+use File::Find;
+
+use Getopt::Long;
+use Data::Dumper;
+use Storable qw/freeze retrieve/;
+
+# the configuration file with DBI details
+my @confs = ('catalog.cfg', 'products/site.txt');
+my $conf;
+my $expire = '1 hour';
+my $sessiondir = 'session';
+my $help;
+
+my $opts = GetOptions (
+                       "conf=s" => \$conf,
+                       "expire=s" => \$expire,
+                       "session-dir=s" => \$sessiondir,
+                       "help" => \$help,
+                      );
+
+if ($help) {
+    print <<'EOF';
+
+This script will migrate the existing sessions stored in the files
+under the "session" directory and store them in the database. The
+script does the following assumptions:
+
+ - The sessions table is located into the same database of the
+   interchange instance.
+
+ - The variables SQLDSN, SQLUSER, SQLPASS and SessionDB are set in
+   products/site.txt or catalog.cfg or in the file provided on the
+   command line (see below).
+
+ - The database table is already configured (and empty) with the
+   suggested schema from the IC doc (the script will use 'code' and
+   'session', as the last_accessed will be set by mysql)
+
+CREATE TABLE sessions (
+       code VARCHAR(64) NOT NULL PRIMARY KEY,
+       session TEXT,
+       sessionlock VARCHAR(64) DEFAULT '' NOT NULL,
+       last_accessed TIMESTAMP(14));
+
+The following command line options are provided:
+
+  --help  (this help)
+
+  --session-dir <session-directory>
+    
+    By default this is set to the standard "session" directory, but you
+    may override this.
+  
+  --expire <seconds or string>
+
+    The format is the same used by IC (the code to parse it was taken
+    almost verbatim from Vend::Config): examples: "60 mins", "3 hours",
+    "4 days", "2 weeks" (don't forget the quotes).
+
+  --conf myconf.txt
+
+    Configuration file to parse *after* catalog.cfg, products/site.txt.
+
+EOF
+    exit 2;
+}
+
+
+push(@confs, $conf) if $conf;
+
+$| = 1;
+
+my $dbidsn = get_dbi_details(@confs);
+
+my $dbh = DBI->connect($dbidsn->{SQLDSN},
+                       $dbidsn->{SQLUSER},
+                       $dbidsn->{SQLPASS});
+
+# prepare the statement
+my $sth = $dbh->prepare("INSERT INTO $dbidsn->{SessionDB} (code, session) values (?, ?);");
+
+my $expiration = get_expire_in_seconds($dbidsn->{SessionExpire});
+die "Couldn't parse the expiration period" unless $expiration;
+print "Expiring after $expiration seconds\n";
+
+die "Missing session-dir '$sessiondir'!" unless -d $sessiondir;
+
+print "Using session-dir: $sessiondir\n";
+
+print "Starting migration in 10 seconds, last chance to quit (with control-c)";
+for (0..10) {
+    sleep 1;
+    print "."
+}
+print "\n";
+
+
+find( { wanted => sub {
+            my $file = $_;
+            return if -d $file;
+            return if $file =~ m/\.lock$/;
+            my $mtime = (stat($file))[9];
+            my $age = time - $mtime;
+            if ($age < $expiration) {
+                print "Looking at $file\n";
+                my $session = retrieve($file);
+                # insert into the db
+                $sth->execute($file, freeze($session));
+                die $sth->errstr if $sth->err;
+            }
+        }} => $sessiondir);
+
+
+sub get_dbi_details {
+    my @confs = @_;
+    my %config;
+
+    foreach my $conf (@confs) {
+        my $conf = shift;
+        open (my $fh, '<', $conf) or die "Couldn't open $conf $!";
+        while (<$fh>) {
+            my $l = $_;
+            if ($l =~ m/^(\w.*?)\s+(.*?)\s*$/) {
+                $config{$1} = $2;
+            }
+        }
+        close $fh;
+    }
+    unless ($config{SessionExpire}) {
+        $config{SessionExpire} = $expire; # pick the global one
+    }
+    my %sessionconf;
+    foreach my $k (qw/SQLDSN SQLUSER SQLPASS SessionDB SessionExpire/) {
+        unless (defined $config{$k}) {
+            die "Couldn' get $k from " . join(", ", @confs);
+        }
+        if ($config{$k} =~ m/^__(.+)__$/) {
+            $config{$k} = $config{$1};
+        }
+        $sessionconf{$k} = $config{$k}
+    }
+    print "Using the following details:\n",  Dumper(\%sessionconf);
+    return \%sessionconf;
+}
+
+sub get_expire_in_seconds {
+    my $str = shift;
+    # copied from Vend::Config;
+    my ($n, $dur);
+    if ($str =~ m/(\d+)[\s\0]*(\w+)?/) {
+        $n = $1;
+        $dur = $2;
+    }
+    return undef unless defined $n;
+    if (defined $dur) {
+        local($_) = $dur;
+        if (m/^s|sec|secs|second|seconds$/i) {
+        }
+        elsif (m/^m|min|mins|minute|minutes$/i) {
+            $n *= 60;
+        }
+        elsif (m/^h|hour|hours$/i) {
+            $n *= 60 * 60;
+        }
+        elsif (m/^d|day|days$/i) {
+            $n *= 24 * 60 * 60;
+        }
+        elsif (m/^w|week|weeks$/i) {
+            $n *= 7 * 24 * 60 * 60;
+        }
+        else {
+            return undef;
+        }
+    }
+    return $n;
+}
+
+# Copyright (C) 2013, Marco Pessotto and others
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+# MA  02110-1301  USA.
+
+
+
