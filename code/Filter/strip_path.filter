@@ -1,0 +1,17 @@
+# Copyright 2002-2014 Interchange Development Group and others
+# Copyright 1996-2002 Red Hat, Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.  See the LICENSE file for details.
+
+CodeDef strip_path Filter
+CodeDef strip_path Description Strip all path segments, leaving file name
+CodeDef strip_path Routine <<EOR
+sub {
+    local $_ = shift;
+    s{.*[/\\]}{}s;
+    return $_;
+}
+EOR
