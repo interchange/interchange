@@ -505,6 +505,15 @@ sub authorizenet {
         push @query, "$key=$val";
     }
 
+	my %no_trans_id = (
+		AUTH_CAPTURE => 1,
+		AUTH_ONLY    => 1,
+	);
+
+	## As of Jan 31, 2014 AuthorizeNet errors out with x_Trans_ID on transaction type that
+	## doesn't need it
+	delete $query{x_Trans_ID} if $no_trans_id{ $query{x_Type} };
+
 #::logDebug("Authorizenet query: " . ::uneval(\%query));
     $opt->{extra_headers} = { Referer => $referer };
 
