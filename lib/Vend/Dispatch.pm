@@ -1281,7 +1281,7 @@ sub dispatch {
 		$::Instance->{ExternalCookie} = $sessionid || 1;
 		$Vend::CookieID = $Vend::Cookie = 1;
 	}
-	elsif (defined $CGI::cookie and $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})[:_]([-\@.:A-Za-z0-9]+?)\b/) {
+	elsif (defined $CGI::cookie and $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})[:_]([-\@.:A-Za-z0-9]+)/) {
 	  SESSION_COOKIE: {
 	      my $id = $1;
 	      my $host = $2;
