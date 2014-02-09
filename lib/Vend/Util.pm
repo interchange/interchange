@@ -880,11 +880,11 @@ sub is_hash {
 # Verify that passed string is a valid IPv4 address.
 sub is_ipv4 {
     my $addr = shift or return;
-    my @segs = split '.', $addr;
+    my @segs = split /\./, $addr;
     return unless @segs == 4;
     foreach (@segs) {
-	return unless /^\d{1,3}$/ && !/^0\d/;
-	return unless $_ <= 255;
+		return unless /^\d{1,3}$/ && !/^0\d/;
+		return unless $_ <= 255;
     }
     return 1;
 }
