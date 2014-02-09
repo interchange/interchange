@@ -1275,30 +1275,39 @@ sub dispatch {
 	elsif ($sessionid and $CGI::values{mv_force_session}) {
 		# do nothing
 	}
-	elsif ($::Instance->{CookieName} and defined $CGI::cookie) {
+	elsif ($::Instance->{CookieName} and ! $Vend::Cfg->{InternalCookie} and $CGI::cookie) {
 		$CGI::cookie =~ m{$::Instance->{CookieName}=($Vend::Cfg->{CookiePattern})};
 		$seed = $sessionid = $1;
-		$::Instance->{ExternalCookie} = $sessionid || 1;
+		if($Vend::Cfg->{InternalCookie}) {
+			$CGI::cookiehost = $4;
+			$CGI::cookieuser = $5;
+		}
+		else {
+			$::Instance->{ExternalCookie} = 1;
+		}
 		$Vend::CookieID = $Vend::Cookie = 1;
 	}
-	elsif (defined $CGI::cookie and $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})[:_]([-\@.:A-Za-z0-9]+)/) {
+	elsif ( $CGI::cookie
+			and $::Instance->{CookieName} ||= 'MV_SESSION_ID'
+			and $CGI::cookie =~ /\b$::Instance->{CookieName}=(\w{8,32})(?:[:_]|%3[aA])([-\@.:A-Za-z0-9]+)/ ) {
 	  SESSION_COOKIE: {
 	      my $id = $1;
 	      my $host = $2;
 	      if (is_ipv4($host) || is_ipv6($host)) {
-		  $CGI::cookiehost = $host;
+			  $CGI::cookiehost = $host;
 	      }
 	      elsif ($host =~ /[A-Za-z0-9][-\@A-Za-z.0-9]+/) {
-		  $CGI::cookieuser = $host;
+			  $CGI::cookieuser = $host;
 	      }
 	      else {
-		  last SESSION_COOKIE;
+			  last SESSION_COOKIE;
 	      }
 
 	      $sessionid = $id;
 	      $Vend::CookieID = $Vend::Cookie = 1;
 	    }
 	}
+#::logDebug("Instance CookieName=$::Instance->{CookieName}, found sessionid=$sessionid cookiehost=$CGI::cookiehost  cookieuser=$CGI::cookieuser external=$::Instance->{ExternalCookie}");
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid");
 

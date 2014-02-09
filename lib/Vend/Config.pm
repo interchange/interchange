@@ -655,6 +655,7 @@ sub catalog_directives {
 	['CookiePattern',	 'regex',     	     '[-\w:.]+'],
 	['CookieLogin',      'yesno',            'No'],
 	['CookieDomain',     undef,              ''],
+	['InternalCookie',   'yesno',            'No'], ## Allows CookieName to be change yet still handle IP address in cookie
 	['MasterHost',		 undef,     	     ''],
 	['UserTag',			 'tag', 	    	 ''],
 	['CodeDef',			 'mapped_code',    	 ''],
