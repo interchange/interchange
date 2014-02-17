@@ -189,6 +189,12 @@ sub escape_chars_url {
     my($c, $r);
 
     $r = '';
+    if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
+        # check if it's decoded
+        if (is_utf8($in)) {
+            $in = encode_utf8($in);
+        }
+    }
     foreach $c (split(m{}, $in)) {
 		$r .= $ESCAPE_CHARS::translate_url[ord($c)];
     }
