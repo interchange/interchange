@@ -955,7 +955,7 @@ return $Tag->deliver({ location => $redirecturl });
 # populate the billing address rather than shipping address when the basket is being shipped to
 # another address, eg it is a wish list.
 	  if (($result{'Ack'} eq "Success") and ($::Values->{'pp_use_billing_address'} == 1)) {
-		$::Values->{'b_phone_day'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'ContactPhone'};
+		$::Values->{'b_phone_day'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'ContactPhone'} || $::Values->{b_phone} || $::Values->{phone_day} || $::Values->{phone_night};
 		$::Values->{'email'}            = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Payer'};
 		$::Values->{'payerid'}          = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerID'};
 		$::Values->{'payerstatus'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerStatus'};
@@ -966,7 +966,7 @@ return $Tag->deliver({ location => $redirecturl });
 	    $::Values->{'b_lname'}          = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'LastName'};
 	    $::Values->{'suffix'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'Suffix'};
 	    $::Values->{'address_status'}   = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'AddressStatus'};
-	    $::Values->{'b_name'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'PayerName'};
+	    $::Values->{'b_name'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Name'};
 	    $::Values->{'b_address1'}       = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Street1'};
 	    $::Values->{'b_address2'}       = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Street2'};
 	    $::Values->{'b_city'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'CityName'};
@@ -1009,10 +1009,19 @@ return $Tag->deliver({ location => $redirecturl });
 # If shipping address and name are chosen at Paypal to be different to the billing address/name, then {name} contains 		
 # the shipping name but {fname} and {lname} still contain the billing names.
 ### In this case the returned 'name' may be a company name as it turns out, so what should we do?
+    if ($::Values->{pp_use_billing_address}) {
+       if (($::Values->{'b_fname'} !~ /$::Values->{'b_name'}/) and ($::Values->{'b_name'} =~ /\s/)) {
+           $::Values->{'b_name'} =~ /(\S*)\s+(.*)/;
+           $::Values->{'b_fname'} = $1;
+           $::Values->{'b_lname'} = $2;
+       }
+    }
+    else {
    if (($::Values->{'fname'} !~ /$::Values->{'name'}/) and ($::Values->{'name'} =~ /\s/)) {
        $::Values->{'name'} =~ /(\S*)\s+(.*)/;
        $::Values->{'fname'} = $1;
        $::Values->{'lname'} = $2;
+       }
     }
 		
 		  $::Session->{'errors'}{'PaypalExpress'} = $result{'Errors'}{'LongMessage'}  if ($result{'Errors'} !~ /ARRAY/);
