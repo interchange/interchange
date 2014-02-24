@@ -189,6 +189,7 @@ sub {
 		my %encoding_types = (
 			'text/plain' => ($utf8 ? 'quoted-printable' : '8bit'),
 			'text/html' => 'quoted-printable',
+            'text/html; charset=UTF-8' => 'quoted-printable',
 		);
 
 		for my $ref (@$att) {
