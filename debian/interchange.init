@@ -36,6 +36,9 @@ DESC="Interchange Server"
 
 test -f $DAEMON || exit 0
 
+# source LSB init functions
+. /lib/lsb/init-functions
+
 # modes that Interchange uses 
 # possible values are
 # --unix            Unix mode only (default)
