@@ -22,6 +22,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Order;
+use Vend::Error;
 require Exporter;
 
 $VERSION = '2.110';
@@ -2063,6 +2064,15 @@ my @Scan_modifiers = qw/
 sub update_quantity {
     return 1 unless defined  $CGI::values{"quantity0"}
 		|| $CGI::values{mv_quantity_update};
+
+	if ( my $n = $CGI::values{mv_nlines} ) {
+		my $check = scalar(@$Vend::Items);
+		if ( $n != $check ) {
+			Vend::Error::interaction_error();
+			return undef;
+		}
+	}
+
 	my ($h, $i, $quantity, $modifier, $cart, $cartname, %altered_items, %old_items);
 
 	if ($CGI::values{mv_cartname}) {
