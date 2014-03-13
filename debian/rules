@@ -116,6 +116,10 @@ install: build
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
+# move image files for standard demo
+	mkdir -p $(TMP)/usr/share/interchange/standard
+	mv $(TMP)/usr/lib/interchange/standard/images $(TMP)/usr/share/interchange/standard
+	cd $(TMP)/usr/lib/interchange/standard; ln -s ../../../share/interchange/standard/images .
 # install global usertags for standard demo
 	mkdir -p $(TMP)/usr/lib/interchange/usertag/standard
 	install -m 0644 dist/standard/config/*.tag $(TMP)/usr/lib/interchange/usertag/standard
