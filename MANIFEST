@@ -75,6 +75,7 @@ code/Filter/strftime.filter
 code/Filter/strikeout.filter
 code/Filter/strip.filter
 code/Filter/strip_html.filter
+code/Filter/strip_path.filter
 code/Filter/tabbed.filter
 code/Filter/text2html.filter
 code/Filter/textarea_get.filter
@@ -1060,6 +1061,7 @@ eg/jedit/catalog
 eg/jedit/interchange.xml
 eg/jedit/README
 eg/merge-tab-files
+eg/migrate-sessions-to-dbi
 eg/news_feature/dbconf/default_db/news.dbm
 eg/news_feature/dbconf/mysql/news.mysql
 eg/news_feature/dbconf/oracle/news.ora
@@ -1205,8 +1207,6 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
-MYMETA.json
-MYMETA.yml
 README
 README-DEVELOPMENT
 README.debian

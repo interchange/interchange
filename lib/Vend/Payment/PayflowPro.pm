@@ -615,25 +615,32 @@ sub payflowpro {
     if($tender eq 'P') {
         @query{keys %paypal_query} = values %paypal_query;
         my $i = 0;
-        for my $it (@{$::Carts->{main}}) {
-            $query{'L_PAYMENTREQUEST_0_NAME'    .$i} = $it->{description} || Vend::Data::item_description($it);
-            $query{'L_PAYMENTREQUEST_0_NUMBER'  .$i} = $it->{code};
-            $query{'L_PAYMENTREQUEST_0_DESC'    .$i} = Vend::Data::item_description($it);
-            $query{'L_PAYMENTREQUEST_0_AMT'     .$i} = Vend::Data::item_price($it);
-            $query{'L_PAYMENTREQUEST_0_QTY'     .$i} = $it->{quantity};
-            ##$query{'L_PAYMENTREQUEST_0_TAXAMT'.$i} = (Vend::Data::item_price($it)/$itemTotal * $taxTotal);
-            $i++;
+        if ($action ne 'D') {
+            for my $it ( @{ $::Carts->{main} } ) {
+                my $it_price = Vend::Data::item_price($it);
+                my $disc_price = Vend::Interpolate::discount_price( $it, $it_price, $it->{quantity} );
+#::logDebug("payflowpro: prices for $it->{code}: it_price=$it_price, disc_price=$disc_price");
+                $query{ 'L_PAYMENTREQUEST_0_NAME'   . $i } = $it->{description} || Vend::Data::item_description($it);
+                $query{ 'L_PAYMENTREQUEST_0_NUMBER' . $i } = $it->{code};
+                $query{ 'L_PAYMENTREQUEST_0_DESC'   . $i } = Vend::Data::item_description($it);
+                $query{ 'L_PAYMENTREQUEST_0_AMT'    . $i } = $disc_price;
+                $query{ 'L_PAYMENTREQUEST_0_QTY'    . $i } = $it->{quantity};
+                ##$query{'L_PAYMENTREQUEST_0_TAXAMT'    .$i} = ($disc_price/$itemTotal * $taxTotal);
+                $i++;
+            }
         }
         $opt->{check_sub} = undef;
     }
     else {
         my $i = 1;
         for my $it (@{$::Carts->{main}}) {
+        my $it_price = Vend::Data::item_price($it);
+        my $disc_price = Vend::Interpolate::discount_price($it, $it_price, $it->{quantity});
             $query{'L_NAME' . $i} = $it->{description} || Vend::Data::item_description($it);
-            $query{'L_COST' . $i} = Vend::Data::item_price($it);
+            $query{'L_COST' . $i} = $disc_price;
             $query{'L_QTY'  . $i} = $it->{quantity};
             $query{'L_SKU'  . $i} = $it->{code};
-            ##$query{'L_TAXAMT'.$i} = (Vend::Data::item_price($it)/$itemTotal * $taxTotal);
+            ##$query{'L_TAXAMT'.$i} = ($disc_price/$itemTotal * $taxTotal);
             $i++;
         }
     }
@@ -655,6 +662,9 @@ sub payflowpro {
         }
     }
     else {
+        if ( $Vend::Session->{admin} and $::Values->{order_desk_entry} ) {
+            delete $query{CUSTIP};    # prevent 'IP/Address Mismatch' fraud reports for UI orders
+        }
         ## these not for PayPal authorizations, only capture/void (and credit cards):
         $query{ORIGID} = $order_id;
         $query{EXPDATE} = $exp;

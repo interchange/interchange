@@ -147,7 +147,7 @@ sub {
             $msg->attach(
                          Type => $opt->{body_mime},
                          Encoding => $opt->{body_encoding},
-                         Data => $body,
+                         Data => ($utf8 ? utf8_to_other($body, 'utf-8') : $body),
                          Disposition => $opt->{body_disposition} || 'inline',
                          Format => $opt->{body_format} || $att1_format,
                         );
@@ -189,6 +189,7 @@ sub {
 		my %encoding_types = (
 			'text/plain' => ($utf8 ? 'quoted-printable' : '8bit'),
 			'text/html' => 'quoted-printable',
+            'text/html; charset=UTF-8' => 'quoted-printable',
 		);
 
 		for my $ref (@$att) {

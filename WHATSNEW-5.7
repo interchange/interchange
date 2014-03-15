@@ -8,7 +8,56 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.8.1 not yet released.
+Interchange 5.8.1 released on 2014-03-12.
+
+Core
+----
+
+* Improved Unicode support in core: improvements to [area] tag, email.tag
+
+* Fixed a bug in session cookie parsing which could result in lost sessions.
+
+* Add strip_path filter.
+
+* Improvements in UserTag Alias handling of embedded hyphens
+
+* Added new full-page caching features
+
+* Fixed one-off [item-increment] bug when passing fm (jump) parameter to a search.
+
+* [weight] UserTag now supports "adder" options.
+
+* Re-connect session variables when doing an su.
+
+* Fix XSS in error tag display of failed submissions
+
+
+Payments
+--------
+
+* Fixes for a change in behavior with  Authorize.net's handling of AUTH and CAPTURE transaction types.
+
+* Fixes to PayPal alternate address handling.
+
+* Allow Union Pay cards to skip luhn-10
+
+* Update Cardsave payment module to 0.9.8.
+
+
+Standard Demo
+-------------
+
+* Updated checkout to recognise Internet Explorer 10
+
+* Optimized lookup of order items for ship notice.
+
+
+External Tools
+--------------
+
+* Added script to migrate sessions from Storable to DBI.
+
+* Use su directive in Debian's logrotate file to avoid skipping due to permissions issues.
 
 
 ------------------------------------------------------------------------------
