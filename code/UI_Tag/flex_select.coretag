@@ -460,7 +460,8 @@ EOF
 			else {
 				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
 			}
-			if(length($s) > 1) {
+			my $ms = defined $CGI->{mv_min_string} ? $CGI->{mv_min_string} : 1;
+			if(length($s) > $ms) {
 				$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
 			}
 			else {
