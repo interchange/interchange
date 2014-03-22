@@ -255,6 +255,7 @@ for( values %extmap ) {
 	cannest			canNest
 	description  	Description
 	override	  	Override
+	underride	  	Underride
 	visibility  	Visibility
 	help		  	Help
 	documentation	Documentation
@@ -5050,7 +5051,7 @@ sub parse_mapped_code {
 	get_system_code() unless defined $SystemCodeDone;
 
 	my($tag,$p,$val) = split /\s+/, $value, 3;
-	
+
 	# Canonicalize
 	$p = $tagCanon{lc $p} || ''
 		or ::logDebug("bizarre mapped code line '$value'");
@@ -5130,7 +5131,7 @@ sub parse_tag {
 		config_warn("Bad user tag parameter '%s' for '%s', skipping.", $p, $tag);
 		return $c;
 	}
-	
+
 	# Canonicalize
 	$p = $tagCanon{lc $p};
 	$tag =~ tr/-/_/;
@@ -5140,7 +5141,15 @@ sub parse_tag {
 	if ($tagSkip{$p}) {
 		return $c;
 	}
-	
+
+	if($p eq 'Underride') {
+		if($Global::UserTag->{Routine}->{$tag} or $C && $C->{UserTag}->{Routine}->{$tag}) {
+			$c->{Done}{$tag} = 1;
+		}
+	}
+
+	return $c if $c->{Done}{$tag};
+
 	if($CodeDest and $CodeDest eq 'CoreTag') {
 		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
 	}
