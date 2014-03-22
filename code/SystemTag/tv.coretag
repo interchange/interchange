@@ -1,0 +1,88 @@
+UserTag tv  Order name
+UserTag tv  Description Return $Tmp value
+UserTag tv  Routine <<EOR
+sub {
+	my $key = shift;
+ 	my $val = $Vend::Interpolate::Tmp->{ $key };
+	return $val;
+}
+EOR
+
+UserTag ts  Order name
+UserTag ts  hasEndTag
+UserTag ts  Interpolate
+UserTag ts  Description Set $Tmp value
+UserTag ts  Routine <<EOR
+sub {
+	my $key = shift;
+ 	$Vend::Interpolate::Tmp->{$key} = shift;
+	return '';
+}
+EOR
+
+UserTag tn  Order name
+UserTag tn  hasEndTag
+UserTag tn  Description Set $Tmp value
+UserTag tn  Routine <<EOR
+sub {
+	my $key = shift;
+ 	$Vend::Interpolate::Tmp->{$key} = shift;
+	return '';
+}
+EOR
+
+UserTag tv  Documentation <<EOD
+=head1 NAME
+
+tv -- true temporary, non-session set/value tag
+
+=head1 SYNOPSIS
+
+ [ts foo]The time is: [time fmt="%H:%M"][/ts]
+ [tv foo]
+ (Shows "The time is: 09:10")
+ 
+ [tn bar]The time tag is set as in: [time fmt='%H:%M'][/tn]
+ [tv bar]
+ (Shows "The time tag is set as in: [time fmt='%H:%M']")
+
+=head1 DESCRIPTION
+
+Interchange uses C<[tmp foo][/tmp]> and C<[tmpn bar][/tmpn]> to set
+temporary scratch values. While this works OK in most cases, these
+values have to be managed in the session, and also may overwrite values
+which could be counted on by other pages (when set with C<[set ...]>) or by
+manipulating $Scratch.
+
+The above three tags replace this scheme with values that are based
+in the C<$Vend::Interpolate::Tmp> space. These values are available
+in embedded Perl with C<$Tmp>, so are usable in the same fashion as
+C<$Scratch>. But they are truly temporary and will never be saved to
+a session.
+
+=over 4
+
+=item [ts VARNAME]VALUE[/ts]
+
+ITL code in VALUE I<is> interoplated prior to setting VARNAME in $Tmp.
+
+=item [tn VARNAME]VALUE[/tn]
+
+ITL code in VALUE is I<not> interoplated prior to setting VARNAME in $Tmp.
+
+=item [tv VARNAME]
+
+Display value of VARNAME.
+
+=back
+
+=head1 AUTHOR
+
+Mike Heins, <mike@icdevgroup.org>
+
+=head1 BUGS
+
+The usual number.
+
+=cut
+EOD
