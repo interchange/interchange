@@ -499,7 +499,7 @@ print "GCO".__LINE__.": tax=$salestax; shipping=$shipping, $::Values->{mv_shippi
               $zip_pattern = "$1"."*";
     my $taxshipping = 'false';
               $taxshipping = 'true' if (($country =~ /$::Variable->{TAXSHIPPING}/) or ($state =~ /$::Variable->{TAXSHIPPING}/) or ($alwaystaxshipping == '1'));
-::logDebug(":GCO:".__LINE__.": shipping=$::Session->{final_shipping}, $shipping; handling=$handling; taxshipping=$::Variable->{TAXSHIPPING}; country=$country; tx=$taxshipping");
+#::logDebug(":GCO:".__LINE__.": shipping=$::Session->{final_shipping}, $shipping; handling=$handling; taxshipping=$::Variable->{TAXSHIPPING}; country=$country; tx=$taxshipping");
  my $stax = Vend::Interpolate::salestax();
  print "GCO:".__LINE__.": stax=$stax; mvst=$::Values->{mv_salestax}, $::Values->{salestax}\n";
 if ($salestax == '0') { 
@@ -514,7 +514,7 @@ if ($salestax == '0') {
   else { 
          $taxrate =  ($salestax / $subtotal || '0');
 }
-::logDebug(":GCO:".__LINE__.": subtotal=$subtotal; taxrate=$taxrate");
+#::logDebug(":GCO:".__LINE__.": subtotal=$subtotal; taxrate=$taxrate");
 
 ### Check that the currency sent to GCO is the one registered with them, or return to the checkout
 my $user_currency = $::Scratch->{iso_currency_code} || $::Values->{iso_currency_code} || $currency;
@@ -918,7 +918,7 @@ elsif ($$xmlIpn =~ /order-state-change-notification/) {
 					$qty = $items->{'quantity'};
 					$sthi = $dbh->prepare("UPDATE inventory SET quantity = quantity -'$qty' WHERE sku = '$itm'");
 					$sthi->execute() or die errmsg("Cannot update table inventory");
-::logDebug(":GCO:".__LINE__.": Decremented inventory for $itm by $qty");
+#::logDebug(":GCO:".__LINE__.": Decremented inventory for $itm by $qty");
 					}
 				  }	
 	   			}
@@ -1335,7 +1335,7 @@ use MIME::Base64;
      $header->header('Accept'        => "application/xml");
   my $request = HTTP::Request->new(POST => $gcourl, $header, $xmlOut);
   my $response = $agent->request($request);
-::logDebug(":GCO:".__LINE__.": sendxml: gcourl=$gcourl\nxmlOut=$xmlOut");
+#::logDebug(":GCO:".__LINE__.": sendxml: gcourl=$gcourl\nxmlOut=$xmlOut");
   return $response->content;
 }
 

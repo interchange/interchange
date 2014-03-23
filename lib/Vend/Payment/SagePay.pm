@@ -778,7 +778,7 @@ sub sagepay {
 	my $clientIPAddress    = $CGI::remote_addr if $CGI::remote_addr;
 			$::Values->{authcode} = '';
 	
-::logDebug("SP".__LINE__.": bCity=$billingCity; mvccType=$cardType; start=$mvccStartDate; issue=$issue;");
+#::logDebug("SP".__LINE__.": bCity=$billingCity; mvccType=$cardType; start=$mvccStartDate; issue=$issue;");
 		
 # ISO currency code sent to SagePay, from the page or fall back to config files.
 	my $currency = $::Values->{iso_currency_code} || $::Values->{currency_code} || $Vend::Cfg->{Locale}{iso_currency_code} ||
@@ -988,7 +988,7 @@ if ($request eq 'psp') {
 		$response = $post->{status_line};
 		$page     = $post->{result_page};
 
-::logDebug("SP".__LINE__.": response page:\n-------------------------\n$page \n---------------------------\nend of SagePay results page\n\n");
+#::logDebug("SP".__LINE__.": response page:\n-------------------------\n$page \n---------------------------\nend of SagePay results page\n\n");
 		
 		$result{TxType}         = $txtype;
 		$result{Currency}       = $currency;
@@ -1067,7 +1067,7 @@ EOB
  	     		$::Scratch->{tds} = 'yes' ;
  	     		$Vend::Session->{payment_result} = \%result;
 
-::logDebug("SP".__LINE__.": secureStatus=$result{SecureStatus} so now to run routes; result hash=".::uneval(\%result));
+#::logDebug("SP".__LINE__.": secureStatus=$result{SecureStatus} so now to run routes; result hash=".::uneval(\%result));
 
  	     		Vend::Dispatch::do_process();
  	     		}

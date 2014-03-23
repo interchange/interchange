@@ -856,7 +856,7 @@ sub cybersource {
     my ($opt) = @_;
     $opt->{order_number} ||= $opt->{order_id};
 
-::logDebug("cybersource opt hash: %s", $debug_scrub->($opt));
+#::logDebug("cybersource opt hash: %s", $debug_scrub->($opt));
 
     my %type_map = qw/
         sale            auth_bill
@@ -919,7 +919,7 @@ sub cybersource {
         || charge_param('transaction')
         || 'auth';
 
-::logDebug("transaction type: $transtype");
+#::logDebug("transaction type: $transtype");
 
     $transtype = $type_map{$transtype}
         or return (
@@ -950,7 +950,7 @@ sub cybersource {
         push (@apps, $_)
             if exists $opt_apps{ lc ($_) };
     }
-::logDebug ("Applications: " . ::uneval \@apps);
+#::logDebug ("Applications: " . ::uneval \@apps);
 
     ## Allow IC-relative page paths for return and cancel URLs
     if ($acct_type eq 'pp' && grep { /^pp_ec_set$/ } @apps) {
@@ -1468,7 +1468,7 @@ sub cybersource {
     ::logError("Error in ship_map route param: $@")
         if $@;
 
-::logDebug('%%ship_method: %s', ::uneval(\%ship_method));
+#::logDebug('%%ship_method: %s', ::uneval(\%ship_method));
 
     ## Special Cases
     $required_map{ics_bill} = [ 'ccCaptureService_run' ]
@@ -1485,7 +1485,7 @@ sub cybersource {
     my %actual = $opt->{actual} ? %{ $opt->{actual} } : map_actual();
     $actual{mv_credit_card_number} ||= $opt->{mv_credit_card_number};
 
-::logDebug('%%actual: %s', $debug_scrub->(\%actual));
+#::logDebug('%%actual: %s', $debug_scrub->(\%actual));
 
     my @required_keys = (
         @{ $required_map{all} },
@@ -1809,7 +1809,7 @@ sub cybersource {
             die $sigalrm_die_msg;
         };
 
-::logDebug("cybersource Sending Request...\n%s", $debug_scrub->(\%request));
+#::logDebug("cybersource Sending Request...\n%s", $debug_scrub->(\%request));
 
         my $start = time;
         alarm $timeout;
@@ -1821,7 +1821,7 @@ sub cybersource {
 
         my $end = time;
 
-::logDebug("cybersource Response (%ds):\n%s", $end - $start, ::uneval(\%resp));
+#::logDebug("cybersource Response (%ds):\n%s", $end - $start, ::uneval(\%resp));
 
         # Initiate a timeout payment if the gateway response
         # itself was a timeout error
@@ -1947,7 +1947,7 @@ sub cybersource {
     $resp{acct_type}  = $acct_type;
     $resp{rc_msg}     = $reason_code_map{ $resp{reasonCode} } || 'Unknown';
 
-::logDebug("decision: $status, reason code: $resp{reasonCode}");
+#::logDebug("decision: $status, reason code: $resp{reasonCode}");
 
     if ($status ne 'success') {
         if ($acct_type eq 'bml') {
@@ -1980,7 +1980,7 @@ EOP
         }
     }
 
-::logDebug("Returning %%resp: %s",::uneval(\%resp));
+#::logDebug("Returning %%resp: %s",::uneval(\%resp));
     return %resp;
 }
 
@@ -2054,7 +2054,7 @@ sub init {
             . ".xsd";
 
         $xsd = Vend::File::readfile($file);
-::logDebug("cybersource: found cached xsd for version " . $self->attr('CYBS_VERSION') . " at $file") if $xsd;
+#::logDebug("cybersource: found cached xsd for version " . $self->attr('CYBS_VERSION') . " at $file") if $xsd;
     }
 
     unless ($xsd) {
