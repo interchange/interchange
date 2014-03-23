@@ -123,7 +123,7 @@ use vars qw/%Display_type %Display_options %Style_sheet/;
 	default => sub {
 		my $opt = shift;
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}{META_STRING}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -155,7 +155,7 @@ EOF
 <tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}\{FIRST?} style="$opt->{break_cell_first_style}"{/FIRST?}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -177,7 +177,7 @@ EOF
 	text_js_help => sub {
 		my $opt = shift;
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL?}{HELP_URL}{/HELP_URL?}{HELP_URL:}javascript:alert('{HELP}'); void(0){/HELP_URL:}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
@@ -189,7 +189,7 @@ EOF
 	three_column => sub {
 		my $opt = shift;
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN} nowrap>
@@ -205,7 +205,7 @@ EOF
 #::logDebug("calling simple_row display");
 		my $opt = shift;
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN} nowrap>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<a href="{META_URL}">$opt->{meta_anchor}</a>{/META_URL?}
@@ -223,7 +223,7 @@ EOF
 	</td>
 </tr>
 <tr>
-{/HELP?}	<td colspan="2"$opt->{label_cell_extra}>
+{/HELP?}	<td title="{COLUMN}" colspan="2"$opt->{label_cell_extra}>
 		{LABEL}
 	</td>
 </tr>
@@ -243,7 +243,7 @@ $opt->{spacer_row}
 <tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -269,7 +269,7 @@ $opt->{spacer_row}
 <tr$opt->{break_row_extra}><td colspan="$span" $opt->{break_cell_extra}>{ROW}</td></tr>
 EOF
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -290,7 +290,7 @@ EOF
 	simple_help_below => sub {
 		my $opt = shift;
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -310,7 +310,7 @@ EOF
 		my $opt = shift;
 		$opt->{help_icon} ||= '/icons/small/unknown.gif';
 		my $thing = <<EOF;
-   <td$opt->{label_cell_extra}> 
+   <td title="{COLUMN}"$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}\{COLSPAN}>
@@ -1439,6 +1439,42 @@ EOF
 
 }
 
+sub tabbed_jui {
+	my ($tit, $cont, $opt) = @_;
+	
+	$opt ||= {};
+
+	my @colors;
+
+	my $id = $opt->{jui_tabs};
+	my $num_panels = scalar(@$tit);
+	my $out = <<EOF;
+<script>
+	\$(function() {
+	\$("#$id").tabs();
+});
+</script>
+<div id="$id">
+<ul>
+EOF
+	my $s1 = '';
+	my $s2 = '';
+	for(my $i = 0; $i < $num_panels; $i++) {
+		my $tabid = "$id-$i";
+		$s1 .= qq{<li><a href="#$tabid">$tit->[$i]</a></li>\n};
+		my $len1 = length($cont->[$i]);
+		my $len2 = length($s2);
+		$s2 .= qq{<div id="$tabid"><table$opt->{panel_table_extra}>$cont->[$i]</table></div>};
+		my $len3 = length($s2);
+	}
+
+	$out .= $s1;
+	$out .= "</ul>\n";
+	$out .= $s2;
+	$out .= "</div>\n";
+	return $out;
+}
+
 my $tcount_all;
 my %alias;
 my %exclude;
@@ -1748,6 +1784,8 @@ sub resolve_options {
         delete_button_style
         display_type
         file_upload
+		form_extra
+		form_prepend
         help_anchor
         help_cell_class
         help_cell_style
@@ -1813,6 +1851,7 @@ sub resolve_options {
         tab_vert_offset
         tab_width
         tabbed
+		jui_tabs
         table_height
         table_width
         title_row_class
@@ -2432,7 +2471,6 @@ EOF
 	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
 	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
 
-	undef $opt->{tabbed} if $::Scratch->{ui_old_browser};
 	undef $opt->{auto_secure} if $opt->{cgi};
 
 	### Build the error checking
@@ -2615,9 +2653,26 @@ EOF
 
 	my $key_message;
 	if($opt->{ui_new_item} and ! $opt->{notable}) {
-		if( ! $db->config('_Auto_number') and ! $db->config('AUTO_SEQUENCE')) {
-			$db->config('AUTO_NUMBER', '000001');
-			$key = $db->autonumber($key);
+		if($db->config('AUTO_NEXT')) {
+			my $kn = $db->config('KEY');
+			my $ary = $db->query("select max($kn) from $table");
+			eval {
+				$key = $ary->[0][0];
+			};
+			$key ||= 'XXXXXX01';
+			if($key =~ /(.*[^A-Za-z0-9])([A-Za-z0-9]*)$/) {
+				my $non = $1;
+				my $word = $2;
+				$word++;
+				$key = $non . $word;
+			}
+			else {
+				$key++;
+			}
+		}
+		elsif(! $db->config('_Auto_number') and ! $db->config('AUTO_SEQUENCE')) {
+				$db->config('AUTO_NUMBER', '000001');
+				$key = $db->autonumber($key);
 		}
 		else {
 			$key = '';
@@ -4016,6 +4071,7 @@ EOF
 		$display->{META_STRING} = $meta_string;
 		$display->{TKEY}   = $tkey_message;
 		$display->{BLABEL} = $blabel;
+		$display->{COLUMN} = $c;
 		$display->{ELABEL} = $elabel;
 		$display->{COLSPAN} = qq{ colspan="$colspan->{$namecol}"}
 			if $colspan->{$namecol};
@@ -4499,15 +4555,22 @@ $tstart
 		}
 		my @put;
 		if($opt->{tabbed}) {
-			my @tabcont;
-			for(@controls) {
-				push @tabcont, create_rows($opt, $_);
-			}
+#::logDebug("jui=$opt->{jui_tabs}");
 			$opt->{panel_table_extra} ||= 'width="100%" cellpadding="3" cellspacing="1"';
 			$opt->{panel_table_extra} =~ s/^/ /;
 			$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 			$opt->{panel_append} ||= '</table>';
-			push @put, tabbed_display(\@titles,\@tabcont,$opt);
+			my @tabcont;
+			for(@controls) {
+				push @tabcont, create_rows($opt, $_);
+			}
+			if($opt->{jui_tabs}) {
+				$opt->{jui_tabs} = 'editor-tabs' if $opt->{jui_tabs} =~ /^\d+$/;
+				push @put, tabbed_jui(\@titles,\@tabcont,$opt);
+			}
+			else {
+				push @put, tabbed_display(\@titles,\@tabcont,$opt);
+			}
 		}
 		else {
 			my $first = 0;
@@ -4531,7 +4594,6 @@ $tstart
 	}
 
 	if($opt->{tabbed}) {
-#::logDebug("In tabbed display...controls=" . scalar(@controls) . ", titles=" . scalar(@titles));
 		my @tabcont;
 		for(@controls) {
 			push @tabcont, create_rows($opt, $_);
@@ -4540,7 +4602,14 @@ $tstart
 		$opt->{panel_table_extra} =~ s/^/ /;
 		$opt->{panel_prepend} ||= "<table$opt->{panel_table_extra}>";
 		$opt->{panel_append} ||= '</table>';
-		push @put, tabbed_display(\@titles,\@tabcont,$opt);
+#::logDebug("In tabbed display...jui_tabs=$opt->{jui_tabs}...controls=" . scalar(@controls) . ", titles=" . scalar(@titles));
+		if($opt->{jui_tabs}) {
+			$opt->{jui_tabs} = 'editor-tabs' if $opt->{jui_tabs} =~ /^\d+$/;
+			push @put, tabbed_jui(\@titles,\@tabcont,$opt);
+		}
+		else {
+			push @put, tabbed_display(\@titles,\@tabcont,$opt);
+		}
 	}
 	else {
 #::logDebug("titles=" . uneval(\@titles) . "\ncontrols=" . uneval(\@controls));
