@@ -1,1 +1,19 @@
-<xmp>[dump key="[cgi key]"]</xmp>
+[calc]
+    $Tag->tmp('tmp_gate_dump');
+    $pass = $Variable->{SQLPASS} || $Variable->{ORDERS_TO} || $Config->{MailOrderTo} || 'bogus';
+    if($CGI->{password} eq $pass) {
+        $Scratch->{tmp_gate_dump} = 1;
+    } 
+    $CGI->{sort} = 1 unless defined $CGI->{sort};
+    return;
+[/calc]
+[if scratch tmp_gate_dump]
+<xmp>[dump key="[cgi key]" sort="[cgi sort]"]</xmp>
+[else]
+    You must provide the password. It is usually the SQL server password, or the email address where orders go.
+    <form action="[process href=@@MV_PAGE@@ secure=1]" METHOD=post>
+    Password: <input type="text" name=password value="">
+    <input type="submit" value="Dump">
+    </form>
+[/else]
+[/if]

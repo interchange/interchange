@@ -129,7 +129,8 @@ sub full_dump {
 	}
 
 	$out = minidump();
-	local($Data::Dumper::Indent) = 2;
+	local($Data::Dumper::Indent) = $opt->{indent} || 2;
+	local($Data::Dumper::Sortkeys) = $opt->{sort};
 	unless ($opt->{no_env}) {
 		$out .= "###### ENVIRONMENT     #####\n";
 		if(my $h = ::http()) {
