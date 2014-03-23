@@ -21,9 +21,10 @@ List of needed Modules to get interchange to build and start:
     perl-MIME-Lite
     perl-libwww-perl
     perl-HTML-Parser
-    perl-Image-Size-3.2-4.el6.noarch
-    perl-Safe-Hole-0.10-1.el6.rf.i686
-    perl-Set-Crontab-1.02-1.el6.rf.noarch
+    perl-Image-Size
+    perl-Safe-Hole
+    perl-Set-Crontab
+    perl-ExtUtils-MakeMaker (RHEL/CentOS 6 only)
 
 (Some of the above install multiple members of the Bundle::Interchange set.)
 
