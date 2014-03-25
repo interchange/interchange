@@ -653,6 +653,8 @@ sub interpolate_html {
 	if(defined $Vend::PageInit and ! $Vend::PageInit) {
 		defined $::Variable->{MV_AUTOLOAD}
 			and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
+		defined $::Variable->{MV_AUTOEND}
+			and $html =~ s/$/$::Variable->{MV_AUTOEND}/;
 		$toplevel = 1;
 	}
 #::logDebug("opt=" . uneval($opt));

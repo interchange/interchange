@@ -118,8 +118,10 @@ sub display_page {
 	my $inth_opt;
 	# Try for on-the-fly if not there
 	if(! defined $page) {
+		$Vend::PageInit = 0;
 		$page = Vend::Interpolate::fly_page($name)
-			and $inth_opt->{onfly} = 1;
+			and $inth_opt->{onfly} = 1
+			and undef $Vend::PageInit;
 	}
 
 	# Try one last time for page with index
@@ -130,7 +132,7 @@ sub display_page {
 	}
 
 	if (defined $page) {
-		$Vend::PageInit = 0;
+		$Vend::PageInit = 0 unless $inth_opt->{onfly};
 		if ($opt->{return}) {
 			return ::interpolate_html($page, 1, $inth_opt);
 		} else {
