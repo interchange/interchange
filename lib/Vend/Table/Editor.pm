@@ -2382,6 +2382,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $height       = $opt->{height};
 	my $help         = $opt->{help};
 	my $help_url     = $opt->{help_url};
+	my $id           = $opt->{id};
 	my $label        = $opt->{label};
 	my $wid_href     = $opt->{wid_href};
 	my $lookup       = $opt->{lookup};
@@ -4035,6 +4036,7 @@ EOF
 							help				=> $help->{$c},
 							help_url			=> $help_url->{$c},
 							href				=> $wid_href->{$c},
+							id					=> $id->{$c},
 							js_check			=> $js_check->{$c},
 							key					=> $key,
 							label				=> $label->{$c},
