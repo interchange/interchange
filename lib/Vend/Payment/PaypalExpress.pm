@@ -911,7 +911,13 @@ sub paypalexpress {
 
  	    $method = SOAP::Data->name('SetExpressCheckoutReq')->attr({xmlns=>$xmlns});
 	    $response = $service->call($header, $method => $request);
-	    %result = %{$response->valueof('//SetExpressCheckoutResponse')};
+
+      my $result_hashref = $response->valueof('//SetExpressCheckoutResponse');
+      unless ($result_hashref) {
+          $Tag->error({ name => 'paypal_failure', set => errmsg('Unable to parse the PayPal response') });
+          return $Tag->deliver({ location => $checkouturl });
+      }
+	    %result = %$result_hashref;
 		$::Scratch->{'token'} = $result{'Token'};
  
    if (!$result{'Token'}) {
