@@ -2016,8 +2016,9 @@ sub log {
 		}
 		elsif($opt->{type} =~ /^(?:error|debug)/) {
 			if ($opt->{file}) {
+				$data =~ s/\n\z//;
 				$data = format_log_msg($data) unless $data =~ s/^\\//;;
-				$status = Vend::Util::writefile($file, $data, $opt);
+				$status = Vend::Util::writefile($file, $data . "\n", $opt);
 			}
 			elsif ($opt->{type} =~ /^debug/) {
 				$status = Vend::Util::logDebug($data);
