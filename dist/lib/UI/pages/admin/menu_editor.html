@@ -573,7 +573,7 @@ push @out, "\tlines[0] = ['" . join("', '", @menufields) . "'];";
 return join "\n", @out;
 [/perl]
 
-[restrict enable="perl calc scratch loop image area" log=none]
+[restrict enable="perl calc scratch loop image area either" log=none]
 [loop head-skip=1 lr=1 list="[scratch qmenu_data]"][loop-sub jsline]
 sub {
 $loopname = shift;
