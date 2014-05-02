@@ -992,6 +992,12 @@ sub conditional {
 				if defined $comp;
 		delete $::Scratch->{$term};
 	}
+	elsif($base eq 'tmp') {
+		$op =	qq%$Tmp->{$term}%;
+		$op = "q{$op}" unless defined $noop;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
+	}
 	elsif($base =~ /^e?value/) {
 		$op =	qq%$::Values->{$term}%;
 		$op = "q{$op}" unless defined $noop;
