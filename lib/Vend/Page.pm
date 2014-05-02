@@ -127,7 +127,8 @@ sub display_page {
 	# Try one last time for page with index
 	if(! defined $page and $Vend::Cfg->{DirectoryIndex}) {
 		my $try = $name;
-		$try =~ s!/*$!/$Vend::Cfg->{DirectoryIndex}!;
+		my $slash = length($try) ? '/' : '';
+		$try =~ s!/*$!$slash$Vend::Cfg->{DirectoryIndex}!;
 		$page = readin($try);
 	}
 
