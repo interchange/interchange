@@ -196,6 +196,7 @@ EOF
 
 	my $extra = $opt->{state_extra} ? " $opt->{state_extra}" : '';
 	my $state_js = $opt->{state_js} ? "; $opt->{state_js}" : '';
+	my $state_class = $opt->{state_class} ? "$opt->{state_class}" : '';
 	my $country_js = $opt->{country_js} ? "; $opt->{country_js}" : '';
 	for ($state_js, $country_js) { s|\bthis\.form\b|$v_formv|g }
 
@@ -230,7 +231,7 @@ EOF
 		}
 		var stary = $v_state_tary\[country];
 
-		var str = '<select name="$svar_in" id="$svar_in" onChange="$v_formv.$svar.value = this.value$state_js"$extra>';
+		var str = '<select name="$svar_in" id="$svar_in" onChange="$v_formv.$svar.value = this.value$state_js" class="$state_class"$extra>';
 		for(var i = 0; i < svary.length; i++) {
 			str += '<option value="' + svary[i] + '"';
 			if(svary[i] == sval)
