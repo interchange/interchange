@@ -24,6 +24,7 @@ use vars qw!
 	@S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS
 	%S_to_B %B_to_S
 	$USERNAME_GOOD_CHARS
+	$Has_Bcrypt
 !;
 
 use Vend::Data;
@@ -31,6 +32,27 @@ use Vend::Util;
 use Vend::Safe;
 use strict;
 no warnings qw(uninitialized numeric);
+
+{
+    local $@;
+    eval {
+        require Digest::Bcrypt;
+        require Crypt::Random;
+    };
+    unless ($@) {
+        $Has_Bcrypt = 1;
+    }
+}
+
+use constant BCOST => 13;
+
+# Map between bcrypt identifier letter and "pre-digested" encryption type
+my %cipher_map = qw/
+    s   sha1
+    m   md5
+    n   md5_salted
+    c   default
+/;
 
 my $ready = new Vend::Safe;
 
@@ -44,6 +66,7 @@ my %enc_subs = (
     md5 => \&enc_md5,
     md5_salted => \&enc_md5_salted,
     sha1 => \&enc_sha1,
+    bcrypt => \&enc_bcrypt,
 );
 
 sub enc_default {
@@ -95,15 +118,184 @@ sub enc_sha1 {
     return Vend::Util::sha1_hex(shift);
 }
 
+sub enc_bcrypt {
+    my $obj = shift;
+    unless ($Has_Bcrypt) {
+        $obj->log_either('Bcrypt passwords unavailable. Are Digest::Bcrypt and Crypt::Random installed?');
+        return;
+    }
+    my ($password, $salt) = @_;
+    my $store = bmarshal($salt);
+    my $opt = $obj->{OPTIONS} || {};
+
+    my $bcrypt = Digest::Bcrypt->new;
+
+    my $salt =
+        $store->{salt}
+        ||
+        Crypt::Random::makerandom_octet(
+            Length   => 16, # bcrypt requirement
+            Strength =>  0, # /dev/urandom instead of /dev/random
+        )
+    ;
+    my $cost = bcost($opt, $store);
+
+    $bcrypt->cost($cost);
+    $bcrypt->salt($salt);
+    $bcrypt->add($obj->brpad($password, $opt, $store->{cipher}));
+
+    return bserialize($bcrypt, $store->{cipher});
+}
+
+sub bcost {
+    my $opt = shift;
+    my $store = shift || {};
+    return $store->{cost} || $opt->{cost} || BCOST;
+}
+
+sub brpad {
+    my $obj = shift;
+    my ($data, $opt, $cipher) = @_;
+
+    # If passwords are already stored SHA1, MD5, or crypt(),
+    # and there is no desire to allow promote to organically
+    # update them, the existing encrypted passwords can be
+    # bcrypted wholesale and future submission by users will
+    # "pre-digest" to the original encrypted structure
+    # for comparison against the bcrypt hashes.
+    #
+    # This is indicated by the structure of the cipher:
+    # * $2c$XX$ - original crypt() password with XX salt
+    # * $2m$ - plain MD5 digest on password
+    # * $2n$XX$ - salted MD5 digest on password
+    # * $2s$ - plain SHA1 digest on password
+
+    $data = $obj->pre_digest($data, $cipher);
+
+    # Increase difficulty to brute force passwords by right padding out
+    # to at least 72 character length. Most effective with "pepper" set
+    # in catalog config.
+
+    while (length ($data) < 72) {
+        my $md5 = Digest::MD5->new;
+        $md5->add($opt->{bcrypt_pepper})
+            if $opt->{bcrypt_pepper};
+        $data .= $md5->add($data)->b64digest;
+    }
+    return $data;
+}
+
+sub bserialize {
+    my $bcrypt = shift;
+    my $cipher = shift || '$2y$';
+
+    my $encoded_salt = substr (MIME::Base64::encode_base64($bcrypt->salt,''),0,-2);
+
+    return $cipher .
+        join (
+            '$',
+            sprintf ('%02d', $bcrypt->cost),
+            $encoded_salt . $bcrypt->b64digest,
+        )
+    ;
+}
+
+sub bmarshal {
+    local $_ = shift;
+
+    my $cipher = '';
+    s/^(\$2(?:[yms]|[nc]\$..)\$)//
+        and $cipher = $1;
+
+    return {} unless $cipher;
+
+    my ($cost, $combined) = grep { /\S/ } split /\$/;
+    my ($encoded_salt, $hash) = $combined =~ /^(.{22})(.*)$/;
+
+    return {} if
+        $cost < 1
+        ||
+        $cost > 31
+        ||
+        $encoded_salt =~ m{[^a-z0-9+/]}i
+        ||
+        ($hash || '-') =~ m{[^a-z0-9+/]}i
+    ;
+
+    return {
+        cipher => $cipher,
+        salt => MIME::Base64::decode_base64("$encoded_salt=="),
+        cost => $cost,
+        hash => $hash,
+    };
+}
+
+sub pre_digest {
+    my $obj = shift;
+    my $data = shift;
+    my $cipher = shift || '';
+    my ($id, $salt) = grep { /\S/ } split /\$/, $cipher;
+
+    # Starts with "2" or not bcrypt
+    $id =~ s/^2//
+        or return $data;
+
+    # Must have routine key defined in %cipher_map
+    my $key = $cipher_map{$id}
+        or return $data;
+
+    return $enc_subs{$key}->($obj, $data, $salt);
+}
+
+sub construct_bcrypt {
+    my $opt = shift;
+
+    my $bstruct =
+        __PACKAGE__
+            -> new(profile => $opt->{profile})
+            -> do_crypt($opt->{password})
+    ;
+
+    die sprintf (
+        q{Encryption type for profile '%s' must be bcrypt},
+        $opt->{profile} || 'default'
+    )
+        unless substr ($bstruct, 0, 4) eq '$2y$';
+
+    return $bstruct unless my $type = $opt->{type};
+
+    my %type_map = (crypt => 'c', reverse %cipher_map);
+    my $cipher = $type_map{ $type }
+        or die "$type is an unrecognized crypt type";
+
+    my $salt =
+        $cipher eq 'n' ? substr ($opt->{password}, -2) :
+        $cipher eq 'c' ? substr ($opt->{password}, 0, 2)
+                       : ''
+    ;
+    $salt &&= '$' . $salt;
+
+    $bstruct =~ s/y/$cipher$salt/;
+
+    return $bstruct;
+}
+
 # Maps the length of the encrypted data to the algorithm that
-# produces it. This method will have to be re-evaluated if competing
-# algorithms are introduced which produce the same-length value.
+# produces it, or the identifier of the format from modular
+# crypt format (MCF) in the case of bcrypt.
 my %enc_id = qw/
-    13  default
-    32  md5
-    35  md5_salted
-    40  sha1
+    13      default
+    32      md5
+    35      md5_salted
+    40      sha1
+    $2      bcrypt
 /;
+
+sub determine_cipher {
+    my $hash = shift;
+    my ($cipher) = $hash =~ /^(\$\d+)/;
+    return $cipher || length ($hash);
+}
 
 =head1 NAME
 
@@ -1550,15 +1742,19 @@ sub login {
 				my ($cur_method) = grep { $self->{OPTIONS}{ $_ } } keys %enc_subs;
 				$cur_method ||= 'default';
 
-				my $stored_by = $enc_id{ length($db_pass) };
+				my $stored_by = $enc_id{ determine_cipher($db_pass) };
 
 				if (
 					$cur_method ne $stored_by
+					||
+					$cur_method eq 'bcrypt'
 					&&
+					bcost($self->{OPTIONS}) != bcost($self->{OPTIONS}, bmarshal($db_pass))
+					and
 					$db_pass eq $enc_subs{$stored_by}->($self, $pw, $db_pass)
 				) {
 
-					my $newpass = $enc_subs{$cur_method}->($self, $pw, $db_pass);
+					my $newpass = $enc_subs{$cur_method}->($self, $pw, Vend::Util::random_string(2));
 					my $db_newpass = eval {
 						$self->{DB}->set_field(
 							$self->{USERNAME},
