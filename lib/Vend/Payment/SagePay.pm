@@ -977,7 +977,7 @@ if ($request eq 'psp') {
 #::logDebug("SP".__LINE__.": now for keys in query");
   my @query;
     	foreach my $key (sort keys(%query)) {
-    	::logDebug("Query to SagePay: \"$key=$query{$key}\""); # nicely readable version of the string sent
+#::logDebug(qq{Query to SagePay: "$key=$query{$key}"}); # nicely readable version of the string sent (careful: this line will log sensitive info)
        	push @query, "$key=$query{$key}";
     	}
   
