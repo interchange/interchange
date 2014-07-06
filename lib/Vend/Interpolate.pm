@@ -4511,9 +4511,9 @@ sub iterate_hash_list {
                     elsif($tmp) {
                         $return = 1;
                     }
-                    '' #xoge;
+                    '' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    interpolate_html($1) != 0 ? next : '' #oge;
+                    interpolate_html($1) != 0 ? next : '' #ixge;
 		$run =~ s/<option\s*/<option SELECTED /i
 			if $opt_select and $opt_select->($code);	
 
