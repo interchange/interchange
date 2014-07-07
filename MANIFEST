@@ -203,6 +203,7 @@ code/SystemTag/tmpn.coretag
 code/SystemTag/total_cost.coretag
 code/SystemTag/tree.coretag
 code/SystemTag/try.coretag
+code/SystemTag/tv.coretag
 code/SystemTag/uc_attr_list.coretag
 code/SystemTag/unpack.coretag
 code/SystemTag/update.coretag
@@ -1312,3 +1313,4 @@ WHATSNEW-5.1
 WHATSNEW-5.3
 WHATSNEW-5.5
 WHATSNEW-5.7
+WHATSNEW-5.8
