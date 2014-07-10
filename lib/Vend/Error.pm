@@ -186,25 +186,19 @@ sub do_lockout {
 	# Now we log the error after custom lockout routine gets chance
 	# to bypass 
 	my $pause = $::Limit->{lockout_reset_seconds} || 30;
-	$msg = errmsg(
-		"WARNING: POSSIBLE BAD ROBOT. %s accesses with no %d second pause.",
-		$Vend::Session->{accesses},
-		$pause,
-	);
-	::logError($msg);
+	my $msg_string = "WARNING: POSSIBLE BAD ROBOT. %s accesses with no %d second pause.";
+	::logError($msg_string, $Vend::Session->{accesses}, $pause);
 
 	if($cmd = $Global::LockoutCommand) {
 		my $host = $CGI::remote_addr;
 		$cmd =~ s/%s/$host/ or $cmd .= " $host";
 		$msg .= errmsg("Performing lockout command '%s'", $cmd);
 		system $cmd;
-		$msg .= errmsg("\nBad status %s from '%s': %s\n", $?, $cmd, $!)
-			if $?;
+		$? and $msg .= "\n" . errmsg("Bad status %s from '%s': %s\n", $?, $cmd, $!);
 		logGlobal({level => 'notice'}, $msg);
 	}
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
 	$Vend::LockedOut = 1;
-	logError($msg) if $msg;
 	return;
 }
 
