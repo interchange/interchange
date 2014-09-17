@@ -751,7 +751,7 @@ sub log_either {
 sub log {
 	my $self = shift;
 	my $time = $self->{OPTIONS}{unix_time} ?  time() :
-				POSIX::strftime("%Y%m%d%H%M", localtime());
+				POSIX::strftime("%Y%m%d%H%M%S", localtime());
 	my $msg = shift;
 	logData( ($self->{OPTIONS}{logfile} || $Vend::Cfg->{LogFile}),
 						$time,
