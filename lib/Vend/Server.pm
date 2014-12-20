@@ -35,6 +35,7 @@ use Errno qw/:POSIX/;
 use Config;
 use Socket;
 use Symbol;
+use JSON ();
 use strict;
 
 no warnings qw(uninitialized);
@@ -260,6 +261,8 @@ EOF
 
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
+#::logDebug("request_method=$CGI::request_method");
+#::logDebug("content_type=$CGI::content_type");
 
 #::logDebug("Check robot UA=$Global::RobotUA IP=$Global::RobotIP");
 	if ($Global::RobotIP and $CGI::remote_addr =~ $Global::RobotIP) {
@@ -320,7 +323,22 @@ sub parse_cgi {
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
 			parse_post(\$CGI::query_string, 1)
 				if $Global::TolerateGet;
-			parse_post($h->{entity});
+			if ($CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
+				$CGI::post_ref = $h->{entity};
+				undef $CGI::json_ref;
+				eval {
+					$CGI::json_ref = JSON::from_json($$CGI::post_ref);
+#::logDebug('json: %s', ::uneval($CGI::json_ref));
+					# populate CGI from json_ref; maybe make a directive?
+					if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
+						@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
+					}
+				};
+				logError("Error parsing JSON data: $@") if $@;
+			}
+			else {
+				parse_post($h->{entity});
+			}
 		}
 		else {
 			## invalid content type for POST

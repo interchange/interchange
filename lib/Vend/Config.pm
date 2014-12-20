@@ -513,6 +513,7 @@ sub global_directives {
 	['Catalog',			 'catalog',     	 ''],
 	['SubCatalog',		 'catalog',     	 ''],
 	['AutoVariable',	 'autovar',     	 'UrlJoiner'],
+	['UnpackJSON',		 'yesno',	     	 'Yes'],
 	['XHTML',			 'yesno',	     	 'No'],
 	['UTF8',			 'yesno',	     	 $ENV{MINIVEND_DISABLE_UTF8} ? 'No' : 'Yes'],
 	['External',		 'yesno',	     	 'No'],
