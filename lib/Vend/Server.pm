@@ -23,7 +23,7 @@
 
 package Vend::Server;
 
-use vars qw($VERSION);
+use vars qw($VERSION $Has_JSON);
 $VERSION = '2.107';
 
 use Cwd;
@@ -35,8 +35,17 @@ use Errno qw/:POSIX/;
 use Config;
 use Socket;
 use Symbol;
-use JSON ();
 use strict;
+
+{
+    local $@;
+    eval {
+        require JSON;
+    };
+    unless ($@) {
+        $Has_JSON = 1;
+    }
+}
 
 no warnings qw(uninitialized);
 
@@ -323,13 +332,13 @@ sub parse_cgi {
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
 			parse_post(\$CGI::query_string, 1)
 				if $Global::TolerateGet;
-			if ($CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
+			if ($Has_JSON && $CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
 				$CGI::post_ref = $h->{entity};
 				undef $CGI::json_ref;
 				eval {
 					$CGI::json_ref = JSON::from_json($$CGI::post_ref);
 #::logDebug('json: %s', ::uneval($CGI::json_ref));
-					# populate CGI from json_ref; maybe make a directive?
+
 					if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
 						@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
 					}
