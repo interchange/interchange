@@ -38,13 +38,20 @@ use Symbol;
 use strict;
 
 {
-    local $@;
-    eval {
-        require JSON;
-    };
-    unless ($@) {
-        $Has_JSON = 1;
-    }
+	local $@;
+	eval {
+		require JSON;
+	};
+	if ($@) {
+		::logGlobal(
+			$@ =~ /^Can't locate JSON/ ?
+			'No POST support for application/json without installing JSON module' :
+			"Error loading JSON module: $@"
+		);
+	}
+	else {
+		$Has_JSON = 1;
+	}
 }
 
 no warnings qw(uninitialized);
@@ -332,18 +339,25 @@ sub parse_cgi {
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
 			parse_post(\$CGI::query_string, 1)
 				if $Global::TolerateGet;
-			if ($Has_JSON && $CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
-				$CGI::post_ref = $h->{entity};
-				undef $CGI::json_ref;
-				eval {
-					$CGI::json_ref = JSON::from_json($$CGI::post_ref);
-#::logDebug('json: %s', ::uneval($CGI::json_ref));
+			if ($CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
+				if (!$Has_JSON) {
+					::logGlobal('No POST support for application/json without installing JSON module');
+					goto INVALIDPOST;
+				}
+				else {
 
-					if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
-						@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
-					}
-				};
-				logError("Error parsing JSON data: $@") if $@;
+					$CGI::post_ref = $h->{entity};
+					undef $CGI::json_ref;
+					eval {
+						$CGI::json_ref = JSON::from_json($$CGI::post_ref);
+	#::logDebug('json: %s', ::uneval($CGI::json_ref));
+
+						if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
+							@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
+						}
+					};
+					logError("Error parsing JSON data: $@") if $@;
+				}
 			}
 			else {
 				parse_post($h->{entity});
@@ -352,16 +366,19 @@ sub parse_cgi {
 		else {
 			## invalid content type for POST
 			## XXX we may want to be a little more forgiving here
-			my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
-			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
-			my $len = length($msg);
-			$Vend::StatusLine = <<EOF;
+		  INVALIDPOST:
+			{
+				my $msg = ::get_locale_message(415, "Unsupported Content-Type for POST method");
+				my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
+				my $len = length($msg);
+				$Vend::StatusLine = <<EOF;
 Status: 415 Unsupported Media Type
 Content-Type: $content_type
 Content-Length: $len
 EOF
-			respond('', \$msg);
-			die($msg);
+				respond('', \$msg);
+				die($msg);
+			}
 		}
 	}
 	elsif ($request_method eq 'PUT') {
