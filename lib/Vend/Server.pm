@@ -43,11 +43,10 @@ use strict;
 		require JSON;
 	};
 	if ($@) {
-		::logGlobal(
-			$@ =~ /^Can't locate JSON/ ?
-			'No POST support for application/json without installing JSON module' :
-			"Error loading JSON module: $@"
-		);
+
+		if ($@ !~ /^Can't locate JSON/) {
+			::logGlobal("Error loading JSON module: $@");
+		}
 	}
 	else {
 		$Has_JSON = 1;
@@ -339,7 +338,7 @@ sub parse_cgi {
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {
 			parse_post(\$CGI::query_string, 1)
 				if $Global::TolerateGet;
-			if ($CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
+			if ($Global::EnableJSONPost && $CGI::content_type =~ m{^application/json\s*(?:;|$)}i) {
 				if (!$Has_JSON) {
 					::logGlobal('No POST support for application/json without installing JSON module');
 					goto INVALIDPOST;
