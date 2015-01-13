@@ -1747,6 +1747,8 @@ sub logDebug {
 		$debug{tag} = $Vend::CurrentTag;
 		$debug{host} = $CGI::host || $CGI::remote_addr;
 		$debug{remote_addr} = $CGI::remote_addr;
+		$debug{request_method} = $CGI::request_method;
+		$debug{request_uri} = $CGI::request_uri;
 		$debug{catalog} = $Vend::Cat;
         if($tpl =~ /\{caller\d+\}/i) {
             my @caller = caller();
@@ -1754,6 +1756,10 @@ sub logDebug {
                 $debug{"caller$i"} = $caller[$i];
             }
         }
+        $tpl =~ s/\{session\.([^}|]+)(.*?)\}/
+                $debug{"session_\L$1"} = $Vend::Session->{$1};
+                "{SESSION_\U$1$2}"
+            /iegx;
 		$debug{message} = errmsg(@_);
 
 		$msg = Vend::Interpolate::tag_attr_list($tpl, \%debug, 1);
