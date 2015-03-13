@@ -42,13 +42,16 @@ use vars qw/
 			$TYPE
 			$DBI
 			$EACH
+			$QTABLE
+			$QKEY
+			$QNAME
 			$TIE_HASH
             %DBI_connect_cache
             %DBI_connect_count
             %DBI_connect_bad
 		 /;
 
-($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $DBI, $EACH) = (0 .. 6);
+($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $DBI, $EACH, $QTABLE, $QKEY, $QNAME) = (0 .. 9);
 
 $TIE_HASH = $DBI;
 
@@ -143,7 +146,7 @@ my %known_capability = (
 	DESCRIBE_TABLE => {
 		mysql	=> sub {
 			my $s = shift;
-			my $q = "show create table $s->[$TABLE]";
+			my $q = "show create table $s->[$QTABLE]";
 #::logDebug("describe query: $q");
 			my $sth = $s->[$DBI]->prepare($q);
 			$sth->execute();
@@ -183,8 +186,8 @@ my %known_capability = (
 		mysql => 'SELECT * FROM `_TABLE_` WHERE 2 = 1',
 	},
 	SEQUENCE_CREATE	 => { 
-		Oracle => "CREATE SEQUENCE _SEQUENCE_NAME_",
-		Pg => "CREATE SEQUENCE _SEQUENCE_NAME_",
+		Oracle => "CREATE SEQUENCE _SEQUENCE_NAME_ID_",
+		Pg => "CREATE SEQUENCE _SEQUENCE_NAME_ID_",
 	},
 	HAS_TABLE_TYPE	 => { 
 		mysql => 1,
@@ -198,8 +201,8 @@ my %known_capability = (
 		mysql => 1,
 	},
 	SEQUENCE_QUERY	 => { 
-		Oracle => "SELECT _SEQUENCE_NAME_.nextval FROM dual",
-		Pg => "SELECT nextval('_SEQUENCE_NAME_')",
+		Oracle => "SELECT _SEQUENCE_NAME_ID_.nextval FROM dual",
+		Pg => "SELECT nextval(_SEQUENCE_NAME_V_)",
 	},
 	SEQUENCE_VAL	 => { 
 		mysql => undef,
@@ -210,8 +213,8 @@ my %known_capability = (
 		Oracle	=> 'INT NOT NULL PRIMARY KEY',
 	},
 	SEQUENCE_VALUE_FUNCTION	 => { 
-		Pg => "SELECT currval('_SEQUENCE_NAME_')",
-		Oracle => "SELECT _SEQUENCE_NAME_.currval FROM dual",
+		Pg => "SELECT currval(_SEQUENCE_NAME_V_)",
+		Oracle => "SELECT _SEQUENCE_NAME_ID_.currval FROM dual",
 	},
 	SEQUENCE_LAST_FUNCTION	 => { 
 		mysql => 'select last_insert_id()',
@@ -251,6 +254,7 @@ sub check_capability {
 
 sub create_sql {
 	my ($s, $tablename, $config, $columns) = @_;
+	my ($qtable, $qcols);
 
 #::logDebug("create_sql called, tablename=$tablename config=$config columns=$columns");
 	if($s) {
@@ -260,6 +264,34 @@ sub create_sql {
 	}
 	elsif(! $config) {
 		return undef;
+	}
+
+	if (!$config->{QUOTE_IDENTIFIERS}) {
+	    $qtable = $tablename;
+	    $qcols = $columns;
+	}
+	elsif ($s) {
+	    $qtable = $s->[$QTABLE];
+	    $qcols = $s->[$QNAME];
+	}
+	else {
+	    # We need a db handle to quote the identifiers with
+	    my $cc = {%$config}; # Make a copy
+	    $cc->{HANDLE_ONLY} = 1;
+	    my $db = __PACKAGE__->open_table($cc, $tablename);
+	    $db &&= $db->[$DBI];
+	    if ($db) {
+		$qtable = $db->quote_identifier($tablename);
+		$qcols = [map {
+		    my $col = $_;
+		    $col =~ s/^(\S+)/$db->quote_identifier($1)/e;
+		    $col;
+			  } @$columns];
+	    }
+	    else {
+		$qtable = $tablename;
+		$qcols = $columns;
+	    }
 	}
 
 	if($s and $config->{HAS_DESCRIBE}) {
@@ -274,18 +306,18 @@ sub create_sql {
 	my $def_type = $config->{DEFAULT_TYPE} || 'char(128)';
 #::logDebug("columns coming in: @{$columns}");
     for (my $i = 0;  $i < @$columns;  $i++) {
-        $cols[$i] = $$columns[$i];
-#::logDebug("checking column '$cols[$i]'");
+        $cols[$i] = $qcols->[$i];
+#::logDebug("checking column '$column->[$i]'");
 		if(defined $key) {
-			$keycol = $i if $cols[$i] eq $key;
+			$keycol = $i if $columns->[$i] eq $key;
 		}
-		if(defined $config->{COLUMN_DEF}->{$cols[$i]}) {
-			$cols[$i] .= " " . $config->{COLUMN_DEF}->{$cols[$i]};
+		if(defined $config->{COLUMN_DEF}->{$columns->[$i]}) {
+			$cols[$i] .= " " . $config->{COLUMN_DEF}->{$columns->[$i]};
 		}
 		else {
 			$cols[$i] .= " $def_type";
 		}
-		$$columns[$i] = $cols[$i];
+#		$$columns[$i] = $cols[$i];
 		$$columns[$i] =~ s/\s+.*//;
     }
 
@@ -303,7 +335,7 @@ sub create_sql {
 		}
 	}
 
-	my $query = "create table $tablename ( \n";
+	my $query = "create table $qtable ( \n";
 	$query .= join ",\n", @cols;
 	$query .= "\n)\n";
 
@@ -323,7 +355,7 @@ sub create_sql {
 			$query =~ s/\s*$/ $template\n/;
 		}
 		else {
-			$template =~ s/\b_TABLE_\b/$tablename/;
+			$template =~ s/\b_TABLE_\b/$qtable/;
 
 			$config->{POSTCREATE} ||= [];
 			push(@{$config->{POSTCREATE}},$template);
@@ -365,10 +397,12 @@ sub create {
 	# Allow multiple tables in different DBs to have same local name
 	$tablename = $config->{REAL_NAME}
 		if $config->{REAL_NAME};
+
+    	my $qtable = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($tablename) : $tablename;
 	
 	# Used so you can do query() and nothing else
 	if($config->{HANDLE_ONLY}) {
-		return bless [$config, $tablename, undef, undef, undef, $db], $class;
+		return bless [$config, $tablename, undef, undef, undef, $db, undef, $qtable], $class;
 	}
 
 	check_capability($config, $db->{Driver}{Name});
@@ -389,6 +423,7 @@ sub create {
 	my(@cols);
 
 	$key = $config->{KEY} || $columns->[0];
+    	my $qkey = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($key) : $key;
 	$keycol = 0 unless defined $keycol;
 	$config->{KEY_INDEX} = $keycol;
 	$config->{KEY} = $key;
@@ -423,7 +458,7 @@ sub create {
 		my $query = create_sql(undef, $tablename, $config, $columns);
 
 		eval {
-			$db->do("drop table $tablename")
+			$db->do("drop table $qtable")
 				and $config->{Clean_start} = 1
 				or warn "$DBI::errstr\n";
 			$db->commit() if $config->{Transactions};
@@ -444,9 +479,14 @@ sub create {
 
 #::logDebug("seq: $config->{AUTO_SEQUENCE} create: $config->{SEQUENCE_CREATE}");
 	if($config->{AUTO_SEQUENCE} and my $q = $config->{SEQUENCE_CREATE}) {
+		my $seq_name = $config->{AUTO_SEQUENCE};
+		my $seq_name_id = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($seq_name) : $seq_name;
+		my $seq_name_v = $db->quote($seq_name);
 		if($config->{AUTO_SEQUENCE_DROP}) {
-			my $dq = $config->{SEQUENCE_DROP} || 'DROP SEQUENCE _SEQUENCE_NAME_';
-			$dq =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
+			my $dq = $config->{SEQUENCE_DROP} || 'DROP SEQUENCE _SEQUENCE_NAME_ID_';
+			$dq =~ s/_SEQUENCE_NAME_ID_/$seq_name_id/g;
+			$dq =~ s/_SEQUENCE_NAME_V_/$seq_name_v/g;
+			$dq =~ s/_SEQUENCE_NAME_/$seq_name/g;
 #::logDebug("dropping sequence with query: $dq");
 			eval {
 				$db->do($dq)
@@ -454,7 +494,10 @@ sub create {
 				$db->commit() if $config->{Transactions};
 			};
 		}
-		$q =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
+
+		$q =~ s/_SEQUENCE_NAME_ID_/$seq_name_id/g;
+		$q =~ s/_SEQUENCE_NAME_V_/$seq_name_v/g;
+		$q =~ s/_SEQUENCE_NAME_/$seq_name/g;
 		$q =~ s/_SEQUENCE_START_/$config->{AUTO_SEQUENCE_START} || 1/eg;
 		$q =~ s/_SEQUENCE_CACHE_/$config->{AUTO_SEQUENCE_CACHE} || 1/eg;
 		$q =~ s/_SEQUENCE_MINVAL_/$config->{AUTO_SEQUENCE_MINVAL} || 1/eg;
@@ -478,14 +521,17 @@ sub create {
 			my $col = $def;
 			$col =~ s/\W.*//s;
 			$key_index_found = 1 if lc($col) eq lc($key);
+			my $qcol = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($col) : $col;
+			my $qdef = $def;
+			$qdef =~ s/^\Q$col\E/$qcol/i if $config->{QUOTE_IDENTIFIERS};
 			my $template = $config->{ALTER_INDEX}
 						|| $known_capability{ALTER_INDEX}{default};
-			$template =~ s/\b_TABLE_\b/$tablename/g;
-			$template =~ s/\b_COLUMN_\b/$col/g;
-			$template =~ s/\b_DEF_\b/$def/g;
-			$template =~ s/\$TABLE\$/$tablename/g;
-			$template =~ s/\$DEF\$/$def/g;
-			$template =~ s/\$COLUMN\$/$col/g;
+			$template =~ s/\b_TABLE_\b/$qtable/g;
+			$template =~ s/\b_COLUMN_\b/$qcol/g;
+			$template =~ s/\b_DEF_\b/$qdef/g;
+			$template =~ s/\$TABLE\$/$qtable/g;
+			$template =~ s/\$DEF\$/$qdef/g;
+			$template =~ s/\$COLUMN\$/$qcol/g;
 			$template =~ s/\b_UNIQUE_(\w+_)?/$uniq ? ($1 || $uniq) : ''/eg;
 			push @index, $template;
 		}
@@ -507,7 +553,9 @@ sub create {
 		# so we don't need to do it again
 	}
 	elsif(! $key_index_found) {
-		$db->do("create index ${tablename}_${key} on $tablename ($key)")
+	    my $ind_name = "${tablename}_${key}";
+	    $ind_name = $db->quote_identifer($ind_name) if $config->{QUOTE_IDENTIFIERS};
+		$db->do("create index $ind_name on $qtable ($qkey)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 		$db->commit() if $config->{Transactions};
 	}
@@ -549,7 +597,20 @@ sub create {
 
 	$config->{NAME} = $columns;
 
-    my $s = [$config, $tablename, $key, $columns, undef, $db];
+    # Quote identifiers
+    my ($qtable, $qkey, $qnames);
+    if ($config->{QUOTE_IDENTIFIERS}) {
+	$qtable = $db->quote_identifier($tablename);
+	$qkey = $db->quote_identifier($key);
+	$qnames = [map {$db->quote_identifier($_)} @$columns];
+    }
+    else {
+	$qtable = $tablename;
+	$qkey = $key;
+	$qnames = $columns;
+    }
+
+    my $s = [$config, $tablename, $key, $columns, undef, $db, undef, $qtable, $qkey, $qnames];
     bless $s, $class;
 }
 
@@ -653,6 +714,7 @@ sub open_table {
 	# Allow multiple tables in different DBs to have same local name
 	$tablename = $config->{REAL_NAME}
 		if $config->{REAL_NAME};
+    	my $qtable = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($tablename) : $tablename;
 
 	if (ref $config->{PREQUERY} eq 'ARRAY') {
 		for (@{$config->{PREQUERY}}) {
@@ -678,7 +740,7 @@ sub open_table {
 #::logDebug("connect count open: " . $DBI_connect_count{$config->{dsn_id}});
 
 	if($config->{HANDLE_ONLY}) {
-		return bless [$config, $tablename, undef, undef, undef, $db], $class;
+		return bless [$config, $tablename, undef, undef, undef, $db, undef, $qtable], $class;
 	}
 	my $key;
 	my $columns;
@@ -701,6 +763,9 @@ sub open_table {
 		else {
 			list_fields($db, $tablename, $config);
 		}
+		$config->{QNAME} = $config->{QUOTE_IDENTIFIERS} ?
+		    [map {$db->quote_identifier($_)} @{$config->{NAME}}] :
+		    $config->{NAME};
 
 		## side-effects here -- sets $config->{_Default_ary} if needed
 		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config, $db)
@@ -734,6 +799,8 @@ sub open_table {
 		)
 		if ! defined $config->{KEY_INDEX};
 
+    	my $qkey = $config->{QKEY} = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($key) : $key;
+
     if ( $config->{MAX_FIELD_LENGTH}
 			and
 		  $config->{LENGTH_EXCEPTION_DEFAULT}
@@ -742,7 +809,7 @@ sub open_table {
 		)
 			{
 		my $ssql = $config->{MAX_FIELD_LENGTH};
-		$ssql =~ s/_TABLE_/$tablename/g;
+		$ssql =~ s/_TABLE_/$qtable/g;
 		my $osth = $db->prepare($ssql);
 		$osth->execute;
 	
@@ -777,7 +844,7 @@ sub open_table {
 		$osth->finish;
     }
 
-    my $s = [$config, $tablename, $key, $config->{NAME}, $config->{EXTENDED}, $db];
+    my $s = [$config, $tablename, $key, $config->{NAME}, $config->{EXTENDED}, $db, undef, $qtable, $qkey, $config->{QNAME}];
 	bless $s, $class;
 }
 
@@ -839,6 +906,12 @@ sub quote {
 	return $value;
 }
 
+sub quote_identifier {
+    my ($s, $value) = @_;
+    $s = $s->import_db() if ! defined $s->[$DBI];
+    return $s->[$DBI]->quote_identifier($value);
+}
+
 sub numeric {
 	return exists $_[0]->[$CONFIG]->{NUMERIC}->{$_[1]};
 }
@@ -859,9 +932,9 @@ sub filter {
 sub inc_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	$column = $s->[$NAME][ $s->column_index($column) ]; 
-	my $q1 = "select $column from $s->[$TABLE] where $s->[$KEY] = ?";
-	my $q2 = "update $s->[$TABLE] set $column = ? where $s->[$KEY] = ?";
+	$column = $s->[$QNAME][ $s->column_index($column) ]; 
+	my $q1 = "select $column from $s->[$QTABLE] where $s->[$QKEY] = ?";
+	my $q2 = "update $s->[$QTABLE] set $column = ? where $s->[$QKEY] = ?";
     my $sth1 = $s->[$DBI]->prepare($q1)
 		or $s->log_error("%s query (%s) failed: %s", 'inc_field', $q1, $DBI::errstr)
 		and return undef;
@@ -939,8 +1012,8 @@ sub column_exists {
 sub field_accessor {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	$column = $s->[$NAME][ $s->column_index($column) ]; 
-	my $q = "select $column from $s->[$TABLE] where $s->[$KEY] = ?";
+	$column = $s->[$QNAME][ $s->column_index($column) ]; 
+	my $q = "select $column from $s->[$QTABLE] where $s->[$QKEY] = ?";
 	my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("field_accessor statement (%s) -- bad result.", $q)
 		and return undef;
@@ -987,7 +1060,13 @@ sub autosequence {
 
 	# Like Oracle or Pg, get it now then return passed value later
 	my $q = $cfg->{SEQUENCE_QUERY} || "select nextval('_SEQUENCE_NAME_')";
-	$q =~ s/_SEQUENCE_NAME_/$cfg->{AUTO_SEQUENCE}/g;
+
+	my $seq_name = $cfg->{AUTO_SEQUENCE};
+	my $seq_name_id = $cfg->{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($seq_name) : $seq_name;
+	my $seq_name_v = $s->[$DBI]->quote($seq_name);
+	$q =~ s/_SEQUENCE_NAME_ID_/$seq_name_id/g;
+	$q =~ s/_SEQUENCE_NAME_V_/$seq_name_v/g;
+	$q =~ s/_SEQUENCE_NAME_/$seq_name/g;
 	my $sth = $s->[$DBI]->prepare($q)
 		or die ::errmsg('prepare %s: %s', $q, $DBI::errstr);
 	$sth->execute()
@@ -1049,12 +1128,16 @@ sub alter_column {
 		return undef;
 	}
 
-	$template =~ s/\b_BACKUP_\b/"bak_$s->[$TABLE]"/g;
-	$template =~ s/\b_TABLE_\b/$s->[$TABLE]/g;
+	my $backup = "bak_$s->[$TABLE]";
+	$backup = $s->[$DBI]->quote_identifier($backup) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+	$column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+
+	$template =~ s/\b_BACKUP_\b/$backup/g;
+	$template =~ s/\b_TABLE_\b/$s->[$QTABLE]/g;
 	$template =~ s/\b_COLUMN_\b/$column/g;
 	$template =~ s/\b_DEF_\b/$def/g;
-	$template =~ s/\$BACKUP\$/"bak_$s->[$TABLE]"/g;
-	$template =~ s/\$TABLE\$/$s->[$TABLE]/g;
+	$template =~ s/\$BACKUP\$/$backup/g;
+	$template =~ s/\$TABLE\$/$s->[$QTABLE]/g;
 	$template =~ s/\$COLUMN\$/$column/g;
 	$template =~ s/\$DEF\$/$def/g;
 
@@ -1097,7 +1180,8 @@ sub clone_set {
 #::logDebug("called clone_set col=$col old=$old new=$new");
 	return unless $s->column_exists($col);
 	my $sel = $s->quote($old, $col);
-	my $name = $s->[$CONFIG]{name};
+	my $name = $s->[$QTABLE];
+	my $qcol = $s->[$CONFIG]{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($col) : $col;
 	my ($ary, $nh, $na) = $s->query("select * from $name where $col = $sel");
 	my $fpos = $nh->{$col} || return undef;
 	$s->config('AUTO_NUMBER', '000001') unless $s->config('AUTO_NUMBER');
@@ -1188,8 +1272,10 @@ sub get_slice {
 		$fary = [ @_ ];
 	}
 
+    	$fary = [map {$s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{$_}]} @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+
 	my $fstring = join ",", @$fary;
-	$sql = "SELECT $fstring from $s->[$TABLE] WHERE $s->[$KEY] = $tkey";
+	$sql = "SELECT $fstring from $s->[$QTABLE] WHERE $s->[$QKEY] = $tkey";
 
 #::logDebug("get_slice query: $sql");
 #::logDebug("get_slice key/fields:\nkey=$key\n" . ::uneval($fary));
@@ -1277,6 +1363,8 @@ sub set_slice {
 		}
     }
 
+    	$fary = [map {$s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{$_}]} @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
@@ -1294,7 +1382,7 @@ sub set_slice {
 			return $key;
 		}
 		my $fstring = join ",", map { "$_=?" } @$fary;
-		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
+		$sql = "update $s->[$QTABLE] SET $fstring WHERE $s->[$QKEY] = $tkey";
 	}
 	else {
 		my $found;
@@ -1302,12 +1390,12 @@ sub set_slice {
 			$key = $s->autonumber();
 		}
 		for(my $i = 0; $i < @$fary; $i++) {
-			next unless $fary->[$i] eq $s->[$KEY];
+			next unless $fary->[$i] eq $s->[$QKEY];
 			splice @$fary, $i, 1;
 			splice @$vary, $i, 1;
 			last;
 		}
-			unshift @$fary, $s->[$KEY];
+			unshift @$fary, $s->[$QKEY];
 			unshift @$vary, $key;
 		my $fstring = join ",", @$fary;
 		my $vstring = join ",", map {"?"} @$vary;
@@ -1369,7 +1457,7 @@ sub set_row {
 		my $key_string;
 		my $val_string;
 		my $ary;
-		my @flds = $s->[$KEY];
+		my @flds = $s->[$QKEY];
 		my @vals = $val;
 		if($cfg->{_Default_ary} || $cfg->{_Default_session_ary}) {
 			my $ary = $cfg->{_Default_ary} || [];
@@ -1377,26 +1465,26 @@ sub set_row {
 			my $max = $#$ary > $#$sary ? $#$ary : $#$sary;
 			for (my $i = 0; $i <= $max; $i++) {
 				if($sary->[$i]) {
-					push @flds, $s->[$NAME][$i];
+					push @flds, $s->[$QNAME][$i];
 					push @vals, $sary->[$i]->($s);
 					next;
 				}
 				next unless defined $ary->[$i];
-				push @flds, $s->[$NAME][$i];
+				push @flds, $s->[$QNAME][$i];
 				push @vals, $ary->[$i];
 			}
 			$key_string = join ",", @flds;
 			$val_string = join ",", @vals;
 		}
 		else {
-			$key_string = $s->[$KEY];
+			$key_string = $s->[$QKEY];
 			$val_string = $val;
 		}
 #::logDebug("def_ary query will be: insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		eval {
-			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
+			$s->[$DBI]->do("delete from $s->[$QTABLE] where $s->[$QKEY] = $val")
 				if $s->record_exists();
-			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
+			$s->[$DBI]->do("insert into $s->[$QTABLE] ($key_string) VALUES ($val_string)");
 		};
 		if($@) {
 			my $caller = caller();
@@ -1432,7 +1520,7 @@ sub set_row {
 	{
 		eval {
 			$val = $s->quote($fields[$ki], $s->[$KEY]);
-			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
+			$s->[$DBI]->do("delete from $s->[$QTABLE] where $s->[$QKEY] = $val");
 		};
 	}
 
@@ -1447,7 +1535,7 @@ sub set_row {
 		my $fstring = '';
 
 		my $ins_string = join ", ",  @ins_mark;
-		my $query = "INSERT INTO $s->[$TABLE]$fstring VALUES ($ins_string)";
+		my $query = "INSERT INTO $s->[$QTABLE]$fstring VALUES ($ins_string)";
 #::logDebug("set_row query=$query");
 		$cfg->{_Insert_h} = $s->[$DBI]->prepare($query)
 			or die $s->log_error(
@@ -1486,9 +1574,14 @@ sub last_sequence_value {
 		$q = $cfg->{SEQUENCE_VALUE_FUNCTION};
 	}
 
-	$q =~ s/_SEQUENCE_NAME_/$s->[$CONFIG]{AUTO_SEQUENCE}/g;
-	$q =~ s/_TABLE_/$s->[$TABLE]/g;
-	$q =~ s/_COLUMN_/$s->[$KEY]/g;
+	my $seq_name = $cfg->{AUTO_SEQUENCE};
+	my $seq_name_id = $cfg->{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($seq_name) : $seq_name;
+	my $seq_name_v = $s->[$DBI]->quote($seq_name);
+	$q =~ s/_SEQUENCE_NAME_ID_/$seq_name_id/g;
+	$q =~ s/_SEQUENCE_NAME_V_/$seq_name_v/g;
+	$q =~ s/_SEQUENCE_NAME_/$seq_name/g;
+	$q =~ s/_TABLE_/$s->[$QTABLE]/g;
+	$q =~ s/_COLUMN_/$s->[$QKEY]/g;
 	my $sth = $s->[$DBI]->prepare($q)
 		or die ::errmsg("prepare %s: %s", $q, $DBI::errstr);
 	my $rc = $sth->execute()
@@ -1507,7 +1600,7 @@ sub last_sequence_value {
 sub row {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	my $q = "select * from $s->[$TABLE] where $s->[$KEY] = ?";
+	my $q = "select * from $s->[$QTABLE] where $s->[$QKEY] = ?";
     my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("%s prepare error for %s: %s", 'row', $q, $DBI::errstr)
 		and return undef;
@@ -1519,8 +1612,9 @@ sub row {
 
 sub foreign_hash {
     my ($s, $col, $key) = @_;
-	$s = $s->import_db() if ! defined $s->[$DBI];
-	my $q = "select * from $s->[$TABLE] where $col = ?";
+    $s = $s->import_db() if ! defined $s->[$DBI];
+    $col = $s->[$DBI]->quote_identifier($col) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+    my $q = "select * from $s->[$QTABLE] where $col = ?";
     my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("%s prepare error for %s: %s", 'row_hash', $q, $DBI::errstr)
 		and return undef;
@@ -1554,7 +1648,7 @@ sub foreign_hash {
 sub row_hash {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	my $q = "select * from $s->[$TABLE] where $s->[$KEY] = ?";
+	my $q = "select * from $s->[$QTABLE] where $s->[$QKEY] = ?";
     my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("%s prepare error for %s: %s", 'row_hash', $q, $DBI::errstr)
 		and return undef;
@@ -1587,7 +1681,8 @@ sub row_hash {
 
 sub field_settor {
     my ($s, $column) = @_;
-	$s = $s->import_db() if ! defined $s->[$DBI];
+    $s = $s->import_db() if ! defined $s->[$DBI];
+    $column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 	my $q = "update $s->[$TABLE] SET $column = ? where $s->[$KEY] = ?";
 	my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("Unable to prepare query for field_settor: %s", $q)
@@ -1603,12 +1698,17 @@ sub foreign {
 	return single($s, $s->[$KEY], $foreign) if ref($foreign);
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $idx;
+    	my $qforeign;
 	if( $s->[$TYPE] and $idx = $s->column_index($foreign) )  {
 		$foreign = $s->[$NAME][$idx];
+		$qforeign = $s->[$QNAME][$idx];
+	}
+    	else {
+	    $qforeign = $s->[$CONFIG]{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($foreign) : $foreign;
 	}
 	$key = $s->[$DBI]->quote($key)
 		unless exists $s->[$CONFIG]{NUMERIC}{$foreign};
-	my $query = "select $s->[$KEY] from $s->[$TABLE] where $foreign = $key";
+	my $query = "select $s->[$QKEY] from $s->[$QTABLE] where $qforeign = $key";
 #::logDebug("DBI field: key=$key query=$query");
     my $sth;
 	eval {
@@ -1624,9 +1724,10 @@ sub foreign {
 sub single {
     my ($s, $field, $qhash) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
+    	$field = $s->[$DBI]->quote_identifier($field) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 	my $idx;
 
-	my $q = "select $field from $s->[$TABLE] WHERE ";
+	my $q = "select $field from $s->[$QTABLE] WHERE ";
 	
 	my @fields;
 	my @dats;
@@ -1635,13 +1736,15 @@ sub single {
 		for(@$qhash) {
 			s/(\w+)\s*=\s*//
 				or next;
-			push @fields, "$1 = ?";
+			my $fn = $s->[$CONFIG]{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($1) : $1;
+			push @fields, "$fn = ?";
 			push @dats, $_;
 		}
 	}
 	elsif(ref($qhash) eq 'HASH') {
 		while(my ($k,$v) = each %$qhash) {
-			push @fields, "$k = ?";	
+			my $fn = $s->[$CONFIG]{QUOTE_IDENTIFIERS} ? $s->[$DBI]->quote_identifier($k) : $k;
+			push @fields, "$fn = ?";	
 			push @dats, $v;	
 		}
 	}
@@ -1670,9 +1773,12 @@ sub field {
 		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
 	my $idx;
 	if( $s->[$TYPE] and $idx = $s->column_index($column) )  {
-		$column = $s->[$NAME][$idx];
+		$column = $s->[$QNAME][$idx];
 	}
-	my $query = "select $column from $s->[$TABLE] where $s->[$KEY] = $key";
+    	else {
+	    $column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+	}
+	my $query = "select $column from $s->[$QTABLE] where $s->[$QKEY] = $key";
 #::logDebug("DBI field: key=$key column=$column query=$query");
     my $sth;
 	eval {
@@ -1714,12 +1820,13 @@ sub set_field {
 
 	my $rawkey = $key;
 	my $rawval = $value;
+    	$column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 
 	my $q;
 	if(! $s->record_exists($rawkey)) {
 		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
 			$key = 0 if ! $key;
-			$q = qq{INSERT INTO $s->[$TABLE] ($s->[$KEY], $column) VALUES (?,?)};
+			$q = qq{INSERT INTO $s->[$QTABLE] ($s->[$QKEY], $column) VALUES (?,?)};
 		}
 		else {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
@@ -1729,7 +1836,7 @@ sub set_field {
 
 	my @args;
 	if(!$q) {
-		$q = qq{update $s->[$TABLE] SET $column = ? where $s->[$KEY] = ?};
+		$q = qq{update $s->[$QTABLE] SET $column = ? where $s->[$QKEY] = ?};
 		@args = ($value, $key);
 	}
 	else {
@@ -1764,7 +1871,7 @@ sub record_exists {
     $query = $s->[$CONFIG]{Exists_handle}
         or
 	    $query = $s->[$DBI]->prepare(
-				"select $s->[$KEY] from $s->[$TABLE] where $s->[$KEY] = ?"
+				"select $s->[$QKEY] from $s->[$QTABLE] where $s->[$QKEY] = ?"
 			)
         and
 		$s->[$CONFIG]{Exists_handle} = $query;
@@ -1791,7 +1898,7 @@ sub delete_record {
 	## Rely on DBI to quote
 	$key = $s->[$DBI]->quote($key, $s->[$KEY]);
 
-    $s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $key");
+    $s->[$DBI]->do("delete from $s->[$QTABLE] where $s->[$QKEY] = $key");
 }
 
 sub fields_index {
@@ -1854,7 +1961,15 @@ sub list_fields {
 	my @fld;
 
 	my $q = $config->{LIST_FIELDS_QUERY} || "SELECT * FROM _TABLE_ WHERE 2 = 1";
+#::logGlobal("list_fields() 1: name=$name q=$q");
+	$name = $db->quote_identifier($name) if $config->{QUOTE_IDENTIFIERS};
+
+	# This is a bit of a hack since LIST_FIELDS_QUERY for mysql includes
+	# the backticks around the table name already and we can't break BC
+	# with catalogs that don't have QUOTE_IDENTIFIERS set.
+	$q =~ s/\B`_TABLE_`\B/$name/g if $config->{QUOTE_IDENTIFIERS};
 	$q =~ s/\b_TABLE_\b/$name/g;
+#::logGlobal("list_fields() 2: name=$name q=$q");
 
 	my $sth = $db->prepare($q)
 		or die ::errmsg("%s prepare on %s: %s", 'list_fields', $name, $DBI::errstr);
@@ -1895,6 +2010,8 @@ sub touch {
 sub sort_each {
 	my($s, $sort_field, $sort_option) = @_;
 	if(length $sort_field) {
+	    $s = $s->import_db() if ! defined $s->[$DBI];
+	    $sort_field = $s->[$DBI]->quote_identifier($sort_field) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 		$sort_field .= " DESC" if $sort_option =~ /r/;
 		$s->[$CONFIG]{Export_order} = " ORDER BY $sort_field"
 	}
@@ -1911,7 +2028,7 @@ sub each_record {
 		my $qual = shift || '';
 		$qual .= $s->[$CONFIG]{Export_order} 
 			if $s->[$CONFIG]{Export_order};
-		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
+		($table, $db, $each) = @{$s}[$QTABLE,$DBI,$EACH];
 		my $query = $db->prepare("select * from $table $qual")
             or die $s->log_error('prepare');
 		$query->execute()
@@ -1922,11 +2039,11 @@ sub each_record {
 				or return undef;
 			return ($ref->[$idx], $ref);
 		};
-        push @$s, $each;
+		$s->[$EACH] = $each;
     }
 	my ($key, $return) = $s->[$EACH]->();
 	if(! defined $key) {
-		pop @$s;
+	    	undef $s->[$EACH];
 		delete $s->[$CONFIG]{Export_order};
 		return ();
 	}
@@ -1937,12 +2054,12 @@ sub each_record {
 sub each_nokey {
     my $s = shift;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-    my ($table, $db, $each);
+    my ($table, $qtable, $db, $each);
     unless(defined $s->[$EACH]) {
 		my $qual = shift || '';
 		$qual .= $s->[$CONFIG]{Export_order} 
 			if $s->[$CONFIG]{Export_order};
-		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
+		($table, $qtable, $db, $each) = @{$s}[$TABLE,$QTABLE,$DBI,$EACH];
 		my $restrict;
 		if($restrict = $Vend::Cfg->{TableRestrict}{$table}
 			and (
@@ -1953,9 +2070,10 @@ sub each_nokey {
 			) {
 			$qual = $qual ? "$qual AND " : 'WHERE ';
 			my ($rfield, $rsession) = split /\s*=\s*/, $restrict;
+			$rfield = $s->[$DBI]->quote_identifier($rfield) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 			$qual .= "$rfield = '$Vend::Session->{$rsession}'";
 		}
-		my $query = $db->prepare("select * from $table " . ($qual || '') )
+		my $query = $db->prepare("select * from $qtable " . ($qual || '') )
             or die $s->log_error('prepare');
 		$query->execute()
             or die $s->log_error('execute');
@@ -1964,11 +2082,11 @@ sub each_nokey {
 				or return undef;
 			return $ref;
 		};
-        push @$s, $each;
+		$s->[$EACH] = $each;
     }
 	my $return = $s->[$EACH]->();
 	if(! defined $return->[0]) {
-		pop @$s;
+	    	undef $s->[$EACH];
 		delete $s->[$CONFIG]{Export_order};
 		return ();
 	}
