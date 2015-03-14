@@ -554,7 +554,7 @@ sub create {
 	}
 	elsif(! $key_index_found) {
 	    my $ind_name = "${tablename}_${key}";
-	    $ind_name = $db->quote_identifer($ind_name) if $config->{QUOTE_IDENTIFIERS};
+	    $ind_name = $db->quote_identifier($ind_name) if $config->{QUOTE_IDENTIFIERS};
 		$db->do("create index $ind_name on $qtable ($qkey)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 		$db->commit() if $config->{Transactions};
