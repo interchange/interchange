@@ -1238,6 +1238,31 @@ sub run_macro {
 	}
 }
 
+sub set_source {
+    my ($source, $priority) = @_;
+    my ($subname, $sub);
+    if ($subname = $Vend::Cfg->{SpecialSub}{set_source} and
+	$sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname}) {
+	my $ret;
+	eval { $ret = $sub->($source, $priority, $Vend::Session->{source}) };
+
+	if($@) {
+	    ::logError("Error running %s subroutine %s: %s",
+		       'set_source', $subname, $@);
+	    return;
+	}
+
+	if (defined $ret) {
+	    $Vend::Session->{source} = $ret;
+	}
+
+	return $ret;
+    }
+
+    $Vend::Session->{source} = $source;
+    return $source;
+}
+
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
@@ -1499,8 +1524,7 @@ EOF
             if ($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /\D/) {
                 $new_source = $CGI::values{mv_pc};
 		$new_source =~ s/[\r\n\t]//g;
-		$Vend::Session->{source} = $new_source;
-                last SOURCEPRIORITY;
+		last SOURCEPRIORITY if defined set_source($new_source, $_);
             }
          }
 
@@ -1509,8 +1533,7 @@ EOF
 #::logDebug("Cookie $1 is $cookie_source");
              if (length $cookie_source) {
 		 $cookie_source =~ s/[\r\n\t]//g;
-                 $Vend::Session->{source} = $cookie_source;
-                 last SOURCEPRIORITY;
+                 last SOURCEPRIORITY if defined set_source($cookie_source, $_);
             }
          }
 
@@ -1533,8 +1556,7 @@ EOF
             if (length $CGI::values{$_}) {
                 $new_source = $CGI::values{$_};
 		$new_source =~ s/[\r\n\t]//g;
-		$Vend::Session->{source} = $new_source;
-                last SOURCEPRIORITY;
+                last SOURCEPRIORITY if defined set_source($new_source, $_);
             }
          }
      }
