@@ -1,6 +1,6 @@
 # Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
 #
-# Copyright (C) 2002-2013 Interchange Development Group and others
+# Copyright (C) 2002-2015 Interchange Development Group and others
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is distributed in the hope that it will be useful,
@@ -38,7 +38,7 @@ Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POS
     OpenSSL
 
 PayPal's Payflow Pro HTTPS POST does NOT require the proprietary binary-only
-shared library that was used for the Verisign Payflow Pro service.
+shared library that was formerly used for the Signio and Verisign Payflow Pro services.
 
 =head1 DESCRIPTION
 

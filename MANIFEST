@@ -1167,7 +1167,6 @@ lib/Vend/Payment/Protx2.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Sage.pm
 lib/Vend/Payment/SagePay.pm
-lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
 lib/Vend/Payment/TestPayment.pm
