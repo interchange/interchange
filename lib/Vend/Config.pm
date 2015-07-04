@@ -44,6 +44,7 @@ use vars qw(
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			$SystemReposDone $ReposDest @include
 			);
+use Config;
 use Vend::Safe;
 use Fcntl;
 use Vend::Parse;
@@ -2781,10 +2782,12 @@ sub parse_require {
 			if($perlglobal) {
 				if ($pathinfo) {
 					unshift(@INC, $pathinfo);
+					unshift(@INC, "$pathinfo/$Config{archname}");
 				}
 				eval "require $module$oldtype;";
 				my $error = $@;
 				if ($pathinfo) {
+					shift(@INC);
 					shift(@INC);
 				}
 				::logGlobal("while eval'ing module %s got [%s]\n", $module, $error) if $error;
