@@ -712,7 +712,7 @@ sub parse_options {
         configfile|config|c|f=s
         dir|vendroot|d=s
         email=s
-        exclude|e=s
+        exclude|e:s
         flag=i
 		help|h
 		globalconfig
