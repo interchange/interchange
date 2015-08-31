@@ -3,7 +3,7 @@
 #
 # Interchange version 5.8.2
 #
-# Copyright (C) 2002-2014 Interchange Development Group
+# Copyright (C) 2002-2015 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -347,7 +347,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2014 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2015 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -986,7 +986,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2014 Interchange Development Group
+    Copyright (C) 2002-2015 Interchange Development Group
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 
@@ -1005,12 +1005,13 @@ The Interchange Development Group is:
     Jon Jensen
     Jure Kodzoman
     Mark Johnson
-    Mark Lipscombe
     Mike Heins
     Peter Ajamian
+    Peter Mottram
+    Richard Templet
     Ron Phipps
+    Sam Batschelet
     Stefan Hornburg (aka Racke), captain
-    Ton Verhagen
 
 Please do not contact the authors directly for help with the system.
 Use the Interchange mail list:
@@ -1039,8 +1040,10 @@ Special thanks to Retired Core Team Members:
     Jonathan Clark
     JT Justman
     Kevin Walsh
+    Mark Lipscombe
     Paul Vinciguerra
     Randy Moore
+    Ton Verhagen
 
 Contributions to Interchange have been made by:
 
