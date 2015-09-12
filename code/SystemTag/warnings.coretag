@@ -19,7 +19,13 @@ sub {
 
 	if($message) {
 		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
-		push_warning($message, @$param);
+        if($opt->{param}) { 
+            my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
+            push_warning($message, @$param);
+        }
+        else {
+            push_warning($message);
+        }
 		return unless $opt->{show};
 	}
 
