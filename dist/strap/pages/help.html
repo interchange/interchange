@@ -1,0 +1,37 @@
+[tmp page_title]__COMPANY__ -- [L]Help[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<p class="lead">
+    [L]This is a demonstration <b>help page</b> for your customer service area.[/L]
+</p>
+
+<p>
+<address>
+    __COMPANY__<br>
+    __ADDRESS__<br>
+    __CITY__
+</address>
+    [if variable PHONE]
+    [L]Phone[/L]: __PHONE__<br>
+    [/if]
+    [if variable FAX]
+    [L]Fax[/L]: __FAX__<br>
+    [/if]
+    [if variable TOLLFREE]
+    [L]Toll free[/L]: __TOLLFREE__<br>
+    [/if]
+</p>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

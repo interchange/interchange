@@ -1,0 +1,203 @@
+[tmp page_title]__COMPANY__ -- [L]Receipt[/L][/tmp]
+[tmpn display_class]noleft[/tmpn]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>[msg arg="__COMPANY__"]Thank you for shopping at %s[/msg]</h1>
+<p class="well well-small lead">[msg arg="<strong>[value mv_order_number]</strong>"]Your Order Number is %s[/msg]</p>
+
+<p>[L]Your order is being electronically processed and will be shipped soon.[/L]</p>
+
+<ul>
+[if value email_copy]
+	<li>[msg arg="<b>[value email]</b>"]A copy of this receipt has been emailed to %s[/msg]</li>
+	<li>[L]You will receive an email with tracking information when your order is shipped[/L]</li>
+[/if]
+	<li>[msg arg.0='<a href="[area contact]">' arg.1='</a>']Should you have any questions about your order, %splease feel free to contact us%s[/msg]</li>
+</ul>
+
+<a href="[area ]" class="btn btn-large btn-primary" style="margin:13px 0 10px">[L]Continue Shopping[/L] <span class="icon icon-white icon-arrow-right"></span></a>
+
+<hr>
+
+<h3>[L]Order Details[/L]</h3>
+
+<table class="table-condensed">
+<tr>
+	<th style="text-align:right">[L]Order Date[/L]:</th>
+	<td colspan=3>[time]%b %e, %Y[/time]</td>
+</tr>
+<tr>
+	<th style="text-align:right">[L]Order #[/L]:</th>
+	<td colspan=3>[value mv_order_number]</td>
+</tr>
+<tr>
+	<th style="text-align:right">[L]Payment Method[/L]:</th>
+	<td colspan=3>[value mv_payment]</td>
+</tr>
+<tr>
+	<th style="text-align:right">[L]Shipping Method[/L]:</th>
+	<td colspan=3>
+		[shipping_desc]
+	</td>
+</tr>
+[if value mv_handling]
+<tr>
+	<th style="text-align:right">[L]Handling Charge[/L]:</th>
+	<td colspan=3>
+		[loop list="[value mv_handling]"]
+		[loop-change 1]
+			[condition]1[/condition]
+			[else]<BR>[/else]
+		[/loop-change 1]
+		[either][shipping_desc mode="[loop-code]"][or][L]CHARGED[/L][/either]
+		[/loop]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th style="text-align:right;vertical-align:top">[L]Shipping Address[/L]:</th>
+	<td style="vertical-align:top">
+		[value fname] [value lname]<br>
+		[if value company][value company]<br>[/if]
+		[value address1]<br>
+		[if value address2][value address2]<br>[/if]
+		[value city], [value state]  [value zip]<br>
+		[value country]<br>
+		[value phone_day]<br>
+		[value email]
+	</td>
+	<th style="text-align:right;vertical-align:top;padding-left:4em">[L]Billing Address[/L]:</th>
+	<td style="vertical-align:top">
+		[if value mv_same_billing]
+			([L]same as shipping[/L])
+		[else]
+			[value b_fname] [value b_lname]<br>
+			[value b_address1]<br>
+			[if value b_address2][value b_address2]<br>[/if]
+			[value b_city], [value b_state]  [value b_zip]<br>
+			[value b_country]<br>
+			[value phone_day]<br>
+			[value email]
+		[/else]
+		[/if]
+	</td>
+</tr>
+</table>
+
+[comment] Handle downloadables [/comment]
+[perl products]
+	sub get_download {
+		if (! $Scratch->{download_present}) {
+			return '(<B>Must pay by credit card to download now.)</B>';
+		}
+		my $sku = shift;
+		return '' unless tag_data('products', 'download', $sku);
+		my $loc =  tag_data('products', 'dl_location', $sku);
+		my $save = delete $Scratch->{mv_add_dot_html};
+		my $url = $Tag->area( {
+						href => "deliver/$loc",
+						no_session_id => 1,
+						no_count => 1,
+						arg => $sku,
+						form => $Scratch->{mv_autocreate},
+					} ); 
+		$Scratch->{mv_add_dot_html} = $save if $save;
+		return qq{<BR><A HREF="$url"><IMG border=0 SRC="download.png"></A>};
+	}
+	return;
+[/perl]
+
+<br>
+<table class="table-condensed table-striped" width="100%">
+<tr class="well well-small smaller muted">
+	<th colspan=2 style="text-align:left">[L]Item Description[/L]</th>
+	<th width="10%" style="text-align:right">[L]Each[/L]&nbsp;</th>
+	<th width="10%">[L]Quantity[/L]</th>
+	<th width="10%" style="text-align:right">[L]Total[/L]&nbsp;&nbsp;</th>
+</tr>
+[item-list]
+	<tr>
+		<td style="width:75px;text-align:center">
+			[image sku="[item-code]" makesize="75x75" default="../thumb.gif" imagesubdir=items]
+		</td>
+		<td style="vertical-align:top;padding-top:8px">
+			<div><b>[item-description]</b></div>
+			[item-sku]
+			[if-modifier size]<BR>SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+			[if-item-field option_type]
+				<br>[item-options label=1 bold=1 price=1 type=display]
+			[/if-item-field]
+			[if-item-modifier mv_ad]
+				<br>
+				<b>SHIP TO:</b>
+				<pre>[item-modifier mv_ad]</pre>
+			[/if-item-modifier]
+		</td>
+		<td style="vertical-align:top;padding-top:8px;text-align:right">[item-discount-price]</td>
+		<td style="vertical-align:top;padding-top:8px;text-align:center">[item-quantity]</td>
+		<td style="vertical-align:top;padding-top:8px;text-align:right">[item-discount-subtotal]</td>
+	</tr>
+	[if-item-param pay_cert_code]
+	<tr>
+		<td colspan="5">
+			[tmp pc][area href="cert/[item-param pay_cert_code]/[item-param pay_cert_check]" no-session=1][/tmp]
+			<b style="color:red">Give this URL to pass on the gift certificate:</b> <a href="[scratch pc]">[scratch pc]</a>
+		</td>
+	</tr>
+	[/if-item-param]
+	[if-item-field download]
+	<tr>
+		<td colspan=5>
+			[calc]get_download('[item-code]')[/calc]
+		</td>
+	</tr>
+	[/if-item-field]
+[/item-list]
+
+<tr>
+	<td colspan=4 style="text-align:right">SUBTOTAL</td>
+	<td style="text-align:right">[subtotal]</td>
+</tr>
+<tr>
+	<td colspan=4 style="text-align:right">SALES TAX</td>
+	<td style="text-align:right">[salestax]</td>
+</tr>
+[if value mv_shipmode]
+<tr>
+	<td colspan=4 style="text-align:right">SHIPPING</td>
+	<td style="text-align:right">[shipping]</td>
+</tr>
+[/if]
+[if value mv_handling]
+<tr>
+	<td colspan=4 style="text-align:right">HANDLING</td>
+	<td style="text-align:right">[handling]</td>
+</tr>
+[/if]
+<tr>
+	<th colspan=4 style="text-align:right">TOTAL</th>
+	<th style="text-align:right">[total-cost]</th>
+</tr>
+[if scratch pay_cert_total]
+<tr>
+	<th colspan=4 style="text-align:right">GIFT CERTIFICATE</th>
+	<td style="text-align:right">[currency][scratch pay_cert_total][/currency]</td>
+</tr>
+<tr>
+	<th colspan=4 style="text-align:right">CHARGED</th>
+	<th style="text-align:right">[currency][scratch tmp_remaining][/currency]</th>
+</tr>
+[/if]
+</table>
+
+[if value gift_note]
+	<p><b>Note for Gift:</b> [value gift_note]</p>
+[/if]
+
+<br>
+<p class="text-info"><i>[L RECEIPT_PRINT]Please print this receipt for your records. Thank you for your order![/L]</i></p>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

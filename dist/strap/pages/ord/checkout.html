@@ -1,0 +1,82 @@
+[tmp page_title]__COMPANY__ -- [L]Checkout[/L][/tmp]
+[tmp display_class]noleft[/tmp]
+[tmpn onepage]1[/tmpn]
+
+[include include/checkout/initialization]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-1">&nbsp;</div>
+<div class="col-md-10">
+
+<div class="page-header">
+<h1>[L]Checkout[/L]</h1>
+</div>
+
+[if session logged_in]
+	<p class="lead">[L]Please verify the information below and click the <b>'Place Order'</b> button to process your order.[/L]</p>
+[else]
+    <p class="lead">[L]Please fill in the information below and click the <b>'Place Order'</b> button to process your order.[/L]</p>
+    [include include/checkout/login_form]
+[/else]
+[/if]
+
+[if !variable NO_TAX_POPUP]
+	[include include/checkout/tax_popup]
+[/if]
+
+[edisplay show_label=1 show_var=0 keep=1]
+
+<form action="[area href=@@MV_PAGE@@ secure=1]" method="POST" name=checkout novalidate>
+<fieldset class="form-inline">
+[form-session-id]
+<input type=hidden name=mv_action     value=refresh>
+	[include include/checkout/shopping_cart]
+</fieldset>
+<fieldset class="form-horizontal">
+	[include include/checkout/shipping_address]
+</fieldset>
+[if variable CHECKOUT_MAIL]
+<fieldset class="form-inline">
+	[include include/checkout/mailing_status]
+	<br>
+</fieldset>
+[/if]
+<fieldset class="form-horizontal">
+	[include include/checkout/billing_address]
+</fieldset>
+<div class="well" style="padding-top:10px">
+	<fieldset class="form-horizontal">
+		<legend><i class="glyphicon glyphglyphicon glyphicon-lock" style="margin-top:6px"></i> [L]Payment Information[/L]</legend>
+		[include include/checkout/payment_select]
+		[include include/checkout/payment_info]
+	</fieldset>
+</div>
+	<div class="text-center" style="margin-bottom:1em">
+			[if items]
+			  <input type=submit value="[L]Recalculate[/L]" class="btn btn-default">
+			  &nbsp;&nbsp;
+			  [button 
+					  name="mv_click" 
+					  text="[L]Place Order[/L]"
+					  wait-text="-- [L]Wait[/L] --"
+					  form=checkout
+					  class="btn btn-primary btn-lg"
+			  ]
+					  mv_todo=submit
+			  [/button]
+			[else]
+			  <b>[L]No items in your shopping cart![/L]</b>
+			[/else]
+			[/if]
+	</div>
+</form>
+
+</div>
+<div class="col-md-1">&nbsp;</div>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

@@ -1,0 +1,97 @@
+[comment]
+ui_name: cross
+ui_type: component
+ui_class: content, vertical
+ui_group: promotions
+ui_help: depends on setting cross_codes or cross_category in page, falls back to featured/specials.
+ui_label: Cross-sell or specific feature
+
+banner:
+	code: banner
+	default: [L]See also...[/L]
+	label: Top row banner
+	type: text
+	width: 40
+
+size:
+	label: Number of selections
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cols:
+	label: Number of columns
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cross_codes:
+	label: Specific featured products (sku)
+	type: text
+	width: 40
+
+random:
+	label: Random order?
+	type: yesno
+
+buttons:
+	label: Display buy/info buttons
+	type: yesno
+
+[/comment]
+<!-- BEGIN COMPONENT [control component cross_horizontal] -->
+[if !scratch cross_codes]
+[tmp cross_codes][control cross_codes][/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+[if scratch cross_category]
+						st=db
+						fi=merchandising
+						sf=cross_category
+						se=[scratch cross_category]
+						ml=[control size 3]
+[else]
+						st=db
+						fi=merchandising
+						sf=featured
+						se=specials
+						ml=[control size 3]
+[/else]
+[/if]
+					"] [loop-code][/loop][/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+						st=db
+						fi=merchandising
+						ra=yes
+						tf=times_ordered
+						ml=[control size 3]
+					"] [loop-code][/loop][/tmp]
+[/if]
+    [calc]
+		my $rand = q{[control random]};
+		delete $Scratch->{random};
+		if($rand) {
+			$Scratch->{random} = q{[control size 3]};
+		}
+		return;
+	[/calc]
+	<h4 class="text-muted">[control name=banner default="[L]See also...[/L]"]</h4>
+	[div-organize embed=lc pretty=1 cols="12" filler_class="[control cols col-sm-3]" row_attr='class="row equal-height-container"']
+	[loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]    
+		<div class="[control cols col-sm-3] equal-height-column">
+			<DIV class="thumbnail equal-height-column">
+				<a href="[area [loop-code]]">[image src="thumb/[loop-field thumb]" default="thumb.gif"]</a>
+				<DIV class="caption text-center">
+					<h5><a href="[area [loop-code]]">[loop-description]</a></h5>
+					<p>[L]Our Price[/L]: <b>[loop-price]</b></p>
+					[if control buttons]
+						<a href="[area order [loop-code]]" class="btn btn-xs btn-primary">[L]Add to Cart[/L]</a>
+					[/if]
+				</DIV>
+			</DIV>
+		</div>
+	[/loop]
+	[/div-organize]
+
+<!-- END COMPONENT [control component cross_horizontal] -->

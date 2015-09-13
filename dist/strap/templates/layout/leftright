@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="[either]__MV_HTTP_CHARSET__[or]iso-8859-1[/either]">	
+	<title>[scratch page_title]</title>
+	__CSS__
+	<meta name="viewport" content="initial-scale=1.0, width=device-width">
+	[scratch meta_header]
+</head>
+<body>
+
+<div class="container">
+	<div class="masthead row">
+		<a href="[area]"><img src="__LOGO__" alt="__COMPANY__" class="img-responsive"></a>
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#ic-navbar" aria-expanded="false">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="ic-navbar">
+					__TOP_MENU__
+					__TOP_SEARCH__
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div class="row">
+
+		<div class="col-md-3">
+			{{LEFT}}
+		</div>
+
+		<div class="col-md-6">
+			{{TOP}}
+			{{:DEFAULT}}
+			{{BOTTOM}}
+		</div>
+
+		<div class="col-md-3">
+			{{RIGHT}}
+		</div>
+
+	</div>
+	<div class="row">
+		__COPYRIGHT__
+	</div>
+</div>
+
+__JS__
+[scratch meta_footer]
+</body>
+</html>

@@ -1,0 +1,12 @@
+__NAME__ s
+mv_coordinate=1
+mv_searchtype=db
+mv_matchlimit=10
+mv_sort_field=category
+mv_search_field=:*
+mv_min_string=2
+mv_substring_match=1
+mv_column_op=rm
+mv_searchspec=[cgi s]
+mv_value=more_link=
+__END__

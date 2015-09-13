@@ -1,0 +1,68 @@
+[tmp page_title]__COMPANY__ -- [L]Shipping Address[/L][/tmp]
+[tmp display_class]noleft[/tmp]
+
+[include include/checkout/initialization]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-1">&nbsp;</div>
+<div class="col-md-10">
+
+[if !variable NO_TAX_POPUP]
+	[include include/checkout/tax_popup]
+[/if]
+
+[edisplay show_var=0 show_label=1 keep=1]
+
+[set Check_shipping]
+	&fatal=no
+	&update=yes
+	__COMMON_ORDER_PROFILE__
+	&fail=@@MV_PAGE@@
+	&fatal=yes
+[/set]
+
+<form action="[area href="ord/next_step" secure=1]" method="POST" class="form-horizontal">
+<fieldset>
+[form-session-id]
+<input type="hidden" name="mv_action"        value="return">
+<input type="hidden" name="mv_nextpage"      value="ord/billing">
+<input type="hidden" name="mv_failpage"      value="ord/shipping">
+<input type="hidden" name="mv_form_profile"  value="Check_shipping">
+<input type="hidden" name="country_reset"    value="">
+
+	[include include/checkout/shipping_address]
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<label for="mv_same_billing" class="checkbox-inline">
+				<input type="checkbox" name="mv_same_billing" id="mv_same_billing" value="1" [checked name=mv_same_billing value=1 default=1]>[L]Billing is same as this address[/L]
+			</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+		<input type=button onclick="
+				this.form.mv_form_profile.value='';
+				this.form.country_reset.value='1';
+				this.form.mv_action.value='back';
+				this.form.mv_nextpage.value='ord/country';
+				this.form.submit();
+			"
+			value="[L]Back[/L]" class="btn btn-default">
+		<input type=submit value="[L]Continue checkout[/L]" class="btn btn-primary">
+		</div>
+	</div>
+
+</fieldset>
+</form>
+
+</div>
+<div class="col-md-1">&nbsp;</div>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

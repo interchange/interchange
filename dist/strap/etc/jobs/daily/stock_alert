@@ -1,0 +1,80 @@
+[perl tables="stock_alert products, inventory"]
+	my $db = $Db{stock_alert};
+	my @msgs;
+	
+	my $isth = $Sql{inventory}->prepare('SELECT i.quantity, p.inactive FROM inventory i, products p WHERE i.sku = ? AND i.sku=p.sku')
+		or return 'stock_alert: could not prepare select query for products, inventory';
+
+	my $dsth = $Sql{stock_alert}->prepare('DELETE FROM stock_alert WHERE uid = ?')
+		or return 'stock_alert: could not prepare delete query';
+
+
+## see if sku is back in stock:
+	my %in_stock;
+	my $sku_ary = $db->query('SELECT DISTINCT sku FROM stock_alert');
+	for(@$sku_ary) {
+		my $sku = $_->[0];
+		$isth->execute($sku);
+		my @row = $isth->fetchrow();
+#return uneval(\@row);
+		if( $row[0] > 0 && !$row[1] ) {  # if has quantity and not inactive
+			$in_stock{$sku} = 1 
+		}
+	}
+#return uneval(\%in_stock);
+
+
+## get list of users to email:
+	my @email;
+	my $ary = $db->query({ sql => 'SELECT * FROM stock_alert', hashref => 1 });
+	for(@$ary) {
+		next unless $in_stock{ $_->{sku} };
+#return uneval($_);
+
+		## now, email them.
+		push @email, $_;
+	}
+
+
+## email users, then delete them:
+	for(@email) {
+		my $pretty_date = $Tag->convert_date({ fmt => '%B %e, %Y' }, $_->{date});
+		my $url = 'http://' . $Variable->{SERVER_NAME} . $Variable->{CGI_URL};
+		$url =~ s:([^/])$:$1/:;   # trailing slash, if needed
+		$url .= $_->{sku};
+
+		my $msg;
+		$msg = $_->{fname} ? "Dear $_->{fname}," : "Hello,";
+		$msg .= <<EOF;
+
+
+On $pretty_date you asked to be notified when 
+    $_->{description}
+came in stock.
+
+Today this item became available. The price is \$$_->{price}.
+
+You can find this product here:
+    $url
+
+Thank you,
+$Variable->{COMPANY} Backorder Robot
+EOF
+
+		my $email_res = $Tag->email({
+			to => "$_->{fname} $_->{lname} <$_->{email}>",
+			from => "$Variable->{COMPANY} <$Variable->{EMAIL_INFO}>",
+			subject => "Now in stock: $_->{description}",
+			body => $msg,
+		});
+		if($email_res) {
+			$dsth->execute($_->{uid});
+			push @msgs, "stock_alert: emailed uid: $_->{uid} about sku: $_->{sku}";
+		}
+		else {
+			push @msgs, "stock_alert: failed to email uid: $_->{uid}";
+		}
+	}
+
+	return join "\n", @msgs;
+[/perl]

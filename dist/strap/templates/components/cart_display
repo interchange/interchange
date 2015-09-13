@@ -1,0 +1,52 @@
+[comment]
+ui_name: cart_display
+ui_type: component
+ui_class: content
+ui_group: info
+ui_label: Smaller cart for display in content area
+
+
+[/comment]
+<!-- BEGIN COMPONENT [control component cart_display] -->
+[if items]
+  <table class="table table-condensed table-striped">
+  	<thead>
+		<tr>
+			<th colspan=6> 
+				[L]&nbsp;Your Cart[/L]:
+			</th>
+		</tr>
+		<TR>
+                        <th class="text-center">[L]Action[/L]</th>
+                        <th>[L]SKU[/L]</th>
+                        <th>[L]Description[/L]</th>
+                        <th class="text-center">[L]Quantity[/L]</th>
+                        <th class="text-right">[L]Price[/L]</th>
+                        <th class="text-right">[L]Extension[/L]</th>
+		</TR>
+  	</thead>
+	<tbody>
+[item-list]
+
+<tr>
+	<td align=center valign=top>
+	  <a href="[area href="ord/basket"]" class="cartlink">[L]edit[/L]</A>
+	</TD>
+	<td valign=top>[item-sku]</TD>
+	<td valign=top><a href="[area href="[item-sku]"]" class="cartlink">[item-data products description]</a></TD>
+
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	<TD ALIGN=right>
+			[item-price]
+	</TD>
+	<TD ALIGN=right>
+			[item-subtotal]
+	</TD>
+</TR>
+
+[/item-list]
+</tbody>
+</table>
+[/if]
+
+<!-- END COMPONENT [control component cart_display] -->

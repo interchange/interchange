@@ -1,0 +1,92 @@
+[tmp page_title]__COMPANY__ -- [L]New Account[/L][/tmp]
+[tmp display_class]noleft[/tmp]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-11 col-md-offset-1">
+
+<div class="page-header">
+<h1>[L]New Account[/L]</h1>
+</div>
+
+[if session logged_in][bounce href="[area member/account]"][/if]
+[if !scratch new]
+	[if session failure]<div class="alert alert-danger">[calc] delete $Session->{failure}[/calc]</div>[/if]
+	[edisplay show_var=0]
+[else]
+[set new][/set]
+[/else]
+[/if]
+
+[set NewAccount]
+[calc]delete $Scratch->{usernick};[/calc]
+[if type=explicit compare="[userdb new_account]"]
+mv_nextpage=[either][cgi destination][or]member/account[/either]
+[else]
+mv_nextpage=new_account
+[/else]
+[/if]
+[/set]
+
+[set new_emailcheck]
+&fatal=1
+mv_username=email_only
+&set=email [cgi mv_username]
+[/set]
+
+<form action="[process]" method="POST" class="form-horizontal">
+<fieldset>
+[form-session-id]
+<input type="hidden" name="mv_form_profile" value="new_emailcheck">
+<input type="hidden" name="mv_click" value="NewAccount">
+<input type="hidden" name="mv_doit" value="return">
+<input type="hidden" name="function" value="new_account">
+<input type="hidden" name="mv_nextpage" value="@@MV_PAGE@@">
+<input type="hidden" name="destination" value="[cgi destination]">
+
+	<div class="form-group">
+        <label for="mv_username" class="control-label col-sm-2">[error filter=e name=mv_username std_label="[L]Your email[/L]"]:</label>
+		<div class="col-sm-10 col-md-7 col-lg-5">
+			<input type="email" class="form-control" name="mv_username" id="mv_username" value="[value-extended name=mv_username]">
+			<small class="help-block">(please double-check)</small>
+		</div>
+	</div>
+	<div class="form-group">
+        <label for="mv_password" class="control-label col-sm-2">[error for=mv_password std_label="[L]Password[/L]"]:</label>
+		<div class="col-sm-10 col-md-7 col-lg-5">
+			<input type="password" class="form-control" name="mv_password" id="mv_password" value="">
+		</div>
+	</div>
+	<div class="form-group">
+        <label for="mv_verify" class="control-label col-sm-2">[error for=mv_verify std_label="[L]Verify Password[/L]"]:</label>
+		<div class="col-sm-10 col-md-7 col-lg-5">
+			<input type="password" class="form-control" name="mv_verify" id="mv_verify" value="" autocomplete="off" oncopy="return false" onpaste="return false" oncut="return false">
+		</div>
+	</div>
+[if config CookieLogin]
+	<div class="form-group">
+		<div class="col-sm-10 col-sm-offset-2">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" name="mv_cookie_password" value="1" checked=checked>
+					[L]Remember me (uncheck if public terminal)[/L]
+				</label>
+			</div>
+		</div>
+	</div>
+[/if]
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<input type="submit" value="[L]Create Account[/L]" class="btn btn-primary">
+		</div>
+	</div>
+</fieldset>
+</form>
+
+</div>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

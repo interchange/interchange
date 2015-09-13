@@ -1,0 +1,38 @@
+[userdb function=logout clear-cookie="MV_PASSWORD" clear="[if cgi keep_values]0[else]1[/else][/if]" hide=1]
+
+[tmp page_title]__COMPANY__ -- [L]Log Out[/L][/tmp]
+[tmp display_class]leftright[/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+	[show_categories]1[/show_categories]
+	[output]left[/output]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[banner][L]Random Component[/L][/banner]
+	[buttons]1[/buttons]
+	[cols]col-xs-6 col-sm-3 col-md-12[/cols]
+	[matches]5[/matches]
+	[pool]100[/pool]
+	[size]5[/size]
+	[output]right[/output]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-12">
+	<div class="alert alert-success">
+		[L]You have been logged out.[/L]<br>
+		[L]Thank you for visiting.[/L]
+	</div>
+</div>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

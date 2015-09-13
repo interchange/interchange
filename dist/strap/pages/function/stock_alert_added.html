@@ -1,0 +1,72 @@
+[tmp page_title]__COMPANY__ -- [L]Stock Alerting[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h2>[L]Stock Alerting[/L]</h2>
+
+[if session arg]
+  [seti code][data session arg][/seti]
+[/if]
+
+[perl tables="stock_alert products"]
+	my $db  = $Db{stock_alert};
+	my $pdb = $Db{products};
+
+	my $code = $Scratch->{code};
+	my $q_code  = $db->quote($code);
+	my $q_price = $db->quote( $pdb->field($code, 'price') );
+	my $q_desc  = $db->quote( $pdb->field($code, 'description') );
+	my $q_fname = $db->quote($Values->{fname});
+	my $q_lname = $db->quote($Values->{lname});
+	my $q_email = $db->quote($Values->{email});
+	my $q_date  = $db->quote( $Tag->time({ fmt => '%Y-%m-%d' }) );
+
+	my $q = qq{ 
+		INSERT INTO stock_alert SET
+		sku = $q_code,
+		price = $q_price,
+		description = $q_desc,
+		fname = $q_fname,
+		lname = $q_lname,
+		email = $q_email,
+		date = $q_date
+	};
+	$db->query($q);
+	return;
+[/perl]
+
+<p><b>[L]Your request has been sent sucessfully.[/L]</b></p>
+
+<p>
+	[L]We will contact you once your selected item becomes available.[/L]
+    [L]Thank you for your interest in our products.[/L]
+</p>
+
+[comment] SEND ACKNOWLEDGEMENT [/comment]
+[email
+	hide=1
+	to="[if value fname][value fname] [value lname][/if] <[value email]>"
+	subject="[L]Stock Alert Request[/L]"
+	from="__COMPANY__ <__EMAIL_INFO__>"
+][L]Hello and thank you for your interest in __COMPANY__ products.[/L]
+
+[L]We have received your in-stock alert notification and we will contact you once the selected item becomes available.[/L]
+
+[L]This a confirmation of your request submission.[/L]
+[if value fname]
+         [L]Name[/L]: [value fname] [value lname][/if]
+        [L]Email[/L]: [value email]
+
+      [L]Product[/L]: [data table=products column=description key="[scratch name=code filter=e]"]
+[L]Current Price[/L]: [price code="[scratch code]"]
+[/email]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

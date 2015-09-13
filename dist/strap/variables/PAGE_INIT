@@ -1,0 +1,9 @@
+[calc]
+	if($Scratch->{members_only} and ! $Session->{logged_in}) {
+		$Scratch->{mv_successpage} = $Tag->var('MV_PAGE', 1);
+		$Tag->deliver({ location => $Tag->area('login')});
+	}
+	return;
+[/calc][if !scratch logo]
+[seti logo][var LOGO][/seti]
+[/if]

@@ -1,0 +1,153 @@
+        <table class="table table-striped">
+		<thead>
+        <tr>
+          <th style="text-align:center">[L]Remove[/L]</th>
+          <th>[L]SKU[/L]</th>
+          <th>[L]Description[/L]</th>
+          <th>[L]Quantity[/L]</th>
+          <th style="text-align:right">[L]Price[/L]</th>
+          <th style="text-align:right">[L]Extension[/L]</th>
+        </tr>
+		</thead>
+        <tbody>
+
+        [if items]
+        [then]
+        [item-list modular=1]
+
+        <tr>
+          <td style="text-align:center">
+            <input type=checkbox name="[item-quantity-name]" onClick="this.form.action='[process]', this.form.submit()" value=0>
+          </td>
+          <td><b>[item-sku]</b></td>
+          <td><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
+
+            [if scratch dealer]
+            [if-item-data pricing sku]
+              <br><a href="[area href="quantity [item-code]"]" class="cartlink">
+              [L]QUANTITY PRICING[/L]</a>
+            [/if-item-data]
+            [/if]
+
+        [if-item-data options o_enable]
+            [if-item-data !options o_modular]
+                [table-organize cols=4 table=' ' font="size=1" pretty=1]
+                    [item-options td=1 label=1 bold=1 price=1]
+                [/table-organize]
+            [/if-item-data]
+        [/if-item-data]
+
+            [if-item-field weight]
+            [seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+            [/if-item-field]
+          </td>
+          <td>
+            <input type="[if config FractionalItems]text[else]number[/else][/if]" name="[item-quantity-name]" value="[item-quantity]" class="form-control">
+          </td>
+          <td style="text-align:right">
+            [item-discount-price]
+            [if discount [item-code]]<br>[msg arg.0="[item-discount]"]Item is discounted %s[/msg][/if]
+          </td>
+          <td style="text-align:right">[item-discount-subtotal]</td>
+        </tr>
+
+        [/item-list]
+        [/then]
+        [else]
+        <tr>
+          <td style="text-align:center" colspan=6>
+            [L]No items at the moment.[/L]
+          </td>
+        </tr>
+
+        [/else]
+        [/if]
+        </table>
+
+        <table style="margin:0 auto">
+        <tr>
+          <td>
+			[if items]<input type=submit value="[L]Recalculate[/L]" class="btn btn-default"> &nbsp;[/if]
+			[if data session ship_message]
+		    [if session ship_message !~ /^No (match|zone)/]
+			  <br><br><b>[L]Note[/L]:</b> [data session ship_message]
+		    [/if]
+		    [/if]
+			&nbsp;&nbsp;&nbsp;&nbsp;
+          </td>
+          <td>
+            <table class="table table-condensed form-inline" style="margin-bottom:0">
+            <tr>
+              <td>[L]Subtotal[/L]:</td>
+              <td style="text-align:right">[subtotal]</td>
+            </tr>
+		[if config Levies]
+			[levies recalculate=1 hide=1]
+			[levy-list]
+            <tr>
+              <td>[levy-param label]:</td>
+              <td style="text-align:right">[levy-param cost]</td>
+            </tr>
+			[/levy-list]
+		[else]
+            <tr>
+              <td style="white-space:nowrap">[L]Sales Tax[/L]:</td>
+              <td style="text-align:right">[salestax]</td>
+            </tr>
+            <tr>
+              <td>
+				  [if scratch onepage]
+					  <label for="ship_widget">[L]Shipping[/L]:</label>
+				  [else]
+					  [L]Shipping[/L][if scratch total_weight] (<a href="[area ord/shipmode]">[shipping-desc]</a>)[/if]
+				  [/else]
+				  [/if]
+			  </td>
+              <td style="text-align:right">
+				  [if scratch onepage]
+					  [shipping widget=select extra='class="form-control id="ship_widget" onchange="this.form.submit()"']
+				  [else]
+					  [shipping]
+				  [/else]
+				  [/if]
+			  </td>
+            </tr>
+			[if value mv_handling]
+            <tr>
+              <td>[L]Handling[/L]:</td>
+              <td style="text-align:right">[handling]</td>
+            </tr>
+			[/if]
+		[/else]
+		[/if]
+            <tr>
+              <td><b>[L]TOTAL[/L]:</b></td>
+              <td style="text-align:right"><b>[total-cost]</b></td>
+            </tr>
+[if scratch pay_cert_code]
+	[tmp tc][total-cost noformat=1][/tmp]
+	[perl table=pay_certs]
+		my $db = $Db{pay_certs};
+		my $pcamt = 0;
+		for(split /\0+/, $Values->{use_pay_cert}) {
+			$pcamt += $db->field($_ , 'amount');
+		}
+		my $tc = $Scratch->{tc};
+		$pcamt = $tc < $pcamt ? $tc : $pcamt;
+		$Tag->tmp('certs', $pcamt);
+		return;
+	[/perl]
+			<tr>
+			  <td>[L]Less paid by Gift Certificates[/L]:</td>
+			  <td style="text-align:right">-[currency][scratch certs][/currency]</td>
+			</tr>
+			<tr>
+			  <td><b>[L]To Be Charged[/L]:</b></td>
+			  <td style="text-align:right"><b>[currency][calc] [total-cost noformat=1]-[scratch certs] [/calc][/currency]</b></td>
+			</tr>
+[/if]
+            </table>
+          </td>
+        </tr>
+        </table>
+<br>

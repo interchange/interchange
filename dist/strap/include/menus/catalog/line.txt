@@ -1,0 +1,8 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		0					scan/ra=yes/tf=category,title/fi=products		Products		0								
+002		1					psub		psub		0	psub							
+003		2					subsub		psubsub		0								
+004		0					ord/basket		Cart		0								
+005		1					csub		csub		0								
+006		0					help		Help		0								
+007		0					contact		Contact us		0								

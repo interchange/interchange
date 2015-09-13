@@ -1,0 +1,3 @@
+<!--START MENU-->
+[bootmenu logged_in=member file="include/menus/catalog/top.txt" localize="description,name"][/bootmenu]
+<!--END MENU-->

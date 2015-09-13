@@ -1,0 +1,86 @@
+[tmp page_title]__COMPANY__ -- [L]Order History[/L][/tmp]
+[tmp members_only]1[/tmp]
+[tmp display_class]leftonly[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]product_tree[/component]
+[show_categories]1[/show_categories]
+[output]left[/output]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+[wdisplay]
+
+  <table class="table table-condensed table-striped" style="background:#f5f5f5; border-collapse:separate;">
+  	<thead>
+	<tr class="info">
+		<th>
+			[L]Date[/L]
+		</th>
+		<th>
+			[L]Order ID[/L]
+		</th>
+		<th>
+			[L]Qty[/L]
+		</th>
+		<th>
+			[L]Payment Method[/L]
+		</th>
+		<th class="text-right">
+			[L]Subtotal[/L]
+		</th>
+		<th class="text-right">
+			[L]Shipping[/L]
+		</th>
+		<th class="text-right">
+			[L]TOTAL[/L]
+		</th>
+		<th>
+			[L]Status[/L]
+		</th>
+	</tr>
+[query list=1 sql="select * from transactions where username = '[data session username]' order by order_date"]
+<tr [sql-alternate 2]class=rownorm[else]class=rowalt[/else][/sql-alternate]>
+	<td>
+		[convert-date fmt="%B %e, %Y %H:%M"][sql-param order_date][/convert-date]
+	</td>
+	<td>
+		<a href="[area query/order_detail [sql-param order_number]]">[sql-param order_number]</A>
+	</td>
+	<td align=right>
+		[sql-param nitems]
+	</td>
+	<td>
+		[sql-param payment_method]
+	</td>
+	<td align=right>
+		[currency][sql-param subtotal][/currency]
+	</td>
+	<td align=right>
+		[currency][sql-param shipping][/currency]
+		[if-sql-param handling > 0]
+		<br>(handling [sql-param handling])
+		[/if-sql-param]
+	</td>
+	<td align=right>
+		[currency][sql-param total_cost][/currency]
+	</td>
+	<td>
+		[display table=transactions type=display col=status key="[sql-code]" applylocale=1]
+	</td>
+</tr>
+[/query]
+</table>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

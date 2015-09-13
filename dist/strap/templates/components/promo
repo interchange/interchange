@@ -1,0 +1,74 @@
+[comment]
+ui_name: promo
+ui_type: component
+ui_class: content, vertical
+ui_group: promotion
+ui_label: Promotion
+
+promo_type:
+	label: Promotion type
+	options: specials=Specials, new=New items
+	type: select
+
+matches:
+	label: Number to show
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cols:
+	label: Columns
+	options: 1,2,3*,4
+	type: select
+
+banner:
+	default: [L]Specials[/L]
+	label: Banner for top box
+	type: text
+	width: 40
+
+[/comment]
+<!-- BEGIN COMPONENT [control component promo] -->
+
+<h4 class="text-muted">[control name=banner default="[L]Specials[/L]"]</h4>
+[tmp now][time fmt='%Y%m%d'][/tmp]
+[query list=1 sql=|
+	SELECT sku,timed_promotion,start_date,finish_date, blurb_begin, blurb_end
+	FROM [either]__UI_MERCH_TABLE__[or]merchandising[/either]
+	WHERE featured = '[control promo_type specials]'
+	AND (
+		timed_promotion <> 1 OR (
+			timed_promotion = 1 AND
+			start_date < "[scratch now]" AND
+			finish_date > "[scratch now]" )
+		)
+	LIMIT [control matches 4]
+| prefix="loop"]
+[div-organize embed=lc pretty=1 cols="12" filler_class="[control cols col-sm-3]" row_attr='class="row equal-height-container"']
+[list]
+	<div class="[control cols col-sm-3] equal-height-column">
+		<DIV class="thumbnail equal-height-column">
+			<a href="[area [loop-code]]">[image src="thumb/[loop-field thumb]" default="thumb.gif"]</a>
+			<DIV class="caption text-center">
+				[if-loop-param blurb_begin]
+					[loop-param blurb_begin]
+				[else]
+					<h5><a href="[area [loop-code]]">[loop-description]</a></h5>
+				[/else]
+				[/if-loop-param]
+				<p>[L]Our Price[/L]: <b>[loop-price]</b></p>
+				[if-loop-param blurb_end]
+					<a href="[area [loop-code]]">[loop-param blurb_end]</a>
+				[else]
+					[if control buttons]
+						<a href="[area order [loop-code]]" class="btn btn-xs btn-primary">[L]Add to Cart[/L]</a>
+					[/if]
+				[/else]
+				[/if-loop-param]
+			</DIV>
+		</DIV>
+	</div>
+[/list]
+[/div-organize]
+[/query]
+
+<!-- END COMPONENT [control component promo] -->

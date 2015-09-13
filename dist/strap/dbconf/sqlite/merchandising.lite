@@ -1,0 +1,8 @@
+Database  merchandising  merchandising.txt __SQLDSN__
+Database  merchandising  DEFAULT_TYPE text
+Database  merchandising  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
+Database  merchandising  COLUMN_DEF   "featured=CHAR(32) NOT NULL DEFAULT ''"
+Database  merchandising  COLUMN_DEF   "start_date=CHAR(24) NOT NULL DEFAULT ''"
+Database  merchandising  COLUMN_DEF   "finish_date=CHAR(24) NOT NULL DEFAULT ''"
+Database  merchandising  COLUMN_DEF   "cross_category=CHAR(64) NOT NULL DEFAULT ''"
+Database  merchandising  INDEX        featured start_date finish_date cross_category

@@ -1,0 +1,118 @@
+[tmp page_title]__COMPANY__ -- [L]Select Shipping[/L][/tmp]
+[tmp display_class]noleft[/tmp]
+
+[include include/checkout/initialization]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-offset-2 col-md-8">
+
+[edisplay show_var=0 keep=1]
+
+[set Check_shipmode]
+&fatal=no
+&fail=@@MV_PAGE@@
+mv_shipmode=mandatory You need to select a shipping mode.
+[cgi name=ship_ok set=""]
+[cgi name=mode_ok set=""]
+[seti allowed_modes][either][query list=1 sql="select shipmodes from state where state = '[value state]' and country = '[value country]'"][sql-code][/query][or][data table=country col=shipmodes key="[value country]"][/either][/seti]
+[calc]
+	$CGI->{mode_ok} = $Scratch->{allowed_modes} =~ /(^|\s)$CGI->{mv_shipmode}(\s|$)/;
+	return;
+[/calc]
+&fatal=yes
+mode_ok=mandatory Shipping type [shipping-desc] not valid for country [value country].
+[/set]
+
+[set jump_to_paymode]
+mv_nextpage=ord/payment
+[/set]
+
+<form action="[area href="ord/finalize" secure=1]" method="POST" class="form-horizontal">
+<fieldset><legend>[L]Shipping selection[/L]</legend>
+[form-session-id]
+<input type=hidden name=mv_action        value=return>
+<input type=hidden name=mv_nextpage      value="ord/finalize">
+<input type=hidden name=mv_form_profile  value="Check_shipmode">
+<input type=hidden name=mv_click         value="Jump to paymode">
+
+	<p class="text-info">[L]Shipping weight[/L]: [scratch total_weight] lbs</p>
+
+[tmp tmp_shipmodes][shipping possible=1][/tmp]
+
+<!-- 
+[loop list="[scratch tmp_shipmodes]"]
+[set num][loop-increment][/set]
+[loop-code]=[shipping-desc mode="[loop-code]"] ([shipping mode="[loop-code]"])
+[/loop]
+-->
+
+[if !scratch total_weight]
+	[set num]0[/set]
+[/if]
+[if scratch num <= 1]
+	[if value mv_same_billing]
+	[set finalize_back]ord/shipping[/set]
+	[else]
+	[set finalize_back]ord/billing[/set]
+	[/else]
+	[/if]
+	[bounce page=ord/finalize]
+[else]
+	[set finalize_back]ord/shipmode[/set]
+[/else]
+[/if]
+
+	<!-- total_weight=[scratch total_weight], num=[scratch num] -->
+	<div class="form-group">
+		<div class="col-sm-12">
+			[shipping
+				mode="[scratch tmp_shipmodes]"
+				label=1
+				format='<div class="radio"><label><input type=radio name=mv_shipmode value="%M"%C>%D (%F)</label></div>'
+			]
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-12">
+			<input type="button" onclick="
+					this.form.mv_form_profile.value='';
+					this.form.mv_action.value='back';
+					[if value mv_same_billing]
+					this.form.mv_nextpage.value='ord/shipping';
+					[else]
+					this.form.mv_nextpage.value='ord/billing';
+					[/else]
+					[/if]
+					this.form.submit();
+				"
+				class="btn btn-default"
+				value="[L]Back[/L]"
+				>
+			<input type=submit value="[L]Continue checkout[/L]" class="btn btn-primary">
+		</div>
+	</div>
+
+	[calcn]
+		return unless my $sm = $Session->{ship_message};
+		my %msgs;
+		for(split /\./, $sm) {
+			next if /^No match/;
+			$msgs{$_} = 1;
+		}
+		$Session->{ship_message} = join '<br>', keys %msgs;
+		return;
+	[/calcn]
+	[if session ship_message]
+		<div style="margin:1em 0 0" class="alert alert-info">[calc]delete $Session->{ship_message};[/calc]</div>
+	[/if]
+
+</fieldset>
+</form>
+
+</div>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

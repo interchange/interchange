@@ -1,0 +1,12 @@
+	<form action="[area search]" method=get class="navbar-form navbar-right" role="search">
+		[form-session-id]
+		<input type="hidden" name="mp" value="s">
+		<div class="form-group">
+		[if session browser =~ /MSIE/i]
+			<input name="s" type="text" class="form-control" value="Search" onfocus="this.value=''">
+		[else]
+			<input name="s" type="search" class="form-control" placeholder="Search">
+		[/else]
+		[/if]
+		</div>
+	</form>

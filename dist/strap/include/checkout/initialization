@@ -1,0 +1,55 @@
+[weight hide=1 matrix=1 no-free-shipping=1]
+[perl tables="products country"]
+
+## This section sets the shipping, handling, taxing, and payment initializations
+
+## Initialize country:
+	$Values->{country} ||= $Variable->{SHIP_DEFAULT_COUNTRY};
+
+## reset shipping to default if current mv_shipmode is not a valid mode.
+	my @possible_and_valid = split ',', $Scratch->{ship_poss};
+	my $curr = $Values->{mv_shipmode};
+	my $ok = 0;
+	for(@possible_and_valid) {
+		$ok = 1 if $_ eq $curr;
+	}
+	unless($ok) {
+		$Tag->tmp('ship_reset', 1);
+#Debug("doing ship_reset... possible_and_valid = " . join ',',@possible_and_valid);
+	}
+
+## Initialize shipmode:
+	if ($Values->{mv_shipmode} eq 'default') {
+		my $shipmode = $Tag->data('country', 'shipmodes', $Values->{country});
+		$shipmode =~ s/^\s+//;
+		$shipmode =~ s/\s.*//;
+		$Values->{mv_shipmode} = $shipmode;
+	}
+
+## Start with payment mode if none there
+	$Values->{mv_order_profile} ||= $Variable->{DEFAULT_PAYMENT_MODE}
+								||'credit_card';
+
+## Check for COD order
+
+	my @handling;
+
+	if($Values->{mv_handling}) {
+			@handling = split /[\s,\0]+/, $Values->{mv_handling};
+			@handling = grep /\S/ && $_ ne 'cod', @handling;
+			$Values->{mv_handling} = join " ", @handling;
+	}
+
+	if($Values->{mv_order_profile} eq 'cod') {
+			push @handling, 'cod';
+	}
+
+	if(@handling) {
+			$Values->{mv_handling} = join " ", @handling;
+	}
+#Debug("mv_handling=$Values->{mv_handling}");
+	return;
+[/perl]
+[if scratch ship_reset]
+	[shipping mode="__SHIP_DEFAULT_MODE__" default=1 hide=1]
+[/if]

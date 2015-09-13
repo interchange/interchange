@@ -1,0 +1,39 @@
+code,accessorial,rate
+0001,Additional Handling,5.00 
+0002,Address Corrections- Ground,5.00 
+0003,Address Corrections- Air,10.00 
+0004,Chargeback for Consignee Billing Shipments,10.00 
+0005,C.O.D.s,7.00 
+0006,Delivery Area Surcharge,1.75 
+0007,Delivery Confirmation Response,1.00 
+0008,Delivery Confirmation Response - Signature Required,2.00 
+0009,Delivery Confirmation Response - Adult Signature Required,2.75 
+0010,Dimensional Weight Factor,194
+0011,Early AM Out of Territory,10.00 
+0012,Early AM Premium,28.50 
+0013,"Excessive Tracking, Tracing, & Refund Requests ",3.00 
+0014,"Hazardous Materials Surcharge, Air ",30.00 
+0015,"Hazardous Materials Surcharge, Ground ",20.00 
+0016,Insured Value,0.35 per $100
+0017,Missing/Invalid Account # Charge,10.00 
+0018,Oversize 1,30 Pounds 
+0019,Oversize 2,70 Pounds 
+0020,Pickup  Charge - Ground ARS,10.00 
+0021,Proof of Delivery- (Fax or Mail),3.00 
+0022,Quantum View Notify,1.00 
+0023,Residential Differential,1.15 
+0024,Saturday Charge Pickup,10.00 
+0025,Saturday Charge Delivery,12.50 
+0026,Ship Notification,1.00 
+0027,UPS Returns: Print Return Label,0.50 
+0028,UPS Returns: Electronic Return Label,1.00 
+0029,UPS Returns: Print & Mail Return Label,2.25 
+0030,UPS Returns Plus: 1 UPS Pickup Attempt,4.00 
+0031,UPS Returns Plus: 3 UPS Pickup Attempts,5.25 
+0032,UPS Returns Plus: Call Tag,5.75 
+0033,Verbal Confirmation of Delivery,2.00 
+0034,Weekly Service Charge ($0 - $14.99 Billed),16.00 
+0035,Weekly Service Charge ($15.00-$59.99 Billed),11.00 
+0036,Weekly Service Charge ( $60+ Billed),7.00 
+0037,Oversize 1,30
+0038,Oversize 2,30

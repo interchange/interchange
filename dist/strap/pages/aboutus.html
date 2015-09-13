@@ -1,0 +1,36 @@
+[tmp page_title]__COMPANY__ -- [L]About Us[/L][/tmp]
+[tmp display_class]leftonly[/tmp]
+
+[control reset=1]
+[control-set]
+	[component]product_tree[/component]
+	[output]left[/output]
+[/control-set]
+[control-set]
+	[component]promo[/component]
+	[matches]4[/matches]
+	[cols]col-xs-6 col-sm-3 col-md-4 col-lg-3[/cols]
+	[banner][L]Specials[/L][/banner]
+	[output]bottom[/output]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>[L]About Us[/L]: <b>__COMPANY__</b>!</h1>
+
+	<p>
+	[msg arg.0="<a href='[area contact]'>" arg.1="</a>"]Please %scontact us%s if you have any questions for us.[/msg]<br>
+	</p>
+
+	<p>
+	[msg arg.0='<a href="@_INTERCHANGE_URL_@">' arg.1='</a>']This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.[/msg]
+	</p>
+
+    <p>
+	[L]Or send an e-mail to[/L]: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a>.
+	</p>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

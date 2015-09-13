@@ -1,0 +1,166 @@
+<legend>[L]Billing Address[/L]</legend>
+
+[if scratch onepage]
+	[if value mv_same_billing eq '']
+		[value name=mv_same_billing set=1 hide=1]
+	[/if]
+	[tmp meta_footer]
+		[scratch meta_footer]
+		<script>
+			if (typeof jQuery != 'undefined') {
+				[if value mv_same_billing]$("#bill-form").hide();[/if]
+				$("#mv_same_billing0, #mv_same_billing1").click(function(){
+					if ( $("#mv_same_billing1").is(":checked") ) {
+						$("#bill-form").hide('fast');
+					}
+					else {
+						$("#bill-form").show('fast');
+					}
+				});
+			}
+		</script>
+		<script>
+			function check_bill_elements (el) {
+				var f;
+				var disit = [if value mv_same_billing]true[else]false[/else][/if];
+				if(el != undefined) {
+					if(el.checked == true && el.value == 0) 
+						disit = false;
+					if(el.checked == false && el.value == 0) 
+						disit = true;
+					if(el.checked == true && el.value == 1) 
+						disit = true;
+					if(el.checked == false && el.value == 1) 
+						disit = false;
+					f = el.form;
+
+				}
+				else {
+					f = document.checkout;
+				}
+				f.b_fname.disabled=disit;
+				f.b_lname.disabled=disit;
+				f.b_company.disabled=disit;
+				f.b_address1.disabled=disit;
+				f.b_address2.disabled=disit;
+				f.b_city.disabled=disit;
+				f.b_state.disabled=disit;
+				f.b_state_cs_in.disabled=disit;
+				f.b_zip.disabled=disit;
+				f.b_country.disabled=disit;
+			}
+		</script>
+		<script>
+			check_bill_elements();
+		</script>
+	[/tmp]
+	<label for="mv_same_billing0" class="radio-inline">
+			<input
+				type="radio"
+				name="mv_same_billing"
+				id="mv_same_billing0"
+				value="0"
+				onclick="check_bill_elements(this)"
+				[checked mv_same_billing 0]>
+			[L]Different than shipping[/L]
+	</label>
+	<label for="mv_same_billing1" class="radio-inline">
+			<input
+				type="radio"
+				name="mv_same_billing"
+				id="mv_same_billing1"
+				value="1"
+				onclick="check_bill_elements(this)"
+				 [checked mv_same_billing 1]>
+			[L]Same as shipping[/L]
+	</label>
+	<br><br>
+[else]
+	<script>
+	[loop list="fname lname company address1 address2 city state zip country"
+	]var b_[loop-code] = [jsq interpolate=1][either][value b_[loop-code]][or][value [loop-code]][/either][/jsq];
+	[/loop]var b_phone = [jsq interpolate=1][either][value b_phone][or][value phone_day][/either][/jsq];
+	function do_address (form, clear) {
+		if(clear) {
+			[loop list="fname lname company address1 address2 city state zip country"]
+			form.b_[loop-code].value = '';
+			[/loop]
+			form.b_phone = b_phone;
+		}
+		else {
+			[loop list="fname lname company address1 address2 city state zip country"]
+			form.b_[loop-code].value = b_[loop-code];
+			[/loop]
+			form.b_phone = b_phone;
+		}
+		return;
+	}
+	</script>
+	<label for=same_bill class="checkbox-inline" style="margin-bottom:1em">
+		<input type=checkbox name=mv_same_billing id=same_bill value=1 onClick="do_address(this.form,this.checked)">
+		[L]Same as shipping address[/L]
+	</label>
+[/else]
+[/if]
+
+<div id="bill-form">
+
+<div class="form-group">
+	<label for="b_fname" class="col-sm-2 control-label">[error name=b_fname std_label="[L]First name[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_fname" id="b_fname" value="[evalue b_fname]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_lname" class="col-sm-2 control-label">[error name=b_lname std_label="[L]Last name[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_lname" id="b_lname" value="[evalue b_lname]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_company" class="col-sm-2 control-label">[L]Company name[/L]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_company" id="b_company" value="[evalue b_company]" class="form-control">
+		<small class="help-block">([L]optional[/L])</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_address1" class="col-sm-2 control-label">[error name=b_address1 std_label="[L]Address line 1[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_address1" id="b_address1" value="[evalue b_address1]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_address2" class="col-sm-2 control-label">[error name=b_address2 std_label="[L]Address line 2[/L]"]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_address2" id="b_address2" value="[evalue b_address2]" class="form-control">
+		<small class="help-block">([L]optional; Apt, Suite or Floor[/L])</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_city" class="col-sm-2 control-label">[error name=b_city std_label="[L]City[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_city" id="b_city" value="[evalue b_city]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_state_cs_in" class="col-sm-2 control-label">[error name=b_state std_label="[L]State/Province[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		[display name=b_state type=state_select value="[evalue b_state]"]
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_zip" class="col-sm-2 control-label">[error name=b_zip std_label="[L]ZIP/Postal code[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type="text" name="b_zip" id="b_zip" value="[evalue b_zip]" class="form-control">
+		<small class="help-block">(example: 12345 or 12345-7890)</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="b_country" class="col-sm-2 control-label">[error name=b_country std_label="[L]Country[/L]"]</label>
+	<div class="col-sm-10 col-lg-6">
+		[display name=b_country id=b_country type=country_select value="[either][evalue b_country][or]__SHIP_DEFAULT_COUNTRY__[/either]" class="form-control" state_class="form-control"no-region=1]
+	</div>
+</div>
+
+</div>

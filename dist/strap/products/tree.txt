@@ -1,0 +1,26 @@
+code	parent_fld	mgroup	msort	page	form	name	description	inactive	extended	next_line	indicator	exclude_on	depends_on	super	help_name	img_dn	img_up	img_sel	img_icon	url	member
+1	catalog/top	catalog/top	0	index		Home	The home page of this catalog	0													
+2	catalog/top	catalog/top	0	login		Log In	Sign on!	0													0
+3	catalog/top	catalog/top	0	logout		Log Out	Log out, remove your login cookie	0													1
+4	3	catalog/top	1	logout	keep_values=1	Log out and keep name/address		0													
+5	catalog/top	catalog/top	0	ord/basket		Your Cart		0													
+6	5	catalog/top	1	ord/basket		View cart		0													
+7	5	catalog/top	1	ord/basket	empty_cart=1	Empty cart		0													
+8	catalog/top	catalog/top	0	ord/country		Checkout	Place the order...	0													
+9	8	catalog/top	1	ord/country		Std	Multiple page checkout	0													
+10	8	catalog/top	1	ord/checkout		Express	Simple one-page checkout form	0													
+11	catalog/top	catalog/top	0	member/service		Service	Track orders, do returns, manage name/address, more	0													1
+12	11	catalog/top	1	member/service		Dashboard	Find your account functions here.	0													1
+13	11	catalog/top	1	query/check_orders		Order Tracking		0													1
+14	11	catalog/top	1	member/returns		Order Returns	Get an RMA number for an order	0													1
+15	11	catalog/top	1	member/account		Account Maintenance	Change name, address, email, etc.	0													1
+16	11	catalog/top	1	member/change_password		Change Password		0													1
+17	11	catalog/top	1	member/ship_addresses		Additional Shipping Addresses		1													1
+18	11	catalog/top	1	member/saved_carts		Saved Carts/Recurring Orders		1													1
+19	catalog/top	catalog/top	0	aboutus		About Us	More information on our company	0													
+20	19	catalog/top	1	aboutus		Our Story		0													
+21	19	catalog/top	1	contact		Contact us		0													
+22	19	catalog/top	1	privacypolicy		Privacy Policy	Our Privacy Policy	0													
+23	catalog/top	catalog/top	0			Language	Choose language	0													
+24	23	catalog/top	1	process/locale/en_US/page/index		English	Select English	0													
+25	23	catalog/top	1	process/locale/de_DE/page/index		Deutsch	Select German	0													

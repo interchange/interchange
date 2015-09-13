@@ -1,0 +1,282 @@
+[tmp page_title]__COMPANY__ -- [L]Order History[/L][/tmp]
+[tmp members_only]1[/tmp]
+[tmp display_class]noleft[/tmp]
+
+@_TOP_@
+
+[tmpn bounce_page]query/check_orders[/tmpn]
+[perl transactions]
+	my $on = $Session->{arg};
+	my $un = $Tag->data('transactions', 'username', $on);
+	if($un eq  $Session->{username}) {
+		delete $Scratch->{bounce_page};
+	}
+	else {
+		$Tag->warnings('Not your order!');
+	}
+	return;
+[/perl]
+[bounce page="[scratch bounce_page]" if="[scratch bounce_page]"]
+
+<!-- BEGIN CONTENT -->
+
+[perl tables=country]### pre-open database for calcs below[/perl] 
+
+[loop list="[data session arg]"]
+         <table class="table table-condensed">
+            <tr class="info"> 
+               <td>Order Number: &nbsp;[loop-data transactions order_number]</td>
+               <td>
+			   	Order Status: &nbsp;
+						[display table=transactions col=status type=display key="[loop-code]"]
+					</a>
+					[if-loop-data transactions archived == 1]
+					([L]archived[/L])
+					[/if-loop-data]
+					[if-loop-data transactions deleted == 1]
+					([L]deleted[/L])
+					[/if-loop-data]
+					
+				</td>
+               <td>
+			   		
+					Affiliate: &nbsp;
+					[if-loop-data transactions affiliate]
+						[loop-data transactions affiliate]
+					[else]
+							none
+					[/else]
+					[/if-loop-data]
+				</td>
+                <td>
+			   		Order Date: &nbsp; <span >
+						[convert-date fmt="%b %e, %Y %l:%M %P"][loop-data transactions order_date][/convert-date]
+					</span>
+				</td>
+            </tr>
+         </table>
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+               <!-- CUSTOMER DETAILS -->
+               <!-- BILLING DETAILS -->
+               <td width="50%" valign="top" class=well> 
+                  <table class="table table-condensed">
+                     <tr> 
+                        <th>Billing Address</th>
+                     </tr>
+                     <tr> 
+                        <td valign="top"> 
+[if-loop-data transactions b_address1]
+	[loop prefix=bill list="[loop-code]"]
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%">[L]Name[/L]:</td>
+                                 <td width="70%"><a HREF="[area href="member/account"]"><u>[loop-data transactions b_fname] [loop-data transactions b_lname]</A>
+                                 </td>
+                              </tr>
+							  [if-bill-data transactions b_company]
+                              <tr> 
+                                 <td width="30%">[L]Company[/L]:</td>
+                                 <td width="70%">
+								 	[loop-data transactions b_company]
+                                 </td>
+                              </tr>
+							  [/if-bill-data]
+                              <tr> 
+                                 <td valign="top">[L]Address[/L]:</td>
+                                 <td>
+								 [loop-data transactions b_address1]
+								 [if-bill-data transactions b_address2]
+								 <br>
+								 [loop-data transactions b_address2]
+								 [/if-bill-data]
+								 </td>
+                              </tr>
+							  [if-bill-data transactions b_country =~ /^US|^CA/]
+                              <tr> 
+                                 <td>[L]City, State, Zip[/L]:</td>
+                                 <td >[loop-data transactions b_city], [loop-data transactions state]  [loop-data transactions zip]</td>
+                              </tr>
+							  [else]
+                              <tr> 
+                                 <td>[L]City[/L]:</td>
+                                 <td>[loop-data transactions b_city]</td>
+                              </tr>
+							  		[if-bill-data transactions b_state]
+                              <tr> 
+                                 <td>[L]State[/L]:</td>
+                                 <td>[loop-data transactions b_state]</td>
+                              </tr>
+								    [/if-bill-data]
+							  		[if-bill-data transactions b_zip]
+                              <tr> 
+                                 <td>[L]Postal code[/L]:</td>
+                                 <td>[loop-data transactions b_zip]</td>
+                              </tr>
+								    [/if-bill-data]
+							  [/else]
+							  [/if-bill-data]
+                              <tr> 
+                                 <td>[L]Country[/L]:</td>
+                                 <td>[data table=country col=name key="[loop-data transactions b_country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" ><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+		[/loop]
+[else]
+						<i>Same as shipping address</i>
+[/else]
+[/if-loop-data]
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <!-- SHIPPING DETAILS -->
+               <td width="50%" valign="top" class=well> 
+                  <table class="table table-condensed">
+                     <tr> 
+                        <th>Shipping Address</th>
+                     </tr>
+                     <tr> 
+                        <td valign="top"> 
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%">[L]Name[/L]:</td>
+                                 <td width="70%"><A HREF="[area
+				href="member/account"
+		]"><u>[loop-data transactions fname] [loop-data transactions lname]</A>
+                                 </td>
+                              </tr>
+							  [if-loop-data transactions company]
+                              <tr> 
+                                 <td width="30%">[L]Company[/L]:</td>
+                                 <td width="70%">
+								 	[loop-data transactions company]
+                                 </td>
+                              </tr>
+							  [/if-loop-data]
+                              <tr> 
+                                 <td valign="top" >[L]Address[/L]:</td>
+                                 <td>
+								 [loop-data transactions address1]
+								 [if-loop-data transactions address2]
+								 <br>
+								 [loop-data transactions address2]
+								 [/if-loop-data]
+								 </td>
+                              </tr>
+							  [if-loop-data transactions country =~ /^US|^CA/]
+                              <tr> 
+                                 <td>[L]City, State, Zip[/L]:</td>
+                                 <td>[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]</td>
+                              </tr>
+							  [else]
+                              <tr> 
+                                 <td>[L]City[/L]:</td>
+                                 <td>[loop-data transactions city]</td>
+                              </tr>
+							  		[if-loop-data transactions state]
+                              <tr> 
+                                 <td>[L]State[/L]:</td>
+                                 <td>[loop-data transactions state]</td>
+                              </tr>
+								    [/if-loop-data]
+							  		[if-loop-data transactions zip]
+                              <tr> 
+                                 <td>[L]Postal code[/L]:</td>
+                                 <td>[loop-data transactions zip]</td>
+                              </tr>
+								    [/if-loop-data]
+							  [/else]
+							  [/if-loop-data]
+                              <tr> 
+                                 <td>[L]Country[/L]:</td>
+                                 <td>[data table=country col=name key="[loop-data transactions country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" ><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+         <!-- CUSTOMERS ORDER GRID -->
+         <table class="table table-condensed table-striped">
+		 	<thead>
+            <tr> 
+               <th width="14%">[L]Status[/L]</th>
+               <th width="14%">[L]SKU[/L]</th>
+               <th width="14%">[L]Name[/L]</th>
+               <th width="14%" class="text-right">[L]Qty[/L]</th>
+               <th width="14%" class="text-right">[L]Unit Price[/L]</th>
+               <th width="14%" class="text-right">[L]Total[/L]</th>
+            </tr>
+			</thead>
+			<tbody>
+[query list=1 sql="select * from orderline where order_number = '[loop-code]'"]
+            <tr> 
+               <td>
+                [display    table=orderline
+                            column=status
+                            key="[sql-code]"
+                            type=display
+			    applylocale=1
+                ]
+[calc]
+	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
+	return;
+[/calc]
+               <td >[sql-param sku]</td>
+               <td >[sql-filter 30.][sql-param description][/sql-filter]</td>
+               <td class="text-right">[sql-param quantity]</td>
+               <td class="text-right">[sql-param price]</td>
+               <td class="text-right">[sql-param subtotal]</td>
+            </tr>
+[/query]
+            <tr> 
+               <td height=4 colspan=5><img src="bg.gif" width=1 height=4></td>
+               <td><img src="bg.gif" width=1 height=4></td>
+            </tr>
+            <tr> 
+               <td height=39 colspan=5 class="text-right">[L]Item Total[/L]:</td>
+               <td  class="text-right">[currency][loop-data transactions subtotal][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 class="text-right">[L]Tax:[/L]</td>
+               <td  class="text-right">[currency][loop-data transactions salestax][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 class="text-right">[L]Total Weight:[/L]</td>
+               <td  class="text-right">[calc]$total_weight[/calc]</td>
+            </tr>
+			[if-loop-data transactions handling > 0]
+            <tr> 
+               <td colspan=5 class="text-right">[L]Shipping[/L]</td>
+               <td  class="text-right">[currency][loop-data transactions shipping][/currency]</td>
+            </tr>
+			[/if-loop-data]
+            <tr> 
+               <td colspan=5 class="text-right">[L]Shipping[/L]</td>
+               <td  class="text-right">[currency][loop-data transactions shipping][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 class="text-right">[L]GRAND TOTAL:[/L]</td>
+               <td bold class="text-right">[currency][loop-data transactions total_cost][/currency]</td>
+            </tr>
+			<tbody>
+         </table>
+
+[/loop]
+
+<div class="text-center">
+	<a style="font-size:large" href="[area query/check_orders]">Return</a>
+</div>
+
+<!-- END CONTENT -->
+
+@_BOTTOM_@

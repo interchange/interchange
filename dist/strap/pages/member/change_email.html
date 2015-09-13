@@ -1,0 +1,85 @@
+[tmp page_title][L]Change Email[/L][/tmp]
+[tmpn members_only]1[/tmpn]
+[tmp display_class]noleft[/tmp]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-11 col-md-offset-1">
+
+<h1>[scratch page_title]</h1>
+
+[edisplay show_var=0 show_label=1 keep=1]
+[wdisplay]
+
+[set check_email]
+	[calc] $Values->{ok_to_change_email} = ''; [/calc]
+	email=required
+	&fatal=yes
+	email=email
+	email=match email_verify Emails must match.
+	email=unique userdb::usernick Sorry, that email is already associated with an account.
+	&set=ok_to_change_email 1
+[/set]
+
+<form method=POST action="[process href=@@MV_PAGE@@]" class="form-horizontal">
+<fieldset>
+	<legend>[L]Current email[/L]: [value email]</legend>
+	[form-session-id]
+	<input type="hidden" name="mv_action" value="go">
+	<input type="hidden" name="mv_form_profile" value="check_email">
+	<input type="hidden" name="mv_click" value="change_email">
+
+	<div class="form-group">
+		<label for="email" class="control-label col-sm-3">[error name=email std_label="[L]Change your email to[/L]"]:</label>
+		<div class="col-sm-6">
+			<input type="email" name="email" id="email" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="email_verify" class="control-label col-sm-3">[error name=email_verify std_label="[L]Type it again[/L]"]:</label>
+		<div class="col-sm-6">
+			<input type="email" name="email_verify" id="email_verify" autocomplete="off" oncopy="return false" onpaste="return false" oncut="return false" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-3 col-sm-6">
+		<input type="submit" value="[L]Change email[/L]" class="btn btn-primary">
+		</div>
+	</div>
+</fieldset>
+</form>
+
+[set change_email]
+[perl tables=userdb]
+	my $udb = $Db{userdb};
+	return unless $Values->{ok_to_change_email};
+
+	if(! $Session->{logged_in}) {
+		$Tag->error({ name => 'change_username', set => 'Not logged in' });
+		return;
+	}
+
+	my $email = $CGI->{email} or return;
+	$email = lc($email);
+	$email =~ s/^\s+//;
+	$email =~ s/\s+$//;
+
+my ($log, $die, $warn) = $Tag->logger('change_email', 'logs/member.log');
+	
+	my $result = $udb->set_slice($Session->{username}, ['usernick','email'], [ $email, $email ]);
+	#$Tag->userdb('logout');
+
+$log->("Username $Session->{username} changed email to $email.");
+
+	return $Tag->warnings(errmsg("Changed username to %s.", $email)) if $result;
+	return $Tag->error({ name => 'change_email', set => 'Failure -- please contact us.' });
+[/perl]
+[/set]
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+</div>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

@@ -1,0 +1,12 @@
+Database  state  state.txt    __SQLDSN__
+Database  state  AUTO_NUMBER  00001
+Database  state  COLUMN_DEF   "code=CHAR(8) NOT NULL PRIMARY KEY"
+Database  state  COLUMN_DEF   "country=CHAR(20) DEFAULT '' NOT NULL"
+Database  state  INDEX         country
+Database  state  COLUMN_DEF   "state=CHAR(20) DEFAULT '' NOT NULL"
+Database  state  INDEX         state
+Database  state  COLUMN_DEF   "postcode=CHAR(20) DEFAULT '' NOT NULL"
+Database  state  INDEX         postcode
+Database  state  COLUMN_DEF   "tax=text"
+Database  state  COLUMN_DEF   "name=CHAR(64) DEFAULT '' NOT NULL"
+Database  state  INDEX         name

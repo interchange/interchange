@@ -1,0 +1,43 @@
+[tmp page_title]__COMPANY__ -- [L]Customer Service[/L][/tmp]
+[tmp members_only]1[/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+	[output]left[/output]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>[L]Customer Service[/L]</h1>
+
+[edisplay show_var=0 show_label=1]
+[wdisplay]
+
+    [if cgi mv_successpage]
+        <p><b>[L]Welcome back[/L][if value fname], [value fname][/if]!</b></p>
+	[/if]
+
+	<p>
+	[msg arg.0="<a href='[area contact]'>" arg.1="</a>"]Below are our automated
+    customer service options. If you need to talk to someone please
+    %sclick here%s.[/msg]
+	</p>
+
+	<h4>[L]Account Management Functions[/L]</h4>
+	<ul class="list-unstyled">
+		[menu name="catalog/service" inactive=inactive localize="description,name"]
+        <li><a href="{HREF}" title="{DESCRIPTION}"><b>{NAME}</b></a></li>
+		[/menu]
+	[if session admin]
+        <li><a href="[area href="admin/menu_editor" form="qmenu_name=catalog/service"]">[L]edit[/L]</a></li>
+	[/if]
+	</ul>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

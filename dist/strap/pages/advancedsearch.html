@@ -1,0 +1,151 @@
+[set page_title]__COMPANY__ -- [L]Advanced Search[/L][/set]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control-set]
+	[component]cross[/component]
+	[size]2[/size]
+	[cols]col-xs-6 col-sm-3 col-md-6[/cols]
+	[banner]Specials[/banner]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+[tmp matchlimit]10[/tmp]
+
+<h1>[L]Advanced Search[/L]</h1>
+
+<form action="[area search]" method=post class="form-horizontal" role="form">
+<fieldset>
+<legend>[L]Search by Field[/L]</legend>
+	[form-session-id]
+	<div class="form-group">
+		<label for="searchterm" class="col-sm-4 control-label">Search for</label>
+		<div class="col-sm-8">
+		  <input type="text" class="form-control" name=se id="searchterm" placeholder="Search Term">
+		</div>
+	</div>
+	<input type=hidden name=st value=db>
+	<input type=hidden name=co value=1>		
+	[if module-version Text::Query]
+	<input type=hidden name=op value=aq>
+	[else]
+	<input type=hidden name=op value=rm>
+	[/else]
+	[/if]
+	<div class="form-group">
+		<label for="searchfield" class="col-sm-4 control-label">In Fields</label>
+		<div class="col-sm-8">
+			<select class="form-control" name=sf id="searchfield">
+			<option value=":sku:price:comment:description:category:author">--[L]all fields[/L]--
+			[loop
+				acclist=1
+				list="sku=SKU,price=Price,comment=Product Description,description=Title,category=Category,author=Author"
+			]
+			<option value="[loop-code]">[loop-param label]
+			[/loop]
+			</select>
+		</div>
+	</div>
+	<input type=hidden name=sf value=category>
+	<div class="form-group">
+		<label for="subfield" class="col-sm-4 control-label">Full words only</label>
+		<div class="col-sm-8">
+			[display name=su id=subfield type=noyes class="form-control"]
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="case_sens" class="col-sm-4 control-label">Case Sensitive</label>
+		<div class="col-sm-8">
+			[display name=su id=case_sens type=noyes class="form-control"]
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="regex" class="col-sm-4 control-label">Regular Expression</label>
+		<div class="col-sm-8">
+			[display name=su id=regex type=noyes class="form-control"]
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="onlycat" class="col-sm-4 control-label">[L]Only in category[/L]</label>
+		<div class="col-sm-8">
+			[tmp cat_widget]
+				[display
+						name=se
+						type=select
+						options="=--[L]all categories[/L]--"
+						lookup_query="SELECT DISTINCT category FROM products ORDER BY category"
+						class="form-control"
+						id=onlycat
+				]
+			[/tmp]
+			[scratch cat_widget]
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-8 col-sm-offset-4">
+			<button type=submit class="btn btn-info">[L]Search[/L]</button>
+		</div>
+	</div>
+</fieldset>
+</form>
+
+<form action="[area search]" method=post class="form-horizontal" role="form">
+<fieldset>
+<legend>[L]Search by Price[/L]</legend>
+	[form-session-id]
+			<input type=hidden name=st value=db>
+			<input type=hidden name=co value=1>
+			<input type=hidden name=sf value=price>
+			<input type=hidden name=sf value=price>
+			<input type=hidden name=sf value=category>
+			<input type=hidden name=nu value=1>
+			<input type=hidden name=nu value=1>
+			<input type=hidden name=nu value=0>
+			<input type=hidden name=op value=ge>
+			<input type=hidden name=op value=le>
+			<input type=hidden name=op value=eq>
+	<div class="form-group">
+		<label for="minprice" class="col-sm-4 control-label">Minimum Price</label>
+		<div class="col-sm-8">
+		  <input type="text" class="form-control" name=se id="minprice" placeholder="Minimum Price">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="maxprice" class="col-sm-4 control-label">Maximum Price</label>
+		<div class="col-sm-8">
+		  <input type="text" class="form-control" name=se id="maxprice" placeholder="Maximum Price">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="onlycat" class="col-sm-4 control-label">[L]Only in category[/L]</label>
+		<div class="col-sm-8">
+			[tmp cat_widget]
+				[display
+						name=se
+						type=select
+						options="=--[L]all categories[/L]--"
+						lookup_query="select distinct category from products order by category"
+						class="form-control"
+						id=onlycat
+				]
+			[/tmp]
+			[scratch cat_widget]
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-8 col-sm-offset-4">
+			<button type=submit class="btn btn-info">[L]Search[/L]</button>
+		</div>
+	</div>
+</form>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

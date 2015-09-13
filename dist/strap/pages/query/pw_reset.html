@@ -1,0 +1,115 @@
+[tmp page_title]Password Reset[/tmp]
+[tmpn display_class]noleft[/tmpn]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>Password Reset</h1>
+
+[if cgi u]
+[and cgi x]
+[and cgi k]
+	[userdb function=logout clear-cookie="MV_PASSWORD,MV_USERNAME" hide=1]
+	[perl table=userdb]
+		my $uid = $CGI->{u};
+		my $expire = $CGI->{x};
+		my $time = $Tag->time({ body => '%y%m%d%H' });
+		return if ($expire < $time);
+		# validated expiry, so keep going
+		my $db = $Db{userdb};
+		my $key = $Variable->{PASSWORD_RESET_CHECK_KEY};
+		my ($email, $old_pw, $mod_time) = $db->get_slice($uid, ['email', 'password', 'mod_time']);
+		# using mod_time in hmac prevents clicking link again after pw_reset page loads
+		my $hmac = $Tag->filter({ op => "hmac_sha1_hex.$key", body => $mod_time . $expire . $email });
+		if($CGI->{k} eq substr($hmac, 0, 20)) {
+			$Scratch->{key_matches} = 1;
+			## reset password and set expiration, just in case they don't change pwd now; invalidates key (increases mod_time)
+			my $new_pw;
+			for(1 .. 4) { $new_pw .= int(rand(10)); }
+			my $cry_pw = $new_pw;
+			if( $Config->{UserDB}{crypt} ) {
+				$cry_pw = $Tag->crypt($new_pw);
+			}
+			my $expire_pass = $Tag->time({ body => '%Y%m%d%H%M%S', adjust => '1 days', });
+			$db->set_slice($uid, [qw/password expiration/], [$cry_pw, $expire_pass]);
+Log(qq{ pass for $uid was $old_pw, now $cry_pw } );
+			$Scratch->{pwd} = $new_pw;
+			$Scratch->{email} = $email;
+		}
+		return;
+	[/perl]
+	[if scratch key_matches][seti login_result][userdb function=login username="[scratch email]" password="[scratch pwd]"][/seti][/if]
+[/if]
+
+[if scratch key_matches]
+[and scratch login_result]
+
+	[set change_pass]
+		[if type=explicit compare=|
+						[userdb
+							function=change_pass
+							password="[cgi password]"
+							verify="[cgi password_verify]"
+							oldpass="[scratch pwd]"
+						]
+		|]
+			[perl table=userdb]
+				$Db{userdb}->set_field($Session->{username}, 'expiration', '');
+				delete $Scratch->{key_matches};
+				delete $Scratch->{login_result};
+				delete $Scratch->{pwd};
+				return;
+			[/perl]
+			mv_nextpage=[cgi mv_successpage]
+			[warnings message="Password change successful. Please make a note of your new password."]
+		[else]
+			mv_nextpage=@@MV_PAGE@@
+		[/else]
+		[/if]
+	[/set]
+	[set check_pass]
+		password=length 4 Password length less than minimum length of 4 characters.
+		password_verify=match password The specified passwords do not match.
+	[/set]
+	[if session failure]
+		<div class="alert alert-error">[calc] delete $Session->{failure}[/calc]</div>
+	[/if]
+	[error auto=1 show_var=0]
+	<form action="[process href=@@MV_PAGE@@ secure=1]" method="POST" class="form-horizontal">
+	<fieldset>
+		<legend>Thank you for verifying your email address. You must now change your password.</legend>
+		[form-session-id]
+		<input type=hidden name=mv_action       value=back>
+		<input type=hidden name=mv_click        value="change_pass">
+		<input type=hidden name=mv_form_profile value="check_pass">
+		<input type=hidden name=mv_successpage  value="member/service">
+		<input type=hidden name=u               value="[cgi u]">
+
+		<div class="control-group">
+			<label for="pass" class="control-label">New Password</label>
+			<div class="controls">
+				<input type=password name=password id=pass value="" autocomplete="off">
+			</div>
+		</div>
+		<div class="control-group">
+			<label for="verify" class="control-label">Verify</label>
+			<div class="controls">
+				<input type=password name=password_verify id=verify value="" autocomplete="off" oncopy="return false" onpaste="return false" oncut="return false">
+			</div>
+		</div>
+		<div class="form-actions">
+			<input type="submit" value="[L]Change password[/L]" class="btn btn-primary">
+		</div>
+	</fieldset>
+	</form>
+
+[else]
+
+	<p>That key did not match. It might have expired, or you might need to copy and paste the link from your email, rather than clicking it.</p>
+	<p>You can also <a href="[area lost_password]">reset your password</a> again.</p>
+
+[/else]
+[/if]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

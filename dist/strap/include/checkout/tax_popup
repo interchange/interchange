@@ -1,0 +1,22 @@
+[if config SalesTax ne multi]
+<script>
+    function check_tax(form) {
+        var foundState = false;
+		[calc]
+			if($Variable->{TAXCOUNTRY}) {
+				return q{var ch = 'NEVAIRBE';}
+					unless $Variable->{TAXCOUNTRY} =~ /\b$Values->{country}\b/;
+			}
+			return q{var ch = form.state.value;}
+		[/calc]
+        ch = ch.toUpperCase();
+                [loop list="__TAXAREA__"]
+        if(ch == "[loop-code]") {
+            alert("You will be charged [currency][fly-tax [loop-code]][/currency] sales tax since you are shipping to [loop-code].");
+            foundState = true;
+        }
+                [/loop]
+        return foundState;
+    }
+</script>
+[/if]

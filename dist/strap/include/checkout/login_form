@@ -1,0 +1,31 @@
+[if session failure]
+  <p><b>[calc]delete $Session->{failure}[/calc]</b></p>
+[/if]
+
+[set Log In]
+  mv_nextpage=@@MV_PAGE@@
+[/set]
+
+<form action="[process secure=1]" method="POST" class="form-inline alert alert-info">
+<fieldset>
+[form-session-id]
+<input type="hidden" name="mv_todo"     value="return">
+<input type="hidden" name="mv_nextpage" value="ord/checkout">
+<input type="hidden" name="mv_check"    value="Log In">
+<input type="hidden" name="mv_click"    value="Login">
+
+<p>[msg arg.0='<a class="alert-link" href="[area new_account]">' arg.1='</a>']If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.[/msg]</p>
+
+	<input type="email" autocapitalize="off" autocorrect="off" class="form-control" name="mv_username" id="mv_username" value="[read-cookie MV_USERNAME]" placeholder="[L]Email[/L]">
+	<input type="password" name="mv_password" id="mv_password" class="form-control" value="" autocomplete="off" placeholder="[L]Password[/L]">
+	<input type="submit" value="[L]Log In[/L]" class="btn btn-info">
+
+	[if config CookieLogin]
+		<label for="mv_cookie_password" class="checkbox muted small" style="margin-left:1em">
+			<input type="checkbox" name="mv_cookie_password" id="mv_cookie_password" value="1" checked=checked>
+			[L]Remember me (uncheck if public terminal)[/L]
+		</label>
+	[/if]
+
+</fieldset>
+</form>

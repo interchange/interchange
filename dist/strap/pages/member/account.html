@@ -1,0 +1,63 @@
+[tmp page_title]__COMPANY__ -- [L]Account Maintenance[/L][/tmp]
+[tmpn members_only]1[/tmpn]
+[tmpn onepage]1[/tmpn]
+[tmp display_class]noleft[/tmp]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-11 col-md-offset-1">
+
+<h1>[L]Account Maintenance[/L]</h1>
+
+[update values]
+
+[edisplay keep=1]
+[wdisplay]
+
+[userdb function=get_billing_names]
+[userdb function=get_shipping_names]
+
+[set Save_database]
+[calc]#Debug("Saving!"); return[/calc]
+[if compare="[userdb save]"]
+[warnings message=|Information saved. Return to <a href="[area member/service]">your account</a>|]
+[else]
+[error name=userdb set="Information saved."]
+[/else]
+[/if]
+[/set]
+
+<form action="[process secure=1]" method="POST" name=checkout>
+<fieldset class="form-horizontal">
+[form-session-id]
+<input type=hidden name=mv_form_profile value=account_change>
+<input type=hidden name=mv_todo         value=return>
+<input type=hidden name=mv_nextpage     value="[if items]__CHECKOUT_PAGE__[else]@@MV_PAGE@@[/else][/if]">
+<input type=hidden name=mv_check        value="Save_database">
+
+	[include include/checkout/shipping_address]
+</fieldset>
+<fieldset class="form-inline">
+	[include include/checkout/mailing_status]
+		[comment] Reset value variable mail_list in order to be able to unsubscribe from ALL mailinglists.  [/comment]
+		[value name='mail_list' value='']
+	<br>
+</fieldset>
+<fieldset class="form-horizontal">
+	[include include/checkout/billing_address]
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type=submit class="btn btn-primary">[L]Save Account Info[/L]</button> 
+		</div>
+	</div>
+
+</fieldset>
+</form>
+
+</div>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

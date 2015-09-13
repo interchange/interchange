@@ -1,0 +1,9 @@
+CodeDef hmac_sha1_hex Filter
+CodeDef hmac_sha1_hex Description hmac_sha1_hex hashing
+CodeDef hmac_sha1_hex Routine <<EOR
+use Digest::SHA;
+sub {
+	my ($val, undef, $key) = @_;
+	return Digest::SHA::hmac_sha1_hex($val, $key);
+}
+EOR

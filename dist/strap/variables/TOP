@@ -1,0 +1,11 @@
+__PAGE_INIT__
+[output name=trash]
+[component group=vertical output="[control output left]"]
+[component group=vertical output="[control output left]"]
+[component group=vertical output="[control output left]"]
+[component group=content output="[control output top]"]
+[component group=content output="[control output bottom]"]
+[component group=vertical output="[control output left]"]
+[component group=vertical output="[control output left]"]
+[component group=vertical output="[control output left]"]
+[output name=""]

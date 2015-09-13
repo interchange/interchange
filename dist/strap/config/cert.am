@@ -1,0 +1,12 @@
+ActionMap  cert <<EOA
+sub {
+	my $path = shift;
+	$path =~ s:^cert/::;
+	my $CGI = \%CGI::values;
+	$CGI->{mv_nextpage} = 'pay_cert/redeem';
+	my ($code, $check) = split('/', $path);
+	$CGI->{pc_code} = $code;
+	$CGI->{pc_check} = $check;
+	return 1;
+}
+EOA

@@ -1,0 +1,26 @@
+<xmp>
+[either][value country][or][value name=country values_space=order_entry][/either]
+[either][value state][or][value name=state values_space=order_entry][/either]
+[either][value zip][or][value name=zip values_space=order_entry][/either]
+
+[shipping]
+
+weight: [weight]
+weight-matrix: [weight matrix=1]
+weight-nofreeshipping: [weight no-free-shipping=1]
+
+total_weight: [scratch total_weight]
+
+shipmode: [either][value mv_shipmode][or][value name=mv_shipmode values_space=order_entry][/either]
+
+Possible: [shipping possible=1]
+
+widget_options: [shipping widget=options]
+
+Description: [shipping label=1 format="%D"]
+
+ship_message: [data session ship_message]
+
+default mode var: __SHIP_DEFAULT_MODE__
+
+</xmp>

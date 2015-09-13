@@ -1,0 +1,88 @@
+[tmp page_title]__COMPANY__ -- [L]Welcome[/L][/tmp]
+[tmp display_class][either][cgi template][or]leftright[/either][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+	[output]right[/output]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+	[show_categories]1[/show_categories]
+	[output]left[/output]
+[/control-set]
+[control-set]
+	[component]cross[/component]
+	[buttons]1[/buttons]
+	[cols]col-xs-6 col-sm-3 col-md-4 col-lg-3[/cols]
+	[random]1[/random]
+	[size]4[/size]
+	[output]bottom[/output]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[buttons]1[/buttons]
+	[cols]col-xs-6 col-sm-3 col-md-12[/cols]
+	[matches]5[/matches]
+	[pool]100[/pool]
+	[size]5[/size]
+	[output]right[/output]
+[/control-set]
+[control reset=1]
+
+[comment] ----- Gift Certs ----- [/comment]
+[if !scratch pay_cert_code]
+	[seti pay_cert_code][read-cookie MV_GIFT_CERT_CODE][/seti]
+	[seti pay_cert_check][read-cookie MV_GIFT_CERT_CHECK][/seti]
+[/if]
+[if scratch pay_cert_code]
+	[perl pay_certs]
+		my @certs = grep /\S/, split /[\0,\s]+/, $Scratch->{pay_cert_code};
+		my %seen;
+		@certs = grep !$seen{$_}++, @certs;
+		@certs = grep tag_data('pay_certs', 'amount', $_) > 0, @certs;
+		my $now = $Tag->time({ fmt => '%Y%m%d%H%M%S' });
+		my $i=0;
+		for(@certs) {
+			my $expiry = tag_data('pay_certs', 'date_expires', $_);
+			delete $certs[$i] if $expiry < $now;
+			$i++;
+		}
+		$Scratch->{pay_cert_code} = join ",", @certs;
+		return;
+	[/perl]
+[/if]
+[comment] --- END Gift Certs --- [/comment]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+[loop list="[scratch pay_cert_code]"]
+	<p class="alert alert-success">You have a[loop-alternate except_first]nother[/loop-alternate] gift certificate for [currency][loop-data pay_certs amount][/currency]!</p>
+[/loop]
+
+	[L INDEX_PAR1]
+		<h1>Welcome to __COMPANY__!</h1>
+
+		<p class="lead">This site is intended to get you started building
+		your own e-business site. Replace the stock graphics, products, 
+		and categories in this store to begin building your custom site.</p>
+		<p>Please note that any products purchased will not be delivered nor 
+		will the customer be billed. Any products found on this site are to 
+		be treated as fictional.
+		</p>[/L]
+
+		<p>View <a href="[area All-Products]">all products</a>.</p>
+
+[if var MV_DEMO_MODE]
+		<p>
+			  View a different layout for the page:<br>
+			  <a href="[area href=index form=|template=leftonly|]">Left column, right content</a><br>
+			  <a href="[area href=index form=|template=rightonly|]">Right column, left content</a><br>
+			  <a href="[area href=index form=|template=leftright|]">Right column, left column, center content</a><br>
+		</p>
+		<p>[L]Generate test order to fill the sample order database[/L]: <a href="[area test_order]">[L]Do test order[/L]</a>.</p>
+[/if]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

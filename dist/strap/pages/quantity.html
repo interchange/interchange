@@ -1,0 +1,70 @@
+[tmp page_title]__COMPANY__ -- [L]Quantity Discounts[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+[fly-list code="[data session arg]"]
+
+<h2><small>[item-field category]:</small> [item-description]</h2>
+
+[if-item-field image]
+  <img src="items/[item-field image]" alt="[item-description]" class="pull-left">
+[/if-item-field]
+
+<p>[item-field comment]</p>
+
+[seti count][data table=inventory column=quantity key='[item-code]'][/seti]
+[if scratch count eq 0]
+	<p><b class="text-warning">[L]Out Of Stock[/L]</b> <a href="[area function/stock_alert [item-code]]">[L]In Stock Notification[/L]</a></p>
+[else]
+	<p class="text-success"><b>[L]In Stock[/L]</b></p>
+[/else]
+[/if]
+
+[set quantities]1 5 10 25[/set]
+			[calc]
+				$Scratch->{quantities} =~ s/\s+$//;
+				$Scratch->{quantities} =~ s/^\s+//;
+				@things = split /[\s,\0]+/, $Scratch->{quantities};
+				$Scratch->{qp_columns} = scalar @things;
+				$Scratch->{qp_columns}++;
+				return;
+			[/calc]
+
+[loop prefix="part" list="[data session arg]"]
+
+
+[table-organize
+			table="class='table table-bordered table-condensed'"
+			caption="Quantity Pricing"
+			rows="2"
+			columnize="[scratch qp_columns]"
+			cols="[scratch qp_columns]"
+			]
+	<td>
+		[L]Part No.[/L]
+	</td>
+	<td valign="top">[part-code]</td>
+	[loop list="[scratch quantities]"]
+	<td valign="bottom" align="right">[loop-code]</td>
+	<td valign="top" align="right">
+		[order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</a>
+	</td>
+	[/loop]
+[/table-organize]
+
+[/loop]
+
+[/fly-list]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

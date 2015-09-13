@@ -1,0 +1,1 @@
+uid	sku	price	description	fname	lname	email	date

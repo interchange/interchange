@@ -1,0 +1,11 @@
+{MYSQLCREATE}mysqladmin __MVC_MYSQLCREATEOPT__ create __MVC_SQLDB__
+Since you selected the MySQL option, you need to create a database named
+"__MVC_SQLDB__". In a default MySQL configuration, any user may create
+and drop and modify test_* databases, but some administrators disable this.
+  
+
+{PGSQL}createdb __MVC_SQLDB__
+Since you selected the PostgreSQL option, you need to create a database named
+"__MVC_SQLDB__". This will only work if your administrator allowed it.
+
+

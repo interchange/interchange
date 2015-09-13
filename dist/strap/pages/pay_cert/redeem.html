@@ -1,0 +1,81 @@
+[tmp page_title][L]Gift certificate redemption[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>Gift Certificate Redemption</h1>
+  
+[if !cgi pc_check]
+	<p class="alert alert-error">Check value required. Your gift certificate link is not complete. Please contact the provider of your gift or <a href="[area contact]">__COMPANY__</a>.</p>
+[else]
+
+[if cgi pc_code]
+  	[seti pay_cert_code][cgi name=pc_code filter=e][/seti]
+[/if]
+[perl pay_certs]
+	my @cert_msgs;
+  	my $from_cookie = $Tag->read_cookie('MV_GIFT_CERT_CODE');
+	my $cert = join ",", $from_cookie, $Scratch->{pay_cert_code};
+	my @certs = grep /\S/, split /[\0,\s]+/, $cert;
+	my %seen;
+	@certs = grep !$seen{$_}++, @certs;
+	@certs = grep tag_data('pay_certs', 'amount', $_) > 0, @certs;
+#expires=20121205103725  (2012-12-05 10:37:25)
+	my $now = $Tag->time({ fmt => '%Y%m%d%H%M%S' });
+	my $i=0;
+	for(@certs) {
+		my $expiry = tag_data('pay_certs', 'date_expires', $_);
+		if($expiry < $now) {
+			$expiry =~ s/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/$1-$2-$3 $4:$5:$6/;
+			my $exp = $Tag->filter('convert_date', $expiry);
+			push @cert_msgs, "Sorry, certificate $_ expired $exp";
+			delete $certs[$i];
+		}
+		## check check_value for posted cert
+		next unless $CGI->{pc_code} eq $_;
+		my $check = tag_data('pay_certs', 'check_value', $_);
+		if($check ne $CGI->{pc_check}) {
+			push @cert_msgs, "The link for your gift certificate $_ is not valid";
+			delete $certs[$i];
+		}
+		$i++;
+	}
+	$Scratch->{pay_cert_code} = join ",", @certs;
+	$Tag->set_cookie( {
+						name => 'MV_GIFT_CERT_CODE',
+						value => $Scratch->{pay_cert_code},
+						expire => $Variable->{GIFT_CERT_PERIOD},
+					});
+	$Tag->tmp('cert_msg', join(', and: ',@cert_msgs) . '.') if scalar @cert_msgs;
+	return;
+[/perl]
+	<br>
+	[if scratch pay_cert_code]
+		<ul>
+		[loop list="[scratch pay_cert_code]"]
+			[if-loop-data pay_certs amount > 0]
+			<li><B>You have a[loop-alternate except_first]nother[/loop-alternate] gift certificate for [currency][loop-data pay_certs amount][/currency]!</B></li>
+			[/if-loop-data]
+		[/loop]
+		</ul>
+		<br>
+		[if scratch cert_msg]<p>[scratch cert_msg] Please contact the provider of your gift or <a href="[area contact]">__COMPANY__</a>.</p>[/if]
+	[else]
+		<p>Bad certificate code. [scratch cert_msg] Please contact the provider of your gift or <a href="[area contact]">__COMPANY__</a>.</p>
+	[/else]
+	[/if]
+
+[/else]
+[/if]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

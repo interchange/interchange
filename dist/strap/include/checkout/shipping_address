@@ -1,0 +1,90 @@
+<legend>[L]Shipping Address[/L] <small>([L]primary[/L])</small></legend>
+
+[if !scratch onepage]
+[if session logged_in]
+    <p>Please verify the information below.</p>
+[else]
+	<div class="alert alert-info"><a class="btn btn-info" href="[area href=login form=|destination=@@MV_PAGE@@|]">[msg arg.0='</a>' arg.1='<a class="alert-link" href="[area href=new_account form=|destination=@@MV_PAGE@@|]">' arg.2='</a>']Login%s to pre-fill this information. Or, %screate an account%s with us (optional).[/msg]</div>
+[/else]
+[/if]
+<p class="text-info"><i>[L]Asterisk (*) indicates required field[/L]</i></p>
+[/if]
+
+<div class="form-group">
+	<label for="fname" class="col-sm-2 control-label">[error name=fname std_label="[L]First name[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=fname id=fname value="[evalue fname]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="lname" class="col-sm-2 control-label">[error name=lname std_label="[L]Last name[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=lname id=lname value="[evalue lname]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="company" class="col-sm-2 control-label">[error name=company std_label="[L]Company name[/L]" required="[scratch dealer]"]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=company id=company value="[evalue company]" class="form-control">
+		<small class="help-block">([L]optional[/L])</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="address1" class="col-sm-2 control-label">[error name=address1 std_label="[L]Address line 1[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=address1 id=address1 value="[evalue address1]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="address2" class="col-sm-2 control-label">[error name=address2 std_label="[L]Address line 2[/L]"]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=address2 id=address2 value="[evalue address2]" class="form-control">
+		<small class="help-block">([L]optional; Apt, Suite or Floor[/L])</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="city" class="col-sm-2 control-label">[error name=city std_label="[L]City[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=city id=city value="[evalue city]" class="form-control">
+	</div>
+</div>
+<div class="form-group">
+	<label for="state_cs_in" class="col-sm-2 control-label">[error name=state std_label="[L]State/Province[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		[display name=state type=state_select value="[evalue state]"]
+	</div>
+</div>
+<div class="form-group">
+	<label for="zip" class="col-sm-2 control-label">[error name=zip std_label="[L]ZIP/Postal code[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=text name=zip id=zip value="[evalue zip]" class="form-control">
+		<small class="help-block">([L]example[/L]: 12345 [L]or[/L] 12345-7890 [L]or[/L] A1B2C3)</small>
+	</div>
+</div>
+<div class="form-group">
+	<label for="country" class="col-sm-2 control-label">[L]Country[/L]</label>
+	<div class="col-sm-10 col-lg-6">
+		[display name=country id=country type=country_select value="[either][evalue country][or]__SHIP_DEFAULT_COUNTRY__[/either]" class="form-control" state_class="form-control" no-region=1 state_js="check_tax(this.form)"]
+	</div>
+</div>
+<div class="form-group">
+	<label for="email" class="col-sm-2 control-label">[error name=email std_label="[L]E-mail address[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		[if session logged_in]
+			<input type=hidden name=email id=email value="[evalue email]" class="form-control">
+            [evalue email]
+			<span class="help-block">(<a href="[area member/change_email]">[L]change[/L]</a>)</span>
+		[else]
+			<input type=email name=email id=email value="[evalue email]" class="form-control" autocapitalize="off" autocorrect="off">
+			<small class="help-block">([L]example[/L]: name@domain.com)</small>
+		[/else]
+		[/if]
+	</div>
+</div>
+<div class="form-group">
+	<label for="phone_day" class="col-sm-2 control-label">[error name=phone_day std_label="[L]Phone[/L]" required=1]</label>
+	<div class="col-sm-10 col-lg-6">
+		<input type=tel name=phone_day id=phone_day value="[evalue phone_day]" class="form-control">
+		<small class="help-block">([L]example[/L]: 202-555-1212 [L]or[/L] 44-22-555-1212)</small>
+	</div>
+</div>

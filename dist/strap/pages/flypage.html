@@ -1,0 +1,116 @@
+[tmp page_title]
+	[if session arg]
+		[description code="[data session arg]"]
+	[else]
+		[item-description]
+	[/else]
+	[/if] -- __COMPANY__
+[/tmp]
+[tmp display_class]leftonly[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]cart_tiny[/component]
+[output]left[/output]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[show_categories]1[/show_categories]
+[output]left[/output]
+[/control-set]
+
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+[fly-list code="[data session arg]"]
+[set cross_category][item-field category][/set]
+[set upsell][item-data merchandising upsell_to][/set]
+[set cross_codes][item-data merchandising cross_sell][/set]
+
+<h1>[item-description]</h1>
+
+<form action="[area href="[if-item-field option_type][item-code][else]ord/basket[/else][/if-item-field]"]" method="POST" class="form-horizontal">
+<input type="hidden" name="mv_action"  value="refresh">
+<input type="hidden" name="mv_order_item"  value="[item-code]">
+[form-session-id]
+
+<table class="table">
+<tr> 
+	<td> 
+		[if-item-field image]
+			<img src="items/[item-field image]" alt="[item-filter encode_entities][item-description][/item-filter]">
+		[/if-item-field]
+	</td>
+	<td>
+		[item-field comment]
+
+	    [if ordered [item-code]]
+	        <p style="margin-top:1em" class="text-info">[msg arg.0="[page ord/basket]" arg.1="</a>"]This item is currently in your %sshopping cart%s.[/msg]</p>
+	    [/if]
+
+		[edisplay show_var=0]
+
+		[if-item-field option_type eq Matrix]
+			[set check_opt]
+				&success=ord/basket
+				mv_sku=mandatory Need to select an option.
+			[/set]
+			<input type=hidden name=mv_form_profile value=check_opt>
+		[/if-item-field]
+		[if-item-field option_type eq Simple]
+			[seti check_opt]
+				&success=ord/basket
+				[query
+					list=1
+					sql="select o_group,o_label from options where sku='[item-code]'"
+				]mv_order_[sql-code]=mandatory Need to select [sql-param o_label]
+				[/query]
+			[/seti]
+			<input type=hidden name=mv_form_profile value=check_opt>
+		[/if-item-field]
+		[table-organize cols=2 table=' class="table table-bordered table-condensed small" style="margin-top:1em"']
+			[item-options td=1 label=1 bold=1 price=1 blank_label="--select--"]
+		[/table-organize]
+	</td>
+</tr>
+<tr> 
+	<td style="white-space:nowrap">
+  	    [if-item-data inventory quantity < 1]
+	    	<b class="text-danger">[L]Out Of Stock[/L]<b>
+	        <br>
+	        <a href="[area function/stock_alert [item-code]]">[L]In-Stock Notification[/L]</a>
+	    [else]
+			<b class="text-success">[L]In Stock[/L]</b>
+	    [/else]
+	    [/if-item-data]
+	</td>
+	<td class="form-inline text-right">
+	    <label for="mv_order_quantity">[L]Quantity[/L]:</label>
+		[if-item-field prod_group eq 'Gift Certificates']
+          	1<input type="hidden" name="mv_order_quantity" value="1">
+        [else]
+			<input type="[if config FractionalItems]text[else]number[/else][/if]" class="form-control" name="mv_order_quantity" id="mv_order_quantity" value="1">
+		[/else]
+		[/if-item-field]
+	</td>
+</tr>
+<tr>
+	<td>
+		[L]Price[/L]: <b>[item-price]</b>
+	</td>
+	<td class="text-right">					
+		<input type="submit" value="[L]Add to Cart[/L]" class="btn btn-primary">
+	</td>
+</tr>
+</table>
+
+</form>
+
+[/fly-list]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

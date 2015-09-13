@@ -1,0 +1,62 @@
+[comment]
+ui_name: random
+ui_type: component
+ui_class: content, vertical
+ui_group: promotion
+ui_label: Random items
+
+matches:
+	label: Number to show
+	options: 1,2*,3,4,5,6,7,8,9,10
+	type: select
+
+pool:
+	help: Controls now many items will be returned and randomized, always from the beginning of the database/text file
+	label: Number to select from
+	options: 100,1000*,10000
+	type: select
+
+cols:
+	label: Columns
+	options: 1*,2,3,4
+	type: select
+
+banner:
+	label: Banner for top box
+	type: text
+	width: 40
+
+buttons:
+	label: Display buy/info buttons
+	type: yesno
+
+
+[/comment]
+<!-- BEGIN COMPONENT [control component random] -->
+
+<h4 class="text-muted">[control name=banner default="[L]Random Items[/L]"]</h4>
+[div-organize embed=lc pretty=1 cols="12" filler_class="[control cols col-sm-3]" row_attr='class="row equal-height-container"']
+[loop
+	random="[control matches 2]"
+	search="
+		fi=products
+		st=db
+		ra=yes
+		ml=[control pool 1000]
+"]
+	<div class="[control cols col-sm-3] equal-height-column">
+		<DIV class="thumbnail equal-height-column">
+			<a href="[area [loop-code]]">[image src="thumb/[loop-field thumb]" default="thumb.gif"]</a>
+			<DIV class="caption text-center">
+				<h5><a href="[area [loop-code]]">[loop-description]</a></h5>
+				<p>[L]Our Price[/L]: <b>[loop-price]</b></p>
+				[if control buttons]
+					<a href="[area order [loop-code]]" class="btn btn-xs btn-primary">[L]Add to Cart[/L]</a>
+				[/if]
+			</DIV>
+		</DIV>
+	</div>
+[/loop]
+[/div-organize]
+
+<!-- END COMPONENT [control component random] -->

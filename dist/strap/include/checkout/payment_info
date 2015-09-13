@@ -1,0 +1,313 @@
+[tmp meta_footer]
+[scratch meta_footer]
+
+<div class="modal fade" id="modalcvv" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Security code <small>(or "CVC" or "CVV")</small></h4>
+			</div>
+			<div class="modal-body">
+				<p>The CVV or security code is an extra security measure to ensure you have access to, or physical possession of the credit card. See below for how to find your security code:</p>
+				<table class="table table-bordered">
+				<tr>
+					<td>
+						<img src="visa_cvv.png" alt="Visa/MC CVV">
+						<h3>VISA &amp; MasterCard</h3>
+						<p>It is the last 3 digits after the credit card number on the back of the card in the signature area.</p>
+					</td>
+					<td>
+						<img src="amex_cvv.png" alt="AMEX CVV">
+						<h3>American Express</h3>
+						<p>The code is printed on the front of the card, above and to the right of the embossed card number.</p>
+					</td>
+				</tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var cards = [ 'visa', 'mc', 'disc', 'amex' ];
+	var cardimg = new Array;
+	for (var i = 0; i < cards.length; i++) {
+		var el = document.getElementById('img_' + cards[i]);
+		if (el != undefined) {
+			cardimg[cards[i]] = el;
+			el.style.border = "2px solid transparent";
+		}
+	}
+
+	function click_card (type) {
+		for (var e in cardimg) {
+			cardimg[e].style.border = (e == type) ? "2px solid #000" : "2px solid transparent";
+		}
+	}
+
+	function highlight_card (num) {
+		var ti = document.getElementById('textindication');
+		ti.innerHTML = '';
+
+		for (var e in cardimg) {
+			cardimg[e].style.border = "2px solid transparent";
+		}
+
+		var type;
+		var desc;
+
+		if (num == undefined) return;
+
+		if (num.substr(0,1) == '4')  {
+			type = 'visa'; desc = '(Visa)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,2) == '51' ||
+			num.substr(0,2) == '52' ||
+			num.substr(0,2) == '53' ||
+			num.substr(0,2) == '54' ||
+			num.substr(0,2) == '55'
+		) {
+			type = 'mc'; desc = '(Mastercard)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,4) == '6011'
+		) {
+			type = 'disc'; desc = '(Discover card)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,2) == '34' ||
+			num.substr(0,2) == '37'
+		) {
+			type = 'amex'; desc = '(American Express card)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,2) == '36' ||
+			num.substr(0,2) == '30'
+		) {
+			type = 'diners'; desc = '(Diners Club card)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,2) == '38'
+		) {
+			type = 'carteblanche'; desc = '(Carte Blanche)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,1) == '2'
+		) {
+			type = 'enroute'; desc = '(En Route)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,2) == '56'
+		) {
+			type = 'bankcard'; desc = '(BankCard)';
+		}
+
+		if (
+			desc == undefined &&
+			num.substr(0,1) == '3' ||
+			num.substr(0,4) == '2131' ||
+			num.substr(0,4) == '1800'
+		) {
+			type = 'jcb'; desc = '(JCB card)';
+		}
+
+		var el = cardimg[type];
+//alert("el is " + el);
+		if (el != undefined) {
+			el.style.border = "2px solid #000";
+		}
+		if (desc != undefined) {
+			ti.innerHTML = desc;
+		}
+	}
+</script>
+[/tmp]
+
+<div style="height:auto">
+<div id="credit_card" style="display:none">
+    <!-- credit card information -->
+	<div class="form-group" style="margin-top:1em">
+		<label for="mvcc" class="col-sm-3 control-label">[error std_label="[L]Credit card number[/L]" name=mv_credit_card_valid required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="mv_credit_card_number" id="mvcc" pattern="\d*" novalidate autocorrect="off" autocomplete="off" onchange="highlight_card(this.value)"[if variable MV_DEMO_MODE] value="4111 1111 1111 1111"[/if]>
+			<small class="help-block">(spaces or dashes are OK)</small>
+			<div style="margin-top:.5em">
+              [calc]
+                my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
+                my (@out);
+                my (@cc);
+                my $out;
+                push @cc, 'visa' if $accepted =~ /visa/;
+                push @cc, 'mc' if $accepted =~ /mc/;
+                push @cc, 'disc' if $accepted =~ /discover/;
+                push @cc, 'amex' if $accepted =~ /amex/;
+                for (@cc) {
+                  push @out, qq{<img id="img_$_" src="small$_.png" alt="$_" style="cursor:pointer" onclick="click_card('$_')">};
+                }
+                return join '&nbsp;', @out;
+              [/calc] <i id="textindication" style="font-size:smaller"></i>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="cvv2" class="col-sm-3 control-label">[error std_label="[L]Security code[/L]" name=mv_credit_card_cvv2 required=1]</label>
+		<div class="col-sm-3 col-md-2">
+			<input class="form-control" type="text" name="mv_credit_card_cvv2" id="cvv2" maxlength="4" pattern="\d*" novalidate autocorrect="off">
+			<span class="help-block"><a href="#modalcvv" data-toggle="modal">where is it?</a></span>
+		</div>
+	</div>
+	<div class="form-inline form-group">
+		<label for="expiry" class="col-sm-3 control-label">[error std_label="[L]Expiration date[/L]" name=mv_credit_card_exp_month required=1]</label>
+		<div class="col-sm-9">
+			<select class="form-control" name="mv_credit_card_exp_month" id="expiry" title="[L]month[/L]">
+			[loop
+					option=mv_credit_card_exp_month
+					acclist=1
+					list=|
+1=01 - [L]January[/L],
+2=02 - [L]February[/L],
+3=03 - [L]March[/L],
+4=04 - [L]April[/L],
+5=05 - [L]May[/L],
+6=06 - [L]June[/L],
+7=07 - [L]July[/L],
+8=08 - [L]August[/L],
+9=09 - [L]September[/L],
+10=10 - [L]October[/L],
+11=11 - [L]November[/L],
+12=12 - [L]December[/L]|]
+			<option value="[loop-code]"> [loop-param label]
+			[/loop]
+			</select> &nbsp;/&nbsp;
+			<select class="form-control" name="mv_credit_card_exp_year" title="[L]year[/L]">
+                [comment]
+                This should always return the current year as the first, then
+                10 more years.
+                [/comment]
+                [loop option=mv_credit_card_exp_year lr=1 list=`
+                my $year = $Tag->time( '', { format => '%Y' }, '%Y' );
+                my $out = '';
+                for ($year .. $year + 10) {
+                        /\d\d(\d\d)/;
+                        $last_two = $1;
+                        $out .= "$last_two\t$_\n";
+                }
+                return $out;
+                `]
+
+                <option value="[loop-code]"> [loop-code]</option>
+                [/loop]
+			</select>
+		</div>
+	</div>
+</div>
+<div id="postal" style="display:none">
+		[L NEW_BROWSER_PAYMENT_MSG1]We will wait for a check sent to us referencing the order number you receive on your receipt.[/L]
+</div>
+<div id="cod" style="display:none">
+		[msg arg.0="[handling cod]"]There will be a %s charge added for COD.[/msg]
+</div>
+<div id="online_check" style="display:none">
+	<div class="form-group" style="margin-top:1em">
+		<label for="check_accttype" class="col-sm-3 control-label">[error name=check_accttype std_label="[L]Type of Account[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<select class="form-control" name="check_accttype" id="check_accttype">
+			[loop
+				option=check_accttype
+				acclist=1
+				list=|
+Checking=Checking,
+Savings=Savings,
+Business Checking=Business Checking|]
+			<option value="[loop-code]">[loop-param label]</option>
+			[/loop]
+			</select>
+			<small class="help-block">(US-based accounts only)</small>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="check_routing" class="col-sm-3 control-label">[error name=check_routing std_label="[L]Routing #[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="check_routing" id="check_routing" value="[evalue check_routing]" maxlength=9>
+			<small class="help-block">(9 digits)</small>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="check_account" class="col-sm-3 control-label">[error name=check_account std_label="[L]Account #[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="check_account" id="check_account" value="[evalue check_account]">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="check_bankname" class="col-sm-3 control-label">[error name=check_bankname std_label="[L]Bank Name[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="check_bankname" id="check_bankname" value="[evalue check_bankname]">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="check_acctname" class="col-sm-3 control-label">[error name=check_acctname std_label="[L]Name on Account[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="check_acctname" id="check_acctname" value="[evalue check_acctname]">
+		</div>
+	</div>
+	<p class="text-info">
+		By clicking the button below, I authorize __COMPANY__ to charge my bank account today (or on the next business day) for [total-cost] for the items listed above.
+	</p>
+</div>
+<div id="purchase_order" style="display:none">
+	<div class="form-group" style="margin-top:1em">
+		<label class="col-sm-3 control-label" style="white-space:nowrap"><b>[L]P.O. Information[/L]</b></label>
+	</div>
+	[if !variable PO_ALWAYS]
+	<div class="form-group">
+		<label for="po_number" class="col-sm-3 control-label">[error name=credit_limit_ok std_label="[L]PO Number[/L]" required=1]</label>
+		<div class="col-sm-9 col-md-6 col-lg-4">
+			<input class="form-control" type="text" name="po_number" id="po_number" value="[evalue po_number]">
+		</div>
+	</div>
+	[/if]
+	[if type=data
+		term="userdb::credit_limit::[data session username]"
+		op=">"
+		compare=0.01
+	]
+		<b> Available credit </b>&nbsp;&nbsp;&nbsp;
+		[currency]
+		[data table=userdb col=credit_limit key="[data session username]"]
+		[/currency]
+		
+		[if type=data
+			term="userdb::credit_limit::[data session username]"
+			op=<
+			compare="[total-cost noformat=1]"
+		]
+		<br>
+		[msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/msg]
+		[/if]
+		<br>
+	[/if]
+</div>
+<div id="pay_cert" style="display:none"></div>
+</div>
+<script>
+	visible('[either][value mv_order_profile][or]credit_card[/either]');
+</script>

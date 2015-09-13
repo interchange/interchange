@@ -1,0 +1,91 @@
+[comment]
+ui_name: product_tree
+ui_type: component
+ui_class: vertical
+ui_group: Navigation
+ui_label: Products Tree
+
+show_categories:
+	label: Show categories?
+	type: yesno
+
+[/comment]
+<!-- BEGIN COMPONENT [control component product_tree] -->
+
+[perl tables=products]
+	my ($ary,$index_hash,$name_ary) = $Db{products}->query('SELECT prod_group, category FROM products GROUP BY prod_group, category');
+	$Tmp->{cats} = {
+		mv_results => $ary,
+		mv_field_names => $name_ary,
+	};
+	return;
+[/perl]
+
+<!-- tablet/phone variation -->
+<div class="btn-group visible-xs-block visible-sm-block">
+	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Shop by Category <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu">
+		<li><a href="[area All-Products]">[L]All Products[/L]</a></li>
+		<li role="separator" class="divider"></li>
+	[loop object=`$Tmp->{cats}` prefix=sql]
+		[sql-change grp][condition][sql-code][/condition]
+			<li><a href="[area href="[sql-filter string2uri][sql-code][/sql-filter]"]">[sql-code]</a></li>
+		[/sql-change grp]
+	[/loop]
+	</ul>
+	<div class="clearfix"></div>
+</div>
+
+<!-- desktops -->
+<ul class="nav nav-pills nav-stacked hidden-xs hidden-sm">
+	<li><a href="[area All-Products]">[L]All Products[/L]</a></li>
+
+[if control show_categories]
+
+[loop object=`$Tmp->{cats}` prefix=sql]
+	[sql-change grp][condition][sql-code][/condition]
+	[sql-alternate except_first]
+			</ul>
+		</li>
+	[/sql-alternate]
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">[sql-code] <span class="caret"></span></a>
+			[tmp grp][sql-filter string2uri][sql-code][/sql-filter][/tmp]
+			<ul class="dropdown-menu">
+				<li><a href="[area href='[scratch grp]']">[L]All[/L] [sql-code]</a></li>
+	[/sql-change grp]
+	[if-sql-param category]
+				<li><a href="[area href="[scratch grp]/[sql-filter string2uri][sql-pos 1][/sql-filter]"]">[sql-pos 1]</a></li>
+	[/if-sql-param]
+	[sql-alternate last_only]
+			</ul>
+		</li>
+	[/sql-alternate]
+[/loop]
+
+[else]
+
+[tmp link][value name=more_link filter=uri2string keep=1][/tmp]
+[loop object=`$Tmp->{cats}` prefix=sql]
+[sql-change grp][condition][sql-code][/condition]
+	<li[if scratch link eq "[sql-code]"] class=disabled[/if]>
+		<a href="[area href="[sql-filter string2uri][sql-code][/sql-filter]"]">[sql-code]</a>
+		[if scratch link eq "[sql-code]"]
+			<ul class="nav" style="margin-left:1.5em">
+			[query prefix=cat list=1 sql="SELECT category FROM products WHERE prod_group = [cat-quote][scratch link][/cat-quote] GROUP BY category"]
+				<li><a href="[area href="[value more_link]/[cat-filter string2uri][cat-code][/cat-filter]"]">[cat-code]</a></li>
+			[/query]
+			</ul>
+		[/if]
+	</li>
+[/sql-change grp]
+[/loop]
+
+[/else]
+[/if]
+
+</ul>
+
+<!-- END COMPONENT [control component product_tree] -->

@@ -1,0 +1,252 @@
+[tmp page_title]__COMPANY__ -- [L]Shopping Cart[/L][/tmp]
+[tmp display_class]leftonly[/tmp]
+
+[control reset=1]
+[control-set]
+	[component]product_tree[/component]
+	[show_categories]1[/show_categories]
+	[output]left[/output]
+[/control-set]
+[control-set]
+	[component]cross[/component]
+	[banner][L]See also[/L][/banner]
+	[cross_codes][/cross_codes]
+	[size]3[/size]
+	[cols]col-xs-6 col-sm-3 col-md-6[/cols]
+	[output]left[/output]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>[L]Your Current Shopping Cart[/L]</h1>
+
+[edisplay]
+
+[calc]
+	my $cname = $Config->{CookieName} || 'MV_SESSION_ID';
+	$Scratch->{have_cookie} = $Tag->read_cookie($cname)
+		and delete $Scratch->{tried};
+	return;
+[/calc]
+[if scratch have_cookie]
+[elsif scratch tried]
+		[L CART_MSG1]You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.[/L]
+[/elsif]
+[else]
+	[set tried]1[/set]
+	[bounce href="[area ord/basket]"]
+[/else]
+[/if]
+
+<form action="[process secure=1]" method=POST name="basket" class="form-horizontal">
+[form-session-id]
+<input type="hidden" name="mv_doit"      value="refresh">
+<input type="hidden" name="mv_orderpage" value="ord/basket">
+<input type="hidden" name="mv_nextpage"  value="index">
+<input type="hidden" name="mv_nlines"    value="[nitems lines=1]">
+
+<table class="table table-striped">
+<thead>
+<tr>
+	<th class="text-right">[L]Remove[/L]</th>
+	<th>[L]SKU[/L]</th>
+	<th>[L]Description[/L]</th>
+	<th>[L]Quantity[/L]</th>
+	<th class="text-right">[L]Price[/L]</th>
+	<th class="text-right">[L]Extension[/L]</th>
+</tr>
+</thead>
+<tbody>
+
+[if items]
+[then]
+[item-list]
+
+[item-calc]
+#Log("Checking master item $master");
+	$row_class = ++$count % 2 ?  'cartnorm' : 'cartalt';
+	my $item = '[item-increment]';
+	my $up = q{[item-data merchandising upsell_to]};
+	my $cr = q{[item-data merchandising cross_sell]};
+	$upsell_remove{'[item-code]'} = 1;
+	$cross_remove{'[item-code]'} = 1;
+	my %seen = ( '' => 1 );
+
+	$Scratch->{upsell} .= " $up" if $up;
+	$Scratch->{cross_codes} .= " $cr" if $cr;
+	my @up = split /\s+/, $Scratch->{upsell};
+	my @cr = split /\s+/, $Scratch->{cross_codes};
+	@up = grep  ( (!$seen{$_}++ && ! $upsell_remove{$_}), @up);
+	@cr = grep  ( (!$seen{$_}++ && ! $cross_remove{$_}), @cr);
+	$Scratch->{upsell} = join " ", @up;
+	$Scratch->{cross_codes} = join " ", @cr;
+	return;
+[/item-calc]
+
+<tr>
+	<td class="text-center">
+		[if-item-param !mv_si]
+			<input type=checkbox name="[item-quantity-name]" onclick="this.form.action='[process]', this.form.submit()" value=0>
+		[else]&nbsp;[/else]
+		[/if-item-param]
+	</td>
+	<td><b>[item-sku]</b></td>
+	<td>
+		<a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
+
+		[if scratch dealer]
+		[if-item-data pricing sku]
+			<BR>[page quantity [item-code]]
+			[L]QUANTITY PRICING[/L]</A>
+		[/if-item-data]
+		[/if]
+		[if-item-field weight]
+			[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+		[/if-item-field]
+		[if-item-param mv_min_under]
+			<br>
+			<span style="color: __CONTRAST__; font-size: 8pt">
+			[msg arg.0="[item-param mv_min_quantity]"]Minimum order quantity of %s enforced.[/msg]
+			</span>
+		[/if-item-param]
+		[if-item-param mv_max_over]
+			<br>
+			<span style="color: __CONTRAST__; font-size: 8pt">
+			[msg arg.0="[item-param mv_max_quantity]"]Maximum order quantity of %s enforced.[/msg]
+			</span>
+		[/if-item-param]
+
+		[if-item-data merchandising others_bought]
+		  [if compare="__CART_OTHERS_BOUGHT__"]
+			[perl tables=products]
+				my $hash = [item-data merchandising others_bought];
+				my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+				return '' unless @ary;
+				my %in_basket;
+				splice(@ary, 3);
+				for(@{$Carts->{main}}) {
+					$in_basket{$_->{code}} = 1;
+				}
+				@ary = grep ! $in_basket{$_}, @ary;
+				return '' unless @ary;
+				my $out = q{
+					<blockquote class="small">
+					  <i>[L]Customers who bought this item also bought[/L]:</i><br>
+				};
+				for(@ary) {
+					my $desc = tag_data( 'products', 'description', $_);
+					my $url = $Tag->area($_);
+					$out .= qq{
+					  <a href="$url" class="cartlink">$desc</a><br>
+					};
+				}
+				return $out . '</blockquote>';
+			[/perl]
+		  [/if]
+		[/if-item-data]
+
+		[if compare="__CART_UPSELL__"]
+			[set upsell_found][/set]
+			[loop list="[item-data merchandising upsell_to]"]
+			[if scratch upsell_found]
+				<blockquote class="small">
+				<i>[L]Other items you may like[/L]:</i><br>
+				  [list]
+				  [loop-calc]
+					  @ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
+					  return if scalar @ary;
+					  $Scratch->{upsell_found} = 1;
+					  return q{<a href="[area [loop-code]]" class="cartlink">[loop-description]</a><br>};
+				  [/loop-calc]
+				  [/list]
+				</blockquote>
+			[/if]
+			[/loop]
+		[/if]
+
+		[if-item-param !mv_si]
+			[table-organize cols=2 table=' class="table table-bordered table-striped table-condensed small"' pretty=1]
+				[item-options td=1 label=1 bold=1 price=1 blank-label="--select--"]
+			[/table-organize]
+		[/if-item-param]
+
+	</td>
+[input-filter name="[item-quantity-name]" op="nullselect digits_dot"][/input-filter]
+	<td>
+		<input type="[if config FractionalItems]text[else]number[/else][/if]" name="[item-quantity-name]" value="[item-quantity]" class="form-control">
+	</td>
+[if discount [item-code]]
+	<td class="text-right">
+	    [L]Regular price[/L] <STRIKE>[item-price]</STRIKE>
+	    <BR>
+	    <B>[L]Your price[/L]: [item-discount-price]<br>
+	    [L]You save[/L]: [item-difference]
+	</td>
+	<td class="text-right">
+	    <strike>[item-subtotal]</strike><br>
+	    <B>[item-discount-subtotal]<BR>
+	    [L]You save[/L]: [item-discount]</b>
+	</td>
+[else]
+	<td class="text-right">[item-discount-price]</td>
+	<td class="text-right">[item-discount-subtotal]</td>
+[/else]
+[/if]
+</tr>
+
+[/item-list]
+
+</tbody>
+<tbody>
+<tr> 
+	<td colspan="3">
+		&nbsp;
+	</td>
+	<td>
+		<input type="submit" value="[L]Recalculate[/L]" class="btn btn-default">
+	</td>
+	<td colspan="2" class="text-right">
+		<table class="table-condensed" style="margin-left:auto">
+		<tr> 
+		  <td class="text-right" style="white-space:nowrap">[L]Shipping Weight[/L]:</td>
+		  <td class="text-right">[summary format="%s" total=1]</td>
+		</tr>
+		<tr class="bg-info">
+		  <td class="text-right"><b>[L]Subtotal[/L]:</b></td>
+		  <td class="text-right"><b>[subtotal]</b></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td colspan="6" class="text-right">
+		[button
+		  text="[L]Checkout now[/L]"
+		  class="btn btn-primary btn-lg"
+		  form=basket
+		]
+			mv_todo=return
+			mv_nextpage=__CHECKOUT_PAGE__
+		[/button]
+	</td>
+</tr>
+
+[/then]
+[else]
+	<tr>
+		<td class="text-center" colspan="6">
+			<b>[L]No items at the moment.[/L]</b>
+		</td>
+	</tr>
+[/else]
+[/if]
+
+</tbody>
+</table>
+
+</form>
+
+<!-- END CONTENT -->
+@_BOTTOM_@

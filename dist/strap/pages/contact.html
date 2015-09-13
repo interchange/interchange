@@ -1,0 +1,65 @@
+[tmp page_title]__COMPANY__ -- [L]Contact Us[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[banner][L]Random Component[/L][/banner]
+	[buttons]1[/buttons]
+	[cols]col-xs-6 col-sm-3 col-md-12[/cols]
+	[matches]5[/matches]
+	[pool]100[/pool]
+	[size]5[/size]
+	[output]right[/output]
+[/control-set]
+[control-set]
+	[component]promo[/component]
+	[promo_type]new[/promo_type]
+	[matches]3[/matches]
+	[cols]col-xs-6 col-sm-3 col-md-4 col-lg-3[/cols]
+	[banner][L]New items[/L][/banner]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h1>[L]Contact Us[/L]</h1>
+
+		<p>
+			<strong>
+			[L]You can contact us the following ways[/L]:
+			</strong>
+		</p>
+
+		<address>
+		<strong>__COMPANY__</strong><br>
+		__ADDRESS__<br>
+		__CITY__<br><br>
+
+		[L]Phone[/L]: __PHONE__<br>
+		[if variable FAX]
+			[L]Fax[/L]: __FAX__<br>
+		[/if]
+		[if variable TOLLFREE]
+			[L]Toll-free[/L]: __TOLLFREE__<br>
+		[/if]
+		[if variable EMAIL_INFO]
+			[L]e-mail[/L]: <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a><br>
+		[/if]
+		</address>
+
+		<hr>
+
+		<p>[L]If you would like further information on constructing a store like this, please contact Perusion[/L]:</p>
+
+		<p><a href="@_INTERCHANGE_URL_@">@_INTERCHANGE_URL_@</a><br>
+		[L]e-mail[/L]: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a><br><br></p>     
+
+<!-- END CONTENT -->
+@_BOTTOM_@

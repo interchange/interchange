@@ -1,0 +1,17 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		0					index		Home		0	The home page of this catalog							
+002		0					login		Log In		0	Sign on!							0
+003		0							Logout		0								1
+004		1					logout		Logout		0	Log out, remove your login cookie							1
+005		1					logout	keep_values=1	Logout and keep name/address		0								
+006		0					member/service		Your Account		0	Track orders, do returns, manage name/address, more							1
+007		0					ord/basket		Your Cart		0								
+008		0							Checkout		0	Place the order...							
+009		1					ord/country		Multi-page		0	Multiple page checkout							
+010		1					ord/checkout		One-page		0	Simple one-page checkout form							
+011		0							About Us		0								
+012		1					aboutus		Our Story		0	More information on our company							
+013		1					contact		Contact us		0								
+014		0							Language		0	Choose language							
+015		1					process/locale/en_US/page/index		English		0	Select English							
+016		1					process/locale/de_DE/page/index		Deutsch		0	Select German							

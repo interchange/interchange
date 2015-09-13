@@ -1,0 +1,7 @@
+sh __MVC_RELOCATE____MVC_CATROOT__/config/makedirs
+We need to make some directories to store sessions, logs, and such.
+
+sh __MVC_RELOCATE____MVC_CATROOT__/config/add_global_usertag
+This catalog requires some global usertags not available in the
+standard distribution.
+

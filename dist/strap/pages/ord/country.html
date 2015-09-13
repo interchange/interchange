@@ -1,0 +1,53 @@
+[tmp page_title]__COMPANY__ -- [L]Select country[/L][/tmp]
+[tmp display_class]noleft[/tmp]
+
+[include include/checkout/initialization]
+
+[if value country]
+	[if !cgi country_reset]
+	[bounce href="[area href=ord/shipping secure=1]"]
+	[/if]
+[/if]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<div class="col-md-2">&nbsp;</div>
+<div class="col-md-8">
+
+[edisplay keep=1]
+
+[set Check_country]
+	&fatal=yes
+	country=required
+[/set]
+
+<form action="[area href="ord/shipping" secure=1]">
+<fieldset><legend>[L]Country selection[/L]</legend>
+[form-session-id]
+<input type=hidden NAME=mv_action        value=return>
+<input type=hidden NAME=mv_nextpage      value="ord/shipping">
+<input type=hidden NAME=mv_failpage      value="ord/country">
+<input type=hidden name=mv_form_profile  value="Check_country">
+
+	<label for="country">[L]Country[/L]</label>
+	[display
+		name=country
+		id=country
+		type=select
+		default=__SHIP_DEFAULT_COUNTRY__
+		value=`$Values->{country}`
+		lookup_query="select code,name from country where shipmodes <> '' order by name"
+	]
+	<br>
+	<input type=submit value="[L]Next[/L]" class="btn btn-primary">
+
+</form>
+
+</div>
+<div class="col-md-2">&nbsp;</div>
+
+[tmp clear_errors][error all=1 comment="Clear errors"][/tmp]
+
+<!-- END CONTENT -->
+@_BOTTOM_@

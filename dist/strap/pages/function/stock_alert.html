@@ -1,0 +1,61 @@
+[tmp page_title]__COMPANY__ -- [L]Stock Alerting[/L][/tmp]
+
+[control reset=1]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control reset=1]
+
+@_TOP_@
+<!-- BEGIN CONTENT -->
+
+<h2>[L]Stock Alerting[/L]</h2>
+
+[if session arg]
+[seti code][data session arg][/seti]
+[/if]
+
+<p>[L STOCK_ALERT_PAR1]Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature and you are not in any way obligated to purchase the item.[/L]</p>
+
+<h3>[data table=products column=description key='[scratch name=code filter=e]']</h3>
+
+<br>
+
+[edisplay]
+
+[set check_alert_form]
+	email=email_only
+[/set]
+[set add_alert]
+	mv_nextpage=function/stock_alert_added
+[/set]
+
+<form action="[area href=@@MV_PAGE@@]" method=post class="form-horizontal">
+<fieldset>
+	<legend>[L]Contact Information[/L]</legend>
+[form-session-id]
+<input type=hidden name=mv_action value=return>
+<input type=hidden name=mv_form_profile value=check_alert_form>
+<input type=hidden name=mv_click value=add_alert>
+
+<div class="control-group">
+	<label for="fname" class="control-label">[error name=fname std_label="[L]Your Name[/L]"]</label>
+	<div class="controls">
+		<input type=text name=fname id=fname value="[value fname]">
+	</div>
+</div>
+<div class="control-group">
+	<label for="email" class="control-label">[error name=email std_label="[L]Email Address[/L]" required=1]</label>
+	<div class="controls">
+		<input type=email name=email id=email value="[value email]">
+	</div>
+</div>
+<div class="form-actions">
+	<input type=submit value="[L]Notify me[/L]" class="btn btn-primary">
+</div>
+
+</fieldset>
+</form>
+						                      
+<!-- END CONTENT -->
+@_BOTTOM_@
