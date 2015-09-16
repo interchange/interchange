@@ -2,7 +2,7 @@
 #
 # $Id: TestPayment.pm,v 1.10 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2015 Interchange Development Group
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
 #
@@ -320,7 +320,7 @@ sub testpayment {
 			$result{'pop.auth-code'} = $opt->{auth_code};
 		}
 	}
-    elsif ($actual->{mv_credit_card_number} eq '4111111111111111'){
+    elsif ($actual->{mv_credit_card_number} =~ /^(4111111111111111|6011333333333333|5454545454545454|341111111111111)$/){
     	$result{'pop.status'} = 'success';
 		$result{'pop.order-id'} = $opt->{order_id};
 		$result{'pop.auth-code'} = 'test_auth_code';
