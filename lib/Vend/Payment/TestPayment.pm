@@ -56,7 +56,9 @@ The module will perform one of three actions:
 
 =item *
 
-If the card number is 4111111111111111 then the transaction will be approved.
+If the card number is 4111111111111111 then the transaction will be approved. 
+Additional approval numbers include 6011333333333333 (discover), 5454545454545454
+(mc), 341111111111111 (amex).
 
 =item *
 
