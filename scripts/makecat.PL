@@ -114,7 +114,7 @@ options:
     --cgidir=directory         The directory the CGI link should go to
     --servername=server        Name of server (www.whatever.domain)
     --cgiurl=url_fragment      The path to the CGI link (no server name)
-    --demotype=template        The template catalog (standard is the default)
+    --demotype=template        The template catalog (strap is the default)
     --mailorderto=email        Email address to send orders
 
     Optional:
@@ -269,7 +269,7 @@ extension .cgi added.
 Only the characters [-a-zA-Z0-9_] are allowed, and it is strongly suggested
 that the catalog name be all lower case.
 
-If you are doing the demo for the first time, you might use "standard".
+If you are doing the demo for the first time, you might use "strap".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
@@ -445,7 +445,7 @@ my %Prefix = (
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
-	demotype     =>  $ENV{MVC_DEMOTYPE} || 'standard',
+	demotype     =>  $ENV{MVC_DEMOTYPE} || 'strap',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
 							($isroot ? '' : $Conf{'interchangeuser'})
@@ -566,8 +566,11 @@ my %History = (
     demotype =>  sub {
 						my @dir; 
 						@dir = sort map { s:(.*)/.*:$1:; $_ } glob("*/catalog.cfg");
-						@dir = grep $_ ne 'standard', @dir;
-						unshift(@dir, 'standard') if -f 'standard/catalog.cfg';
+						@dir = grep $_ ne 'strap', @dir;
+						unshift(@dir, 'strap') if -f 'strap/catalog.cfg';
+						unshift(@dir, 'standard')
+							if  -f 'standard/catalog.cfg'
+							and $catalog_name =~ /^standard/;
 						unshift(@dir, 'foundation')
 							if  -f 'foundation/catalog.cfg'
 							and $catalog_name =~ /^foundation/;
@@ -2450,18 +2453,18 @@ For testing on your local machine, just use C<localhost>.
 =item --cgiurl=url_fragment
 
 The path to the CGI link (no server name). For a catalog named
-C<standard>, this would normally be one of:
+C<strap>, this would normally be one of:
 
-    --cgiurl=/cgi-bin/standard
+    --cgiurl=/cgi-bin/strap
 
 or 
 
-    --cgiurl=/standard.cgi
+    --cgiurl=/strap.cgi
 
 
 =item --demotype=template
 
-The template catalog. The default is <standard>.
+The template catalog. The default is <strap>.
 
 =item --mailorderto=email
 
@@ -2550,11 +2553,11 @@ B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
 
 A catalog template contains an image of a configured catalog. The best
-way to see what the makecat program does is to configure the 'standard'
+way to see what the makecat program does is to configure the 'strap'
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-  diff -r interchange/standard catalogs/standard
+  diff -r interchange/strap catalogs/strap
 
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
@@ -2581,7 +2584,7 @@ substituted, and include (at least):
     MVC_DOCUMENTROOT MVC_VENDROOT
     MVC_ENCRYPTOR
 
-(Not all of these are present in the standard template, and
+(Not all of these are present in the strap template, and
 quite a few more may be defined.)  In fact, any environment variable that
 is set and begins with MVC_ will be substituted for by the C<makecat>
 script. So if you wanted to set up a configurable parameter to customize
@@ -2600,7 +2603,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-standard and copy the C<standard> demo directory to it as a starting point.
+strap and copy the C<strap> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
@@ -2653,7 +2656,7 @@ This will cause the prompt:
     We need to create an SQL database for your Interchange
     database tables.
      
-    Run command "mysqladmin create test_standard"?
+    Run command "mysqladmin create test_strap"?
 
 If the response is "y" or "yes", then the command will be run
 by passing it through the Perl system() function. As with any
@@ -2707,7 +2710,7 @@ documentation for Interchange is at:
 
 __END__
 
-[catalog standard]
+[catalog strap]
 basedir         =
 catroot         =
 catuser         =
@@ -2715,7 +2718,7 @@ cgibase         =
 cgibin          =
 cgidir          =
 cgiurl          =
-demotype        = standard
+demotype        = strap
 documentroot    =
 imagedir        =
 imageurl        =
