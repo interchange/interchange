@@ -77,7 +77,8 @@ dist/          The distribution files, exclusive of executable
                files and modules. Includes:
 
                interchange.cfg.dist   Distribution-default interchange.cfg
-               standard/              Demo catalog skeleton, used by makecat
+               strap/                 Demo catalog skeleton, used by makecat
+               standard/              Old demo catalog skeleton
                src/                   C and Perl code for CGI link programs
                lib/                   Back-end administrative interface
                code/                  Usertags and other customizable code
@@ -128,7 +129,7 @@ as described in the next section.
 
                                  D E M O
 
-There is a demo catalog skeleton (called 'standard') included.
+There is a demo catalog skeleton (called 'strap') included.
 
 To build your own catalog from the demo, go to the directory where you
 installed Interchange (default is "interchange" in your home directory,
