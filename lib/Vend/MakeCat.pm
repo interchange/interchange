@@ -238,7 +238,7 @@ EOF
 # strongly suggested that the catalog name be all lower case.
 #
 # If you are doing the demo for the first time, you might use
-# "standard".
+# "strap".
 EOF
 
 	catroot   =>  <<EOF,
@@ -292,12 +292,12 @@ EOF
 	demotype   =>  <<EOF,
 # The type of demo catalog to use. The standard one distributed is:
 #
-#    standard
+#    strap
 #
 # If you have defined your own custom template catalog,
 # you can enter its name.
 #
-# If you are new to Interchange, use "standard" to start with.
+# If you are new to Interchange, use "strap" to start with.
 EOF
 
 	documentroot    =>  <<EOF,
@@ -318,7 +318,7 @@ EOF
 # directive in the catalog configuration file. This is a URL
 # fragment, not a directory or file name.
 #
-#         <IMG SRC="/standard/images/icon.gif">
+#         <IMG SRC="/strap/images/icon.gif">
 #                   ^^^^^^^^^^^^^^^^
 #
 EOF
