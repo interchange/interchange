@@ -2132,15 +2132,20 @@ sub update_quantity {
     	$quantity = $CGI::values{"quantity$i"};
     	next unless defined $quantity;
 		my $do_update;
+
+		## Allow explicit negative numbers in items
+		my $intro = '';
+		$line->{mv_negative} and $intro = '-?';
+
 		my $old_item = $old_items{$i} ||= { %$line } if $raise_event;
-    	if ($quantity =~ m/^\d*$/) {
+    	if ($quantity =~ m/^$intro\d*$/) {
         	$line->{'quantity'} = $quantity || 0;
 			$do_update = 1;
 			$altered_items{$i} = 1
 				if $quantity_raise_event
 				and $line->{quantity} != $old_item->{quantity};
     	}
-    	elsif ($quantity =~ m/^[\d.]+$/
+    	elsif ($quantity =~ m/^$intro[\d.]+$/
 				and $Vend::Cfg->{FractionalItems} ) {
         	$line->{'quantity'} = $quantity;
 			$do_update = 1;
