@@ -1,4 +1,3 @@
-Message ncheck
 GlobalSub <<EOS
 sub ncheck_category {
 	##
