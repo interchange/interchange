@@ -979,7 +979,7 @@ sub shipping {
 		}
 		$label =~ s/(%(.))/exists $subst{$2} ? $subst{$2} : $1/eg;
 #::logDebug("label intermediate: $label");
-		$label =~ s/(\$O{(.*?)})/$o->{$2}/eg;
+		$label =~ s/(\$O\{(.*?)\})/$o->{$2}/eg;
 #::logDebug("label returning: $label");
 		return $label;
 	}
