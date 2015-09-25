@@ -1057,6 +1057,7 @@ dist/strap/config/div_organize.tag
 dist/strap/config/hmac_sha1_hex.filter
 dist/strap/config/logger.tag
 dist/strap/config/makedirs
+dist/strap/config/ncheck_category.tag
 dist/strap/config/pay_cert.tag
 dist/strap/config/pay_cert_redeem.tag
 dist/strap/config/postcopy_commands
