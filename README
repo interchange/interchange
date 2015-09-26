@@ -78,7 +78,6 @@ dist/          The distribution files, exclusive of executable
 
                interchange.cfg.dist   Distribution-default interchange.cfg
                strap/                 Demo catalog skeleton, used by makecat
-               standard/              Old demo catalog skeleton
                src/                   C and Perl code for CGI link programs
                lib/                   Back-end administrative interface
                code/                  Usertags and other customizable code
