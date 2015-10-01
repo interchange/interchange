@@ -1743,6 +1743,7 @@ sub login {
 				$cur_method ||= 'default';
 
 				my $stored_by = $enc_id{ determine_cipher($db_pass) };
+				my $from_sub = $self->{OPTIONS}{from_plain} ? sub {$_[1]} : $enc_subs{$stored_by};
 
 				if (
 					$cur_method ne $stored_by
@@ -1751,7 +1752,7 @@ sub login {
 					&&
 					bcost($self->{OPTIONS}) != bcost($self->{OPTIONS}, bmarshal($db_pass))
 					and
-					$db_pass eq $enc_subs{$stored_by}->($self, $pw, $db_pass)
+					$db_pass eq $from_sub->($self, $pw, $db_pass)
 				) {
 
 					my $newpass = $enc_subs{$cur_method}->($self, $pw, Vend::Util::random_string(2));
