@@ -90,6 +90,10 @@ fi
 chmod $FMODE __MVC_RELOCATE__$LOGDIR/logs/error.log
 chmod $FMODE __MVC_RELOCATE____MVC_CATROOT__/catalog.cfg
 
+
+## Create Bcrypt Pepper
+perl -e '@c=("A".."Z","a".."z",0..9);$p.=$c[rand(scalar @c)] for 1..32; print $p' > __MVC_RELOCATE____MVC_CATROOT__/variables/BCRYPT_PEPPER
+
 # Make cache directories to store tmps.
 if test -n '__MVC_CACHEDIR__'
 then 
