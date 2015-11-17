@@ -100,6 +100,26 @@ mv_username=email
 	</fieldset>
 	</form>
 
+    [if var MV_DEMO_MODE]
+        <div class="bg-info"><b>Demo mode:</b> try one of these default test users:</p><ul>
+        [loop acclist=1 list=|
+            kirk@icdevgroup.net=kirk,
+            devnull@icdevgroup.net=test,
+            king@icdevgroup.net=king,
+            Rollins@icdevgroup.net=rollins,
+            adams@icdevgroup.net=adams,
+            riley@icdevgroup.net=riley,
+            carter@icdevgroup.net=carter,
+            keller@icdevgroup.net=keller,
+            michael@icdevgroup.net=michaels,
+            smith@icdevgroup.net=smith,
+            milton@icdevgroup.net=test,
+            jones@icdevgroup.net=jones,
+            lucas@icdevgroup.net=lucas,
+        |]<li>[loop-code] ([loop-param label])</li>
+        [/loop]</ul></div>
+    [/if]
+
 [else]
 
 	[bounce page="[either][ecgi destination][or]member/service[/either]"]

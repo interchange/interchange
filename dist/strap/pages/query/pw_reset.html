@@ -11,28 +11,25 @@
 [and cgi k]
 	[userdb function=logout clear-cookie="MV_PASSWORD,MV_USERNAME" hide=1]
 	[perl table=userdb]
+		delete $Scratch->{key_matches};
 		my $uid = $CGI->{u};
-		my $expire = $CGI->{x};
+		my $expires = $CGI->{x};
 		my $time = $Tag->time({ body => '%y%m%d%H' });
-		return if ($expire < $time);
-		# validated expiry, so keep going
+		return if ($expires < $time);
+		# validated expires, so keep going
 		my $db = $Db{userdb};
 		my $key = $Variable->{PASSWORD_RESET_CHECK_KEY};
-		my ($email, $old_pw, $mod_time) = $db->get_slice($uid, ['email', 'password', 'mod_time']);
-		# using mod_time in hmac prevents clicking link again after pw_reset page loads
-		my $hmac = $Tag->filter({ op => "hmac_sha1_hex.$key", body => $mod_time . $expire . $email });
+		my ($email, $mod_time, $expiry) = $db->get_slice($uid, [qw/email mod_time expiration/]);
+		# using mod_time+expiry in hmac prevents clicking link again after pw_reset page loads
+		my $hmac = $Tag->filter({ op => "hmac_sha1_hex.$key", body => $mod_time . $expiry . $expires . $email });
+#Debug("k: " . $CGI->{k} . ", hmac: " . substr($hmac, 0, 20) );
 		if($CGI->{k} eq substr($hmac, 0, 20)) {
 			$Scratch->{key_matches} = 1;
-			## reset password and set expiration, just in case they don't change pwd now; invalidates key (increases mod_time)
+			# reset password and set expiration, just in case they don't change pwd now; invalidates key
 			my $new_pw;
 			for(1 .. 4) { $new_pw .= int(rand(10)); }
-			my $cry_pw = $new_pw;
-			if( $Config->{UserDB}{crypt} ) {
-				$cry_pw = $Tag->crypt($new_pw);
-			}
 			my $expire_pass = $Tag->time({ body => '%Y%m%d%H%M%S', adjust => '1 days', });
-			$db->set_slice($uid, [qw/password expiration/], [$cry_pw, $expire_pass]);
-Log(qq{ pass for $uid was $old_pw, now $cry_pw } );
+			$db->set_slice($uid, [qw/password expiration/], [$new_pw, $expire_pass]);
 			$Scratch->{pwd} = $new_pw;
 			$Scratch->{email} = $email;
 		}

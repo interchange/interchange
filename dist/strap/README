@@ -17,6 +17,8 @@ The Bootstrap and jQuery files are loaded from `variables/CSS` and
 
 Works best with Interchange version 5.8.1 or higher.
 
+Requires installation of Bundle::Interchange CPAN module.
+
 ## Usage
 
   `bin/makecat [your-catalog-name]`
@@ -27,6 +29,12 @@ Note: if you previously installed the "standard" template, you should
   `rm [/path/to/interchange]/code/template_tag/standard/pay_cert*`
 
 ## Notes
+
+* **TURN OFF the MV_DEMO_MODE variable before using this in production!**
+
+* User passwords are crypted by default, using bcrypt. You *should*
+  change the "pepper" to something unique and random for your catalog.
+  Search for "pepper" in catalog.cfg.
 
 * If you want stock alerting, you need to add a cronjob for the user of
   your catalog, to run the 'daily' Interchange job. Something like:
@@ -62,7 +70,7 @@ Note: if you previously installed the "standard" template, you should
 
 * Password Reset page no longer emails password (bad practice). Now
   sends a basic encoded link to reset the password, which expires in 1
-  day. Requires installation of Bundle::Interchange CPAN module.
+  day.
 
 * Checkout pages have a ton of clean up, and improved with user-experience
   guidelines for Checkout from Baymard Institute. 
