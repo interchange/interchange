@@ -171,6 +171,7 @@ my %HashDefaultBlank = (qw(
 					Mail			1
 					Accounting		1
 					Levy			1
+					QueryCache		1
 				));
 
 my %DumpSource = (qw(
@@ -722,6 +723,7 @@ sub catalog_directives {
 	['BounceReferralsRobot', 'yesno',        'no'],
 	['BounceRobotSessionURL',		 'yesno', 'no'],
 	['OrderCleanup',     'routine_array',    ''],
+	['QueryCache',        'hash',			''],
 	['SessionCookieSecure', 'yesno',         'no'],
 	['SessionHashLength', 'integer',         1],
 	['SessionHashLevels', 'integer',         2],
@@ -3597,6 +3599,16 @@ sub set_default_search {
 					return 1 unless $C->{DiscountSpacesOn};
 					push @Dispatches, 'DiscountSpaces';
 					return 1;
+		},
+		QueryCache => sub { 
+					my $qc; 
+					return 1 unless $qc = $C->{QueryCache}; 
+					$qc->{table} ||= 'qc'; 
+					$qc->{intro} ||= 'qc'; 
+					$qc->{default_expire} ||= '30min'; 
+					$qc->{default_public_expire} ||= '48hours'; 
+					$qc->{default_return} ||= '{}'; 
+					return 1; 
 		},
 		CookieLogin => sub {
 					return 1 unless $C->{CookieLogin};

@@ -2408,6 +2408,274 @@ sub update_data {
 	return;
 }
 
+my $JSON_present;
+BEGIN: {
+	eval {
+		require JSON;
+		require SQL::Parser;
+		require SQL::Statement;
+	};
+	$JSON_present = 1;
+	import JSON;
+}
+
+sub run_query_cache {
+	my $qc = shift; ## Query config
+	my $sessionid = shift; ## Session ID from dispatch
+	my $path = $CGI::path_info;
+
+	$Vend::ContentType = $qc->{content_type} || "application/json";
+
+	my $default = $qc->{default_return} || '{}'; ## Default string to return
+
+	if(! $Vend::allow_qc or ! $JSON_present ) {
+#::logDebug("Returning $default due to allow=$Vend::allow_qc or JSON_present=$JSON_present");
+		return $default;
+	}
+	$path =~ s{^/}{};
+	my (undef, $qid, @passed) = split m{/}, $path;
+	my $ctab = $qc->{table} || 'qc'; ## Default table for query cache
+	my $mtab = $qc->{meta_table} || 'mv_metadata'; ## Default table for metadata
+
+	my $limit;
+	if($CGI::values{mv_matchlimit} =~ /^\d+$/) {
+		$limit = ' LIMIT ';
+		if($CGI::values{mv_first_match} =~ /^\d+$/) {
+			$limit .= "$CGI::values{mv_first_match},";
+		}
+		$limit .= $CGI::values{mv_matchlimit};
+	}
+		
+#::logDebug("Running dummy database on $ctab, $mtab");
+	#dummy_database($ctab,$mtab);
+#::logDebug("Ready to eval, ctab=$ctab");
+	my $qrec;
+	my (@cols);
+	my $tab;
+	my $places;
+	my $limit_from_statement;
+	eval {
+		my $qdb = dbref($ctab);
+#::logDebug("Received qdb=$qdb");
+		$qrec = $qdb->row_hash($qid);
+#::logDebug("Received qrec=" . ::uneval($qrec));
+		if(! $qrec->{public}) {
+			$qrec->{session} eq $sessionid
+				or die ::errmsg("%s unauthorized for %s of %s", $sessionid, 'query_cache', $qid);
+		}
+		if(my $func = $qrec->{library}) {
+			if($qrec->{library_type} eq 'tag') {
+				my $Tag = new Vend::Tags;
+				my $return = $Tag->$func->(@passed);
+				if(ref($return eq 'ARRAY')) {
+					return encode_json($return);
+				}
+			}
+			elsif($qrec->{library_type} eq 'filter') {
+				
+			}
+		}
+
+## Query cache table
+#+--------------+--------------+------+-----+-------------------+-------+
+#| Field        | Type         | Null | Key | Default           | Extra |
+#+--------------+--------------+------+-----+-------------------+-------+
+#| qid          | varchar(32)  | NO   | PRI | NULL              |       | 
+#| session      | varchar(64)  | YES  |     | NULL              |       | 
+#| ipaddr       | varchar(16)  | YES  |     | NULL              |       | 
+#| qtext        | text         | YES  |     | NULL              |       | 
+#| verbatim     | tinyint(1)   | YES  |     | NULL              |       | 
+#| meta         | text         | YES  |     | NULL              |       | 
+#| cols         | text         | YES  |     | NULL              |       | 
+#| params       | text         | YES  |     | NULL              |       | 
+#| template     | text         | YES  |     | NULL              |       | 
+#| content_type | varchar(128) | YES  |     |                   |       | 
+#| public       | char(1)      | YES  |     |                   |       | 
+#| secure       | char(1)      | YES  |     |                   |       | 
+#| hash         | varchar(32)  | YES  |     |                   |       | 
+#| update_date  | timestamp    | NO   |     | CURRENT_TIMESTAMP |       | 
+#| expire_date  | datetime     | YES  |     | NULL              |       | 
+#| results      | text         | YES  |     | NULL              |       | 
+#+--------------+--------------+------+-----+-------------------+-------+
+
+		my $parser = new SQL::Parser;
+		$parser->{RaiseError} = 1;
+		$parser->{PrintError} = 0;
+
+		my $query = $qrec->{qtext};
+		my $stmt = SQL::Statement->new($query, $parser);
+
+		my $cmd = $stmt->command();
+		## only want SELECT, use library function for more
+		$cmd =~ /^select$/i or die sprintf("%s unauthorized for %s of %s", $sessionid, $cmd, $query);
+		$places = scalar($stmt->params);
+
+#::logDebug("After SQL::parser run, cmd=" . ::uneval($cmd));
+
+		($tab) = $stmt->tables();
+		$tab = $tab->{name};
+		my $c = $stmt->column_defs();
+		for my $col (@$c) {
+			$col->{type} eq 'function' and $col = $col->{value}->[0];
+			push @cols, $col->{alias} || $col->{value};
+		}
+		if( $limit and $stmt->limit() ) {
+#::logDebug("removing any external limit due to limit in statement");
+			$limit = '';
+		}
+		for(@cols) {
+			## strip leading table name
+			s/.*\.//;
+		}
+	};
+	if($@) {
+		::logDebug("Died in eval with $@, qrec->session=$qrec->{session} id=$Vend::SessionID");
+		return $default;
+	}
+
+	my $view = $qc->{meta};
+	my $qtab;
+	if($view =~ m/^\w+:+(.*)/) {
+		$qtab = $1;
+	}
+	else {
+		$qtab = $view;
+	}
+	
+	my @params;
+	my @param_names = grep /\w/, split /[\s,\0]+/, $qrec->{params};
+	my %like;
+	my %begin;
+	my %min;
+	my %refilter;
+	my @refilter;
+	for(@param_names) {
+		my $ref; my $min; my $like; my $begin;
+		s/\#//g and $ref = 1;
+		s/:(\d+)// and $min = $1;
+		s/\%$// and $like = 1;
+		s/^\^// and $begin = 1;
+#::logDebug("Final parm=$_");
+		$ref and $refilter{$_} = 1;
+		$min and $min{$_} = $min;
+		$like and $like{$_} = 1;
+		$begin and $begin{$_} = 1;
+	}
+	if(@passed) {
+		@params = @passed;
+	}
+	else {
+		for(@param_names) {
+			my $min = defined $min{$_} ? $min{$_} : 3;
+			my $val = $CGI::values{$_};
+#::logDebug("Doing $_, like=$like{$_}, val=$val refilter=$refilter{$_}");
+			if($refilter{$_}) {
+				my @do;
+				($val, @do) = split /\s+/, $val;	
+				## We only want to dothis once
+				push @refilter, @do if $refilter{$_}++ == 1;
+			}
+
+			## Here we weed out early queries
+			$min and
+				length($val) < $min and
+					return $default;
+#::logDebug("Doing $_, like=$like{$_}, val=$val");
+			if($begin{$_}) {
+				$val .= '%';
+			}
+			elsif($like{$_}) {
+				$val = '%' . $val . '%';
+			}
+			push @params, $val;
+		}
+	}
+
+	while(scalar(@params) > $places) {
+		my $killed = pop @params;
+		::logDebug( ::errmsg("Killed extra param: %s", $killed) );
+	}
+
+	my $col = {};
+	if($view) {
+		for(@cols) {
+			$col->{$_} = Vend::Table::Editor::meta_record($_,$view,$mtab);
+		}
+	}
+#::logDebug("ready for $qrec->{qtext}, param_names:" . ::uneval(\@param_names));
+#::logDebug("ready for $qrec->{qtext}, params:" . ::uneval(\@params));
+#::logDebug("ready for $qrec->{qtext}, columns:" . ::uneval(\@cols));
+
+	my $db = dbref($tab) || dbref($qtab)
+		or return $default;
+	my $dbh = $db->dbh();
+	my $sth = $dbh->prepare($qrec->{qtext} . $limit);
+	my $rc = $sth->execute(@params);
+#::logDebug("Returned $rc rows from $qrec->{qtext} (" . ::uneval(\@params) . ")");
+	return $default if $rc < 1;
+	my $ary;
+	if(! $qrec->{hash}) {
+		$ary = $sth->fetchall_arrayref();
+	}
+	elsif($qrec->{hash} =~ /jquery/i) {
+		my @out;
+		while(my $ary = $sth->fetchrow_arrayref) {
+			push @out, { value => $ary->[0], label => $ary->[1] };
+		}
+		for(@refilter) {
+#::logDebug("Refilter with $_");
+			my $re = qr($_)i;
+			@out = grep $_->{label} =~ $re, @out;
+		}
+		$ary = \@out;
+	}
+	elsif($qrec->{hash} =~ /[a-z]/) {
+		$ary = $sth->fetchall_hashref($qrec->{hash});
+	}
+	else {
+		my @out;
+		while(my $rec = $sth->fetchrow_hashref()) {
+			push @out, $rec;
+		}
+		$ary = \@out;
+	}
+	undef $sth;
+	if(my $tpl = $qrec->{template}) {
+		my @out;
+		my $pre = '';
+		my $post = '';
+		$tpl =~ s!\{PRE_TEMPLATE\}(.*)\{/PRE_TEMPLATE\}!!s
+			and $pre = $1;
+		$tpl =~ s!\{POST_TEMPLATE\}(.*)\{/POST_TEMPLATE\}!!s
+			and $post = $1;
+		$qrec->{content_type} and $Vend::ContentType = $qrec->{content_type};
+		if(ref $ary eq 'HASH') {
+			while(my ($k,$v) = each %$ary) {
+				push @out, Vend::Interpolate::tag_attr_list($tpl, $v, 1);
+			}
+		}
+		elsif( ref($ary->[0]) eq 'ARRAY') {
+			for(@$ary) {
+				my %f;
+				@f{@cols} = @$_;
+				push @out, Vend::Interpolate::tag_attr_list($tpl, \%f, 1);
+			}
+		}
+		else {
+			for(@$ary) {
+				push @out, Vend::Interpolate::tag_attr_list($tpl, $_, 1);
+			}
+		}
+#::logDebug("Getting ready to return " . ::uneval(\@out));
+		return join "", $pre, @out, $post;
+	}
+	else {
+#::logDebug("Getting ready to return " . ::uneval($ary));
+		return encode_json($ary);
+	}
+}
+
+
 1;
 
 __END__

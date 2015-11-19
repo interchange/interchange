@@ -1,0 +1,293 @@
+UserTag jsonq Order params public query
+UserTag jsonq addAttr
+UserTag jsonq Routine <<EOR
+sub {
+	my ($params, $public, $query, $opt) = @_;
+	my $qc = $Vend::Cfg->{QueryCache} or return undef;
+	my $tab = $qc->{table};
+	my $db = dbref($tab)
+		or do {
+			::logError("%s: missing table %s", 'query-cache', $tab);
+			return;
+		};
+	my $intro = $qc->{intro};
+
+	## Need to undef it if wrong because of vendURL
+	my $external = $qc->{external_program} || $opt->{external_program};
+	undef $external unless $external =~ m{^\w+:};
+
+#::logDebug("External=$external");
+# QC Table fields
+# code	qid	session	qtext	meta	params	public	secure	update_date	expire_date	results
+
+	my $exp_sess = '0';
+	my $exp_addr = '0';
+	my $exp_secure = '0';
+	my $exp_hash = '0';
+	my $exp_meta = '0';
+	my $exp_view = '0';
+	my $exp_term = '0';
+
+	$opt->{expire} ||= $public ? $qc->{default_public_expire} : $qc->{default_expire};
+
+	$public			or  $exp_sess = $Vend::SessionID;
+	$opt->{ip}		and $exp_addr = $CGI::remote_addr;
+	$opt->{secure}	and $exp_secure = 1;
+	$opt->{params}	and $exp_term = $opt->{params};
+	$opt->{hash}	and $exp_hash = $opt->{hash};
+	$opt->{meta}	and $exp_meta = $opt->{meta};
+	$opt->{meta_view}	and $exp_view = $opt->{meta_view};
+
+#::logDebug("hash=$opt->{hash}");
+	my $qid = Vend::Util::generate_key(join '|', $query, $exp_sess, $exp_addr, $exp_term, $exp_secure, $exp_hash,$exp_meta,$exp_view);
+
+	CHECKEXIST:  {
+		if(my $exist = $db->row_hash('qid',$qid) ) {
+			if(my $ed = $exist->{expire_date}) {
+				$ed =~ s/\D+//g;
+				last CHECKEXIST if $ed lt POSIX::strftime('%Y%m%d%H%M%S', localtime());
+			}
+			return Vend::Util::vendUrl("$intro/$qid", undef, $external, { secure => $exist->{secure}, add_dot_html => 0 });
+		}
+	}
+
+	my $rec = { 
+		qtext => $query,
+		qid => $qid,
+		public => $public,
+		secure => $opt->{secure},
+		hash => $opt->{hash},
+		params => $params,
+		meta_view => $opt->{meta_view},
+		meta => $opt->{meta},
+		content_type => $opt->{content_type},
+		template => $opt->{template},
+	};
+
+	if($opt->{expire} =~ /\D/ or length($opt->{expire}) < 7) {
+		my $add = $opt->{expire} =~ /[a-z]/ ? Vend::Config::time_to_seconds($opt->{expire}) : $opt->{expire} ;
+		$rec->{expire_date} = POSIX::strftime('%Y%m%d%H%M%S', localtime( time() + $add ));
+	}
+	else {
+		$rec->{expire_date} = $opt->{expire};
+	}
+
+	$rec->{session} = $Vend::SessionID unless $public;
+	$rec->{ipaddr} = $CGI::remote_addr if $opt->{ip};
+	$db->set_slice($qid, $rec);
+	return Vend::Util::vendUrl("$intro/$qid", undef, $external, { secure => $rec->{secure}, no_session => 1, add_dot_html => 0 });
+}
+EOR
+
+
+UserTag jsonq Documentation <<EOD
+=head2 NAME
+
+[jsonq] - Ajax query generation with security
+
+=head2 SYNOPSIS
+
+	[jsonq
+		query="select field1,field2,field3 ..."
+		expire="30min|3 days|86400|20170511"
+		public="0|1"
+		hash="0|1|field"
+		meta="option=value"
+		meta-view="metaview"
+		ip="0|1"
+	 ]
+
+NOTE: only the query is required
+
+=head2 CONFIGURATION
+
+	QueryCache  enabled 1
+	QueryCache  table  qc
+	QueryCache  intro  qc
+	QueryCache  default_expire 30min
+	QueryCache  default_public_expire 48hours
+	QueryCache  default_return {}
+
+=head2 PREREQUISITES
+
+	Module	JSON
+	Module	Digest::MD5
+	Module	SQL::Statement
+	Module	SQL::Parser
+
+=head2 DESCRIPTION
+
+The [jsonq] tag generates a record in a table (by default C<qc>) that allows users to access JSON records
+created by a query. The query associated with the record will be run with any parameters that are specified
+being taken either from 1) CGI variables or 2) the path info.
+
+The return value of [jsonq] is a URL to access the query.
+
+The URL used short circuits the usual Interchange session and catalog configuration mechanisms in Dispatch.pm,
+allowing fast (up to 3 times faster) access to JSON records. Alternatively, there can be an external handler
+for requests that could increase speed dramatically.
+
+The tag is standard, and is in the UserTag code area. It is enabled by specifying any setting for the
+QueryCache directive, by default "enabled 1".
+
+=head2 The table
+
+The C<qc> table has the following structure (in MySQL, other databases could be used):
+
+	+--------------+--------------+------+-----+-------------------+
+	| Field        | Type         | Null | Key | Default           |
+	+--------------+--------------+------+-----+-------------------+
+	| qid          | varchar(32)  | NO   | PRI | NULL              |
+	| session      | varchar(64)  | YES  |     | NULL              |
+	| ipaddr       | varchar(16)  | YES  |     | NULL              |
+	| qtext        | text         | NO   |     |                   |
+	| verbatim     | tinyint(1)   | YES  |     |                   |
+	| meta_view    | varchar(255) | YES  |     | NULL              |
+	| meta         | text         | YES  |     | NULL              |
+	| cols         | varchar(255) | YES  |     | NULL              |
+	| content_type | varchar(128) | YES  |     | NULL              |
+	| params       | text         | YES  |     | NULL              |
+	| template     | text         | YES  |     | NULL              |
+	| public       | char(1)      | YES  |     |                   |
+	| secure       | char(1)      | YES  |     |                   |
+	| hash         | varchar(32)  | YES  |     |                   |
+	| update_date  | timestamp    | NO   |     | CURRENT_TIMESTAMP |
+	| expire_date  | datetime     | YES  |     | NULL              |
+	| results      | text         | YES  |     | NULL              |
+	+--------------+--------------+------+-----+-------------------+
+
+When the [jsonq] tag is run, the parameters act on the table in this way:
+
+=over 4
+
+=item query	
+
+Enters the table as C<qtext>. This is the actual query that will run, and
+is possibly affected by CGI paramers C<mv_matchlimit> and C<mv_first_match>.
+
+=item public
+
+Enters table as C<public> field. If this is set, query is accessible to anyone.
+Do not use on private data sets.
+
+=item params
+
+The name of the CGI variables that will be inserted in place of any placeholders
+in the query. This uses DBI methodology, so it is secure and will not allow 
+SQL injection. If you wish to use the parameter in a C<LIKE> query, then append
+a C<%> character to the parameter, i.e.
+
+	[jsonq params="q%" query="select * from products where description like ?"]
+
+This causes the value of C<$CGI->{q} / [cgi q]> to be inserted surrounded by
+the percent signs, causing LIKE to work with partial strings.
+
+If you wish to use the parameter in a C<LIKE> query but only match the beginning
+of the string, then I<prepend> a C<^> character to the parameter, i.e.
+
+	[jsonq params="^q" query="select * from products where description like ?"]
+
+This causes the value of C<$CGI->{q} / [cgi q]> to be inserted followed by
+the percent signs, causing LIKE to work with the first part of the string
+anchored.
+
+By default, searches are rejected (returning C<default_return>) until the
+search parameter is 3 characters long. This prevents large query returns
+early in parameter typing, possibly overloading the database server.
+If you wish to start searching at a lower threshold (or a higher one)
+then append a colon followed by a digit:
+
+	[jsonq params="^q:1" query="select * from products where description like ?"]
+
+This causes the query to be done the moment the C<q> parameter has a single
+character. A C<4> would delay return until four characters are reached,
+etc.
+
+=item hash
+
+Enters table as C<hash> field. If this is blank, the query when run returns an "array of
+arrays" in JSON.  If it is set to digits only, normally 1, then the query will return
+an array of hashes. If it is set to a field name, this is the field that will be used
+to create a hash of hashes. Normally you would only use a unique key for that.
+
+=item meta_view
+
+Selects the I<meta view> which will operate on the JSON query output. This allows
+you, typically, to run Interchange filters on the output which will transform the
+output data from the query. 
+
+NOTE: If you are using the external CGI delivery mechanism, this will be ignored.
+
+=item meta
+
+Metadata options which will operate on the JSON query output. This allows
+setting other values (such as jui_datagrid to sculpt response).
+
+NOTE: If you are using the external CGI delivery mechanism, this will be ignored.
+
+=item template
+
+If you don't want JSON out, you can iterate over any array that you produce
+and output text or HTML based on the Interchange I<attr_list> format. The
+special areas
+
+	{PRE_TEMPLATE} Pre text {/PRE_TEMPLATE}
+	{POST_TEMPLATE} Post text {/POST_TEMPLATE}
+
+allow you to add text to the template that will not be iterted over.
+This invocation:
+
+  [tmpn tpl]
+  {PRE_TEMPLATE}<ul>{/PRE_TEMPLATE}
+  <li>{SKU} - {DESCRIPTION}</li>
+  {POST_TEMPLATE}</ul>{/POST_TEMPLATE}
+  [/tmpn]
+  [jsonq
+     query="select sku,description from products where description like '%Nails%'"
+  		template="[scratch tpl]" hash=1 content-type="text/html"
+		]
+
+Will produce something like this when the query is run:
+
+	<ul>
+	<li>os28057a - 16 Penny Nails</li>
+	<li>os28057b - 10 Penny Nails</li>
+	<li>os28057c - 8 Penny Nails</li>
+	</ul>
+
+This will work no matter the state of the C<hash> parameter, as the fields are
+determined. (It is probably best to use hash=1 for this query.)
+
+=item content-type
+
+This parameter will allow you to change the MIME type of the output from
+the default of C<application/json>.
+
+=back
+
+=head2 URL
+
+Here is a typical URL generated (for a catalog with a VendURL of http://www.perusion.com/c/strap):
+
+	http://www.perusion.com/c/strap/qc/059aba1aaee1debb4ecd3c67dd039e80
+
+You can specify the URL intro with the C<intro> configuration parameter.
+When it is set to C<qc>, it disables any URLs in the catalog that
+begin with /qc/ and short circuits their delivery to the routine which
+generates JSON.
+
+You can manage the presentation of the query with the C<mv_matchlimit>
+CGI parameter. If you specify C<mv_first_match> in addition, you can 
+set up paging. (Note those are remapped to C<ml> and C<fm> in most
+standard Interchange catalogs. You should take account of this if
+using the external CGI method.)
+
+NOTE: mv_first_match will not work without mv_matchlimit.
+
+=head2 AUTHOR
+
+Mike Heins, <mikeh@perusion.com>
+
+=cut
+
+EOD

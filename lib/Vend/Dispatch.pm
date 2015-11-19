@@ -1301,6 +1301,7 @@ sub dispatch {
 		# do nothing
 	}
 	elsif ($::Instance->{CookieName} and ! $Vend::Cfg->{InternalCookie} and $CGI::cookie) {
+		$Vend::allow_qc = 1;  ## Allow the QueryCache AJAX access
 		$CGI::cookie =~ m{$::Instance->{CookieName}=($Vend::Cfg->{CookiePattern})};
 		$seed = $sessionid = $1;
 		if($Vend::Cfg->{InternalCookie}) {
@@ -1314,7 +1315,9 @@ sub dispatch {
 	}
 	elsif ( $CGI::cookie
 			and $::Instance->{CookieName} ||= 'MV_SESSION_ID'
-			and $CGI::cookie =~ /\b$::Instance->{CookieName}=(\w{8,32})(?:[:_]|%3[aA])([-\@.:A-Za-z0-9]+)/ ) {
+			and $CGI::cookie =~ /\b$::Instance->{CookieName}=(\w{8,32})(?:[:_]|%3[aA])([-\@.:A-Za-z0-9]+)/ )
+	{
+		  $Vend::allow_qc = 1;  ## Allow the QueryCache AJAX access
 	  SESSION_COOKIE: {
 	      my $id = $1;
 	      my $host = $2;
@@ -1335,6 +1338,12 @@ sub dispatch {
 #::logDebug("Instance CookieName=$::Instance->{CookieName}, found sessionid=$sessionid cookiehost=$CGI::cookiehost  cookieuser=$CGI::cookieuser external=$::Instance->{ExternalCookie}");
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid");
+
+    my $qc;
+    if($qc = $Vend::Cfg->{QueryCache} and $CGI::path_info =~ m{^/$qc->{intro}/} ) {
+        ## Received cached query. Will gate $Vend::allow_qc in target (allows public queries)
+        return response(Vend::Data::run_query_cache($qc,$sessionid));
+	}
 
 	$::Instance->{CookieName} = 'MV_SESSION_ID' if ! $::Instance->{CookieName};
 
