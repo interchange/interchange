@@ -319,7 +319,7 @@ EOF
 # fragment, not a directory or file name.
 #
 #         <IMG SRC="/strap/images/icon.gif">
-#                   ^^^^^^^^^^^^^^^^
+#                   ^^^^^^^^^^^^^
 #
 EOF
 
