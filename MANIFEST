@@ -562,7 +562,6 @@ dist/lib/UI/pages/admin/survey/question.html
 dist/lib/UI/pages/admin/tablereport.html
 dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/tax_simple.html
-dist/lib/UI/pages/admin/test_code.html
 dist/lib/UI/pages/admin/trafficstats.html
 dist/lib/UI/pages/admin/transfer_catalog.html
 dist/lib/UI/pages/admin/upload_config.html
@@ -1056,6 +1055,7 @@ eg/survey_wizard/pages/admin/overall.html
 eg/survey_wizard/pages/survey/standard.html
 eg/survey_wizard/survey_wizard.coretag
 eg/te
+eg/test_code.html
 eg/usertag/benchmark.tag
 eg/usertag/isindex.tag
 eg/usertag/sleep.tag
