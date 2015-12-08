@@ -33,6 +33,9 @@ BEGIN {
 			$ENV{MINIVEND_STORABLE} = 1;
 		}
 	}
+	else {
+		die "Cannot proceed: EXT_INTERCHANGE_DIR environment variable is not defined.\n";
+	}
 }
 
 use Vend::Util;
@@ -79,6 +82,10 @@ BEGIN {
 			warn caller() . ':external_debug: ', Vend::Util::errmsg(@_), "\n";
 		}
 
+		sub logError {
+			die caller() . ':external_error: ', Vend::Util::errmsg(@_), "\n";
+		}
+
 		sub catalog {
 			my $cat = shift or return $Vend::Cat;
 			$Vend::Cat = $cat;
@@ -90,7 +97,7 @@ BEGIN {
 				or die "No Interchange catalog specified\n";
 			$Vend::Cfg = $Vend::Global->{Catalogs}{$Vend::Cat}{external_config}
 				or die "Catalog $Vend::Cat not found.\n";
-			$CGI::remote_addr = $ENV{REMOTE_ADDR};
+			$CGI::remote_addr = $ENV{REMOTE_ADDR} || '127.0.0.1';
 			if($id =~ /^(\w+):/) {
 				$Vend::SessionID = $1;
 				$Vend::SessionName = $id;
