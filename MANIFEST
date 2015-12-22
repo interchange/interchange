@@ -241,6 +241,7 @@ code/UI_Tag/global_value.coretag
 code/UI_Tag/grep_mm.coretag
 code/UI_Tag/if_mm.coretag
 code/UI_Tag/import_fields.coretag
+code/UI_Tag/jsonq.coretag
 code/UI_Tag/jsq.coretag
 code/UI_Tag/jsqn.coretag
 code/UI_Tag/list_databases.coretag
@@ -1183,6 +1184,8 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+MYMETA.json
+MYMETA.yml
 README
 README-DEVELOPMENT
 README.debian
@@ -1285,6 +1288,7 @@ WHATSNEW-4.5
 WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
+WHATSNEW-5.10
 WHATSNEW-5.3
 WHATSNEW-5.5
 WHATSNEW-5.7
