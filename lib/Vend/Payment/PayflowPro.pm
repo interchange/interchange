@@ -1,6 +1,6 @@
 # Vend::Payment::PayflowPro - Interchange support for PayPal Payflow Pro HTTPS POST
 #
-# Copyright (C) 2002-2015 Interchange Development Group and others
+# Copyright (C) 2002-2016 Interchange Development Group and others
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is distributed in the hope that it will be useful,
