@@ -2,7 +2,7 @@
 #
 # $Id: TestPayment.pm,v 1.10 2007-08-09 13:40:55 pajamian Exp $
 #
-# Copyright (C) 2002-2015 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
 #

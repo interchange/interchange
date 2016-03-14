@@ -125,7 +125,7 @@ $ESCAPE_CHARS::ok_in_url =
 	;
 
 ## This is a character class for HTML::Entities
-$ESCAPE_CHARS::std = qq{^\n\t\X !\#\$%\'-;=?-Z\\\]-~};
+$ESCAPE_CHARS::std = qq{^\n\t\\X !\#\$%\'-;=?-Z\\\]-~};
 
 ## Some standard error templates
 

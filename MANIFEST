@@ -241,6 +241,7 @@ code/UI_Tag/global_value.coretag
 code/UI_Tag/grep_mm.coretag
 code/UI_Tag/if_mm.coretag
 code/UI_Tag/import_fields.coretag
+code/UI_Tag/jsonq.coretag
 code/UI_Tag/jsq.coretag
 code/UI_Tag/jsqn.coretag
 code/UI_Tag/list_databases.coretag
@@ -562,7 +563,6 @@ dist/lib/UI/pages/admin/survey/question.html
 dist/lib/UI/pages/admin/tablereport.html
 dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/tax_simple.html
-dist/lib/UI/pages/admin/test_code.html
 dist/lib/UI/pages/admin/trafficstats.html
 dist/lib/UI/pages/admin/transfer_catalog.html
 dist/lib/UI/pages/admin/upload_config.html
@@ -1056,6 +1056,7 @@ eg/survey_wizard/pages/admin/overall.html
 eg/survey_wizard/pages/survey/standard.html
 eg/survey_wizard/survey_wizard.coretag
 eg/te
+eg/test_code.html
 eg/usertag/benchmark.tag
 eg/usertag/isindex.tag
 eg/usertag/sleep.tag
@@ -1129,7 +1130,6 @@ lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
 lib/Vend/Payment/Getitcard.pm
-lib/Vend/Payment/GoogleCheckout.pm
 lib/Vend/Payment/HSBC.pm
 lib/Vend/Payment/ICS.pm
 lib/Vend/Payment/iTransact.pm
@@ -1184,6 +1184,8 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+MYMETA.json
+MYMETA.yml
 README
 README-DEVELOPMENT
 README.debian
@@ -1286,6 +1288,7 @@ WHATSNEW-4.5
 WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
+WHATSNEW-5.10
 WHATSNEW-5.3
 WHATSNEW-5.5
 WHATSNEW-5.7

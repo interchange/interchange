@@ -1,0 +1,66 @@
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+                       (since the version 5.10 branch)
+
+          See UPGRADE document for a list of incompatible changes.
+
+------------------------------------------------------------------------------
+
+
+
+Interchange 5.10.0 released January 5, 2016
+
+Admin UI
+--------
+
+* Admin passwords encrypted with Bcrypt by default.
+
+* test_code page removed (deemed slight security risk). Copy in eg/ if needed.
+
+
+Payment Modules
+---------------
+
+* Removed defunct GoogleCheckout module.
+
+* Removed defunct Signio module; use PayFlowPro instead.
+
+* Add support for Merchantware payment gateway.
+
+
+Strap Demo
+----------
+
+* New default demo catalog, based on Bootstrap Framework. See dist/strap/README for details.
+* User passwords encrypted with Bcrypt by default.
+
+
+Standard Demo
+-------------
+
+* The standard demo has been relegated to the annals of time. It can be obtained from previous Interchange versions.
+
+
+External tool support
+---------------------
+
+* Add secure JSON query generation for interface with AJAX widgets. Allows generation of
+  queries vetted by login, with either public access or access gated by session.
+
+
+Core
+----
+
+* [bounce] tags abort further ITL processing.
+
+* Support additional test credit card numbers.
+
+* Add "set_source" SpecialSub for affiliate change hooks.
+
+* Allow the quoting of identifiers in Database directives to better support
+  columns with keywords as names.
+
+* New DebugTemplate tokens for more informative logging.
+
+* Support direct JSON POSTs and automatic decoding of POSTed JSON entities in the $CGI::json_ref using the new UnpackJSON directive.

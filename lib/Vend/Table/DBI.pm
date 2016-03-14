@@ -1,8 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.88 2008-06-30 23:09:53 jon Exp $
-#
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -179,7 +177,7 @@ my %known_capability = (
 	},
 	ALTER_INDEX	 => { 
 		mysql => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
-		Pg => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
+		Pg => 'CREATE _UNIQUE_ INDEX $TABLE_COLUMN$ ON _TABLE_ (_COLUMN_)',
 		default => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 	},
 	LIST_FIELDS_QUERY => { 
@@ -521,17 +519,25 @@ sub create {
 			my $col = $def;
 			$col =~ s/\W.*//s;
 			$key_index_found = 1 if lc($col) eq lc($key);
-			my $qcol = $config->{QUOTE_IDENTIFIERS} ? $db->quote_identifier($col) : $col;
+
+			my $qcol = $col;
 			my $qdef = $def;
-			$qdef =~ s/^\Q$col\E/$qcol/i if $config->{QUOTE_IDENTIFIERS};
+			my $qtable_col = "${tablename}_$col";
+			if ($config->{QUOTE_IDENTIFIERS}) {
+				$qcol = $db->quote_identifier($qcol);
+				$qdef =~ s/^\Q$col\E/$qcol/i;
+				$qtable_col = $db->quote_identifier($qtable_col);
+			}
+
 			my $template = $config->{ALTER_INDEX}
 						|| $known_capability{ALTER_INDEX}{default};
 			$template =~ s/\b_TABLE_\b/$qtable/g;
 			$template =~ s/\b_COLUMN_\b/$qcol/g;
 			$template =~ s/\b_DEF_\b/$qdef/g;
+			$template =~ s/\$TABLE_COLUMN\$/$qtable_col/g;
 			$template =~ s/\$TABLE\$/$qtable/g;
-			$template =~ s/\$DEF\$/$qdef/g;
 			$template =~ s/\$COLUMN\$/$qcol/g;
+			$template =~ s/\$DEF\$/$qdef/g;
 			$template =~ s/\b_UNIQUE_(\w+_)?/$uniq ? ($1 || $uniq) : ''/eg;
 			push @index, $template;
 		}
@@ -564,7 +570,7 @@ sub create {
 #::logDebug("Running: $_");
 		$db->do($_) 
 			or ::logError(
-							"DBI: Post creation query '%s' failed: %s" ,
+							"DBI: Index creation query '%s' failed: %s" ,
 							$_,
 							$DBI::errstr,
 				);

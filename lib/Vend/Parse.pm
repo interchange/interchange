@@ -774,6 +774,7 @@ EOF
 			$::Pragma->{download} = 1;
 			::response($body);
 			$Vend::Sent = 1;
+			$self->{ABORT} = 1;
 			$self->{SEND} = 1;
 			return 1;
 		}

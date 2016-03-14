@@ -12,9 +12,8 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 011		x011							ITL Helpers		0								
 012		x012					admin/search_wizard		Search Wizard		0	Generate a search for a page							
 013		x013					admin/button_builder		Button Builder		0	Generate an order button or link							
-014		x014					admin/test_code		Test code	1	0	Test snippets of ITL							
-015		x015							Encryption	1	0								
-016		x016					admin/gpg_key		Add GPG Key	1	0	Check and add GPG keys to keyring							
-017		x017					admin/pref_select	ui_text_qualification=pref_group=Encryption	Encryption Preferences	1	0								
-018		x018							Upgrade Helpers		0								
-019		x019					admin/merge_meta		Merge metadata		0	Merge new metadata values from upgraded Interchange version							
+014		x014							Encryption	1	0								
+015		x015					admin/gpg_key		Add GPG Key	1	0	Check and add GPG keys to keyring							
+016		x016					admin/pref_select	ui_text_qualification=pref_group=Encryption	Encryption Preferences	1	0								
+017		x017							Upgrade Helpers		0								
+018		x018					admin/merge_meta		Merge metadata		0	Merge new metadata values from upgraded Interchange version							

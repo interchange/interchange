@@ -128,7 +128,7 @@ or in variable.txt:
 
     MV_PAYMENT_MODE protx (tab separated)
 
-if you want this to cooperate with other payment systems, eg PaypalExpress or GoogleCheckout, then see
+if you want this to cooperate with other payment systems, eg PaypalExpress, then see
 the documentation that comes with that system - it should be fully explained there (essentially, you
 don't run the charge route from profiles.order but from log_transaction).
 
