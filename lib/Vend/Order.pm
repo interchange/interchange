@@ -2423,9 +2423,13 @@ sub add_items {
 		undef $item;
 		$quantity = defined $quantities[$j] ? $quantities[$j] : 1;
 		$set = $quantity =~ s/^=//;
-		$quantity =~ s/^(-?)\D+/$1/;
-		$quantity =~ s/^(-?\d*)\D.*/$1/
-			unless $Vend::Cfg->{FractionalItems};
+		
+		## Strip any whitespace, letters, etc. but allow digits, decimals, and - signs
+		$quantity =~ s/^[^-.\d]+/$1/;
+
+		## Strip decimal points unless FractionalItems
+		$quantity =~ s/\..*// unless $Vend::Cfg->{FractionalItems};
+
 		($j++,next) unless $quantity;
 		if(! $fly[$j]) {
 			$base = product_code_exists_tag($code, $bases[$j] || undef);
