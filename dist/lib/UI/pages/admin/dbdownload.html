@@ -31,14 +31,14 @@
 [set mv_deliver][/set]
 
 
-[if file backup/DBDOWNLOAD.xls]
-	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.xls'; return; [/calc]
+[if type=file term="[var BACKUP_DIRECTORY]/DBDOWNLOAD.xls"]
+	[calc] $Scratch->{mv_deliver} .= ' ' . $Tag->var('BACKUP_DIRECTORY') . '/DBDOWNLOAD.xls'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.xls"
 	      add_dot_html=0
 			form="
-				mv_data_file=backup/DBDOWNLOAD.xls
+				mv_data_file=[var BACKUP_DIRECTORY]/DBDOWNLOAD.xls
 				mv_todo=deliver
-			"][L]Download XLS file[/L] ([file-info name="backup/DBDOWNLOAD.xls" date=1], [file-info name="backup/DBDOWNLOAD.xls" size=1] bytes)</A><BR>
+			"][L]Download XLS file[/L] ([file-info name="[var BACKUP_DIRECTORY]/DBDOWNLOAD.xls" date=1], [file-info name="[var BACKUP_DIRECTORY]/DBDOWNLOAD.xls" size=1] bytes)</a><br>
 [/if]
 
 [if scratch ui_error]
