@@ -1,8 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.93 2009-03-20 18:59:35 mheins Exp $
-#
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +24,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.93 $, 10);
+$VERSION = '1.94';
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -4137,6 +4135,10 @@ EOF
 	while($rowcount % $rowdiv) {
 		chunk ttag(), '<td colspan="$cells_per_span">&nbsp;</td>'; # unless $wo;
 		$rowcount++;
+	}
+
+	if (delete $::Scratch->{mv_force_file_upload} and $outhash{FORM_BEGIN} !~ /form-data/) {
+		$outhash{FORM_BEGIN} =~ s#># enctype="multipart/form-data">#;
 	}
 
 	$::Scratch->{mv_data_enable} = '';
