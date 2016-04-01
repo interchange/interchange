@@ -1,4 +1,4 @@
-# Copyright 2002-2011 Interchange Development Group and others
+# Copyright 2002-2016 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@ UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   1.25
+UserTag image Version   1.26
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
@@ -132,6 +132,9 @@ sub {
 			my @trylist;
 			if ($try and $try !~ /$filere/) {
 				@trylist = map { "$try.$_" } @imagesuffixes;
+				push @trylist, map { $try . '.' . uc($_) } @imagesuffixes;
+				my %uniq = map { $_ => undef } @trylist;
+				@trylist = sort keys %uniq;
 			} else {
 				@trylist = ($try);
 			}
