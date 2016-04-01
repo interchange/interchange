@@ -64,3 +64,5 @@ scripts/restart
 scripts/update
 .vagrant
 Vagrantfile
+*.swp
+*~
