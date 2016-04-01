@@ -1,4 +1,4 @@
-# Copyright 2002-2009 Interchange Development Group and others
+# Copyright 2002-2016 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -7,7 +7,7 @@
 
 UserTag backup-database Order    tables
 UserTag backup-database AddAttr
-UserTag backup-database Version  1.11
+UserTag backup-database Version  1.12
 UserTag backup-database Routine  <<EOR
 sub {
 	my ($tables, $opt) = @_;
@@ -59,6 +59,7 @@ sub {
 		$fn =~ s:.*/::;
 		my $file = "$backup_dir/$fn";
 		my $status;
+		local $Vend::Cfg->{NoExportExternal} if $opt->{force};
 		eval {
 			$status = export(
 						$table,
