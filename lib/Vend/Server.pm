@@ -1240,6 +1240,7 @@ sub reset_vars {
 	package CGI;
 	reset 'A-Z';
 	reset 'a-z';
+	undef $::Control;
 	undef %Vend::Table::DBI::DBI_connect_cache;
 	undef %Vend::Table::DBI::DBI_connect_bad;
 	undef %Vend::Table::DBI::DBI_connect_count;
