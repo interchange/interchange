@@ -35,7 +35,9 @@ sub new {
     my ($invocant, @args) = @_;
 
     my $safe = Safe->new(@args);
-    $invocant->initialize_safe_compartment($safe);
+
+	## UTF-8 may cause testing problems on some systems
+    $invocant->initialize_safe_compartment($safe) unless $ENV{MINIVEND_TEST};
 
     return $safe;
 }
