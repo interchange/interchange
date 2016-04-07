@@ -30,9 +30,6 @@ if($^O =~ /cygwin|win32/) {
 die "Must be in build directory\n" unless -d 'blib';
 die "No tests defined for Windows\n" if $^O =~ /win32/i;
 
-### This tells certain modules to ignore some initialization when doing unit tests
-$ENV{MINIVEND_TEST} = 1;
-
 $ENV{MINIVEND_ROOT} = "$cur_dir/blib";
 $ENV{MINIVEND_PORT} = 8786 unless defined $ENV{MINIVEND_PORT};
 
