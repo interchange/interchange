@@ -32,13 +32,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:1001
+#: ../interchange-cat-strap.templates:1001
 msgid "Create the Interchange demo catalog?"
 msgstr "Создать демонстрационный каталог Interchange?"
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:1001
+#: ../interchange-cat-strap.templates:1001
 msgid ""
 "Whether to install the demo catalog from the standard template or let you "
 "manually install it with makecat."
@@ -48,13 +48,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:2001
+#: ../interchange-cat-strap.templates:2001
 msgid "Remove demo catalog on package purge?"
 msgstr "Удалить демонстрационный каталог при вычистке пакета?"
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:2001
+#: ../interchange-cat-strap.templates:2001
 msgid ""
 "Should all files belonging to the Interchange demo catalog removed when you "
 "purge this package, e.g. with dpkg --purge or apt-get remove --purge ?"
@@ -64,19 +64,19 @@ msgstr ""
 
 #. Type: select
 #. Choices
-#: ../interchange-cat-standard.templates:3001
+#: ../interchange-cat-strap.templates:3001
 msgid "always, ask, never"
 msgstr "всегда, спросить, никогда"
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:3002
+#: ../interchange-cat-strap.templates:3002
 msgid "Policy for replacing existing demo catalogs:"
 msgstr "Политика замены существующих демонстрационных каталогов:"
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:3002
+#: ../interchange-cat-strap.templates:3002
 msgid ""
 "Whether to silently replace an existing demo catalog installation, ask for a "
 "confirmation or never touch an existing installation."
@@ -86,25 +86,25 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:4001
+#: ../interchange-cat-strap.templates:4001
 msgid "Replace the Interchange demo catalog?"
 msgstr "Заменить демонстрационный каталог Interchange?"
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:4001
+#: ../interchange-cat-strap.templates:4001
 msgid "There seems to already exist an Interchange demo catalog."
 msgstr "Похоже, что демонстрационный каталог Interchange уже существует."
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:5001
+#: ../interchange-cat-strap.templates:5001
 msgid "Virtual host for the demo catalog:"
 msgstr "Виртуальный хост для демонстрационного каталога:"
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:5001
+#: ../interchange-cat-strap.templates:5001
 msgid ""
 "You are running Interchange with \"FullURL\" enabled. Please specify the "
 "virtual host for the demo catalog."
@@ -114,13 +114,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:6001
+#: ../interchange-cat-strap.templates:6001
 msgid "Username for this catalog's administration:"
 msgstr "Имя пользователя для администрирования этого каталога:"
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:6001
+#: ../interchange-cat-strap.templates:6001
 msgid ""
 "Please provide an username for administering the demo catalog. The username "
 "must be at least 2 characters long and only contain letters, digits, "
@@ -132,13 +132,13 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../interchange-cat-standard.templates:7001
+#: ../interchange-cat-strap.templates:7001
 msgid "Password for this catalog's administration:"
 msgstr "Пароль для администрирования этого каталога:"
 
 #. Type: password
 #. Description
-#: ../interchange-cat-standard.templates:7001
+#: ../interchange-cat-strap.templates:7001
 msgid ""
 "Please provide a password for administering the standard demo "
 "catalog. Choose one which can not be easily guessed. Default is pass. The "
@@ -152,19 +152,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../interchange-cat-standard.templates:8001
+#: ../interchange-cat-strap.templates:8001
 msgid "Enable demo mode?"
 msgstr "Разрешить демонстрационный режим?"
 
 #. Type: multiselect
 #. Description
-#: ../interchange-cat-standard.templates:9001
+#: ../interchange-cat-strap.templates:9001
 msgid "Additional locales for the storefront:"
 msgstr "Дополнительные локали для витрины:"
 
 #. Type: multiselect
 #. Description
-#: ../interchange-cat-standard.templates:9001
+#: ../interchange-cat-strap.templates:9001
 msgid ""
 "The Interchange demo catalog is able to display the storefront in a number "
 "of different languages. Each selected locale will increase the memory "
@@ -178,73 +178,73 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:10001
+#: ../interchange-cat-strap.templates:10001
 msgid "Default locale for the storefront:"
 msgstr "Локаль по умолчанию для витрины:"
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:10001
+#: ../interchange-cat-strap.templates:10001
 msgid "Please select the default locale for the Interchange demo catalog."
 msgstr "Выберите локаль по умолчанию для демонстрационного каталога Interchange."
 
 #. Type: select
 #. Choices
-#: ../interchange-cat-standard.templates:11001
+#: ../interchange-cat-strap.templates:11001
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
 #. Type: select
 #. Choices
-#: ../interchange-cat-standard.templates:11001
+#: ../interchange-cat-strap.templates:11001
 msgid "MySQL"
 msgstr "MySQL"
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:11002
+#: ../interchange-cat-strap.templates:11002
 msgid "DBMS for the demo catalog:"
 msgstr "DBMS для демонстрационного каталога:"
 
 #. Type: select
 #. Description
-#: ../interchange-cat-standard.templates:11002
+#: ../interchange-cat-strap.templates:11002
 msgid "Please select the database type used for the demo catalog."
 msgstr "Выберите тип базы данных для демонстрационного каталога."
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:12001
+#: ../interchange-cat-strap.templates:12001
 msgid "Database name:"
 msgstr "Имя базы данных:"
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:12001
+#: ../interchange-cat-strap.templates:12001
 msgid "Please select the name of the database."
 msgstr "Выберите имя базы данных."
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:13001
+#: ../interchange-cat-strap.templates:13001
 msgid "Database user:"
 msgstr "Имя пользователя:"
 
 #. Type: string
 #. Description
-#: ../interchange-cat-standard.templates:13001
+#: ../interchange-cat-strap.templates:13001
 msgid "Please specify the username for connecting to the database."
 msgstr "Введите имя пользователя для подключения к базе данных."
 
 #. Type: password
 #. Description
-#: ../interchange-cat-standard.templates:14001
+#: ../interchange-cat-strap.templates:14001
 msgid "Database password:"
 msgstr "Пароль к базе данных:"
 
 #. Type: password
 #. Description
-#: ../interchange-cat-standard.templates:14001
+#: ../interchange-cat-strap.templates:14001
 msgid "Please specify the password for connecting to the database."
 msgstr "Введите пароль для подключения к базе данных."
 

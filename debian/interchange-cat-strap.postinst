@@ -22,7 +22,7 @@
 
 # Call dbconfig-common hook
 . /usr/share/dbconfig-common/dpkg/postinst
-dbc_go interchange-cat-standard $@
+dbc_go interchange-cat-strap $@
 
 GOAHEAD=false
 
@@ -33,16 +33,16 @@ db_get interchange/group
 GROUP=$RET
 
 # Whether to do the actual installation of the demo catalog
-db_get interchange-cat-standard/install
+db_get interchange-cat-strap/install
 
 if [ "$RET" = "true" ]; then
 	CATALOG=standard
 	if [ -d /var/lib/interchange/catalogs/$CATALOG ]; then
-		db_get interchange-cat-standard/replace
+		db_get interchange-cat-strap/replace
 		if [ "$RET" = "always" ]; then
 			GOAHEAD=true
 		elif [ "$RET" = "ask" ]; then
-			db_get interchange-cat-standard/confirm
+			db_get interchange-cat-strap/confirm
 			GOAHEAD=$RET
 		fi
 		if [ "$GOAHEAD" = "true" ]; then
@@ -72,20 +72,20 @@ if [ "$GOAHEAD" = "true" ]; then
 	# replace catalog directory
 	mkdir /var/lib/interchange/catalogs/$CATALOG
 	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
-	db_get interchange-cat-standard/username
+	db_get interchange-cat-strap/username
 	UI_SUPERUSER=$RET
-	db_get interchange-cat-standard/password
+	db_get interchange-cat-strap/password
 	UI_PASSWORD=$RET
-    db_get interchange-cat-standard/locales
+    db_get interchange-cat-strap/locales
     LOCALES=`echo "$RET" | sed -e 's/, /,/'`
-	db_get interchange-cat-standard/defaultlocale
+	db_get interchange-cat-strap/defaultlocale
 	DEFAULTLOCALE=$RET
 	# determine database parameters
 	MYSQL=0
 	PGSQL=0
 	SQLITE=0
 	SQLDSN=
-	db_get interchange-cat-standard/dbtype
+	db_get interchange-cat-strap/dbtype
 	if [ "$dbc_dbtype" = "mysql" ]; then
 		MYSQL=1
 		SQLDSN="dbi:mysql:$dbc_dbname"
@@ -100,7 +100,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	# with full URL enabled we use virtual host provided by the user
 	db_get interchange/full_url
 	if [ "$RET" = "true" ]; then
-		db_get interchange-cat-standard/vhost
+		db_get interchange-cat-strap/vhost
 		SERVERNAME="$RET"
 	else
 		SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
@@ -139,16 +139,16 @@ if [ "$GOAHEAD" = "true" ]; then
 		SQLPASS="$dbc_dbpass"
 fi
 
-db_get interchange-cat-standard/install
+db_get interchange-cat-strap/install
 if [ "$RET" = "true" ]; then
 	db_get interchange/full_url
 	if [ "$RET" = "true" ]; then
-		db_get interchange-cat-standard/vhost
+		db_get interchange-cat-strap/vhost
 		URLS="$RET/cgi-bin/ic/standard $RET:443/cgi-bin/ic/standard"
 	else
 		URLS="/cgi-bin/ic/standard"
 	fi
-	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-standard.cfg
+	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-strap.cfg
 include usertag/standard/*
 require module Vend::Payment::TestPayment
 Catalog standard /var/lib/interchange/catalogs/standard $URLS

@@ -116,9 +116,9 @@ install: build
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
-# install global usertags for standard demo
-	mkdir -p $(TMP)/usr/lib/interchange/usertag/standard
-	install -m 0644 dist/standard/config/*.tag $(TMP)/usr/lib/interchange/usertag/standard
+# install global usertags for strap demo
+	mkdir -p $(TMP)/usr/lib/interchange/usertag/strap
+	install -m 0644 dist/strap/config/*.tag $(TMP)/usr/lib/interchange/usertag/strap
 # mimic global pragma for data updates
 	cat debian/catalog_before.cfg >> $(TMP)/usr/lib/interchange/catalog_before.cfg
 
@@ -157,7 +157,7 @@ binary-arch: build install
 # install cron script
 	dh_installcron -a
 	dh_installchangelogs -a
-	dh_install -a -p interchange --sourcedir=debian/tmp --exclude=UI --exclude=standard
+	dh_install -a -p interchange --sourcedir=debian/tmp --exclude=UI --exclude=strap
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a

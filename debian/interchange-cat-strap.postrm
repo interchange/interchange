@@ -23,13 +23,13 @@
 # Call dbconfig-common hook
 if [ -f /usr/share/dbconfig-common/dpkg/postrm ]; then
 	. /usr/share/dbconfig-common/dpkg/postrm
-	dbc_go interchange-cat-standard $@
+	dbc_go interchange-cat-strap $@
 fi
 
 if [ "$1" = "purge" ]; then
-	db_get interchange-cat-standard/install
+	db_get interchange-cat-strap/install
 	if [ "$RET" = "true" ]; then
-		db_get interchange-cat-standard/purge
+		db_get interchange-cat-strap/purge
 		if [ "$RET" = "true" ]; then
 			CATALOG=standard
 			db_get interchange/docroot

@@ -22,16 +22,16 @@
 
 # Call dbconfig-common hook
 . /usr/share/dbconfig-common/dpkg/prerm
-dbc_go interchange-cat-standard $@
+dbc_go interchange-cat-strap $@
 
 interchangeconfig USE_STANDARD=
 
-db_get interchange-cat-standard/install
+db_get interchange-cat-strap/install
 if [ "$RET" = "true" ]; then
 	if [ ! -f /var/run/interchange-install ]; then
 		# remove catalog from running server
 		interchange --remove=standard || true
-		rm -f /var/lib/interchange/catalog.d/interchange-cat-standard.cfg
+		rm -f /var/lib/interchange/catalog.d/interchange-cat-strap.cfg
 	fi
 fi
 
