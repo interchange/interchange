@@ -1,11 +1,15 @@
-interchange (5.7.7-2.1) unstable; urgency=low
-  
+interchange (5.10.0-1) unstable; urgency=low
+
+  * New upstream release (Closes: #816657, thanks to Robert James Clay
+    <jame@rocasa.us>).
+  * Fixes UI installation error (Closes: #687904,
+    thanks to Toni Mueller <support@oeko.net>).
   * Remove superfluous space before question mark from Debconf template
     (Closes: #584513, thanks to Helge Kreutzmann <debian@helgefjell.de>
     for the report)
   * Remove empty crontab manual page after build.
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 23 Jan 2012 11:54:52 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 21 Apr 2016 13:37:32 +0200
 
 interchange (5.7.7-1) unstable; urgency=low
 
