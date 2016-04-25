@@ -4,6 +4,8 @@ interchange (5.10.0-1) unstable; urgency=low
     <jame@rocasa.us>).
   * Fixes UI installation error (Closes: #687904,
     thanks to Toni Mueller <support@oeko.net>).
+  * Add missing build-{arch,indep} targets (Closes: #821994, thanks to
+    niels@thykier.net).
   * Remove superfluous space before question mark from Debconf template
     (Closes: #584513, thanks to Helge Kreutzmann <debian@helgefjell.de>
     for the report)

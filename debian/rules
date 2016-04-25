@@ -28,7 +28,10 @@ TMP = $(shell pwd)/debian/tmp
 IC_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if /^Version: (.*?)-(.*)$$/')
 IC_MAJOR_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if /^Version: (\d+\.\d+)(.*?)-(.*)$$/')
 
-build: build-stamp
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+
 build-stamp:
 	dh_testdir
 
