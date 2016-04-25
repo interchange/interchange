@@ -36,7 +36,7 @@ GROUP=$RET
 db_get interchange-cat-strap/install
 
 if [ "$RET" = "true" ]; then
-	CATALOG=standard
+	CATALOG=strap
 	if [ -d /var/lib/interchange/catalogs/$CATALOG ]; then
 		db_get interchange-cat-strap/replace
 		if [ "$RET" = "always" ]; then
@@ -60,7 +60,7 @@ if [ "$GOAHEAD" = "true" ]; then
 	BASEDIR=/var/lib/interchange/catalogs
 	CGIBASE=/cgi-bin/ic
 	DOCROOT="$RET"
-	CATALOG=standard
+	CATALOG=strap
 
 	# replace document root
 	if [ "$DOCROOT" -a -d "$DOCROOT" ]; then
@@ -106,7 +106,7 @@ if [ "$GOAHEAD" = "true" ]; then
 		SERVERNAME=`hostname --fqdn 2>/dev/null || echo localhost`
 	fi
 
-	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_SQLITE=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
+	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_CATALOGNAME="shops/strap" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" MVC_SKIP_ADD_GLOBAL_USERTAG=1 MVC_SQLITE=1 MVC_MYSQL=$MYSQL MVC_PGSQL=$PGSQL /usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
 		--demotype=$CATALOG \
@@ -144,18 +144,18 @@ if [ "$RET" = "true" ]; then
 	db_get interchange/full_url
 	if [ "$RET" = "true" ]; then
 		db_get interchange-cat-strap/vhost
-		URLS="$RET/cgi-bin/ic/standard $RET:443/cgi-bin/ic/standard"
+		URLS="$RET/cgi-bin/ic/strap $RET:443/cgi-bin/ic/strap"
 	else
-		URLS="/cgi-bin/ic/standard"
+		URLS="/cgi-bin/ic/strap"
 	fi
 	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-strap.cfg
-include usertag/standard/*
+include usertag/strap/*
 require module Vend::Payment::TestPayment
-Catalog standard /var/lib/interchange/catalogs/standard $URLS
+Catalog strap /var/lib/interchange/catalogs/strap $URLS
 EOF
 	if [ ! -f /var/run/interchange-install ]; then
 		# add catalog to running server
-		echo "Catalog standard /var/lib/interchange/catalogs/standard $URLS" | interchange --add standard
+		echo "Catalog strap /var/lib/interchange/catalogs/strap $URLS" | interchange --add strap
 	fi
 fi
 

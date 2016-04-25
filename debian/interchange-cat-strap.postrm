@@ -31,7 +31,7 @@ if [ "$1" = "purge" ]; then
 	if [ "$RET" = "true" ]; then
 		db_get interchange-cat-strap/purge
 		if [ "$RET" = "true" ]; then
-			CATALOG=standard
+			CATALOG=strap
 			db_get interchange/docroot
 			DOCROOT=$RET
 			rm -rf /usr/lib/cgi-bin/ic/$CATALOG

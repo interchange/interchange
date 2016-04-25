@@ -79,7 +79,7 @@ _Description: DBMS for the demo catalog:
 
 Template: interchange-cat-strap/dbname
 Type: string
-Default: standard
+Default: strap
 _Description: Database name:
  Please select the name of the database.
 

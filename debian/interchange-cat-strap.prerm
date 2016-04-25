@@ -30,7 +30,7 @@ db_get interchange-cat-strap/install
 if [ "$RET" = "true" ]; then
 	if [ ! -f /var/run/interchange-install ]; then
 		# remove catalog from running server
-		interchange --remove=standard || true
+		interchange --remove=strap || true
 		rm -f /var/lib/interchange/catalog.d/interchange-cat-strap.cfg
 	fi
 fi
