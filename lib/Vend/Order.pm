@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# Copyright (C) 2002-2013 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

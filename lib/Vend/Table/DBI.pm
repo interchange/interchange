@@ -19,7 +19,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.88 $, 10);
+$VERSION = '2.89';
 
 use strict;
 no warnings qw(uninitialized numeric);

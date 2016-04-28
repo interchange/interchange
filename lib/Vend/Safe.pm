@@ -1,6 +1,6 @@
 # Vend::Safe - utility methods for handling character encoding
 #
-# Copyright (C) 2009 Interchange Development Group
+# Copyright (C) 2016 Interchange Development Group
 # Copyright (C) 2009 David Christensen <david@endpoint.com>
 #
 # This program is free software; you can redistribute it and/or modify
