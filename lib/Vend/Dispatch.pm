@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# Copyright (C) 2002-2013 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = '1.114';
+$VERSION = '1.115';
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1629,7 +1629,9 @@ EOF
 			map { "$_=$CGI::values{$_}\n" }
 			grep { !$Vend::Cfg->{BounceReferrals_hide}->{$_} }
 			sort keys %CGI::values;
-		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path, undef, undef, { form => $form, match_security => 1 });
+		my $url = vendUrl($path eq '' ? $Vend::Cfg->{DirectoryIndex} : $path,
+			undef, undef,
+			{ form => $form, match_security => 1, no_default_process => 1 });
 		$url = header_data_scrub($url);
 		my $msg = get_locale_message(
 			301,

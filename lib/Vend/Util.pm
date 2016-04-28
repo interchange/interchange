@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -98,7 +98,7 @@ use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.127 $, 10);
+$VERSION = '2.128';
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1343,7 +1343,7 @@ sub vendUrl {
 
 	my $extra;
 	if($opt->{form}) {
-		$path = $Vend::Cfg->{ProcessPage} unless $path;
+		$path ||= $Vend::Cfg->{ProcessPage} unless $opt->{no_default_process};
 		if($opt->{form} eq 'auto') {
 			my $form = '';
 			while( my ($k, $v) = each %$opt) {
