@@ -9,6 +9,79 @@
 
 
 
+Interchange 5.10.1 released ?
+
+
+Admin UI
+--------
+
+* Respect custom BACKUP_DIRECTORY in admin table downloads. This matches
+  behavior expected by [export-database].
+
+* Allow admin user to export tables upon request despite NoExportExternal.
+  NoExportExternal was intended to ensure automatic products/ exports don't
+  happen, but we shouldn't stop manual exports to the download directory.
+
+* Expand table editor / imagehelper features for file uploads.
+
+* Update Perl module checks in Administration > Info > Perl Information tab.
+
+
+Usertags, filters
+-----------------
+
+* In [image] search for upper and lower case of file suffixes, in predictable
+  order.
+
+* In [deliver], extra headers should always be sent, even for a redirect. (Our
+  redirects were always cacheable unless explicitly set prior to deliver call.)
+
+* Add date-change filter "common" boolean option to output date+time without T
+  separator, e.g. 2016-03-31 12:34:56 instead of 2016-03-31T12:34:56.
+
+* Add support for [all-anchor] token in [more-list] template
+
+
+Database interaction
+--------------------
+
+* Changed dbconf files for userdb, transactions, and orderline to reflect a
+  varchar(255) definition for username, usernick, and email. Previously were a
+  mis-matched variations of lengths, that do not provide adequate length for
+  modern email addresses.
+
+* Fix error creating indexes when QUOTE_IDENTIFIERS is set.
+
+
+Core
+----
+
+* Work around unit test problem caused by UTF-8.
+
+* Fix memory leak where new session would retain previous version of
+  $::Control.
+
+* In &Vend::Order:add_items:
+
+** Fix long-wrong code which had the effect of always stripping - signs.
+
+** Fix code which was intended to remove amounts after the decimal point unless
+   FractionalItems.
+
+* Properly-backquote \X in ESCAPE_CHARS. This resolves "warning: unrecognized
+  escape \X".
+
+* Fix for BounceReferrals including process path.
+
+* Avoid warning when &Vend::Data::item_price is called with a SKU rather than hashref.
+
+* Fix DBI quoting problem in &Vend::Table::DBI::delete_record that appears with newer
+  versions of DBD::Pg.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 5.10.0 released January 5, 2016
 
 Admin UI
@@ -64,3 +137,6 @@ Core
 * New DebugTemplate tokens for more informative logging.
 
 * Support direct JSON POSTs and automatic decoding of POSTed JSON entities in the $CGI::json_ref using the new UnpackJSON directive.
+
+
+(end)
