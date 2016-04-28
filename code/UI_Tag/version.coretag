@@ -1,18 +1,16 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2016 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: version.coretag,v 1.15 2007-08-05 08:01:03 kwalsh Exp $
 
 UserTag version Order      extended
 UserTag version attrAlias  module_test modtest
 UserTag version attrAlias  moduletest modtest
 UserTag version attrAlias  require modtest
 UserTag version addAttr
-UserTag version Version    $Revision: 1.15 $
+UserTag version Version    1.16
 UserTag version Routine    <<EOR
 sub {
 	return $::VERSION unless shift;
@@ -144,11 +142,12 @@ sub {
 		my @wanted = qw/
 			Archive::Tar
 			Archive::Zip
-			Bundle::LWP
 			Business::UPS
 			Compress::Zlib
+			Crypt::Random
 			Crypt::SSLeay
 			DBI
+			Digest::Bcrypt
 			Digest::MD5
 			Digest::SHA
 			Image::Size
@@ -168,11 +167,12 @@ sub {
 		my %info = (
 			'Archive::Tar' => q{Only needed for supplementary UserTag definitions.},
 			'Archive::Zip' => q{Only needed for supplementary UserTag definitions.},
-			'Bundle::LWP' => q{Certain parts of these modules (URI::URL and MIME::Base64) are required for Interchange's internal HTTP server. Also, Business::UPS, for calculating shipping, requires this.},
-			'Business::UPS' => q{Enables lookup of shipping costs directly from www.ups.com. Requires Bundle::LWP.},
+			'Business::UPS' => q{Enables lookup of shipping costs directly from www.ups.com.},
 			'Compress::Zlib' => q{Only needed for supplementary UserTag definitions.},
+			'Crypt::Random' => q{Used for UserDB bcrypt password hashing.},
 			'Crypt::SSLeay' => q{Payment interface links via HTTPS/SSL.},
 			'DBI' => q{Most people want to use SQL with Interchange, and this is a requirement.  You will also need the appropriate DBD module, i.e. DBD::mysql to support MySQL.},
+			'Digest::Bcrypt' => q{Used for UserDB bcrypt password hashing.},
 			'Digest::MD5' => q{IMPORTANT: cache keys and other search-related functions will not work.},
 			'Digest::SHA' => q{Used by sha1 filter, optional UserDB functionality, and some payment modules.},
 			'Image::Size' => q{Optional but recommended for [image ...] tag.},
