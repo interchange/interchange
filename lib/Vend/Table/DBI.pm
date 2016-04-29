@@ -1901,8 +1901,7 @@ sub delete_record {
 		return undef;
 	}
 
-	## Rely on DBI to quote
-	$key = $s->[$DBI]->quote($key, $s->[$KEY]);
+	$key = $s->quote($key, $s->[$KEY]);
 
     $s->[$DBI]->do("delete from $s->[$QTABLE] where $s->[$QKEY] = $key");
 }
