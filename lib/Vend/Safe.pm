@@ -27,6 +27,12 @@ use warnings;
 use Vend::CharSet;
 use Safe;
 
+BEGIN {
+    eval {
+        require version;
+    };
+};
+
 # The L<new> method creates and returns an initialized Safe
 # compartment.  This is mainly provided so there is a single point of
 # modification for all needed Safe.pm initializations.
@@ -35,7 +41,11 @@ sub new {
     my ($invocant, @args) = @_;
 
     my $safe = Safe->new(@args);
-    $invocant->initialize_safe_compartment($safe);
+
+    # Safe started taking better care of Unicode things as of version 2.32
+    if ($] lt '5.009' || version->parse($Safe::VERSION) < version->parse('2.32')) {
+        $invocant->initialize_safe_compartment($safe);
+    }
 
     return $safe;
 }
