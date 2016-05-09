@@ -916,11 +916,7 @@ sub display {
 			last METAMAKE;
 		}
 
-		if ($record->{restrict_allow}) {
-			my %restrict_allow;
-			@restrict_allow{grep /\S/, split / /, $opt->{restrict_allow} . ' ' . $record->{restrict_allow}} = ();
-			$opt->{restrict_allow} = join ' ', sort keys %restrict_allow;
-		} 
+		$opt->{restrict_allow} ||= $record->{restrict_allow};
 #::logDebug("formatting prepend/append/lookup_query name=$opt->{name} restrict_allow=$opt->{restrict_allow}");
 		for(qw/append prepend lookup_query/) {
 			next unless $record->{$_};
