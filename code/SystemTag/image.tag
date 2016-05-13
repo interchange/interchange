@@ -9,14 +9,12 @@ UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Version   1.27
+UserTag image Version   1.26
 UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
 	my ($image, $path, $secure, $sku);
 	my ($imagedircurrent, $imagedir, $imagedirsecure);
-
-	use Image::Size;
 
 	my @descriptionfields = grep /\S/, split /\s+/,
 		$opt->{descriptionfields} || $::Variable->{DESCRIPTIONFIELDS} || $Vend::Cfg->{DescriptionField};
@@ -29,22 +27,6 @@ sub {
 	my @imagesuffixes = qw( jpg gif png jpeg );
 	my $filere = qr/\.\w{2,4}$/;
 	my $absurlre = qr!^(?i:https?)://!;
-
-	my $verify_image =	sub {
-		my $file = shift;
-
-		return unless -f $file;
-
-		my ($imgx, $imgy, $error) = imgsize($file);
-
-		if(! $imgx) {
-			::logError("Image::Size error on verify-image: $error");
-			return undef;
-		}
-
-		return 1 if ($error =~ /(jpg|jpeg|gif|png|bmp|tif|ico|xbm)/i);
-		return undef;
-	};
 
 	if ($opt->{ui}) {
 		# unless no image dir specified, add locale string
@@ -240,12 +222,6 @@ sub {
 					}
 				}
 				last MOGIT unless $exec;
-
-				unless ($verify_image->($newpath)){
-					logError("Image file not valid image:%s", $newpath);
-					last MOGIT;
-				}
-
 				system qq{$exec -geometry "$siz" '$newpath'};
 				if($?) {
 					logError("%s: Unable to mogrify image '%s'", 'image tag', $newpath);
@@ -265,7 +241,8 @@ sub {
 
 		if ($opt->{getsize} and $path) {
 			eval {
-				my ($width, $height) = imgsize($path);
+				require Image::Size;
+				my ($width, $height) = Image::Size::imgsize($path);
 				$opt->{height} = $height
 					if defined($height) and not exists($opt->{height});
 				$opt->{width} = $width
