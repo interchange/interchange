@@ -18,6 +18,28 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
+=head1 NAME
+
+Vend::Table::DBI
+
+=head1 SYNOPSIS
+
+use Vend::Table::Common;
+use Vend::Table::DBI;
+
+=head1 DESCRIPTION
+
+This is the database code that links Interchange to database tables as
+presented by Perl DBI, and which are interfaced by SQL. Some may
+conceivably be non-SQL tables with DBI frontents, but most Interchange
+installations use MySQL or Postgres.
+
+=head1 METHODS
+
+Selected methods used in this module are documented below.
+
+=cut
+
 package Vend::Table::DBI;
 $VERSION = '2.89';
 
@@ -1797,6 +1819,50 @@ sub field {
 	$data;
 }
 
+=over
+
+=item set_field
+
+This method sets a single field with a value, i.e.
+
+	$dbobj->set_field($key,$field,$value)
+
+The primary key for the field is passed as the first parameter, the
+field name as defined in the Interchange table definition is the
+second parameter, and the value to be set is the last value.
+
+If the row does not exist, it will be created. (Note that this
+may fail if there are NOT NULL values without defaults.)
+
+This will essentially perform this pseudo-query:
+
+	UPDATE  $table
+	SET     $field = $value
+	WHERE   $primary_key = $key
+
+If there is a database configuration TIMESTAMP_FIELD, and the column
+is defined as NO_UPDATE, the TIMESTAMP_FIELD will be set to its
+current value to avoid being marked as updated. This changes the
+pseudo_query to be
+
+	UPDATE  $table
+	SET     $timestamp_field = $timestamp_field, $field = $value
+	WHERE   $primary_key = $key
+
+This is most commonly needed in Interchange's userdb definition,
+where it sets the mod_time field and you may not wish to indicate
+the user as having been updated.
+
+	Database userdb TIMESTAMP_FIELD update_date
+	Database userdb NO_UPDATE mod_time
+
+WARNING: There is no update_date field in Interchange's table definition
+in the demo. You would need to add that to make this work.
+
+=back
+
+=cut
+
 sub set_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
@@ -1840,9 +1906,14 @@ sub set_field {
 		}
 	}
 
+	my $extra = '';
+	if( my $f = $s->[$CONFIG]{TIMESTAMP_FIELD} and exists $s->[$CONFIG]{NO_UPDATE}{$column} ) {
+		$extra = "$f = $f, ";
+	}
+
 	my @args;
 	if(!$q) {
-		$q = qq{update $s->[$QTABLE] SET $column = ? where $s->[$QKEY] = ?};
+		$q = qq{update $s->[$QTABLE] SET $extra$column = ? where $s->[$QKEY] = ?};
 		@args = ($value, $key);
 	}
 	else {

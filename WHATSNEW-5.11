@@ -1,0 +1,26 @@
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+                       (since the version 5.11 branch)
+
+          See UPGRADE document for a list of incompatible changes.
+
+------------------------------------------------------------------------------
+
+
+Database
+--------
+
+* Add ability to have a NO_UPDATE field in SQL tables, which field will
+  not affect a TIMESTAMP field (in MySQL or Postgres, at least).
+
+  Intended to allow mod_time in user logins to be updated without
+  changing a timestamp field. May have other uses, but is only
+  honored at this time in the set_field() method, so has limited
+  applicability.
+
+  Assuming one has a timestamp field in the userdb table called
+  "update_date", this is effected by changing the configuration as:
+
+  	Database userdb  TIMESTAMP_FIELD  update_date
+  	Database userdb  NO_UPDATE        mod_time

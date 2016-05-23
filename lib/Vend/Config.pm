@@ -4257,6 +4257,7 @@ my %Hash_ref = (  qw!
 							DEFAULT_SESSION       DEFAULT_SESSION
 							FIELD_ALIAS   FIELD_ALIAS
 							NUMERIC       NUMERIC
+							NO_UPDATE     NO_UPDATE
 							PREFER_NULL   PREFER_NULL
 							WRITE_CATALOG WRITE_CATALOG
 					! );
