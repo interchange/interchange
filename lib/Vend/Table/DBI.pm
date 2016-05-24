@@ -1892,7 +1892,16 @@ sub set_field {
 
 	my $rawkey = $key;
 	my $rawval = $value;
-    	$column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+
+	my $extra = '';
+	if( my $f = $s->[$CONFIG]{TIMESTAMP_FIELD} and exists $s->[$CONFIG]{NO_UPDATE}{$column} ) {
+		$f = $s->[$DBI]->quote_identifier($f) if $s->[$CONFIG]->{QUOTE_IDENTIFIERS};
+		$extra = "$f = $f, ";
+	}
+
+	# Would have preferred that this was not invasive, eliminates possibility
+	# of accessing column configuration below this
+	$column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 
 	my $q;
 	if(! $s->record_exists($rawkey)) {
@@ -1904,12 +1913,6 @@ sub set_field {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
 			$s->set_row($key);
 		}
-	}
-
-	my $extra = '';
-	if( my $f = $s->[$CONFIG]{TIMESTAMP_FIELD} and exists $s->[$CONFIG]{NO_UPDATE}{$column} ) {
-		$f = $s->[$DBI]->quote_identifier($f) if $s->[$CONFIG]->{QUOTE_IDENTIFIERS};
-		$extra = "$f = $f, ";
 	}
 
 	my @args;
