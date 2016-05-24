@@ -1908,7 +1908,7 @@ sub set_field {
 
 	my $extra = '';
 	if( my $f = $s->[$CONFIG]{TIMESTAMP_FIELD} and exists $s->[$CONFIG]{NO_UPDATE}{$column} ) {
-		$f = $db->quote_identifier($f) if $config->{QUOTE_IDENTIFIERS};
+		$f = $s->[$DBI]->quote_identifier($f) if $s->[$CONFIG]->{QUOTE_IDENTIFIERS};
 		$extra = "$f = $f, ";
 	}
 
@@ -2072,6 +2072,7 @@ sub list_fields {
 			}
 		};
 	}
+	no strict 'subs';
 	my @num = map { exists $config->{NUMERIC}{$_} ? DBI::SQL_NUMERIC : undef } @fld;
 	$config->{_Numeric_ary} = \@num;
 	if($config->{UPPERCASE}) {
@@ -2367,6 +2368,7 @@ eval {
 
     my $search;
 	$opt->{bd} = $tabs[0];
+	require Vend::DbSearch;
 	$search = new Vend::DbSearch;
 
 	my %fh;
