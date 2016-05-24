@@ -1908,6 +1908,7 @@ sub set_field {
 
 	my $extra = '';
 	if( my $f = $s->[$CONFIG]{TIMESTAMP_FIELD} and exists $s->[$CONFIG]{NO_UPDATE}{$column} ) {
+		$f = $db->quote_identifier($f) if $config->{QUOTE_IDENTIFIERS};
 		$extra = "$f = $f, ";
 	}
 
