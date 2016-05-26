@@ -1873,6 +1873,10 @@ sub set_field {
 		return undef;
 	}
 
+    my $qcolumn = $column;
+    $qcolumn = $s->[$DBI]->quote_identifier($column)
+	if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+
 	my $lcfg;
     if(
 		$s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}
@@ -1899,15 +1903,11 @@ sub set_field {
 		$extra = "$f = $f, ";
 	}
 
-	# Would have preferred that this was not invasive, eliminates possibility
-	# of accessing column configuration below this
-	$column = $s->[$DBI]->quote_identifier($column) if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
-
 	my $q;
 	if(! $s->record_exists($rawkey)) {
 		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
 			$key = 0 if ! $key;
-			$q = qq{INSERT INTO $s->[$QTABLE] ($s->[$QKEY], $column) VALUES (?,?)};
+			$q = qq{INSERT INTO $s->[$QTABLE] ($s->[$QKEY], $qcolumn) VALUES (?,?)};
 		}
 		else {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
@@ -1917,7 +1917,7 @@ sub set_field {
 
 	my @args;
 	if(!$q) {
-		$q = qq{update $s->[$QTABLE] SET $extra$column = ? where $s->[$QKEY] = ?};
+		$q = qq{update $s->[$QTABLE] SET $extra$qcolumn = ? where $s->[$QKEY] = ?};
 		@args = ($value, $key);
 	}
 	else {
