@@ -857,11 +857,14 @@ sub do_check {
 
 		my $conditional_update;
 		my $parameter = $_;
+
+		my $varex = $::Limit->{profile_check_varname_regex} || '\w[-\w]*';
+
 		my($var, $val, $m, $message);
 		if (/^&/) {
 			($var,$val) = split /[\s=]+/, $parameter, 2;
 		}
-		elsif ($parameter =~ /(\w+)[\s=]+(.*)/) {
+		elsif ($parameter =~ /($varex)[\s=]+(.*)/) {
 			my $k = $1;
 			my $v = $2;
 			$conditional_update = $Update;
