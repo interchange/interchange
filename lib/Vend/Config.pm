@@ -3907,12 +3907,14 @@ sub parse_ip_address_regexp {
 	my ($var, $value) = @_;
 	return '' unless $value;
 
+	my @atoms = split /[\s,\0]/, $value;
+
 	eval {
 		require Net::IP::Match::Regexp;
 	};
 	$@ and config_error("$var directive requires module: $@");
 
-	my $re = Net::IP::Match::Regexp::create_iprange_regexp($value)
+	my $re = Net::IP::Match::Regexp::create_iprange_regexp(@atoms)
 		or config_error("Improper IP address range for $var");
     return $re;
 }
