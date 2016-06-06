@@ -72,7 +72,7 @@ my ($log, $die, $warn) = $Tag->logger('change_email', 'logs/member.log');
 
 $log->("Username $Session->{username} changed email to $email.");
 
-	return $Tag->warnings(errmsg("Changed username to %s.", $email)) if $result;
+	return $Tag->warnings(errmsg("Changed email to %s.", $email)) if $result;
 	return $Tag->error({ name => 'change_email', set => 'Failure -- please contact us.' });
 [/perl]
 [/set]
