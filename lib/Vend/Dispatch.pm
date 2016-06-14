@@ -1276,6 +1276,8 @@ sub dispatch {
 
 	run_macro($Vend::Cfg->{Preload});
 
+    return $Vend::PreloadReturn if defined $Vend::PreloadReturn;
+
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
 
