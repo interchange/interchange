@@ -1770,6 +1770,8 @@ EOF
 	run_macro($Vend::Session->{Autoload});
 #show_times("end session Autoload macro") if $Global::ShowTimes;
 
+    return $Vend::AutoloadReturn if defined $Vend::AutoloadReturn;
+
     # If the cgi-bin program was invoked with no extra path info,
     # just display the catalog page.
     if (! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
