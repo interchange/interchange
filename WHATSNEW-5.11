@@ -24,3 +24,9 @@ Database
 
   	Database userdb  TIMESTAMP_FIELD  update_date
   	Database userdb  NO_UPDATE        mod_time
+
+* Add ability to return after Preload and Autoload routines.
+  Setting $Vend::PreloadReturn or $Vend::AutoloadReturn (i.e.
+  they are defined) means Vend::Dispatch::dispatch() will 
+  return that status. This allows features like QueryCache
+  and others that are hooked via Preload or Autoload.
