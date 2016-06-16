@@ -1109,6 +1109,7 @@ lib/Vend/File.pm
 lib/Vend/Form.pm
 lib/Vend/Glimpse.pm
 lib/Vend/Imagemap.pm
+lib/Vend/InDev.pm
 lib/Vend/Interpolate.pm
 lib/Vend/MakeCat.pm
 lib/Vend/Menu.pm
