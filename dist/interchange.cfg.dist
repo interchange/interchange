@@ -3,6 +3,11 @@
 # interchange.cfg
 
 #========================================================================#
+#
+
+# Allows use of "ifdef @INDEV" below. Will set INDEV to 1 if file
+# _indev is present.
+Require module Vend::InDev
 
 # These settings all affect other configuration directives below.
 
@@ -28,8 +33,11 @@ Variable  TRAFFIC  low
 
 # Require an external module
 
-# This one tests the realtime payment gateway code, uncomment to test.
-## Require module Vend::Payment::TestPayment
+# This one tests the realtime payment gateway code, set INDEV variable to test.
+#
+ifdef @INDEV
+Require module Vend::Payment::TestPayment
+endif
 
 #========================================================================#
 

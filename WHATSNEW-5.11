@@ -30,3 +30,8 @@ Database
   they are defined) means Vend::Dispatch::dispatch() will 
   return that status. This allows features like QueryCache
   and others that are hooked via Preload or Autoload.
+
+* Add skeleton module Vend::InDev, which does nothing but set a single
+  global variable if the file _indev is present in $Global::VendRoot.
+  This allows interchange.cfg bifurcation, useful when maintain a
+  SCCS repository.
