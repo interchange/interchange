@@ -105,9 +105,20 @@ Your Authorize.net account password, supplied by Authorize.net when you sign up.
 Global parameter is MV_PAYMENT_SECRET. This may not be needed for
 actual charges.
 
+=item host
+
+The Authorize.net host to be used. The default is
+
+    secure.authorize.net
+
+Authorize.net recommends you use their Akamai host, and
+to do so you set (as in the example above):
+
+	Route authorizenet host secure2.authorize.net
+
 =item referer
 
-A valid referering url (match this with your setting on secure.authorize.net).
+A valid referring url (match this with your setting on secure.authorize.net).
 Global parameter is MV_PAYMENT_REFERER.
 
 =item transaction
