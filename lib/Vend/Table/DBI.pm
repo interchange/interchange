@@ -1300,7 +1300,11 @@ sub get_slice {
 		$fary = [ @_ ];
 	}
 
-    	$fary = [map {$s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{lc $_}]} @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+        $fary = [map {
+            defined $s->[$CONFIG]{COLUMN_INDEX}{lc $_} ?
+                $s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{lc $_}] :
+                $s->quote_identifier($_)
+            } @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 
 	my $fstring = join ",", @$fary;
 	$sql = "SELECT $fstring from $s->[$QTABLE] WHERE $s->[$QKEY] = $tkey";
@@ -1391,7 +1395,11 @@ sub set_slice {
 		}
     }
 
-    	$fary = [map {$s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{lc $_}]} @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
+        $fary = [map {
+            defined $s->[$CONFIG]{COLUMN_INDEX}{lc $_} ?
+                $s->[$QNAME][$s->[$CONFIG]{COLUMN_INDEX}{lc $_}] :
+                $s->quote_identifier($_)
+            } @$fary] if $s->[$CONFIG]{QUOTE_IDENTIFIERS};
 
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
