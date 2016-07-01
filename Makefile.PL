@@ -851,4 +851,7 @@ WriteMakefile(
 	VERSION_FROM => "scripts/interchange.PL",
 	EXE_FILES  => [],
 	CONFIGURE  => \&initialize,
+	PREREQ_PM  => {
+		'HTML::Entities' => 0,
+	},
 );
