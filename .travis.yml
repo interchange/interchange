@@ -9,6 +9,8 @@ perl:
   - "5.20"
   - "5.22"
 sudo: false
+services:
+  - mysql
 before_install:
   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
   - source ~/travis-perl-helpers/init
@@ -18,7 +20,19 @@ before_install:
   - cd $BUILD_DIR
 install:
   - cpan-install --deps
+  - cpanm --notest --installdeps .
+  - cpanm --notest DBD::Pg DBD::mysql
+before_script:
+  - mysql -e 'create database interchange_test;'
 script:
   - perl Makefile.PL force=1 PREFIX=/home/travis/interchange
   - make
   - perl test.pl
+  - make install
+  - mkdir /home/travis/catalogs
+  - cp -r /home/travis/interchange/strap /home/travis/catalogs/
+  - mkdir /home/travis/catalogs/strap/logs
+  - cp -fv t/interchange-test/variable.txt /home/travis/catalogs/strap/products/
+  - cp -fv t/interchange-test/interchange.cfg /home/travis/interchange/
+  - cd /home/travis/interchange
+  - ./bin/restart

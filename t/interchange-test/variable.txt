@@ -1,0 +1,108 @@
+code	Variable	pref_group
+ADDRESS	123 Main St.	Company
+CART_UPSELL	0	Cart/Checkout
+CGIWRAP	__MVC_CGIWRAP__	Admin Control
+CGI_DIR	__MVC_CGIDIR__	Admin Control
+CGI_URL	__MVC_CGIURL__	Directories and Paths
+CHECKOUT_MAIL	1	Cart/Checkout
+CHECKOUT_MAIL_LIST	1	Cart/Checkout
+CHECKOUT_PAGE	ord/country	Cart/Checkout
+CHECK_ACCEPTED	1	Payment
+CITY	Anywhere, OH 45056	Company
+COD_ACCEPTED	0	Payment
+COMPANY	__MVC_COMPANY__	Company
+CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
+DECREMENT_INVENTORY	0	Order
+DEFAULT_COUNTRY	US	Shipping
+DEFAULT_LOCALE	en_US	Internationalization
+DEFAULT_PAYMENT_MODE	credit_card	Payment
+DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
+EMAIL_INFO	__MVC_MAILORDERTO__	Company
+EMAIL_SERVICE	__MVC_MAILORDERTO__	Company
+ENCRYPTOR		Encryption
+ENTRY_CHECK_ACCEPTED	1	Payment
+ENTRY_COD_ACCEPTED	0	Payment
+ENTRY_CREDIT_CARDS_ACCEPTED	visa mc amex discover  	Payment
+ENTRY_POSTAL_ACCEPTED	0	Payment
+ENTRY_PO_ACCEPTED	1	Payment
+FAX	(765) 555-9999	Company
+GIFT_CERT_PERIOD	1 year	Payment
+GOOGLE_ANL_ID		Google
+IC_DIR	__MVC_VENDROOT__	Admin Control
+IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
+LINKHOST		Admin Control
+LINKMODE		Admin Control
+LINKPORT		Admin Control
+LOCALES		Internationalization
+LOGDIR	logs	Admin Control
+LOGO	logo.png	Template
+MAILING_FROM	__MVC_COMPANY__ <__MVC_MAILORDERTO__>	Mailings
+MAILING_MAX_DIRECT	50	Mailings
+MAILING_TO	{FNAME} {LNAME} <{EMAIL}>	Mailings
+MV_DEFAULT_SEARCH_DB	1	Database
+MV_DEMO_MODE	1	General
+MV_PAYMENT_HOST		Payment
+MV_PAYMENT_ID	a_fake_id	Payment
+MV_PAYMENT_MODE	testpayment	Payment
+MV_PAYMENT_PARTNER		Payment
+MV_PAYMENT_REFERER		Payment
+MV_PAYMENT_SECRET		Payment
+MV_PAYMENT_VENDOR		Payment
+MYSQL	1	Database
+ORDERS_TO	__MVC_MAILORDERTO__	Order
+ORDER_ROUTES	log main copy_user	Order
+PASSWORD_RESET_CHECK_KEY	ChAnGeMe	General
+PGP_KEY		Encryption
+PGSQL		Database
+PHONE	(765) 555-1212	Company
+POSTAL_ACCEPTED	0	Payment
+PO_ACCEPTED	1	Payment
+PUBLISH_DO_RCS	0	Admin Control
+PUBLISH_NO_PAGE_ROOT	0	Admin Control
+PUBLISH_PUT_IMAGES	images	Admin Control
+PUBLISH_PUT_PAGES	pages	Admin Control
+PUBLISH_QUIT_ON_RCS_ERROR	0	Admin Control
+RUNDIR	run	Admin Control
+SAMPLEHTML	__MVC_SAMPLEHTML__	Directories and Paths
+SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
+SECURE_ENABLE	0	General
+SECURE_SERVER	http://__MVC_SERVERNAME__	Directories and Paths
+SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
+SETTLE_TRANSACTION		Payment
+SHIP_DEFAULT_COUNTRY	US	Shipping
+SHIP_DEFAULT_MODE	free_or_upsg	Shipping
+SHIP_FLAT_DOM_RATE	5	Shipping
+SHIP_FLAT_INTL_RATE	10	Shipping
+SQLDSN	dbi:mysql:interchange_test	Database
+SQLITE		Database
+SQLPASS		Database
+SQLUSER	travis	Database
+TAXAREA	IN	Tax
+TAXFIELD	state	Tax
+TAXRATE	IN=6.0	Tax
+TAXSHIPPING		Tax
+TOLLFREE	(888) 555-1212	Company
+UI_ABOUT_LOGIN_URL	http://www.icdevgroup.org/	Admin Control
+UI_ABOUT_NORMAL_URL	http://www.icdevgroup.org/	Admin Control
+UI_ADMIN_TABLES	2ndDayAir 2ndDayAirAM 3DaySelect access Accessorials air_pp Book dict Expedited Express Ground ichelp locale mv_metadata NextDayAir NextDayAirSaver Priority pay_cert_lock pay_cert_redeem surf_pp ups_cache usps variable Xarea Zone	Admin Control
+UI_BOTTOMIMG	poweredby.gif	Admin Control
+UI_CLONE_TABLES	products* pricing* inventory merchandising options:sku	Item display
+UI_COMPONENT_DIR	templates/components	Directories and Paths
+UI_HELP_HEIGHT	480	Admin Control
+UI_HELP_WIDTH	650	Admin Control
+UI_IMAGE_DIR	__MVC_SHAREURL__/interchange-5/	Admin Control
+UI_IMAGE_DIR_SECURE	__MVC_SHAREURL__/interchange-5/	Admin Control
+UI_ITEM_TABLES	products pricing inventory merchandising options:sku	Item display
+UI_LOCALE	en_US	Admin Control
+UI_META_LINK	1	Admin Control
+UI_ORDER_VIEWNEXT_MAX_SKIP	20	Admin Control
+UI_PAGE_DIR	pages	Directories and Paths
+UI_SECURE		Admin Control
+UI_TEMPLATE_DIR	templates	Directories and Paths
+UI_TRAFFIC_STATS		Directories and Paths
+UI_USER_MERGE_TABLES		Admin Control
+UI_WIDGET_TYPES		Admin Control
+UPS_COUNTRY_FIELD	country	Shipping
+UPS_ORIGIN	45056	Shipping
+UPS_POSTCODE_FIELD	zip	Shipping
+WWW_DIR	/__MVC_CATALOGNAME__	Directories and Paths
