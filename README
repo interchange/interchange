@@ -34,7 +34,11 @@ Interchange requires Perl 5.8.5 or later, on a Unix-like operating system.
 Interchange also requires some non-standard Perl modules to be installed on
 your system. Unless you are installing from distribution-specific packages
 (Red Hat, Debian, ...), the quick way to install the necessary support is to
-run:
+run from the untarred Interchange directory:
+
+  cpanm --installdeps .
+
+Alternatively, you can run:
 
   perl -MCPAN -e 'install Bundle::Interchange'
 

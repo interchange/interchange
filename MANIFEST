@@ -1,3 +1,4 @@
+cpanfile
 code/Filter/acl2hash.filter
 code/Filter/alpha.filter
 code/Filter/alphanumeric.filter
