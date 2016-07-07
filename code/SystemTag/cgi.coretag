@@ -24,6 +24,10 @@ sub {
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
 		$value =~ s/\[/&#91;/g;
 	}
+	elsif(defined $opt->{default}) {
+		$value = $opt->{default};
+	}
+
 	if($opt->{filter}) {
 		$value = filter_value($opt->{filter}, $value, $var);
 		$CGI::values{$var} = $value unless $opt->{keep};
