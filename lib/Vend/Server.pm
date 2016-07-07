@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION $Has_JSON);
-$VERSION = '2.107';
+$VERSION = '2.108';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -348,8 +348,8 @@ sub parse_cgi {
 					$CGI::post_ref = $h->{entity};
 					undef $CGI::json_ref;
 					eval {
-						$CGI::json_ref = JSON::from_json($$CGI::post_ref);
-	#::logDebug('json: %s', ::uneval($CGI::json_ref));
+						$CGI::json_ref = JSON::decode_json($$CGI::post_ref);
+#::logDebug('json: %s', ::uneval($CGI::json_ref));
 
 						if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
 							@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
