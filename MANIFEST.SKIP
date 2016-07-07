@@ -67,7 +67,7 @@ _$
 ^run(/|$)
 ^scripts/.*[a-z]$
 ^scripts/initp.PL$
-^\.travis.yml$
+^\.travis\.yml$
 ^win(/|$)
 ^windows(/|$)
 ^work(/|$)
