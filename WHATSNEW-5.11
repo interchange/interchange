@@ -35,3 +35,21 @@ Database
   global variable if the file _indev is present in $Global::VendRoot.
   This allows interchange.cfg bifurcation, useful when maintain a
   SCCS repository.
+
+* Add valref and scratchref options to UserDB, allowing the admin
+  user to put their stuff in someplace besides $Values. This would
+  allow you to easily set $Values to customer or affiliate settings,
+  without impacting the admin user.
+
+  If you do:
+
+  	  UserDB  ui  valref   user_record
+	  UserTag uvalue Alias  data base=session key=
+
+  you will then be able to reference the Admin "values" with
+
+  	[uvalue name]
+
+  The [if-mm] tag probably needs to be adjusted for this to work
+  in the admin in real life.
+
