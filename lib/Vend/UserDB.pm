@@ -2521,7 +2521,7 @@ sub userdb {
 			$Vend::Session->{failure} = errmsg("Unable to access user database.");
 			return undef;
 		}
-		$status = $user->get_values();
+		$status = $user->get_values($opt->{valref}, $opt->{scratchref});
 	}
 	else {
 		$user = $module->new(%options);
