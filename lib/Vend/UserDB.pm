@@ -985,8 +985,54 @@ sub clear_values {
 sub get_values {
 	my($self, $valref, $scratchref) = @_;
 
-	$valref = $::Values unless ref($valref);
-	$scratchref = $::Scratch unless ref($scratchref);
+	my $same;
+	if($valref eq $scratchref) {
+		$same = 1;
+	}
+
+	if(ref($valref) eq 'HASH') {
+		## do nothing
+	}
+	elsif($valref and ! ref($valref) ) {
+		my @things = split /:+/, $valref;
+		$valref = $Vend::Session;
+		for(@things) {
+			my $clear = s/\*+$//;
+			if($clear) {
+				$valref = $valref->{$_} = {};
+			}
+			else {
+				$valref = $valref->{$_} ||= {};
+			}
+		}
+	}
+	else {
+		$valref = $::Values;
+	}
+
+	if($same) {
+		$scratchref = $valref;
+	}
+	elsif(ref($scratchref) eq 'HASH') {
+		## do nothing
+	}
+	elsif($scratchref and ! ref($scratchref) ) {
+		my @things = split /:+/, $scratchref;
+		$scratchref = $Vend::Session;
+		for(@things) {
+			my $clear = s/\*+$//;
+			if($clear) {
+				$scratchref = $scratchref->{$_} = {};
+			}
+			else {
+				$scratchref = $scratchref->{$_} ||= {};
+			}
+		}
+	}
+	else {
+		$scratchref = $::Scratch;
+	}
+	
 	my $constref = $Vend::Session->{constant} ||= {};
 
 	my @fields = @{ $self->{DB_FIELDS} };
@@ -2445,6 +2491,423 @@ sub set_cart {
 	$self->{DB}->set_field( $self->{USERNAME}, $field_name, $s);
 
 }
+
+
+=head2 The [userdb ...] tag
+
+Interchange provides a C<[userdb ...]> tag to access the UserDB functions.
+
+ [userdb
+        function=function_name
+        username="username"
+        assign_username=1
+        username_mask=REGEX
+        password="password"
+        verify="password"
+        oldpass="old password"
+        crypt="1|0"
+		bcrypt=1
+		promote=1
+		md5=1
+		md5_salted=1
+		sha1=1
+		valref=user_record
+		scratchref=user_record
+        shipping="fields for shipping save"
+        billing="fields for billing save"
+        preferences="fields for preferences save"
+        ignore_case="1|0"
+        force_lower=1
+        param1=value
+        param2=value
+        ...
+        ]
+
+All parameters are optional except for the function. Normally, parameters 
+are set in catalog.cfg with the I<UserDB> directive.
+
+It is normally called in an C<mv_click> or C<mv_check> setting, as in:
+
+    [set Login]
+    mv_todo=return
+    mv_nextpage=welcome
+    [userdb function=login]
+    [/set]
+
+    <FORM ACTION="[process-target]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+    Username <INPUT NAME=mv_username SIZE=10>
+    Password <INPUT NAME=mv_password SIZE=10>
+    </FORM>
+
+There are several global parameters that apply to any use of
+the C<userdb> functions. Most importantly, by default the database
+table is set to be I<userdb>. If you must use another table name,
+then you should include a C<database=table> parameter with any
+call to C<userdb>. The global parameters (default in parens):
+
+    database     Sets user database table (userdb)
+    show         Show the return value of certain functions
+                 or the error message, if any (0)
+    force_lower  Force possibly upper-case database fields
+                 to lower case session variable names (0)
+    billing      Set the billing fields (see Accounts)
+    shipping     Set the shipping fields (see Address Book)
+    preferences  Set the preferences fields (see Preferences)
+    bill_field   Set field name for accounts (accounts)
+    addr_field   Set field name for address book (address_book)
+    pref_field   Set field name for preferences (preferences)
+    cart_field   Set field name for cart storage (carts)
+    pass_field   Set field name for password (password)
+    time_field   Set field for storing last login time (time)
+    expire_field Set field for expiration date (expire_date)
+    acl          Set field for simple access control storage (acl)
+    file_acl     Set field for file access control storage (file_acl)
+    db_acl       Set field for database access control storage (db_acl)
+
+By default the system crypt() call will be used to compare the
+password. This is minimal security, but at least the passwords in the user
+database will not be human readable. For better security, in descending
+order of security, use:
+
+	bcrypt    Bcrypt, most secure
+	sha1      SHA1 digest, more secure than MD5
+	md5       Not so easily stored in cracklib as md5 unsalted
+	md5       Better security than crypt
+
+If you don't keep actual user information, don't have users creating
+accounts and setting the passwords themselvs, and don't do Interchange
+administration via the C<UserDB> capability, then you may
+wish to use the <UserDB> directive (described below) to set
+encryption off by default:
+
+    UserDB   default   crypt   0
+
+That will set encryption off by default. You can still set encryption
+on by passing C<crypt=1> with any call to a C<new_account>, C<change_pass>,
+or C<login> call.
+
+WARNING: Using unencrypted passwords is never recommended if you have users
+setting their passwords. They will use the same passwords as other systems,
+possibly compromising important information.
+
+=head2 Setting defaults with the UserDB directive
+
+The I<UserDB> directive provides a way to set defaults for
+the user database. For example, if you always wanted to save
+and recall the scratch variable C<tickets> in the user database
+instead of the form variable C<tickets>, you could set:
+
+    UserDB   default   scratch  tickets
+
+That makes every call to C<[userdb function=login]> be equivalent
+to C<[userdb function=login scratch=tickets]>.
+
+If you wish to override that default for one call only, you can
+use C<[userdb function=login scratch="passes"]>.
+
+If you wish to log failed access authorizations, set the C<UserDB>
+profile parameter C<log_failed> true:
+
+    UserDB  default  log_failed 1
+
+To disable logging of failed access authorizations (the default), set
+the C<UserDB> profile parameter C<log_failed> to 0:
+
+    UserDB  default  log_failed 0
+
+The I<UserDB> directive uses the same key-value pair settings
+as the I<Locale> and I<Route> directives, and you may have more
+than one set of defaults. You can set them in a hash structure:
+
+    UserDB  case_crypt  scratch     tickets
+    UserDB  case_crypt  bcrypt	    1
+    UserDB  case_crypt  ignore_case 0
+
+    UserDB  default     scratch     tickets
+    UserDB  default     sha1	    1
+    UserDB  default     ignore_case 1
+
+The last one to be set becomes the default.
+
+The option C<profile> selects the set to use. So if you wanted
+usernames and passwords to be case sensitive with bcrypt encryption,
+you could pass this call:
+
+    [userdb function=new_account profile=case_crypt]
+
+The username and password will be stored as typed in, and the
+password will be encrypted in the database.
+
+=head2 User Database functions
+
+The user database features are implemented as a series of functions
+attached to the C<userdb> tag. The functions are:
+
+=over 4
+
+=item login
+
+Log in to Interchange. By default, the username is contained in the
+form variable C<mv_username> and the password in C<mv_password>.
+If the login is successful, the session value C<username>
+(C<[data session username]>) will be set to the user name.
+
+This will recall the values of all non-special fields in the user
+database and place them in their corresponding user form variables.
+
+=item logout
+
+Log out of Interchange. No additional parameters are needed.
+
+=item new_account
+
+Create a new account. It requires the C<username>, C<password>, and
+C<verify> parameters, which are by default contained in the form
+variables C<mv_username>, C<mv_password>, C<mv_verify> respectively.
+
+If you set the C<assign_username> parameter, then UserDB will assign
+a sequential username. The C<counter> parameter can be used to set
+the filename (must be absolute), or you can accept the default of
+CATALOG_DIR/etc/username.counter. The first username will be "U0001"
+if the counter doesn't exist already.
+
+The C<ignore_case> parameter forces the username and password to
+lower case in the database, in effect rendering the username and
+password case-insensitive.
+
+If you set C<username_mask> to a valid Perl regular expression (without
+the surrounding / /) then any username containing a matching string will
+not be allowed for use. For example, to screen out order numbers from
+being used by a random user:
+
+    [userdb function=new_account
+            username_mask="^[A-Z]*[0-9]"
+            ]
+
+The I<CookieLogin> directive (catalog.cfg) allows users to save
+their username/password in a cookie. Expiration time is set by
+I<SaveExpire>, renewed every time they log in. To cause the cookie to
+be generated originally, the form variable C<mv_cookie_password> or
+C<mv_cookie_username> must be set in the login form. The former causes
+both username and password to be saved, the latter just the username.
+
+If you want to automatically create an account for every order,
+you can do in the I<OrderReport> file:
+
+    [userdb function=new_account
+            username="[value mv_order_number]"
+            password="[value zip]"
+            verify="[value zip]"
+            database="orders"
+            ]
+
+This would be coupled with a login form that asked for order number and
+zip code; thereupon allowing you to display the contents of a transaction
+database with (presumably updated) order status information or a shipping
+company tracking number.
+
+=item change_pass
+
+Change the password on the currently logged-in account. It requires
+the C<username>, C<password>, C<verify>, and C<oldpass> parameters,
+which are by default contained in the form variables C<mv_username>,
+C<mv_password>, C<mv_verify>, C<mv_password_old> respectively.
+
+=item set_shipping
+
+Active parameters: nickname, shipping, ship_field
+
+Place an entry in the shipping Address book. Example:
+
+    [userdb function=set_shipping nickname=Dad]
+
+See I<Address Book> below.
+
+=item get_shipping
+
+Active parameters: nickname, shipping, ship_field
+
+Recall an entry from the shipping Address book. Example:
+
+    [userdb function=get_shipping nickname=Dad]
+
+See I<Address Book> below.
+
+=item get_shipping_names
+
+Active parameters: ship_field
+
+Gets the names of shipping address book entries and places
+them in the variable C<address_book>. By default, it does not return
+the values; if you wish them to be returned you can set
+the parameter C<show> to 1, as in:
+
+    [set name=shipping_nicknames
+         interpolate=1]
+      [userdb function=get_shipping_names show=1]
+    [/set]
+
+=item set_billing
+
+Active parameters: nickname, billing, bill_field
+
+Place an entry in the billing accounts book. Example:
+
+    [userdb function=set_billing nickname=discover]
+
+See I<Accounts Book> below.
+
+=item get_billing
+
+Active parameters: nickname, billing, bill_field
+
+Recall an entry from the billing accounts book. Example:
+
+    [userdb function=get_billing nickname=visa]
+
+See I<Accounts Book> below.
+
+=item save
+
+Saves all non-special form values that have columns in the user database.
+
+=item load
+
+Performs the transfer of user values to the values space, scratch space, and
+constant space. Performed automatically upon login.
+
+If you pass the C<valref> option, that will be used instead of C<$Values> for
+the values space. It can either be a real hash reference, or a scalar that
+will be a key directly in C<$Vend::Session>. If it contains a colon (C<:>), it
+will be a subreference in C<$Vend::Session>. For example:
+
+	[userdb function=load valref=`$Session->{user_record} ||= {}`]
+
+Will store the values in C<$Vend::Session->{user_record}>, clearing it first.
+The below accomplishes the same thing:
+
+	[userdb function=load valref=user_record]
+
+If you want to place it a couple of levels down, do:
+
+	[userdb function=load valref=`$Session->{values_repository}{userdb} ||= {}`]
+
+or
+
+	[userdb function=load valref="values_repository:userdb"]
+
+To clear the record instead of add to the existing values, add an
+asterisk at the end:
+
+	[userdb function=load valref="values_repository:userdb*"]
+
+Which is equivalent to:
+
+	[userdb function=load valref=`$Session->{values_repository}{userdb} = {}`]
+
+The C<scratchref> option is the same as C<valref>, but for the scratch values
+passed with C<UserDB scratch>.
+
+=item set_cart
+
+Save the contents of a shopping cart.
+
+    [userdb function=set_cart nickname=christmas]
+
+See I<Carts> below.
+
+=item get_cart
+
+Active parameters: nickname, carts_field, target
+
+Recall a saved shopping cart. 
+
+    [userdb function=get_cart nickname=mom_birthday]
+
+Setting C<target> saves to a different shopping cart than the
+default main cart. The C<carts_field> controls the database
+field used for storage.
+
+=item set_acl
+
+Active parameters: location, acl_field, delete
+
+Set a simple acl. Example:
+
+    [userdb function=set_acl location=cartcfg/editcart]
+
+This allows the current user to access the page "cartcfg/editcart" if 
+it is access-protected.
+
+To delete access, do:
+
+    [userdb function=set_acl location=cartcfg/editcart delete=1]
+
+To display the setting at the same time as setting use the
+C<show> attribute:
+
+    [userdb function=set_acl location=cartcf/editcart show=1]
+
+=item check_acl
+
+Active parameters: location, acl_field
+
+Checks the simple access control listing for a location, returning
+1 if allowed and the empty string if not allowed.
+
+    [if type=explicit
+        compare="[userdb
+                    function=check_acl
+                    location=cartcfg/editcart]"
+    ]
+    [page cartcfg/editcart]Edit your cart configuration[/page]
+    [/if]
+
+=item set_file_acl, set_db_acl
+
+Active parameters: location, mode, db_acl_field, file_acl_field, delete
+
+Sets a complex access control value. Takes the form:
+
+    [userdb function=set_file_acl
+            mode=rw
+            location=products/inventory.txt]
+
+where mode is any value you wish to check for with check_file_acl. As
+with the simple ACL, you can use delete=1 to delete the location entirely.
+
+=item check_file_acl, check_db_acl
+
+Active parameters: location, mode, db_acl_field, file_acl_field
+
+Checks a complex access control value and returns a true/false (1/0)
+value. Takes the form:
+
+    [userdb function=check_db_acl
+            mode=w
+            location=inventory]
+
+where mode is any value you wish to check for with check_file_acl. It
+will return true if the mode string is contained within the entry
+for that location. Example:
+
+    [if type=explicit
+        compare="[userdb
+                    function=check_db_acl
+                    mode=w
+                    location=inventory]"
+    ]
+    [userdb function=set_acl location=cartcfg/edit_inventory]
+    [page cartcfg/edit_inventory]You may edit the inventory database[/page]
+    [else]
+    [userdb function=set_acl location=cartcfg/edit_inventory delete=1]
+    Sorry, you can't edit inventory.
+    [/if]
+
+=back
+
+=cut
 
 sub userdb {
 	my $function = shift;
