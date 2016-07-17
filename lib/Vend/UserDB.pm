@@ -1911,7 +1911,7 @@ sub login {
 		}
 		$self->log('login') if $options{'log'};
 		
-		$self->get_values() unless $self->{OPTIONS}{no_get};
+		$self->get_values($self->{OPTIONS}{valref}, $self->{OPTIONS}{scratchref}) unless $self->{OPTIONS}{no_get};
 	};
 
 	scrub();
