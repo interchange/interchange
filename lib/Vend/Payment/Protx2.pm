@@ -716,6 +716,7 @@ sub protx {
 
             elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)                          {$cardType = 'Visa'}
             elsif ($ccnum =~ /^5[1-5]\d{14}$/)                                {$cardType = 'MC'}
+            elsif ($ccnum =~ /^(2\d{5})\d{10}$/ && $1 >= 222100 && $1 < 272100) {$cardType = 'MC'}
             elsif ($ccnum =~ /^3[47]\d{13}$/)                                 {$cardType = 'Amex'}
         }
 

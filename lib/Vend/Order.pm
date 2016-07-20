@@ -480,7 +480,7 @@ sub guess_cc_type {
 	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)
 	{ return 'visa' }
 
-	elsif ($ccnum =~ /^5[1-5]\d{14}$/)
+	elsif ($ccnum =~ /^5[1-5]\d{14}$/ || ($ccnum =~ /^(2\d{5})\d{10}$/ && ($1 >= 222100 && $1 < 272100)))
 	{ return 'mc' }
 
 	elsif (
