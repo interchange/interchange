@@ -8,6 +8,13 @@
 ------------------------------------------------------------------------------
 
 
+Payments
+--------
+
+* Add BIN-2 MasterCard number support to Vend::Order, catalog templates,
+  admin, and Vend::Payment modules which require it.
+  
+
 Database
 --------
 

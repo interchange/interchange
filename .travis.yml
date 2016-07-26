@@ -28,6 +28,7 @@ script:
   - perl Makefile.PL force=1 PREFIX=/home/travis/interchange
   - make
   - perl test.pl
+  - prove -rlv
   - make install
   - mkdir /home/travis/catalogs
   - cp -r /home/travis/interchange/strap /home/travis/catalogs/

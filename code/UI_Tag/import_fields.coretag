@@ -406,7 +406,6 @@ EOF
 					$out .= "${tmsg}Blank key, no autonumber option, skipping.\n";
 					next;
 				}
-				$k = $db->set_row($k);
 				$out .= "${tmsg}Adding record '$k'.\n" if $verbose;
 				$addcount++;
 			}

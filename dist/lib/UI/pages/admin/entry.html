@@ -789,7 +789,9 @@ function visible (selnam) {
 			num.substr(0,2) == '52' ||
 			num.substr(0,2) == '53' ||
 			num.substr(0,2) == '54' ||
-			num.substr(0,2) == '55'
+			num.substr(0,2) == '55' ||
+			( num.substr(0,6) >= 222100 &&
+			  num.substr(0,6) <= 272099)
 		)
 		{
 			type = 'mc';

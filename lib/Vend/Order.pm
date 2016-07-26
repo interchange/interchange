@@ -477,32 +477,27 @@ sub guess_cc_type {
 	if ($ccnum eq '')
 	{ return '' }
 
-	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)
+	elsif ($ccnum =~ /^4[0-8]\d{11,17}$/)
 	{ return 'visa' }
 
-	elsif ($ccnum =~ /^5[1-5]\d{14}$/)
+	elsif ($ccnum =~ /^5[1-5]\d{14}$/ || ($ccnum =~ /^(2\d{5})\d{10}$/ && ($1 >= 222100 && $1 < 272100)))
 	{ return 'mc' }
 
 	elsif (
 		$ccnum =~ /^30[0-5]\d{11}(?:\d{2})?$/   # Diners Club: 300-305
 		or $ccnum =~ /^3095\d{10}(?:\d{2})?$/   # Diners Club: 3095
-		or $ccnum =~ /^3[68]\d{12}(?:\d{2})?$/  # Diners Club: 36
-		or $ccnum =~ /^6011\d{12}$/
-		or $ccnum =~ /^64[4-9]\d{13}$/
-		or $ccnum =~ /^65\d{14}$/
-		or ( $ccnum =~ /^62[24-68]\d{13}$/ and $country ne 'CN' )  # China Unionpay
+		or $ccnum =~ /^36\d{12,17}$/            # Diners Club: 36
+		or $ccnum =~ /^3[89]\d{14,17}$/         # Diners Club: 38 and 39
+		or $ccnum =~ /^6011\d{12,15}$/
+		or $ccnum =~ /^64[4-9]\d{13,16}$/
+		or $ccnum =~ /^65\d{14,17}$/
+		or ( $ccnum =~ /^62[24-68]\d{13,16}$/ and $country ne 'CN' )  # China Unionpay
 		or ( $ccnum =~ /^35(?:2[89]|[3-8]\d)\d{10}$/ and $country eq 'US' )  # JCB
 	)
 	{ return 'discover' }
 
 	elsif ($ccnum =~ /^3[47]\d{13}$/)
 	{ return 'amex' }
-
-	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)
-	{ return 'dinersclub' }
-
-	elsif ($ccnum =~ /^38\d{12}$/)
-	{ return 'carteblanche' }
 
 	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)
 	{ return 'enroute' }
@@ -517,6 +512,9 @@ sub guess_cc_type {
 	)
 	{ return 'switch' }
 
+	elsif ($ccnum =~ /^4\d{12,18}$/)  # catch 49* that's not Switch
+	{ return 'visa' }
+
 	elsif ($ccnum =~ /^56(?:10\d\d|022[1-5])\d{10}$/)
 	{ return 'bankcard' }
 
@@ -528,6 +526,9 @@ sub guess_cc_type {
 
 	elsif ($ccnum =~ /^6(?:304|7(?:06|09|71))\d{12,15}$/)
 	{ return 'laser' }
+
+	elsif ($ccnum =~ /^\d{8,9}$/)
+	{ return 'isracard' }
 
 	else
 	{ return $::Variable->{MV_PAYMENT_OTHER_CARD} || 'other' }
