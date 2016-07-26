@@ -259,6 +259,20 @@ sub create_last_search {
 	my @val;
 	my ($key, $val);
 	while( ($key, $val) = each %$ref) {
+		if($key eq 'mv_search_map') {
+			my @keys = grep /\w/, split /[\s,\0]+/, $ref->{$key};
+			for(@keys) {
+				s/.*=//;
+				s/\s+$//;
+			}
+			for my $k (@keys) {
+				my $val = $ref->{$k};
+				$val =~ s!/!__SLASH__!g;
+				$val =~ s!(\W)!sprintf '%%%02x', ord($1)!eg;
+				$val =~ s!__SLASH__!::!g;
+				push @out, "$k=$val";
+			} 
+		}
 		next unless defined $RevScan{$key};
 		@val = split /\0/, $val;
 		for(@val) {
@@ -268,6 +282,7 @@ sub create_last_search {
 			push @out, "$RevScan{$key}=$_";
 		}
 	}
+
 
 	# Make repeatable for permanent store
 	@out = sort @out;
