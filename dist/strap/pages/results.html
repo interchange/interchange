@@ -108,7 +108,8 @@
 [search-list]
 
 [item-change 1][condition][item-field category][/condition]
-	[item-alternate except_first]</div>[/item-alternate]
+	[scratch category_close]
+	[tmpn category_close]</div>[/tmpn]
 	[if-item-field category]
 		<h3>[either][value banner_text][or][item-field category][/either]</h3>
 	[/if-item-field]
