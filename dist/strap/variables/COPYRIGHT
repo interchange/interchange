@@ -1,7 +1,7 @@
 <div class="text-center">
 	<a href="[var INTERCHANGE_URL]"><img src="[var UI_BOTTOMIMG]" alt="[L]Powered by Interchange[/L]"></a>
 	[if variable MV_DEMO_MODE]<p><a href="[area admin/index]">[L]Admin[/L]</a></p>[/if]
-	<p class="smaller muted">Portions copyright 2002-[time]%Y[/time] Interchange Development Group, freely redistributable under GPL</p>
+	<p class="small muted">Portions copyright 2002-[time]%Y[/time] Interchange Development Group, freely redistributable under GPL</p>
 </div>
 
 [if variable MV_DEMO_MODE]
