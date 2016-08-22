@@ -23,7 +23,7 @@ sub ncheck_category {
 		s,::,/,g;
 	}
 	my ($search, $o);
-	my $limit = $::Values->{mv_matchlimit} || $::Variable->{MV_DEFAULT_MATCHLIMIT} || 50;
+	my $limit = $::Variable->{MV_DEFAULT_MATCHLIMIT} || 50;
 	my $more_link = $a_prod_group;
 	if($category && $category !~ /^([0-9]+|Next|Previous)$/ ) {
 		$more_link .= '/' . $a_category;
