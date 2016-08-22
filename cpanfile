@@ -1,4 +1,5 @@
-requires 'Bundle::LWP';
+requires 'LWP';
+requires 'LWP::Protocol::https';
 requires 'Crypt::Random';
 requires 'DBI';
 requires 'Digest::Bcrypt';
