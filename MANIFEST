@@ -752,7 +752,7 @@ dist/strap/etc/rma.number
 dist/strap/etc/ship_notice
 dist/strap/html/css/strap.css
 dist/strap/html/index.html
-dist/strap/html/js/jquery.equalheightcolumns.min.js
+dist/strap/html/js/jquery.matchHeight.js
 dist/strap/images/affiliate/hardhat.gif
 dist/strap/images/amex_cvv.png
 dist/strap/images/bg.gif
