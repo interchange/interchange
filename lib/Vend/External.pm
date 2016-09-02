@@ -209,6 +209,11 @@ BEGIN {
 			or die "eval_file failed (value=$Vend::Global): $!";
 #::logDebug("DID read global");
 		#logDebug(uneval($Vend::Global));
+
+        $Vend::Cat ||= $ENV{EXT_INTERCHANGE_CATALOG}
+            or die "No Interchange catalog specified\n";
+        $Vend::Cfg = $Vend::Global->{Catalogs}{$Vend::Cat}{external_config}
+            or die "Catalog $Vend::Cat not found.\n";
 	}
 }
 
