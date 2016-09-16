@@ -1,8 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.20 2009-03-22 19:32:31 mheins Exp $
-#
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -39,7 +37,7 @@ else {
 }
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = '2.21';
 
 sub new {
 	my ($class, $obj) = @_;
@@ -147,8 +145,8 @@ sub apply_utf8_filters {
 
 #::logDebug("applying UTF-8 filters to GDBM handle");
 
-	my $out_filter = sub { $_ = encode('utf-8', $_) };
-	my $in_filter  = sub { $_ = decode('utf-8', $_) };
+	my $out_filter = sub { $_ = encode('utf8', $_) };
+	my $in_filter  = sub { $_ = decode('utf8', $_) };
 
 	$handle->filter_store_key($out_filter);
 	$handle->filter_store_value($out_filter);
