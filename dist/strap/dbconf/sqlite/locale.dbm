@@ -1,3 +1,2 @@
 Database            locale          locale.txt        TAB
 Database            locale          EXPORT_SORT       code
-Database            locale          GDBM_ENABLE_UTF8  1
