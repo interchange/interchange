@@ -1248,7 +1248,10 @@ sub export_database {
 		or die "Couldn't exclusive lock $file: $!\n";
 	open(EXPORT, "+>$file") or
 	   	die "Couldn't write $file: $!\n";
-	
+
+	# we should be outputting as UTF8 if we're so configured
+	binmode(\*EXPORT, ':utf8') if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
+
 #::logDebug("EXPORT_SORT=" . $db->config('EXPORT_SORT'));
 	if($opt->{sort} ||= $db->config('EXPORT_SORT')) {
 #::logDebug("Found EXPORT_SORT=$opt->{sort}");

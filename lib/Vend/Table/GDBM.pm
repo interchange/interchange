@@ -27,17 +27,8 @@ use vars qw($VERSION @ISA);
 use GDBM_File;
 use Vend::Table::Common;
 
-if ($ENV{MINIVEND_DISABLE_UTF8}) {
-	sub encode($$;$){}
-	sub decode($$;$){}
-}
-else {
-	require Encode;
-	import Encode qw( decode encode );
-}
-
 @ISA = qw(Vend::Table::Common);
-$VERSION = '2.21';
+$VERSION = '2.22';
 
 sub new {
 	my ($class, $obj) = @_;
@@ -120,8 +111,6 @@ sub open_table {
 	die ::errmsg("%s could not tie to '%s': %s", 'GDBM', $filename, $!)
 		unless $dbm;
 
-	apply_utf8_filters($dbm) if $config->{GDBM_ENABLE_UTF8};
-
 	my $columns = [split(/\t/, $tie->{'c'})];
 
 	$config->{VERBATIM_FIELDS} = 1 unless defined $config->{VERBATIM_FIELDS};
@@ -138,22 +127,6 @@ sub open_table {
 				$dbm
 			];
 	bless $s, $class;
-}
-
-sub apply_utf8_filters {
-	my ($handle) = shift;
-
-#::logDebug("applying UTF-8 filters to GDBM handle");
-
-	my $out_filter = sub { $_ = encode('utf8', $_) };
-	my $in_filter  = sub { $_ = decode('utf8', $_) };
-
-	$handle->filter_store_key($out_filter);
-	$handle->filter_store_value($out_filter);
-	$handle->filter_fetch_key($in_filter);
-	$handle->filter_fetch_value($in_filter);
-
-	return $handle;
 }
 
 # Unfortunate hack need for Safe searches

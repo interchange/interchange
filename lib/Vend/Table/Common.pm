@@ -1,8 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.51 2008-05-26 02:30:04 markj Exp $
-#
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2016 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -23,7 +21,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = '2.52';
 use strict;
 
 package Vend::Table::Common;
@@ -33,6 +31,19 @@ require Vend::CounterFile;
 no warnings qw(uninitialized numeric);
 use Symbol;
 use Vend::Util;
+
+our $Has_Encode = 0;
+
+if ($ENV{MINIVEND_DISABLE_UTF8}) {
+	# stub routines to pass-thru data if disabled
+	*encode_utf8 = sub {@_};
+	*decode_utf8 = sub {@_};
+}
+else {
+	require Encode;
+	import Encode qw( encode_utf8 decode_utf8 );
+	$Has_Encode = 1;
+}
 
 use Exporter;
 use vars qw($Storable $VERSION @EXPORT @EXPORT_OK);
@@ -164,6 +175,8 @@ sub unlock_table {
 
 sub stuff {
     my ($val) = @_;
+    $val = encode_utf8($val)
+        if $Has_Encode && ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8});
     $val =~ s,([\t\%]),$Hex_string[ord($1)],eg;
     return $val;
 }
@@ -171,6 +184,8 @@ sub stuff {
 sub unstuff {
     my ($val) = @_;
     $val =~ s,%(..),chr(hex($1)),eg;
+    $val = decode_utf8($val)
+        if $Has_Encode && ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8});
     return $val;
 }
 
@@ -1079,6 +1094,9 @@ sub import_ascii_delimited {
 	}
 
 	new_filehandle(\*IN);
+
+	# we should be inputting as UTF8 if we're so configured
+	binmode(\*IN, ':utf8') if $::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8};
 
 	my $field_hash;
 	my $para_sep;
