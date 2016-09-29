@@ -108,6 +108,7 @@ code/OrderCheck/numeric.oc
 code/OrderCheck/numeric_strict.oc
 code/OrderCheck/regex.oc
 code/OrderCheck/relative_filename.oc
+code/OrderCheck/some_spec.oc
 code/OrderCheck/unique.oc
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
@@ -886,6 +887,7 @@ dist/strap/include/menus/catalog/line.txt
 dist/strap/include/menus/catalog/service.txt
 dist/strap/include/menus/catalog/top.txt
 dist/strap/include/menus/Top.txt
+dist/strap/include/profiles/profiles.admin
 dist/strap/include/profiles/profiles.login
 dist/strap/include/profiles/profiles.order
 dist/strap/include/profiles/searchprofiles

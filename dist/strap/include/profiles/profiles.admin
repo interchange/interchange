@@ -1,0 +1,7 @@
+__NAME__ some_spec
+## Used to prevent empty mv_like_spec when present
+## Useful for flex-select tag that could conceivably do large checks
+&fatal=yes
+&fail=admin/error
+mv_like_spec=some_spec 2
+__END__

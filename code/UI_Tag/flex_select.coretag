@@ -737,6 +737,7 @@ EOF
 <input type=hidden name=mv_data_table    value="$table">
 <input type=hidden name=mv_action        value="$opt->{mv_action}">
 <input type=hidden name=mv_click         value="warn_me_main_form">
+<input type=hidden name=mv_form_profile  value="$opt->{mv_form_profile}">
 <input type=hidden name=mv_session_id    value="$Vend::SessionID">
 EOF
 

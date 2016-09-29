@@ -1,0 +1,26 @@
+CodeDef some_spec OrderCheck 1
+CodeDef some_spec Description Check to see some value is input. Designed for flex_select/mv_like_spec.
+CodeDef some_spec Routine <<EOR
+sub {
+    ## $ref is to Vend::Session->{'values'} hash
+    ## $var is the passed name of the variable
+    ## $val is the current value of the checked variable
+    my($ref, $var, $val, $len) = @_;
+    $len ||= 3;
+    my @things = split /\0/, $val;
+    my $found;
+
+    ### If reference not defined, don't want to fail this check
+    unless (defined $ref->{$var} ) {
+        return (1, $var, '') if $found >= $len;
+    }
+
+    for(@things) {
+        $found += length($_);
+    }
+    return (1, $var, '') if $found >= $len;
+    return (undef, $var,
+        errmsg( "Must input some sort of search --  at least $len characters total")
+    );
+}
+EOR
