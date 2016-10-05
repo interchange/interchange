@@ -1,8 +1,6 @@
 # Vend::CharSet - utility methods for handling character encoding
 #
-# $Id: CharSet.pm,v 2.11 2009-03-22 19:32:31 mheins Exp $
-#
-# Copyright (C) 2008 Interchange Development Group
+# Copyright (C) 2008-2016 Interchange Development Group
 # Copyright (C) 2008 Sonny Cook <sonny@endpoint.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,9 +29,6 @@ package Vend::CharSet;
 				);
 
 use strict;
-
-use utf8; eval "\$\343\201\257 = 42";  # attempt to automatically load the utf8 libraries.
-require "utf8_heavy.pl";
 
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
