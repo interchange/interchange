@@ -27,7 +27,7 @@ sub utf8_to_other {
 	return $string unless $Have_encode; # nop if no Encode
 
 	unless(Encode::is_utf8($string)){
-		$string = Encode::decode('utf-8', $string);
+		$string = Encode::decode('utf8', $string);
 	}
 	return Encode::encode($encoding, $string);
 }
@@ -73,7 +73,7 @@ sub {
 	# force utf8 email through MIME as attachment
 	unless (($opt->{attach} || $opt->{html}) && $utf8){
 		$opt->{body_mime} = $opt->{mimetype};
-		$body = utf8_to_other($body, 'utf-8');
+		$body = utf8_to_other($body, 'utf8');
 	}	
 
 	my $sent_with_attach = 0;
@@ -118,7 +118,7 @@ sub {
             }
             else {
                 $msg_args{Type} ||= 'text/html'  . ($utf8 ? '; charset=UTF-8' : '');
-                $msg_args{Data} ||=  ($utf8 ? utf8_to_other($opt->{html}, 'utf-8') : $opt->{html});
+                $msg_args{Data} ||=  ($utf8 ? utf8_to_other($opt->{html}, 'utf8') : $opt->{html});
             }
 
 			$att1_format = 'flowed';
@@ -136,7 +136,7 @@ sub {
 			my $content = $2 or next;
 			$name =~ s/[-_]+/-/g;
 			$name =~ s/\b(\w)/\U$1/g;
-			$msg->add($name, ($utf8 ? utf8_to_other($content, 'UTF-8')
+			$msg->add($name, ($utf8 ? utf8_to_other($content, 'utf8')
 									: $content)) 
 				if $name && $content;
 		}
@@ -147,7 +147,7 @@ sub {
             $msg->attach(
                          Type => $opt->{body_mime},
                          Encoding => $opt->{body_encoding},
-                         Data => ($utf8 ? utf8_to_other($body, 'utf-8') : $body),
+                         Data => ($utf8 ? utf8_to_other($body, 'utf8') : $body),
                          Disposition => $opt->{body_disposition} || 'inline',
                          Format => $opt->{body_format} || $att1_format,
                         );
@@ -181,7 +181,7 @@ sub {
 		if($opt->{html} && $body =~ /\S/) {
 			unshift @$att, {type => 'text/html' 
 							.($utf8 ? '; charset=UTF-8': ''),
-							data => ($utf8 ? utf8_to_other($opt->{html}, 'UTF-8') : $opt->{html}),
+							data => ($utf8 ? utf8_to_other($opt->{html}, 'utf8') : $opt->{html}),
 							disposition => 'inline',
 							};
 		}
