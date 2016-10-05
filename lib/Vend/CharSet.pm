@@ -30,6 +30,7 @@ package Vend::CharSet;
 
 use strict;
 
+use utf8; eval "\$\343\201\257 = 42";  # attempt to automatically load the utf8 libraries.
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
 	import Encode qw( decode is_utf8 find_encoding );
