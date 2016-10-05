@@ -18,7 +18,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-# wrapper around Safe to return pre-inited Safe compartments which are utf-8 friendly.
+# wrapper around Safe to return pre-inited Safe compartments which are UTF-8 friendly.
 package Vend::Safe;
 
 use strict;
@@ -68,7 +68,7 @@ sub initialize_safe_compartment {
     # add custom shared variables for unicode support
     $compartment->share_from('main', ['&utf8::SWASHNEW', '&utf8::SWASHGET']);
 
-    # preload utf-8 stuff in compartment
+    # preload UTF-8 stuff in compartment
     $compartment->reval('qr{\x{0100}}i');
     $@ and ::logError("Failed activating implicit UTF-8 in Safe container: %s", $@);
 
