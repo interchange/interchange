@@ -3,7 +3,7 @@
 <script src="[var WWW_DIR]/js/jquery.matchHeight.js"></script>
 <script>
 $(document).ready(function() {
-    $('.equal-height-container').matchHeight();
+    $('.equal-height-container > div').matchHeight();
 });
 </script>
 

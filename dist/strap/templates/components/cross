@@ -77,7 +77,7 @@ buttons:
 		return;
 	[/calc]
 	<h4 class="text-muted">[control name=banner default="[L]See also...[/L]"]</h4>
-	[div-organize embed=lc pretty=1 cols="12" filler_class="[control cols col-sm-3]" row_attr='class="row equal-height-container"']
+	[div-organize embed=lc pretty=1 cols="[control size 12]" filler_class="[control cols col-sm-3]" row_attr='class="row equal-height-container"']
 	[loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]    
 		<div class="[control cols col-sm-3]">
 			<DIV class="thumbnail">
