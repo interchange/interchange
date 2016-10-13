@@ -1000,7 +1000,6 @@ dist/strap/special_pages/missing.html
 dist/strap/special_pages/violation.html
 dist/strap/templates/components/affiliate_receptor
 dist/strap/templates/components/best
-dist/strap/templates/components/cart
 dist/strap/templates/components/cart_display
 dist/strap/templates/components/cart_tiny
 dist/strap/templates/components/category_vertical_tree
