@@ -4494,7 +4494,7 @@ sub iterate_hash_list {
 							check_change($1,$3,undef,$2)
 											?	pull_if($4)
 											:	pull_else($4)!ige;
-		$run =~ s#$B$QR{_tag}($All$E[-_]tag[-_]\1\])#
+		$run =~ s#$B$QR{_tag}($Some$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
 		$Row = $item;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
