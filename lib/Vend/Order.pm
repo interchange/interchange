@@ -763,7 +763,7 @@ trying one more time. Fix this.},
 
 	track_order($order_no, $body);
 
-	$subject = $::Values->{mv_order_subject} || "ORDER %n";
+	$subject = $::Values->{mv_order_subject} || "Order %n";
 
 	if(defined $order_no) {
 		$subject =~ s/%n/$order_no/;
