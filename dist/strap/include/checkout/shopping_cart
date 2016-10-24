@@ -17,7 +17,7 @@
 
         <tr>
           <td style="text-align:center">
-            <input type=checkbox name="[item-quantity-name]" onClick="this.form.action='[process]', this.form.submit()" value=0>
+            <input type=checkbox name="[item-quantity-name]" onClick="this.form.submit()" value=0>
           </td>
           <td><b>[item-sku]</b></td>
           <td><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
