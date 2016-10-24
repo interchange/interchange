@@ -1,14 +1,15 @@
 <legend>[L]Shipping Address[/L] <small>([L]primary[/L])</small></legend>
 
 [if !scratch onepage]
-[if session logged_in]
-    <p>Please verify the information below.</p>
-[else]
-    <div class="alert alert-info"><a class="btn btn-info" href="[area href=login form=|destination=@@MV_PAGE@@|]">[msg arg.0='</a>' arg.1='<a class="alert-link" href="[area href=new_account form=|destination=@@MV_PAGE@@|]">' arg.2='</a>']Login%s to pre-fill this information. Or, %screate an account%s with us (optional).[/msg]</div>
-[/else]
+    [if session logged_in]
+        <p>Please verify the information below.</p>
+    [else]
+        <div class="alert alert-info"><a class="btn btn-info" href="[area href=login form=|destination=@@MV_PAGE@@|]">[msg arg.0='</a>' arg.1='<a class="alert-link" href="[area href=new_account form=|destination=@@MV_PAGE@@|]">' arg.2='</a>']Login%s to pre-fill this information. Or, %screate an account%s with us (optional).[/msg]</div>
+    [/else]
+    [/if]
 [/if]
+
 <p class="text-info"><i>[L]Asterisk (*) indicates required field[/L]</i></p>
-[/if]
 
 <div class="form-group">
     <label for="fname" class="col-sm-2 control-label">[error name=fname std_label="[L]First name[/L]" required=1]</label>
