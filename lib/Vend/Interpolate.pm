@@ -983,13 +983,6 @@ sub conditional {
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
-	elsif($base eq 'scratchd') {
-		$op =	qq%$::Scratch->{$term}%;
-		$op = "q{$op}" unless defined $noop;
-		$op .=	qq%	$operator $comp%
-				if defined $comp;
-		delete $::Scratch->{$term};
-	}
 	elsif($base eq 'tmp') {
 		$op =	qq%$Tmp->{$term}%;
 		$op = "q{$op}" unless defined $noop;
@@ -1185,6 +1178,13 @@ sub conditional {
 		$op = "q{$op}" unless defined $noop;
 		$op .= qq% $operator $comp%
 			if defined $comp;
+	}
+	elsif($base eq 'scratchd') {
+		$op =	qq%$::Scratch->{$term}%;
+		$op = "q{$op}" unless defined $noop;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
+		delete $::Scratch->{$term};
 	}
 	else {
 		$op =	qq%$term%;
