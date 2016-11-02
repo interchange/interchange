@@ -1,1 +1,1 @@
-{REQUIRED <b>*&thinsp;}<span class="text-error">{LABEL}</span>{REQUIRED </b>}[else]{REQUIRED <b>*&thinsp;}{LABEL}{REQUIRED </b>}[/else]
+{REQUIRED <b>*&thinsp;}<span class="text-danger">{LABEL}</span>{REQUIRED </b>}[else]{REQUIRED <b>*&thinsp;}{LABEL}{REQUIRED </b>}[/else]
