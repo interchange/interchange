@@ -1643,10 +1643,11 @@ sub item_price {
 
 #::logDebug("item_price initial call: " . (ref $item ? $item->{code} : $item));
 
+	$item = { 'code' => $item } unless ref $item;
+
 	return $item->{mv_cache_price}
 		if ! $quantity and ref($item) and defined $item->{mv_cache_price};
 
-	$item = { 'code' => $item } unless ref $item;
 	$item->{quantity} = 1 if ! defined $item->{quantity};
 
 	if(	!	$item->{mv_ib}
