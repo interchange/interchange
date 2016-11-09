@@ -224,7 +224,7 @@ EOF
 		var svary = $v_state_vary\[country];
 		if(! svary) {
 			var val = '';
-			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" id="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value"$extra>';
+			sbox.innerHTML = '<input type="text" size="$size" name="$svar_in" id="$svar_in" value="' + sval + '" onChange="$v_formv.$svar.value = this.value" class="$state_class"$extra>';
 			$v_formv.$svar.value=sval;
 
 			return;
