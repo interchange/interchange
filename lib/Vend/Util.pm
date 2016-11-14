@@ -28,6 +28,10 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
 	import Encode qw( is_utf8 encode_utf8 );
 }
+else {
+    # sub returning false when UTF8 is disabled
+    *is_utf8 = sub { };
+}
 
 @ISA = qw(Exporter);
 
