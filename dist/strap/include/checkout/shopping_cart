@@ -42,7 +42,7 @@
             [/if-item-field]
           </td>
           <td>
-            <input type="[if config FractionalItems]text[else]number[/else][/if]" name="[item-quantity-name]" value="[item-quantity]" class="form-control">
+            <input type="[if config FractionalItems]text[else]number[/else][/if]" name="[item-quantity-name]" value="[item-quantity]" class="form-control" autocomplete="nope">
           </td>
           <td style="text-align:right">
             [item-discount-price]
