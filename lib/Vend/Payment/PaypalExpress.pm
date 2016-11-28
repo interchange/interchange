@@ -1049,11 +1049,10 @@ return $Tag->deliver({ location => $redirecturl });
 		$state = 'QC' if ($state =~ /Quebec|^QC$/i);
 		$state = 'SK' if ($state =~ /Saskatchewan|^SK$/i);
 		$state = 'YT' if ($state =~ /Yukon|^YT$/i);
-	}
-        
         $::Values->{'b_state'} = $state if ($::Values->{'pp_use_billing_address'} == 1);
         $::Values->{'state'} = $state;
-  
+	}
+
   }
 
 #------------------------------------------------------------------------------------------------
