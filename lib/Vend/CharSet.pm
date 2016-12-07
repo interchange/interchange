@@ -31,7 +31,15 @@ package Vend::CharSet;
 use strict;
 
 use utf8; eval "\$\343\201\257 = 42";  # attempt to automatically load the utf8 libraries.
-unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
+
+if ( $ENV{MINIVEND_DISABLE_UTF8} ) {
+    # install stubs for proper operation
+	*is_utf8 = sub { 0 };
+    *find_encoding = sub { };
+    # first arg is encoding, second is data, we're just passing-through
+    *decode = sub { $_[1] };
+}
+else {
 	require Encode;
 	import Encode qw( decode is_utf8 find_encoding );
 }
