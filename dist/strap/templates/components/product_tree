@@ -13,7 +13,7 @@ show_categories:
 <!-- BEGIN COMPONENT [control component product_tree] -->
 
 [perl tables=products]
-	my ($ary,$index_hash,$name_ary) = $Db{products}->query('SELECT prod_group, category FROM products GROUP BY prod_group, category');
+	my ($ary,$index_hash,$name_ary) = $Db{products}->query('SELECT prod_group, category FROM products GROUP BY prod_group, category ORDER BY prod_group, category');
 	$Tmp->{cats} = {
 		mv_results => $ary,
 		mv_field_names => $name_ary,
