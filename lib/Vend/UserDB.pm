@@ -1970,6 +1970,15 @@ sub logout {
 
 	my $opt = $self->{OPTIONS};
 
+	if (my $macros = $opt->{prelogout_action}) {
+		eval {
+			Vend::Dispatch::run_macro $macros;
+		};
+		if ($@) {
+			logError("UserDB prelogout_action execution error: %s\n", $@);
+		}
+	}
+
 	if( is_yes($opt->{clear}) ) {
 		$self->clear_values();
 	}
