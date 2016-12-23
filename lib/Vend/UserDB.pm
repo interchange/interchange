@@ -1941,6 +1941,9 @@ sub login {
 	$Vend::login_table = $Vend::Session->{login_table} = $self->{DB_ID};
 	$Vend::username = $Vend::Session->{username} = $self->{USERNAME};
 	$Vend::Session->{logged_in} = 1;
+	if ( $Vend::ReadOnlyCfg->{AdminUserDB}{$self->{PROFILE}} ) {
+		$Vend::admin = 1;
+	}
 
 	if (my $macros = $self->{OPTIONS}{postlogin_action}) {
 		eval {
@@ -2940,9 +2943,6 @@ sub userdb {
 			return undef;
 		}
 		if ($status = $user->login(%options) ) {
-			if( $Vend::ReadOnlyCfg->{AdminUserDB}{$user->{PROFILE}} ) {
-				$Vend::admin = 1;
-			}
 			::update_user();
 		}
 	}
