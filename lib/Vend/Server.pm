@@ -564,8 +564,7 @@ sub parse_multipart {
 
 
 sub create_cookie {
-	my($domain,$path) = @_;
-	my  $out;
+	my ($default_domain, $default_path) = @_;
 
 	if ($Vend::suppress_cookies) {
 #::logDebug('explicitly clearing the cookie jar (nom nom nom)');
@@ -582,7 +581,7 @@ sub create_cookie {
 
 	my @jar;
 	push @jar, [
-				($::Instance->{CookieName} || 'MV_SESSION_ID'),
+				$::Instance->{CookieName} || 'MV_SESSION_ID',
 				defined $::Instance->{ClearCookie} ? '' : $Vend::SessionName,
 				$Vend::Expire || undef,
 				undef,
@@ -592,17 +591,19 @@ sub create_cookie {
 		unless $Vend::CookieID;
 	push @jar, @{$::Instance->{Cookies}}
 		if defined $::Instance->{Cookies};
-	$out = '';
-	foreach my $cookie (@jar) {
-		my ($name, $value, $expire, $d, $p, $secure) = @$cookie;
-		$d = $domain if ! $d;
-		$p = $path   if ! $p;
-#::logDebug("create_cookie: name=$name value=$value expire=$expire");
+#::logDebug("create_cookie jar=" . ::uneval(\@jar));
+
+	my @out;
+	for my $cookie (@jar) {
+		my ($name, $value, $expire, $domain, $path, $secure) = @$cookie;
+		$domain ||= $default_domain;
+		$path   ||= $default_path;
+#::logDebug("create_cookie: name=$name value=$value expire=$expire domain=$domain path=$path secure=$secure");
 		$value = Vend::Interpolate::esc($value) 
 			if $value !~ /^[-\w:.]+$/;
-		$out .= "Set-Cookie: $name=$value;";
-		$out .= " path=$p;";
-		$out .= " domain=" . $d . ";" if $d;
+		my @pieces = "Set-Cookie: $name=$value";
+		push @pieces, "Path=$path";
+		push @pieces, "Domain=$domain" if $domain;
 		if (defined $expire or $Vend::Expire) {
 			my $expstring;
 			if(! $expire) {
@@ -611,16 +612,19 @@ sub create_cookie {
 			elsif($expire =~ /\s\S+\s/) {
 				$expstring = $expire;
 			}
-			$expstring = strftime "%a, %d-%b-%Y %H:%M:%S GMT ", gmtime($expire)
-				unless $expstring;
-			$expstring = "expires=$expstring" if $expstring !~ /^\s*expires=/i;
-			$expstring =~ s/^\s*/ /;
-			$out .= $expstring;
+			$expstring ||= strftime("%a, %d-%b-%Y %H:%M:%S GMT", gmtime($expire));
+			$expstring =~ s/^\s+//;
+			$expstring = "Expires=$expstring" if $expstring !~ /^expires=/i;
+			push @pieces, $expstring;
 		}
-		$out .= '; secure' if $secure;
-		$out .= '; HttpOnly' if $::Pragma->{set_httponly};
-		$out .= "\r\n";
+		push @pieces, 'Secure' if $secure;
+		push @pieces, 'HttpOnly' if $::Pragma->{set_httponly};
+		my $header = join('; ', @pieces);
+#::logDebug("create_cookie made header: $header");
+		push @out, $header;
 	}
+
+	my $out = join('', map { "$_\r\n" } @out);
 	return $out;
 }
 
