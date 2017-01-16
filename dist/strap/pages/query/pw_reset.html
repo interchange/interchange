@@ -1,6 +1,11 @@
 [tmp page_title]Password Reset[/tmp]
 [tmpn display_class]noleft[/tmpn]
 
+[if session spider]
+    [tag op=header]Status: 403 Forbidden to Spiders[/tag]
+    [goto]
+[/if]
+
 @_TOP_@
 <!-- BEGIN CONTENT -->
 
