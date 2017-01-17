@@ -986,7 +986,7 @@ sub get_values {
 	my($self, $valref, $scratchref) = @_;
 
 	my $same;
-	if($valref eq $scratchref) {
+	if($valref and $valref eq $scratchref) {
 		$same = 1;
 	}
 
