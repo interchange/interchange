@@ -50,11 +50,11 @@ ok( $Global::NotRobotUA,   "NotRobotUA regex exists" );
 
 # check various hard-coded UA strings that should/shouldn't get flagged as robots
 for my $ua (@robot_uas) {
-    is(check_is_robot($ua), 1);
+    ok(check_is_robot($ua), "flagged as robot: $ua");
 }
 
 for my $ua (@not_robot_uas) {
-    is(check_is_robot($ua), 0);
+    ok(!check_is_robot($ua), "not flagged as robot: $ua");
 }
 
 done_testing();
