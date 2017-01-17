@@ -65,8 +65,6 @@ sub parse_robot_cfg {
 
     my $robot_lines = read_file($path);
 
-    my %D;
-
     for my $directive (qw/RobotUA NotRobotUA RobotIP RobotHost/) {
         # assuming these are and will stay here-docs
         if ($robot_lines =~ m/$directive <<(\w+)(.*?)^\1/imsg) {
