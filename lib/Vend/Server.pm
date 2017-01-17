@@ -286,7 +286,7 @@ EOF
 
 
 sub check_is_robot {
-    my $ret = 1;
+	my $ret = 1;
 
 #::logDebug("Check robot UA=$Global::RobotUA IP=$Global::RobotIP");
 	if ($Global::RobotIP and $CGI::remote_addr =~ $Global::RobotIP) {
@@ -303,13 +303,18 @@ sub check_is_robot {
 			$ret = 1;
 		}
 	}
-	unless ($Vend::Robot) { 
-		if ($Global::NotRobotUA and $CGI::useragent =~ $Global::NotRobotUA) {
-			# do nothing
-		}
-		elsif ($Global::RobotUA and $CGI::useragent =~ $Global::RobotUA) {
-#::logDebug("It is a robot by UA!");
-			$ret = 1;
+	if ($Global::RobotUAFinal and $CGI::useragent =~ $Global::RobotUAFinal) {
+		$ret = 1;
+	}
+	else {
+		unless ($Vend::Robot) {
+			if ($Global::NotRobotUA and $CGI::useragent =~ $Global::NotRobotUA) {
+				# do nothing
+			}
+			elsif ($Global::RobotUA and $CGI::useragent =~ $Global::RobotUA) {
+	#::logDebug("It is a robot by UA!");
+				$ret = 1;
+			}
 		}
 	}
 	return $ret;
