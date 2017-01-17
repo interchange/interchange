@@ -485,7 +485,7 @@ sub global_directives {
 	['AcrossLocks',		 'yesno',            'No'],
     ['DNSBL',            'array',            ''],
 	['NotRobotUA',		 'list_wildcard',      ''],
-	['RobotUA',			 'list_wildcard',      ''],
+	['RobotUA',			 'list_robotua',      ''],
 	['RobotIP',			 'list_wildcard_full', ''],
 	['RobotHost',		 'list_wildcard_full', ''],
 	['HostnameLookups',	 'yesno',            'No'],
@@ -3848,6 +3848,20 @@ sub parse_array_complete {
 	}
 
 	$c;
+}
+
+sub parse_list_robotua {
+	my $value = get_wildcard_list(@_,0);
+	return '' unless length($value);
+
+    # set any high-priority "Final" RobotUA based on prefixed "!!"; note that we are setting a global as a side-effect here!
+    my @always_robots = ($value =~ m/!!(.*?)(?:\||$)/xg);
+
+    if (@always_robots) {
+        $Global::RobotUAFinal = do { for (join '|' => @always_robots) { qr/$_/ } };
+    }
+
+	return qr/$value/i;
 }
 
 sub parse_list_wildcard {
