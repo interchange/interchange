@@ -1742,8 +1742,8 @@ sub login {
 		if($foreign) {
 			my $uname = ($self->{PASSED_USERNAME} ||= $self->{USERNAME});
 			my $ufield = $self->{LOCATION}{USERNAME};
-			$uname = $udb->quote($uname);
-			my $q = "select $ufield from $self->{DB_ID} where $foreign = $uname";
+			my $quname = $udb->quote($uname);
+			my $q = "select $ufield from $self->{DB_ID} where $foreign = $quname";
 #::logDebug("indirect login query: $q");
 			my $ary = $udb->query($q)
 				or do {
@@ -1755,10 +1755,15 @@ sub login {
 					$self->log_either(errmsg(
 						@$ary ? "Denied attempted login with ambiguous (indirect from %s) user name %s" : "Denied attempted login with nonexistent (indirect from %s) user name %s",
 						$foreign,
-						$uname,
+						$quname,
 						$self->{USERNAME},
 					));
-					die $stock_error, "\n";
+					if ($self->{OPTIONS}{fallback_login}) {
+						$ary->[0][0] = $uname;
+					}
+					else {
+						die $stock_error, "\n";
+					}
 				};
 			$self->{USERNAME} = $ary->[0][0];
 		}

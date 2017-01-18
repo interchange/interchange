@@ -60,3 +60,11 @@ Database
   The [if-mm] tag probably needs to be adjusted for this to work
   in the admin in real life.
 
+
+UserDB
+------
+
+* Add "fallback_login" option, to be used with "indirect_login". If indirect fails, it will fallback
+  to the primary key (by default, username). This could allow users to login with email
+  (indirect_login = usernick), but still support login via username if they opted to use their
+  username instead.
