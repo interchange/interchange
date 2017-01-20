@@ -1,0 +1,23 @@
+CodeDef bcrypt Filter
+CodeDef bcrypt Routine <<EOR
+sub {
+	my ($val, undef, $profile) = @_;
+	return Vend::UserDB::construct_bcrypt(
+		{
+			password => $val,
+			profile  => $profile || 'default',
+		}
+	);
+}
+EOR
+CodeDef bcrypt Documentation <<EOD
+
+    [filter bcrypt]foo[/filter]
+
+    Set a UserDB profile (defaults to "default"):
+
+        [filter bcrypt.default]foo[/filter]
+
+    This tag will not work from embedded Perl, unless perhaps if global is set.
+
+EOD

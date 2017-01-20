@@ -8,6 +8,14 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 5.11 not yet released
+
+Core
+----
+
+* Add bcrypt filter.
+
+
 Payments
 --------
 
