@@ -10,6 +10,14 @@
 
 Interchange 5.11 not yet released
 
+Installation
+----
+
+* Assume that if a source code control repository is present in
+  the installation directory, we don't need to do the archaic .~*
+  file copies.
+
+
 Core
 ----
 

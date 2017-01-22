@@ -23,6 +23,7 @@ use strict;
 use vars (qw($VERSION $DOWARN));
 
 my $TermRead;
+my $HaveSCCS;
 my $Prompt_sub;
 my @mods_to_get;
 my @remove_old;
@@ -121,6 +122,7 @@ sub install_file {
 		$perms = (stat(_))[2] & 0777;
 	}
 
+
 	if( -f $targfile and ! compare_file($srcfile, $targfile) ) {
 		open (GETVER, $targfile)
 			or die "Couldn't read $targfile for version update: $!\n";
@@ -130,16 +132,20 @@ sub install_file {
 			$extra =~ tr/0-9//cd;
 			last;
 		}
-		$extra = '~' unless $extra;
-		my $rename = get_rename($targfile, $extra);
-		while (-f $rename ) {
+		
+		## Assume we don't need to make these archaic copies if a SCCS is in play
+		unless($HaveSCCS) {
+			$extra = '~' unless $extra;
+			my $rename = get_rename($targfile, $extra);
+			while (-f $rename ) {
+				push @remove_old, $rename;
+				$extra .= '~';
+				$rename = get_rename($targfile, $extra);
+			}
 			push @remove_old, $rename;
-			$extra .= '~';
-			$rename = get_rename($targfile, $extra);
+			rename $targfile, $rename
+				or die "Couldn't rename $targfile to $rename: $!\n";
 		}
-		push @remove_old, $rename;
-		rename $targfile, $rename
-			or die "Couldn't rename $targfile to $rename: $!\n";
 	}
 
 	File::Copy::copy($srcfile, $targfile)
@@ -443,6 +449,7 @@ EOF
 
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
+		$HaveSCCS = (-d "$realdir/.git" or -d "$realdir/CVS" or -d "$realdir/RCS") ? 1 : 0;
 		install_file('.', $realdir, $_) for @sharefiles;
 		# install code/ files from MANIFEST
 		chomp(my @codefiles = grep m:^code/:, @files);
