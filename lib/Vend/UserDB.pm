@@ -1091,6 +1091,25 @@ sub get_values {
 			$v ||= $k;
 			$scratch{$k} = $v;
 		}
+		#
+		## $self->{ADMIN} comes when promote_admin option is set to a field,
+		## and that field is set in both scratch and the database.
+		## For instance:
+		#   
+		#   UserDb  default  scratch        "dealer promote_admin"
+		#   UserDb  default  promote_admin  promote_admin
+		#
+		#  If the "promote_admin" field is present in the database and
+		#  set to a true value, user will be made $Vend::admin. Cannot be
+		#  superuser.
+		#
+		#  This allows use of potential AllowGlobalAdmin and NoStrictAdmin
+		#  features.
+		#
+		my $pafield;
+		if($pafield = $self->{OPTIONS}{promote_admin} and $scratch{$pafield}) {
+			$self->{ADMIN} = 1;
+		}
 #::logDebug("scratch ones: " . join " ", @s);
 	}
 
@@ -1946,7 +1965,10 @@ sub login {
 	$Vend::login_table = $Vend::Session->{login_table} = $self->{DB_ID};
 	$Vend::username = $Vend::Session->{username} = $self->{USERNAME};
 	$Vend::Session->{logged_in} = 1;
-	if ( $Vend::ReadOnlyCfg->{AdminUserDB}{$self->{PROFILE}} ) {
+
+	## $self->{ADMIN} comes when promote_admin option is set to a field,
+	## and that field is set in both scratch and the database.
+	if ( $self->{ADMIN} or $Vend::ReadOnlyCfg->{AdminUserDB}{$self->{PROFILE}} ) {
 		$Vend::admin = 1;
 	}
 

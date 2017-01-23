@@ -84,3 +84,9 @@ UserDB
   to the primary key (by default, username). This could allow users to login with email
   (indirect_login = usernick), but still support login via username if they opted to use their
   username instead.
+
+* Add "promote_admin" option, to be used with "scratch". The option is set to the value of a
+  field name, which also has to be a "scratch" value. If that is true, and the value of the
+  field is true, the user will be promoted to $Vend::admin. They will not be $Vend::super.
+  Note that this does not gain access to the classic Interchange UI without modification,
+  since the login_table will not be admin (the test which is used in most cases).
