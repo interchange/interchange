@@ -1361,6 +1361,16 @@ CONFIGLOOP:
 	$C->{BounceReferrals_hide} = { map { ($_, 1) } grep { !(/^cookie-/ or /^session(?:$|-)/) } @{$C->{SourcePriority}} };
 	my @exclude = qw( mv_form_charset mv_session_id mv_tmp_session );
 	@{$C->{BounceReferrals_hide}}{@exclude} = (1) x @exclude;
+	
+	## Figure out the max depth of all defined actionmaps
+	for my $actionmap (keys %{$Global::ActionMap}, keys %{$C->{ActionMap}}) {
+            my $length = scalar split('/', $actionmap);
+            $C->{MaxActionDepth} =
+                    $C->{MaxActionDepth} > $length
+                    ? $C->{MaxActionDepth}
+                    : $length
+            ;
+    }
 
 	finalize_mapped_code();
 
@@ -2160,6 +2170,7 @@ sub external_cat {
 # Set up an ActionMap or FormAction or FileAction
 sub parse_action {
 	my ($var, $value, $mapped) = @_;
+
 	if (! $value) {
 		return $InitializeEmpty{$var} ? '' : {};
 	}
@@ -2183,7 +2194,7 @@ sub parse_action {
 		$c->{_mvsafe} = $calc;
 	}
 	my ($name, $sub) = split /\s+/, $value, 2;
-
+	
 	$name =~ s/-/_/g;
 	
 	## Determine if we are in a catalog config, and if 
@@ -5076,7 +5087,7 @@ sub parse_mapped_code {
 	$p = $tagCanon{lc $p} || ''
 		or ::logDebug("bizarre mapped code line '$value'");
 	$tag =~ tr/-/_/;
-	$tag =~ s/\W//g
+	$tag =~ s/[^\/\w]//g
 		and config_warn("Bad characters removed from '%s'.", $tag);
 
 	my $repos = $C ? ($C->{CodeDef} ||= {}) : ($Global::CodeDef ||= {});

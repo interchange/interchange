@@ -974,7 +974,6 @@ sub url_history {
 ## DISPATCH
 
 # Parse the invoking URL and dispatch to the handling subroutine.
-
 my %action = (
     process	=> \&do_process,
 	ui		=> sub { 
@@ -1853,26 +1852,53 @@ EOF
 			if ! defined $CGI::values{mv_nextpage};
 	}
 	else {
-		($Vend::Action) = $Vend::FinalPath =~ m{\A([^/]*)};
+		$Vend::Action = $Vend::FinalPath;
 		$Vend::Action =~ s/-/_/g; # allow hyphens as synonyms for underscores for SEO prettiness
+		#::logDebug('Vend::Action: ' . $Vend::Action);
 	}
+	
+	my @path_parts = split('/', $Vend::Action);
+	my $depth = 
+	    scalar @path_parts < $Vend::Cfg->{MaxActionDepth}
+		? scalar @path_parts
+		: $Vend::Cfg->{MaxActionDepth}
+	;
+	$Vend::Action = 
+		$depth > 1
+		? join('/', @path_parts[0..$depth - 1])
+		: $path_parts[0]
+	;
+	
+	## Attempt to find a defined actionmap based on the FinalPath
+	## Strip away, one directory at a time, until we either find an
+	## actionmap, or we have stripped away everything
+	my ($sub, $status) = undef, undef;
+	do {
+		#::logDebug('Looking for actionmap: ' . $Vend::Action);
 
-#::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
-	my ($sub, $status);
-	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
-		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
-		$CGI::values{mv_nextpage} = $Vend::FinalPath
-			if ! defined $CGI::values{mv_nextpage};
-		new Vend::Parse;
-	}
-	else {
-		$sub = $action{$Vend::Action};
-	}
+		if (defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
+			$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
+			$CGI::values{mv_nextpage} = $Vend::FinalPath
+				if ! defined $CGI::values{mv_nextpage};
+			new Vend::Parse;
+		}
+		else {
+			$sub = $action{$Vend::Action};
+		}
+
+		if (! defined $sub) {
+			my @path_parts = split('/', $Vend::Action);
+			pop @path_parts;
+			$Vend::Action = join('/', @path_parts);
+		}
+		
+	} while ( (! defined $sub) && length $Vend::Action > 0);
 
 #show_times("end path/action resolve") if $Global::ShowTimes;
 
 	eval {
-		if(defined $sub) {
+		if (defined $sub) {
+		    #::logDebug('Running ActionMap - ' . $Vend::Action . "->($Vend::FinalPath)");
 			$status = $sub->($Vend::FinalPath);
 #show_times("end action") if $Global::ShowTimes;
 		}
