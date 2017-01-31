@@ -3,7 +3,7 @@ Database  userdb  LENGTH_EXCEPTION_DEFAULT  truncate_log
 Database  userdb  DEFAULT_TYPE  varchar(255)
 
 Database  userdb  COLUMN_DEF   "username=varchar(255) NOT NULL PRIMARY KEY"
-Database  userdb  COLUMN_DEF   "usernick=varchar(255) NOT NULL"
+Database  userdb  COLUMN_DEF   "usernick=varchar(255) DEFAULT NULL"
 Database  userdb  COLUMN_DEF   "password=varchar(64)"
 Database  userdb  COLUMN_DEF   "expiration=varchar(32)"
 Database  userdb  COLUMN_DEF   "accounts=text"
@@ -39,7 +39,7 @@ Database  userdb  COLUMN_DEF   "fname=varchar(30)"
 Database  userdb  COLUMN_DEF   "inactive=varchar(8)"
 Database  userdb  COLUMN_DEF   "lname=varchar(30)"
 Database  userdb  COLUMN_DEF   "mail_list=text"
-Database  userdb  COLUMN_DEF   "mod_time=varchar(20)"
+Database  userdb  COLUMN_DEF   "mod_time=timestamp"
 Database  userdb  COLUMN_DEF   "mv_shipmode=varchar(255)"
 Database  userdb  COLUMN_DEF   "owner=varchar(20)"
 Database  userdb  COLUMN_DEF   "p_nickname=text"
@@ -52,7 +52,7 @@ Database  userdb  COLUMN_DEF   "state=varchar(20)"
 Database  userdb  COLUMN_DEF   "updated=varchar(32)"
 Database  userdb  COLUMN_DEF   "zip=varchar(10)"
 Database  userdb  DEFAULT      "inactive=''"
+Database  userdb  PREFER_NULL   usernick mod_time
 Database  userdb  INDEX        "UNIQUE usernick"
 
-# Prevent problems with abstime representation
-UserDB    default    time_field    none
+UserDB    default    iso_time  1
