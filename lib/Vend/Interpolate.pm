@@ -1612,6 +1612,19 @@ sub tag_perl {
 		}
 	}
 
+	$MVSAFE::Safe = 1;
+	my $always_global = $Global::PerlAlwaysGlobal->{$Vend::Cat};
+	my $not_global = 1;
+	if (
+		( $opt->{global} or (! defined $opt->{global} and $always_global ) )
+			and
+		$Global::AllowGlobal->{$Vend::Cat}
+		)
+	{
+		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
+		$not_global = 0;
+	}
+
 	if($tables) {
 		my (@tab) = grep /\S/, split /\s+/, $tables;
 		foreach my $tab (@tab) {
@@ -1628,7 +1641,7 @@ sub tag_perl {
 				$dbh = $db->dbh();
 			}
 
-			if($hole) {
+			if($not_global and $hole) {
 				if ($dbh) {
 					$Sql{$tab} = $hole->wrap($dbh);
 				}
@@ -1645,7 +1658,14 @@ sub tag_perl {
 		}
 	}
 
-	$Tag = $hole->wrap($Tag) if $hole and ! $Vend::TagWrapped++;
+	if($not_global) {
+		$Vend::TagWrapped ||= $Tag = $hole->wrap($Tag);
+	}
+	else {
+		$Tag = new Vend::Tags;
+	}
+
+Debug("Not global? not_global=$not_global Tag=$Tag Db=$Db{userdb} MVSAFE::Safe=$MVSAFE::Safe");
 
 	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
@@ -1670,14 +1690,10 @@ sub tag_perl {
 
 	$body =~ tr/\r//d if $Global::Windows;
 
-	$MVSAFE::Safe = 1;
-	if (
-		( $opt->{global} or (! defined $opt->{global} and $Global::PerlAlwaysGlobal->{$Vend::Cat} ) )
-			and
-		$Global::AllowGlobal->{$Vend::Cat}
-		)
-	{
-		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
+	### Make calc/perl namespaces match
+	if($always_global) {
+		my $safepackage = $ready_safe->root();
+		$body = "package $safepackage;\n$body";
 	}
 
 	if(! $MVSAFE::Safe) {
@@ -1693,6 +1709,8 @@ sub tag_perl {
 		$result = $ready_safe->reval($body);
 	}
 
+	## Package might have changed with PerlAlwaysGlobal
+	package Vend::Interpolate;
 	undef $MVSAFE::Safe;
 
 	if ($@) {
