@@ -51,6 +51,10 @@ sub flex_select_init {
 	$::Scratch->{ui_class} = $CGI->{ui_class}
 		if $CGI->{ui_class} &&  $CGI->{ui_class} =~ /^\w+$/;
 
+	if($CGI->{ui_text_like}) {
+		($CGI->{mv_like_field}, $CGI->{mv_like_spec}) = split /=+/, $CGI->{ui_text_like}, 2;
+	}
+
 	if($opt->{sql_query}) {
 		my $spec;
 		eval {
@@ -882,6 +886,7 @@ EOF
 											mv_data_table=$table
 											ui_meta_view=$mview
 											from_page=$Global::Variable->{MV_PAGE}
+											substr=$m->{fs_group_substring}
 											mv_arg=$col
 										),
 							});
@@ -1029,7 +1034,7 @@ EOF
 	shift @mcol;
 
 	my $ncols = $idx;
-	$ncols++ if $opt->{explicit_edit};
+	$ncols += $opt->{explicit_edit} if $opt->{explicit_edit} > 0;
 	$ncols++ if $opt->{number_list};
 	$ncols++ if $opt->{radio_box};
 	$ncols++ unless $opt->{no_checkbox};
@@ -1116,11 +1121,8 @@ EOF
 			$edit_extra .= "ui_return_to=$cwp";
 		}
 
-		my $edit_anchor;
 		my $ee_extra;
 		if($opt->{explicit_edit}) {
-			$edit_anchor = $opt->{explicit_edit_anchor} || errmsg('edit record');
-			$edit_anchor =~ s/ /&nbsp;/g;
 			$ee_extra = '';
 			for(qw/ class style width align valign /) {
 				my $v = $opt->{"explicit_edit_$_"}
@@ -1182,17 +1184,33 @@ EOF
 			}
 
 			if($opt->{explicit_edit}) {
-				my $form = $opt->{explicit_edit_form} || '';
-				if($form) {
-					$form .= $ecode;
+				for (qw/ explicit_edit_anchor explicit_edit_page explicit_edit_form /) {
+					$opt->{$_} =~ s/^\s+//;
+					$opt->{$_} =~ s/\s+$//;
 				}
-				my $url = $Tag->area({
-									href => $opt->{explicit_edit_page} || $edit_page,
-									form => $form || $ep_string,
-								});
-				my $msg = errmsg('process %s', $ecode);
-				my $pre = qq{<a href="$url" title="$msg">};
-				$out .= qq{<td$ee_extra>&nbsp;$pre$edit_anchor$code_post&nbsp;</td>};
+				my @forms   = grep /\w/, split /[ \t]*[\r\n|][ \t]*/, $opt->{explicit_edit_form};
+				my @anchors = grep /\w/, split /[ \t]*[\r\n|][ \t]*/, $opt->{explicit_edit_anchor};
+				my @pages   = grep /\w/, split /[ \t]*[\r\n|][ \t]*/, $opt->{explicit_edit_page};
+				$out .= qq{<td$ee_extra>};
+				while (my $page = shift @pages) {
+					my $form = shift(@forms);
+					my $edit_anchor = shift(@anchors) || errmsg('edit record');
+					$edit_anchor =~ s/ /&nbsp;/g;
+					if($form) {
+						$form .= $ecode;
+					}
+					my $url = $Tag->area({
+										href => $page || $edit_page,
+										form => $form || $ep_string,
+									});
+					my $msg = errmsg('process %s', $ecode);
+					my $pre = qq{<a href="$url" title="$msg">};
+					$out .= qq{&nbsp;$pre$edit_anchor$code_post&nbsp;};
+				}
+				$out .= qq{</td>};
+				if($opt->{no_code_link}) {
+					$code_post = $code_pre = '';
+				}
 			}
 
 #::logDebug("keyname=$ts->{keyname}");
