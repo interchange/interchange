@@ -1665,7 +1665,6 @@ sub tag_perl {
 		$Tag = new Vend::Tags;
 	}
 
-Debug("Not global? not_global=$not_global Tag=$Tag Db=$Db{userdb} MVSAFE::Safe=$MVSAFE::Safe");
 
 	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
