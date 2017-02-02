@@ -1612,7 +1612,6 @@ sub tag_perl {
 		}
 	}
 
-	$MVSAFE::Safe = 1;
 	my $always_global = $Global::PerlAlwaysGlobal->{$Vend::Cat};
 	my $not_global = 1;
 	if (
@@ -1621,7 +1620,6 @@ sub tag_perl {
 		$Global::AllowGlobal->{$Vend::Cat}
 		)
 	{
-		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
 		$not_global = 0;
 	}
 
@@ -1660,12 +1658,12 @@ sub tag_perl {
 
 	if($not_global) {
 		$Vend::TagWrapped ||= $Tag = $hole->wrap($Tag);
+		$MVSAFE::Safe = 1;
 	}
 	else {
 		$Tag = new Vend::Tags;
+		$MVSAFE::Safe = 0;
 	}
-
-Debug("Not global? not_global=$not_global Tag=$Tag Db=$Db{userdb} MVSAFE::Safe=$MVSAFE::Safe");
 
 	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
