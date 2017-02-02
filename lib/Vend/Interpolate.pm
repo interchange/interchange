@@ -1684,7 +1684,11 @@ sub tag_perl {
 
 	# Skip costly eval of code entirely if perl tag was called with no code,
 	# likely used only for the side-effect of opening database handles
-	return if $body !~ /\S/;
+	
+	if($body !~ /\S/) {
+		undef $MVSAFE::Safe;
+		return;
+	}
 
 	$body =~ tr/\r//d if $Global::Windows;
 
