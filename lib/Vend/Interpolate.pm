@@ -2245,7 +2245,7 @@ sub tag_counter {
 		return undef;
 	}
 	
-    $file = $Vend::Cfg->{VendRoot} . "/$file"
+    $file = ($Vend::Cfg->{CounterDir} || $Vend::Cfg->{VendRoot}) . "/$file"
         unless Vend::Util::file_name_is_absolute($file);
 
 	for(qw/inc_routine dec_routine/) {

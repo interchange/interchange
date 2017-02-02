@@ -681,7 +681,7 @@ sub catalog_directives {
 	['TrackDateFormat',	 undef,     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
-	['StaticDir',		 undef,     	     ''],
+	['CounterDir',		 'relative_dir',     ''],
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['SOAP_Action',		 'action',			 ''],				   
