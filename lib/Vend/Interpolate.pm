@@ -157,7 +157,7 @@ BEGIN {
 }
 
 use vars @Share_vars, @Share_routines,
-		 qw/$ready_safe $safe_safe/;
+		 qw/$ready_safe $safe_safe $always_global $loop_calc/;
 use vars qw/%Filter %Ship_handler $Safe_data/;
 
 $ready_safe = new Vend::Safe;
@@ -191,6 +191,8 @@ sub reset_calc {
 		$Tag        = new Vend::Tags;
 		$Sub        = new Vend::Subs;
 	}
+	$always_global = $Global::PerlAlwaysGlobal->{$Vend::Cat};
+	$loop_calc = $always_global ? sub { tag_perl('', {}, @_) }: \&tag_calc;
 	$Tmp        = {};
 	undef $s;
 	undef $q;
@@ -1612,7 +1614,6 @@ sub tag_perl {
 		}
 	}
 
-	my $always_global = $Global::PerlAlwaysGlobal->{$Vend::Cat};
 	my $not_global = 1;
 	if (
 		( $opt->{global} or (! defined $opt->{global} and $always_global ) )
@@ -2245,7 +2246,8 @@ sub tag_counter {
 		return undef;
 	}
 	
-    $file = ($Vend::Cfg->{CounterDir} || $Vend::Cfg->{VendRoot}) . "/$file"
+	my $basedir = $Vend::Cfg->{CounterDir} || $Vend::Cfg->{VendRoot};
+    $file = "$basedir/$file"
         unless Vend::Util::file_name_is_absolute($file);
 
 	for(qw/inc_routine dec_routine/) {
@@ -4299,7 +4301,7 @@ my $once = 0;
 				$Row = {};
 				@{$Row}{@$fa} = @$row;
 			}
-			tag_calc($1)
+			$loop_calc->($1)
 			#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
@@ -4517,7 +4519,7 @@ sub iterate_hash_list {
 		$run =~ s#$B$QR{_tag}($Some$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
 		$Row = $item;
-		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
+		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#$loop_calc->($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
 					(
