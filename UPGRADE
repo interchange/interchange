@@ -91,7 +91,7 @@ KNOWN ISSUES UPGRADING FROM 5.10.x
 
 1.  A bug was fixed in the [area] tag where if you previously passed a fully
 qualified URL as the href and used the form attribute then the protocol://domain
-portion of the URL would get overwritten by the one in VendUrl.  If you're code
+portion of the URL would get overwritten by the one in VendUrl. If your code
 relies on this buggy behaviour you need to fix it.
 
 
