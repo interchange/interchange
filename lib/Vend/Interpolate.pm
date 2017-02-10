@@ -2764,7 +2764,7 @@ sub tag_area {
 
 	$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
 
-	return $urlroutine->($page, $arg, undef, $opt);
+	return $urlroutine->($page, $arg, $r, $opt);
 }
 
 }

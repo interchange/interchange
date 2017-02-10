@@ -7,6 +7,10 @@ Interchange is designed to be drop-in compatible in its major version.
 Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
+ 5.10.x -- A minor bug was fixed in an edge-case usage of the [area] tag which
+	  could result in incompatibility if your code relies on the buggy
+	  behaviour.
+
  5.6.x -- Perl 5.8.8 or newer is now generally required to run Interchange.
           See "Known Issues" below.
 
@@ -81,6 +85,14 @@ That's it. Verify your catalog's operation, and you are live.
 ---------------------------------------------------------------------------
 
                          K N O W N   I S S U E S
+
+
+KNOWN ISSUES UPGRADING FROM 5.10.x
+
+1.  A bug was fixed in the [area] tag where if you previously passed a fully
+qualified URL as the href and used the form attribute then the protocol://domain
+portion of the URL would get overwritten by the one in VendUrl.  If you're code
+relies on this buggy behaviour you need to fix it.
 
 
 KNOWN ISSUES UPGRADING FROM 5.6.x
