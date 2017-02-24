@@ -68,6 +68,8 @@ sub find_options_type {
 
 	my $sku = $item->{mv_sku} || $item->{code};
 
+	return unless defined $sku && $sku ne '';
+
 	$opt = get_option_hash($opt);
 
 	my $module;
