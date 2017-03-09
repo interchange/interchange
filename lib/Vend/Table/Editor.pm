@@ -925,9 +925,7 @@ sub display {
 									log => 'none',
 									enable => $opt->{restrict_allow},
 									disable => $opt->{restrict_deny},
-									body => $record->{$_},
-								});
-			}
+								}, $record->{$_});
 			else {
 				$record->{$_} = expand_values($record->{$_});
 			}
