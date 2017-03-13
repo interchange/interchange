@@ -1,8 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.23 2009-03-20 22:15:56 markj Exp $
-#
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +21,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = '2.24';
 
 @ISA = qw(Exporter);
 
@@ -106,7 +104,6 @@ sub map_actual {
 	$vref = $::Values		unless $vref;
 	$cref = \%CGI::values	unless $cref;
 	my @map = qw(
-
 		address
 		address1
 		address2
@@ -120,6 +117,7 @@ sub map_actual {
 		b_fname
 		b_lname
 		b_name
+		b_phone
 		b_state
 		b_zip
 		check_account
@@ -152,6 +150,7 @@ sub map_actual {
 		mv_transaction_id
 		name
 		origin_zip
+		phone
 		phone_day
 		phone_night
 		pin
