@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -54,7 +54,7 @@ use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
 
-$VERSION = '2.248';
+$VERSION = '2.249';
 
 my %CDname;
 my %CPname;
@@ -649,6 +649,7 @@ sub catalog_directives {
 	['OptionsAttribute', undef,     	     ''],
 	['Options',			 'locale',     	     ''],
 	['AlwaysSecure',	 'boolean',  	     ''],
+	['AlwaysSecureGlob', 'list_wildcard_full', ''],
 	['Password',         undef,              ''],
 	['AdminSub',		 'boolean',			 ''],
 	['ExtraSecure',		 'yesno',     	     'No'],

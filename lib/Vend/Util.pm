@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -102,7 +102,7 @@ use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '2.128';
+$VERSION = '2.129';
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1382,7 +1382,11 @@ sub vendUrl {
 		$opt->{secure} = $CGI::secure;
 	}
 
-	if($opt->{secure} or exists $Vend::Cfg->{AlwaysSecure}{$path}) {
+	my $asg = $Vend::Cfg->{AlwaysSecureGlob};
+	if ($opt->{secure}
+		or exists $Vend::Cfg->{AlwaysSecure}{$path}
+		or ($asg and $path =~ $asg)
+	) {
 		$r = $Vend::Cfg->{SecureURL};
 	}
 
