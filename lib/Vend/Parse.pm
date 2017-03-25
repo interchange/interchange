@@ -747,7 +747,7 @@ sub start {
 #::logDebug("bouncing...options=" . ::uneval($attr));
 			return 1 if resolve_if_unless($attr);
 			if(! $attr->{href} and $attr->{page}) {
-				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
+				$attr->{href} = Vend::Interpolate::tag_area($attr->{page}, undef, $attr);
 			}
 
 			$attr->{href} = header_data_scrub($attr->{href});
