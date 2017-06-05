@@ -8,8 +8,17 @@ Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
  5.10.x -- A minor bug was fixed in an edge-case usage of the [area] tag which
-	  could result in incompatibility if your code relies on the buggy
-	  behaviour.
+	   could result in incompatibility if your code relies on the buggy
+	   behaviour.
+
+	-- Month and year adjustments introduced in 5.7 had a bug where
+	   adjusting the month to one where the target date doesn't exist caused
+	   the day to roll over into the following month (ex: May 31st - 1 month
+	   became May 1st instead of April 30th) and similarily with leapday
+	   year adjustments (Feb 29th, 2016 + 1 year), this was fixed to adjust
+	   to the last day of the correct month instead of rolling over into the
+	   next month.  If your code relies on the old behavior please update
+	   it.
 
  5.6.x -- Perl 5.8.8 or newer is now generally required to run Interchange.
           See "Known Issues" below.
