@@ -890,7 +890,7 @@ sub is_hash {
 # Verify that passed string is a valid IPv4 address.
 sub is_ipv4 {
     my $addr = shift or return;
-    my @segs = split /\./, $addr;
+    my @segs = split /\./, $addr, -1;
     return unless @segs == 4;
     foreach (@segs) {
 		return unless /^\d{1,3}$/ && !/^0\d/;
@@ -901,12 +901,14 @@ sub is_ipv4 {
 
 # Verify that passed string is a valid IPv6 address.
 sub is_ipv6 {
-    my $addr = shift or return;
-    my @segs = split ':', $addr;
+    my $tosplit = my $addr = shift or return;
+    $tosplit =~ s/^:://;
+    $tosplit =~ s/::$//;
+    my @segs = split /:+/, $tosplit, -1;
 
     my $quads = 8;
     # Check for IPv4 style ending
-    if ($segs[-1] =~ /\./) {
+    if (@segs && $segs[-1] =~ /\./) {
 	return unless is_ipv4(pop @segs);
 	$quads = 6;
     }
