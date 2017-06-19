@@ -1,8 +1,8 @@
-cpanfile
 code/Filter/acl2hash.filter
 code/Filter/alpha.filter
 code/Filter/alphanumeric.filter
 code/Filter/backslash.filter
+code/Filter/bcrypt.filter
 code/Filter/bold.filter
 code/Filter/cgi.filter
 code/Filter/checkbox.filter
@@ -281,6 +281,7 @@ code/UI_Tag/widget_meta.coretag
 code/UI_Tag/write_relative_file.coretag
 code/UI_Tag/write_shipping.coretag
 code/UI_Tag/xfer_catalog.coretag
+code/UserTag/adjust_href.tag
 code/UserTag/bar_button.tag
 code/UserTag/button.tag
 code/UserTag/capture_page.tag
@@ -346,6 +347,7 @@ code/Widget/value.widget
 code/Widget/yesno.widget
 code/Widget/ynzero.widget
 configure
+cpanfile
 debian/400mod_interchange.info
 debian/catalog_before.cfg
 debian/catalogs.cfg
@@ -1285,6 +1287,9 @@ SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
 SPECS/interchange.spec
+t/credit_cards.t
+t/interchange-test/interchange.cfg
+t/interchange-test/variable.txt
 test.pl
 UPGRADE
 WHATSNEW-4.5
@@ -1292,6 +1297,7 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.10
+WHATSNEW-5.11
 WHATSNEW-5.3
 WHATSNEW-5.5
 WHATSNEW-5.7

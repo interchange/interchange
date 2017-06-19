@@ -701,17 +701,21 @@ sub respond {
 		binmode(MESSAGE, ':utf8');
 	}
 
+	## Set this to determine if we want to do HTML-specific transformations. Also
+	## may be set below.
+	$Vend::IsHTML = $Vend::StatusLine =~ m{Content-Type:.*text/html}i;
+
 	if(! $s and $Vend::StatusLine) {
 		if ($Vend::StatusLine !~ /^Content-Type:/im) {
-		$Vend::StatusLine .= "\r\nContent-Type: text/html";
-		if ($response_charset) {
-			$Vend::StatusLine .= "; charset=$response_charset\r\n";
-		}
+			$Vend::StatusLine .= "\r\nContent-Type: text/html";
+			if ($response_charset) {
+				$Vend::StatusLine .= "; charset=$response_charset\r\n";
+			}
 
-		else {
-			$Vend::StatusLine .= "\r\n";
+			else {
+				$Vend::StatusLine .= "\r\n";
+			}
 		}
-	}
 
 # TRACK
 		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
@@ -719,6 +723,12 @@ sub respond {
 # END TRACK
 
 		add_cache_headers();
+
+		### Adjust links if appropriate
+		if($Vend::IsHTML and $::Pragma->{adjust_href}) {
+			my $text = Vend::Tags->adjust_href($$body);
+			$body = \$text;
+		}
 
 		print MESSAGE canon_status($Vend::StatusLine);
 		print MESSAGE "\r\n";
@@ -754,6 +764,13 @@ sub respond {
 	}
 
 	if($Vend::ResponseMade || $CGI::values{mv_no_header} ) {
+
+		### Adjust links if appropriate
+		if($Vend::IsHTML and $::Pragma->{adjust_href}) {
+			my $text = Vend::Tags->adjust_href($$body);
+			$body = \$text;
+		}
+
 		print $fh $$body;
 		print $rfh $$body if $rfh;
 #show_times("end response send") if $Global::ShowTimes;
@@ -863,6 +880,10 @@ sub respond {
 		else {
 			print $fh canon_status("Content-Type: text/html");
 		}
+
+		## This is HTML for sure now. Set this to force HTML-specific transformations if pragma(s) set.
+		$Vend::IsHTML = 1;
+
 # TRACK
 		print $fh canon_status("X-Track: " . $Vend::Track->header())
 			if $Vend::Track and $Vend::Cfg->{UserTrack};
@@ -872,6 +893,13 @@ sub respond {
 	print $fh canon_status($_) for get_cache_headers();
 
 	print $fh "\r\n";
+
+	### Adjust links if appropriate
+	if($Vend::IsHTML and $::Pragma->{adjust_href}) {
+		my $text = Vend::Tags->adjust_href($$body);
+		$body = \$text;
+	}
+
 	print $fh $$body;
 	print $rfh $$body if $rfh;
 #show_times("end response send") if $Global::ShowTimes;

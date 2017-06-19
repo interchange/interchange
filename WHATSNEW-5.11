@@ -23,6 +23,13 @@ Core
 
 * Add bcrypt filter.
 
+* Add [adjust-href] tag. Reads HTML passed to it, finds <a href> links
+  and adjusts ones that don't begin with an absolute path to
+  Interchange URLs. Normally done by setting "Pragma adjust_href" in
+  catalog.cfg (or [pragma adjust_href] at the top of the page).
+
+* Add code to Server.pm to adjust <a href="link"> tags when "Pragma adjust_href"
+  is in force. Uses above tag.
 
 Payments
 --------
