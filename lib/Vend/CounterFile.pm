@@ -387,6 +387,7 @@ sub DESTROY
 # eval and __END__ so that error line numbers make more sense.
 
 package main;
+no warnings 'once';
 
 eval join('',<DATA>) || die $@ unless caller();
 
