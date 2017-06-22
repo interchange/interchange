@@ -707,10 +707,13 @@ sub allowed_file {
 	my $fn = shift;
 	my $write = shift;
 	my $status = 1;
+	my $pat;
 	$Vend::File::errstr = '';
 	if(	$Global::NoAbsolute
 			and
-		$fn !~ $Global::AllowedFileRegex->{$Vend::Cat}
+		$pat = $Global::AllowedFileRegex->{$Vend::Cat // ''}
+			and
+		$fn !~ $pat
 			and
 		absolute_or_relative($fn)
 		)
