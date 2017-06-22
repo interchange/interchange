@@ -54,7 +54,6 @@ my $PERLQQ = 0x0100; # from Encode(3perl)
 unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 	require Encode;
 	import Encode qw( is_utf8 );
-	$PERLQQ = Encode::PERLQQ();
 }
 
 use Vend::Util;
