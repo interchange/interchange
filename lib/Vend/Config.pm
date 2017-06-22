@@ -4982,8 +4982,8 @@ sub map_codedef_to_directive {
 	my $ref;
 	my $r;
 
-	next unless $r = $c->{$type};
-	next unless $ref = $r->{Routine};
+	return unless $r = $c->{$type};
+	return unless $ref = $r->{Routine};
 
 	for(keys %$ref ) {
 		$cfg->{$_} = $ref->{$_};
