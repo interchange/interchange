@@ -2544,7 +2544,6 @@ sub tag_mail {
     }
 
     if (!$ok) {
-		close MAIL;
 		$body = substr($body, 0, 2000) if length($body) > 2000;
         return error_opt(
 					"Unable to send mail using %s\n%s",
