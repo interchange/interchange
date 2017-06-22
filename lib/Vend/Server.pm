@@ -3077,7 +3077,6 @@ sub run_jobs {
 }
 
 sub unlink_pid {
-	close(TEMPPID);
 	unlink("$Global::RunDir/pid.$$");
 	1;
 }
