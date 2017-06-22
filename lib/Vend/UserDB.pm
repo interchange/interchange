@@ -128,7 +128,7 @@ sub enc_bcrypt {
 
     my $bcrypt = Digest::Bcrypt->new;
 
-    my $salt =
+    $salt =
         $store->{salt}
         ||
         Crypt::Random::makerandom_octet(
