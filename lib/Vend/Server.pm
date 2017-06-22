@@ -23,7 +23,7 @@
 
 package Vend::Server;
 
-use vars qw($VERSION $Has_JSON);
+use vars qw($VERSION $Has_JSON $RUNDIR);
 $VERSION = '2.108';
 
 use Cwd;
