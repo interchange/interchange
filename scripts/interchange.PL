@@ -152,6 +152,7 @@ BEGIN {
 
 use vars qw($VERSION);
 require Exporter;
+no warnings qw/once/;
 
 BEGIN {
 	$VERSION = '5.10.0';
