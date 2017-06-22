@@ -92,7 +92,7 @@ else {
 );
 
 use strict;
-no warnings qw(uninitialized numeric);
+no warnings qw(uninitialized numeric redundant);
 use Config;
 use Fcntl;
 use Errno;
