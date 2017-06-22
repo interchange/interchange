@@ -639,10 +639,12 @@ eval {
 
 	my $search;
 	if ("\L$opt->{st}" eq 'db' ) {
+        require Vend::DbSearch;
 		$search = new Vend::DbSearch;
 #::logDebug("created DbSearch object: " . ::uneval($search));
 	}
 	else {
+        require Vend::TextSearch;
 		$search = new Vend::TextSearch;
 #::logDebug("created TextSearch object: " . ::uneval($search));
 	}
