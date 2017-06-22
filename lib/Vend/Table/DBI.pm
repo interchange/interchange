@@ -626,7 +626,7 @@ sub create {
 	$config->{NAME} = $columns;
 
     # Quote identifiers
-    my ($qtable, $qkey, $qnames);
+    my $qnames;
     if ($config->{QUOTE_IDENTIFIERS}) {
 	$qtable = $db->quote_identifier($tablename);
 	$qkey = $db->quote_identifier($key);
