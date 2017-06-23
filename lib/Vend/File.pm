@@ -711,7 +711,7 @@ sub allowed_file {
 	$Vend::File::errstr = '';
 	if(	$Global::NoAbsolute
 			and
-		$pat = $Global::AllowedFileRegex->{$Vend::Cat // ''}
+		$pat = $Global::AllowedFileRegex->{$Vend::Cat || ''}
 			and
 		$fn !~ $pat
 			and
