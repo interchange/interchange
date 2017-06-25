@@ -93,7 +93,7 @@ else {
 
 use strict;
 no warnings qw(uninitialized numeric);
-no warnings qw(redundant) if $^V ge v5.22.0;
+no if $^V ge v5.22.0, warnings => qw(redundant);
 use Config;
 use Fcntl;
 use Errno;
