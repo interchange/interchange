@@ -27,7 +27,6 @@ before_script:
 script:
   - perl Makefile.PL force=1 PREFIX=/home/travis/interchange
   - make
-  - perl test.pl
   - prove -rlv
   - make install
   - mkdir /home/travis/catalogs
