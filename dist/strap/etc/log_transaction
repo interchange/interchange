@@ -281,7 +281,7 @@ Set order number in session: [calc]
         [/seti]
         Auto-created user [seti auto_username][data session username][/seti][scratch auto_username].
     [else]
-    Auto-create of user failed.
+    Auto-create of user failed. Reason: [data session failure]
     [perl] die errmsg("Auto-create of user failed."); [/perl]
     [/else]
     [/if]
