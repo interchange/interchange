@@ -22,7 +22,7 @@ use strict;
 
 use Config;
 
-require 'scripts/initp.pl';
+require './scripts/initp.pl';
 
 sub doit {
 	my ($key) = @_;
