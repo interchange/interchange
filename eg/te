@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 
 =pod
 
@@ -11,15 +11,17 @@ text tables
 
 B<te> I<file1> [ I<file2> ... ]
 
+Run without arguments to see options.
+
 =head1 DESCRIPTION
 
-This program makes it easier to edit tab-delimited ASCII tables, such
+This program makes it easier to edit tab-delimited text tables, such
 as are used with Interchange (see icdevgroup.org), and can be exported
 from many popular spreadsheet and database applications.
 
-It converts tab-delimited ASCII files that have one record per line into
+It converts tab-delimited text files that have one record per line into
 temporary files with one field per line, each line beginning with the
-field name. It then sends each file to your favorite text editor. After
+field name. It then sends each file to your selected text editor. After
 you exit your editor, it checks to see if you changed anything in the
 file, and if so, it converts the data back to the tab-delimited format
 with one record per line, and replaces the original file.
@@ -62,7 +64,7 @@ records as you wish).
 
 Note that if you're using the "extended" option (-e), you can't add new
 columns, because they can't be distinguished from the extended fields that
-go into the serialized hash. You'd need to do that in a separate pass.
+go into the serialized hash. You would need to do that in a separate pass.
 
 =item o 
 
@@ -73,7 +75,7 @@ any instances of that field in records after the first will be ignored.
 
 Any space left after the field name and colon (like C<fieldname:>) will be
 included as part of the field. Any tabs you put in the field data itself
-will be converted to spaces (as they would corrupt the table otherwise).
+will be converted to spaces (since they would corrupt the table otherwise).
 
 =item o
 
@@ -96,18 +98,18 @@ processed and saved, but the rest will be skipped.
 
 As is customary with many Unix applications, you can set the environment
 variables VISUAL or EDITOR to point to your favorite text editor. If
-neither of those is set, my favorite editor, B<vi>(1) is used.
+neither of those is set, B<vi>(1) is used.
 
 Options will also be read from environment variable TE_OPTIONS if it is
 set.
 
 =head1 AUTHOR
 
-Jon Jensen <jon@endpoint.com>
+Jon Jensen <jonj@cpan.org>
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2008 Jon Jensen and others
+    Copyright (C) 2002-2017 Jon Jensen and others
     Copyright (C) 2001-2002 Red Hat, Inc.
 
 This program is free software; you can redistribute it and/or modify it
@@ -122,7 +124,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-2008-04-12 02:33:40
+2017-08-09
 
 =head1 CHANGELOG
 
@@ -169,13 +171,31 @@ serialized hashes with the -e option.
 2008-04-11. Added option -o to write output to a file and exit, never
 invoking an editor. By Greg Sabino Mullane.
 
+2017-08-09. Added option -t to suppress tabs for empty final columns.
+
+Added option -h to suppress output of an empty extended attribute hash {}.
+
+Started sorting extended attributes in stringified hashes to have a
+stable order, since newer Perl hash key ordering is random per run.
+
+Made agnostic about character set encoding.
+
+Use Safe reval instead of unsafe eval on extended attribute serialized hashes
+to avoid running possibly untrusted code.
+
+Updated code to modernize some Perl conventions: 3-arg open, lexical
+filehandles, etc.
+
 =cut
 
 use strict;
+use warnings;
+use 5.010_000;
 use Digest::MD5;
 use File::Basename 'fileparse';
 use Text::ParseWords;
 use Data::Dumper;
+use Safe;
 use Getopt::Std;
 
 my ($prog) = fileparse($0);
@@ -191,6 +211,8 @@ Options:
     -f       Do not look for field names on first line of file.
     -n       Number rows in comments
     -e field Extra fields in this field, a stringified hash
+    -h       Suppress empty extended attributes hash (with -e)
+    -t       Trim end-of-line tabs around empty fields
     -o FILE  Convert to the named output file and exit
 
 See 'man te' or 'perldoc $0' for more information.
@@ -200,31 +222,36 @@ EOF
 unshift @ARGV, Text::ParseWords::shellwords($ENV{TE_OPTIONS})
 	if defined $ENV{TE_OPTIONS};
 
-use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e $opt_o/;
-getopts('is:fne:o:') or die "$@\n$USAGE";
+use vars qw/$opt_i $opt_s $opt_f $opt_n $opt_e $opt_h $opt_o $opt_t/;
+getopts('is:fne:ho:t') or die "$@\n$USAGE";
 
 die $USAGE unless @ARGV;
 
-my @ED = Text::ParseWords::shellwords($ENV{VISUAL} || $ENV{EDITOR} || 'vi');
+my @ed = Text::ParseWords::shellwords($ENV{VISUAL} || $ENV{EDITOR} || 'vi');
 
 if ($opt_s) {
 	if ($opt_i) {
-		push @ED, '-c', 'set ic';
+		push @ed, '-c', 'set ic';
 		$opt_s = lc $opt_s;
 	}
 	$opt_s =~ s:/:\\/:g;
-	push @ED, '-c', qq{/$opt_s/};
+	push @ed, '-c', qq{/$opt_s/};
 }
 
 # run gvim in foreground mode, since it otherwise immediately returns
 # control to us and we never get the user's changes
-if($ED[0] =~ /\bgvim\b/) {
-	push @ED, '-f' unless grep $_ eq '-f', @ED;
+if($ed[0] =~ /\bgvim\b/) {
+	push @ed, '-f' unless grep $_ eq '-f', @ed;
+}
+
+my $compartment;
+if ($opt_e) {
+	$compartment = Safe->new;
 }
 
 for my $filename (@ARGV) {
 	my (@fieldnames, $fieldcount, @fields);
-	my ($name, $path, $tmpfile, $newfile, $digest1, $digest2);
+	my ($name, $path, $in, $out, $tmpfile, $newfile, $digest1, $digest2);
 	unless (-e $filename) {
 		warn "Skipping '$filename': file does not exist\n";
 		next;
@@ -233,18 +260,19 @@ for my $filename (@ARGV) {
 		warn "Skipping '$filename': not a regular file\n";
 		next;
 	}
-	unless (open IN, "<$filename") {
-		warn "Error 'opening' $filename for reading: $!\n";
+	unless (open $in, '<', $filename) {
+		warn "Error opening '$filename' for reading: $!\n";
 		next;
 	}
+	binmode $in;
 
 	# get field names
-	$_ = <IN>;
+	$_ = <$in>;
 	s/\x0d?\x0a?$//;
 	$fieldcount = tr/\t/\t/ + 1;
 	if ($opt_f) {
 		@fieldnames = map { "field$_" } (1 .. $fieldcount);
-		seek IN, 0, 0;
+		seek $in, 0, 0;
 	}
 	else {
 		die "Error in '$filename' header: null field name found\n" if /\t\t/;
@@ -271,9 +299,10 @@ for my $filename (@ARGV) {
 		}
 		$tmpfile = $opt_o;
 	}
-	open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
+	open $out, '>', $tmpfile or die "Error opening '$tmpfile' for writing: $!\n";
+	binmode $out;
 	print STDERR "Prettifying $filename\n";
-	print OUT <<EOF;
+	print $out <<EOF;
 #
 # This is a temporary file, automatically generated from the data file:
 #
@@ -284,92 +313,99 @@ for my $filename (@ARGV) {
 #
 EOF
 	my $rowcount = 0;
-	while (<IN>) {
+	while (<$in>) {
 		s/\x0d?\x0a?$//;
-		++$rowcount, print OUT "# row $rowcount\n" if $opt_n;
+		++$rowcount, print $out "# row $rowcount\n" if $opt_n;
 		@fields = split /\t/, $_, $fieldcount;
 		my $extended;
 		for (my $i = 0; $i < @fieldnames; $i++) {
 			$extended = $i, next if $opt_e and $fieldnames[$i] eq $opt_e;
-			print OUT $fieldnames[$i], ":",
-				defined $fields[$i] ? $fields[$i] : '', "\n";
+			print $out $fieldnames[$i], ":", $fields[$i] // '', "\n";
 		}
 		if ($opt_e) {
 			die "Extended field '$opt_e' does not exist\n"
 				unless $fieldnames{$opt_e};
-			my $extra = eval $fields[$extended];
-			if (ref($extra) eq 'HASH') {
-				for (sort keys %$extra) {
-					if ($fieldnames{$_}) {
-						print OUT <<EOF;
+			if ($fields[$extended]) {
+				my $extra = $compartment->reval($fields[$extended]);
+				if (ref($extra) eq 'HASH') {
+					for (sort keys %$extra) {
+						if ($fieldnames{$_}) {
+							print $out <<EOF;
 # NOTE! The following field '$_' from the serialized hash
 # in field '$opt_e' duplicates one of the base columns.
 # If duplicates exist when saving, the last one encountered will win.
 EOF
+						}
+						print $out $_, ":", $extra->{$_}, "\n";
 					}
-					print OUT $_, ":", $extra->{$_}, "\n";
+				}
+				else {
+					die "Invalid extended field '$opt_e': $fields[$extended]\n";
 				}
 			}
-			elsif ($fields[$extended]) {
-				die "Invalid extended field '$opt_e': $fields[$extended]\n";
-			}
 		}
-		print OUT "#\n";
+		print $out "#\n";
 	}
 	my $have_rows = ($. > 1);
 	if ($have_rows) {
-		print OUT <<EOF;
+		print $out <<EOF;
 # You can uncomment the following lines to use as a template for inserting
 # a new row into the table. Copy as many times as needed to add many rows.
 #
 EOF
-	} else {
-		print OUT <<EOF;
+	}
+	else {
+		print $out <<EOF;
 # Your file was empty -- it had no data rows, only field definitions.
 # You can copy the following empty row template as many times as needed
 # to add new rows to the table.
 #
 EOF
 	}
-	print OUT join("\n", map { ($have_rows ? '#' : '') . $_ . ":" } @fieldnames);
-	print OUT "\n#\n";
-	close IN;
-	print OUT <<EOF;
+	print $out join("\n", map { ($have_rows ? '#' : '') . $_ . ":" } @fieldnames);
+	print $out "\n#\n";
+	close $in;
+	print $out <<EOF;
 # end of file
 #
 EOF
-	close OUT or die "Error closing '$tmpfile' after writing: $!\n";
+	close $out or die "Error closing '$tmpfile' after writing: $!\n";
 	if ($opt_o) {
 		print "Wrote $opt_o\n";
 		exit;
 	}
 
-	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
-	binmode IN;
-	$digest1 = Digest::MD5->new->addfile(*IN)->digest;
-	close IN;
-	system (@ED, $tmpfile) == 0
+	open $in, '<', $tmpfile or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode $in;
+	$digest1 = Digest::MD5->new->addfile($in)->digest;
+	close $in;
+
+	system (@ed, $tmpfile) == 0
 		or do {
-			for(@ED) {
+			for (@ed) {
 				next unless /\s/;
 				s/"/\\"/g;
 				$_ = qq["$_"];
 			}
-			my $editor = join " ", @ED;
+			my $editor = join ' ', @ed;
 			die "Error calling editor '$editor' with '$tmpfile': $!\n";
 		};
-	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
-	binmode IN;
-	$digest2 = Digest::MD5->new->addfile(*IN)->digest;
+
+	open $in, '<', $tmpfile or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode $in;
+	$digest2 = Digest::MD5->new->addfile($in)->digest;
+
 	if ($digest1 eq $digest2) {
 		print STDERR "No changes made; '$filename' untouched\n";
-		close IN;
+		close $in;
 		unlink $tmpfile;
 		next;
 	}
+
 	print STDERR "Importing changes back into '$filename'\n";
 	$newfile = "$path.$name.new.$$";
-	open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
+	open $out, '>', $newfile or die "Error opening '$newfile' for writing: $!\n";
+	binmode $out;
 
 	my @newfields;
 	my %found_fields;
@@ -380,13 +416,13 @@ EOF
 	my $tabcounter = 0;
 	my $fieldpos = 0;
 	my $done;
-	seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
+	seek $in, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
 
 	my %record;
 
 	no warnings qw/ uninitialized /;
 
-	while (<IN>) {
+	while (<$in>) {
 		$done = 1 if /^#\s*DONE/;
 		if(/^#/) {
 			next unless $fieldpos;
@@ -397,7 +433,7 @@ EOF
 				}
 				@found_fields{@newfields} = @newfields;
 				$fields_out = join("\t", @newfields) . "\n";
-				print OUT $fields_out;
+				print $out $fields_out;
 				undef $fields_out;
 			}
 			if ($opt_e) {
@@ -406,11 +442,15 @@ EOF
 					next if $fieldnames{$_};
 					$extra{$_} = delete $record{$_};
 				}
-				my $d = Data::Dumper->new([ \%extra ]);
-				$d->Indent(0)->Terse(1);
-				$record{$opt_e} = $d->Dump;
+				if (%extra or ! $opt_h) {
+					my $d = Data::Dumper->new([ \%extra ]);
+					$d->Indent(0)->Terse(1)->Sortkeys(1);
+					$record{$opt_e} = $d->Dump;
+				}
 			}
-			print OUT join("\t", @record{@newfields}), "\n";
+			my $out_line = join("\t", @record{@newfields});
+			$out_line =~ s/\t+$// if $opt_t;
+			print $out $out_line, "\n";
 			%record = ();
 			$fieldpos = 0;
 			next;
@@ -436,8 +476,8 @@ EOF
 		$tabcounter == 1 ? ' was' : 's were',
 		" found in the data! Each tab was replaced with a space.\n"
 		if $tabcounter;
-	close OUT or die "Error closing '$filename.new' after writing: $!\n";
-	close IN or die "Error closing '$tmpfile' after reading: $!\n";
+	close $out or die "Error closing '$filename.new' after writing: $!\n";
+	close $in or die "Error closing '$tmpfile' after reading: $!\n";
 	my ($mode, $uid, $gid) = (stat($filename))[2,4,5];
 	chmod $mode, $newfile;
 	chown $uid, $gid, $newfile if $> == 0;
@@ -449,3 +489,5 @@ EOF
 		last;
 	}
 }
+
+# vim: set noet:
