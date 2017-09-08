@@ -693,7 +693,6 @@ EOF
 				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
 			;
 		$template = get_locale_message(500, $template, $err);
-		$template .= "($err)";
 		logError($err);
 		response($template);
 	}
@@ -1893,7 +1892,7 @@ EOF
 				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
 			;
 		$template = get_locale_message(500, $template, $err);
-		$template .= "($err)";
+		logError($err);
 		undef $Vend::write_redirect;
 		response($template);
 	}
