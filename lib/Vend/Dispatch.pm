@@ -690,7 +690,7 @@ Sorry, there was an error in processing this form action. Please
 report the error or try again later.
 EOF
 		$template .= "\n\nError: %s\n"
-				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
+				if $Global::DisplayErrors || $Vend::Cfg->{DisplayErrors}
 			;
 		$template = get_locale_message(500, $template, $err);
 		logError($err);
@@ -1680,7 +1680,7 @@ EOF
 			and not ($Vend::admin and ! $::Variable->{MV_TRACK_ADMIN});
 # END TRACK
 
-	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
+	if($Vend::Cfg->{DisplayErrors} or $Global::DisplayErrors) {
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
 							put_session() if $Vend::HaveSession;
@@ -1889,7 +1889,7 @@ Sorry, there was an error in processing this form action. Please
 report the error or try again later.
 EOF
 		$template .= "\n\nError: %s\n"
-				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
+				if $Global::DisplayErrors || $Vend::Cfg->{DisplayErrors}
 			;
 		$template = get_locale_message(500, $template, $err);
 		logError($err);
