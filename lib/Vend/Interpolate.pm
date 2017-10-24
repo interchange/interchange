@@ -3794,8 +3794,8 @@ sub tag_attr_list {
 				  !eg;
 		$body =~ s!\{($Marker)\|($Some)\}!$hash->{lc $1} || $2!eg;
 		$body =~ s!\{($Marker)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{($Marker)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-		1 while $body =~ s!\{($Marker)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+		1 while $body =~ s!\{($Marker)\?\}($Some)\{/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+		1 while $body =~ s!\{($Marker)\:\}($Some)\{/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 		$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
 	}
 	else {
@@ -3805,8 +3805,8 @@ sub tag_attr_list {
 			  !eg;
 	$body =~ s!\{($Codere)\|($Some)\}!$hash->{$1} || $2!eg;
 	$body =~ s!\{($Codere)\s+($Some)\}! $hash->{$1} ? $2 : ''!eg;
-	1 while $body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{$1} ? $2 : ''!eg;
-	1 while $body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{$1} ? '' : $2!eg;
+	1 while $body =~ s!\{($Codere)\?\}($Some)\{/\1\?\}! $hash->{$1} ? $2 : ''!eg;
+	1 while $body =~ s!\{($Codere)\:\}($Some)\{/\1\:\}! $hash->{$1} ? '' : $2!eg;
 	$body =~ s!\{(\w+)\:+(\w+)\:+(.*?)\}! tag_data($1, $2, $3) !eg;
 	}
 	return $body;

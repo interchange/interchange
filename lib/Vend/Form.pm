@@ -261,8 +261,8 @@ sub attr_list {
 	$body =~ s!\{([A-Z_]+)\}!$hash->{lc $1}!g;
 	$body =~ s!\{([A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
 	$body =~ s!\{([A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-	1 while $body =~ s!\{([A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-	1 while $body =~ s!\{([A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+	1 while $body =~ s!\{([A-Z_]+)\?\}($Some)\{/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+	1 while $body =~ s!\{([A-Z_]+)\:\}($Some)\{/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 	return $body;
 }
 
