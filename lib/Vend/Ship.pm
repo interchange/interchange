@@ -763,7 +763,12 @@ sub shipping {
 			$formula =~ s/\@\@CRIT\@\\?\@/$total/ig;
 			$formula = interpolate_html($formula)
 				if $formula =~ /__\w+__|\[\w/;
-			$cost = $Vend::Interpolate::ready_safe->reval($formula);
+			if($MVSAFE::Safe) {
+				$cost = eval($formula);
+			}
+			else {
+				$cost = $Vend::Interpolate::ready_safe->reval($formula);
+			}
 			if($@) {
 				$error_message   = errmsg(
 								"Shipping mode '%s': bad formula. Returning 0.",
