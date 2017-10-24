@@ -19,6 +19,7 @@ package File::Copy;
 require File::Basename;
 import File::Basename 'basename';
 package Vend::Interpolate;
+require File::Temp;
 sub {
 	my ($file, $opt, $replace) = @_;
 	my $die = sub {
@@ -49,7 +50,7 @@ sub {
 		return $die->("missing begin or end marker");
 	}
 
-	my $bak = POSIX::tmpnam();
+	my $bak = File::Temp::tmpnam();
 	File::Copy::copy($file, $bak)
 		or return $die->(
 					"substitute_file - %s: unable to backup to %s",

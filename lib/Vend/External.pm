@@ -41,6 +41,7 @@ use Vend::Session;
 use Vend::Cart;
 use Cwd;
 require Data::Dumper;
+require File::Temp;
 
 BEGIN {
 	if($ENV{EXT_INTERCHANGE_DIR}) {
@@ -58,7 +59,7 @@ sub check_html {
 		logError("Can't check HTML: No global CheckHTML defined. Contact admin.", '');
 	}
 
-	my $file = POSIX::tmpnam();
+	my $file = File::Temp::tmpnam();
 	open(CHECK, "|$Global::CheckHTML > $file 2>&1")	or die "Couldn't fork: $!\n";
 	print CHECK $$out;
 	close CHECK;

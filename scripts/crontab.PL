@@ -45,7 +45,7 @@ BEGIN {
 
 ### END CONFIGURATION VARIABLES
 
-use POSIX qw/tmpnam/;
+use File::Temp qw/:POSIX/;
 use Vend::Cron;
 
 my $prospect = tmpnam();
