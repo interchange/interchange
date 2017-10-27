@@ -17,7 +17,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.10.0
+Version: 5.12.0
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -381,6 +381,9 @@ fi
 
 
 %changelog
+* Fri Oct 27 2017 David Christensen <david@endpoint.com> 5.12.0-1
+- Update for new release.
+
 * Tue Dec 22 2015 David Christensen <david@endpoint.com> 5.10.0-1
 - Update for new release.
 

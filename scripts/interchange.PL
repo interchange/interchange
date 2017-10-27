@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
-# Interchange version 5.10.0
+# Interchange version 5.12.0
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
@@ -155,7 +155,7 @@ require Exporter;
 no warnings qw/once/;
 
 BEGIN {
-	$VERSION = '5.10.0';
+	$VERSION = '5.12.0';
 }
 
 use Fcntl;
@@ -348,7 +348,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2016 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2017 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -361,7 +361,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.10.0
+5.12.0
 
 =head1 DESCRIPTION
 
@@ -987,7 +987,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2016 Interchange Development Group
+    Copyright (C) 2002-2017 Interchange Development Group
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 

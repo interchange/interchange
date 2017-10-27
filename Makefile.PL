@@ -29,7 +29,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '5.10.0';
+$VERSION = '5.12.0';
 
 my @os_hints;
 eval {
@@ -160,7 +160,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2016 Interchange Development Group.
+ Copyright (C) 2002-2017 Interchange Development Group.
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
