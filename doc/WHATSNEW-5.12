@@ -22,6 +22,17 @@ Installation
 Core
 ----
 
+* Updated RobotUA handling.
+
+* Improved UTF-8 handling and bugfixes.
+
+* Improve image uploading via the table editor.
+
+* Improve [image] extension handling to search for lower/upper versions of file
+  extensions.
+
+* Add date-change "common" filter parameter.
+
 * Add bcrypt filter.
 
 * Add [adjust-href] tag. Reads HTML passed to it, finds <a href> links
@@ -32,15 +43,30 @@ Core
 * Add code to Server.pm to adjust <a href="link"> tags when "Pragma adjust_href"
   is in force. Uses above tag.
 
+* Cleanup of quite a few Perl module dependencies, removal of vestiges of
+  old version control systems from source files.
+
+* Improved integration of CI tools for development.
+
+* Multiple cleanups to handle more modern versions of Perl.
+
+
 Payments
 --------
 
 * Add BIN-2 MasterCard number support to Vend::Order, catalog templates,
   admin, and Vend::Payment modules which require it.
-  
+
+* Remove defunct payment services: Vend::Payment::ECHO and Vend::Payment::Skipjack.
+
+* Updated Vend::Payment::PayPal to latest available version.
+
 
 Database
 --------
+
+* Allow admin user to export specific tables using [backup-database] despite
+  current NoExportExternal setting.
 
 * Add ability to have a NO_UPDATE field in SQL tables, which field will
   not affect a TIMESTAMP field (in MySQL or Postgres, at least).
@@ -84,6 +110,10 @@ Database
   The [if-mm] tag probably needs to be adjusted for this to work
   in the admin in real life.
 
+* Fix bugs with MySQL and PostgreSQL handling of QUOTE_IDENTIFIERS.
+
+* Update default field widths for userdb, transactions, and orderlines.
+
 
 UserDB
 ------
@@ -98,3 +128,14 @@ UserDB
   field is true, the user will be promoted to $Vend::admin. They will not be $Vend::super.
   Note that this does not gain access to the classic Interchange UI without modification,
   since the login_table will not be admin (the test which is used in most cases).
+
+
+Strap Demo Catalog
+------------------
+
+* Updates to the version of JQuery, Google Analytics, and Bootstrap used.
+
+* Remove some legacy cart components.
+
+* Formatting fixes on checkout pages.
+
