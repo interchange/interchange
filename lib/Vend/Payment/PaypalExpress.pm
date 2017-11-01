@@ -1,6 +1,6 @@
 # Vend::Payment::PaypalExpress - Interchange Paypal Express Payments module
 #
-# Copyright (C) 2011 Zolotek Resources Ltd
+# Copyright (C) 2015 Zolotek Resources Ltd
 # All Rights Reserved.
 #
 # Author: Lyn St George <lyn@zolotek.net>
@@ -204,7 +204,7 @@ Recurring Payments:
 you need a number of new fields in the products table for the parameters required by
 Paypal, viz:
 rpdeposit: gross amount for a deposit
-rpdepositfailedaction: ContineOnFailure - Paypal will added failed amount to outstanding balance
+rpdepositfailedaction: ContinueOnFailure - Paypal will added failed amount to outstanding balance
   CancelOnFailure (or empty) - Paypal sets status to Pending till inital payment completes, then 
   sends IPN to notify of either the status becoming Active or the payment failing
 rptrialamount: nett amount
@@ -319,7 +319,7 @@ purchase or possibly without any initial payment - if without then the amount se
 # ### FIXME 
 To allow Interchange to log a zero amount,
 change log_transaction to: 
-[unless scratch allowzeroamount]
+[unless scratch allowzeropayment]
   [if scratch tmp_remaining == 0]
 	Fully paid by payment cert.
   [/if] 
@@ -388,11 +388,35 @@ Including brand_name does the same as above but only when a BillingAgreeement is
 request - hence the module excludes this setting when a BillingAgreeement is included, but sets
 it otherwise. 
 
+SOAP::Lite v0.715 may crash with an error on ln1993 of Lite.pm - backlevelling the version will make
+this error go away.
 
 
 
 
 =head1 Changelog
+version 1.1.6 November 2015
+	- more minor bug fixes
+	
+version 1.1.5 February 2015
+	- bug fix in XML entities handling
+
+version 1.1.4 January 2015
+	- further stricter handling of XML entities
+	
+version 1.1.3 September 2014
+	- update to allow LandingPage to be set to either Login or Billing
+	- stricter handling of XML entities to suit Paypal's stricter handling
+	
+version 1.1.2 March 2013
+	- bugfix for rounding errors when sending basket in the 'dorequest'
+	- set $Config->{PriceField} to $::Scratch->{PriceField} if defined
+	
+version 1.1.1 November 2012
+	- incorporated Racke's updates
+	- stripped locale tags from data displayed in the basket at Paypal
+	- truncated description field displayed in itemised basket at paypal
+	
 version 1.1.0 October 2011
 	- major update:
 	- enabled 'item details' in initial request, so the new-style Paypal checkout page shows
@@ -475,7 +499,7 @@ BEGIN {
 		require Net::SSLeay;
 		require LWP::UserAgent;
 		require HTTP::Request;
-        require Date::Calc;
+		require Date::Calc or die __PACKAGE__ . " requires Date::Calc";
 		use Date::Calc qw(Add_Delta_YMD Today Today_and_Now);
 		use POSIX 'strftime';
 	};
@@ -483,12 +507,12 @@ BEGIN {
 		$Vend::Payment::Have_Net_SSLeay = 1 unless $@;
 
 	if ($@) {
-		$msg = __PACKAGE__ . ' requires SOAP::Lite and IO::Socket::SSL ' . $@;
+		$msg = __PACKAGE__ . ' requires SOAP::Lite, IO::Socket::SSL and Date::Calc ' . $@;
 		::logGlobal ($msg);
 		die $msg;
 	}
 
-	::logGlobal("%s v1.1.0m 20120121 payment module loaded",__PACKAGE__)
+	::logGlobal("%s v1.1.6e 20151002 payment module loaded",__PACKAGE__)
 		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
@@ -500,7 +524,7 @@ use strict;
 
 sub paypalexpress {
     my ($token, $request, $method, $response, $in, $opt, $actual, $basket, $itemCode, $tax, $invoiceID);
-	my ($item, $itm, $basket, $setrpbillagreement, $rpprofile, $db, $dbh, $sth);
+	my ($item, $itm, $basket, $setrpbillagreement, $rpprofile, $db, $dbh, $sth, $noteText);
 
 	foreach my $x (@_) {
 		    $in = { 
@@ -531,24 +555,26 @@ sub paypalexpress {
         $username   = charge_param('sandbox_id');
         $password   = charge_param('sandbox_password');
         $signature  = charge_param('sandbox_signature');
-    }
+		}
     else {
         $username    = charge_param($account . 'id');
         $password    = charge_param($account . 'password');
         $signature   = charge_param($account . 'signature');
     }
-
+    
     unless ($username && $password && $signature) {
          return (
 			MStatus => 'failure-hard',
 			MErrMsg => errmsg('Bad credentials'),
-		);
+		 );
     }
-    
+
 	my $ppcheckreturn = $::Values->{'ppcheckreturn'} || 'ord/checkout';
 	my $checkouturl = $::Tag->area({ href => "$ppcheckreturn" });
 #::logDebug("PP".__LINE__.": req=$pprequest; sandbox=$sandbox;");
-#::logDebug("PP".__LINE__.": amt=" .Vend::Interpolate::total_cost() . "-" . charge_param('amount') ."-". $::Values->{'amount'});
+#::logDebug("PP".__LINE__.": pf=" . $Vend::Cfg->{'PriceField'} . " $::Scratch->{'PriceField'};  amt=" . Vend::Interpolate::total_cost() . "-" . charge_param('amount') ."-". $::Values->{'amount'});
+	   $Vend::Cfg->{'PriceField'} = delete $::Scratch->{'PriceField'} if defined $::Scratch->{'PriceField'};
+#::logDebug("PP".__LINE__.": pf=" . $Vend::Cfg->{'PriceField'} . " $::Scratch->{'PriceField'};  amt=" . Vend::Interpolate::total_cost() . "-" . charge_param('amount') ."-". $::Values->{'amount'});
 
 #	my $amount =  charge_param('amount') || Vend::Interpolate::total_cost() || $::Values->{amount}; # required
 	my $amount =  charge_param('amount') || Vend::Interpolate::total_cost() || $::Values->{'amount'}; # required
@@ -593,25 +619,26 @@ sub paypalexpress {
 # these next taken from IC after customer has logged in, and used in '$addressOverride'
 	my $usebill  = $::Values->{'use_billing_override'} || charge_param('use_billing_override');
 	my $name     = $usebill ? "$::Values->{'b_fname'} $::Values->{'b_lname'}" || '' : "$::Values->{'fname'} $::Values->{'lname'}" || '';
-	my $address1 = $usebill ? $::Values->{'b_address1'} : $::Values->{address1};
-	my $address2 = $usebill ? $::Values->{'b_address2'} : $::Values->{address2};
-	my $city     = $usebill ? $::Values->{'b_city'} : $::Values->{city};
-	my $state    = $usebill ? $::Values->{'b_state'} : $::Values->{state};
-	my $zip      = $usebill ? $::Values->{'b_zip'} : $::Values->{zip};
-	my $country  = $usebill ? $::Values->{'b_country'} : $::Values->{country};
+	my $address1 = $usebill ? $::Values->{'b_address1'} : $::Values->{'address1'};
+	my $address2 = $usebill ? $::Values->{'b_address2'} : $::Values->{'address2'};
+	my $city     = $usebill ? $::Values->{'b_city'} : $::Values->{'city'};
+	my $state    = $usebill ? $::Values->{'b_state'} : $::Values->{'state'};
+	my $zip      = $usebill ? $::Values->{'b_zip'} : $::Values->{'zip'};
+	my $country  = $usebill ? $::Values->{'b_country'} : $::Values->{'country'};
 	   $country  = 'GB' if ($country eq 'UK'); # plonkers reject UK
 	my $phone    = $::Values->{'phone_day'} || $::Values->{'phone_night'};
-	   
+#::logDebug("PP".__LINE__.": usebill=$usebill, name=$name, address1=$address1, city=$city");
+
 # for a Do request, and Set with item details
 	my $dsmode 	      = $::Variable->{'DSMODE'}; # for any custom shipping tags
-	my $itemTotal     = $::Values->{'itemtotal'} || Vend::Interpolate::subtotal() || '';
+	my $itemTotal     = $::Values->{'itemtotal'} || Vend::Interpolate::subtotal() || $::Session->{'ppitemTotal'} || '';
 	   $itemTotal     = sprintf '%.2f', $itemTotal;
-	my $shipTotal     = $::Values->{'shiptotal'} || Vend::Interpolate::tag_shipping() || '' unless  $::Variable->{'DSMODE'};
+	my $shipTotal     = $::Values->{'shiptotal'} || Vend::Interpolate::tag_shipping() || $::Session->{'ppshipTotal'} || '' unless  $::Variable->{'DSMODE'};
 	   $shipTotal     = $::Tag->$dsmode() if $::Variable->{'DSMODE'};
 	   $shipTotal     = sprintf '%.2f', $shipTotal;
-	my $taxTotal      = $::Values->{'taxtotal'} || Vend::Interpolate::salestax() || '';
+	my $taxTotal      = $::Values->{'taxtotal'} || Vend::Interpolate::salestax() || $::Session->{'pptaxTotal'} || '';
 	   $taxTotal      = sprintf '%.2f', $taxTotal;
-	my $handlingTotal = $::Values->{'handlingtotal'} || Vend::Ship::tag_handling() || '';
+	my $handlingTotal = $::Values->{'handlingtotal'} || Vend::Ship::tag_handling() || $::Session->{'pphandlingTotal'} || '';
 	   $handlingTotal = sprintf '%.2f', $handlingTotal;
 
 	my $buttonSource        = $::Values->{'buttonsource'} || charge_param('buttonsource') || ''; # for third party source
@@ -628,12 +655,13 @@ sub paypalexpress {
 	   $itemAmount   = sprintf '%.2f', $itemAmount;
 	   $amount       = sprintf '%.2f', $amount;
 	my $receiverType = $::Values->{'receiverType'} || charge_param('receivertype') || 'EmailAddress'; # used in MassPay
-	   $version      = '74.0';
+	   $version      = '122.0'; # '97.0', '74.0';
 	my $order_id  = gen_order_id($opt);
 #::logDebug("PP".__LINE__.": oid=$order_id; amount=$amount, itemamount=$itemAmount; tax=$taxTotal, ship=$shipTotal, hdl=$handlingTotal");
 
 # new fields for v 1.1.0 and API v 74
 	my $softDescriptor    = $::Values->{'soft_descriptor'} || charge_param('soft_descriptor'); # appears on customer's card statement
+	my $sellerDetails     = $::Values->{'seller_details'} || charge_param('seller_details'); # will appear in eBay emails
 	my $allowNote         = $::Values->{'allow_note'} || charge_param('allow_note'); # allow customer to enter note at Paypal
 	my $brandName         = $::Values->{'brand_name'} || charge_param('brand_name'); # max 127 chars, over-rides the business name at Paypal
 	my $servicePhone      = $::Values->{'service_phone'} || charge_param('service_phone'); # displayed to customer
@@ -651,6 +679,8 @@ sub paypalexpress {
 	my $landingPage       = $::Values->{'landing_page'} || charge_param('landing_page');
 	my $solutionType      = $::Values->{'solution_type'} || charge_param('solution_type');
 	my $totalType         = $::Values->{'total_type'} || charge_param('total_type') || 'EstimatedTotal'; # or 'Total' if is known accurately
+	
+	my $errordisplayoff   = charge_param('errordisplayoff') || '';
 
 
 
@@ -697,7 +727,7 @@ sub paypalexpress {
 #--------------------------------------------------------------------------------------------------
 ### Create a SET request and method, and read response
 #
-	my ($item,$itm,@pditems,@pdi,$pdi,$pdiamount,$itemtotal,$pdisubtotal,$cntr,$pditotalamount,$rpamount,$itemname);
+	my ($item,$itm,@pditems,@pdi,$pdi,$pdiamount,$itemtotal,$pdisubtotal,$cntr,$pditotalamount,$rpamount,$itemname,$itemdesc);
 
 	if ($pprequest eq 'setrequest') {
 	  if (charge_param('setordernumber') == '1') {
@@ -722,8 +752,8 @@ sub paypalexpress {
 		push @setreq,  SOAP::Data->name("cpp-header-back-color" => $headerBackColor)->type("xs:string") if $headerBackColor;
 		push @setreq,  SOAP::Data->name("cpp-payflow-color" => $payflowColor)->type("xs:string") if $payflowColor;
 		push @setreq,  SOAP::Data->name("cpp-cart-border-color" => $cartBorderColor)->type("xs:string") if $cartBorderColor;
-		push @setreq,  SOAP::Data->name("LandingPage" => $landingPage)->type("ebl:LandingPageType") if $landingPage;
-		push @setreq,  SOAP::Data->name("SolutionType" => $solutionType)->type("ebl:SolutionTypeType") if $solutionType;
+		push @setreq,  SOAP::Data->name("LandingPage" => $landingPage)->type("") if $landingPage;
+		push @setreq,  SOAP::Data->name("SolutionType" => $solutionType)->type("") if $solutionType;
 		push @setreq,  SOAP::Data->name("MaxAmount" => $maxAmount)->attr({"currencyID" => $currency})->type("ebl:BasicAmountType") if $maxAmount;
 		push @setreq,  SOAP::Data->name("CustomerServiceNumber" => $servicePhone)->type("xs:string") if $servicePhone;
 		push @setreq,  SOAP::Data->name("GiftMessageEnable" => $giftMessageEnable)->type("xs:string") if $giftMessageEnable; # 0 or 1
@@ -737,10 +767,11 @@ sub paypalexpress {
 		push @setreq,  SOAP::Data->name("SurveyChoice" => $surveyChoice)->type("xs:string") if $surveyChoice; # max 15 chars
 		push @setreq,  SOAP::Data->name("LocaleCode" => $localeCode)->type("xs:string") if $localeCode;
 		push @setreq,  SOAP::Data->name("AllowNote" => $allowNote)->type("xs:string") if defined $allowNote; # 0 or 1
+
 #		push @setreq,  SOAP::Data->name("TotalType" => $totalType)->type("") if $totalType; # ### crashes ... ###
 
 
-#::logDebug("PP".__LINE__.": itemTotal=$itemTotal; taxTotal=$taxTotal");
+::logDebug("PP".__LINE__.": itemTotal=$itemTotal; taxTotal=$taxTotal");
 
 # now loop through the basket and put every item into iterated PaymentDetailsItem blocks, and 
 # recurring payments items into iterated BillingAgreeement blocks. Explicit arrays not needed.
@@ -751,13 +782,25 @@ sub paypalexpress {
 					  sku => $item->{'code'},
 					  quantity => $item->{'quantity'},
 					  amount => Vend::Data::item_price($item),
-					  description => Vend::Data::item_field($item, 'description'),
 					  title => Vend::Data::item_field($item, 'title'),
+					  description => Vend::Data::item_field($item, 'description'),
+					  comment => Vend::Data::item_field($item, 'comment'),
 					  rpamount => Vend::Data::item_field($item, 'rpamount'),
 					  rpamount_field => Vend::Data::item_field($item, $rpamount_field),
 					  };
 
+			$itm->{'title'} = _pplocfilter( $itm->{'title'} );
+			$itm->{'comment'} = _pplocfilter( $itm->{'comment'} );
+			$itm->{'description'} = _pplocfilter( $itm->{'description'} );
 			$itemname = $itm->{'title'} || $itm->{'description'};
+			$itemname = _ppxmlfilter( $itemname );
+			$itemname = substr($itemname,0,126);
+
+			$itemdesc = $itm->{'description'} if $itm->{'title'};
+			$itemdesc = $itm->{'comment'} unless $itm->{'title'};
+			$itemdesc = _ppxmlfilter( $itemdesc );
+			$itemdesc = substr($itemdesc,0,126);
+
 			$pdiamount = $itm->{'amount'};
 			$pdiamount = sprintf '%.02f', $pdiamount;
 			$pdisubtotal = $pdiamount * $itm->{'quantity'};
@@ -792,12 +835,12 @@ sub paypalexpress {
 # Separate block for each item: also include those which are RecPay items
 #
 			  $pditotalamount += $pdisubtotal; # to overcome rounding errors in currency conversions
-#::logDebug("PP".__LINE__.":amt=$amount; pditotalamount=$pditotalamount; pdiamount=$pdiamount");
+::logDebug("PP".__LINE__.":amt=$amount; pditotalamount=$pditotalamount; pdiamount=$pdiamount");
 
 		       @pdi = SOAP::Data->name("Name" => $itemname)->type("");
 	      push @pdi, SOAP::Data->name("Amount" => $pdiamount)->attr({"currencyID" => $currency})->type("");
 	      push @pdi, SOAP::Data->name("Number" => $itm->{'sku'})->type("");
-	      push @pdi, SOAP::Data->name("Description" => $itm->{'description'})->type("") if $itm->{'description'};
+	      push @pdi, SOAP::Data->name("Description" => $itemdesc)->type("");
 	      push @pdi, SOAP::Data->name("Quantity" => $itm->{'quantity'})->type("") if $itm->{'quantity'};
 	      push @pdi, SOAP::Data->name("ItemWeight" => $itm->{'weight'})->type("") if $itm->{'weight'};
 	      push @pdi, SOAP::Data->name("ItemWidth" => $itm->{'width'})->type("") if $itm->{'width'};
@@ -814,25 +857,29 @@ sub paypalexpress {
 	                  )->type("ebl:PaymentDetailsItemType"),
 	                );
 
-		  push @pditems, $pdi unless $itemised_basket_off == '1';
+		  push @pditems, $pdi unless length $rpamount;
 			$cntr++;
 	  } # foreach item in basket
 
 #
 # Finished basket loop for each item, now for PaymentDetails
 #
-#::logDebug("PP".__LINE__.": vship=$::Values->{'shiptotal'}; tag=" .Vend::Interpolate::tag_shipping());
+::logDebug("PP".__LINE__.": vship=$::Values->{'shiptotal'}; tag=" .Vend::Interpolate::tag_shipping());
 # calculate here so as to avoid rounding errors and rejection at Paypal
 	my $itemtotal     = $pditotalamount;
 	   $itemtotal     = sprintf '%.2f', $itemtotal;
+	   $::Session->{'ppitemTotal'} = $itemtotal;
 	my $shiptotal     = $::Values->{'shiptotal'} || Vend::Interpolate::tag_shipping() || '' unless  $::Variable->{'DSMODE'};
 	   $shiptotal     = $::Tag->$dsmode() if $::Variable->{'DSMODE'};
 	   $shiptotal     = sprintf '%.2f', $shiptotal;
+	   $::Session->{'ppshipTotal'} = $shiptotal;
 	my $handlingtotal = $::Values->{'handlingtotal'} || Vend::Ship::tag_handling() || '';
 	   $handlingtotal = sprintf '%.2f', $handlingtotal;
+	   $::Session->{'pphandlingTotal'} = $handlingtotal;
 	my $taxtotal      = $::Values->{'taxtotal'} || Vend::Interpolate::salestax() || '';
 	   $taxtotal      = sprintf '%.2f', $taxtotal;
-#::logDebug("PP".__LINE__.": tax=$::Values->{taxtotal}; ". Vend::Interpolate::salestax());
+	   $::Session->{'pptaxTotal'} = $taxtotal;
+::logDebug("PP".__LINE__.": tax=$::Values->{taxtotal}; ". Vend::Interpolate::salestax());
 	   $amount = $itemtotal + $shiptotal + $taxtotal + $handlingtotal;
 
            my $shiptoaddress = (
@@ -860,7 +907,22 @@ sub paypalexpress {
 		push @pd, SOAP::Data->name("Custom" => $custom)->type("") if $custom;
 #		push @pd, SOAP::Data->name("TransactionID" => $order_id)->type(""); # ###
 		push @pd, $shiptoaddress if length $addressOverride;
-		push @pd, @pditems unless $itemised_basket_off == '1';
+		
+		my $discount = $Vend::Session->{discount} || '';
+::logDebug("PP:".__LINE__." discount=$discount " . ::uneval($discount));
+
+#
+# discounts are not shown at paypal
+#
+		push @pd, @pditems unless $itemised_basket_off == '1' or length $discount;
+#::logDebug("PP".__LINE__.": ppdiscnote=$::Values->{pp_discount_note}; note=$::Values->{pp_note_to_buyer}");
+		my $note_to_buyer = $::Values->{'pp_discount_note'};
+		 push @pd, SOAP::Data->name("NoteToBuyer" => $note_to_buyer)->type("") if length $note_to_buyer;
+		$::Values->{'pp_discount_note'} = '';
+		push @pd, SOAP::Data->name("OrderDescription" => $note_to_buyer)->type("") if $custom;
+#
+# neither NoteToBuyer nor OrderDescription show at the new-style dumbed-down paypal splash page ...
+#
 
 	my $paymentDetails = (
 	                SOAP::Data->name("PaymentDetails" =>
@@ -871,17 +933,8 @@ sub paypalexpress {
 				);
 
 	  push @setreq, $paymentDetails;
-	  push @setreq, SOAP::Data->name("BrandName" => $brandName)->type("") if ($brandName and !$setrpbillagreement);
-#::logDebug("PP".__LINE__.": ppdiscnote=$::Values->{pp_discount_note}");
-		my $note_to_buyer = $::Values->{'pp_note_to_buyer'};
-		   $note_to_buyer =~ s|\<.*\>||g;
-		   $note_to_buyer .= " *** Discounts and coupons will be shown and applied before final payment" if  $::Values->{'pp_discount_note'};
-		my $note  = (
-	                SOAP::Data->name("NoteToBuyer" => $note_to_buyer)->type(""),
-	                );
-		$::Values->{'pp_discount_note'} = '';
+	  push @setreq, SOAP::Data->name("BrandName" => $brandName)->type("") if $brandName;
 
-	  push @setreq, $note; # ### 
 
 							
 	my ($bt,$rpdesc,$rpAgreementAmount,$rpStartDate);						
@@ -891,7 +944,7 @@ sub paypalexpress {
 	my @setrpbill;
 	my $cntr = '0';
 
-#print "PP".__LINE__.": setreq=".::uneval(@setreq);
+#::logDebug("PP".__LINE__.": setreq=".::uneval(@setreq)); # ### NOTE 
 
 # Destroy the token here at the start of a new request, rather than after a 'dorequest' has completed,
 # as Paypal use it to reject duplicate payments resulting from clicking the final 'pay' button more
@@ -913,7 +966,7 @@ sub paypalexpress {
 	    $response = $service->call($header, $method => $request);
 	    %result = %{$response->valueof('//SetExpressCheckoutResponse')};
 		$::Scratch->{'token'} = $result{'Token'};
- 
+#::logDebug("PP".__LINE__.": result= ".::uneval(%result)); # ### NOTE  
    if (!$result{'Token'}) {
     if ($result{'Ack'} eq 'Failure') {
 		  $::Session->{'errors'}{'PaypalExpress'} = $result{'Errors'}{'LongMessage'}  if ($result{'Errors'} !~ /ARRAY/);
@@ -955,7 +1008,7 @@ return $Tag->deliver({ location => $redirecturl });
 # populate the billing address rather than shipping address when the basket is being shipped to
 # another address, eg it is a wish list.
 	  if (($result{'Ack'} eq "Success") and ($::Values->{'pp_use_billing_address'} == 1)) {
-		$::Values->{'b_phone_day'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'ContactPhone'} || $::Values->{b_phone} || $::Values->{phone_day} || $::Values->{phone_night};
+		$::Values->{'b_phone_day'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'ContactPhone'};
 		$::Values->{'email'}            = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Payer'};
 		$::Values->{'payerid'}          = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerID'};
 		$::Values->{'payerstatus'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerStatus'};
@@ -966,7 +1019,7 @@ return $Tag->deliver({ location => $redirecturl });
 	    $::Values->{'b_lname'}          = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'LastName'};
 	    $::Values->{'suffix'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'Suffix'};
 	    $::Values->{'address_status'}   = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'AddressStatus'};
-	    $::Values->{'b_name'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Name'};
+	    $::Values->{'b_name'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'PayerName'}{'PayerName'};
 	    $::Values->{'b_address1'}       = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Street1'};
 	    $::Values->{'b_address2'}       = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Street2'};
 	    $::Values->{'b_city'}           = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'CityName'};
@@ -974,6 +1027,7 @@ return $Tag->deliver({ location => $redirecturl });
 	    $::Values->{'b_zip'}            = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'PostalCode'};
 	    $::Values->{'b_country'}        = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Country'};
 	    $::Values->{'countryname'}      = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'CountryName'};
+		$::Values->{'country'}          = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PayerInfo'}{'Address'}{'Country'};
 	              }
 
 	  elsif ($result{'Ack'} eq "Success") {
@@ -1000,6 +1054,9 @@ return $Tag->deliver({ location => $redirecturl });
 	              }
 		   }
 		   
+		$::Values->{'gift_note'}   = $result{'GetExpressCheckoutDetailsResponseDetails'}{'PaymentDetails'}{'NoteText'};
+ 
+		   
 		$::Values->{'company'} = $::Values->{'b_company'} = $::Values->{'payerbusiness'};
 		$::Values->{'giropaytrue'} = $result{'GetExpressCheckoutDetailsResponseDetails'}{'RedirectRequired'};
 
@@ -1009,19 +1066,10 @@ return $Tag->deliver({ location => $redirecturl });
 # If shipping address and name are chosen at Paypal to be different to the billing address/name, then {name} contains 		
 # the shipping name but {fname} and {lname} still contain the billing names.
 ### In this case the returned 'name' may be a company name as it turns out, so what should we do?
-    if ($::Values->{pp_use_billing_address}) {
-       if (($::Values->{'b_fname'} !~ /$::Values->{'b_name'}/) and ($::Values->{'b_name'} =~ /\s/)) {
-           $::Values->{'b_name'} =~ /(\S*)\s+(.*)/;
-           $::Values->{'b_fname'} = $1;
-           $::Values->{'b_lname'} = $2;
-       }
-    }
-    else {
    if (($::Values->{'fname'} !~ /$::Values->{'name'}/) and ($::Values->{'name'} =~ /\s/)) {
        $::Values->{'name'} =~ /(\S*)\s+(.*)/;
        $::Values->{'fname'} = $1;
        $::Values->{'lname'} = $2;
-       }
     }
 		
 		  $::Session->{'errors'}{'PaypalExpress'} = $result{'Errors'}{'LongMessage'}  if ($result{'Errors'} !~ /ARRAY/);
@@ -1049,10 +1097,11 @@ return $Tag->deliver({ location => $redirecturl });
 		$state = 'QC' if ($state =~ /Quebec|^QC$/i);
 		$state = 'SK' if ($state =~ /Saskatchewan|^SK$/i);
 		$state = 'YT' if ($state =~ /Yukon|^YT$/i);
+	}
+        
         $::Values->{'b_state'} = $state if ($::Values->{'pp_use_billing_address'} == 1);
         $::Values->{'state'} = $state;
-	}
-
+  
   }
 
 #------------------------------------------------------------------------------------------------
@@ -1060,11 +1109,15 @@ return $Tag->deliver({ location => $redirecturl });
 #
  elsif ($pprequest =~ /dorequest|modifyrp/) {
      #  $currency = 'EUR'; # set to currency different to that started with to force failure for testing
-#::logDebug("PP".__LINE__.":invID=$invoiceID; on=$::Values->{mv_order_number}; total=$amount, itemtotal=$itemTotal, shiptot=$shipTotal,handTot=$handlingTotal,taxtot=$taxTotal");
 			$invoiceID = ($::Values->{'mv_order_number'} || $::Values->{'order_number'}) unless $invoiceID;
+			
+# To further handle rounding errors with discounts, using values put in session during 'setrequest'
+	   my $orderTotal = $itemTotal + $shipTotal + $handlingTotal + $taxTotal;
+
+::logDebug("PP".__LINE__.":invID=$invoiceID; on=$::Values->{mv_order_number}; total=$amount, $orderTotal, itemtotal=$itemTotal, shiptot=$shipTotal,handTot=$handlingTotal,taxtot=$taxTotal");
 
 	   my @pd  = (
-				     SOAP::Data->name("OrderTotal" => $amount )->attr({"currencyID" => $currency})->type(""),
+				     SOAP::Data->name("OrderTotal" => $orderTotal )->attr({"currencyID" => $currency})->type(""),
 				     SOAP::Data->name("ItemTotal" => $itemTotal )->attr({"currencyID" => $currency})->type(""),
 				     SOAP::Data->name("ShippingTotal" => $shipTotal )->attr({"currencyID" => $currency})->type(""),
 				     SOAP::Data->name("HandlingTotal" => $handlingTotal )->attr({"currencyID" => $currency})->type(""),
@@ -1087,7 +1140,7 @@ return $Tag->deliver({ location => $redirecturl });
                      );
 
 		  my ($item,$itm,@pdi,$pdiamount,$pditax);
-# ### FIXME what is the point of sending item details here???? 
+# ### FIXME what is the point of sending item details here???? Because the API says must send here if sent in the 'set' request ...
 		if (($itemTotal > '0') and ($taxTotal > '0')) {
 		  foreach  $item (@{$::Carts->{'main'}}) {
 			  $itm = {
@@ -1096,17 +1149,22 @@ return $Tag->deliver({ location => $redirecturl });
 					  description => Vend::Data::item_description($item),
 					  amount => Vend::Data::item_price($item),
 					  comment => Vend::Data::item_field($item, 'comment'),
-					  tax => exists $item->{'tax'} ? $item->{'tax'} : (Vend::Data::item_price($item)/$itemTotal * $taxTotal),
+					  tax => (Vend::Data::item_price($item)/$itemTotal * $taxTotal),
 					  rpAmount => Vend::Data::item_field($item, 'rpamount'),
 					  };
   
 			  $pdiamount = sprintf '%.02f', $itm->{'amount'};
 			  $pditax = sprintf '%.02f', $itm->{'tax'};
+			  
+			$itemname = $itm->{'title'} || $itm->{'description'};
+			$itemname = _ppxmlfilter( $itemname );
+			$itemname = substr($itemname,0,126);
+
 
 		my $pdi  = (
 	                SOAP::Data->name("PaymentDetailsItem" =>
 	                \SOAP::Data->value(
-	                 SOAP::Data->name("Name" => $itm->{'description'})->type("xs:string"),
+	                 SOAP::Data->name("Name" => $itemname)->type("xs:string"),
 	                 SOAP::Data->name("Amount" => $pdiamount)->attr({"currencyID" => $currency})->type("xs:string"),
 	                 SOAP::Data->name("Number" => $itm->{'number'})->type("xs:string"),
 	                 SOAP::Data->name("Quantity" => $itm->{'quantity'})->type("xs:string"),
@@ -1143,7 +1201,7 @@ EOB
 		 $nonrp = '1' if (! $rpamount); # only run Do request if have standard purchase as well
 	  if ($rpamount) {
 #		$cntr++;
-print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm->{rpAmount}; trialAmount=$itm->{trialAmount}\n";	
+#::logDebug("PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm->{rpAmount}; trialAmount=$itm->{trialAmount}");	
             $dorecurringbilling = (
 					   SOAP::Data->name("BillingAgreementDetails" =>
 					   \SOAP::Data->value(
@@ -1160,8 +1218,10 @@ print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm-
 
 		push @pd, SOAP::Data->name("Custom" => $custom )->type("xs:string") if $custom;
 		push @pd, SOAP::Data->name("NotifyURL" => $notifyURL )->type("xs:string") if $notifyURL;
+		push @pd, SOAP::Data->name("NoteText" => delete $::Values->{'gift_note'})->type('') if $::Values->{'gift_note'};
 		push @pd, @sta if $addressOverride  == '1';
-		push @pd, @pdi if $paymentDetailsItem == '1';# and ($itemTotal > '0'));
+# ### 		push @pd, @pdi if $paymentDetailsItem == '1';# and ($itemTotal > '0')); 
+# ### NOTE problems with discounts and totals not adding up if PaymentDetailsItems are sent.
 
 	my $pd = (      SOAP::Data->name("PaymentDetails" =>
 			         \SOAP::Data->value( @pd
@@ -1170,9 +1230,9 @@ print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm-
 				);
 
 	my @doreq = (	 SOAP::Data->name("Token" => $::Scratch->{'token'})->type("xs:string"),
-			         SOAP::Data->name("PaymentAction" => $paymentAction)->type(""),
-			         SOAP::Data->name("PayerID" => $::Values->{'payerid'} )->type("xs:string"),
-				);
+			 SOAP::Data->name("PaymentAction" => $paymentAction)->type(""),
+			 SOAP::Data->name("PayerID" => $::Values->{'payerid'} )->type("xs:string"),
+			);
 # ###		push @doreq, SOAP::Data->name("ReturnFMFDetails" => '1' )->type("xs:boolean") if $returnFMFdetails == '1'; # ### crashes
 # ###		push @doreq, SOAP::Data->name("GiftMessage" => $giftMessage)->type("xs:string") if $giftMessage;
 		push @doreq, SOAP::Data->name("GiftReceiptEnable" => $giftReceiptEnable)->type("xs:string") if $giftReceiptEnable; # true | false
@@ -1180,6 +1240,7 @@ print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm-
 		push @doreq, SOAP::Data->name("GiftWrapAmount" => $giftWrapAmount)->attr({"currencyID" => $currency})->type("ebl:BasicAmountType") if $giftWrapAmount;
 		push @doreq, SOAP::Data->name("ButtonSource" => $buttonSource )->type("xs:string") if $buttonSource;
 		push @doreq, SOAP::Data->name("SoftDescriptor" => $softDescriptor)->type('') if $softDescriptor;
+		push @doreq, SOAP::Data->name("SellerDetails" => $sellerDetails)->type('') if $sellerDetails;
 
 		push @doreq, $pd;
 
@@ -1217,11 +1278,15 @@ print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm-
 	    $result{'FeeAmount'}           = $result{'DoExpressCheckoutPaymentResponseDetails'}{'PaymentInfo'}{'FeeAmount'};
 	    $result{'ExchangeRate'}        = $result{'DoExpressCheckoutPaymentResponseDetails'}{'PaymentInfo'}{'ExchangeRate'};
 		$result{'giropaytrue'}         = $result{'DoExpressCheckoutPaymentResponseDetails'}{'RedirectRequired'};
+# 22.11.2012, v111b		
+		$result{'gift_note'}           = $result{'DoExpressCheckoutPaymentResponseDetails'}{'Note'};
+
 
 			    }
  	  else  {
 	  		  $::Session->{'errors'}{'PaypalExpress'} = $result{'Errors'}{'LongMessage'}  if ($result{'Errors'} !~ /ARRAY/);
 			  for my $i (0 .. 3) {
+			      last unless $result{'Errors'};
 				$::Session->{'errors'}{'PaypalExpress'} .= " $result{'Errors'}[$i]{'LongMessage'}"  if ($result{'Errors'} =~ /ARRAY/);
 			  }
 	  }
@@ -1321,7 +1386,7 @@ print "PP".__LINE__.": cntr=$cntr; initamount=$itm->{initAmount}; rpAmount=$itm-
 							SOAP::Data->name('Country' => $::Values->{'country'})->type(''),
 							),
 						   ),
-						) if $::Values->{'address18'};
+						) if $::Values->{'address1'};
 
 	  my $payment = (
 						   SOAP::Data->name('PaymentPeriod' => 
@@ -1635,6 +1700,7 @@ use strict;
 		  if ($res->content() eq 'VERIFIED') {
 			  foreach my $line (split /\&/, $$page) {
 				my ($key, $val) = (split /=/, $line);
+#::logDebug("IPN: $key = $val");
 				$result{$key} = $val;
 #::logDebug("PP".__LINE__.": IPN result=".::uneval(%result));
 				return %result;
@@ -1814,13 +1880,14 @@ use strict;
     for (keys %result_map) {
         $result{$_} = $result{$result_map{$_}}
            if defined $result{$result_map{$_}};
+::logDebug('PP: '.__LINE__."result map: $result{$_}=$result{$result_map{$_}}");           
     }
   }
-#::logDebug("PP".__LINE__.": ack=$result{Ack}; ppreq=$pprequest");
+::logDebug("PP".__LINE__.": ack=$result{Ack}; ppreq=$pprequest");
   if (($result{'Ack'} eq 'Success') and ($pprequest =~ /dorequest|giropay/)) {
          $result{'MStatus'} = $result{'pop.status'} = 'success';
          $result{'order-id'} ||= $order_id || $opt->{'order_id'};
-#::logDebug("PP".__LINE__.": mstatus=$result{MStatus}"); 
+::logDebug("PP".__LINE__.": mstatus=$result{MStatus}"); 
            }
   elsif (!$result{'Ack'}) {
          $result{'MStatus'} = $result{'pop.status'} = 'failure';
@@ -1837,7 +1904,7 @@ use strict;
 	$::Values->{'returnurl'} = '';
 	$::Scratch->{'pprecurringbilling'} = '';
 
-#::logDebug("PP".__LINE__." result:" .::uneval(\%result));
+::logDebug("PP".__LINE__." result:" .::uneval(\%result));
     return (%result);
 
 }
@@ -1929,6 +1996,31 @@ sub getrpdetails {
 		}
 
 	return($result{'Ack'});
+}
+
+sub _ppxmlfilter {
+#
+# filter for valid XML
+#
+      my $string = shift;
+		$string =~ s|&|&amp;|g unless $string =~ /&amp/i;;
+		$string =~ s|<|&lt;|g;
+		$string =~ s|>|&gt;|g;
+		$string =~ s|'|&apos;|g;
+		$string =~ s|"|&quot;|g;
+	return $string;
+
+}
+
+sub _pplocfilter {
+#
+# filter to remove IC's Locale tags
+#
+      my $string = shift;
+	  $string =~ s|\[L\]||g;
+	  $string =~ s|\[\/L\]||g;
+      return $string;
+
 }
 
 package Vend::Payment::PaypalExpress;
