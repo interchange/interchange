@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: get_url.tag,v 1.12 2007-12-05 00:38:03 racke Exp $
 
 UserTag get-url Order        url
 UserTag get-url AddAttr

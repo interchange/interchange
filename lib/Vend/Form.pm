@@ -1,6 +1,4 @@
 # Vend::Form - Generate Form widgets
-# 
-# $Id: Form.pm,v 2.77 2009-04-05 19:24:36 mheins Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.

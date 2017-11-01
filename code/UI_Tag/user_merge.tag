@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: user_merge.tag,v 1.4 2009-05-20 23:37:27 pajamian Exp $
 
 UserTag user-merge Order from to
 UserTag user-merge addAttr

@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: convert_date.tag,v 1.9 2009-05-01 13:50:00 pajamian Exp $
 
 UserTag convert-date Order       adjust
 UserTag convert-date PosNumber   1

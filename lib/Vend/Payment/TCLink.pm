@@ -1,7 +1,5 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.10 2009-03-16 19:34:01 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #

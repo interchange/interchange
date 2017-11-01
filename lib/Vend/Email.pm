@@ -1,6 +1,4 @@
 # Vend::Email - Handle Interchange email functions
-# 
-# $Id: Email.pm,v 1.11 2007-12-28 11:47:51 racke Exp $
 #
 # Copyright (C) 2007 Interchange Development Group
 #

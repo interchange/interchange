@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: save_cart.tag,v 1.7 2007-12-16 10:15:09 kwalsh Exp $
 
 UserTag save_cart Order     nickname recurring keep
 UserTag save_cart AttrAlias name nickname

@@ -1,7 +1,5 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.54 2008-05-26 02:30:04 markj Exp $
-#
 # Copyright (C) 2002-2006 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify

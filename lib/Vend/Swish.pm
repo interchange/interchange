@@ -1,7 +1,5 @@
 # Vend::Swish - Search indexes with Swish-e's new SWISH::API
 #
-# $Id: Swish.pm,v 1.15 2008-10-09 14:43:42 racke Exp $
-#
 # Adapted from earlier Vend::Swish by Brian Miller <brian@endpoint.com>
 #
 # Copyright (C) 2005-2008 Interchange Development Group

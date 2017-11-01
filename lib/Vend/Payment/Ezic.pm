@@ -1,7 +1,5 @@
 # Vend::Payment::Ezic - Interchange Ezic support
 #
-# $Id: Ezic.pm,v 1.6 2009-03-16 19:34:00 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #

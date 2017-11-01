@@ -1,7 +1,5 @@
 # Vend::SessionDB - Stores Interchange session information in a database table
 #
-# $Id: SessionDB.pm,v 2.11 2007-10-09 13:56:46 jon Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #

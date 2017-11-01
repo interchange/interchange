@@ -3,8 +3,6 @@
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 2.6 2007-08-09 13:40:56 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
@@ -134,7 +132,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 2.6 2007-08-09 13:40:56 pajamian Exp $
+2007-08-09
 
 =head1 DESCRIPTION
 

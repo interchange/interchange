@@ -1,7 +1,5 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.13 2007-01-30 11:29:51 racke Exp $
-#
 # Copyright (C) 2003-2007 Interchange Development Group
 #
 # Based on HTML::Parser

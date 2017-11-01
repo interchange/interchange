@@ -1,7 +1,5 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# $Id: UserControl.pm,v 2.6 2007-08-09 13:40:54 pajamian Exp $
-#
 # Copyright (C) 2003-2007 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
 #

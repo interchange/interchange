@@ -1,6 +1,5 @@
 # Copyright 2007 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: match.oc,v 1.1 2007-05-04 14:36:00 mheins Exp $
 
 CodeDef match OrderCheck 1
 CodeDef match Description Matches another CGI variable, possibly for password verify

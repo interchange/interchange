@@ -1,7 +1,5 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.53 2009-02-24 15:29:01 jon Exp $
-#
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
 # This program is free software; you can redistribute it and/or modify

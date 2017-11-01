@@ -1,7 +1,5 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.13 2007-08-09 13:40:53 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
 #

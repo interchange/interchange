@@ -1,6 +1,4 @@
 # Vend::Page - Handle Interchange page routing
-# 
-# $Id: Page.pm,v 2.26 2008-04-15 19:37:57 racke Exp $
 #
 # Copyright (C) 2002-2008 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.

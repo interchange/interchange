@@ -1,7 +1,5 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.18 2007-08-09 13:40:54 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 2000-2002 Red Hat, Inc.
 #

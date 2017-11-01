@@ -1,7 +1,5 @@
 # SOAP::Transport - Handle Interchange SOAP connections
 #
-# $Id: Transport.pm,v 2.3 2007-03-30 11:39:54 pajamian Exp $
-#
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify

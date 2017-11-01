@@ -1,7 +1,5 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.7 2007-08-09 13:40:53 pajamian Exp $
-#
 
 package Vend::CounterFile;
 use Vend::Util;

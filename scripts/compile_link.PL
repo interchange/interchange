@@ -3,8 +3,6 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.11 2009-03-16 10:21:28 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #

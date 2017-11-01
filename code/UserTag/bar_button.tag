@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: bar_button.tag,v 1.5 2007-03-30 23:40:56 pajamian Exp $
 
 UserTag bar-button Order     page current
 UserTag bar-button PosNumber 2

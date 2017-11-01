@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: capture_page.tag,v 1.12 2008-10-01 09:21:45 racke Exp $
 
 UserTag capture_page Order   page file
 UserTag capture_page addAttr

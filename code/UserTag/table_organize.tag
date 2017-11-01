@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: table_organize.tag,v 1.11 2007-11-05 20:15:27 docelic Exp $
 
 UserTag table-organize Order         cols
 UserTag table-organize attrAlias     columns cols

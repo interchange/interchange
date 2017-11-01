@@ -5,8 +5,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: duration.filter,v 1.7 2009-05-01 13:50:00 pajamian Exp $
 
 CodeDef duration Filter
 CodeDef duration Description Duration

@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: button.tag,v 1.25 2008-06-15 19:11:16 jure Exp $
 
 UserTag button Order     name src text
 UserTag button addAttr

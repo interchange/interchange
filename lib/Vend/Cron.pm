@@ -1,7 +1,5 @@
 # Vend::Cron - Determine tasks to run based on time
 #
-# $Id: Cron.pm,v 2.6 2007-08-09 13:40:53 pajamian Exp $
-#
 # Copyright (C) 2002-2007 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify

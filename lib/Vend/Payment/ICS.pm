@@ -1,7 +1,5 @@
 # Vend::Payment::ICS - Interchange Cybersource ICS Support
 #
-# $Id: ICS.pm,v 1.2 2007-03-30 11:39:52 pajamian Exp $
-#
 # Copyright (C) 2005 End Point Corporation
 #
 # Written by Sonny Cook <sonny@endpoint.com>

@@ -1,7 +1,5 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.16 2007-08-09 13:40:53 pajamian Exp $
-#
 # Adapted for use with Interchange from Search::Glimpse
 #
 # Copyright (C) 2002-2007 Interchange Development Group

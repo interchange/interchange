@@ -1,6 +1,4 @@
 # Vend::Tags - Interpret Interchange tags for Safe
-# 
-# $Id: Tags.pm,v 2.4 2007-08-09 13:40:54 pajamian Exp $
 #
 # Copyright (C) 2002-2007 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.

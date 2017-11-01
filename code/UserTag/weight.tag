@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: weight.tag,v 1.9 2007-07-18 00:16:26 jon Exp $
 
 UserTag weight Order   attribute
 UserTag weight addAttr

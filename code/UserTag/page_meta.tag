@@ -4,8 +4,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
-# 
-# $Id: page_meta.tag,v 1.4 2007-03-30 23:40:57 pajamian Exp $
 
 UserTag page-meta Order   page
 UserTag page-meta addAttr
