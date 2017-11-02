@@ -1,4 +1,4 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2017 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -8,7 +8,7 @@
 UserTag  survey-wizard  Order     name
 UserTag  survey-wizard  AddAttr
 UserTag  survey-wizard  HasEndTag
-UserTag  survey-wizard  Version   $Revision: 1.3 $
+UserTag  survey-wizard  Version   1.5
 UserTag  survey-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;
@@ -875,7 +875,7 @@ sub {
 				};
 				if($@) {
 					$Tag->error(
-						"error during perl conditional: $@\ncode was:\n%s",
+						"error during perl conditional: %s\ncode was:\n%s",
 						$@,
 						$optref->{_condition},
 					);
