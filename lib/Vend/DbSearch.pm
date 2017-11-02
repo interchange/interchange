@@ -2,7 +2,7 @@
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = '2.28';
 
 use Search::Dict;
 use strict;
@@ -198,7 +198,9 @@ sub search {
 	if ($s->{mv_search_error}) {
  		return $s;
  	}
-	
+
+	# clear errors for non-eval code paths below
+	undef $@;
 	if ($s->{mv_coordinate}) {
 		undef $f;
 	}
@@ -219,7 +221,6 @@ sub search {
 											),
 										@pats					)};
 	}
-
 	$@  and  return $s->search_error("Function creation: $@");
 
 	my $qual;

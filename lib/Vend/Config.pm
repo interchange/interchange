@@ -54,7 +54,7 @@ use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
 
-$VERSION = '2.249';
+$VERSION = '2.250';
 
 my %CDname;
 my %CPname;
@@ -787,10 +787,8 @@ sub global_chunk {
 		eval {
 			$GlobalRead->($lvar, $value);
 		};
-		if($@ =~ /Duplicate\s+usertag/i) {
-			next;
-		}
-		if($@) {
+		if ($@) {
+			next if $@ =~ /Duplicate\s+usertag/i;
 			::logDebug("error running global $lvar: $@");
 		}
 	}
@@ -865,9 +863,7 @@ sub code_from_file {
 		eval {
 			$GlobalRead->($lvar, $value);
 		};
-		if($@ =~ /Duplicate\s+usertag/i) {
-			next;
-		}
+		next if $@ =~ /Duplicate\s+usertag/i;
 	}
     close SYSTAG;
     close NEWTAG;
@@ -2201,6 +2197,8 @@ sub parse_action {
 	$sub =~ s/^\s*((?s:.)*\S)\s*//;
 	$sub = $1;
 
+	# clear errors for code paths below that don't call eval or reval
+	undef $@;
 	if($sub !~ /\s/) {
 		no strict 'refs';
 		if($sub =~ /::/ and ! $C) {

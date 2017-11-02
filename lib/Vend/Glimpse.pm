@@ -2,7 +2,7 @@
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = '2.17';
 use strict;
 use Vend::File;
 use Vend::Util;
@@ -189,6 +189,8 @@ sub search {
 
 	my $joiner = $s->{mv_orsearch}[0] ? ',' : ';';
 
+	# clear errors for non-eval code paths below
+	undef $@;
 	if ($s->{mv_coordinate}) {
 		undef $f;
 	}
@@ -213,8 +215,8 @@ sub search {
 											),
 										@pats					)};
 	}
-
 	$@  and  return $s->search_error("Function creation: $@");
+
 	local($/) = $s->{mv_record_delim} || "\n";
 
 	$s->save_specs();

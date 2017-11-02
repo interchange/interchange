@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# Copyright (C) 2002-2013 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -466,6 +466,8 @@ sub read_session {
 		
 #::logDebug ("Session:\n$s\n");
 	return new_session($seed) unless $s;
+
+    undef $@;
     $Vend::Session = ref $s ? $s : evalr($s);
     die "Could not eval '$s' from session dbm: $@\n" if $@;
 

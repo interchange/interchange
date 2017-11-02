@@ -964,8 +964,10 @@ EOF
 		::logDebug("filter function code is: $f")
 			if $Global::DebugFile and $CGI::values{debug};
 		use locale;
-		$f = eval $f if $f and ! ref $f;
-		die($@) if $@;
+		if ($f and ! ref $f) {
+			$f = eval $f;
+			die($@) if $@;
+		}
 		my $relate;
 		if(scalar @code > 1) {
 			$relate = 'return ( ';

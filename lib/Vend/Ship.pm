@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# Copyright (C) 2002-2015 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -329,6 +329,8 @@ sub read_shipping {
 			$zone = $1 if ! $zone;
 			next if defined $zones{$zone};
 			my $ref;
+			# clear errors for non-eval code paths below
+			undef $@;
 			if ($o->{zone}) {
 				$ref = {};
 				my @common = qw/
