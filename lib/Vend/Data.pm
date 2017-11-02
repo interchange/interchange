@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -1001,14 +1001,15 @@ sub import_database {
 
 #::logDebug("db=$db, \$\!='$!' \$\@='$@' (" . length($@) . ")\n") if ! $db;
 		if($@) {
-#::logDebug("Dieing of $@");
-			die $@ unless $no_import;
-			die $@ if $tried_import++;
+			my $err = $@;
+#::logDebug("Dieing of $err");
+			die $err unless $no_import;
+			die $err if $tried_import++;
 			if(! -f $database_dbm) {
 				$Vend::ForceImport{$obj->{name}} = 1;
 				return import_database($obj);
 			}
-			die $@;
+			die $err;
 		}
 		undef $tried_import;
 #::logDebug("Opening $obj->{name}: RO=$obj->{Read_only} WC=$obj->{WRITE_CONTROL} WA=$obj->{WRITE_ALWAYS}");

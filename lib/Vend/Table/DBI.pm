@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1456,8 +1456,6 @@ sub set_slice {
 		}
 	};
 
-#::logDebug("set_slice key: $val");
-
 	if($@) {
 		my $caller = caller();
 		$s->log_error(
@@ -1471,6 +1469,7 @@ sub set_slice {
 		return undef;
 	}
 
+#::logDebug("set_slice key: $val");
 	return $val;
 }
 
@@ -2286,11 +2285,10 @@ sub query {
 		}
 	};
 	if($@) {
+		my $origmsg = $@;
+
 		if(! $sth or ! defined $rc) {
 			# query failed, probably because no table
-
-			## Save the original message
-			my $origmsg = $@;
 
 			# Allow failed query by design, maybe to use multiple key inserts
 			return undef if $opt->{no_requery};
@@ -2330,7 +2328,7 @@ sub query {
 			}
 		}
 		else {
-			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $origmsg, $query);
 			$s->log_error($msg);
 			Carp::croak($msg) if $Vend::Try;
 			return undef;

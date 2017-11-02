@@ -1,4 +1,4 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2017 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -7,7 +7,7 @@
 
 UserTag file-navigator Order    mask
 UserTag file-navigator addAttr
-UserTag file-navigator Version  $Revision: 1.17 $
+UserTag file-navigator Version  1.18
 UserTag file-navigator Routine  <<EOR
 use vars qw/$CGI $Session $Tag $Scratch/;
 eval {
@@ -85,11 +85,10 @@ sub {
 					}
 					$regex = qr{$string};
 				};
-			}
-
-			if($@ or ! $regex) {
-				push @errors, ::errmsg("%s is not a good search.", $regex);
-				last FINDNAV;
+				if ($@ or ! $regex) {
+					push @errors, ::errmsg("%s is not a good search.", $regex);
+					last FINDNAV;
+				}
 			}
 
 			$full_path = 1;

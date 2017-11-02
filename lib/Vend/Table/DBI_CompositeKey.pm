@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = '1.16';
 
 use strict;
 
@@ -461,12 +461,13 @@ sub set_slice {
 #::logDebug("set_slice key: $val");
 
 	if($@) {
+		my $err = $@;
 		my $caller = caller();
 		$s->log_error(
 			"%s error as called by %s: %s\nquery was:%s\nvalues were:'%s'",
 			'set_slice',
 			$caller,
-			$@,
+			$err,
 			$sql,
 			join("','", @$vary),
 		);
@@ -546,12 +547,13 @@ sub set_row {
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		};
 		if($@) {
+			my $err = $@;
 			my $caller = caller();
 			$s->log_error(
 				"%s error as called by %s: %s\nfields=%s\nvalues=%s",
 				'set_row',
 				$caller,
-				$@,
+				$err,
 				$key_string,
 				$val_string,
 			);

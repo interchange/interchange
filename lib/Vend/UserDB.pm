@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# Copyright (C) 2002-2015 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2357,15 +2357,16 @@ sub new_account {
 						);
 		}
 	};
+	my $err = $@;
 
 	scrub();
 
-	if($@) {
+	if ($err) {
 		if(defined $self) {
-			$self->{ERROR} = $@;
+			$self->{ERROR} = $err;
 		}
 		else {
-			logError( "Vend::UserDB error: %s\n", $@ );
+			logError("Vend::UserDB error: %s\n", $err);
 		}
 		return undef;
 	}

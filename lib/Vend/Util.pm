@@ -103,7 +103,7 @@ use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '2.129';
+$VERSION = '2.130';
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -790,13 +790,14 @@ sub logData {
 		close(MVLOGDATA) or die "close\n";
     };
     if ($@) {
+        my $err = $@;
 
 		if($::Limit->{logdata_error_length} > 0) {
 			$msg = substr($msg, 0, $::Limit->{logdata_error_length});
 		}
 
 		logError ("Could not %s log file '%s': %s\nto log this data:\n%s",
-				$@,
+				$err,
 				$file,
 				$!,
 				$msg,

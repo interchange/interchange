@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = '1.115';
+$VERSION = '1.116';
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -514,8 +514,6 @@ my %form_action = (
 #::logDebug("selected receipt=$receipt");
 							display_special_page($receipt);
 						};
-						$not_displayed = 0;
-#::logDebug("not_displayed=$not_displayed");
 						if($@) {
 							my $msg = $@;
 							logError( 
@@ -524,6 +522,8 @@ my %form_action = (
 								$msg,
 							);
 						}
+						$not_displayed = 0;
+#::logDebug("not_displayed=$not_displayed");
 					}
 
 					# Do order cleanup
@@ -683,8 +683,8 @@ sub do_process {
 		$status = $sub->($todo);
 	};
 	if($@) {
-		undef $status;
 		my $err = $@;
+		undef $status;
 		my $template = <<EOF;
 Sorry, there was an error in processing this form action. Please 
 report the error or try again later.
@@ -820,12 +820,13 @@ sub run_in_catalog {
 		};
 
 		if ($@) {
+			my $err = $@;
+			$failure = errmsg('Job terminated with an error: %s', $err);
+			logError("Job group=%s pid=%s terminated with an error: %s", $job || 'INTERNAL', $$, $err);
+
 			# job terminated due to an error
 			$errors = 1;
 
-			$failure = errmsg('Job terminated with an error: %s', $@);
-			logError ("Job group=%s pid=%s terminated with an error: %s", $job || 'INTERNAL', $$, $@);
-			
 			# remove flag for this job
 			Vend::Server::flag_job($$, $cat, 'furl');
 		}
@@ -1882,8 +1883,8 @@ EOF
 	(undef $Vend::RedoAction, redo DOACTION) if $Vend::RedoAction;
 
 	if($@) {
-		undef $status;
 		my $err = $@;
+		undef $status;
 		my $template = <<EOF;
 Sorry, there was an error in processing this form action. Please 
 report the error or try again later.

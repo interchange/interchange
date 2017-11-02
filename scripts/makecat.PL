@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# Copyright (C) 2002-2015 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1716,9 +1716,6 @@ DOCOPY: {
 	eval {
 		copy_current_to_dir("$Conf{relocate}$Conf{catroot}");
 	};
-
-	umask(022) unless $Conf{noumask};
-
 	if($@) {
 		die <<EOF . "\n";
 There were errors in copying the demo files.  Cannot
@@ -1728,6 +1725,8 @@ The problem was:
 	$@
 EOF
 	}
+
+	umask(022) unless $Conf{noumask};
 
 	unless($prog eq 'NONE') {
 		File::Copy::copy( $prog, "$Conf{relocate}$Conf{catroot}/executable")
@@ -2304,7 +2303,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-2.29
+2017-11-01
 
 =head1 INTRODUCTION
 
