@@ -3,7 +3,7 @@
 #
 # Interchange localizer
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,6 @@ EOF
 
 getopts('cd:l:Mm:nostu:') or die "$USAGE\n";
 
-die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
 die "$USAGE\n" if $opt_d && $opt_l eq $opt_d;
 
@@ -381,7 +380,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-2007-08-09
+2017-11-01
 
 =head1 SYNOPSIS
 
