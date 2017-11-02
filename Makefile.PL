@@ -705,6 +705,17 @@ EOF
 	# Check for extra needed libraries
 	extra_libs($realdir);
 
+	# if we are building from a git checkout, then set the VERSION based on the
+	# closest git tag, otherwise use the last hard-coded version
+
+	if (-d "./.git") {
+		$X{VERSION} = qx(git describe --tags --dirty);
+		chomp $X{VERSION};
+	}
+	else {
+		$X{VERSION} = $VERSION;
+	}
+
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
     return \%X;
