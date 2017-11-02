@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 ##!~_~perlpath~_~
 #
-# Interchange version 5.12.0
+#-# Interchange version ~_~VERSION~_~
 #
 # Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -155,7 +155,9 @@ require Exporter;
 no warnings qw/once/;
 
 BEGIN {
+	# base version for Makefile.PL only, will be overridden with tagged-version-relative
 	$VERSION = '5.12.0';
+#-	$VERSION = '~_~VERSION~_~';
 }
 
 use Fcntl;
@@ -361,7 +363,8 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-5.12.0
+
+#-~_~VERSION~_~
 
 =head1 DESCRIPTION
 
