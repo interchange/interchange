@@ -6,6 +6,7 @@ BEGIN {
 		require FindBin;
 		chdir $FindBin::RealBin;
 	};
+    die "Can't cd to $FindBin::RealBin!\n" if $@;
 }
 
 use Config;
