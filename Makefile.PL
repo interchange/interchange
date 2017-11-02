@@ -35,7 +35,7 @@ $VERSION = eval { require './_ic_version' } || '5.12.0';
 my @os_hints;
 eval {
 	# gets package 'mvhints'
-	require 'hints.pl';
+	require './hints.pl';
 	@os_hints = mvhints::get_hints();
 };
 
