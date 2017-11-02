@@ -29,7 +29,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '5.12.0';
+$VERSION = eval { require './.ic-version' } || '5.12.0';
 
 my @os_hints;
 eval {
@@ -711,6 +711,7 @@ EOF
 	if (-d "./.git") {
 		$X{VERSION} = qx(git describe --tags --dirty);
 		chomp $X{VERSION};
+		system(qq{echo '"$X{VERSION}"' > .ic-version});
 	}
 	else {
 		$X{VERSION} = $VERSION;
