@@ -9,8 +9,29 @@
 
 =for example
 
-use lib '/home/jon/interchange/lib';
-#use lib '~_~INSTALLPRIVLIB~_~';
+Original:
+
+  #use lib '~_~INSTALLPRIVLIB~_~';
+
+Output:
+
+  use lib '/home/jon/interchange/lib';
+  #use lib '~_~INSTALLPRIVLIB~_~';
+
+=cut
+
+# If the leading comment starts with #- then the output of the original
+# commented line will be suppressed.
+
+=for example
+
+Original:
+
+  #-use lib '~_~INSTALLPRIVLIB~_~';
+
+Output:
+
+  use lib '/home/jon/interchange/lib';
 
 =cut
 
@@ -46,7 +67,7 @@ DOIT: {
 	@ARGV = ($input) if $input;
 	local ($_) = <>;
 
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
+	s{.*\n(#(-?)(.*)~_~(\w+)~_~(.*))}{$3 . doit($4) . $5 . ($2 ? '' : "\n$1" )}eg;
 
 	if ($output) {
 		open STDOUT, ">$output" or die "Error creating $output: $!\n";
