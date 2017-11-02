@@ -1,6 +1,6 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# Copyright (C) 2003-2007 Interchange Development Group
+# Copyright (C) 2003-2017 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 
 package Vend::UserControl;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = '2.7';
 
 require Vend::UserDB;
 use Vend::Data;
@@ -193,8 +193,8 @@ sub get_values {
 	foreach $area (qw!PREFERENCES CARTS!) {
 		my $f = $location->{$area};
 		if ($present->{$f}) {
-			my $s = $self->get_hash($area);
-			die ::errmsg("Bad structure in %s: %s", $f, $@) if $@;
+			my $s = $self->get_hash($area)
+                or die ::errmsg("Bad structure in %s: %s", $f, $self->{ERROR});
 			$::Values->{$f} = join "\n", sort keys %$s;
 		}
 	}
