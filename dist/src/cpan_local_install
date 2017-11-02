@@ -11,7 +11,7 @@ require 5.008_005;
 
 use vars qw/$opt_c $opt_d $opt_h $VERSION/;
 
-$VERSION = '2008-11-12';
+$VERSION = '2017-11-01';
 
 my $prog = $0;
 $prog =~ s:.*/::;
@@ -112,15 +112,6 @@ EOF
 			unless -w $CPAN::Config->{build_dir};
 	}
 	CPAN::get 'Bundle::Interchange';
-}
-
-# See if we have the CPAN module
-eval { 	
-	die "Don't try this at home with Windows.\n" if $^O =~ /win32/i;
-};
-
-if($@) {
-	die "Can't do cpan_local_install: $@\n";
 }
 
 sub my_prompt {
