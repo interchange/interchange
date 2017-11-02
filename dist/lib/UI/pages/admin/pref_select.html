@@ -78,7 +78,7 @@
 
 	for(grep $_, @{$CGI_array->{item_id}}) {
 		$db->delete_record($_)
-			or push @errors, $@;
+			or push @errors, $db->errstr;
 	}
 	if(@errors) {
 		my $plural = @errors > 1 ? 's' : '';
