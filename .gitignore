@@ -66,4 +66,4 @@ scripts/update
 Vagrantfile
 *.swp
 *~
-.ic-version
+_ic_version

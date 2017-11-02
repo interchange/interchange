@@ -29,7 +29,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = eval { require './.ic-version' } || '5.12.0';
+$VERSION = eval { require './_ic_version' } || '5.12.0';
 
 my @os_hints;
 eval {
@@ -711,7 +711,7 @@ EOF
 	if (-d "./.git") {
 		$X{VERSION} = qx(git describe --tags --dirty);
 		chomp $X{VERSION};
-		system(qq{echo '"$X{VERSION}"' > .ic-version});
+		system(qq{echo '"$X{VERSION}"' > _ic_version});
 	}
 	else {
 		$X{VERSION} = $VERSION;
@@ -857,7 +857,7 @@ WriteMakefile(
 	NAME     => "Interchange",
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update .ic-version",
+				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update _ic_version",
 			   },
 
 	dist     => {
