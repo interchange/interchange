@@ -9,7 +9,7 @@ UserTag rand Order     file
 UserTag rand posNumber 1
 UserTag rand addAttr
 UserTag rand hasEndTag
-UserTag rand Version   $Revision: 1.5 $
+UserTag rand Version   1.5
 UserTag rand Routine   <<EOR
 sub {
 	my ($file, $opt, $inline) = @_;

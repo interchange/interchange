@@ -97,7 +97,7 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/);
+$VERSION = '1.07';
 
 # first line in counter file, regex to match good value
 $MAGIC           = "#COUNTER-1.0\n";    # first line in standard counter files

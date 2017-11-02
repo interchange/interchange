@@ -10,7 +10,7 @@ UserTag record              attrAlias    column col
 UserTag record              attrAlias    code key
 UserTag record              attrAlias    field col
 UserTag record              PosNumber    0
-UserTag record              Version      $Revision: 1.4 $
+UserTag record              Version      1.4
 UserTag record              Routine      <<EOR
 sub {
 	my ($opt) = @_;

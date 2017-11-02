@@ -11,5 +11,5 @@ UserTag loop                attrAlias    args list
 UserTag loop                attrAlias    arg list
 UserTag loop                hasEndTag
 UserTag loop                PosNumber    1
-UserTag loop                Version      $Revision: 1.4 $
+UserTag loop                Version      1.4
 UserTag loop                MapRoutine   Vend::Interpolate::tag_loop_list

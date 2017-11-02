@@ -16,7 +16,7 @@ UserTag order               attrAlias    href page
 UserTag order               attrAlias    variant mv_sku
 UserTag order               addAttr
 UserTag order               PosNumber    2
-UserTag order               Version      $Revision: 1.7 $
+UserTag order               Version      1.7
 UserTag order               Routine      <<EOR
 # Returns an href to place an order for the product PRODUCT_CODE.
 # If AlwaysSecure is set, goes by the page accessed, otherwise 

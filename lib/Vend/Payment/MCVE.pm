@@ -20,7 +20,7 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = '1.6';
 
 =head1 NAME
 

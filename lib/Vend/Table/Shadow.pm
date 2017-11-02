@@ -18,7 +18,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.54 $, 10);
+$VERSION = '1.54';
 
 # CREDITS
 #

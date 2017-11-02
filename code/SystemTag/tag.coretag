@@ -10,5 +10,5 @@ UserTag tag                 addAttr
 UserTag tag                 attrAlias    description arg
 UserTag tag                 hasEndTag
 UserTag tag                 PosNumber    2
-UserTag tag                 Version      $Revision: 1.4 $
+UserTag tag                 Version      1.4
 UserTag tag                 MapRoutine   Vend::Interpolate::do_tag

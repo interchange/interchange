@@ -10,7 +10,7 @@ UserTag salestax            attrAlias    cart name
 UserTag salestax            attrAlias    space discount_space
 UserTag salestax            addAttr
 UserTag salestax            PosNumber    2
-UserTag salestax            Version      $Revision: 1.8 $
+UserTag salestax            Version      1.8
 UserTag salestax            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

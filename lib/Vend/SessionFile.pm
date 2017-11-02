@@ -27,7 +27,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = '2.8';
 
 my $SessionDir;
 my $CommDir;

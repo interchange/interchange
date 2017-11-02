@@ -33,7 +33,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = '2.18';
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;

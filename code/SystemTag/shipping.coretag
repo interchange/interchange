@@ -12,5 +12,5 @@ UserTag shipping            attrAlias    carts cart
 UserTag shipping            attrAlias    modes mode
 UserTag shipping            attrAlias    name mode
 UserTag shipping            PosNumber    1
-UserTag shipping            Version      $Revision: 1.5 $
+UserTag shipping            Version      1.5
 UserTag shipping            MapRoutine   Vend::Ship::tag_shipping

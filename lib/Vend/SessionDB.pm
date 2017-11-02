@@ -26,7 +26,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = '2.11';
 
 sub TIEHASH {
 	my($class, $db) = @_;

@@ -8,5 +8,5 @@
 UserTag shipping-description Alias       shipping-desc
 
 UserTag shipping-desc        Order       mode key
-UserTag shipping-desc        Version     $Revision: 1.6 $
+UserTag shipping-desc        Version     1.6
 UserTag shipping-desc        MapRoutine  Vend::Ship::tag_shipping_desc

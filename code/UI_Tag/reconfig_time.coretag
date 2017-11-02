@@ -6,7 +6,7 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag reconfig-time Order   name
-UserTag reconfig-time Version $Revision: 1.4 $
+UserTag reconfig-time Version 1.4
 UserTag reconfig-time Routine <<EOR
 sub {
 	my $name = shift || $Vend::Cfg->{CatalogName};

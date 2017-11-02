@@ -31,10 +31,12 @@
 # Connection routine for Ezic version 3 using the 'ADC Direct Response'
 # method.
 # Reworked extensively to support new Interchange payment stuff by Mike Heins
+
 package Vend::Payment::Ezic;
+
 =head1 Interchange Ezic Support
 
-Vend::Payment::Ezic $Revision: 1.6 $
+Vend::Payment::Ezic
 
 =head1 SYNOPSIS
 

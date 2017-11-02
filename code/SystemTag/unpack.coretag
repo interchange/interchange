@@ -9,7 +9,7 @@ UserTag unpack PosNumber     0
 UserTag unpack addAttr
 UserTag unpack hasEndTag
 UserTag unpack Interpolate
-UserTag unpack Version       $Revision: 1.4 $
+UserTag unpack Version       1.4
 UserTag unpack Routine       <<EOR
 sub {
 	my ($opt, $template) = @_;

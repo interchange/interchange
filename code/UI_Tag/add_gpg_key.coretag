@@ -7,7 +7,7 @@
 
 UserTag add-gpg-key Order   name
 UserTag add-gpg-key addAttr
-UserTag add-gpg-key Version $Revision: 1.6 $
+UserTag add-gpg-key Version 1.6
 UserTag add-gpg-key Routine <<EOR
 sub {
 	my ($name, $opt) = @_;

@@ -7,7 +7,7 @@
 
 UserTag assign              addAttr
 UserTag assign              PosNumber    0
-UserTag assign              Version      $Revision: 1.5 $
+UserTag assign              Version      1.5
 UserTag assign              Routine      <<EOR
 my %_assignable = (qw/
 				salestax	1

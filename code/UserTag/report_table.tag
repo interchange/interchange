@@ -339,7 +339,7 @@ To get a blank column:
 
 
 EOD
-UserTag report-table Version $Revision: 1.5 $
+UserTag report-table Version 1.5
 UserTag report-table Routine <<EOR
 sub prep_cell {
 	my ($def,$datum,$linecount,$record) = @_;

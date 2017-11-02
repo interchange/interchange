@@ -11,7 +11,7 @@ UserTag msg                 attrAlias    lc inline
 UserTag msg                 hasEndTag
 UserTag msg                 Interpolate
 UserTag msg                 PosNumber    1
-UserTag msg                 Version      $Revision: 1.4 $
+UserTag msg                 Version      1.4
 UserTag msg                 Routine      <<EOR
 sub {
 	my ($key, $opt, $body) = @_;

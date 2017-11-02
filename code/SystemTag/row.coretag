@@ -9,7 +9,7 @@ UserTag row                 Order        width
 UserTag row                 hasEndTag
 UserTag row                 Interpolate
 UserTag row                 PosNumber    1
-UserTag row                 Version      $Revision: 1.4 $
+UserTag row                 Version      1.4
 UserTag row                 Routine      <<EOR
 sub tag_column {
 	my($spec,$text) = @_;

@@ -8,7 +8,7 @@
 UserTag file-info Order       name
 UserTag file-info attrAlias   file name
 UserTag file-info addAttr
-UserTag file-info Version     $Revision: 1.4 $
+UserTag file-info Version     1.4
 UserTag file-info Routine     <<EOR
 sub {
 	my ($fn, $opt) = @_;

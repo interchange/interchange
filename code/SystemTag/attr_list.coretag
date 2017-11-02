@@ -9,7 +9,7 @@ UserTag attr_list           addAttr
 UserTag attr_list           hasEndTag
 UserTag attr_list           PosNumber    0
 UserTag attr_list           noRearrange
-UserTag attr_list           Version      $Revision: 1.8 $
+UserTag attr_list           Version      1.8
 UserTag attr_list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;

@@ -9,7 +9,7 @@ UserTag menu Order       name
 UserTag menu hasEndTag
 UserTag menu addAttr
 UserTag menu noReparse
-UserTag menu Version     $Revision: 1.4 $
+UserTag menu Version     1.4
 UserTag menu Routine     <<EOR
 require Vend::Menu;
 sub {

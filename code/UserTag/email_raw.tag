@@ -8,7 +8,7 @@
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
 UserTag email-raw Interpolate
-UserTag email-raw Version     $Revision: 1.8 $
+UserTag email-raw Version     1.8
 UserTag email-raw Routine     <<EOR
 sub {
     my($opt, $body) = @_;

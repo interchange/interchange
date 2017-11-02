@@ -7,7 +7,7 @@
 
 UserTag var Order         name global filter
 UserTag var Interpolate   1
-UserTag var Version       $Revision: 1.12 $
+UserTag var Version       1.12
 UserTag var Routine       <<EOR
 sub {
 	my ($key, $global, $filter) = @_;

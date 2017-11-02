@@ -6,7 +6,7 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag flag_job Order   action token
-UserTag flag_job Version $Revision: 1.2 $
+UserTag flag_job Version 1.2
 UserTag flag_job Routine <<EOR
 sub {
 	my ($action, $token) = @_;

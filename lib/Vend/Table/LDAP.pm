@@ -23,7 +23,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = '2.17';
 use strict;
 
 use vars qw(

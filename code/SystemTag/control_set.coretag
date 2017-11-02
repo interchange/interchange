@@ -9,7 +9,7 @@ UserTag control-set         Order        index
 UserTag control-set         addAttr
 UserTag control-set         hasEndTag
 UserTag control-set         PosNumber    1
-UserTag control-set         Version      $Revision: 1.4 $
+UserTag control-set         Version      1.4
 UserTag control-set         Routine      <<EOR
 # Batch sets a set of controls without affecting Scratch
 # Increments the index afterwards unless index is defined

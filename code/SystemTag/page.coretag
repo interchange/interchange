@@ -10,5 +10,5 @@ UserTag page                addAttr
 UserTag page                attrAlias    base arg
 UserTag page                Implicit     secure secure
 UserTag page                PosNumber    2
-UserTag page                version      $Revision: 1.4 $
+UserTag page                Version      1.4
 UserTag page                MapRoutine   Vend::Interpolate::tag_page

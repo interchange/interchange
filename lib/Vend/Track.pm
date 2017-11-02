@@ -33,7 +33,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = '2.4';
 
 @ISA = qw(Exporter);
 

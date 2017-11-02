@@ -8,7 +8,7 @@
 UserTag cgi                 Order        name
 UserTag cgi                 addAttr
 UserTag cgi                 PosNumber    1
-UserTag cgi                 Version      $Revision: 1.6 $
+UserTag cgi                 Version      1.6
 UserTag cgi                 Routine      <<EOR
 sub {
 	my($var, $opt) = @_;

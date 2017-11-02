@@ -19,7 +19,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = '2.53';
 
 use Vend::Util;
 use strict;

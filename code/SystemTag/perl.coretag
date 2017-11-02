@@ -10,5 +10,5 @@ UserTag perl                addAttr
 UserTag perl                attrAlias    table tables
 UserTag perl                hasEndTag
 UserTag perl                PosNumber    1
-UserTag perl                Version      $Revision: 1.5 $
+UserTag perl                Version      1.5
 UserTag perl                MapRoutine   Vend::Interpolate::tag_perl

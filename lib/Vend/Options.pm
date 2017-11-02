@@ -21,7 +21,7 @@
 package Vend::Options;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = '2.8';
 
 @ISA = qw(Exporter);
 

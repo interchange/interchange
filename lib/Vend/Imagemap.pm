@@ -61,7 +61,7 @@ require Exporter;
 @EXPORT = qw(action_map);
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = '2.1';
 
 my $Action = "";
 my $minDistance = -1;

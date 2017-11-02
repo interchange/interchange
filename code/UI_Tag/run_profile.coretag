@@ -7,7 +7,7 @@
 
 UserTag run-profile Order   check cgi profile name
 UserTag run-profile addAttr
-UserTag run-profile Version $Revision: 1.7 $
+UserTag run-profile Version 1.7
 UserTag run-profile Routine <<EOR
 sub {
 	my ($check, $cgi, $profile, $name, $opt) = @_;

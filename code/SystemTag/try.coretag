@@ -9,5 +9,5 @@ UserTag try                 Order        label
 UserTag try                 addAttr
 UserTag try                 hasEndTag
 UserTag try                 PosNumber    1
-UserTag try                 Version      $Revision: 1.4 $
+UserTag try                 Version      1.4
 UserTag try                 MapRoutine   Vend::Interpolate::try

@@ -8,7 +8,7 @@
 UserTag component Order     component
 UserTag component addAttr
 UserTag component NoReparse 1
-UserTag component Version   $Revision: 1.10 $
+UserTag component Version   1.10
 UserTag component Routine   <<EOR
 sub {
 	my ($name, $opt) = @_;

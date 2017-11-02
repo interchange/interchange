@@ -8,5 +8,5 @@
 UserTag dump                Order        key
 UserTag dump                addAttr
 UserTag dump                PosNumber    1
-UserTag dump                Version      $Revision: 1.5 $
+UserTag dump                Version      1.5
 UserTag dump                MapRoutine   ::full_dump

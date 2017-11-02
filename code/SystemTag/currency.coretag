@@ -10,7 +10,7 @@ UserTag currency            hasEndTag
 UserTag currency            Interpolate
 UserTag currency            addAttr
 UserTag currency            PosNumber    2
-UserTag currency            Version      $Revision: 1.5 $
+UserTag currency            Version      1.5
 UserTag currency            Routine      <<EOR
 sub {
 	my($convert,$noformat,$opt,$amount) = @_;

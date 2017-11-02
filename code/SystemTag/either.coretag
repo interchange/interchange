@@ -8,7 +8,7 @@
 UserTag either              hasEndTag
 UserTag either              PosNumber    0
 UserTag either              NoReparse    1
-UserTag either              Version      $Revision: 1.6 $
+UserTag either              Version      1.6
 UserTag either              Routine      <<EOR
 sub {
 	my @ary = split /\[or\]/, shift;

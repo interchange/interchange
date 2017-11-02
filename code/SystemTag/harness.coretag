@@ -8,7 +8,7 @@
 UserTag harness             addAttr
 UserTag harness             hasEndTag
 UserTag harness             PosNumber    0
-UserTag harness             Version      $Revision: 1.4 $
+UserTag harness             Version      1.4
 UserTag harness             Routine      <<EOR
 my $Test = 'test001';
 sub {

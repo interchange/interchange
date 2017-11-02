@@ -7,7 +7,7 @@
 
 UserTag list_glob Order      spec prefix
 UserTag list_glob PosNumber  2 
-UserTag list_glob Version    $Revision: 1.4 $
+UserTag list_glob Version    1.4
 UserTag list_glob Routine    <<EOR
 sub {
 	my @files = UI::Primitive::list_glob(@_);

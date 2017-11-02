@@ -4,7 +4,7 @@ quickpoll- Quick poll for Interchange
 
 =head1 VERSION
 
-$Revision: 1.1 $
+1.1
 
 =head1 SYNOPSIS
 
@@ -54,5 +54,3 @@ To create a poll, go to Tables->quickpoll->New Entry in the admin UI.
 =head1 AUTHOR
 
 Mike Heins, Perusion, <mikeh@perusion.com>.
-
-

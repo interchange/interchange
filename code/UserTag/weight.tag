@@ -7,7 +7,7 @@
 
 UserTag weight Order   attribute
 UserTag weight addAttr
-UserTag weight Version $Revision: 1.9 $
+UserTag weight Version 1.9
 UserTag weight Routine <<EOR
 sub {
 	my ($attr, $opt) = @_;

@@ -8,7 +8,7 @@
 UserTag db_columns  Order       name columns joiner passed_order
 UserTag db_columns  AttrAlias   table name
 UserTag db_columns  AttrAlias   fields columns
-UserTag db_columns  Version     $Revision: 1.5 $
+UserTag db_columns  Version     1.5
 UserTag db_columns  Routine     <<EOR
 sub {
 	my ($table,$columns, $joiner, $passed_order) = @_;

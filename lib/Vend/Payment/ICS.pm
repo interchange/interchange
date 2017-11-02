@@ -24,7 +24,7 @@ package Vend::Payment::ICS;
 
 =head1 Interchange ICS Support
 
-Vend::Payment::ICS $Revision: 1.2 $
+Vend::Payment::ICS
 
 =head1 SYNOPSIS
 

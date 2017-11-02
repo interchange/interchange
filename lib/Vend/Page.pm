@@ -44,7 +44,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = '2.26';
 
 my $wantref = 1;
 

@@ -8,5 +8,5 @@
 UserTag options             Order        code
 UserTag options             addAttr
 UserTag options             PosNumber    1
-UserTag options             Version      $Revision: 1.5 $
+UserTag options             Version      1.5
 UserTag options             MapRoutine   Vend::Options::tag_options

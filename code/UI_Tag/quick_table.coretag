@@ -8,7 +8,7 @@
 UserTag quick_table Order        border
 UserTag quick_table HasEndTag
 UserTag quick_table Interpolate
-UserTag quick_table Version      $Revision: 1.4 $
+UserTag quick_table Version      1.4
 UserTag quick_table Routine      <<EOR
 sub {
 	my ($border,$input) = @_;

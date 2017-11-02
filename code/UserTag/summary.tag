@@ -19,7 +19,7 @@
 UserTag summary Order     amount
 UserTag summary PosNumber 1
 UserTag summary addAttr
-UserTag summary Version   $Revision: 1.5 $
+UserTag summary Version   1.5
 UserTag summary Routine   <<EOF
 sub {
     my ($amount, $opt) = @_;

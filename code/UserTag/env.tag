@@ -9,7 +9,7 @@
 Usertag env Order      arg
 Usertag env PosNumber  1
 UserTag env attrAlias  name arg
-UserTag env Version    $Revision: 1.11 $
+UserTag env Version    1.11
 Usertag env Routine    <<EOR
 sub {
 	my $arg = shift;

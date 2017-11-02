@@ -10,7 +10,7 @@
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.11 $
+UserTag error               Version      1.11
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;

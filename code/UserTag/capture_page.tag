@@ -7,7 +7,7 @@
 
 UserTag capture_page Order   page file
 UserTag capture_page addAttr
-UserTag capture_page Version $Revision: 1.12 $
+UserTag capture_page Version 1.12
 UserTag capture_page Routine <<EOR
 sub {
 	my ($page, $file, $opt) = @_;

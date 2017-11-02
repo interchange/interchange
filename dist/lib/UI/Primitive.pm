@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = '2.28';
 
 $DEBUG = 0;
 

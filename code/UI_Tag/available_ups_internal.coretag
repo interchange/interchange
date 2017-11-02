@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.  See the LICENSE file for details.
 
-UserTag available_ups_internal Version $Revision: 1.4 $
+UserTag available_ups_internal Version 1.4
 UserTag available_ups_internal Routine <<EOR
 sub {
 	my (@files) = glob('products/[0-9][0-9][0-9].csv');

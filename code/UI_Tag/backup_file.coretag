@@ -7,7 +7,7 @@
 
 UserTag backup-file Order     file
 UserTag backup-file AddAttr
-UserTag backup-file Version   $Revision: 1.5 $
+UserTag backup-file Version   1.5
 UserTag backup-file Routine   <<EOR
 require File::Copy;
 require File::Path;

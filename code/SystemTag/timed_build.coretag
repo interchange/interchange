@@ -10,5 +10,5 @@ UserTag timed-build         addAttr
 UserTag timed-build         Gobble
 UserTag timed-build         hasEndTag
 UserTag timed-build         PosNumber    1
-UserTag timed-build         Version      $Revision: 1.4 $
+UserTag timed-build         Version      1.4
 UserTag timed-build         MapRoutine   Vend::Interpolate::timed_build

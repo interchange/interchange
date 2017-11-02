@@ -42,7 +42,7 @@ package Vend::Payment::NetBilling;
 
 =head1 Interchange NetBilling Support
 
-Vend::Payment::NetBilling $Revision: 1.6 $
+Vend::Payment::NetBilling
 
 =head1 SYNOPSIS
 

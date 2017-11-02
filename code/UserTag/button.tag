@@ -9,7 +9,7 @@ UserTag button Order     name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version   $Revision: 1.25 $
+UserTag button Version   1.25
 UserTag button Routine   <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;

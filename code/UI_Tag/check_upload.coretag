@@ -7,7 +7,7 @@
 
 UserTag check-upload Order     file same
 UserTag check-upload PosNumber 2
-UserTag check-upload Version   $Revision: 1.4 $
+UserTag check-upload Version   1.4
 UserTag check-upload Routine   <<EOR
 sub {
 	use File::Copy;

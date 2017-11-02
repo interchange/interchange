@@ -7,7 +7,7 @@
 
 UserTag values-space Order   name
 UserTag values-space addAttr
-UserTag values-space Version $Revision: 1.5 $
+UserTag values-space Version 1.5
 UserTag values-space Routine <<EOR
 sub {
 	my ($name, $opt) = @_;

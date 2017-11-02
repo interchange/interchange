@@ -9,7 +9,7 @@ UserTag grep-mm Order        function
 UserTag grep-mm addAttr
 UserTag grep-mm Interpolate
 UserTag grep-mm hasEndTag
-UserTag grep-mm Version      $Revision: 1.4 $
+UserTag grep-mm Version      1.4
 UserTag grep-mm Routine      <<EOR
 sub {
 	my($func, $opt, $text) = @_;

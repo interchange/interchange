@@ -10,7 +10,7 @@ UserTag item-list           addAttr
 UserTag item-list           attrAlias    cart name
 UserTag item-list           attrAlias    space discount_space
 UserTag item-list           hasEndTag
-UserTag item-list           Version      $Revision: 1.7 $
+UserTag item-list           Version      1.7
 UserTag item-list           Routine      <<EOR
 sub {
 	my($cart,$opt,$text) = @_;

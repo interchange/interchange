@@ -12,5 +12,5 @@ UserTag field               attrAlias    row code
 UserTag field               attrAlias    field name
 UserTag field               attrAlias    key code
 UserTag field               PosNumber    2
-UserTag field               Version      $Revision: 1.4 $
+UserTag field               Version      1.4
 UserTag field               MapRoutine   Vend::Data::product_field

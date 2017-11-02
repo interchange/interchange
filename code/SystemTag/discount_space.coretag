@@ -27,7 +27,7 @@ EOF
 UserTag discount_space  order      name
 UserTag discount_space  AttrAlias  space   name
 UserTag discount_space  AddAttr
-UserTag discount_space  Version    $Revision: 1.6 $
+UserTag discount_space  Version    1.6
 UserTag discount_space  Routine    <<EOF
 sub {
 	my ($namespace, $opt) = @_;

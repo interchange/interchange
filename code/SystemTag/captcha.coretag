@@ -9,7 +9,7 @@ UserTag captcha Order		function
 UserTag captcha attrAlias	func function
 UserTag captcha addAttr
 UserTag captcha Description	Generate captcha codes for authentication check
-UserTag captcha Version		$Revision: 1.4 $
+UserTag captcha Version		1.4
 
 UserTag captcha Routine		<<EOR
 my $Have_Captcha;

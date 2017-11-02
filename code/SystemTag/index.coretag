@@ -10,5 +10,5 @@ UserTag index               addAttr
 UserTag index               attrAlias    base table
 UserTag index               attrAlias    database table
 UserTag index               PosNumber    1
-UserTag index               Version      $Revision: 1.5 $
+UserTag index               Version      1.5
 UserTag index               MapRoutine   Vend::Data::index_database

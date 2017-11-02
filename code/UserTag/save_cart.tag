@@ -7,7 +7,7 @@
 
 UserTag save_cart Order     nickname recurring keep
 UserTag save_cart AttrAlias name nickname
-UserTag save_cart Version   $Revision: 1.7 $
+UserTag save_cart Version   1.7
 UserTag save_cart Routine   <<EOR
 sub {
 	my($nickname,$recurring,$keep) = @_;

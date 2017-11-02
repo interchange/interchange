@@ -6,7 +6,7 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag available_www_shipping Order   only
-UserTag available_www_shipping Version $Revision: 1.5 $
+UserTag available_www_shipping Version 1.5
 UserTag available_www_shipping Routine <<EOR
 sub {
 	my ($only) = @_;

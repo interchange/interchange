@@ -10,7 +10,7 @@ UserTag tabbed-display addAttr
 UserTag tabbed-display hasEndTag 
 UserTag tabbed-display Interpolate 
 UserTag tabbed-display NoReparse 
-UserTag tabbed-display Version       $Revision: 1.6 $
+UserTag tabbed-display Version       1.6
 UserTag tabbed-display Documentation <<EOD
 =head1 NAME
 

@@ -9,5 +9,5 @@ UserTag mail                Order        to
 UserTag mail                addAttr
 UserTag mail                hasEndTag
 UserTag mail                PosNumber    1
-UserTag mail                Version      $Revision: 1.5 $
+UserTag mail                Version      1.5
 UserTag mail                MapRoutine   Vend::Interpolate::tag_mail

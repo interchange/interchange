@@ -8,6 +8,6 @@
 UserTag value               Order        name
 UserTag value               addAttr
 UserTag value               PosNumber    1
-UserTag value               Version      $Revision: 1.7 $
+UserTag value               Version      1.7
 UserTag value               MapRoutine   Vend::Interpolate::tag_value
 UserTag evalue              Alias        value keep=1 filter="encode_entities" name=

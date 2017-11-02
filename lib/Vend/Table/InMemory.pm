@@ -24,7 +24,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common qw(!config !columns);
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = '2.15';
 use strict;
 
 # 0: column names

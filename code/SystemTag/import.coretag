@@ -12,5 +12,5 @@ UserTag import              attrAlias    database table
 UserTag import              hasEndTag
 UserTag import              Interpolate
 UserTag import              PosNumber    2
-UserTag import              Version      $Revision: 1.5 $
+UserTag import              Version      1.5
 UserTag import              MapRoutine   Vend::Data::import_text

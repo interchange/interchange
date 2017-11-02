@@ -9,5 +9,5 @@ UserTag time                Order        locale
 UserTag time                addAttr
 UserTag time                hasEndTag
 UserTag time                PosNumber    1
-UserTag time                Version      $Revision: 1.4 $
+UserTag time                Version      1.4
 UserTag time                MapRoutine   Vend::Interpolate::mvtime

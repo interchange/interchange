@@ -19,7 +19,7 @@
 
 package Vend::Accounting;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = '2.3';
 
 use Vend::Util;
 use LWP::UserAgent;

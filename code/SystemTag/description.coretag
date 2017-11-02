@@ -7,5 +7,5 @@
 
 UserTag description         Order        code base
 UserTag description         PosNumber    2
-UserTag description         Version      $Revision: 1.4 $
+UserTag description         Version      1.4
 UserTag description         MapRoutine   Vend::Data::product_description

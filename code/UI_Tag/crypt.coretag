@@ -8,7 +8,7 @@
 UserTag crypt Order     value salt
 UserTag crypt attrAlias password value
 UserTag crypt attrAlias crypted salt
-UserTag crypt Version   $Revision: 1.6 $
+UserTag crypt Version   1.6
 UserTag crypt Routine   <<EOR
 sub {
 	my ($string, $salt) = @_;

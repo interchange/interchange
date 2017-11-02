@@ -10,7 +10,7 @@ UserTag table-organize attrAlias     columns cols
 UserTag table-organize Interpolate
 UserTag table-organize addAttr
 UserTag table-organize hasEndTag
-UserTag table-organize Version       $Revision: 1.11 $
+UserTag table-organize Version       1.11
 UserTag table-organize Routine <<EOR
 sub {
 	my ($cols, $opt, $body) = @_;

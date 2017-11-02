@@ -9,5 +9,5 @@ UserTag fly-list            Order        code
 UserTag fly-list            addAttr
 UserTag fly-list            hasEndTag
 UserTag fly-list            PosNumber    2
-UserTag fly-list            Version      $Revision: 1.4 $
+UserTag fly-list            Version      1.4
 UserTag fly-list            MapRoutine   Vend::Interpolate::fly_page

@@ -6,5 +6,5 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag usertrack Order   tag value
-UserTag usertrack Version $Revision: 1.5 $
+UserTag usertrack Version 1.5
 UserTag usertrack Routine sub { $Vend::Track->user(@_) if $Vend::Track; }

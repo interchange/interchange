@@ -15,5 +15,5 @@ UserTag accessories         attrAlias    row code
 UserTag accessories         attrAlias    field column
 UserTag accessories         attrAlias    key code
 UserTag accessories         PosNumber    2
-UserTag accessories         Version      $Revision: 1.4 $
+UserTag accessories         Version      1.4
 UserTag accessories         MapRoutine   Vend::Interpolate::tag_accessories

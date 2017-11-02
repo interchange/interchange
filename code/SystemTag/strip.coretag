@@ -7,7 +7,7 @@
 
 UserTag strip               hasEndTag
 UserTag strip               PosNumber    0
-UserTag strip               Version      $Revision: 1.4 $
+UserTag strip               Version      1.4
 UserTag strip               Routine      <<EOR
 sub {
 	local($_) = shift;

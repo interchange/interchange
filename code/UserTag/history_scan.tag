@@ -7,7 +7,7 @@
 
 UserTag history-scan Order   find exclude default
 UserTag history-scan addAttr
-UserTag history-scan Version $Revision: 1.20 $
+UserTag history-scan Version 1.20
 UserTag history-scan Routine <<EOR
 my %var_exclude = ( qw/
 		mv_credit_card_number 1

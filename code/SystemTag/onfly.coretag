@@ -8,5 +8,5 @@
 UserTag onfly               Order        code quantity
 UserTag onfly               addAttr
 UserTag onfly               PosNumber    2
-UserTag onfly               Version      $Revision: 1.4 $
+UserTag onfly               Version      1.4
 UserTag onfly               MapRoutine   Vend::Order::onfly

@@ -7,7 +7,7 @@
 
 UserTag content-modify Order    op name type
 UserTag content-modify addAttr
-UserTag content-modify Version  $Revision: 1.4 $
+UserTag content-modify Version  1.4
 UserTag content-modify Routine  <<EOR
 use UI::ContentEditor;
 sub {

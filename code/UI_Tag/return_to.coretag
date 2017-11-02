@@ -7,7 +7,7 @@
 
 UserTag return_to Order    type table_hack
 UserTag return_to addAttr 
-UserTag return_to Version  $Revision: 1.4 $
+UserTag return_to Version  1.4
 UserTag return_to Routine  <<EOR
 sub {
 	use vars qw/$Tag/;

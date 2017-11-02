@@ -8,7 +8,7 @@
 UserTag diff Order       current previous
 UserTag diff attrAlias   curr current prev previous
 UserTag diff addAttr
-UserTag diff Version     $Revision: 1.4 $
+UserTag diff Version     1.4
 UserTag diff Routine     <<EOR
 sub {
     my ($curr, $prev, $opt) = @_;

@@ -9,7 +9,7 @@ UserTag flex-select Order      table
 UserTag flex-select addAttr
 UserTag flex-select attrAlias  ml height
 UserTag flex-select hasEndTag
-UserTag flex-select Version    $Revision: 1.18 $
+UserTag flex-select Version    1.18
 UserTag flex-select Routine    <<EOR
 use vars qw/$CGI $Tmp $Tag/;
 my @fs_more = qw/

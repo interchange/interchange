@@ -10,7 +10,7 @@ UserTag process-order  Alias     process
 
 UserTag process        Order     target secure
 UserTag process        addAttr
-UserTag process        Version   $Revision: 1.13 $
+UserTag process        Version   1.13
 UserTag process        Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {

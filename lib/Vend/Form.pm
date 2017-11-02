@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.77 $, 10);
+$VERSION = '2.77';
 
 @EXPORT = qw (
 	display

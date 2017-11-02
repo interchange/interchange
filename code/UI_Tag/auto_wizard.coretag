@@ -8,7 +8,7 @@
 UserTag  auto-wizard  Order     name
 UserTag  auto-wizard  AddAttr
 UserTag  auto-wizard  HasEndTag
-UserTag  auto-wizard  Version   $Revision: 1.20 $
+UserTag  auto-wizard  Version   1.20
 UserTag  auto-wizard  Routine   <<EOR
 
 use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;

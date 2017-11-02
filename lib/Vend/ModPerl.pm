@@ -19,7 +19,7 @@
 
 package Vend::ModPerl;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = '2.9';
 
 use Apache::Constants qw(:common);
 use Apache::Request ();

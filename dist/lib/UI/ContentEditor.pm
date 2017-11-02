@@ -20,7 +20,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = '2.23';
 $DEBUG = 0;
 
 use POSIX qw/strftime/;

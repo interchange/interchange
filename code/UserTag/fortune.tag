@@ -7,7 +7,7 @@
 
 UserTag fortune Order   short
 UserTag fortune addAttr
-UserTag fortune Version $Revision: 1.7 $
+UserTag fortune Version 1.7
 UserTag fortune Routine <<EOR
 sub {
 	my ($short, $opt) = @_;

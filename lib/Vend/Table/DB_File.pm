@@ -29,7 +29,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = '2.16';
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;

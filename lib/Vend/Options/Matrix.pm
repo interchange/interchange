@@ -21,7 +21,7 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = '1.17';
 
 =head1 NAME
 

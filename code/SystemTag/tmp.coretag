@@ -9,5 +9,5 @@ UserTag tmp                 Order        name
 UserTag tmp                 hasEndTag
 UserTag tmp                 Interpolate
 UserTag tmp                 PosNumber    1
-UserTag tmp                 Version      $Revision: 1.5 $
+UserTag tmp                 Version      1.5
 UserTag tmp                 MapRoutine   Vend::Interpolate::set_tmp

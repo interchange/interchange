@@ -28,7 +28,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = '2.35';
 
 use strict;
 no warnings qw(uninitialized numeric);

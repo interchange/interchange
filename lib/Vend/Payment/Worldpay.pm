@@ -29,7 +29,7 @@ package Vend::Payment::Worldpay;
 
 =head1 Interchange Worldpay Support
 
-Vend::Payment::Worldpay $Revision: 1.0.2 $
+Vend::Payment::Worldpay
 
 http://kiwi.zolotek.net is the home page with the latest version.
 

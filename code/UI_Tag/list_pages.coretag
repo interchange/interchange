@@ -7,7 +7,7 @@
 
 UserTag list_pages Order   options
 UserTag list_pages addAttr
-UserTag list_pages Version $Revision: 1.4 $
+UserTag list_pages Version 1.4
 UserTag list_pages Routine <<EOR
 sub {
 	my ($return_options, $opt) = @_;

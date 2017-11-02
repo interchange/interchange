@@ -9,7 +9,7 @@ UserTag levy-list           Order        name
 UserTag levy-list           addAttr
 UserTag levy-list           attrAlias    cart name
 UserTag levy-list           hasEndTag
-UserTag levy-list           Version      $Revision: 1.5 $
+UserTag levy-list           Version      1.5
 UserTag levy-list           Routine      <<EOR
 sub {
 	my($cart,$opt,$text) = @_;

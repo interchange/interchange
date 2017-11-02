@@ -7,7 +7,7 @@
 
 UserTag traffic-report Order   save
 UserTag traffic-report addAttr
-UserTag traffic-report Version $Revision: 1.6 $
+UserTag traffic-report Version 1.6
 UserTag traffic-report Routine <<EOR
 sub {
 	my ($save, $opt) = @_;

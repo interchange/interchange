@@ -11,5 +11,5 @@ UserTag flag                attrAlias    tables table
 UserTag flag                attrAlias    flag type
 UserTag flag                attrAlias    name type
 UserTag flag                PosNumber    1
-UserTag flag                Version      $Revision: 1.5 $
+UserTag flag                Version      1.5
 UserTag flag                MapRoutine   Vend::Interpolate::flag

@@ -8,7 +8,7 @@
 UserTag selected            Order        name value
 UserTag selected            addAttr
 UserTag selected            PosNumber    2
-UserTag selected            Version      $Revision: 1.9 $
+UserTag selected            Version      1.9
 UserTag selected            Routine      <<EOR
 # Returns ' SELECTED' when a value is present on the form
 # Must match exactly, but NOT case-sensitive

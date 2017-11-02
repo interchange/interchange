@@ -29,7 +29,7 @@ package Vend::SOAP::Transport;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = '2.3';
 
 # ======================================================================
 

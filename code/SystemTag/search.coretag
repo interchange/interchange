@@ -7,5 +7,5 @@
 
 UserTag search              Order        search
 UserTag search              addAttr
-UserTag search              Version      $Revision: 1.5 $
+UserTag search              Version      1.5
 UserTag search              MapRoutine   Vend::Page::do_search

@@ -36,7 +36,7 @@ use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
 no warnings qw(uninitialized numeric);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = '2.13';
 
 sub new {
 	my $class = shift;

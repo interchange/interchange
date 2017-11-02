@@ -10,7 +10,7 @@ UserTag total-cost          attrAlias    cart name
 UserTag total-cost          attrAlias    space discount_space
 UserTag total-cost          PosNumber    2
 UserTag total-cost          addAttr
-UserTag total-cost          Version      $Revision: 1.7 $
+UserTag total-cost          Version      1.7
 UserTag total-cost          Routine <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

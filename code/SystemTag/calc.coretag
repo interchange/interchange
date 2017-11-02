@@ -7,5 +7,5 @@
 
 UserTag calc                hasEndTag
 UserTag calc                Interpolate
-UserTag calc                Version      $Revision: 1.4 $
+UserTag calc                Version      1.4
 UserTag calc                MapRoutine   Vend::Interpolate::tag_calc

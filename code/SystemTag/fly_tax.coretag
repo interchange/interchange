@@ -9,5 +9,5 @@ UserTag fly-tax             Order        area
 UserTag fly-tax             PosNumber    1
 UserTag fly-tax             AddAttr
 UserTag fly-tax             attrAlias    space discount_space
-UserTag fly-tax             Version      $Revision: 1.5 $
+UserTag fly-tax             Version      1.5
 UserTag fly-tax             MapRoutine   Vend::Interpolate::fly_tax

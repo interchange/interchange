@@ -10,5 +10,5 @@ UserTag export              addAttr
 UserTag export              attrAlias    base table
 UserTag export              attrAlias    database table
 UserTag export              PosNumber    1
-UserTag export              Version      $Revision: 1.5 $
+UserTag export              Version      1.5
 UserTag export              MapRoutine   Vend::Interpolate::export

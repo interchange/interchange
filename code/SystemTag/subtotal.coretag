@@ -10,7 +10,7 @@ UserTag subtotal            attrAlias    cart name
 UserTag subtotal            attrAlias    space discount_space
 UserTag subtotal            addAttr
 UserTag subtotal            PosNumber    2
-UserTag subtotal            Version      $Revision: 1.7 $
+UserTag subtotal            Version      1.7
 UserTag subtotal            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

@@ -12,7 +12,7 @@ UserTag convert-date AttrAlias   fmt format
 UserTag convert-date AttrAlias   days adjust
 UserTag convert-date HasEndTag
 UserTag convert-date Interpolate
-UserTag convert-date Version     $Revision: 1.9 $
+UserTag convert-date Version     1.9
 UserTag convert-date Routine     <<EOR
 sub {
     my ($adjust, $opt, $text) = @_;

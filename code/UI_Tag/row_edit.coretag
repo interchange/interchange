@@ -9,7 +9,7 @@ UserTag row-edit Order       key table size columns
 UserTag row-edit HasEndTag
 UserTag row-edit addAttr
 UserTag row-edit Interpolate 1
-UserTag row-edit Version     $Revision: 1.12 $
+UserTag row-edit Version     1.12
 UserTag row-edit Routine     <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;

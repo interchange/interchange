@@ -7,5 +7,5 @@
 
 UserTag cart                Order        name
 UserTag cart                PosNumber    1
-UserTag cart                Version      $Revision: 1.6 $
+UserTag cart                Version      1.6
 UserTag cart                MapRoutine   Vend::Interpolate::tag_cart

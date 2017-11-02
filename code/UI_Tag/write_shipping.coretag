@@ -8,7 +8,7 @@
 UserTag write-shipping Order      file
 UserTag write-shipping PosNumber  1
 UserTag write-shipping addAttr
-UserTag write-shipping Version    $Revision: 1.6 $
+UserTag write-shipping Version    1.6
 UserTag write-shipping Routine    <<EOR
 sub {
 	my ($file, $opt) = @_;

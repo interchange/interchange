@@ -7,7 +7,7 @@
 
 UserTag xfer-catalog Order     file
 UserTag xfer-catalog addAttr
-UserTag xfer-catalog Version   $Revision: 1.7 $
+UserTag xfer-catalog Version   1.7
 UserTag xfer-catalog Routine   <<EOR
 sub {
 	my ($file, $opt) = @_;

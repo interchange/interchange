@@ -27,7 +27,7 @@ package Vend::Payment::SagePay;
 
 =head1 Interchange Sagepay Support
 
-Vend::Payment::SagePay $Revision: 0.8.7 $
+Vend::Payment::SagePay
 
 http://kiwi.zolotek.net is the home page with the latest version.
 

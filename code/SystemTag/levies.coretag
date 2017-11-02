@@ -8,7 +8,7 @@
 UserTag levies            Order        group
 UserTag levies            addAttr
 UserTag levies            PosNumber    1
-UserTag levies            Version      $Revision: 1.5 $
+UserTag levies            Version      1.5
 UserTag levies            Routine     <<EOR
 sub {
 	my ($group, $opt) = @_;

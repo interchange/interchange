@@ -9,7 +9,7 @@ UserTag jsquote Alias jsq
 UserTag jsq hasEndTag
 UserTag jsq NoReparse
 UserTag jsq PosNumber 0
-UserTag jsq Version   $Revision: 1.8 $
+UserTag jsq Version   1.8
 UserTag jsq Routine   <<EOR
 sub {
 	my $text = shift;

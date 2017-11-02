@@ -21,7 +21,7 @@
 
 package Vend::Options::Simple;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = '1.9';
 
 =head1 NAME
 

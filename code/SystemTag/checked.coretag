@@ -10,7 +10,7 @@ UserTag checked             addAttr
 UserTag checked             Implicit     multiple multiple
 UserTag checked             Implicit     default default
 UserTag checked             PosNumber    2
-UserTag checked             Version      $Revision: 1.9 $
+UserTag checked             Version      1.9
 UserTag checked             Routine      <<EOR
 sub {
 	my ($field,$value,$opt) = @_;

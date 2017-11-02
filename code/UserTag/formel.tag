@@ -8,7 +8,7 @@
 
 UserTag formel Order   label name type size
 UserTag formel addAttr
-UserTag formel Version $Revision: 1.19 $
+UserTag formel Version 1.19
 UserTag formel Routine <<EOF
 sub {
 	my ($label, $name, $type, $size, $opt) = @_;

@@ -14,7 +14,7 @@ UserTag loc Order       locale
 UserTag l   Alias       loc
 UserTag loc hasEndTag   1
 UserTag loc Interpolate 1
-UserTag loc Version     $Revision: 1.7 $
+UserTag loc Version     1.7
 UserTag loc Routine     <<EOF
 sub {
     my ($locale, $message) = @_;

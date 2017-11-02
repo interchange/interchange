@@ -43,7 +43,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.2 $
+1.2
 
 =head1 SYNOPSIS
 

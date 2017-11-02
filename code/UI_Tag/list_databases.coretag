@@ -6,7 +6,7 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag list-databases Order   nohide extended
-UserTag list-databases Version $Revision: 1.5 $
+UserTag list-databases Version 1.5
 UserTag list-databases routine <<EOR
 sub {
 	my $nohide = shift;

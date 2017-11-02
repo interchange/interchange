@@ -7,5 +7,5 @@
 
 UserTag debug  hasEndTag
 UserTag debug  Interpolate
-UserTag debug  Version      $Revision: 1.4 $
+UserTag debug  Version      1.4
 UserTag debug  MapRoutine   Vend::Util::logDebug

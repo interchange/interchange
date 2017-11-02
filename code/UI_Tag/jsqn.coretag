@@ -8,7 +8,7 @@
 UserTag jsqn hasEndTag
 UserTag jsqn NoReparse
 UserTag jsqn PosNumber 0
-UserTag jsqn Version   $Revision: 1.7 $
+UserTag jsqn Version   1.7
 UserTag jsqn Routine   <<EOR
 sub {
 	my $text = shift;

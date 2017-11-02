@@ -7,7 +7,7 @@
 
 UserTag load_cart Order     nickname
 UserTag load_cart AttrAlias name nickname
-UserTag load_cart Version   $Revision: 1.5 $
+UserTag load_cart Version   1.5
 UserTag load_cart Routine   <<EOR
 sub {
 	my($nickname) = @_;

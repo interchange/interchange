@@ -29,7 +29,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = '1.6';
 
 BEGIN {
 	require 5.008_005;

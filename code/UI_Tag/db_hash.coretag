@@ -8,7 +8,7 @@
 UserTag db-hash Order      table column key
 UserTag db-hash PosNumber  3
 UserTag db-hash addAttr
-UserTag db-hash Version    $Revision: 1.5 $
+UserTag db-hash Version    1.5
 UserTag db-hash Routine    <<EOR
 sub {
 	my($table, $col, $key, $opt) = @_;

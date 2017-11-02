@@ -10,7 +10,7 @@ UserTag price               addAttr
 UserTag price               attrAlias    base mv_ib
 UserTag price               attrAlias    space discount_space
 UserTag price               PosNumber    1
-UserTag price               Version      $Revision: 1.10 $
+UserTag price               Version      1.10
 UserTag price               Routine      <<EOR
 sub {
 	my ($code, $ref) = @_;

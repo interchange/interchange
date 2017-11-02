@@ -9,7 +9,7 @@ UserTag su Description  Switch User Tag for catalog superuser
 UserTag su Order        username
 UserTag su attrAlias    user username
 UserTag su addAttr
-UserTag su Version      $Revision: 1.8 $
+UserTag su Version      1.8
 UserTag su Routine      <<EOR
 sub {
 	my ($user, $opt) = @_;

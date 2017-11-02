@@ -8,7 +8,7 @@
 UserTag default             Order        name default
 UserTag default             addAttr
 UserTag default             PosNumber    2
-UserTag default             Version      $Revision: 1.5 $
+UserTag default             Version      1.5
 UserTag default             Routine      <<EOR
 # Returns the text of a user entered field named VAR.
 # Same as tag [value name=name default="string"] except

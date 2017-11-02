@@ -7,7 +7,7 @@
 
 UserTag page-meta Order   page
 UserTag page-meta addAttr
-UserTag page-meta Version $Revision: 1.4 $
+UserTag page-meta Version 1.4
 UserTag page-meta Routine <<EOR
 sub {
 	my ($page, $opt) = @_;

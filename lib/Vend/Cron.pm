@@ -20,7 +20,7 @@
 package Vend::Cron;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = '2.6';
 
 use POSIX qw(strftime);
 use Vend::Util;

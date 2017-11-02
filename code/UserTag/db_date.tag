@@ -13,7 +13,7 @@
 #
 UserTag  db-date  Order     table format
 UserTag  db-date  PosNumber 2
-UserTag  db-date  Version   $Revision: 1.4 $
+UserTag  db-date  Version   1.4
 UserTag  db-date  Routine   <<EOF
 sub {
     my ($db, $format) = @_;

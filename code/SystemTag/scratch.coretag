@@ -8,7 +8,7 @@
 UserTag scratch             Order        name
 UserTag scratch             PosNumber    1
 UserTag scratch             addAttr
-UserTag scratch             Version      $Revision: 1.6 $
+UserTag scratch             Version      1.6
 UserTag scratch             Routine      <<EOR
 sub {
 	my ($var, $opt) = @_;

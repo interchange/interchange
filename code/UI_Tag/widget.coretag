@@ -13,7 +13,7 @@ UserTag widget attrAlias   outboard key
 UserTag widget addAttr
 UserTag widget HasEndTag   1
 UserTag widget Interpolate 1
-UserTag widget Version     $Revision: 1.6 $
+UserTag widget Version     1.6
 UserTag widget Routine     <<EOR
 sub {
 	my($name, $opt, $string) = @_;

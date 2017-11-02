@@ -9,7 +9,7 @@ UserTag counter             Order        file
 UserTag counter             addAttr
 UserTag counter             attrAlias    name file
 UserTag counter             PosNumber    1
-UserTag counter             Version      $Revision: 1.6 $
+UserTag counter             Version      1.6
 UserTag counter             MapRoutine   Vend::Interpolate::tag_counter
 
 UserTag fcounter            Alias        counter

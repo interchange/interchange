@@ -9,7 +9,7 @@ UserTag title-bar Order        width size color
 UserTag title-bar PosNumber    3
 UserTag title-bar Interpolate  1
 UserTag title-bar HasEndTag    1
-UserTag title-bar Version      $Revision: 1.4 $
+UserTag title-bar Version      1.4
 UserTag title-bar Routine      <<EOR
 sub {
 	my ($width, $size, $color, $text) = @_;

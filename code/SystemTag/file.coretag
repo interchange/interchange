@@ -7,7 +7,7 @@
 
 UserTag file                Order        name type
 UserTag file                PosNumber    2
-UserTag file                Version      $Revision: 1.6 $
+UserTag file                Version      1.6
 UserTag file                Routine      <<EOR
 sub {
 	my ($file, $type) = @_;

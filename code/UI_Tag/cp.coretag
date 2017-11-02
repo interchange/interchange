@@ -7,7 +7,7 @@
 
 UserTag cp Order      from to
 UserTag cp addAttr
-UserTag cp Version    $Revision: 1.5 $
+UserTag cp Version    1.5
 UserTag cp Routine    <<EOR
 require File::Copy;
 sub {

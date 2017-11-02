@@ -9,7 +9,7 @@ UserTag child-process addAttr
 UserTag child-process HasEndTag
 UserTag child-process NoReparse 0
 UserTag child-process Interpolate 0
-UserTag child-process Version $Revision: 1.3 $
+UserTag child-process Version 1.3
 UserTag child-process Documentation <<EOD
 
 =head1 NAME

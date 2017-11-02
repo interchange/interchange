@@ -7,7 +7,7 @@
 
 UserTag unlink_file Order      name prefix
 UserTag unlink_file PosNumber  2
-UserTag unlink_file Version    $Revision: 1.5 $
+UserTag unlink_file Version    1.5
 UserTag unlink_file Routine    <<EOR
 sub {
 	my ($file, $prefix) = @_;

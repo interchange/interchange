@@ -7,7 +7,7 @@
 
 UserTag mm-value Order     field table
 UserTag mm-value addAttr
-UserTag mm-value Version   $Revision: 1.4 $
+UserTag mm-value Version   1.4
 UserTag mm-value Routine   <<EOR
 sub {
 	my($field, $table, $opt, $text) = @_;

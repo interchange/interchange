@@ -8,7 +8,7 @@
 UserTag meta-info Order      table column key
 UserTag meta-info attrAlias  col column
 UserTag meta-info addAttr
-UserTag meta-info Version    $Revision: 1.4 $
+UserTag meta-info Version    1.4
 UserTag meta-info Routine    <<EOR
 sub {
 	my ($table, $col, $key, $opt) = @_;

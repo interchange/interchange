@@ -61,7 +61,7 @@ use warnings;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = '1.11';
 
 
 ###########################################################################

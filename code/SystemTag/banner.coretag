@@ -8,7 +8,7 @@
 UserTag banner              Order        category
 UserTag banner              addAttr
 UserTag banner              PosNumber    1
-UserTag banner              Version      $Revision: 1.6 $
+UserTag banner              Version      1.6
 UserTag banner              Routine      <<EOR
 sub {
 	my ($place, $opt) = @_;

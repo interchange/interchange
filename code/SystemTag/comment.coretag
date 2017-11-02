@@ -9,7 +9,7 @@
 # that weren't caught by &Vend::Interpolate::vars_and_comments,
 # e.g. in reparsed output from [perl] blocks
 
-UserTag comment Version $Revision: 1.2 $
+UserTag comment Version 1.2
 UserTag comment hasEndTag
 UserTag comment Routine <<EOR
 sub { '' }

@@ -12,5 +12,5 @@ UserTag mvasp               Gobble
 UserTag mvasp               hasEndTag
 UserTag mvasp               PosNumber    1
 UserTag mvasp               NoReparse
-UserTag mvasp               Version      $Revision: 1.5 $
+UserTag mvasp               Version      1.5
 UserTag mvasp               MapRoutine   Vend::Interpolate::mvasp

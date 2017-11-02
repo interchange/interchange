@@ -8,7 +8,7 @@
 UserTag get-url Order        url
 UserTag get-url AddAttr
 UserTag get-url Interpolate
-UserTag get-url Version      $Revision: 1.12 $
+UserTag get-url Version      1.12
 UserTag get-url Routine      <<EOR
 require LWP::UserAgent;
 sub {

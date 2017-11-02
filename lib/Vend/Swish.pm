@@ -24,7 +24,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = '1.15';
 use strict;
 
 use SWISH::API;

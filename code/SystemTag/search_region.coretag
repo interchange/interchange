@@ -12,5 +12,5 @@ UserTag search-region       attrAlias    params arg
 UserTag search-region       attrAlias    search arg
 UserTag search-region       hasEndTag
 UserTag search-region       PosNumber    0
-UserTag search-region       Version      $Revision: 1.4 $
+UserTag search-region       Version      1.4
 UserTag search-region       MapRoutine   Vend::Interpolate::tag_search_region

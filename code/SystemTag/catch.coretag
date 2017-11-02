@@ -8,7 +8,7 @@
 UserTag catch               Order        label
 UserTag catch               addAttr
 UserTag catch               hasEndTag
-UserTag catch               Version      $Revision: 1.7 $
+UserTag catch               Version      1.7
 UserTag catch               Routine      <<EOR
 sub {
 	my ($label, $opt, $body) = @_;

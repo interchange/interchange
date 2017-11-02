@@ -10,7 +10,7 @@ UserTag discount            AddAttr
 UserTag discount            attrAlias    space discount_space
 UserTag discount            hasEndTag
 UserTag discount            PosNumber    1
-UserTag discount            Version      $Revision: 1.7 $
+UserTag discount            Version      1.7
 UserTag discount            Routine      <<EOR
 
 # Sets the value of a discount field

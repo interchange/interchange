@@ -8,7 +8,7 @@
 UserTag assume-identity   Order        file locale
 UserTag assume-identity   addAttr
 UserTag assume-identity   PosNumber    2
-UserTag assume-identity   Version      $Revision: 1.5 $
+UserTag assume-identity   Version      1.5
 UserTag assume-identity   Routine      <<EOR
 sub {
 	my ($file, $locale, $opt) = @_;

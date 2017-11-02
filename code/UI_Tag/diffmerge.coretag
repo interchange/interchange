@@ -45,7 +45,7 @@
 UserTag diffmerge Interpolate   1
 UserTag diffmerge hasEndTag
 UserTag diffmerge addAttr
-UserTag diffmerge Version       $Revision: 1.4 $
+UserTag diffmerge Version       1.4
 
 # These designations come from the diff3 manpage.
 # It seemed easier to use their names than to make up new ones.

@@ -9,7 +9,7 @@ UserTag rotate-table Order        rotate
 UserTag rotate-table PosNumber    1
 UserTag rotate-table Interpolate  1
 UserTag rotate-table HasEndTag    1
-UserTag rotate-table Version      $Revision: 1.4 $
+UserTag rotate-table Version      1.4
 UserTag rotate-table Routine      <<EOR
 sub {
 	my ($rotate, $text) = @_;

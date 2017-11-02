@@ -7,7 +7,7 @@
 
 UserTag menu-load Order    type
 UserTag menu-load addAttr
-UserTag menu-load Version  $Revision: 1.9 $
+UserTag menu-load Version  1.9
 UserTag menu-load Routine  <<EOR
 sub old_link {
   my ($row, $nrow) = @_;

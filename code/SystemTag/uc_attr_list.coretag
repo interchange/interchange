@@ -9,7 +9,7 @@ UserTag uc-attr-list           addAttr
 UserTag uc-attr-list           hasEndTag
 UserTag uc-attr-list           PosNumber    0
 UserTag uc-attr-list           noRearrange
-UserTag uc-attr-list           Version      $Revision: 1.2 $
+UserTag uc-attr-list           Version      1.2
 UserTag uc-attr-list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;

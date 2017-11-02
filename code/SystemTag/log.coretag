@@ -10,5 +10,5 @@ UserTag log                 addAttr
 UserTag log                 attrAlias    arg file
 UserTag log                 hasEndTag
 UserTag log                 PosNumber    1
-UserTag log                 Version      $Revision: 1.4 $
+UserTag log                 Version      1.4
 UserTag log                 MapRoutine   Vend::Interpolate::log

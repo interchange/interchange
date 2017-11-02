@@ -7,7 +7,7 @@
 
 UserTag  ups-query  Order    mode origin zip weight country
 UserTag  ups-query  addAttr
-UserTag  ups-query  Version  $Revision: 1.12 $
+UserTag  ups-query  Version  1.12
 UserTag  ups-query  Routine  <<EOR
 sub {
  	my( $mode, $origin, $zip, $weight, $country, $opt) = @_;

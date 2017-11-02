@@ -8,7 +8,7 @@
 UserTag output-to Order      name
 UserTag output-to addAttr
 UserTag output-to hasEndTag
-UserTag output-to Version    $Revision: 1.4 $
+UserTag output-to Version    1.4
 UserTag output-to Routine    <<EOR
 sub {
 	my ($name, $opt, $body) = @_;

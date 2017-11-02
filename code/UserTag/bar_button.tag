@@ -8,7 +8,7 @@
 UserTag bar-button Order     page current
 UserTag bar-button PosNumber 2
 UserTag bar-button HasEndTag 1
-UserTag bar-button Version   $Revision: 1.5 $
+UserTag bar-button Version   1.5
 UserTag bar-button Routine   <<EOR
 sub {
 	use strict;

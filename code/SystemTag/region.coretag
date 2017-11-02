@@ -11,5 +11,5 @@ UserTag region              attrAlias    params arg
 UserTag region              attrAlias    search arg
 UserTag region              hasEndTag
 UserTag region              PosNumber    0
-UserTag region              Version      $Revision: 1.4 $
+UserTag region              Version      1.4
 UserTag region              MapRoutine   Vend::Interpolate::region

@@ -6,7 +6,7 @@
 # (at your option) any later version.  See the LICENSE file for details.
 
 UserTag newer Order    source target
-UserTag newer Version  $Revision: 1.4 $
+UserTag newer Version  1.4
 UserTag newer Routine  <<EOR
 sub {
 	my ($source, $file2) = @_;
