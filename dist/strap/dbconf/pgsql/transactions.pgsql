@@ -51,6 +51,7 @@ Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  COLUMN_DEF   "currency_locale=varchar(32)"
 Database  transactions  COLUMN_DEF   "pay_cert_total=varchar(16)"
 Database  transactions  COLUMN_DEF   "pay_cert_ord_total=varchar(16)"
+Database  transactions  PREFER_NULL   update_date
 Database  transactions  INDEX         store_id
 Database  transactions  INDEX         order_number
 Database  transactions  INDEX         order_date

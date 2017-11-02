@@ -40,14 +40,18 @@ Database  transactions  COLUMN_DEF   "b_phone=varchar(20)"
 Database  transactions  COLUMN_DEF   "payment_method=varchar(128)"
 Database  transactions  COLUMN_DEF   "avs=varchar(32)"
 Database  transactions  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
+Database  transactions  INDEX         order_date
 Database  transactions  COLUMN_DEF   "update_date=timestamp"
+Database  transactions  PREFER_NULL   update_date
 Database  transactions  COLUMN_DEF   "order_id=varchar(32)"
 Database  transactions  COLUMN_DEF   "auth_code=varchar(32)"
 Database  transactions  COLUMN_DEF   "tracking_number=varchar(64)"
 Database  transactions  COLUMN_DEF   "status=varchar(32)"
 Database  transactions  COLUMN_DEF   "parent=varchar(9)"
 Database  transactions  COLUMN_DEF   "archived=varchar(1) DEFAULT ''"
+Database  transactions  INDEX         archived
 Database  transactions  COLUMN_DEF   "deleted=varchar(1) DEFAULT ''"
+Database  transactions  INDEX         deleted
 Database  transactions  COLUMN_DEF   "complete=varchar(1) DEFAULT ''"
 Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  COLUMN_DEF   "currency_locale=varchar(32)"
