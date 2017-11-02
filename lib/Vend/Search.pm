@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2017 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = '2.39';
 
 use strict;
 no warnings qw(uninitialized numeric);
@@ -1242,7 +1242,10 @@ sub save_more {
 #::logDebug("save_more: $id to Session DB.");
 #::logDebug("save_more:object:" . ::uneval($new));
 		my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
-		$db->set_field($id, 'session', Vend::Util::uneval_fast($new));
+		my $key = $db->set_field($id, 'session', Vend::Util::uneval_fast($new));
+		# explicitly set $@ for check below because some exits from set_field()
+		# never set $@, and it's safer in general not to rely its internals
+		$@ = defined($key) ? undef : 1;
 	}
 	else {
 #::logDebug("save_more: $id to $file.");
