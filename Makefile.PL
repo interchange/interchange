@@ -731,7 +731,13 @@ sub get_dist_version {
 	# standardize tagged releases; 2 valid formats here: REL_5_X_X and 5.X.X
 	if ($vers =~ /^REL_(\d+)_(\d+)_(\d+)(-(\d+)-g(\w+))?/ || /^(\d+)\.(\d+)\.(\d+)(-(\d+)-g(\w+))?/ ) {
 		if ($4) {
-			$vers = sprintf '%d.%d.%d-devel-%s', $1, $2 + ($is_stable ? 0 : 1), ($is_stable ? $3 + 1 : 0), $6;
+			$vers = sprintf '%d.%d.%d-devel-%d-%s',
+				$1,						   # major
+				$2 + ($is_stable ? 0 : 1), # minor (increasing if we're not on a stable branch)
+				($is_stable ? $3 + 1 : 0), # patch (increasing if we *are* on a stable branch, 0 if minor increased)
+				$5,						   # commit counter
+				$6						   # abbrev git hash
+			;
 		}
 		else {
 			$vers = "$1.$2.$3";
