@@ -1,0 +1,25 @@
+[tmp page_title][L]Customer manager[/L]: [L]Create customer[/L][/tmp]
+[set ui_class]Customers[/set]
+[set page_banner][L]Create customer[/L][/set]
+[set help_name]customer.create[/set]
+[set icon_name]icon_people.gif[/set]
+
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[perl tables=country]### pre-open database for calcs below[/perl] 
+
+<p>With the "Strap"-type catalog, there is not currently a way to create customers via the Admin, because certain fields, like <i>usernick</i>, will not be set. Additionally, the user will not be able to login with their email, and their username counter will not match any other users.</p>
+
+<p>Rather than re-creating the <i>New Account</i> page here, the best course of action is to log out of the Admin and create the customer on the website.</p>
+
+<form action="[area login]" method=get>
+    <input type=hidden name=mv_action value=cancel>
+    <input type=submit value="[L]Log out and visit the New Account page[/L]">
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
