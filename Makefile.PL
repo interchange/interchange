@@ -720,19 +720,21 @@ EOF
 sub get_dist_version {
 	my $vers = $VERSION;
 	if (-d "./.git") {
-		$vers = qx(git describe --tags --dirty);
+		$vers = qx(git describe --tags);
 		chomp $vers;
 	}
-	# XXX do we want to increment revision number if we're not a tagged release,
-	# so anything tagged after 5.12 will display as 5.13 for devel release?
-
 	# standardize/handle old tagged REL tags
 	if ($vers =~ /^REL_(\d+)_(\d+)_(\d+)(-(\d+)-g(\w+))/) {
-		$vers = "$1.$2.$3";
-		$vers .= '-devel-' . $6 if $4;
+		if ($4) {
+			$vers = sprintf '%d.%d.%d', $1, $2 + 1, 0;
+			$vers .= '-devel-' . $6 if $4;
+		}
+		else {
+			$vers = "$1.$2.$3";
+		}
 	}
 	elsif ($vers =~ /^(\d+)\.(\d+)\.(\d+)(-(\d+)-g(\w+))/) {
-		$vers = "$1.$2.$3-devel-$6";
+		$vers = sprintf '%d.%d.%d-devel-%s', $1, $2 + 1, 0, $6;
 	}
 	else {
 		# assuming this is \d+.\d+.\d+ for new tagging scenario
