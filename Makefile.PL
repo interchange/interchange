@@ -719,26 +719,25 @@ EOF
 
 sub get_dist_version {
 	my $vers = $VERSION;
+	my $is_stable;
+
 	if (-d "./.git") {
 		$vers = qx(git describe --tags);
 		chomp $vers;
+		my $branch = qx(git rev-parse --abbrev-ref HEAD);
+		chomp $branch;
+		$is_stable = $branch =~ /^STABLE_/ ? 1 : 0;
 	}
-	# standardize/handle old tagged REL tags
-	if ($vers =~ /^REL_(\d+)_(\d+)_(\d+)(-(\d+)-g(\w+))/) {
+	# standardize tagged releases; 2 valid formats here: REL_5_X_X and 5.X.X
+	if ($vers =~ /^REL_(\d+)_(\d+)_(\d+)(-(\d+)-g(\w+))?/ || /^(\d+)\.(\d+)\.(\d+)(-(\d+)-g(\w+))?/ ) {
 		if ($4) {
-			$vers = sprintf '%d.%d.%d', $1, $2 + 1, 0;
-			$vers .= '-devel-' . $6 if $4;
+			$vers = sprintf '%d.%d.%d-devel-%s', $1, $2 + ($is_stable ? 0 : 1), ($is_stable ? $3 + 1 : 0), $6;
 		}
 		else {
 			$vers = "$1.$2.$3";
 		}
 	}
-	elsif ($vers =~ /^(\d+)\.(\d+)\.(\d+)(-(\d+)-g(\w+))/) {
-		$vers = sprintf '%d.%d.%d-devel-%s', $1, $2 + 1, 0, $6;
-	}
-	else {
-		# assuming this is \d+.\d+.\d+ for new tagging scenario
-	}
+	# assuming we're a pure tag here
 	$vers;
 }
 
