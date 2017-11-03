@@ -366,7 +366,7 @@ Mark Johnson (mark@endpoint.com), End Point Corp.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2009 Interchange Development Group and others
+Copyright (C) 2017 Interchange Development Group and others
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

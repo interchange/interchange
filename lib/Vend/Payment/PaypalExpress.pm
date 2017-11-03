@@ -2080,17 +2080,17 @@ sub log_it {
     my $response = $self->response;
 
     my ($rc,$resp_msg);
-    if ( $response->{Ack} eq 'Success' ) { 
+    if ( $response->{Ack} eq 'Success' ) {
         $rc = 0;
         $resp_msg = $response->{Ack};
-    }   
+    }
     else {
         $rc = $response->{Errors}{ErrorCode};
         # Just in case
         $rc =~ s/[^-\d]+//g
             if defined $rc;
         $resp_msg = $response->{Errors}{LongMessage};
-    }   
+    }
 
     $rc = -1
         unless length ($rc) && $rc =~ /\d/;

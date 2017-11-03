@@ -406,13 +406,13 @@ sub charge {
                     local $SIG{USR2} = sub {
                         $Global_Timeout = 'Global Timeout on gateway request';
                         exit;
-                    };  
+                    };
 
                     my %rv = $sub->($pay_opt);
 
                     $pipe->print( ::uneval(\%rv) );
                     exit;
-                }   
+                }
 
                 $pipe->reader;
 
@@ -429,23 +429,23 @@ sub charge {
                 my $rv = eval join ('', $pipe->getlines);
 
                 return %$rv;
-            }   
+            }
 
             return $sub->($pay_opt);
-        };  
+        };
 
         if($@) {
             my $msg = errmsg(
                         "payment routine '%s' returned error: %s",
                         $charge_type,
-                        $@, 
-            );  
+                        $@,
+            );
             kill (USR2 => $pid)
                 if $pid && kill (0 => $pid);
             ::logError($msg);
             $result{MStatus} = 'died';
             $result{MErrMsg} = $msg;
-        }   
+        }
     }
 	elsif($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
 #::logDebug("Charge custom");
