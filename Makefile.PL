@@ -886,7 +886,7 @@ WriteMakefile(
 					COMPRESS => "gzip -9f",
 					ZIP_FLAGS => '-pr9',
 				},
-	VERSION_FROM => "scripts/interchange.PL",
+	VERSION => get_dist_version(),
 	EXE_FILES  => [],
 	CONFIGURE  => \&initialize,
 	PREREQ_PM  => {
