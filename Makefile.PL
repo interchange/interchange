@@ -709,18 +709,21 @@ EOF
 	# if we are building from a git checkout, then set the VERSION based on the
 	# closest git tag, otherwise use the last hard-coded version
 
-	if (-d "./.git") {
-		$X{VERSION} = qx(git describe --tags --dirty);
-		chomp $X{VERSION};
-		system(qq{echo '"$X{VERSION}"' > _ic_version});
-	}
-	else {
-		$X{VERSION} = $VERSION;
-	}
+	$X{VERSION} = get_dist_version();
+	system(qq{echo '"$X{VERSION}"' > _ic_version});
 
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
     return \%X;
+}
+
+sub get_dist_version {
+	my $vers = $VERSION;
+	if (-d "./.git") {
+		$vers = qx(git describe --tags --dirty);
+		chomp $vers;
+	}
+	$vers;
 }
 
 sub regularize {
