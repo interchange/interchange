@@ -2046,7 +2046,7 @@ use Vend::Payment::GatewayLog;
 use base qw/Vend::Payment::GatewayLog/;
 
 sub log_it {
-	my $self = shift
+	my $self = shift;
 
     my $request = $self->request;
     unless ($request) {
@@ -2094,6 +2094,10 @@ sub log_it {
 
     $rc = -1
         unless length ($rc) && $rc =~ /\d/;
+
+    # Don't want unexpected response structures from different errors
+    # to blow up the error log
+    no strict 'refs';
 
     my %fields = (
         trans_type => $response->{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{TransactionType} || 'x',
