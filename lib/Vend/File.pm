@@ -96,10 +96,8 @@ sub writefile {
 			}
 			# We have checked for beginning > or | previously
 			open(MVLOGDATA, $file) or die "open\n";
-            if ($encoding) {
-                local $PerlIO::encoding::fallback = $fallback;
-                binmode(MVLOGDATA, ":encoding($encoding)");
-            }
+			local $PerlIO::encoding::fallback = $fallback if $encoding;
+			binmode(MVLOGDATA, ":encoding($encoding)") if $encoding;
 
 			lockfile(\*MVLOGDATA, 1, 1) or die "lock\n";
 			seek(MVLOGDATA, 0, 2) or die "seek\n";
