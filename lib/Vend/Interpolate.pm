@@ -649,6 +649,9 @@ sub interpolate_html {
 
 	local($^W);
 
+	my $was_utf8 = utf8::is_utf8($html);
+	Encode::_utf8_off($html) if $was_utf8;
+
 	my $toplevel;
 	if(defined $Vend::PageInit and ! $Vend::PageInit) {
 		defined $::Variable->{MV_AUTOLOAD}
@@ -675,6 +678,7 @@ sub interpolate_html {
 		}
 		$parse->parse('');
 	}
+	Encode::_utf8_on(${$parse->{OUT}}) if $was_utf8;
 	return $parse->{OUT} if defined $wantref;
 	return ${$parse->{OUT}};
 }
