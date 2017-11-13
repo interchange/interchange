@@ -516,7 +516,21 @@ sub transaction {
             unless $transtype =~ /[VF]/;
     }
 
-::logDebug("calling braintree's %s transaction method with args %s\n", $method, ::uneval(\@args));
+    my $gwl = Vend::Payment::Braintree::GWL
+        -> new({
+            Enabled => charge_param('gwl_enabled'),
+            LogTable => charge_param('gwl_table'),
+            Source => charge_param('gwl_source'),
+        })
+    ;
+    $gwl->request({
+        opt => {
+            %$opt,
+            transtype => $transtype,
+        },
+        args => $gwl->label_args(\@args),
+    });
+#::logDebug("calling braintree's %s transaction method with args %s\n", $method, ::uneval(\@args));
     my $result;
     {
         local $@;
@@ -530,18 +544,23 @@ sub transaction {
                 $config->$_($opt->{$_})
                     for qw/environment merchant_id public_key private_key/;
 
+                $gwl->start;
                 Net::Braintree::Transaction->$method(@args);
             }
             or do {
-                ::logError($@ || "Net::Braintree::Transaction returned no object but did not die for $method call");
+                my $err = $@ || "Net::Braintree::Transaction returned no object but did not die for $method call";
+                $gwl->stop;
+                $gwl->response({ return => {}, eval_error => $err, },);
                 return (
                     MStatus => 'failure-hard',
                     MErrMsg => ::errmsg('Unable to contact payment processor. Please try again.'),
                 );
             }
         ;
+        $gwl->stop;
+        $gwl->response({ return => { RESPMSG => 'N/A'}, raw => $result, });
     }
-::logDebug("braintree transaction $method result: " . ::uneval($result));
+#::logDebug("braintree transaction $method result: " . ::uneval($result));
 
     my ($success, $api_err, $t);
 
@@ -638,8 +657,9 @@ sub transaction {
         $response{$_} = $response{$response_map{$_}}
             if defined $response{$response_map{$_}};
     }
-::logDebug("braintree transaction $method response: " . ::uneval(\%response));
+#::logDebug("braintree transaction $method response: " . ::uneval(\%response));
 
+    $gwl->response({ return => \%response, raw => $result, });
     return %response;
 }
 
@@ -690,8 +710,21 @@ sub customer {
     }
 
     my @args = (\%params);
-
-::logDebug("calling braintree's %s customer method with args %s\n", $method, ::uneval(\@args));
+    my $gwl = Vend::Payment::Braintree::GWL
+        -> new({
+            Enabled => charge_param('gwl_enabled'),
+            LogTable => charge_param('gwl_table'),
+            Source => charge_param('gwl_source'),
+        })
+    ;
+    $gwl->request({
+        opt => {
+            %$opt,
+            transtype => $transtype,
+        },
+        args => $gwl->label_args(\@args),
+    });
+#::logDebug("calling braintree's %s customer method with args %s\n", $method, ::uneval(\@args));
     my $result;
     {
         local $@;
@@ -705,18 +738,23 @@ sub customer {
                 $config->$_($opt->{$_})
                     for qw/environment merchant_id public_key private_key/;
 
+                $gwl->start;
                 Net::Braintree::Customer->$method(@args);
             }
             or do {
-                ::logError($@ || "Net::Braintree::Customer returned no object but did not die for $method call");
+                my $err = $@ || "Net::Braintree::Customer returned no object but did not die for $method call";
+                $gwl->stop;
+                $gwl->response({ return => {}, eval_error => $err, },);
                 return (
                     MStatus => 'failure-hard',
                     MErrMsg => ::errmsg('Unable to contact payment processor. Please try again.'),
                 );
             }
         ;
+        $gwl->stop;
+        $gwl->response({ return => { RESPMSG => 'N/A'}, raw => $result, });
     }
-::logDebug("braintree customer $method result: " . ::uneval($result));
+#::logDebug("braintree customer $method result: " . ::uneval($result));
 
     my ($success, $api_err, $c, $pm, $ver);
 
@@ -829,8 +867,9 @@ sub customer {
         $response{$_} = $response{$response_map{$_}}
             if defined $response{$response_map{$_}};
     }
-::logDebug("braintree customer $method response: " . ::uneval(\%response));
+#::logDebug("braintree customer $method response: " . ::uneval(\%response));
 
+    $gwl->response({ return => \%response, raw => $result, });
     return %response;
 }
 
@@ -842,7 +881,7 @@ use warnings;
 sub braintree {
     my ($user, $amount) = @_;
 
-::logDebug("braintree called\n%s\n", ::uneval($user));
+#::logDebug("braintree called\n%s\n", ::uneval($user));
 
     my $opt;
     if(ref $user) {
@@ -910,6 +949,343 @@ sub braintree {
     ;
 
     return $sub->($transtype, $amount, $opt);
+}
+
+package Vend::Payment::Braintree::GWL;
+
+use base qw/Vend::Payment::GatewayLog/;
+use Scalar::Util qw/reftype/;
+
+# Return structure from Net::Braintree is exceptionally bloated. The response
+# is passed through a number of thinning processes to make it much more
+# readable and take considerably less storage space.
+
+# Constants to define arrays of typically bloating, useless keys per
+# transaction/reftype combination. They will be culled if they are present but
+# undefined; otherwise, they will persist into gateway_log table.
+
+use constant CUSTOMER_HASH_KEYS =>
+[qw/
+    customer
+/];
+
+use constant CUSTOMER_ARRAY_KEYS =>
+[qw/
+    refund_ids
+/];
+
+use constant CUSTOMER_SCALAR_KEYS =>
+[qw/
+    company
+    fax
+    refund_id
+    refunded_transaction_id
+    website
+/];
+
+use constant CUSTOMER_CC_KEYS =>
+[qw/
+    subscriptions
+/];
+
+use constant TRANSACTION_HASH_KEYS =>
+[qw/
+    descriptor
+    disbursement_details
+    processor_settlement_response_code
+    processor_settlement_response_text
+    subscription
+/];
+
+use constant TRANSACTION_ARRAY_KEYS =>
+[qw/
+    add_ons
+    discounts
+    disputes
+    partial_settlement_transaction_ids
+/];
+
+use constant TRANSACTION_SCALAR_KEYS =>
+[qw/
+    additional_processor_response
+    authorized_transaction_id
+    channel
+    escrow_status
+    master_merchant_account_id
+    plan_id
+    purchase_order_number
+    service_fee_amount
+    settlement_batch_id
+    sub_merchant_account_id
+    subscription_id
+    three_d_secure_info
+    voice_referral_number
+/];
+
+# Remove certain completely empty response objects corresponding to KEYS
+# definitions above.
+
+sub thin_hashes {
+    # hashes either empty or with all undef values
+    my ($obj, $prefix, $fields) = @_;
+    for my $k (@$fields) {
+        next unless exists $obj->{$k};
+        my $h = $obj->{$k};
+        if (grep { defined($h->{$_}) } keys %$h) {
+            ::logError("Unexpected defined value found in $prefix$k - preserving entire hash\n");
+        }
+        else {
+            delete $obj->{$k};
+        }
+    }
+    return;
+}
+
+sub thin_arrays {
+    # empty arrays
+    my ($obj, $prefix, $fields) = @_;
+    for my $k (@$fields) {
+        next unless exists $obj->{$k};
+        my $arr = $obj->{$k};
+        if (ref($arr) ne 'ARRAY' or @$arr) {
+            ::logError("Unexpected data type or array not empty in $prefix$k - preserving\n");
+        }
+        else {
+            delete $obj->{$k};
+        }
+    }
+    return;
+}
+
+sub thin_scalars {
+    # undef scalars
+    my ($obj, $prefix, $fields) = @_;
+    for my $k (@$fields) {
+        next unless exists $obj->{$k};
+        if (defined $obj->{$k}) {
+            ::logError("Unexpected defined value in $prefix$k - preserving\n");
+        }
+        else {
+            delete $obj->{$k};
+        }
+    }
+    return;
+}
+
+# Stringify timestamps for readability and bloat reduction
+
+sub thin_datetimes {
+    # stringify DateTime objects directly on source reference
+    my $ref = shift;
+
+    my $type = ref ($$ref)
+        or return;
+
+    if ( $type eq 'DateTime' ) {
+        $$ref = $$ref->formatter->format_datetime($$ref);
+        return;
+    }
+
+    my $rtype = reftype($$ref);
+    if ( $rtype eq 'HASH' ) {
+        thin_datetimes(\$_) for values %$$ref;
+    }
+    elsif ( $rtype eq 'ARRAY' ) {
+        thin_datetimes(\$_) for @$$ref;
+    }
+
+    return;
+}
+
+# Deflate all hashes
+
+sub hash_deflate {
+    # convert any hash objects into regular hashes
+    my $ref = shift;
+
+    my $rtype = reftype($$ref)
+        or return;
+
+    my $type = ref ($$ref);
+
+    if ($rtype eq 'HASH') {
+
+        hash_deflate(\$_) for values %$$ref;
+
+        if ($type ne $rtype) {
+            $$ref = { %$$ref };
+        }
+    }
+    elsif ($rtype eq 'ARRAY') {
+
+        hash_deflate(\$_) for @$$ref;
+
+    }
+
+    return;
+}
+
+# Main routine to act on the top-level response object. Delegates to the above
+# routines.
+
+sub thin_response_object {
+    my $orig = shift;
+    return $orig unless $orig and reftype($orig) eq 'HASH';
+
+    # Deep copy the object contents so we don't affect the original
+    my $obj = eval ::uneval($orig);
+
+    # Scrub all annoying DateTime objects
+    thin_datetimes(\$obj);
+
+    # Deflate all remaining hash objects
+    hash_deflate(\$obj);
+
+    delete $obj->{return}{CARD_DATA}{image_url}
+        if exists $obj->{return}{CARD_DATA};
+
+    return $obj unless exists $obj->{raw} and reftype($obj->{raw}) eq 'HASH';
+
+    if (exists $orig->{raw}{response}{customer}) {
+        my $customer = $obj->{raw}{response}{customer};
+        my $prefix = 'raw.response.customer.';
+        thin_hashes( $customer, $prefix, CUSTOMER_HASH_KEYS);
+        thin_arrays( $customer, $prefix, CUSTOMER_ARRAY_KEYS);
+        thin_scalars($customer, $prefix, CUSTOMER_SCALAR_KEYS);
+        my $cc_n = 0;
+        for my $cc (@{ $customer->{credit_cards} }) {
+            my $cc_prefix = $prefix . "credit_cards.$cc_n.";
+            ++$cc_n;
+            thin_arrays($cc, $cc_prefix, CUSTOMER_CC_KEYS);
+            delete $cc->{image_url};
+        }
+    }
+
+    if (exists $orig->{raw}{response}{transaction}) {
+        my $txn = $obj->{raw}{response}{transaction};
+        my $prefix = 'raw.response.trasaction.';
+        thin_hashes( $txn, $prefix, TRANSACTION_HASH_KEYS);
+        thin_arrays( $txn, $prefix, TRANSACTION_ARRAY_KEYS);
+        thin_scalars($txn, $prefix, TRANSACTION_SCALAR_KEYS);
+        delete $txn->{credit_card}{image_url};
+    }
+
+    return $obj;
+}
+
+# log_it() must be overridden.
+sub log_it {
+    my $self = shift;
+
+    my $request = $self->request;
+    unless ($request) {
+        ::logDebug('Cannot write to %s: no request present', $self->table);
+        return;
+    }
+
+    unless ($self->response) {
+        if ($Vend::Payment::Global_Timeout) {
+            my $msg = errmsg('No response. Global timeout triggered');
+            ::logDebug($msg);
+            $self->response({
+                return => {
+                    RESULT => -2,
+                    RESPMSG => $Vend::Payment::Global_Timeout,
+                },
+            });
+        }
+        else {
+            my $msg = errmsg('No response. Reason unknown');
+            ::logDebug($msg);
+            $self->response({
+                return => {
+                    RESULT => -3,
+                    RESPMSG => $msg,
+                },
+            });
+        }
+    }
+
+    my $response = $self->response;
+
+    my $return = $response->{return};
+    my $rc =
+        defined ($return->{RESULT})
+        && $return->{RESULT} =~ /^-?\d+$/
+            ? $return->{RESULT}
+            : undef
+    ;
+
+    my $opt = delete $request->{opt};
+    my $processor = $opt->{route} || $opt->{gateway};
+
+    my $thinned_response = eval {
+        thin_response_object($response)
+    };
+    if ($@ or !$thinned_response) {
+        ::logError("Error thinning Braintree response" . ($@ ? ": $@" : ''));
+        $thinned_response = $response;
+    }
+#::logDebug("Gateway log thinned response: " . ::uneval($thinned_response));
+
+    my %fields = (
+        trans_type => $opt->{transtype} || 'x',
+        processor => $processor || 'braintree',
+        catalog => $Vend::Cfg->{CatalogName},
+        result_code => $rc || '',
+        response_msg => $return->{RESPMSG} || '',
+        request_id => $return->{PNREF} || '',
+        order_number => $opt->{comment1} || '',
+        request_duration => $self->duration,
+        request_date => $self->timestamp,
+        request_source => $self->source,
+        email => $opt->{actual}{email} || '',
+        request => ::uneval($request) || '',
+        response => ::uneval($thinned_response) || '',
+        session_id => $::Session->{id},
+    );
+
+    $fields{order_md5} =
+        Digest::MD5::md5_hex(
+            $opt->{actual}{email},
+            $opt->{transtype} || 'x',
+            $request->{args}{ORIGID},
+            $request->{args}{AMT} || $request->{args}{amount},
+            $::Session->{id},
+            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+        )
+    ;
+
+    $self->write(\%fields);
+}
+
+sub label_args {
+    my $self = shift;
+    my $orig = shift;
+
+    return 'malformed request argument list' unless
+        reftype ($orig) eq 'ARRAY'
+        &&
+        scalar @$orig
+    ;
+
+    # Ensure manipulations of argument ref are insulated
+    my $arg = eval ::uneval($orig);
+
+    return $arg->[0] if ref($arg->[0]) and reftype($arg->[0]) eq 'HASH';
+
+    my @k = qw/ORIGID AMT/;
+    my %hsh;
+
+    while (@$arg && @k) {
+        $hsh{ shift (@k) } = shift @$arg;
+    }
+
+    if (@$arg) {
+        $hsh{unknown} = $arg;
+    }
+
+    return \%hsh;
 }
 
 1;
