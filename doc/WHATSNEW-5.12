@@ -61,6 +61,8 @@ Payments
 
 * Updated Vend::Payment::PayPal to latest available version.
 
+* Add Gateway Log feature for logging full details of payment gateway requests/responses.
+  (See extended section about the GatewayLog later in this document.)
 
 Database
 --------
@@ -138,4 +140,74 @@ Strap Demo Catalog
 * Remove some legacy cart components.
 
 * Formatting fixes on checkout pages.
+
+
+Gateway Log
+-----------
+
+Vend::Payment::GatewayLog - Basic package and methods for enabling full
+transaction logging in any of the gateways within the Vend::Payment::*
+namespace.
+
+Gateway logging is inactive by default. It can be explicitly enabled by
+triggering the "gwl_enabled" option in any of the usual ways:
+
+* As an option directly through the [charge] tag. E.g.,
+  [charge route=authorizenet gwl_enabled=1 ...]
+
+* As an option defined in a payment route. E.g.,
+
+  Route  authorizenet  id           "__MV_PAYMENT_ID__"
+  Route  authorizenet  gwl_enabled  1
+  ...
+
+* Globally for all payment modules where gateway logging support has been
+  added to the module, via MV_PAYMENT_* mechanism. E.g.,
+
+  Variable  MV_PAYMENT_GWL_ENABLED 1
+
+Note at this time, only a few payment modules have been fitted with gateway
+logging support. It is assumed that the developer of each module, who is
+familiar with the request/response structure of the specific API, will be
+ideally suited to add gateway logging to the remaining modules. Those
+currently supporting it are:
+
+* AuthorizeNet
+* Braintree
+* CyberSource
+* PayflowPro
+* PaypalExpress (for dorequest API activity only)
+
+Developers responsible for other payment gateways are encouraged to follow the
+examples of the above payment modules and outfit remaining payment gateways
+with their own gateway-logging hooks.
+
+The format and fields of the gateway_log table as defined in the strap demo
+should be used for maximal interoperability. The table name can be any name
+you like, but because every payment module independently constructs the code
+to populate the table, changing the field data types or names, and/or
+adding/removing fields, will likely cause malfunction for the existing
+modules' logging configurations.
+
+There are 3 settings a catalog manager can control when enabling gateway
+logging:
+
+* Enabled (discussed above)
+    Boolean to indicate that actual logging should be performed. Default
+    is false; thus logging must be explicitly requested. Can be set with
+    Route param or [charge] options "gwl_enabled", or globally with
+    MV_PAYMENT_GWL_ENABLED in catalog.cfg.
+
+* LogTable
+    Name of table to which logging should be directed. Default is
+    gateway_log. Can be set with Route param or [charge] option "gwl_table",
+    or globally with MV_PAYMENT_GWL_TABLE in catalog.cfg.
+
+* Source
+    Maps to the request_source field in the log table. Value is most
+    meaningful in a distributed environment, where multiple servers
+    running the Interchange application may be handling requests behind a
+    load balancer. Default value obtained from `hostname -s`. Can be set
+    with Route param or [charge] option "gwl_source", or globally with
+    MV_PAYMENT_GWL_SOURCE in catalog.cfg.
 
