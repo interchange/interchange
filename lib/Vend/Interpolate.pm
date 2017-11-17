@@ -665,6 +665,12 @@ sub interpolate_html {
 	vars_and_comments(\$html)
 		unless $opt and $opt->{onfly};
 
+	# catch potential flipped UTF8 flag from vars_and_comments
+	if (utf8::is_utf8($html)) {
+		$was_utf8 = 1;
+		Encode::_utf8_off($html)
+	}
+
 	$^W = 1 if $::Pragma->{perl_warnings_in_page};
 
     # Returns, could be recursive
