@@ -296,6 +296,13 @@ sub initialize {
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
 	}
 
+	# if we are building from a git checkout, then set the VERSION based on the
+	# closest git tag, otherwise use the last hard-coded version
+
+	$X{VERSION} = get_dist_version();
+	system(qq{echo '"$X{VERSION}"' > _ic_version});
+
+
 	return \%X if $MV::Default{nocopy};
 
     my $uid = $MV::Default{INTERCHANGE_USER};
@@ -705,12 +712,6 @@ EOF
 
 	# Check for extra needed libraries
 	extra_libs($realdir);
-
-	# if we are building from a git checkout, then set the VERSION based on the
-	# closest git tag, otherwise use the last hard-coded version
-
-	$X{VERSION} = get_dist_version();
-	system(qq{echo '"$X{VERSION}"' > _ic_version});
 
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
