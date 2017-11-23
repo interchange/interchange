@@ -136,11 +136,10 @@ sub write {
     if ($@) {
         my $err = $@;
         ::logGlobal(
-            q{Couldn't write to %s: %s -- request: %s -- response: %s},
+            q{Couldn't write to table %s: %s -- data hash: %s},
             $self->table,
             $err,
-            ::uneval($self->request),
-            ::uneval($self->response)
+            ::uneval($data),
         );
     }
     else {

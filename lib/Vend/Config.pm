@@ -4526,6 +4526,8 @@ sub parse_database {
 		else 						{ $d->{Class} ||= $Global::Default_database	}
 
 		if($C and $C->{DatabaseDefault}) {
+			$C->{DatabaseDefault}{PG_ENABLE_UTF8} = 0
+				unless defined $C->{DatabaseDefault}{PG_ENABLE_UTF8};
 			while ( my($k, $v) = each %{$C->{DatabaseDefault}}) {
 				$d->{$k} = $v;
 			}
