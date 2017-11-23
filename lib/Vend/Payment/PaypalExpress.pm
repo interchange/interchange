@@ -1262,7 +1262,7 @@ EOB
             Vend::Payment::PaypalExpress
                 -> new({
                     order_number => $opt->{order_id},
-                    email => $opt->{actual}{email},
+                    email => $::Values->{email} || '',
                     amount => $amount,
                     Enabled => charge_param('gwl_enabled'),
                     LogTable => charge_param('gwl_table'),
