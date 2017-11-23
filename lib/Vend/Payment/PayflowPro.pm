@@ -913,18 +913,19 @@ sub log_it {
         response => ::uneval($response) || '',
         session_id => $::Session->{id},
         request_source => $self->source,
+        amount => $request->{AMT} || '',
+        host_ip => $::Session->{shost} || $::Session->{ohost} || '',
+        username => $::Session->{username} || '',
+        cart_md5 => '',
     );
 
-    $fields{order_md5} =
-        Digest::MD5::md5_hex(
-            $request->{EMAIL},
-            $request->{TRXTYPE},
-            $request->{ORIGID},
-            $request->{AMT},
-            $::Session->{id},
-            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-        )
-    ;
+    if (@$Vend::Items) {
+        $fields{cart_md5} =
+            Digest::MD5::md5_hex(
+                map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+            )
+        ;
+    }
 
     $self->write(\%fields);
 }
