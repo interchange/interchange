@@ -2622,20 +2622,21 @@ sub log_it {
         email => $request->{billTo_email} || '',
         request => ::uneval($request) || '',
         response => ::uneval($response) || '',
-        session_id => $::Session->{id},
+        session_id => $::Session->{id} || '',
         request_source => $self->source,
+        amount => $request->{purchaseTotals_grandTotalAmount} || '',
+        host_ip => $::Session->{shost} || $::Session->{ohost} || '',
+        username => $::Session->{username} || '',
+        cart_md5 => '',
     );
 
-    $fields{order_md5} =
-        Digest::MD5::md5_hex(
-            $request->{billTo_email},
-            $self->{trans_type},
-            $self->{origid},
-            $request->{purchaseTotals_grandTotalAmount},
-            $::Session->{id},
-            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-        )
-    ;
+    if (@$Vend::Items) {
+        $fields{cart_md5} =
+            Digest::MD5::md5_hex(
+                map { ($_->{code}, $_->{quantity}) } @$Vend::Items
+            )
+        ;
+    }
 
     $self->write(\%fields);
 }
