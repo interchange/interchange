@@ -911,7 +911,7 @@ sub log_it {
         email => $request->{EMAIL} || '',
         request => ::uneval($request) || '',
         response => ::uneval($response) || '',
-        session_id => $::Session->{id},
+        session_id => $::Session->{id} || '',
         request_source => $self->source,
         amount => $request->{AMT} || '',
         host_ip => $::Session->{shost} || $::Session->{ohost} || '',
