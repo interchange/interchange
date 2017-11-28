@@ -2631,11 +2631,14 @@ sub log_it {
     );
 
     if (@$Vend::Items) {
-        $fields{cart_md5} =
-            Digest::MD5::md5_hex(
-                map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-            )
+        my $dump = Data::Dumper
+            -> new($Vend::Items)
+            -> Indent(0)
+            -> Terse(1)
+            -> Deepcopy(1)
+            -> Sortkeys(1)
         ;
+        $fields{cart_md5} = Digest::MD5::md5_hex($dump->Dump);
     }
 
     $self->write(\%fields);
