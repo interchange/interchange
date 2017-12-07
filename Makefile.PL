@@ -457,7 +457,7 @@ EOF
 
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
-		$HaveSCCS = (-d "$realdir/.git" or -d "$realdir/CVS" or -d "$realdir/RCS") ? 1 : 0;
+		$HaveSCCS = detect_vcs($realdir);
 		install_file('.', $realdir, $_) for @sharefiles;
 		# install code/ files from MANIFEST
 		chomp(my @codefiles = grep m:^code/:, @files);
@@ -716,6 +716,15 @@ EOF
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
     return \%X;
+}
+
+sub detect_vcs {
+    my $realdir = shift;
+
+    for my $dir ( qw(.git .svn CVS RCS) ) {
+        return 1 if -d "$realdir/$_" or -d "$realdir/../$_";
+    }
+    return 0;
 }
 
 sub get_dist_version {
