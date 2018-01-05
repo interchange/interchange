@@ -345,7 +345,7 @@ sub parse_map {
 	my(@param) = grep $_, split /[\r\n]+/, $params;
 	for(@param) {
 		($var,$source) = split /[\s=]+/, $_, 2;
-		$ref->{$var} = [] unless defined $ref->{$var};
+		$ref->{$var} = [] unless $ref->{$var} and ref $ref->{$var} eq 'ARRAY';
 		$ref->{$source} = '' if ! defined $ref->{$source};
 		$ref->{$source} =~ s/\0/|/g;
 		push @{$ref->{$var}}, ($ref->{$source});
