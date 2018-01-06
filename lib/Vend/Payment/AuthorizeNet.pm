@@ -708,20 +708,24 @@ sub log_it {
         email => $request->{x_Email} || $response->{x_email} || '',
         request => ::uneval($request) || '',
         response => ::uneval($response) || '',
-        session_id => $::Session->{id},
+        session_id => $::Session->{id} || '',
         request_source => $self->source,
+        amount => $request->{x_Amount} || '',
+        host_ip => $::Session->{shost} || $::Session->{ohost} || '',
+        username => $::Session->{username} || '',
+        cart_md5 => '',
     );
 
-    $fields{order_md5} =
-        Digest::MD5::md5_hex(
-            $request->{x_Email},
-            $request->{x_Type},
-            $request->{x_Auth_Code},
-            $request->{x_Amount},
-            $::Session->{id},
-            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-        )
-    ;
+    if (@$Vend::Items) {
+        my $dump = Data::Dumper
+            -> new($Vend::Items)
+            -> Indent(0)
+            -> Terse(1)
+            -> Deepcopy(1)
+            -> Sortkeys(1)
+        ;
+        $fields{cart_md5} = Digest::MD5::md5_hex($dump->Dump);
+    }
 
     $self->write(\%fields);
 }

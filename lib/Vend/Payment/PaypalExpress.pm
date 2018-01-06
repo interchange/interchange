@@ -1262,7 +1262,7 @@ EOB
             Vend::Payment::PaypalExpress
                 -> new({
                     order_number => $opt->{order_id},
-                    email => $opt->{actual}{email},
+                    email => $::Values->{email} || '',
                     amount => $amount,
                     Enabled => charge_param('gwl_enabled'),
                     LogTable => charge_param('gwl_table'),
@@ -2112,20 +2112,24 @@ sub log_it {
         email => $self->{email} || '',
         request => ::uneval($request) || '',
         response => ::uneval($response) || '',
-        session_id => $::Session->{id},
+        session_id => $::Session->{id} || '',
         request_source => $self->source,
+        amount => $self->{amount} || '',
+        host_ip => $::Session->{shost} || $::Session->{ohost} || '',
+        username => $::Session->{username} || '',
+        cart_md5 => '',
     );
 
-    $fields{order_md5} =
-        Digest::MD5::md5_hex(
-            $self->{email},
-            $response->{DoExpressCheckoutPaymentResponseDetails}{PaymentInfo}{TransactionType},
-            $::Scratch->{token},
-            $self->{amount},
-            $::Session->{id},
-            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-        )
-    ;
+    if (@$Vend::Items) {
+        my $dump = Data::Dumper
+            -> new($Vend::Items)
+            -> Indent(0)
+            -> Terse(1)
+            -> Deepcopy(1)
+            -> Sortkeys(1)
+        ;
+        $fields{cart_md5} = Digest::MD5::md5_hex($dump->Dump);
+    }
 
     $self->write(\%fields);
 }

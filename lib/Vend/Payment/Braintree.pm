@@ -1242,19 +1242,23 @@ sub log_it {
         email => $opt->{actual}{email} || '',
         request => ::uneval($request) || '',
         response => ::uneval($thinned_response) || '',
-        session_id => $::Session->{id},
+        session_id => $::Session->{id} || '',
+        amount => $request->{args}{AMT} || $request->{args}{amount} || '',
+        host_ip => $::Session->{shost} || $::Session->{ohost} || '',
+        username => $::Session->{username} || '',
+        cart_md5 => '',
     );
 
-    $fields{order_md5} =
-        Digest::MD5::md5_hex(
-            $opt->{actual}{email},
-            $opt->{transtype} || 'x',
-            $request->{args}{ORIGID},
-            $request->{args}{AMT} || $request->{args}{amount},
-            $::Session->{id},
-            map { ($_->{code}, $_->{quantity}) } @$Vend::Items
-        )
-    ;
+    if (@$Vend::Items) {
+        my $dump = Data::Dumper
+            -> new($Vend::Items)
+            -> Indent(0)
+            -> Terse(1)
+            -> Deepcopy(1)
+            -> Sortkeys(1)
+        ;
+        $fields{cart_md5} = Digest::MD5::md5_hex($dump->Dump);
+    }
 
     $self->write(\%fields);
 }

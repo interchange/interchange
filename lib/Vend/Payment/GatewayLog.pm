@@ -9,21 +9,25 @@ sub new {
     my ($class, $opt) = @_;
 #::logDebug("Called in class $class, with opt hash %s", ::uneval($opt));
     my $self = bless ({}, $class);
-    $self->init($opt);
+    $self->init(%{$opt || {}});
     $Vend::Payment::Global_Timeout = undef;
     return $self;
 }
 
 sub init {
     my $self = shift;
-    my $opt = shift;
-    $self->{_log_table} = $opt->{LogTable} || 'gateway_log';
-    $self->{_enabled} = $opt->{Enabled} || '';
-    $self->{_source} = $opt->{Source} || '';
+    my %opt = @_;
+    $self->{_log_table} = delete ($opt{LogTable}) || 'gateway_log';
+    $self->{_enabled} = delete ($opt{Enabled}) || '';
+    $self->{_source} = delete ($opt{Source}) || '';
 
     unless (length ($self->{_source})) {
         my $host = `hostname -s`;
         chomp ($self->{_source} = $host);
+    }
+
+    if (my @k = keys %opt) {
+        @$self{@k} = @opt{@k};
     }
 
     return 1;
@@ -120,6 +124,7 @@ sub write {
     my $self = shift;
     my $data = shift;
 
+#::logDebug('Ready to write: %s', ::uneval($data));
     eval {
         my $table = $self->table;
         my $db = ::database_exists_ref($table)
