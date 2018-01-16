@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION $Has_JSON $RUNDIR);
-$VERSION = '2.108';
+$VERSION = '2.109';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -642,6 +642,9 @@ sub get_cache_headers {
 
 	my $cc = $::Pragma->{cache_control};
 	push @headers, "Cache-Control: $cc" if $cc;
+
+	my $xee = $::Pragma->{x_accel_expires};
+	push @headers, "X-Accel-Expires: $xee" if defined($xee) and length($xee);
 
 	push @headers, "Pragma: no-cache" if delete $::Scratch->{mv_no_cache};
 
