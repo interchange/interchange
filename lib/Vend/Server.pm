@@ -643,8 +643,8 @@ sub get_cache_headers {
 	my $cc = $::Pragma->{cache_control};
 	push @headers, "Cache-Control: $cc" if $cc;
 
-	my $xee = $::Pragma->{x_accel_expires};
-	push @headers, "X-Accel-Expires: $xee" if defined($xee) and length($xee);
+	my $xae = $::Pragma->{x_accel_expires};
+	push @headers, "X-Accel-Expires: $xae" if defined($xae) and length($xae);
 
 	push @headers, "Pragma: no-cache" if delete $::Scratch->{mv_no_cache};
 
