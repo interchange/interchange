@@ -1180,7 +1180,7 @@ sub alter_column {
 	};
 
 	if($@) {
-		$s->log_error( "'%s' failed. Error: %s", $template,);
+		$s->log_error("'%s' failed. Error: %s", $template, $@);
 		return undef;
 	}
 

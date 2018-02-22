@@ -446,7 +446,7 @@ sub set_slice {
 	}
 
 #::logDebug("exists=$exists set_slice query: $sql");
-#::logDebug("set_slice key/fields/values:\nkey=$key\n" . ::uneval($fary, $vary));
+#::logDebug("set_slice key/fields/values:\n" . ::uneval($key, $fary, $vary));
 
 	my $val;
 	eval {
@@ -761,7 +761,7 @@ sub record_exists {
         $status = defined $s->[$DBI]->selectrow_array($query, undef, @key);
     };
     if($@) {
-		$s->log_error("Bad execution of record_exists query");
+		$s->log_error("Bad execution of record_exists query: $@");
 		return undef;
 	}
 #::logDebug("record_exists status=$status");
