@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 # MA  02110-1301  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = '1.16';
+$VERSION = '1.17';
 
 use strict;
 
@@ -301,65 +301,68 @@ sub get_slice {
 }
 
 sub set_slice {
-    my ($s, $key, $fin, $vin) = @_;
-	my ($fary, $vary);
+	my ($s, $key, $fin, $vin) = @_;
+#::logDebug("set_slice key/fin/vin=\n" . ::uneval($key, $fin, $vin));
+	my ($opt, @key, $fary, $vary, $exists, $sql);
 	
 	$s = $s->import_db() if ! defined $s->[$DBI];
 
-    if($s->[$CONFIG]{Read_only}) {
+	if (ref($key) eq 'ARRAY' && ref($key->[0]) eq 'HASH') {
+		$opt = shift @$key;
+	}
+	$opt ||= {};
+	$opt->{dml} = 'upsert'
+		unless defined $opt->{dml};
+
+	@key = $s->key_values($key) if $key;
+	# A key made up only of NULLs is empty but in composite keys, looks like it exists,
+	# so needs to be removed for the empty key checks below.
+	# Using List::Util::all would be prettier, but this way we avoid another dependency:
+	@key = () if @key and @key == grep { !defined } @key;
+
+#::logDebug("\$key=" . ::uneval($key));
+#::logDebug("\@key=" . ::uneval(\@key));
+#::logDebug("opt=" . ::uneval($opt));
+
+	if($s->[$CONFIG]{Read_only}) {
 		$s->log_error(
 			"Attempt to set slice of %s in read-only table %s",
-			$key,
+			join('/', @key),
 			$s->[$CONFIG]{name},
 		);
 		return undef;
 	}
 
-	my $opt;
-	if (ref ($key) eq 'ARRAY' && ref ($key->[0]) eq 'HASH') {
-		$opt = shift @$key;
-	}
-	$opt ||= {};
-
-	$opt->{dml} = 'upsert'
-		unless defined $opt->{dml};
-
-	my @key;
-	my $exists;
-	if($key) {
-		@key = $s->key_values($key);
-		$exists = $s->record_exists($key);
-	}
-
-	my $sql;
+	$exists = $s->record_exists($key) if $key;
+#::logDebug("exists=$exists");
 
 	if (ref $fin eq 'ARRAY') {
 		$fary = [@$fin];
 		$vary = [@$vin];
 	}
- 	else {
-		my $href = $fin;
-		if(ref $href eq 'HASH') {
-			$href = { %$href };
+	else {
+		my $href;
+		if (ref $fin eq 'HASH') {
+			$href = { %$fin };
 		}
 		else {
 			$href = { splice (@_, 2) };
 		}
- 
- 		if(! $key) {
- 			@key = ();
- 			for( @{$s->[$CONFIG]{_Key_columns}} ) {
+
+		if (! @key) {
+			for( @{$s->[$CONFIG]{_Key_columns}} ) {
 				push @key, delete $href->{$_};
- 			}
- 			$key = \@key;
- 			$exists = $s->record_exists(\@key);
- 		}
- 
+			}
+			$key = \@key;
+			$exists = $s->record_exists($key);
+		}
+
 		$vary = [ values %$href ];
 		$fary = [ keys   %$href ];
- 	}
+	}
+#::logDebug("set_slice \$key/\@key/\$fary/\$vary=\n" . ::uneval($key, \@key, $fary, $vary));
 
-	if(! $key) {
+	if (! @key) {
 		for my $kp (@{$s->[$CONFIG]{_Key_columns}}) {
 			my $idx;
 			my $i = -1;
@@ -381,8 +384,9 @@ sub set_slice {
 			}
 			push @key, $vary->[$idx];
 		}
-#::logDebug("No key, key now=" . ::uneval(\@key));
-		$exists = $s->record_exists(\@key);
+		$key = \@key;
+#::logDebug("No key, key now=" . ::uneval($key));
+		$exists = $s->record_exists($key);
 	}
 
 	if ($s->[$CONFIG]->{PREFER_NULL}) {
@@ -395,7 +399,7 @@ sub set_slice {
 		}
 	}
 
-    if($s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}) {
+	if($s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}) {
 
 		my $lcfg   = $s->[$CONFIG]{FIELD_LENGTH_DATA}
 			or $s->log_error("No field length data with LENGTH_EXCEPTION defined!")
@@ -408,12 +412,10 @@ sub set_slice {
 				if length($vary->[$i]) > $lcfg->{$fary->[$i]}{LENGTH};
 
 		}
-    }
+	}
 
-	my $force_insert =
-		$opt->{dml} eq 'insert';
-	my $force_update =
-		$opt->{dml} eq 'update';
+	my $force_insert = $opt->{dml} eq 'insert';
+	my $force_update = $opt->{dml} eq 'update';
 
 	if ( $force_update or !$force_insert and $exists ) {
 		unless (@$fary) {
@@ -424,7 +426,6 @@ sub set_slice {
 		$sql = "update $s->[$TABLE] SET $fstring $s->[$CONFIG]{_Key_where}";
 	}
 	else {
-		my $found;
 		my %found;
 		for(my $i = 0; $i < @$fary; $i++) {
 			next unless $s->[$CONFIG]{_Key_is}{$fary->[$i]};
@@ -444,7 +445,6 @@ sub set_slice {
 		my $vstring = join ",", map {"?"} @$vary;
 		$sql = "insert into $s->[$TABLE] ($fstring) VALUES ($vstring)";
 	}
-
 #::logDebug("exists=$exists set_slice query: $sql");
 #::logDebug("set_slice key/fields/values:\n" . ::uneval($key, $fary, $vary));
 
@@ -457,8 +457,7 @@ sub set_slice {
 
 		$val = $key;
 	};
-
-#::logDebug("set_slice key: $val");
+#::logDebug("set_slice key=" . ::uneval($val));
 
 	if($@) {
 		my $err = $@;
@@ -478,7 +477,7 @@ sub set_slice {
 }
 
 sub set_row {
-    my ($s, @fields) = @_;
+	my ($s, @fields) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $cfg = $s->[$CONFIG];
 	my $ki = $cfg->{KEY_INDEX};
@@ -743,8 +742,8 @@ sub record_exists {
 	my @key = $s->key_values($key);
     my $query;
 
-	# Does any SQL allow empty key?
-	return '' if ! length($key) and ! $s->[$CONFIG]{ALLOW_EMPTY_KEY};
+	# Don't allow undef or empty key parts unless configuration specifies
+	return '' if grep { !defined or !length } @key and ! $s->[$CONFIG]{ALLOW_EMPTY_KEY};
 	my $mainkey = $s->[$CONFIG]{_Key_columns}[0];
 #::logDebug("record_exists for mainkey=$mainkey key=" . ::uneval(\@key));
 
