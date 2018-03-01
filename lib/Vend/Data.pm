@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -2282,11 +2282,11 @@ sub update_data {
 				if $::Pragma->{dml} eq 'strict'
 					|| $function eq 'insert' && $::Pragma->{dml} eq 'preserve';
 
-			for(keys %$qd) {
-#::logDebug("update_data: Getting ready to set_slice");
-				my $k = $multikey ? undef : $key;
-				$qret = $qd->{$_}->set_slice([$dml, $k], $qf->{$_}, $qv->{$_});
-				$rows_set[$i] = $qret unless $rows_set[$i];
+			my $k = $multikey ? undef : $key;
+			my $args = [$dml, $k];
+			for (keys %$qd) {
+				$qret = $qd->{$_}->set_slice($args, $qf->{$_}, $qv->{$_});
+				$rows_set[$i] ||= $qret;
 			}
 			if($blob && $rows_set[$i]) {
 				$brec->{mv_data_fields} = join " ", @fields;

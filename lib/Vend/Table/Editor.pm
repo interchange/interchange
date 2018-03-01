@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -2334,6 +2334,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 			}
 		}
 	}
+#::logDebug("table editor multikey/key/data=\n" . ::uneval($multikey, $key, $data));
 
 	my $regin = $opt->{all_opts} ? 1 : 0;
 
@@ -2622,13 +2623,8 @@ EOF
 		}
 	}
 
-	my $keycol;
-	if($opt->{notable}) {
-		$keycol = $opt->{ui_data_key_name};
-	}
-	else {
-		$keycol = $opt->{ui_data_key_name} || $db->config('KEY');
-	}
+	my $keycol = $opt->{ui_data_key_name};
+	$keycol ||= $db->config('KEY') if !$opt->{notable};
 
 	###############################################################
 
