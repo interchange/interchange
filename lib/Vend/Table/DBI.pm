@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ use Vend::Table::DBI;
 
 This is the database code that links Interchange to database tables as
 presented by Perl DBI, and which are interfaced by SQL. Some may
-conceivably be non-SQL tables with DBI frontents, but most Interchange
+conceivably be non-SQL tables with DBI frontends, but most Interchange
 installations use MySQL or Postgres.
 
 =head1 METHODS
