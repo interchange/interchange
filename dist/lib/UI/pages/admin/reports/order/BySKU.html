@@ -124,7 +124,7 @@ EOF
 	sql="
 		select affiliate, campaign, total_cost, order_date, order_number
 			from  transactions
-			WHERE deleted <> '1' [scratch date_limit] [scratch synd_limit]
+			WHERE deleted <> '1' and status <> 'canceled' [scratch date_limit] [scratch synd_limit]
 			order by affiliate, campaign, order_date
 	"][/query]
 
