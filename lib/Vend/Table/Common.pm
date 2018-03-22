@@ -631,7 +631,8 @@ sub touch {
 sub ref {
 	my $s = shift;
 	return $s if defined $s->[$TIE_HASH];
-	return $s->import_db();
+	return $s->import_db() if $s->can('import_db');
+	die errmsg("no access for database. Have you opened the database before trying to access it? You can try inserting [perl name_of_table_you_are_accessing][/perl] in your page before the data access or adding the following to your catalog.cfg: AutoLoad [perl name_of_table_you_are_accessing][/perl]");
 }
 
 sub sort_each {

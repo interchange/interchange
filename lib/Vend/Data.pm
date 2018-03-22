@@ -985,14 +985,19 @@ sub import_database {
 #::logDebug("ready to try opening db $table_name") if ! $db;
 		eval { 
 			if($MVSAFE::Safe) {
-                if (exists $Vend::Interpolate::Db{$class_config->{Class}}) {
-				    $db = $Vend::Interpolate::Db{$table_name}->open_table( $obj, $obj->{db_file} );
-                } else {
-                    die errmsg("no access for database %s", $table_name);
-                }
+				if (exists $Vend::Interpolate::Db{$class_config->{Class}}) {
+					$db = $Vend::Interpolate::Db{$table_name}->open_table( $obj, $obj->{db_file} );
+				} else {
+					die errmsg("no access for database $table_name. Have you opened the database before trying to access it? You can try inserting [perl $table_name][/perl] in your page before the data access or adding the following to your catalog.cfg: AutoLoad [perl $table_name][/perl]");
+				}
 			}
 			else {
-				$db = $class_config->{Class}->open_table( $obj, $obj->{db_file} );
+				if ($class_config->{Class}->can('open_table')) {
+					$db = $class_config->{Class}->open_table( $obj, $obj->{db_file} );
+				}
+				else {
+					die errmsg("no access for database $table_name. Have you opened the database before trying to access it? You can try inserting [perl $table_name][/perl] in your page before the data access or adding the following to your catalog.cfg: AutoLoad [perl $table_name][/perl]");
+				}
 			}
 			$obj->{NAME} = $db->[$Vend::Table::Common::COLUMN_INDEX]
 				unless defined $obj->{NAME};
