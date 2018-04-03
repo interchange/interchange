@@ -2288,9 +2288,8 @@ sub update_data {
 					|| $function eq 'insert' && $::Pragma->{dml} eq 'preserve';
 
 			my $k = $multikey ? undef : $key;
-			my $args = [$dml, $k];
 			for (keys %$qd) {
-				$qret = $qd->{$_}->set_slice($args, $qf->{$_}, $qv->{$_});
+				$qret = $qd->{$_}->set_slice([$dml, $k], $qf->{$_}, $qv->{$_});
 				$rows_set[$i] ||= $qret;
 			}
 			if($blob && $rows_set[$i]) {
