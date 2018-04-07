@@ -51,3 +51,5 @@ Database  userdb  COLUMN_DEF   "updated=varchar(32)"
 Database  userdb  COLUMN_DEF   "zip=varchar(10)"
 Database  userdb  PREFER_NULL   mod_time
 Database  userdb  INDEX        "UNIQUE usernick"
+
+UserDB    default    iso_time  1
