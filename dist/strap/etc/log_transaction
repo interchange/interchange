@@ -253,26 +253,20 @@ Set order number in session: [calc]
 		[userdb function=logout clear=0 clear_cart=0]
 	[/if]
 	[tmp auto_create]1[/tmp]
-    [calcn]
-        $Tag->tmp('tmp_pass');
-        for(qw/ zip phone_day phone_night /) {
-            my $pass = $Values->{$_};
-            $pass =~ s/\s+//g;
-            next if length($pass) < 4;
-            $Scratch->{tmp_pass} = $pass;
-        }
-	
-		my @lets = ('A' .. 'Z', '0 .. 9', 'a' .. 'z');
-		$Scratch->{tmp_pass} .= $lets[ rand @lets ]
-			while length($Scratch->{tmp_pass}) < 5;
-        return;
-    [/calcn]
+	[calcn]
+		my $pass = '';
+		my @lets = ('A'..'Z', 'a'..'z', '0'..'9');
+		$pass .= $lets[ rand @lets ]
+			while length($pass) < 8;
+		$Tag->tmpn('tmp_pass', $pass);
+		return;
+	[/calcn]
     [if type=explicit compare=|
         [userdb
             function=new_account
-                assign_username=1
-                    password='[scratch tmp_pass]'
-                        verify='[scratch tmp_pass]'
+            assign_username=1
+            password='[scratch tmp_pass]'
+            verify='[scratch tmp_pass]'
         ]
         |]
         [seti mv_autocreate]
@@ -298,17 +292,11 @@ There was an error adding you to the customer table.
 	[tmp tmp_username][data table=userdb col=usernick key="[value customer_id]"][/tmp]
 	[if !scratch tmp_username]
 		[calcn]
-			$Tag->tmp('tmp_pass');
-			for(qw/ zip phone_day phone_night /) {
-				my $pass = $Values->{$_};
-				$pass =~ s/\s+//g;
-				next if length($pass) < 4;
-				$Scratch->{tmp_pass} = $pass;
-			}
-		
-			my @lets = ('A' .. 'Z', '0 .. 9', 'a' .. 'z');
-			$Scratch->{tmp_pass} .= $lets[ rand @lets ]
-				while length($Scratch->{tmp_pass}) < 5;
+			my $pass = '';
+			my @lets = ('A'..'Z', 'a'..'z', '0'..'9');
+			$pass .= $lets[ rand @lets ]
+				while length($pass) < 8;
+			$Tag->tmpn('tmp_pass', $pass);
 			return;
 		[/calcn]
 		[tmp hide_status][userdb
