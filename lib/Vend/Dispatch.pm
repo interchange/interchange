@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = '1.116';
+$VERSION = '1.117';
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1644,8 +1644,6 @@ EOF
 Status: 301 Moved
 Location: $url
 Content-Type: text/plain
-
-Redirecting to $url
 EOF
 		response($msg);
 #::logDebug("bouncing to $url");
