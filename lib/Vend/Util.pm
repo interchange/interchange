@@ -2262,6 +2262,12 @@ sub send_mail {
 
 		my @to;
 		my @addr = split /\s*,\s*/, $to;
+		for(@extra_headers) {
+			s/\s*$/\n/;
+			next unless /^(Cc|Bcc):\s*(\S.+)$/mi;
+#::logDebug("smtp adding receipients for $1=$2");
+			push @addr, split(/\s*,\s*/, $2);
+		}
 		for (@addr) {
 			if(/\s/) {
 				## Uh-oh. Try to handle
