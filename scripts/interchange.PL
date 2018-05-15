@@ -3,14 +3,14 @@
 #
 #-# Interchange version ~_~VERSION~_~
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
-# See the files 'README' and 'WHATSNEW' for information.
+# See the files 'README.md' and 'WHATSNEW' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -350,7 +350,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2017 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2002-2018 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -990,7 +990,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2017 Interchange Development Group
+    Copyright (C) 2002-2018 Interchange Development Group
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 
@@ -1002,7 +1002,6 @@ Mike Heins is the primary author of Interchange.
 
 The Interchange Development Group is:
 
-    Daniel Browning
     David Christensen
     Gert van der Spoel
     Greg Hanson
@@ -1037,6 +1036,7 @@ portions from Vend 0.3; both were produced in 1995.
 Special thanks to Retired Core Team Members:
 
     Brev Patterson
+    Daniel Browning
     David Kelly
     Davor Ocelic
     Ed LaFrance
@@ -1061,7 +1061,7 @@ Contributions to Interchange have been made by:
     Andreas Koenig                      Jordan Adler
     Andrew Rich                         Josh Braegger
     Bill Carr                           Josh Lavin
-    Bill Dawkins                        José Mª Revuelto
+    Bill Dawkins                        JosÃ© MÂª Revuelto
     Bill Randle                         Jurgen Botz
     Birgitt Funk                        Justin Otten
     Bob Jordan                          Kaare Rasmussen
@@ -1092,12 +1092,12 @@ Contributions to Interchange have been made by:
     Frank Bonita                        Raj Goel
     Frederic Steinfels                  Ray Desjardins
     Gary Benson                         Reid Sutherland
-    Gunnar Hellekson                    René Hertell
+    Gunnar Hellekson                    RenÃ© Hertell
     Hamish Bradick                      Ryan Perry
     Hans-Joachim Leidinger              Sergiusz Jarczyk
     Heinz Wittenbecher                  Shozo Murahashi
     Hiroyuki Cozy Kojima                Sonny Cook
-    Ignacio Lizarán                     Spencer Christensen
+    Ignacio LizarÃ¡n                     Spencer Christensen
     Ivan Kohler                         Steve Graham
     Jack Tsai                           Thomas J.M. Burton
     Jason Holt                          Tim Baverstock

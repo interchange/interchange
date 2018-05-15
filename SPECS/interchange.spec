@@ -249,7 +249,7 @@ exit 0
 %defattr(-, root, root)
 
 %doc LICENSE
-%doc README
+%doc README.md
 %doc README.rpm-dist
 %doc README-DEVELOPMENT
 %doc UPGRADE

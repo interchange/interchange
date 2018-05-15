@@ -345,7 +345,7 @@ based on Foundation and not heavily customized (i.e. using global UserTag
 routines).
 
 1. Install the new Interchange 5.x.x in /usr/lib/interchange-5.x.x
-using the procedure from the README file.
+using the procedure from the README.md file.
 
 2. Make /usr/lib/interchange-5.x.x/interchange.cfg match your
 /usr/lib/interchange.cfg. Note that there may be new options; but the
