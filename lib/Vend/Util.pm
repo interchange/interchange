@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -103,7 +103,7 @@ use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '2.130';
+$VERSION = '2.131';
 
 my $Eval_routine;
 my $Eval_routine_file;
