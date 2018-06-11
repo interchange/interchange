@@ -1234,7 +1234,7 @@ $Job_servers = 0;
 
 # might also trap: QUIT
 
-my ($Routine_USR1, $Routine_USR2, $Routine_HUP, $Routine_TERM, $Routine_INT);
+my ($Routine_TERM, $Routine_INT);
 my ($Sig_inc, $Sig_dec, $Counter);
 
 sub sig_int_or_term {
@@ -1260,9 +1260,6 @@ sub sig_int_or_term {
 
 unless ($Global::Windows) {
 	push @trapped_signals, qw(HUP USR1 USR2);
-	$Routine_USR1 = sub { $SIG{USR1} = $Routine_USR1; $Num_servers++};
-	$Routine_USR2 = sub { $SIG{USR2} = $Routine_USR2; $Num_servers--};
-	$Routine_HUP  = sub { $SIG{HUP} = $Routine_HUP; $Signal_Restart = 1};
 }
 
 $Routine_TERM = sub { $SIG{TERM} = $Routine_TERM; $Signal_Terminate = 1 };
