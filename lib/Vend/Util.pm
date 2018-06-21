@@ -2447,7 +2447,7 @@ sub timecard_stamp {
 	open(FH, '>>', $filename) or die "Can't open $filename for append: $!";
 	lockfile(\*FH, 1, 1);
 	binmode FH;
-	print FH pack('N',time);
+	print FH pack('N',$timestamp);
 	unlockfile(\*FH);
 	close FH;
 }
