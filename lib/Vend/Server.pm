@@ -1258,6 +1258,13 @@ sub sig_int_or_term {
 	return;
 }
 
+sub sig_hup {
+    $Signal_Restart = 1;
+    my $am_master = ($Vend::MasterProcess == $$);
+    warn "Re-opening log...\n" if $am_master;
+    setup_debug_log(!$am_master);
+}
+
 unless ($Global::Windows) {
 	push @trapped_signals, qw(HUP USR1 USR2);
 }
@@ -1310,7 +1317,7 @@ sub setup_signals {
 	else  {
 		$SIG{INT}  = \&sig_int_or_term;
 		$SIG{TERM} = \&sig_int_or_term;
-		$SIG{HUP}  = sub { $Signal_Restart = 1; };
+		$SIG{HUP}  = \&sig_hup;
 		$SIG{USR1} = sub { $Num_servers++; };
 		$SIG{USR2} = sub { $Num_servers--; };
 	}
@@ -1390,6 +1397,7 @@ sub housekeeping {
 			}
 
 			foreach my $pid (@active_pids) {
+				kill('HUP', $pid) and next if $Signal_Restart;
 				kill(0, $pid) and next;
 #::logDebug("Non-existent server at PID %s", $pid);
 				delete $Page_pids{$pid};
@@ -1460,6 +1468,8 @@ sub housekeeping {
 		($jobs) = grep $_ eq 'jobsqueue', @files
 			if $do->{jobs};
 
+		undef $Signal_Restart;
+
 		if($do_before) {
 			for(@$do_before) {
 #::logDebug("run before macro $_");
@@ -1480,7 +1490,6 @@ sub housekeeping {
 		my $respawn;
 
 		if (defined $restart) {
-			$Signal_Restart = 0;
 			open(Vend::Server::RESTART, "+<$Global::RunDir/restart")
 				or die "open $Global::RunDir/restart: $!\n";
 			lockfile(\*Vend::Server::RESTART, 1, 1)
@@ -2520,11 +2529,13 @@ sub send_ipc {
 }
 
 sub setup_debug_log {
+	my $quiet = shift;
 	if ($Global::DebugFile) {
-		open(Vend::DEBUG, ">>$Global::DebugFile");
+		close Vend::DEBUG;
+		open Vend::DEBUG, '>>', $Global::DebugFile;
 		select Vend::DEBUG;
 		$| = 1;
-		print "Start DEBUG at " . localtime() . "\n" unless $Global::SysLog;
+		print "Start DEBUG at " . localtime() . "\n" unless $Global::SysLog or $quiet;
 	}
 	elsif (!$Global::DEBUG) {
 		# May as well turn warnings off, not going anywhere
