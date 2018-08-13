@@ -2124,6 +2124,12 @@ sub cookies_hash {
 sub send_mail {
 	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
 
+	if (my $charset = $::Variable->{MV_EMAIL_CHARSET} || $Global::Variable->{MV_EMAIL_CHARSET}) {
+		if (!grep /content-type/i, @extra_headers) {
+			push @extra_headers, "Content-type: text/plain; charset=$charset";
+		}
+	}
+
 	if(ref $to) {
 		my $head = $to;
 
