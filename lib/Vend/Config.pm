@@ -3870,7 +3870,7 @@ sub parse_wildcard {
 	$value =~ s/\*/.*/g;
 	$value =~ s/\?/./g;
 	$value =~
-		s[({(?:.+?,)+.+?})]
+		s[(\{(?:.+?,)+.+?\})]
 		 [ local $_ = $1; tr/{,}/(|)/; $_ ]eg;
 	$value =~ s/\s+/|/g;
 	eval {  
