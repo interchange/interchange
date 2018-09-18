@@ -43,7 +43,7 @@ sub new {
     my $safe = Safe->new(@args);
 
     # Safe started taking better care of Unicode things as of version 2.32
-    if ($] lt '5.009' || version->parse($Safe::VERSION) < version->parse('2.32')) {
+    if (version->parse($Safe::VERSION) < version->parse('2.32')) {
         $invocant->initialize_safe_compartment($safe);
     }
 

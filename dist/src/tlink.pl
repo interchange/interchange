@@ -3,7 +3,7 @@
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #           via a TCP socket
 #
-# Copyright (C) 2005-2008 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2005-2018 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-require 5.008_005;
+require 5.014_001;
 use strict;
 use Socket;
 my $LINK_TIMEOUT = 30;

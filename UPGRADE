@@ -7,6 +7,8 @@ Interchange is designed to be drop-in compatible in its major version.
 Briefly summarized, here's what you can expect when upgrading from the
 following versions:
 
+ 5.12.x -- The minimum supported Perl version is now 5.14.1.
+
  5.10.x -- A minor bug was fixed in an edge-case usage of the [area] tag which
 	   could result in incompatibility if your code relies on the buggy
 	   behaviour.

@@ -10,13 +10,14 @@
 
 Interchange 5.12 not released yet
 
+Interchange now requires Perl 5.14.1 or newer.
+
 
 Installation
-----
+------------
 
-* Assume that if a source code control repository is present in
-  the installation directory, we don't need to do the archaic .~*
-  file copies.
+* Assume that if a source code control repository is present in the
+  installation directory, we don't need to do the archaic .~* file copies.
 
 
 Core
@@ -28,8 +29,8 @@ Core
 
 * Improve image uploading via the table editor.
 
-* Improve [image] extension handling to search for lower/upper versions of file
-  extensions.
+* Improve [image] extension handling to search for lower/uppercase versions
+  of file extensions.
 
 * Add date-change "common" filter parameter.
 
@@ -48,7 +49,18 @@ Core
 
 * Improved integration of CI tools for development.
 
-* Multiple cleanups to handle more modern versions of Perl.
+* Multiple cleanups and bugfixes to handle more modern versions of Perl.
+
+* Add x_accel_expires pragma to set X-Accel-Expires header for nginx proxy caching.
+
+* Remove non-header from BounceReferrals HTTP response headers, which
+  breaks output with newer Apache versions.
+
+* Support recipient addresses in CC and BCC when using Net::SMTP.
+
+* Make Interchange reopen debug.log/STDERR when receiving HUP signal.
+
+* Fix race conditions in timed-build output.
 
 
 Payments
@@ -61,11 +73,14 @@ Payments
 
 * Updated Vend::Payment::PayPal to latest available version.
 
-* Add Gateway Log feature for logging full details of payment gateway requests/responses.
-  (See extended section about the GatewayLog later in this document.)
+* Add Gateway Log feature for logging full details of payment gateway requests/
+  responses. (See extended section about the GatewayLog later in this document.)
+
 
 Database
 --------
+
+* Support newer versions of MySQL.
 
 * Allow admin user to export specific tables using [backup-database] despite
   current NoExportExternal setting.
@@ -81,8 +96,8 @@ Database
   Assuming one has a timestamp field in the userdb table called
   "update_date", this is effected by changing the configuration as:
 
-  	Database userdb  TIMESTAMP_FIELD  update_date
-  	Database userdb  NO_UPDATE        mod_time
+    Database userdb  TIMESTAMP_FIELD  update_date
+    Database userdb  NO_UPDATE        mod_time
 
 * Add ability to return after Preload and Autoload routines.
   Setting $Vend::PreloadReturn or $Vend::AutoloadReturn (i.e.
@@ -102,12 +117,12 @@ Database
 
   If you do:
 
-  	  UserDB  ui  valref   user_record
-	  UserTag uvalue Alias  data base=session key=
+    UserDB  ui  valref   user_record
+    UserTag uvalue Alias  data base=session key=
 
   you will then be able to reference the Admin "values" with
 
-  	[uvalue name]
+    [uvalue name]
 
   The [if-mm] tag probably needs to be adjusted for this to work
   in the admin in real life.
@@ -116,20 +131,28 @@ Database
 
 * Update default field widths for userdb, transactions, and orderlines.
 
+* Improve error handling/messaging when no access to database in Safe.
+
+* Fix table editor composite key problems, both creating new and editing
+  existing rows.
+
 
 UserDB
 ------
 
-* Add "fallback_login" option, to be used with "indirect_login". If indirect fails, it will fallback
-  to the primary key (by default, username). This could allow users to login with email
-  (indirect_login = usernick), but still support login via username if they opted to use their
-  username instead.
+* Add "fallback_login" option, to be used with "indirect_login". If
+  indirect fails, it will fallback to the primary key (by default,
+  username). This could allow users to login with email (indirect_login
+  = usernick), but still support login via username if they opted to use
+  their username instead.
 
-* Add "promote_admin" option, to be used with "scratch". The option is set to the value of a
-  field name, which also has to be a "scratch" value. If that is true, and the value of the
-  field is true, the user will be promoted to $Vend::admin. They will not be $Vend::super.
-  Note that this does not gain access to the classic Interchange UI without modification,
-  since the login_table will not be admin (the test which is used in most cases).
+* Add "promote_admin" option, to be used with "scratch". The option
+  is set to the value of a field name, which also has to be a "scratch"
+  value. If that is true, and the value of the field is true, the user
+  will be promoted to $Vend::admin. They will not be $Vend::super. Note
+  that this does not gain access to the classic Interchange UI without
+  modification, since the login_table will not be admin (the test which is
+  used in most cases).
 
 
 Strap Demo Catalog
@@ -140,6 +163,9 @@ Strap Demo Catalog
 * Remove some legacy cart components.
 
 * Formatting fixes on checkout pages.
+
+* Fix broken random password number range; consistently make random
+  instead of using zip or phone.
 
 
 Gateway Log
@@ -193,21 +219,22 @@ There are 3 settings a catalog manager can control when enabling gateway
 logging:
 
 * Enabled (discussed above)
-    Boolean to indicate that actual logging should be performed. Default
-    is false; thus logging must be explicitly requested. Can be set with
-    Route param or [charge] options "gwl_enabled", or globally with
-    MV_PAYMENT_GWL_ENABLED in catalog.cfg.
+  Boolean to indicate that actual logging should be performed. Default
+  is false; thus logging must be explicitly requested. Can be set with
+  Route param or [charge] options "gwl_enabled", or globally with
+  MV_PAYMENT_GWL_ENABLED in catalog.cfg.
 
 * LogTable
-    Name of table to which logging should be directed. Default is
-    gateway_log. Can be set with Route param or [charge] option "gwl_table",
-    or globally with MV_PAYMENT_GWL_TABLE in catalog.cfg.
+  Name of table to which logging should be directed. Default is
+  gateway_log. Can be set with Route param or [charge] option "gwl_table",
+  or globally with MV_PAYMENT_GWL_TABLE in catalog.cfg.
 
 * Source
-    Maps to the request_source field in the log table. Value is most
-    meaningful in a distributed environment, where multiple servers
-    running the Interchange application may be handling requests behind a
-    load balancer. Default value obtained from `hostname -s`. Can be set
-    with Route param or [charge] option "gwl_source", or globally with
-    MV_PAYMENT_GWL_SOURCE in catalog.cfg.
+  Maps to the request_source field in the log table. Value is most
+  meaningful in a distributed environment, where multiple servers
+  running the Interchange application may be handling requests behind a
+  load balancer. Default value obtained from `hostname -s`. Can be set
+  with Route param or [charge] option "gwl_source", or globally with
+  MV_PAYMENT_GWL_SOURCE in catalog.cfg.
 
+(end)

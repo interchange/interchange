@@ -17,7 +17,7 @@ use File::Basename;
 use File::Find;
 use Data::Dumper;
 use Cwd;
-require 5.008_005;
+require 5.014_001;
 
 use strict;
 
@@ -312,32 +312,11 @@ sub initialize {
         chomp($uid = <UID>);
         close UID;
     }
+#warn "Got past open UID file , uid=$uid user=$>\n";
 
 	$Global::TryingThreads	=  $Config{usethreads}
 							|| $Config{useithreads}
 							|| $Config{use5005threads};
-
-	if($Global::TryingThreads and $] < 5.008_008 and ! -f '_allow_threads') {
-		print <<EOF;
-It is not recommended that you run Interchange with a thread-enabled
-perl older than version 5.8.8, which you have called this installer with.
-Either rerun with 
-
-	/path/to/non-threaded/perl Makefile.PL
-
-or accept the possible problems that come with running on an experimental
-software system.
-EOF
-
-		my $ans = my_prompt("Do you want to try running with threads? ", 'n');
-		exit if $ans !~ /^\s*y/i;
-        open(THR, ">_allow_threads")
-            or die "Can't write allow threads file: $!\n";
-        print THR "I agree not to hold anyone but myself responsible for the results of running an experimental system.\n";
-        close THR;
-	}
-
-#warn "Got past open UID file , uid=$uid user=$>\n";
 
 	GETUID: {
 		if($> == 0 and ! $MV::Default{INTERCHANGE_USER}) {
@@ -560,15 +539,6 @@ EOF
 						$MV::Default{INTERCHANGE_GID},
 						"$realdir/$_";
 			}
-		}
-
-		ALLOWTHREADS: {
-			unlink "$realdir/_allow_threads";
-			last ALLOWTHREADS unless $Global::TryingThreads;
-			open(THR, ">$realdir/_allow_threads")
-				or die "Can't write allow threads file: $!\n";
-			print THR "I agree not to hold anyone but myself responsible for the results of running an experimental system.\n";
-			close THR;
 		}
 
 		if($MV::Default{LSB}) {

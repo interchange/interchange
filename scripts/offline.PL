@@ -3,7 +3,7 @@
 #
 # Interchange database builder and indexer
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -29,6 +29,7 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
+require 5.014_001;
 use strict;
 use Fcntl;
 use Vend::Util;
@@ -43,7 +44,6 @@ $Data::Dumper::Indent = 2;
 
 BEGIN {
 	eval {
-		require 5.004;
 		require FindBin;
 		1 and $Global::VendRoot = $FindBin::RealBin;
 		1 and $Global::VendRoot =~ s/.bin$//;

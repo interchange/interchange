@@ -2,7 +2,7 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# Copyright (C) 2002-2008 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-require 5.008_005;
+require 5.014_001;
 use strict;
 use Apache::Registry;
 use Socket;

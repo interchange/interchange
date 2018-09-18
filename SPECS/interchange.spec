@@ -18,7 +18,7 @@
 Summary: Interchange web application platform
 Name: interchange
 Version: 5.12.0
-Release: 1
+Release: 2
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -27,8 +27,8 @@ Packager: Jon Jensen <jon@endpoint.com>
 Source0: http://www.icdevgroup.org/interchange/interchange-%{version}.tar.gz
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
-BuildPrereq: perl >= 5.8.8
-Requires: perl >= 5.8.8
+BuildPrereq: perl >= 5.14.1
+Requires: perl >= 5.14.1
 Requires: perl(Safe::Hole)
 Requires: perl(Set::Crontab)
 Requires: interchange = %{version}-%{release}
@@ -381,6 +381,9 @@ fi
 
 
 %changelog
+* Tue Sep 18 2018 Jon Jensen <jon@endpoint.com> 5.12.0-2
+- Increase minimum Perl version to 5.14.1.
+
 * Fri Oct 27 2017 David Christensen <david@endpoint.com> 5.12.0-1
 - Update for new release.
 

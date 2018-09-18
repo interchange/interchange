@@ -85,12 +85,11 @@ Gisle Aas <aas@sn.no>
 
 =cut
 
-require 5.005;
+require 5.014_001;
 use Carp   qw(croak);
 use Symbol qw(gensym);
 my $rewind_check;
 eval {
-		require 5.005;
 		require Errno;
 		import Errno qw(EINTR);
 		$rewind_check = 1;

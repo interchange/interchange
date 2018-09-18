@@ -56,7 +56,7 @@ use Config;
 no Config;
 
 BEGIN {
-	require 5.008_005;
+	require 5.014_001;
 
 	$ENV{PERL_SIGNALS} ||= 'unsafe';
 
@@ -379,7 +379,7 @@ its web site:
 
 		http://www.icdevgroup.org/
 
-Interchange requires Perl 5.8.5 or higher; more information on Perl can
+Interchange requires Perl 5.14.1 or higher; more information on Perl can
 be seen at:
 
 		http://www.perl.com/
@@ -852,32 +852,6 @@ EOF
 			chomp $msg;
 			logGlobal($msg);
 		}
-	}
-
-	THREADCHECK: {
-		last THREADCHECK unless $Global::TryingThreads;
-		$] >= 5.008_008 and last THREADCHECK;
-		
-		my $msg = <<EOF;
-***************************************************************
-***************************************************************
-****                                                       ****
-****  You are running a Perl older than 5.8.8 with         ****
-****  threads enabled -- this is not recommended for a     ****
-****  production environment.                              ****
-****                                                       ****
-****  If the Interchange daemon does not start, add this   ****
-****  line to interchange.cfg:                             ****
-****                                                       ****
-****    Variable MV_GETPPID_BROKEN  1                      ****
-****                                                       ****
-****  Then restart the server.                             ****
-****                                                       ****
-***************************************************************
-***************************************************************
-EOF
-		chomp $msg;
-		logGlobal($msg);
 	}
 
 	# The global configuration set up which catalogs exist.
