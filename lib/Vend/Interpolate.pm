@@ -4252,8 +4252,8 @@ my $once = 0;
 		last unless defined $row;
 		$code = $row->[0];
 
-#::logDebug("Doing $code substitution, count $count++");
-#::logDebug("Doing '" . substr($code, 0, index($code, "\n") + 1) . "' substitution, count $count++");
+#::logDebug("Doing $code substitution, count $count");
+#::logDebug("Doing '" . substr($code, 0, index($code, "\n") + 1) . "' substitution, count $count");
 
 	    $run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
@@ -4439,7 +4439,7 @@ sub iterate_hash_list {
 		$code = $item->{$code_field} || $item->{code};
 		$code = '' unless defined $code;
 
-#::logDebug("Doing $code (variant $item->{code}) substitution, count $count++");
+#::logDebug("Doing $code (variant $item->{code}) substitution, count $count");
 
 		$run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
