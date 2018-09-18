@@ -4028,7 +4028,10 @@ my $rit = 1;
 sub resolve_nested_if {
 	my ($where, $what) = @_;
 	$where =~ s~\[$what\s+(?!.*\[$what\s)(.*?)\[/$what\]~
-				'[' . $what . $rit . " $1" . '[/' . $what . $rit++ . ']'~seg;
+                my $out = '[' . $what . $rit . ' ' . $1 . '[/' . $what . $rit . ']';
+                ++$rit;
+                $out
+				~seg;
 #::logDebug("resolved?\n$where\n");
 	return $where;
 }
