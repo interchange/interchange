@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2018 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -59,13 +59,17 @@ unless( $ENV{MINIVEND_DISABLE_UTF8} ) {
 use Vend::Util;
 use File::Path;
 use File::Copy;
+use File::Temp;
+
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = '2.33';
+
+$VERSION = '2.34';
 
 sub writefile {
     my($file, $data, $opt) = @_;
-	my($encoding, $fallback);
+	ref($opt) or $opt = {};
+	my ($encoding, $fallback, $save_umask);
 
 	if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
 		$encoding = $opt->{encoding} ||= 'utf8';
@@ -75,16 +79,16 @@ sub writefile {
 	}
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
-	if (ref $opt and $opt->{umask}) {
-		$opt->{umask} = umask oct($opt->{umask});
+
+	if ($opt->{umask}) {
+		$save_umask = umask oct($opt->{umask});
 	}
+
     eval {
 		unless($file =~ s/^[|]\s*//) {
-			if (ref $opt and $opt->{auto_create_dir}) {
+			if ($opt->{auto_create_dir}) {
 				my $dir = $file;
 				$dir =~ s/>+//;
-
-				## Need to make this OS-independent, requires File::Spec support
 				$dir =~ s:[\r\n]::g;   # Just in case
 				$dir =~ s:(.*)/.*:$1: or $dir = '';
 				if($dir and ! -d $dir) {
@@ -137,11 +141,99 @@ sub writefile {
 		$status = 0;
     }
 
-    if (ref $opt and defined $opt->{umask}) {                                        
-        $opt->{umask} = umask oct($opt->{umask});                                    
-    }
+    umask $save_umask if defined $save_umask;
 
 	return $status;
+}
+
+
+# writefile_atomic() is similar to writefile(), but:
+# Only writes entire files (no appending or writing to a pipe).
+# Writes first to a temporary file and then renames that into place at the expected file name, which is an atomic operation in POSIX filesystems.
+#
+# This removes the race conditions in writefile() where:
+# * a reader can see an empty file right after truncation
+# * a reader can see a a partially-written file
+# * concurrent writers can double output in the file due to the lock race and seek to end (which is only needed for appending, not overwriting)
+#
+# It also removes the need for locking.
+
+sub writefile_atomic {
+    my ($path, $data, $opt) = @_;
+
+    if ($path =~ /^\s*(?:>>|<|\+|\|)/) {
+        ::logError(__PACKAGE__ . "::writefile_atomic can only write an entire file; invalid prefix: $path");
+        return;
+    }
+
+    # Tolerate unneeded leading > for compatibility
+    $path =~ s/^\s*>\s*//;
+
+    my ($encoding, $fallback, $save_umask, $tmpfile, $status);
+    ref($opt) or $opt = {};
+
+    if ($::Variable->{MV_UTF8} || $Global::Variable->{MV_UTF8}) {
+        $encoding = $opt->{encoding} || 'utf8';
+        undef $encoding if $encoding eq 'raw';
+        $fallback = $opt->{fallback} // $PERLQQ;
+    }
+
+    if ($opt->{umask}) {
+        $save_umask = umask oct($opt->{umask});
+    }
+
+    eval {
+        my $dir = $path;
+        $dir =~ s:[\r\n]::g;   # Just in case
+        my $file;
+        if ($dir =~ s:(.*)/(.*):$1:) {
+            $file = $2;
+        }
+        else {
+            $dir = '';
+            $file = 'temp';
+        }
+
+        if ($dir and $opt->{auto_create_dir} and ! -d $dir) {
+            File::Path::mkpath($dir);
+            die "mkpath\n" unless -d $dir;
+        }
+
+        my $fh;
+        ($fh, $tmpfile) = File::Temp::tempfile($file . '.XXXXXXXX', DIR => $dir);
+        $fh or die "open\n";
+        # File::Temp doesn't respect umask, so correct the file mode
+        chmod 0666 &~ umask(), $tmpfile or die "chmod\n";
+        if ($encoding) {
+            local $PerlIO::encoding::fallback = $fallback;
+            binmode $fh, ":encoding($encoding)";
+        }
+        print $fh ref($data) ? $$data : $data or die "write\n";
+        close $fh or die "close\n";
+        rename $tmpfile, $path or die "rename\n";
+    };
+    my $err = $@;
+    if ($err) {
+        chomp $err;
+        my $msg = ($err !~ /\W/)
+            ? sprintf("Could not %s file '%s': %s",
+                $err,
+                $tmpfile,
+                $!,
+                )
+            : sprintf("Error saving file '%s': %s", $path, $err);
+        ::logError("%s\nto write this data (excerpt):\n%s",
+            $msg,
+            substr(ref($data) ? $$data : $data, 0, 120),
+        );
+    }
+    else {
+        $status = 1;
+    }
+
+    umask $save_umask if defined $save_umask;
+
+    return $status;
 }
 
 sub file_modification_time {

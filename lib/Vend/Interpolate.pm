@@ -5385,8 +5385,8 @@ sub timed_build {
 
     if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {
         my $out = Vend::Interpolate::interpolate_html(shift);
-		$opt->{umask} = '22' unless defined $opt->{umask};
-        Vend::Util::writefile(">$file", $out, $opt );
+        $opt->{umask} //= '22';
+        Vend::File::writefile_atomic($file, $out, $opt);
 		$Vend::Session->{scratch} = $save_scratch if $save_scratch;
         return $out;
     }
