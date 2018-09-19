@@ -73,6 +73,8 @@ Payments
 
 * Updated Vend::Payment::PayPal to latest available version.
 
+* New Braintree payment module.
+
 * Add Gateway Log feature for logging full details of payment gateway requests/
   responses. (See extended section about the GatewayLog later in this document.)
 
