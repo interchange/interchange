@@ -344,18 +344,19 @@ sub parse_cgi {
 					goto INVALIDPOST;
 				}
 				else {
-
 					$CGI::post_ref = $h->{entity};
 					undef $CGI::json_ref;
-					eval {
-						$CGI::json_ref = JSON::decode_json($$CGI::post_ref);
+					if (defined($$CGI::post_ref) and $$CGI::post_ref =~ /\S/a) {
+						eval {
+							$CGI::json_ref = JSON::decode_json($$CGI::post_ref);
 #::logDebug('json: %s', ::uneval($CGI::json_ref));
 
-						if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
-							@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
-						}
-					};
-					logError("Error parsing JSON data: $@") if $@;
+							if ($Global::UnpackJSON && ref $CGI::json_ref eq 'HASH') {
+								@CGI::values{keys %$CGI::json_ref} = values %$CGI::json_ref;
+							}
+						};
+						logError("Error parsing JSON data: $@") if $@;
+					}
 				}
 			}
 			else {
