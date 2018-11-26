@@ -79,7 +79,8 @@ my %Cattr = ( qw(
 					RAISEERROR     	RaiseError
 					PRINTERROR     	PrintError
 					AUTOCOMMIT     	AutoCommit
-					MYSQL_ENABLE_UTF8 mysql_enable_utf8
+					MYSQL_ENABLE_UTF8    mysql_enable_utf8
+					MYSQL_ENABLE_UTF8MB4 mysql_enable_utf8mb4
 				) );
 my @Cattr = keys %Cattr;
 
@@ -94,7 +95,8 @@ my %Dattr = ( qw(
 					LONGTRUNCOK    	LongTruncOk
 					LONGREADLEN    	LongReadLen
 					PG_ENABLE_UTF8	pg_enable_utf8
-					MYSQL_ENABLE_UTF8 mysql_enable_utf8
+					MYSQL_ENABLE_UTF8    mysql_enable_utf8
+					MYSQL_ENABLE_UTF8MB4 mysql_enable_utf8mb4
 				) );
 my @Dattr = keys %Dattr;
 
