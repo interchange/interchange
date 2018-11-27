@@ -6,7 +6,7 @@
 #
 
 # Allows use of "ifdef @INDEV" below. Will set INDEV to 1 if file
-# _indev is present.
+# _indev is present in the Interchange global root directory.
 Require module Vend::InDev
 
 # These settings all affect other configuration directives below.
@@ -31,10 +31,7 @@ Variable  TRAFFIC  low
 
 #========================================================================#
 
-# Require an external module
-
-# This one tests the realtime payment gateway code, set INDEV variable to test.
-#
+# Allow test payments in development mode
 ifdef @INDEV
 Require module Vend::Payment::TestPayment
 endif
