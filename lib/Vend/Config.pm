@@ -53,8 +53,9 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
+use Vend::CIDR qw(cidr2regex);
 
-$VERSION = '2.250';
+$VERSION = '2.251';
 
 my %CDname;
 my %CPname;
@@ -481,12 +482,12 @@ sub global_directives {
 	['DebugTemplate',    undef, 	         ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['CountrySubdomains','hash',             ''],
-	['TrustProxy',		 'list_wildcard_full', ''],
+	['TrustProxy',		 'list_wildcard_cidr', ''],
 	['AcrossLocks',		 'yesno',            'No'],
     ['DNSBL',            'array',            ''],
 	['NotRobotUA',		 'list_wildcard',      ''],
 	['RobotUA',			 'list_wildcard',      ''],
-	['RobotIP',			 'list_wildcard_full', ''],
+	['RobotIP',			 'list_wildcard_cidr', ''],
 	['RobotHost',		 'list_wildcard_full', ''],
 	['HostnameLookups',	 'yesno',            'No'],
 	['TolerateGet',		 'yesno',            'No'],
@@ -3859,6 +3860,33 @@ sub parse_list_wildcard_full {
 	my $value = get_wildcard_list(@_,1);
 	return '' unless length($value);
 	return qr/^($value)$/i;
+}
+
+sub parse_list_wildcard_cidr {
+	my $value = $_[1];
+	return '' unless length($value);
+
+    $value =~ s/^\s+//;
+    $value =~ s/\s*(#.*)?$//;
+
+    my (@components, @other);
+
+    for (split /\s*,\s*/ => $value) {
+        if (/^\d+\.\d+\.\d+\.\d+\/\d+$/) {
+            push @components, cidr2regex($_);
+        }
+        else {
+            push @other, $_;
+        }
+    }
+
+    if (@other) {
+        push @components, get_wildcard_list($_[0],(join ',' => @other),1);
+    }
+
+    my $expr = join '|' => @components;
+
+    return qr/^($expr)$/i;
 }
 
 # Make a dos-ish regex into a Perl regex, check for errors

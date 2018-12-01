@@ -62,6 +62,8 @@ Core
 
 * Fix race conditions in timed-build output.
 
+* Added support for CIDR notation in TrustProxy and RobotIP directives.
+
 
 Payments
 --------
