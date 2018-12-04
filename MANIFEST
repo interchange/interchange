@@ -678,6 +678,7 @@ dist/strap/dbconf/locales/nl_NL.cfg
 dist/strap/dbconf/mysql/access.dbm
 dist/strap/dbconf/mysql/affiliate.mysql
 dist/strap/dbconf/mysql/country.mysql
+dist/strap/dbconf/mysql/gateway_log.mysql
 dist/strap/dbconf/mysql/inventory.mysql
 dist/strap/dbconf/mysql/locale.dbm
 dist/strap/dbconf/mysql/merchandising.mysql
@@ -701,6 +702,7 @@ dist/strap/dbconf/mysql/variants.mysql
 dist/strap/dbconf/pgsql/access.dbm
 dist/strap/dbconf/pgsql/affiliate.pgsql
 dist/strap/dbconf/pgsql/country.pgsql
+dist/strap/dbconf/pgsql/gateway_log.pgsql
 dist/strap/dbconf/pgsql/inventory.pgsql
 dist/strap/dbconf/pgsql/locale.dbm
 dist/strap/dbconf/pgsql/merchandising.pgsql
@@ -724,6 +726,7 @@ dist/strap/dbconf/pgsql/variants.pgsql
 dist/strap/dbconf/sqlite/access.dbm
 dist/strap/dbconf/sqlite/affiliate.lite
 dist/strap/dbconf/sqlite/country.lite
+dist/strap/dbconf/sqlite/gateway_log.lite
 dist/strap/dbconf/sqlite/inventory.lite
 dist/strap/dbconf/sqlite/locale.dbm
 dist/strap/dbconf/sqlite/merchandising.lite
@@ -888,12 +891,14 @@ dist/strap/include/checkout/tax_popup
 dist/strap/include/menus/catalog/line.txt
 dist/strap/include/menus/catalog/service.txt
 dist/strap/include/menus/catalog/top.txt
+dist/strap/include/menus/Customers.txt
 dist/strap/include/menus/Top.txt
 dist/strap/include/profiles/profiles.admin
 dist/strap/include/profiles/profiles.login
 dist/strap/include/profiles/profiles.order
 dist/strap/include/profiles/searchprofiles
 dist/strap/pages/aboutus.html
+dist/strap/pages/admin/customer_create.html
 dist/strap/pages/admin/edit_error.html
 dist/strap/pages/admin/edit_page.html
 dist/strap/pages/admin/edit_setup.html
@@ -945,6 +950,7 @@ dist/strap/products/450.csv
 dist/strap/products/access.asc
 dist/strap/products/affiliate.txt
 dist/strap/products/country.txt
+dist/strap/products/gateway_log.txt
 dist/strap/products/Ground.csv
 dist/strap/products/inventory.txt
 dist/strap/products/locale.txt
@@ -1096,6 +1102,7 @@ lib/Vend/Accounting.pm
 lib/Vend/Accounting/SQL_Ledger.pm
 lib/Vend/Cart.pm
 lib/Vend/CharSet.pm
+lib/Vend/CIDR.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
 lib/Vend/CounterFile.pm
@@ -1126,11 +1133,13 @@ lib/Vend/Parse.pm
 lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
+lib/Vend/Payment/Braintree.pm
 lib/Vend/Payment/BusinessOnlinePayment.pm
 lib/Vend/Payment/Cardsave.pm
 lib/Vend/Payment/CyberSource.pm
 lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/Ezic.pm
+lib/Vend/Payment/GatewayLog.pm
 lib/Vend/Payment/Getitcard.pm
 lib/Vend/Payment/HSBC.pm
 lib/Vend/Payment/ICS.pm
@@ -1187,9 +1196,9 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 MYMETA.json
 MYMETA.yml
-README.md
 README-DEVELOPMENT
 README.debian
+README.md
 README.rhel
 README.rpm-dist
 relocate.pl
@@ -1283,10 +1292,10 @@ SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
 SPECS/interchange.spec
+t/cidr.t
 t/credit_cards.t
 t/interchange-test/interchange.cfg
 t/interchange-test/variable.txt
 test.pl
 UPGRADE
 WHATSNEW
-_ic_version
