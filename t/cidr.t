@@ -1,9 +1,36 @@
+# -*- cperl -*-
+
 use strict;
 use warnings;
 use lib 'lib';
 use Test::More;
-use Vend::CIDR qw(cidr2regex);
+use Vend::CIDR qw(cidr2regex normalize_ip resembles_ip);
 
+my @invalid_ips = (
+    ':::',
+    '::1::',
+    '123:::123',
+    '1:2:3:4:5:6:7:8:9',
+    '1.2.3',
+    '1234.1234.123.1234',
+    '123.234.123.234.12',
+);
+
+my %ip_norm_tests = (
+    '::'                => '0000:0000:0000:0000:0000:0000:0000:0000',
+    '1::'               => '0001:0000:0000:0000:0000:0000:0000:0000',
+    '::1'               => '0000:0000:0000:0000:0000:0000:0000:0001',
+    'abcd::1234'        => 'abcd:0000:0000:0000:0000:0000:0000:1234',
+    '1:2:3:4:5:6:7:8'   => '0001:0002:0003:0004:0005:0006:0007:0008',
+    '2600:42::'         => '2600:0042:0000:0000:0000:0000:0000:0000',
+    'ABCD:C0FF:EFFE::1' => 'abcd:c0ff:effe:0000:0000:0000:0000:0001',
+);
+
+#is(resembles_ip($_), 0, "recognized invalid ip $_") for @invalid_ips;
+is(normalize_ip($_), undef, "returns nothing for invalid ip $_") for @invalid_ips;
+is(normalize_ip($_), $ip_norm_tests{$_}, "normalize IP $_") for sort keys %ip_norm_tests;
+
+# Test IPv4
 test_cidr(
     ['10.0.0.0/24'],
     [qw(10.0.0.0 10.0.0.10 10.0.0.255)],
@@ -40,6 +67,27 @@ test_cidr(
     [qw(1.1.0.0 2.2.1.1 255.255.0.0)],
 );
 
+# Test IPv6
+test_cidr(
+    ['1::/16'],
+    [qw(1:0::)],
+    [qw(2:1:: ::1)],
+);
+
+test_cidr(
+    ['2400:cb00::/32','2405:b500::/32','2606:4700::/32','2803:f800::/32','2c0f:f248::/32','2a06:98c0::/29'],
+    [qw(2400:cb00::1 2803:f800::32:12 2a06:98c6::56 2a06:98c2::56)],
+    [qw(1:1:: 2400:cb01:: 2a06:98d0::56)],
+);
+
+# Mixed
+test_cidr(
+    ['2400:cb00::/32','10.0.0.1/8'],
+    [qw(2400:cb00::1 2400:cb00:ff::32:12 10.2.23.1)],
+    [qw(1:1:: 2400:cb01::2a06:98d0::56 12.124.53.39)],
+);
+
+
 done_testing();
 
 sub test_cidr {
@@ -48,6 +96,6 @@ sub test_cidr {
     my $pat = join '|' => map { cidr2regex($_) } @$pats;
     my $cidr = qr(^($pat)$);
 
-    like  ($_, $cidr, "$_ matches cidr")       for @$include;
-    unlike($_, $cidr, "$_ doesn't match cidr") for @$exclude;
+    like  (normalize_ip($_), $cidr, "$_ matches cidr")       for @$include;
+    unlike(normalize_ip($_), $cidr, "$_ doesn't match cidr") for @$exclude;
 }

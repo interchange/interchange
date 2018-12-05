@@ -5,9 +5,18 @@ use warnings;
 
 use base qw/Exporter/;
 
-our @EXPORT_OK = qw/cidr2regex/;
+our @EXPORT_OK = qw/cidr2regex normalize_ip resembles_ip resembles_cidr/;
 
 sub cidr2regex {
+    local $_ = shift;
+
+    /^(.+)\/\d+/;
+    return unless resembles_ip($1);
+    return cidr2regex_ip4($_) if /\./;
+    return cidr2regex_ip6($_);
+}
+
+sub cidr2regex_ip4 {
     local $_ = shift;
 
     return unless /([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\/([0-9]{1,2})/;
@@ -318,5 +327,81 @@ sub cidr2regex {
 
     return $act->{$5}->();
 }
+
+sub cidr2regex_ip6 {
+    local $_ = shift;
+
+    return unless /^([:a-f0-9]+)\/(\d+)$/i;
+
+    my $masklen = $2;
+
+    return unless $masklen <= 128;
+    return unless my $norm = normalize_ip6($1);
+
+    return $norm if $masklen == 128; # fixed IP
+    return '.*' if $masklen == 0;    # open mask
+
+    # nybble count
+    my $nyblen = $masklen >> 2;
+    # remainder to determine regex
+    my $nybmod = $masklen & 0x3;
+    my $ncolons = $nyblen >> 2;
+
+    my $pat_lkup = [
+        [""],
+        ["[0-7]","[89a-f]"],
+        ["[0-3]","[4-7]","[89ab]","[c-f]"],
+        ["[01]","[23]","[45]","[67]","[89]","[ab]","[cd]","[ef]"],
+    ];
+    my $chr = hex(substr($norm, $ncolons + $nyblen, 1));
+    my $pat = $pat_lkup->[$nybmod]->[$chr >> (4-$nybmod)];
+    return sprintf '%s%s.*', substr($norm, 0, $ncolons + $nyblen), $pat;
+}
+
+sub normalize_ip {
+    local $_ = shift;
+
+    return unless resembles_ip($_);
+    return $_ if /^\d+\.\d+\.\d+\.\d+$/;
+    return normalize_ip6($_);
+}
+
+sub normalize_ip6 {
+    my ($src_addr) = @_;
+
+    if ($src_addr =~ /^[:a-f0-9]+$/i) {
+        my $has_dbl_colon = scalar (@{[$src_addr =~ /::/g]});
+        return if $src_addr =~ /:::/ or $has_dbl_colon > 1;
+        my @parts = split '::' => $src_addr;
+        my @norm;
+
+        if (@parts <= 2) {
+            my @p1 = split ':' => $parts[0] if defined $parts[0];
+            my @p2 = split ':' => $parts[1] if defined $parts[1];
+
+            my $tot = @p1 + @p2;
+
+            if ((@p1 == 8 || $has_dbl_colon) && $tot <= 8) {
+                my $zeros = 8 - $tot;
+
+                for my $part (@p1, ('0000') x $zeros, @p2) {
+                    return if $part !~ /^[a-f0-9]{1,4}$/i;
+                    push @norm, sprintf '%04s', lc($part); # normalize component
+                }
+                return join ':' => @norm;
+            }
+        }
+    }
+    return;
+}
+
+sub resembles_ip {
+    return $_[0] =~ /^(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[:a-f0-9]+)$/i;
+}
+
+sub resembles_cidr {
+    return $_[0] =~ /^([a-f0-9.:]+)\/\d+$/i && resembles_ip($1);
+}
+
 
 1;

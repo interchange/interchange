@@ -30,6 +30,7 @@ use Cwd;
 use POSIX qw(setsid strftime);
 use Vend::Util;
 use Vend::CharSet qw/ to_internal decode_urlencode default_charset /;
+use Vend::CIDR qw( normalize_ip resembles_ip );
 use Fcntl;
 use Errno qw/:POSIX/;
 use Config;
@@ -141,6 +142,8 @@ sub populate {
 #::logDebug("CGI::$field=" . ${"CGI::$field"});
     }
 
+	$CGI::remote_addr = normalize_ip($CGI::remote_addr);
+
 	# try to get originating host's IP address if request was
 	# forwarded through a trusted proxy
 	if (
@@ -155,7 +158,7 @@ sub populate {
 		# in a comma-separated list
 		for my $ip (reverse grep /\S/, split /\s*,\s*/, $forwarded_for) {
 			# do we have a valid-looking IP address?
-			if ($ip !~ /^\d\d?\d?\.\d\d?\d?\.\d\d?\d?\.\d\d?\d?$/) {
+			if (!resembles_ip($ip)) {
 				# if not, log error and ignore X-Forwarded-For header
 				::logGlobal(
 					{ level => 'info' },
@@ -165,6 +168,8 @@ sub populate {
 				);
 				last;
 			}
+
+			$ip = normalize_ip($ip);
 
 			# skip any other upstream trusted proxies
 			next if $ip =~ $Global::TrustProxy;

@@ -53,7 +53,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
-use Vend::CIDR qw(cidr2regex);
+use Vend::CIDR qw(cidr2regex resembles_cidr);
 
 $VERSION = '2.251';
 
@@ -3872,7 +3872,7 @@ sub parse_list_wildcard_cidr {
     my (@components, @other);
 
     for (split /\s*,\s*/ => $value) {
-        if (/^\d+\.\d+\.\d+\.\d+\/\d+$/) {
+        if (resembles_cidr($_)) {
             push @components, cidr2regex($_);
         }
         else {
