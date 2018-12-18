@@ -1811,7 +1811,7 @@ sub login {
 				$cur_method ||= 'default';
 
 				my $stored_by = $enc_id{ determine_cipher($db_pass) };
-				my $from_sub = $self->{OPTIONS}{from_plain} ? sub {$_[1]} : $enc_subs{$stored_by};
+				my $from_sub = $self->{OPTIONS}{from_plain} || ! $stored_by ? sub {$_[1]} : $enc_subs{$stored_by};
 
 				if (
 					$cur_method ne $stored_by
