@@ -12,6 +12,13 @@ Interchange 5.12 not released yet
 
 Interchange now requires Perl 5.14.1 or newer.
 
+Please note that the official Interchange project site has moved from
+icdevgroup.org to:
+https://www.interchangecommerce.org/
+
+The canonical Git repository is now hosted on GitHub at:
+https://github.com/interchange/interchange
+
 
 Installation
 ------------
@@ -29,12 +36,55 @@ Core
 
 * Improve image uploading via the table editor.
 
+* Add support for [all-anchor] token in [more-list] template.
+
 * Improve [image] extension handling to search for lower/uppercase versions
   of file extensions.
 
-* Add date-change "common" filter parameter.
+* Add date-change "common" filter parameter to output date+time without "T"
+  separator.
 
 * Add bcrypt filter.
+
+* Allow a dash in the middle of a varname (and to end one).
+
+* Allow changable varname regex for profile checks via
+  Limit  profile_check_varname_regex   \b\w[-+.\w]*
+
+* Fix bug where only one address was possible for DebugHost. Now accepts a
+  range of IP addresses.
+
+* Disallow comma character within email addresses in email and email_only
+  profile checks.
+
+* Add "default" option on CGI tag. Negligible impact on performance, as
+  branch only followed on blank/zero value.
+
+* Fix bug whereby certain LARGE or HUGE tables could have large searches
+  started by hitting return with the cursor in the entry box.
+
+* Fix bug in hash version of [item-tag-*].
+
+* Reprioritize (later) little-used loop tag scratchd.
+
+* Refactor cookie-setting routine to avoid double ; and extra string copying
+  and use canonical capitalization.
+
+* Add CounterDir configuration to allow counters to be defined by default in
+  some place different than VendRoot.
+
+* Extend PerlAlwaysGlobal to encompass [loop-calc].
+
+* Fixed a bug in the [area] tag when a full URL is passed as the href.
+
+* Pass through from [bounce] URL-generation options such as form, secure,
+  match_secure, etc.
+
+* Add new AlwaysSecureGlob directive. It's not possible to enumerate all the
+  admin URLs or ActionMaps that should be generated secure-only, so this new
+  directive allows matching.
+
+* Fix month and year adjustment wrapping issue in Vend::Util::adjust_time().
 
 * Add [adjust-href] tag. Reads HTML passed to it, finds <a href> links
   and adjusts ones that don't begin with an absolute path to
@@ -49,6 +99,17 @@ Core
 
 * Improved integration of CI tools for development.
 
+* Add ability to return after Preload and Autoload routines. Setting
+  $Vend::PreloadReturn or $Vend::AutoloadReturn (i.e. they are defined)
+  means Vend::Dispatch::dispatch() will return that status. This allows
+  features like QueryCache and others that are hooked via Preload or
+  Autoload.
+
+* Add skeleton module Vend::InDev, which does nothing but set a single
+  global variable if the file _indev is present in $Global::VendRoot.
+  This allows interchange.cfg bifurcation, useful when maintain a SCCS
+  repository.
+
 * Multiple cleanups and bugfixes to handle more modern versions of Perl.
 
 * Add x_accel_expires pragma to set X-Accel-Expires header for nginx proxy caching.
@@ -58,11 +119,20 @@ Core
 
 * Support recipient addresses in CC and BCC when using Net::SMTP.
 
+* Fix Vend::Util::timecard_stamp() to support a passed timestamp.
+
 * Make Interchange reopen debug.log/STDERR when receiving HUP signal.
 
 * Fix race conditions in timed-build output.
 
-* Added support for CIDR notation in TrustProxy and RobotIP directives.
+* Added support for CIDR notation (for both IPv4 & IPv6) in TrustProxy and
+  RobotIP directives.
+
+* Fix bug with mixed plaintext/crypted passwords on promotion.
+
+* Quell error message for harmless empty JSON request body.
+
+* Add more unit tests.
 
 
 Payments
@@ -71,6 +141,8 @@ Payments
 * Add BIN-2 MasterCard number support to Vend::Order, catalog templates,
   admin, and Vend::Payment modules which require it.
 
+* Include b_phone and phone in payment information.
+
 * Remove defunct payment services: Vend::Payment::ECHO and Vend::Payment::Skipjack.
 
 * Updated Vend::Payment::PayPal to latest available version.
@@ -78,7 +150,7 @@ Payments
 * New Braintree payment module.
 
 * Add Gateway Log feature for logging full details of payment gateway requests/
-  responses. (See extended section about the GatewayLog later in this document.)
+  responses. (See extended section about the Gateway Log later in this document.)
 
 
 Database
@@ -86,16 +158,17 @@ Database
 
 * Support newer versions of MySQL.
 
+* Prevent key-only inserts for new rows in [import-fields] tag.
+
 * Allow admin user to export specific tables using [backup-database] despite
   current NoExportExternal setting.
 
 * Add ability to have a NO_UPDATE field in SQL tables, which field will
   not affect a TIMESTAMP field (in MySQL or Postgres, at least).
 
-  Intended to allow mod_time in user logins to be updated without
-  changing a timestamp field. May have other uses, but is only
-  honored at this time in the set_field() method, so has limited
-  applicability.
+  Intended to allow mod_time in user logins to be updated without changing
+  a timestamp field. May have other uses, but is only honored at this
+  time in the set_field() method, so has limited applicability.
 
   Assuming one has a timestamp field in the userdb table called
   "update_date", this is effected by changing the configuration as:
@@ -103,21 +176,22 @@ Database
     Database userdb  TIMESTAMP_FIELD  update_date
     Database userdb  NO_UPDATE        mod_time
 
-* Add ability to return after Preload and Autoload routines.
-  Setting $Vend::PreloadReturn or $Vend::AutoloadReturn (i.e.
-  they are defined) means Vend::Dispatch::dispatch() will 
-  return that status. This allows features like QueryCache
-  and others that are hooked via Preload or Autoload.
+* Fix bugs with MySQL and PostgreSQL handling of QUOTE_IDENTIFIERS.
 
-* Add skeleton module Vend::InDev, which does nothing but set a single
-  global variable if the file _indev is present in $Global::VendRoot.
-  This allows interchange.cfg bifurcation, useful when maintain a
-  SCCS repository.
+* Update default field widths for userdb, transactions, and orderlines.
 
-* Add valref and scratchref options to UserDB, allowing the admin
-  user to put their stuff in someplace besides $Values. This would
-  allow you to easily set $Values to customer or affiliate settings,
-  without impacting the admin user.
+* Improve error handling/messaging when no access to database in Safe.
+
+* Support MySQL's utf8mb4 character set encoding, to be able to store all
+  UTF-8 characters.
+
+
+UserDB
+------
+
+* Add valref and scratchref options to UserDB, allowing the admin user to put
+  their stuff in someplace besides $Values. This would allow you to easily set
+  $Values to customer or affiliate settings, without impacting the admin user.
 
   If you do:
 
@@ -131,18 +205,9 @@ Database
   The [if-mm] tag probably needs to be adjusted for this to work
   in the admin in real life.
 
-* Fix bugs with MySQL and PostgreSQL handling of QUOTE_IDENTIFIERS.
+* Check for admin status earlier so it's available to postlogin_action.
 
-* Update default field widths for userdb, transactions, and orderlines.
-
-* Improve error handling/messaging when no access to database in Safe.
-
-* Fix table editor composite key problems, both creating new and editing
-  existing rows.
-
-
-UserDB
-------
+* Add support for prelogout_action to UserDB logout.
 
 * Add "fallback_login" option, to be used with "indirect_login". If
   indirect fails, it will fallback to the primary key (by default,
@@ -159,10 +224,29 @@ UserDB
   used in most cases).
 
 
+Admin
+-----
+
+* Respect custom BACKUP_DIRECTORY in admin table downloads. This matches
+  behavior expected by [export-database].
+
+* Fix bug which blew away user's yes_tables and yes_functions setting when
+  editing name/superuser status.
+`
+* Fix table editor composite key problems, both creating new and editing
+  existing rows.
+
+* Exclude canceled orders from reports.
+
+
 Strap Demo Catalog
 ------------------
 
-* Updates to the version of JQuery, Google Analytics, and Bootstrap used.
+* Updated the versions of jQuery, Google Analytics, and Bootstrap used.
+
+* Turn off UserDB ignore_case by default.
+
+* Prevent browser autocomplete problems.
 
 * Remove some legacy cart components.
 
@@ -170,6 +254,17 @@ Strap Demo Catalog
 
 * Fix broken random password number range; consistently make random
   instead of using zip or phone.
+
+* Lengthen ip_addr database fields to support IPv6.
+
+
+Other
+-----
+
+* Updated te utility with several new features.
+
+* Quickbooks integration: Fix typos so that removing stray trailing
+  whitespace works.
 
 
 Gateway Log
