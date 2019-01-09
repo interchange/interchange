@@ -20,7 +20,7 @@ display system. Features include:
 Licensed under GPLv2. This program is offered without warranty of any kind.
 See file LICENSE for redistribution terms.
 
-Copyright (C) 2002-2018 Interchange Development Group  
+Copyright (C) 2002-2019 Interchange Development Group  
 Copyright (C) 1996-2002 Red Hat, Inc.  
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
