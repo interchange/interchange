@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# Copyright (C) 2002-2016 Interchange Development Group
+# Copyright (C) 2002-2019 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = '2.16';
+$VERSION = '2.17';
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -97,6 +97,7 @@ sub interaction_error {
 }
 
 sub minidump {
+	no warnings 'uninitialized';
 	my $out = <<EOF;
 Full client host name:  $CGI::remote_host
 Full client IP address: $CGI::remote_addr
@@ -115,6 +116,7 @@ EOF
 }
 
 sub full_dump {
+	no warnings 'uninitialized';
 	my $portion = shift;
 	my $opt = shift || {};
 	my $out = '';
