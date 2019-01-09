@@ -70,6 +70,20 @@ Core
 * Refactor cookie-setting routine to avoid double ; and extra string copying
   and use canonical capitalization.
 
+* Teach pragma set_httponly to apply only to certain cookies.
+
+  E.g. for the default session cookie only:
+
+  Pragma set_httponly=MV_SESSION_ID
+
+  Or for that plus another arbitrary cookie "cart":
+
+  Pragma set_httponly=MV_SESSION_ID,cart
+
+  The old behavior of setting HttpOnly for all cookies still works as before, e.g.:
+
+  Pragma set_httponly
+
 * Add CounterDir configuration to allow counters to be defined by default in
   some place different than VendRoot.
 

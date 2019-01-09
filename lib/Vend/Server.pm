@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2019 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION $Has_JSON $RUNDIR);
-$VERSION = '2.109';
+$VERSION = '2.110';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -585,6 +585,17 @@ sub create_cookie {
 		$sub->();
 	}
 
+	my $all_httponly;
+	my %httponly;
+	if (my $p = $::Pragma->{set_httponly}) {
+		if ($p eq '1') {
+			$all_httponly = 1;
+		}
+		else {
+			$httponly{$_} = undef for split /\s*,\s*/, $p;
+		}
+	}
+
 	my @jar;
 	push @jar, [
 				$::Instance->{CookieName} || 'MV_SESSION_ID',
@@ -624,7 +635,7 @@ sub create_cookie {
 			push @pieces, $expstring;
 		}
 		push @pieces, 'Secure' if $secure;
-		push @pieces, 'HttpOnly' if $::Pragma->{set_httponly};
+		push @pieces, 'HttpOnly' if $all_httponly or exists $httponly{$name};
 		my $header = join('; ', @pieces);
 #::logDebug("create_cookie made header: $header");
 		push @out, $header;
