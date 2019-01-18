@@ -1381,7 +1381,7 @@ sub dispatch {
 						"Malformed session identifier",
 						);
 		$Vend::StatusLine = <<EOF;
-Status: 403 Unauthorized
+Status: 403 Forbidden
 Content-Type: text/plain
 EOF
 		response($msg);
