@@ -694,6 +694,11 @@ EOF
 			;
 		$template = get_locale_message(500, $template, $err);
 		logError($err);
+		$Vend::StatusLine = <<EOF;
+Status: 500 Internal Server Error
+Content-Type: text/plain
+EOF
+		undef $Vend::write_redirect;
 		response($template);
 	}
 
@@ -1892,6 +1897,10 @@ EOF
 			;
 		$template = get_locale_message(500, $template, $err);
 		logError($err);
+		$Vend::StatusLine = <<EOF;
+Status: 500 Internal Server Error
+Content-Type: text/plain
+EOF
 		undef $Vend::write_redirect;
 		response($template);
 	}
