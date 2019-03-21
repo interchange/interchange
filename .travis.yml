@@ -20,7 +20,7 @@ before_install:
   - cd $BUILD_DIR
 install:
   - cpan-install --deps
-  - cpanm --notest --installdeps .
+  - cpanm --verbose --notest --installdeps .
   - cpanm --notest DBD::Pg DBD::mysql
 before_script:
   - mysql -e 'create database interchange_test;'
