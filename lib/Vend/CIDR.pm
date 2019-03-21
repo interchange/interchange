@@ -5,7 +5,7 @@ use warnings;
 
 use base qw/Exporter/;
 
-our @EXPORT_OK = qw/cidr2regex normalize_ip resembles_ip resembles_cidr/;
+our @EXPORT_OK = qw/cidr2regex normalize_ip resembles_ip resembles_cidr normalize_ip6/;
 
 sub cidr2regex {
     local $_ = shift;

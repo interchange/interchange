@@ -53,7 +53,7 @@ use Vend::File;
 use Vend::Data;
 use Vend::Cron;
 use Vend::CharSet ();
-use Vend::CIDR qw(cidr2regex resembles_cidr);
+use Vend::CIDR qw(cidr2regex resembles_cidr normalize_ip6);
 
 $VERSION = '2.251';
 
@@ -3875,6 +3875,9 @@ sub parse_list_wildcard_cidr {
         if (resembles_cidr($_)) {
             push @components, cidr2regex($_);
         }
+	elsif (my $ip6addr = normalize_ip6($_)) {
+            push @components, cidr2regex("$ip6addr/128");
+	}
         else {
             push @other, $_;
         }
