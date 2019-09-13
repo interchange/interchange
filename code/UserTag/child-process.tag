@@ -1,4 +1,4 @@
-# Copyright 2008 Interchange Development Group and others
+# Copyright 2008, 2019 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@ UserTag child-process addAttr
 UserTag child-process HasEndTag
 UserTag child-process NoReparse 0
 UserTag child-process Interpolate 0
-UserTag child-process Version 1.3
+UserTag child-process Version 1.4
 UserTag child-process Documentation <<EOD
 
 =head1 NAME
@@ -97,16 +97,16 @@ sub {
         return;
     }
     else {
-
         Vend::Server::sever_database();
 
         defined (my $grandkid = fork) or die "Kid cannot fork: $!\n";
         exit if $grandkid;
 
         Vend::Server::cleanup_for_exec();
+        Vend::Session::close_session();
 
         # Disconnect from parent's terminal
-        POSIX::setsid() or die "Can't start a new session: $!\n";
+        POSIX::setsid() == -1 and die "Can't start a new session: $!\n";
 
         defined $opt->{label} or $opt->{label} = 'child-process tag';
         Vend::Server::set_process_name($opt->{label});
