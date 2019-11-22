@@ -715,7 +715,7 @@ sub respond {
 		$response_charset =~ /^utf-?8$/i
 		and (
 			! $Vend::StatusLine
-			or $Vend::StatusLine =~ m{^Content-Type: text/}i
+			or $Vend::StatusLine =~ m{^Content-Type: text/}im
 		)
 	) {
 		binmode(MESSAGE, ':utf8');
@@ -731,7 +731,6 @@ sub respond {
 			if ($response_charset) {
 				$Vend::StatusLine .= "; charset=$response_charset\r\n";
 			}
-
 			else {
 				$Vend::StatusLine .= "\r\n";
 			}
