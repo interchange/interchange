@@ -1,4 +1,4 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2019 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ UserTag convert-date AttrAlias   fmt format
 UserTag convert-date AttrAlias   days adjust
 UserTag convert-date HasEndTag
 UserTag convert-date Interpolate
-UserTag convert-date Version     1.9
+UserTag convert-date Version     1.10
 UserTag convert-date Routine     <<EOR
 sub {
     my ($adjust, $opt, $text) = @_;
@@ -33,13 +33,13 @@ sub {
 	} 
 	elsif($text =~ /\d/) {
 					$text =~ s/\D//g;
-					$text =~ /(\d\d\d\d)(\d\d)(\d\d)(?:(\d\d)(\d\d))?/;
+					$text =~ /(\d\d\d\d)(\d\d)(\d\d)(?:(\d\d)(\d\d))?(\d\d)?/;
 					$t[2] = $4 || undef;
 					$t[1] = $5 || undef;
+					$t[0] = $6 || undef;
 					$t[3] = $3;
 					$t[4] = $2 - 1;
-					$t[5] = $1;
-					$t[5] -= 1900;
+					$t[5] = $1 - 1900;
 	}
 	elsif (exists $opt->{empty}) {
 		return $opt->{empty};
