@@ -103,7 +103,7 @@ use Vend::Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '2.132';
+$VERSION = '2.133';
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1993,7 +1993,7 @@ sub logError {
 
 	my $msg = shift;
 	my $opt;
-	if (ref $_[0]) {
+	if (ref($_[0]) eq 'HASH') {
 		$opt = shift;
 	}
 	else {
