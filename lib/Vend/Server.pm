@@ -575,9 +575,10 @@ sub create_cookie {
 	if ($Vend::suppress_cookies) {
 #::logDebug('explicitly clearing the cookie jar (nom nom nom)');
 		undef $::Instance->{Cookies};
+		return '';
 	}
 
-	return '' if $Vend::tmp_session || $Vend::suppress_cookies;
+	return '' if $Vend::tmp_session and !$Vend::sessionless_cookies;
 
 	if (my $sub = $Vend::Cfg->{Sub}{$Vend::Cfg->{OutputCookieHook}}
 				  || $Global::GlobalSub->{$Vend::Cfg->{OutputCookieHook}}
@@ -605,7 +606,7 @@ sub create_cookie {
 				undef,
 				$Vend::Cfg->{SessionCookieSecure} ? $CGI::secure : undef,
 			]
-		unless $Vend::CookieID;
+		if !$Vend::CookieID and !$Vend::sessionless_cookies;
 	push @jar, @{$::Instance->{Cookies}}
 		if defined $::Instance->{Cookies};
 #::logDebug("create_cookie jar=" . ::uneval(\@jar));
@@ -845,22 +846,22 @@ sub respond {
 		)
 	;
 
-	if ( ! $Vend::tmp_session
+	if ((
+			!$Vend::tmp_session
+			or $Vend::sessionless_cookies
+		)
 		and (
 			! $Vend::CookieID && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
 			or $Vend::Cfg->{OutputCookieHook}
-		  )
-			and $Vend::Cfg->{Cookies}
-			and !$Vend::suppress_cookies
-			and $status !~ /^4\d\d/
 		)
-	{
-		my @domains;
-		@domains = ('');
-		my @paths;
-		@paths = ('/');
+		and $Vend::Cfg->{Cookies}
+		and !$Vend::suppress_cookies
+		and $status !~ /^4\d\d/
+	) {
+		my @domains = ('');
+		my @paths = ('/');
 
 		if ($Vend::Cfg->{CookieDomain}) {
 			@domains = split /\s+/, $Vend::Cfg->{CookieDomain};
