@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+# ic-session-ingest
+# Jon Jensen <jon@endpoint.com>
+# 2019-12-11
+
+use strict;
+use warnings;
+use Path::Tiny;
+use Safe;
+use Storable qw( store );
+
+my ($infile, $outfile) = @ARGV;
+die "Usage: $0 <serialized session filename> <session filename>\n"
+    unless $infile and -e $infile and $outfile;
+my $serialized = path($infile)->slurp;
+my $cpt = Safe->new;
+my $session = $cpt->reval($serialized);
+store $session, $outfile;

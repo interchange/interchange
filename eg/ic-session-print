@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+
+# ic-session-print
+# Jon Jensen <jon@endpoint.com>
+# 2014-09-17, updated 2019-12-11
+
+use strict;
+use warnings;
+use Data::Dumper qw( Dumper );
+use Storable qw( retrieve );
+
+$Data::Dumper::Deparse = 1;
+$Data::Dumper::Indent = 3;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Terse = 1;
+{
+    # This option doesn't exist in older versions of Data::Dumper
+    no warnings 'once';
+    $Data::Dumper::Trailingcomma = 1;
+}
+
+my $file = shift;
+die "Usage: $0 <session filename>\n" unless $file and -e $file;
+my $session = retrieve($file);
+print Dumper($session);
