@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Run control script for Interchange
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 #
 # chkconfig: 345 96 4
 # description: Interchange is a web application server focused on ecommerce

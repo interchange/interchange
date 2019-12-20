@@ -103,13 +103,13 @@ Core
   already tolerated one at the beginning and one or more at the end of the
   query parameters:
 
-  http://www.icdevgroup.org/i/dev/index?&id=abcd
-  http://www.icdevgroup.org/i/dev/index?id=abcd&&&&&&
+  http://www.example.domain/i/dev/index?&id=abcd
+  http://www.example.domain/i/dev/index?id=abcd&&&&&&
 
   Now these are handled gracefully too:
 
-  http://www.icdevgroup.org/i/dev/index?&&id=abcd
-  http://www.icdevgroup.org/i/dev/index?id=abcd&&&xyz=123
+  http://www.example.domain/i/dev/index?&&id=abcd
+  http://www.example.domain/i/dev/index?id=abcd&&&xyz=123
 
 * Don't track admin pages.
 

@@ -189,7 +189,7 @@ my $wrap = <<'EOF';
 
 # Interchange control script
 # Calls Interchange with special locations of files as installed by RPM
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 
 IC=/usr/lib/interchange
 ETC=/etc/interchange
@@ -230,7 +230,7 @@ $wrap = <<'EOF';
 
 # Interchange make catalog script
 # Calls Interchange makecat with special locations of files as installed for LSB
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 
 ETC=/etc/interchange
 IC=/usr/lib/interchange

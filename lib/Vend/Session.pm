@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2019 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3

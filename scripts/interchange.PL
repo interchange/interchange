@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2002-2019 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -350,7 +350,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2002-2019 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2019 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -377,12 +377,12 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-		http://www.icdevgroup.org/
+		https://www.interchangecommerce.org/
 
 Interchange requires Perl 5.14.1 or higher; more information on Perl can
 be seen at:
 
-		http://www.perl.com/
+		https://www.perl.org/
 
 =head1 OPTIONS
 
@@ -954,7 +954,7 @@ if ($@) {
 
 compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), offline(1), restart(1), update(1),
-http://www.icdevgroup.org/
+https://www.interchangecommerce.org/
 
 =head1 LICENSE
 
@@ -964,7 +964,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2019 Interchange Development Group
+    Copyright (C) 2002-2019 Interchange Development Group and others
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 
@@ -993,12 +993,12 @@ The Interchange Development Group is:
 Please do not contact the authors directly for help with the system.
 Use the Interchange mail list:
 
-    interchange-users@icdevgroup.org
+    interchange-users@interchangecommerce.org
 
 Information on subscribing to the list, as well as general information and
 documentation for Interchange is at:
 
-    http://www.icdevgroup.org/
+    https://www.interchangecommerce.org/
 
 =head1 ACKNOWLEDGEMENTS
 

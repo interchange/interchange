@@ -161,11 +161,11 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2019 Interchange Development Group.
+ Copyright (C) 2002-2019 Interchange Development Group
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
- http://www.icdevgroup.org/
+ https://www.interchangecommerce.org/
 
 EOF
 }

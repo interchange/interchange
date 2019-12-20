@@ -1,23 +1,23 @@
 # Strap Template for Interchange
 
-This is a modern HTML demo for Interchange, built on the [Bootstrap Framework](http://getbootstrap.com/), version 3.x.
+This is a modern HTML demo catalog (application) for Interchange, built on [Bootstrap](https://getbootstrap.com/) 3.
 
-It uses the Bootstrap CSS and JS files from the [Bootstrap CDN](http://www.bootstrapcdn.com/).
+It uses the Bootstrap CSS and JavaScript files from the [Bootstrap CDN](https://www.bootstrapcdn.com/).
 
-Alternatively, you can [download a customized Bootstrap](http://getbootstrap.com/customize/), upload it to your
+Alternatively, you can [download a customized Bootstrap](https://getbootstrap.com/customize/), upload it to your
 Document Root, and then alter the templates to use it.
 
 [jQuery](https://jquery.com/) is also included. Both Bootstrap and
-jQuery as-used support Internet Explorer 8 and above.
+jQuery as used support Internet Explorer 8 and above.
 
 The Bootstrap and jQuery files are loaded from `variables/CSS` and
-`variables/JS`, if you wish to update the versions used.
+`variables/JS`. You may update the versions used there.
 
 ## Requirements
 
 Works best with Interchange version 5.8.1 or higher.
 
-Requires installation of Bundle::Interchange CPAN module.
+Requires installation of all CPAN modules in Bundle::Interchange.
 
 ## Usage
 
@@ -32,7 +32,7 @@ Note: if you previously installed the "standard" template, you should
 
 * **TURN OFF the MV_DEMO_MODE variable before using this in production!**
 
-* User passwords are crypted by default, using bcrypt. You *should*
+* User passwords are encrypted by default, using bcrypt. You *should*
   change the "pepper" to something unique and random for your catalog.
   Search for "pepper" in catalog.cfg.
 
@@ -41,11 +41,8 @@ Note: if you previously installed the "standard" template, you should
 
   `0 1 * * * /path/to/your/interchange/bin/interchange --runjobs=your_catalog_name=daily --quiet`
 
-* There may be problems with UTF-8 and recent Perls. You can disable
-  UTF-8 by commenting 2 lines in catalog.cfg, under "Encoding". For
-  instance, this is a known issue with UTF-8 enabled:
-  	https://github.com/interchange/interchange/issues/84
-  If disabling, set an environment variable of `MINIVEND_DISABLE_UTF8` to `1`
+* You can disable UTF-8 by commenting 2 lines in catalog.cfg, under "Encoding".
+  If disabling, set environment variable `MINIVEND_DISABLE_UTF8` to `1`.
 
 ## Some of the changes include
 
@@ -83,18 +80,18 @@ Note: if you previously installed the "standard" template, you should
   However, it is only recommended if you have a shipping setup that does
   not depend on a geographical location; if your shipping changes
   based on country/state/ZIP, etc, it will not refresh the page to
-  obtain the correct rates. Javascript-based page refreshing is not
+  obtain the correct rates. JavaScript-based page refreshing is not
   reliable with modern browers and their auto-fill functions.
 
 * Gift certificates (pay certs) supported out-of-the-box. Several code
-  improvements, including ability to validate certificate's check-code
+  improvements, including ability to validate certificates' check-code
   and expiration, and ability to pay for entire order or part of order
   with a gift cert.
 
 * Stock Alert function updated to use a database table and Job to email
   when item is back in stock.
 
-* Address Book (`member/ship_addresses.html`, etc) and Saved Carts have
+* Address Book (`member/ship_addresses.html`, etc.) and Saved Carts have
   been removed. We found these features were too complex and little-used
   in their current state.
 
@@ -102,7 +99,7 @@ Note: if you previously installed the "standard" template, you should
   `tracking_number`, and `pay_cert` totals.
 
 * Admin "Content" tab is hidden, since old Content Editor is not
-  supported anymore.
+  supported any more.
 
 * Basic page editor for Admin users is available to pages that include:
   `[tmpn editable]1[/tmpn]`. Login to Admin, then browse page. "Edit page
@@ -124,7 +121,7 @@ Note: if you previously installed the "standard" template, you should
   `include/layout` have been moved to more appropriately named
   `templates/`. This to consolidate directory structure and make
   location of templates more intuitive. Can be easily changed to be more
-  backward compatible if desired by simply editing `variables/BOTTOM`
+  backward compatible if desired by simply editing `variables/BOTTOM`.
 
 * No longer using `THEME_CSS`.
 

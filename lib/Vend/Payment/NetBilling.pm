@@ -1,6 +1,6 @@
 # Vend::Payment::NetBilling - Interchange NetBilling support
 #
-# Copyright (C) 2003-2007 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2007 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # by Peter Ajamian <peter@pajamian.dhs.org> with code reused and inspired by

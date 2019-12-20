@@ -147,7 +147,7 @@ The C<-f> flag prevents the prompt for superuser and forces quiet mode; this is 
 
 =head1 SEE ALSO
 
-interchange(1), http://www.icdevgroup.org/
+interchange(1), https://www.interchangecommerce.org/
 
 =head1 AUTHOR
 

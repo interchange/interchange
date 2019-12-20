@@ -6,7 +6,7 @@
 # cwenham@synesmedia.com, http://www.synesmedia.com/
 #
 # Copyright (C) 2005-2007 Interchange Development Group,
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:
@@ -197,7 +197,7 @@ That should show what happened.
 =item *
 
 If all else fails, consultants are available to help with integration for a fee.
-See http://www.icdevgroup.org/ for mailing lists and other information.
+See https://www.interchangecommerce.org/ for mailing lists and other information.
 
 =back
 

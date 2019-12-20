@@ -22,9 +22,9 @@ Release: 2
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
-URL: http://www.icdevgroup.org/
+URL: https://www.interchangecommerce.org/
 Packager: Jon Jensen <jon@endpoint.com>
-Source0: http://www.icdevgroup.org/interchange/interchange-%{version}.tar.gz
+Source0: https://ftp.interchangecommerce.org/interchange/5.12/tar/interchange-%{version}.tar.gz
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 BuildPrereq: perl >= 5.14.1

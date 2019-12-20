@@ -16,8 +16,8 @@ Run without arguments to see options.
 =head1 DESCRIPTION
 
 This program makes it easier to edit tab-delimited text tables, such
-as are used with Interchange (see icdevgroup.org), and can be exported
-from many popular spreadsheet and database applications.
+as are used with Interchange (see interchangecommerce.org), and can be
+exported from many popular spreadsheet and database applications.
 
 It converts tab-delimited text files that have one record per line into
 temporary files with one field per line, each line beginning with the

@@ -1,8 +1,8 @@
 # Vend::Payment::Sage - Interchange Sage Support
 #
-# Copyright (C) 2008 Spinlock Solutions, http://www.spinlocksolutions.com/
+# Copyright (C) 2008 Spinlock Solutions
 # Copyright (C) 2008 Prince Services, http://www.princeinternet.com/
-# Copyright (C) 2008 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2008 Interchange Development Group, https://www.interchangecommerce.org/
 #
 # Written by Davor Ocelic, based on code by Cameron Prince,
 # Mark Johnson and Mike Heins.
@@ -156,7 +156,7 @@ That should show what happened.
 =item *
 
 If all else fails, consultants are available to help with integration for a fee.
-See http://www.icdevgroup.org/
+See https://www.interchangecommerce.org/
 
 =item *
 

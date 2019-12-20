@@ -343,7 +343,7 @@ temporary files.
 
 =head1 SEE ALSO
 
-expireall(1), http://www.icdevgroup.org/
+expireall(1), https://www.interchangecommerce.org/
 
 =head1 AUTHOR
 

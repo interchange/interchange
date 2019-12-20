@@ -126,13 +126,6 @@ Standard demo.
 4. Digest::SHA from CPAN is now a recommended module. If it is not
 available, Digest::SHA1 will still be used as a fallback.
 
-5. IPv6 incompatibility: Some of the session IP address verification
-functions do not work correctly for traffic coming from IPv6 sources,
-resulting in lost sessions. You can use catalog directive "WideOpen Yes"
-as a workaround but see the documentation to be aware of tradeoffs:
-
-http://docs.icdevgroup.org/cgi-bin/online/confs/WideOpen.html
-
 
 KNOWN ISSUES UPGRADING FROM 5.5.2
 
@@ -313,7 +306,7 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
   options, and assigned them arbitrary part numbers, or you hand-edited
   the options table, you may find that your product options don't work. 
   You should post the question to the user mail list or contact a
-  competent Interchange consultant at interchange-biz@icdevgroup.org.
+  competent Interchange consultant at: interchange-biz@interchangecommerce.org
 
 * You will probably receive a message about "history-scan tag overrides global
   definition". See the section "PROBLEMS WITH USERTAGS" below.
@@ -329,7 +322,7 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
   If you use the static page build facility, there are other means of
   accomplishing the same thing with scripts. Contact a competent
-  Interchange consultant at interchange-biz@icdevgroup.org to get help.
+  Interchange consultant at interchange-biz@interchangecommerce.org to get help.
 
 * See the section "PROBLEMS WITH USERTAGS" below.
 
@@ -454,7 +447,7 @@ You should be able to update a catalog from 4.6.x if you are reasonably
 proficient in Perl and/or Interchange. If you expect to rely on the
 backend admin UI, it is sometimes better to build a new catalog from
 scratch, and integrate your look and feel with that. Contact a competent
-Interchange consultant to help (interchange-biz@icdevgroup.org).
+Interchange consultant to help: interchange-biz@interchangecommerce.org
 
 That being said, here are some of the issues.
 
@@ -566,7 +559,7 @@ products, variants or options, you should consider rewriting that page to just
 accept the search terms via CGI parameters, and not the entire search. Please
 consult the documentation on in page searches at:
 
-     http://www.icdevgroup.org/doc/icdatabase.html#In-Page%20Searches
+     https://www.interchangecommerce.org/interchange-doc-5.2.0/icdatabase.html#In-Page%20Searches
 
 If your catalog makes use of ActionMaps that perform searches, these should
 continue to work as intended as long as they search a table allowed by 
@@ -688,5 +681,5 @@ consider the changes in the updated lost password page.
 
 If you do not wish to upgrade your Interchange installation to fix this
 vulnerability, patches for all currently supported Interchange versions are
-also available from http://www.icdevgroup.org/. You will still need to
-follow the upgrade advice contained here.
+also available from https://www.interchangecommerce.org/ -- you will still
+need to follow the upgrade advice contained here.

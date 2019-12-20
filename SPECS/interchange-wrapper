@@ -2,7 +2,7 @@
 
 # Interchange control script
 # Calls Interchange with special locations of files as installed by RPM
-# http://www.icdevgroup.org/
+# https://www.interchangecommerce.org/
 
 IC=/usr/lib/interchange
 ETC=/etc

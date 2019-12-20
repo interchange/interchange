@@ -2544,7 +2544,7 @@ has been designed for the use with Debian installations.
 C<makecat> needs a template catalog to operate on. The I<Foundation
 Store> demo template is distributed with Interchange. You can
 also look for additional demo catalogs (mostly for ideas) at
-http://www.icdevgroup.org/
+https://www.interchangecommerce.org/
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
@@ -2671,7 +2671,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://www.icdevgroup.org/
+        https://www.interchangecommerce.org/
 
 =head1 SEE ALSO
 
@@ -2694,14 +2694,11 @@ All rights reserved except as in the license.
 =head1 AUTHOR
 
 Mike Heins, <mike@perusion.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail list:
-
-    interchange-users
-
+direct help with the system. Use the interchange-users mailing list.
 Information on subscribing to the list, and general information and
 documentation for Interchange is at:
 
-    http://www.icdevgroup.org/
+    https://www.interchangecommerce.org/
 
 =cut
 

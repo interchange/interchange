@@ -364,7 +364,7 @@ That should show what happened.
 
 If all else fails, consultants are available to help with
 integration for a fee. You can find consultants by asking on the
-C<interchange-biz@icdevgroup.org> mailing list.
+C<interchange-biz@interchangecommerce.org> mailing list.
 
 =back
 

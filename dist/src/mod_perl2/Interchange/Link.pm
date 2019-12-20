@@ -323,7 +323,7 @@ code.
 =head1 BUGS
 
 Send bug reports and suggestions to the Interchange users list,
-<interchange-users@icdevgroup.org>.
+<interchange-users@interchangecommerce.org>.
 
 =head1 COPYRIGHT AND LICENSE
 

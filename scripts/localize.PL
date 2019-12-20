@@ -455,7 +455,7 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-http://www.icdevgroup.org/
+https://www.interchangecommerce.org/
 
 =head1 AUTHOR
 

@@ -3,7 +3,6 @@
 # interchange.cfg
 
 #========================================================================#
-#
 
 # Allows use of "ifdef @INDEV" below. Will set INDEV to 1 if file
 # _indev is present in the Interchange global root directory.
@@ -107,8 +106,7 @@ Message -i -n Calling UI...
 include lib/UI/ui.cfg
 endif
 
-## This is only needed if you use Net::SMTP instead of
-## sendmail or clones
+# This is only needed if you use Net::SMTP instead of sendmail or clones
 #Variable MV_SMTPHOST smtp
 
 # Include individual usertags.

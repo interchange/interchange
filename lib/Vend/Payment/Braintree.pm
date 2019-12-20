@@ -271,7 +271,7 @@ That should show what happened.
 =item *
 
 If all else fails, consultants are available to help with integration for a fee.
-See http://www.icdevgroup.org/ for mailing lists and other information.
+See https://www.interchangecommerce.org/ for mailing lists and other information.
 
 =back
 

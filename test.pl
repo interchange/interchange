@@ -60,7 +60,7 @@ open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
 	or die "open: $!\n";
 
 print CONFIG <<'EOF';
-MailOrderTo  info@icdevgroup.org
+MailOrderTo  info@interchangecommerce.org
 VendURL      http:/test
 SecureURL    http:/test
 Database     products products.asc DEFAULT

@@ -3,7 +3,7 @@
  *          server via TCP/IP
  *
  * Copyright (C) 2005-2007 Interchange Development Group,
- * http://www.icdevgroup.org/
+ * https://www.interchangecommerce.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
  *

@@ -52,7 +52,7 @@ A documentation package is available, with documentation in many different
 formats. This and other information is available at the Interchange home on
 the web:
 
-http://www.icdevgroup.org/
+https://www.interchangecommerce.org/
 
 ## Repository layout
 
@@ -174,4 +174,4 @@ Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
 MySQL or PostgreSQL.
 
-Visit http://demo.icdevgroup.org/ to try out a live demo.
+Try a live demo at: https://www.interchangecommerce.org/i/dev/demo

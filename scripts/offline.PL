@@ -254,6 +254,6 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-interchange(1), http://www.icdevgroup.org/
+interchange(1), https://www.interchangecommerce.org/
 
 =cut

@@ -1,6 +1,6 @@
 # Vend::Options::Simple - Interchange Simple product options
 #
-# Copyright (C) 2002-2007 Interchange Development Group <interchange@icdevgroup.org>
+# Copyright (C) 2002-2007 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 
 # This program is free software; you can redistribute it and/or modify

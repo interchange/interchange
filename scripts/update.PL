@@ -310,7 +310,7 @@ C<update> program will terminate with an error.
 
 =head1 SEE ALSO
 
-http://www.icdevgroup.org/
+https://www.interchangecommerce.org/
 
 =head1 AUTHOR
 

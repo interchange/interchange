@@ -12,20 +12,13 @@ before incorporating. Better yet, don't use Git changes for anything but
 fixing relevant bugs, and run the latest stable release.
 
 
-Browse Git tree online
-----------------------
+Git repository
+--------------
 
-To browse the Interchange Git repository online, visit:
+To browse the Interchange Git repository online at GitHub or to see
+instructions on cloning and using a local Git working copy go to:
 
-http://git.icdevgroup.org/interchange/
-
-
-Clone a local copy
-------------------
-
-See instructions on cloning and working with a local Git working copy at:
-
-http://www.icdevgroup.org/i/dev/download
+https://www.interchangecommerce.org/i/dev/download
 
 
 Make a distribution tar file
@@ -50,7 +43,7 @@ Unpack the tar file and install as normal. See the README file and other
 documentation for help. You should already be familiar with the Interchange
 developer website at:
 
-	http://www.icdevgroup.org/
+	https://www.interchangecommerce.org/
 
 Make sure you don't put your Git working copy at $HOME/interchange
 and then install on top of it, since $HOME/interchange is the default

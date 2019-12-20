@@ -3,7 +3,7 @@
 # vlink.pl: runs as a cgi program and passes request to Interchange server
 #           via a UNIX socket
 
-# Copyright (C) 2005-2018 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2005-2018 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or

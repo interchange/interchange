@@ -415,7 +415,7 @@ sending its timeout page.
 
 =head1 SEE ALSO
 
-makecat(1), http://www.icdevgroup.org/
+makecat(1), https://www.interchangecommerce.org/
 
 =head1 AUTHOR
 

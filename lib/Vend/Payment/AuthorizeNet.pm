@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# Copyright (C) 2003-2011 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 2003-2011 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Authors:
@@ -215,7 +215,7 @@ That should show what happened.
 =item *
 
 If all else fails, consultants are available to help with integration for a fee.
-See http://www.icdevgroup.org/ for mailing lists and other information.
+See https://www.interchangecommerce.org/ for mailing lists and other information.
 
 =back
 

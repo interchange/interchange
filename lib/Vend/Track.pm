@@ -147,7 +147,7 @@ sub header {
 
 	# arbitrarily limit header value sizes to keep entire header under about 1 kB
 	# to avoid internal server error by Apache, found by Brian Miller <brian@endpoint.com>
-	# and reported at http://www.icdevgroup.org/pipermail/interchange-users/2010-May/051990.html
+	# and reported at https://www.interchangecommerce.org/pipermail/interchange-users/2010-May/051990.html
 	my $max_length = 900;
 	if (length($value) > $max_length) {
 		$value = substr($value, 0, $max_length);

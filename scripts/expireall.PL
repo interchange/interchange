@@ -135,7 +135,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-expire(1), http://www.icdevgroup.org/
+expire(1), https://www.interchangecommerce.org/
 
 
 =cut
