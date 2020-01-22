@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# Copyright (C) 2002-2009 Interchange Development Group
+# Copyright (C) 2002-2020 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ package Interchange::Link;
 use strict;
 use ModPerl::Registry;
 use ModPerl::Code;
-use Apache2::Const -compile => qw(DECLINED OK NOT_FOUND FORBIDDEN REDIRECT HTTP_MOVED_PERMANENTLY);
+use Apache2::Const -compile => qw(DECLINED OK NOT_FOUND FORBIDDEN REDIRECT HTTP_MOVED_PERMANENTLY HTTP_GATEWAY_TIME_OUT);
 use Apache2::ServerRec ();
 require Apache2::Connection;
 require Apache2::RequestRec;
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-2009-08-22
+2020-01-22
 
 =head1 SYNOPSIS
 
@@ -327,7 +327,7 @@ Send bug reports and suggestions to the Interchange users list,
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2002-2009 Interchange Development Group
+ Copyright (C) 2002-2020 Interchange Development Group
  Copyright (C) 1996-2002 Red Hat, Inc.
 
 This program is free software.  You can redistribute it and/or modify
@@ -422,9 +422,13 @@ sub server_not_running {
 
     warn "ALERT: Interchange server not running for $ENV{SCRIPT_NAME}\n";   
 
+    $r->headers_out->{Status} = '504 Gateway Timeout';
     $r->content_type ("text/html");
     $r->print (<<EOF);
-<html><head><title>Service unavailable</title></head>
+<html>
+<head>
+    <title>Service unavailable</title>
+</head>
 <body>
 <p>
 We are temporarily out of service or may be experiencing high system demand.
@@ -656,7 +660,7 @@ sub handler {
 
     $ok   or do {
                     server_not_running($r);
-                    return Apache2::Const::OK;
+                    return Apache2::Const::HTTP_GATEWAY_TIME_OUT;
             };
 
     my $former = select SOCK;

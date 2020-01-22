@@ -2,7 +2,7 @@
  * vlink.c: runs as a CGI program and passes request to Interchange
  *          server via UNIX socket
  *
- * Copyright (C) 2005-2007 Interchange Development Group,
+ * Copyright (C) 2005-2020 Interchange Development Group,
  * https://www.interchangecommerce.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -67,16 +67,21 @@ void server_not_running()
 }
 
 /* Return this message to the browser when a system error occurs.
- * Should we log to a file?  Email to admin?
  */
 static void die(e, msg)
      int e;
      char* msg;
 {
+  printf("Status: 503 Service Unavailable\r\n");
   printf("Content-type: text/plain\r\n\r\n");
   printf("We are sorry, but the Interchange server is unavailable due to a\r\n");
   printf("system error.\r\n\r\n");
-  printf("%s: %s (%d)\r\n", msg, ERRMSG(e), e);
+  if (e) {
+    printf("%s: %s (%d)\r\n", msg, ERRMSG(e), e);
+  }
+  else {
+    printf("%s\r\n", msg);
+  }
   exit(1);
 }
 
@@ -116,7 +121,6 @@ get_entity()
 }
 
 
-static char ibuf[1024];		/* input buffer */
 static jmp_buf reopen_socket;	/* bailout when server shuts down */
 #define buf_size 1024		/* output buffer size */
 static char buf[buf_size];	/* output buffer */
@@ -219,7 +223,8 @@ static void out(len, str)
       bufp += str_left;
       buf_left -= str_left;
       str_left = 0;
-    } else {			       /* only part fits */
+    }
+    else {			       /* only part fits */
       memcpy(bufp, strp, buf_left);    /* copy in as much as fits */
       str_left -= buf_left;
       strp += buf_left;
@@ -441,40 +446,6 @@ static void return_response()
   }
 }
 
-
-#if 0
-/* Now read the response from the cgi-bin server and return it to our
- * caller (httpd).  We assume the server just closes the socket at the
- * end of the response.
- */
-static void read_sock()
-{
-  int nr;
-  char* p;
-  int w;
-
-  for (;;) {
-    do {
-      nr = read(sock, ibuf, sizeof(ibuf));
-    } while (nr < 0 && errno == EINTR);	/* interrupted system call */
-    if (nr < 0)
-      die(errno, "read");
-    if (nr == 0)		       /* that's it, all done */
-      break;
-
-    p = ibuf;			       /* write it to our stdout */
-    while (nr > 0) {
-      do {
-	w = write(CGIOUT, p, nr);
-      } while (w < 0 && errno == EINTR);
-      if (w < 0)
-	die(errno, "write");
-      p += w;			       /* and write again if short write */
-      nr -= w;
-    }
-  }
-}
-#endif
 
 int main(argc, argv)
      int argc;

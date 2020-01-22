@@ -1,9 +1,9 @@
 #!/usr/bin/perl -wT
 
-# tlink.pl: runs as a cgi program and passes request to Interchange server
-#           via a TCP socket
+# tlink.pl: runs as a CGI program and passes request to Interchange
+#           server via a TCP socket
 #
-# Copyright (C) 2005-2018 Interchange Development Group, https://www.interchangecommerce.org/
+# Copyright (C) 2005-2020 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -48,16 +48,18 @@ sub server_not_running {
 
 	$| = 1;
 	print <<EOF;
-Content-type: text/html
-
-<HTML><HEAD><TITLE>Interchange server not running</TITLE></HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<H3>We're sorry, the Interchange server is unavailable...</H3>
-<P>
-We are out of service or may be experiencing high system demand.
-Please try again soon.
-
-</BODY></HTML>
+Status: 504 Gateway Timeout\r
+Content-type: text/html\r
+\r
+<html>
+<head>
+    <title>No response</title>
+</head>
+<body>
+<strong>We're sorry, the Interchange server is unavailable...</strong>
+<p>We are out of service or may be experiencing high system demand. Please try again soon.</p>
+</body>
+</html>
 EOF
 
 }
@@ -65,9 +67,10 @@ EOF
 # Return this message to the browser when a system error occurs.
 #
 sub die_page {
-  printf("Content-type: text/plain\r\n\r\n");
-  printf("We are sorry, but the Interchange server is unavailable due to a\r\n");
-  printf("system error.\r\n\r\n");
+  print "Status: 503 Service Unavailable\r\n";
+  print "Content-type: text/plain\r\n\r\n";
+  print "We are sorry, but the Interchange server is unavailable due to a\r\n";
+  print "system error.\r\n\r\n";
   printf("%s: %s (%d)\r\n", $_[0], $!, $?);
   if($ERROR_ACTION =~ /not/i) {
 	warn "ALERT: Interchange $ENV{SCRIPT_NAME} $_[0]: $! ($?)\n";
