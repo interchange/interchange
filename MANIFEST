@@ -647,8 +647,6 @@ dist/src/mod_interchange/mod_interchange.c
 dist/src/mod_interchange/mod_interchange.html
 dist/src/mod_interchange/README
 dist/src/mod_perl2/Interchange/Link.pm
-dist/src/mod_perl2/Interchange/Link.pm.mod_perl-1.999_21_and_before
-dist/src/mod_perl2/README
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
 dist/src/syscfg.in
