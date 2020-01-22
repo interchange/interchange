@@ -1,4 +1,4 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2020 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -8,7 +8,7 @@
 UserTag get-url Order        url
 UserTag get-url AddAttr
 UserTag get-url Interpolate
-UserTag get-url Version      1.12
+UserTag get-url Version      1.13
 UserTag get-url Routine      <<EOR
 require LWP::UserAgent;
 sub {
@@ -51,6 +51,14 @@ sub {
 	}
 
 	my $req = HTTP::Request->new($method, $url);
+
+	if (local $_ = $opt->{headers}) {
+		for my $h (grep { /\S/ } split /[\r\n]+/) {
+			my ($k, $v) = split (/:/, $h, 2);
+			s/^\s+|\s+$//g for ($k, $v);
+			$req->header($k => $v);
+		}
+	}
 
 	if($do_content) {
 		$req->content_type($opt->{content_type});
