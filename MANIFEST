@@ -1040,6 +1040,8 @@ eg/dump_memory.cfg
 eg/emacs/itl.el
 eg/filter/calculated.filter
 eg/gpg_display
+eg/ic-session-ingest
+eg/ic-session-print
 eg/iclint
 eg/ifdef
 eg/jedit/catalog
