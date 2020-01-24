@@ -616,8 +616,6 @@ dist/lib/UI/pages/include/table_populator
 dist/lib/UI/pages/include/template_editor
 dist/lib/UI/pages/include/templates/ui_print1
 dist/lib/UI/pages/include/templates/ui_type1
-dist/lib/UI/pages/include/templates/ui_type2
-dist/lib/UI/pages/include/templates/ui_type3
 dist/lib/UI/pages/include/templates/ui_type5
 dist/lib/UI/pages/include/wizard_checklist
 dist/lib/UI/pages/include/wizard_profiles
