@@ -82,8 +82,6 @@ TAXFIELD	state	Tax
 TAXRATE	IN=6.0	Tax
 TAXSHIPPING		Tax
 TOLLFREE	(888) 555-1212	Company
-UI_ABOUT_LOGIN_URL	https://www.interchangecommerce.org/	Admin Control
-UI_ABOUT_NORMAL_URL	https://www.interchangecommerce.org/	Admin Control
 UI_ADMIN_TABLES	2ndDayAir 2ndDayAirAM 3DaySelect access Accessorials air_pp Book dict Expedited Express Ground ichelp locale mv_metadata NextDayAir NextDayAirSaver Priority pay_cert_lock pay_cert_redeem surf_pp ups_cache usps variable Xarea Zone	Admin Control
 UI_BOTTOMIMG	poweredby.gif	Admin Control
 UI_CLONE_TABLES	products* pricing* inventory merchandising options:sku	Item display
