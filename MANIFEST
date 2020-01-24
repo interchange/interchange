@@ -626,7 +626,6 @@ dist/lib/UI/profiles/Cancel
 dist/lib/UI/profiles/db_maintenance
 dist/lib/UI/profiles/file_maintenance
 dist/lib/UI/profiles/login
-dist/lib/UI/profiles/miscellaneous
 dist/lib/UI/profiles/order_button_build
 dist/lib/UI/profiles/process_filter
 dist/lib/UI/profiles/recompute_transaction
