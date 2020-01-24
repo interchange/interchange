@@ -121,27 +121,28 @@
                         <td colspan="3" class="darkshade"><img src="bg.gif" width="1" height="1"></td>
                      </tr>
 					<tr>
-					   <td height="28" class="footer" colspan=2>
-						   &nbsp;
-						   	<a href="@_INTERCHANGE_URL_@" class=footer>
+						<td height="28" class="footer" colspan=2>
+							&nbsp;
+							<a href="@_INTERCHANGE_URL_@" class=footer>
 								Interchange
-							</A>
-							[version] &copy; 2019 Interchange Development Group&nbsp;&nbsp;&nbsp;
+							</a>
+							[version] &copy; [time]%Y[/time] Interchange Development Group&nbsp;&nbsp;&nbsp;
+							[if session username]
 							&nbsp;
 							Username:
-						   <a href="[area href='__UI_BASE__/access_permissions' form='user_id=[data session username]']" class=footer>[data session username]</A> &nbsp; 
+							<a href="[area href='__UI_BASE__/access_permissions' form='user_id=[data session username]']" class=footer>[data session username]</a> &nbsp; 
+							[/if]
 							&nbsp;
 							[time]%e %b %Y %H:%M:%S[/time]
 							&nbsp;
-						    &nbsp;
-						   StoreID: <a href="[calc]$Config->{VendURLOriginal}[/calc]" class=footer>[calc]$Config->{CatalogName}[/calc]</A> &nbsp; 
+							&nbsp;
+							StoreID: <a href="[calc]$Config->{VendURLOriginal}[/calc]" class=footer>[calc]$Config->{CatalogName}[/calc]</a> &nbsp; 
 							&nbsp;
 							&nbsp;
 							([var MV_PAGE 1])
-                       </td>
+						</td>
 						<td align=right class=footer>
-								
-                       </td>
+						</td>
 					</tr>
                   </table>
                </td>
