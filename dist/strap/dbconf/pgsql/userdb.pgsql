@@ -4,7 +4,7 @@ Database  userdb  DEFAULT_TYPE  varchar(255)
 
 Database  userdb  COLUMN_DEF   "username=varchar(255) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "usernick=varchar(255)"
-Database  userdb  COLUMN_DEF   "password=varchar(64)"
+Database  userdb  COLUMN_DEF   "password=varchar(128)"
 Database  userdb  COLUMN_DEF   "expiration=varchar(32)"
 Database  userdb  COLUMN_DEF   "accounts=text"
 Database  userdb  COLUMN_DEF   "acl=text"
