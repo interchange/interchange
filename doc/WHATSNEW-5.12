@@ -271,6 +271,9 @@ Admin
 
 * Remove old help content.
 
+* Move access table into SQL to avoid locking between users. (GitHub pull
+  request #89)
+
 
 Strap Demo Catalog
 ------------------

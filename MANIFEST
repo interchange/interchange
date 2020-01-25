@@ -673,7 +673,7 @@ dist/strap/config/precopy_commands
 dist/strap/dbconf/locales/de_DE.cfg
 dist/strap/dbconf/locales/default.cfg
 dist/strap/dbconf/locales/nl_NL.cfg
-dist/strap/dbconf/mysql/access.dbm
+dist/strap/dbconf/mysql/access.mysql
 dist/strap/dbconf/mysql/affiliate.mysql
 dist/strap/dbconf/mysql/country.mysql
 dist/strap/dbconf/mysql/gateway_log.mysql
@@ -698,7 +698,7 @@ dist/strap/dbconf/mysql/tree.mysql
 dist/strap/dbconf/mysql/userdb.mysql
 dist/strap/dbconf/mysql/variable.dbm
 dist/strap/dbconf/mysql/variants.mysql
-dist/strap/dbconf/pgsql/access.dbm
+dist/strap/dbconf/pgsql/access.pgsql
 dist/strap/dbconf/pgsql/affiliate.pgsql
 dist/strap/dbconf/pgsql/country.pgsql
 dist/strap/dbconf/pgsql/gateway_log.pgsql
@@ -723,7 +723,7 @@ dist/strap/dbconf/pgsql/tree.pgsql
 dist/strap/dbconf/pgsql/userdb.pgsql
 dist/strap/dbconf/pgsql/variable.dbm
 dist/strap/dbconf/pgsql/variants.pgsql
-dist/strap/dbconf/sqlite/access.dbm
+dist/strap/dbconf/sqlite/access.lite
 dist/strap/dbconf/sqlite/affiliate.lite
 dist/strap/dbconf/sqlite/country.lite
 dist/strap/dbconf/sqlite/gateway_log.lite
