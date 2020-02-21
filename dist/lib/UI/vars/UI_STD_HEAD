@@ -1,14 +1,6 @@
 Variable UI_STD_INIT <<EOV
 [tag pragma url_no_session_id 0][/tag]
 [calcn]
-	# is this browser able to grok DHTML ?
-	# (Called separately to prevent bad user value in MV_DHTML_BROWSER
-	# from crashing init...)
-	my $regex = q{__MV_DHTML_BROWSER__}
-				|| 'MSIE.*5.5|MSIE.*[6-9]|Mozilla\W*5|Mozilla.*Gecko|Opera.*[7-9]';
-	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
-	return;
-[/calcn][calcn]
 	# call only once per page
 	return if $Config->{ImageDirOriginal};
 
@@ -106,11 +98,6 @@ Variable UI_STD_HEAD <<EOV
 	[seti ui_error][msg arg.0="[var MV_PAGE 1]"]Sorry, must be superuser for page '%s'.[/msg][/seti]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
-[/if]
-[if scratch dhtml_required]
-[and scratch ui_old_browser]
-	[seti ui_error][loc]Modern browser like Mozilla or MSIE 5 required for page accessed[/loc][/seti]
-	[bounce page="__UI_BASE__/error"]
 [/if]
 
 [output name=fixed_menu]

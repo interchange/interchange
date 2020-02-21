@@ -234,9 +234,7 @@ Thanks for your business!
 <div style="
 			Margin-left: 5%;
 			Width: 600px;
-			[if type=explicit
-				compare=`$CGI->{show_members} && ! $Scratch->{ui_old_browser}`
-			]
+			[if cgi show_members]
 			Height: 100px;
 			Overflow: auto;
 			[/if]

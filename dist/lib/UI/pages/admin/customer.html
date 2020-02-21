@@ -279,13 +279,9 @@
 
 	<TD><INPUT TYPE=checkbox NAME=customer VALUE="[item-code]"
 [item-calc]
-  my $string = '';
-  if(! $Scratch->{old_browser}) {
     my $nm = 'checker[item-increment]';
     push @els, qq{push_el('$nm', '');};
-    $string .= "id=$nm ";
-  }
-  return $string;
+    return "id=$nm ";
 [/item-calc]
 >
 
@@ -391,7 +387,6 @@ so there's a full line across the page even if table cells are blank.
 
 [output name=""]
 
-[if !scratch old_browser]
 <script>
 	var stat_array = new Array;
 	function push_el (el, status) {
@@ -452,7 +447,6 @@ so there's a full line across the page even if table cells are blank.
 			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>[L]Check all[/L]</A>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<A HREF="javascript:checkType('none')"><img id="img_check_none" src="__UI_IMG__box_empty.gif" border=0>[L]Uncheck all[/L]</A>
-[/if]
 
 [output name=bottom_of_form]
 </FORM>

@@ -378,76 +378,7 @@ sub reset_transforms {
 	undef $indicated;
 }
 
-sub old_tree {
-	my ($name, $opt, $template) = @_;
-	my @out;
-	my $u;
-	if(! $opt->{explode_url}) {
-		$u = Vend::Tags->history_scan( { var_exclude => 'toggle,collapse,expand' });
-		$opt->{explode_url} = $u;
-		$opt->{explode_url} .= $u =~ /\?/ ? $Global::UrlJoiner : "?";
-		$opt->{explode_url} .= 'explode=1';
-	}
-	if(! $opt->{collapse_url}) {
-		$u ||= Vend::Tags->history_scan( { var_exclude => 'toggle,collapse,expand' });
-		$opt->{collapse_url} = $u;
-		$opt->{collapse_url} .= $u =~ /\?/ ? $Global::UrlJoiner : "?";
-		$opt->{collapse_url} .= 'collapse=1';
-	}
-
-	my $explode_label = errmsg($opt->{explode_label} || 'Explode tree');
-	my $collapse_label = errmsg($opt->{collapse_label} || 'Collapse tree');
-
-	$opt->{header_template} ||= <<EOF;
-<p>
-<a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$explode_label</a><br$Vend::Xtrailer>
-<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>$collapse_label</a>
-</p>
-EOF
-
-	my $header;
-	$header = ::interpolate_html($opt->{header_template})
-		if $opt->{header_template};
-	if($header =~ /\S/) {
-		$header = Vend::Tags->uc_attr_list($opt, $header);
-		push @out, $header;
-	}
-
-	my %defaults = (
-				start       => $opt->{tree_selector} || 'Products',
-				table       => $::Variable->{MV_TREE_TABLE} || 'tree',
-				master      => $opt->{tree_master} || 'parent_fld',
-				subordinate => 'code',
-				autodetect  => '1',
-				sort        => 'code',
-				iterator    => \&tree_link,
-				spacing     => '4',
-				toggle      => 'toggle',
-				memo        => 'memo',
-				expand      => 'expand',
-				collapse    => 'collapse',
-				spacer		=> '&nbsp;',
-			);
-
-	while( my ($k, $v) = each %defaults) {
-		next if defined $opt->{$k};
-		$opt->{$k} = $v;
-	}
-	push @out, Vend::Tags->tree($opt);
-
-	my $footer;
-	$footer = ::interpolate_html($opt->{footer_template})
-		if $opt->{footer_template};
-	if($footer =~ /\S/) {
-		$footer = Vend::Tags->uc_attr_list($opt, $footer);
-		push @out, $footer;
-	}
-
-	return join "\n", @out;
-
-}
-
-sub old_simple {
+sub dhtml_simple {
 	my ($name, $opt, $template) = @_;
 	my @out;
 	my $u;
@@ -502,14 +433,6 @@ sub old_simple {
 
 	return join "\n", @out;
 
-}
-
-sub dhtml_simple {
-	return old_simple(@_);
-}
-
-sub old_flyout {
-	return dhtml_flyout(@_);
 }
 
 sub dhtml_flyout {
@@ -1793,16 +1716,6 @@ my %menu_default_img = (
 		open   => 'fo.gif',
 );
 
-sub dhtml_browser {
-	my $regex;
-	eval {
-		$regex = $::Variable->{MV_DHTML_BROWSER}
-			and $regex = qr/$regex/;
-	};
-	$regex ||= qr/MSIE [5-9].*Windows|Mozilla.*Gecko|Opera.*[7-9]/;
-	return $Vend::Session->{browser} =~ $regex;
-}
-
 ## Returns a link line for a tree walk without DHTML.
 sub tree_link {
 	my ($template, $row, $opt) = @_;
@@ -2191,8 +2104,6 @@ sub menu {
 		}
 	}
 
-	$opt->{dhtml_browser} = dhtml_browser()
-		unless defined $opt->{dhtml_browser};
 	$opt->{menu_type} ||= 'simple';
 
 	my $prefix = $opt->{prefix} || 'menu';
@@ -2298,7 +2209,6 @@ sub menu {
 				};
 		}
 
-		return old_tree($name,$opt,$template) unless $opt->{dhtml_browser};
 		return file_tree($name,$opt,$template) if $opt->{file_tree};
 		return dhtml_tree($name,$opt,$template);
 	}
@@ -2344,7 +2254,6 @@ sub menu {
 			undef $opt->{file} unless -f $opt->{file};
 		}
 
-		return old_flyout($name,$opt,$template) unless $opt->{dhtml_browser};
 		return dhtml_flyout($name,$opt,$template);
 	}
 	elsif($opt->{menu_type} eq 'simple') {
@@ -2359,7 +2268,6 @@ sub menu {
 			my $nm = escape_chars($opt->{name});
 			$opt->{file} .= "/$nm.txt";
 		}
-		return old_simple($name, $opt, $template) unless $opt->{dhtml_browser};
 		return dhtml_simple($name, $opt, $template);
 	}
 	else {

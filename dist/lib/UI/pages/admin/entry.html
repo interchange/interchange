@@ -62,19 +62,6 @@
 [/if]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-<!-- begin initialization -->
-<!-- [set old_browser]1[/set][calc]
-	## Browser check, standalone so syntax error will not
-	## kill init code
-	my $regex = $Variable->{MV_DHTML_BROWSER};
-	$regex ||= 'MSIE [5-9].*Windows|Mozilla.*Gecko|Opera.*[7-9]';
-
-	$regex = qr/$regex/;
-	if($Session->{browser} =~ $regex) {
-		delete $Scratch->{old_browser};
-	}
-	return $Scratch->{old_browser} ? 'Not a DHTML browser' : 'DHTML browser';
-[/calc] -->
 
 [perl tables="country products"]
 
@@ -617,7 +604,6 @@ mv_nextpage=@@MV_PAGE@@
             <td class="contentbar1">&nbsp;</td>
             <td class="contentbar1">
 
-[if !scratch old_browser]
 <script>
 var possible = ['credit_card', 'cod', 'postal', 'online_check', 'purchase_order'];
 
@@ -654,15 +640,8 @@ function visible (selnam) {
 	return;
 }
 </script>
-[/if]
 
-              <SELECT NAME="mv_order_profile"
-			  	onChange="[if scratch old_browser]
-								this.form.submit()
-							[else]
-								visible()
-							[/else]
-							[/if]">
+              <SELECT NAME="mv_order_profile" onChange="visible()">
               [if variable CREDIT_CARDS_ACCEPTED]
               [or variable ENTRY_CREDIT_CARDS_ACCEPTED]
               <option [selected mv_order_profile credit_card] value="credit_card">[L]Credit Card[/L]
@@ -685,11 +664,7 @@ function visible (selnam) {
               [/if]
               </SELECT>
             </td>
-            <td colspan="2" class="contentbar1"> 
-			  [if scratch old_browser]
-              [L](will update display)[/L]
-			  [/if]
-            </td>                              
+            <td colspan="2" class="contentbar1"></td>
           </tr>
           <tr>
             <td class="contentbar1" colspan="4">&nbsp;</td>

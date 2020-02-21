@@ -14,7 +14,7 @@ UserTag tabbed-display Version       1.6
 UserTag tabbed-display Documentation <<EOD
 =head1 NAME
 
-tabbed-display -- DHTML tabbed display
+tabbed-display
 
 =head1 SYNOPSIS
 
@@ -29,7 +29,7 @@ tabbed-display -- DHTML tabbed display
 
 =head1 DESCRIPTION
 
-The [tabbed-display] ITL tag breaks text into a tabbed DHTML display.
+The [tabbed-display] ITL tag breaks text into a dynamic tabbed display.
 There are many options which can change the size of the display,
 colors, and styles.
 

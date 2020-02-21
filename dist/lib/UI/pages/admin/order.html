@@ -296,12 +296,9 @@
 <td>
 <INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
 		[item-calc]
-			my $string = '';
-			if(! $Scratch->{old_browser}) {
-				my $nm = 'checker[item-increment]';
-				push @els, qq{push_el('$nm', '[item-param status]');};
-				$string .= "id=$nm ";
-			}
+			my $nm = 'checker[item-increment]';
+			push @els, qq{push_el('$nm', '[item-param status]');};
+			my $string = "id=$nm ";
 			return $string if $Scratch->{archive_nm} eq 'unarchive';
 			$string .= 'CHECKED'
 				if q{[item-param status]} eq $Values->{checked_status};
@@ -430,13 +427,11 @@ mv_nextpage=__UI_BASE__/order_status
 
 [output name=""]
 
-[if !scratch old_browser]
 <script>
 	var stat_array = new Array;
 	function push_el (el, status) {
 		if(stat_array[status] == undefined) {
 			stat_array[status] = new Array;
-// alert('created ' + status + ' array');
 		}
 		var els = stat_array[status];
 		els[els.length] = el;
@@ -454,7 +449,6 @@ mv_nextpage=__UI_BASE__/order_status
 		var i;
 		var alerted;
 		for(i in stat_array) {
-// alert("checking status of " + i);
 			var els = stat_array[i];
 			for (var j = 0; j < els.length; j++) {
 				var el = document.getElementById(els[j]);
@@ -500,7 +494,6 @@ mv_nextpage=__UI_BASE__/order_status
 			<img id="img_check_[loop-code]" src="__UI_IMG__box_empty.gif" border=0>[loc]Check all [loop-code][/loc]
 		</A>
 [/loop]
-[/if]
 
 [output name=bottom_of_form]
 </FORM>
