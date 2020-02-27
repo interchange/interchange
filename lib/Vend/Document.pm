@@ -1,6 +1,6 @@
 # Vend::Document - Document object for Interchange embedded Perl/ASP
 #
-# Copyright (C) 2002-2007 Interchange Development Group
+# Copyright (C) 2002-2020 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,8 @@ sub header {
 	shift;
 	my ($text, $opt) = @_;
 	$Vend::StatusLine = '' if ref $opt and $opt->{replace};
-	$Vend::StatusLine = '' if !defined $Vend::StatusLine;
-	$Vend::StatusLine .= shift;
+	$Vend::StatusLine //= '';
+	$Vend::StatusLine .= "\r\n" . shift . "\r\n";
 }
 
 sub insert {
