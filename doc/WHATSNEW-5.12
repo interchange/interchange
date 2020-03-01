@@ -142,11 +142,27 @@ Core
 * Added support for CIDR notation (for both IPv4 & IPv6) in TrustProxy and
   RobotIP directives.
 
+* Normalize IPv6 addresses.
+
 * Fix bug with mixed plaintext/crypted passwords on promotion.
 
 * Quell error message for harmless empty JSON request body.
 
+* Allow custom headers in [get-url].
+
 * Add more unit tests.
+
+* Make HTTP response codes more relevant.
+
+* Remove the option for session ids in URLs, so cookies are always required.
+
+* Improvements to [child-process] usertag.
+
+* Allow setting cookies, even if no session is created.
+
+* Add tools for viewing/manipulating existing Storage sessions.
+
+* Remove old mod_perl artifacts, unused variables, and support for ancient browsers.
 
 
 Payments
