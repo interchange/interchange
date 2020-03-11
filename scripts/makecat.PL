@@ -820,11 +820,10 @@ FINDCONF: {
 	}
 	print <<EOF unless @conf;
 
-If you are using the Apache or NCSA web server, Interchange can set
+If you are using the Apache HTTP server, Interchange can set
 some of the default parameters for you by reading the file.
 
-If you use the Netscape Enterprise server or other non-NCSA HTTP server,
-enter 'none' -- the information, if any, will not be useful.
+If you use another web server, enter 'none'.
 
 EOF
 	if (defined $Vend::MakeCat::Prompt_sub) {
@@ -857,7 +856,7 @@ EOF
 		else {
 			print <<EOF;
 
-Interchange can look for Apache or NCSA HTTP server configuration
+Interchange can look for Apache HTTP server configuration
 files for you by a slow method (using the system find
 command). This may take as many as several minutes.
 
@@ -2374,9 +2373,9 @@ parameters followed by an C<=> sign, followed by the value, i.e.
   --parameter=value
 
 Normally, if C<makecat> supplies a default you might guess at that. It
-is fairly intelligent if you have an Apache server and it has found the
-httpd.conf file. If you are on a Netscape or other web server, it is
-less likely to be right.
+is fairly intelligent if you have an Apache web server and it has found
+the httpd.conf file. If you are using another web server, it is unlikely
+to be right.
 
 The options set at reconfig time, i.e. the first time the program is run:
 

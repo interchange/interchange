@@ -410,8 +410,7 @@ EOF
 EOF
 
 	serverconf =>  <<EOF,
-# The server configuration file, if you are running
-# Apache or NCSA. Often:
+# The server configuration file, if you are running Apache. Often:
 #                          /etc/httpd/conf/httpd.conf
 #                          /usr/local/apache/conf/httpd.conf
 #                          /usr/local/etc/httpd/conf/httpd.conf
