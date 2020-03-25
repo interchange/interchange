@@ -1,10 +1,12 @@
 # Interchange
 
 Interchange is a web application server, electronic catalog and database
-display system. Features include:
+display system.
+
+Features include:
 
 * online ordering
-* real-time credit card processing hooks
+* real-time payment processing integration
 * high-level database access and retrieval with SQL support
 * product categorizing, merchandising, and discounting
 * basic customer relationship management
@@ -20,8 +22,8 @@ display system. Features include:
 Licensed under GPLv2. This program is offered without warranty of any kind.
 See file LICENSE for redistribution terms.
 
-Copyright (C) 2002-2020 Interchange Development Group
-Copyright (C) 1996-2002 Red Hat, Inc.
+Copyright © 2002-2020 Interchange Development Group \
+Copyright © 1996-2002 Red Hat, Inc. \
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
 ## Documentation
@@ -60,37 +62,37 @@ Major files and directories in the distribution:
 
 ### Makefile.PL
 
-Script to create a Makefile, used for installation. (Run `./configure` for usage instructions)
+Script to create a Makefile, used for installation. Run `./configure` for usage instructions.
 
 ### dist/
 
 The distribution files, exclusive of executable files and modules. Includes:
 
-* interchange.cfg.dist - Distribution-default interchange.cfg
-* strap/ - Demo catalog skeleton, used by makecat
-* src/ - C and Perl code for CGI link programs
-* lib/ - Back-end administrative interface
-* code/ - Usertags and other customizable code
-
-### hints.pl
-
-OS-specific configuration settings.
+* `code/` - Usertags and other customizable code
+* `interchange.cfg.dist` - Distribution-default interchange.cfg
+* `lib/` - Back-end administrative interface
+* `src/` - C and Perl code for CGI link programs
+* `strap/` - Demo catalog skeleton, used by makecat
 
 ### eg/
 
 Various helper scripts and addons.
 
+### hints.pl
+
+OS-specific configuration settings.
+
 ### lib/
 
 The library modules needed to run Interchange.
 
-### scripts/
-
-The executable files, relocated to bin/ in the install directory.
-
 ### relocate.pl
 
-Script that adjusts paths in scripts/ for installation into bin/.
+Script that adjusts paths in `scripts/` for installation into `bin/`.
+
+### scripts/
+
+The executable files, relocated to `bin/` in the install directory.
 
 ### test.pl
 
@@ -147,16 +149,16 @@ with an absolute path to the perl binary, such as:
 /usr/local/bin/perl Makefile.PL
 ```
 
-The build procedure asks where you'd like to install Interchange and
+The build procedure asks where you’d like to install Interchange and
 the name of the user account that will own the installation.
 
-The Interchange server doesn't do much if it isn't servicing one or more
+The Interchange server doesn’t do much if it isn’t servicing one or more
 actual catalogs, so you next need to make your first Interchange catalog,
 as described in the next section.
 
 ## Demo catalog
 
-There is a demo catalog skeleton (called 'strap') included.
+There is a demo catalog skeleton called `strap` included.
 
 To build your own catalog from the demo, go to the directory where you
 installed Interchange (default is "interchange" in your home directory,
@@ -172,6 +174,6 @@ should be able to access the new instance of the demo catalog.
 
 Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
-MySQL or PostgreSQL.
+MySQL, PostgreSQL, or SQLite.
 
 Try a live demo at: https://www.interchangecommerce.org/i/dev/demo
