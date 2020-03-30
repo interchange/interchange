@@ -57,3 +57,5 @@ Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  COLUMN_DEF   "currency_locale=varchar(32)"
 Database  transactions  COLUMN_DEF   "pay_cert_total=varchar(16)"
 Database  transactions  COLUMN_DEF   "pay_cert_ord_total=varchar(16)"
+Database  transactions  COLUMN_DEF   "tax_sent=int NOT NULL DEFAULT 1 CHECK (tax_sent IN (1,0,-1))"
+Database  transactions  NUMERIC       tax_sent

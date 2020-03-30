@@ -402,6 +402,7 @@ status: pending
 deleted: 0
 archived: 0
 complete: 0
+tax_sent: 0
 comments: [value filter=mac name=gift_note]
 affiliate: [scratch tmp_source]
 campaign: [value campaign]
@@ -446,10 +447,11 @@ options: [item-filter mac strip][item-options report=1 type=value][/item-filter]
 quantity: [item-quantity]
 price: [item-discount-price noformat]
 subtotal: [item-discount-subtotal noformat]
+salestax: [item-modifier salestax]
+full_price: [item-price noformat]
+tax_line_discount: [either][item-modifier tax_line_discount][or]0[/either]
+product_tax_code: [item-modifier product_tax_code]
 taxable: [if-item-data !products nontaxable]1[/if-item-data]
-mv_mi: [item-modifier mv_mi]
-mv_si: [item-modifier mv_si]
-mv_mp: [item-modifier mv_mp]
 order_date: [value order_date]
 affiliate: [scratch tmp_source]
 campaign: [value campaign]

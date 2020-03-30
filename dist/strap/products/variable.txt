@@ -49,6 +49,11 @@ MV_PAYMENT_REFERER		Payment
 MV_PAYMENT_SECRET		Payment
 MV_PAYMENT_VENDOR		Payment
 MYSQL	__MVC_MYSQL__	Database
+NEXUS_ADDRESS	123 Main St.	Tax
+NEXUS_CITY	Anywhere	Tax
+NEXUS_COUNTRY	US	Tax
+NEXUS_STATE	OH	Tax
+NEXUS_ZIP	45056	Tax
 ORDERS_TO	__MVC_MAILORDERTO__	Order
 ORDER_ROUTES	log main copy_user	Order
 PASSWORD_RESET_CHECK_KEY	ChAnGeMe	General
@@ -78,9 +83,12 @@ SQLITE	__MVC_SQLITE__	Database
 SQLPASS	__MVC_SQLPASS__	Database
 SQLUSER	__MVC_SQLUSER__	Database
 TAXAREA	IN	Tax
+TAXAVERAGES_TABLE	tax_averages	Tax
 TAXFIELD	state	Tax
 TAXRATE	IN=6.0	Tax
+TAXSERVICE	TaxJar	Tax
 TAXSHIPPING		Tax
+TAXTOKEN	Set to token from Tax Jar to enable	Tax
 TOLLFREE	(888) 555-1212	Company
 UI_ADMIN_TABLES	2ndDayAir 2ndDayAirAM 3DaySelect access Accessorials air_pp Book dict Expedited Express Ground ichelp locale mv_metadata NextDayAir NextDayAirSaver Priority pay_cert_lock pay_cert_redeem surf_pp ups_cache usps variable Xarea Zone	Admin Control
 UI_BOTTOMIMG	poweredby.gif	Admin Control

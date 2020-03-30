@@ -51,7 +51,9 @@ Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  COLUMN_DEF   "currency_locale=varchar(32)"
 Database  transactions  COLUMN_DEF   "pay_cert_total=varchar(16)"
 Database  transactions  COLUMN_DEF   "pay_cert_ord_total=varchar(16)"
-Database  transactions  PREFER_NULL   update_date
+Database  transactions  COLUMN_DEF   "tax_sent=smallint NOT NULL DEFAULT 1 CHECK (tax_sent IN (1,0,-1))"
+Database  transactions  NUMERIC       nitems,subtotal,shipping,handling,salestax,total_cost,tax_sent
+Database  transactions  PREFER_NULL   update_date,handling,salestax
 Database  transactions  INDEX         store_id
 Database  transactions  INDEX         order_number
 Database  transactions  INDEX         order_date
