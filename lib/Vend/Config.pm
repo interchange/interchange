@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2020 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -1199,7 +1199,7 @@ CONFIGLOOP:
 			print ALLCFG $_
 				unless /^\s*include\s+/i;
 		}
-		chomp;			# zap trailing newline,
+		chomp;
 		if(/^\s*endif\s*$/i) {
 #print "found $_\n";
 			undef $ifdef;
@@ -1659,12 +1659,9 @@ sub read_config_value {
 	my $lvar;
 	my $tie;
 
-	chomp;			# zap trailing newline,
-	s/^\s*#.*//;            # comments,
-				# mh 2/10/96 changed comment behavior
-				# to avoid zapping RGB values
-				#
-	s/\s+$//;		#  trailing spaces
+	chomp;
+	s/^\s*#.*//;
+	s/\s+$//;
 	return undef unless $_;
 
 	local($Vend::config_line);
