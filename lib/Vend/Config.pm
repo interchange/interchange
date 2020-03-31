@@ -45,6 +45,14 @@ use vars qw(
 			$SystemReposDone $ReposDest @include
 			);
 use Config;
+
+my $PERLQQ = 0x0100; # from Encode(3perl)
+my $config_encoding_changed;
+unless ($ENV{MINIVEND_DISABLE_UTF8}) {
+	require Encode;
+	import Encode qw( is_utf8 );
+}
+
 use Vend::Safe;
 use Fcntl;
 use Vend::Parse;
@@ -55,7 +63,7 @@ use Vend::Cron;
 use Vend::CharSet ();
 use Vend::CIDR qw(cidr2regex resembles_cidr normalize_ip6);
 
-$VERSION = '2.251';
+$VERSION = '2.252';
 
 my %CDname;
 my %CPname;
@@ -1005,6 +1013,20 @@ sub substitute_variable {
 	return $val;
 }
 
+sub set_filehandle_encoding {
+	my ($fh, $C) = @_;
+
+	if ($Global::Variable->{MV_UTF8}
+		or ($C and $C->{Variable}{MV_UTF8})
+	) {
+		local $PerlIO::encoding::fallback = $PERLQQ;
+		binmode($fh, ':encoding(utf8)');
+	}
+
+	undef $config_encoding_changed;
+	return;
+}
+
 # Parse the configuration file for directives.  Each directive sets
 # the corresponding variable in the Vend::Cfg:: package.  E.g.
 # "DisplayErrors No" in the config file sets Vend::Cfg->{DisplayErrors} to 0.
@@ -1190,6 +1212,7 @@ CONFIGLOOP:
 				die "$msg\n";
 			}
 		};
+	set_filehandle_encoding(\*CONFIG, $C);
 	print ALLCFG "# READING FROM $configfile\n" if $allcfg;
 	seek(CONFIG, $tellmark, 0) if $tellmark;
 #print "seeking to $tellmark in $configfile, include is @include\n";
@@ -1243,6 +1266,7 @@ CONFIGLOOP:
 
 		# Use our closure defined above
 		$read->($lvar, $value, $tie);
+		set_filehandle_encoding(\*CONFIG, $C) if $config_encoding_changed;
 
 		# If we have passed off configuration to a database we stop here...
 		last if $C->{ConfigDatabase}->{ACTIVE};
@@ -1896,6 +1920,7 @@ GLOBLOOP:
 				die "$msg\n";
 			}
 		};
+	set_filehandle_encoding(\*GLOBAL);
 	seek(GLOBAL, $tellmark, 0) if $tellmark;
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
@@ -1937,7 +1962,7 @@ GLOBLOOP:
 		my ($lvar, $value, $tie) = read_config_value($_, \*GLOBAL);
 		next unless $lvar;
 		$read->($lvar, $value, $tie);
-
+		set_filehandle_encoding(\*GLOBAL) if $config_encoding_changed;
 	}
 	close GLOBAL;
 	$done_one = 1;
@@ -5342,6 +5367,7 @@ sub parse_variable {
 	($name, $param) = split /\s+/, $value, 2;
 	chomp $param;
 	$c->{$name} = $param;
+	$config_encoding_changed = 1 if $name eq 'MV_UTF8' and $param;
 	return $c;
 }
 
