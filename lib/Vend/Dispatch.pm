@@ -1311,14 +1311,7 @@ sub dispatch {
 		$Vend::allow_qc = 1;  ## Allow the QueryCache AJAX access
 		$CGI::cookie =~ m{$::Instance->{CookieName}=($Vend::Cfg->{CookiePattern})};
 		$seed = $sessionid = $1;
-		if($Vend::Cfg->{InternalCookie}) {
-			$CGI::cookiehost = $4;
-			$CGI::cookieuser = $5;
-		}
-		else {
-			$::Instance->{ExternalCookie} = 1;
-		}
-		$Vend::CookieID = $Vend::Cookie = 1;
+		$::Instance->{ExternalCookie} = $Vend::CookieID = $Vend::Cookie = 1;
 	}
 	elsif ( $CGI::cookie
 			and $::Instance->{CookieName} ||= 'MV_SESSION_ID'
