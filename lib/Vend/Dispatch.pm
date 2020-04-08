@@ -1324,9 +1324,6 @@ sub dispatch {
 	      if (is_ipv4($host) || is_ipv6($host)) {
 			  $CGI::cookiehost = $host;
 	      }
-	      elsif ($host =~ /[A-Za-z0-9][-\@A-Za-z.0-9]+/) {
-			  $CGI::cookieuser = $host;
-	      }
 	      else {
 			  last SESSION_COOKIE;
 	      }
@@ -1335,7 +1332,7 @@ sub dispatch {
 	      $Vend::CookieID = $Vend::Cookie = 1;
 	    }
 	}
-#::logDebug("Instance CookieName=$::Instance->{CookieName}, found sessionid=$sessionid cookiehost=$CGI::cookiehost  cookieuser=$CGI::cookieuser external=$::Instance->{ExternalCookie}");
+#::logDebug("Instance CookieName=$::Instance->{CookieName}, found sessionid=$sessionid cookiehost=$CGI::cookiehost external=$::Instance->{ExternalCookie}");
 
 	Vend::Server::set_process_name("$Vend::Cat $CGI::host $sessionid");
 
