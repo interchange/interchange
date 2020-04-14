@@ -500,13 +500,7 @@ sub session_name {
 
 	return $Vend::SessionID if $::Instance->{ExternalCookie};
 
-	if(defined $CGI::user and $CGI::user) {
-		$host = escape_chars($CGI::user);
-	}
-	elsif($CGI::cookieuser) {
-		$host = $CGI::cookieuser;
-	}
-	elsif($CGI::cookiehost) {
+	if($CGI::cookiehost) {
 		$host = $CGI::cookiehost;
 	}
 	else {
