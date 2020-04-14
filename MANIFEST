@@ -258,6 +258,7 @@ code/UI_Tag/mm_value.coretag
 code/UI_Tag/newer.coretag
 code/UI_Tag/quick_table.coretag
 code/UI_Tag/read_shipping.coretag
+code/UI_Tag/recompute_transaction.tag
 code/UI_Tag/reconfig.coretag
 code/UI_Tag/reconfig_time.coretag
 code/UI_Tag/return_to.coretag
@@ -301,14 +302,17 @@ code/UserTag/get_url.tag
 code/UserTag/history_scan.tag
 code/UserTag/if_not_volatile.tag
 code/UserTag/load_cart.tag
+code/UserTag/load_tax_averages.tag
 code/UserTag/loc.tag
 code/UserTag/make_password.tag
 code/UserTag/page_meta.tag
 code/UserTag/rand.tag
 code/UserTag/report_table.tag
 code/UserTag/save_cart.tag
+code/UserTag/send_tax_transaction.tag
 code/UserTag/summary.tag
 code/UserTag/table_organize.tag
+code/UserTag/tax_lookup.tag
 code/UserTag/timed_display.tag
 code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
@@ -689,6 +693,7 @@ dist/strap/dbconf/mysql/pricing.mysql
 dist/strap/dbconf/mysql/products.mysql
 dist/strap/dbconf/mysql/state.mysql
 dist/strap/dbconf/mysql/stock_alert.mysql
+dist/strap/dbconf/mysql/tax_averages.mysql
 dist/strap/dbconf/mysql/transactions.mysql
 dist/strap/dbconf/mysql/tree.mysql
 dist/strap/dbconf/mysql/userdb.mysql
@@ -713,6 +718,7 @@ dist/strap/dbconf/pgsql/pricing.pgsql
 dist/strap/dbconf/pgsql/products.pgsql
 dist/strap/dbconf/pgsql/state.pgsql
 dist/strap/dbconf/pgsql/stock_alert.pgsql
+dist/strap/dbconf/pgsql/tax_averages.pgsql
 dist/strap/dbconf/pgsql/transactions.pgsql
 dist/strap/dbconf/pgsql/tree.pgsql
 dist/strap/dbconf/pgsql/userdb.pgsql
@@ -737,12 +743,15 @@ dist/strap/dbconf/sqlite/products.lite
 dist/strap/dbconf/sqlite/sqlite.cfg
 dist/strap/dbconf/sqlite/state.lite
 dist/strap/dbconf/sqlite/stock_alert.lite
+dist/strap/dbconf/sqlite/tax_averages.lite
 dist/strap/dbconf/sqlite/transactions.lite
 dist/strap/dbconf/sqlite/tree.lite
 dist/strap/dbconf/sqlite/userdb.lite
 dist/strap/dbconf/sqlite/variable.dbm
 dist/strap/dbconf/sqlite/variants.lite
 dist/strap/etc/jobs/daily/stock_alert
+dist/strap/etc/jobs/load_tax_averages/execute
+dist/strap/etc/jobs/send_tax_transactions/execute
 dist/strap/etc/log_transaction
 dist/strap/etc/mail_receipt
 dist/strap/etc/order.number
@@ -990,6 +999,7 @@ dist/strap/products/ship/Zone.csv
 dist/strap/products/specs.txt
 dist/strap/products/state.txt
 dist/strap/products/stock_alert.txt
+dist/strap/products/tax_averages.txt
 dist/strap/products/transactions.txt
 dist/strap/products/tree.txt
 dist/strap/products/userdb.txt
@@ -1182,6 +1192,8 @@ lib/Vend/Table/LDAP.pm
 lib/Vend/Table/SDBM.pm
 lib/Vend/Table/Shadow.pm
 lib/Vend/Tags.pm
+lib/Vend/Tax.pm
+lib/Vend/Tax/TaxJar.pm
 lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserControl.pm

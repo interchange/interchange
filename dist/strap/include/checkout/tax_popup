@@ -1,4 +1,7 @@
-[if config SalesTax ne multi]
+[if type=!explicit compare="
+    local $_ = $Config->{SalesTax};
+    return $_ eq 'multi' || /^\[tax[-_]lookup/;
+"]
 <script>
     function check_tax(form) {
         var foundState = false;

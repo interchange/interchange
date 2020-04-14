@@ -285,6 +285,9 @@ Strap Demo Catalog
 
 * Remove the option for session IDs in URLs, so cookies are always required.
 
+* Add base configuration and settings to delegate [salestax] to 3rd-party tax
+  APIs generally, and use of Tax Jar specifically.
+
 
 Other
 -----
@@ -367,5 +370,53 @@ logging:
   load balancer. Default value obtained from `hostname -s`. Can be set
   with Route param or [charge] option "gwl_source", or globally with
   MV_PAYMENT_GWL_SOURCE in catalog.cfg.
+
+
+3rd Party Tax Support
+---------------------
+
+Vend::Tax - alternative salestax framework to allow catalogs to leverage
+3rd-party APIs for tax calculation, estimates, and reporting.
+
+Vend::Tax defines 3 new tags to support each of the above identified
+functions:
+
+* [tax-lookup] - returns calculated tax amount determined by specific
+  3rd-party provider. Tax may be estimated or live lookup, depending on
+  settings. Data required to calculate tax will be provider dependent.
+
+* [load-tax-averages] - requests and stores tax averages for running in
+  estimate mode, for providers that support it. Stores estimates by default in
+  "tax_averages" table. Further, allows for local tracking of jurisdictions
+  with nexus, which can be used by live lookups to determine if a particular
+  lookup can be skipped entirely. See load_tax_averages Job and "tax_averages"
+  table definition in strap demo.
+
+* [send-tax-transaction] - report to provider the resulting tax transaction
+  for a given order, for providers that support it. By default, operates based
+  on transactions.tax_sent field. 0/empty indicates transaction not reported.
+  1 indicates transaction successfully reported. -1 indicates an error
+  attempting to report transaction, requiring manual intervention. See
+  send_tax_transactions Job in strap demo.
+
+Conceptually, Vend::Tax is patterned off of Vend::Payment for payment
+transactions. It provides the defined interface that Interchange will use,
+via the 3 tags shown above, but must delegate to vendor-specific
+implementations through tax gateway modules.
+
+Currently, only Tax Jar is supported - see Vend::Tax::TaxJar. But Vend::Tax
+was designed to facilitate and encourage the development of any 3rd-party
+providers through the creation of new Vend::Tax::Service modules. A review of
+Vend::Tax::TaxJar should be instructive for the expected interface with the 3
+usertags.
+
+Like the payment modules, in order to make a particular tax service available,
+it must be "Required" from interchange.cfg. E.g.:
+
+ Require module Vend::Tax::TaxJar
+
+See strap demo for example on integrating 3rd-party tax into your catalog via
+the SalesTax configuration directive.
+
 
 (end)

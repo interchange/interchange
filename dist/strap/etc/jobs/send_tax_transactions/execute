@@ -1,0 +1,44 @@
+### BEGIN [time]%F %T[/time] ###
+
+Finding all orders where tax_sent is false ...
+[query
+    table=transactions
+    list=1
+    ml=-1
+    sql="
+        SELECT
+            code,
+            order_ymd,
+            total_cost,
+            shipping,
+            salestax,
+            city,
+            state,
+            zip,
+            country,
+            address1 AS address
+        FROM transactions
+        WHERE NOT tax_sent
+        ORDER BY order_date
+    "
+]
+[sql-increment]: Creating tax transaction for [sql-code]: [send-tax-transaction
+    service=__TAXSERVICE__
+    order_number=[sql-code]
+    order_date="[convert-date fmt='%F'][sql-param order_ymd][/convert-date]"
+    total_cost=[sql-param total_cost]
+    shipping=[sql-param shipping]
+    salestax=[sql-param salestax]
+    city='[sql-param city]'
+    state=[sql-param state]
+    zip='[sql-param zip]'
+    country=[sql-param country]
+    address='[sql-param address]'
+    load_line_items=1
+    sent_field=tax_sent
+    sent_success_value=1
+][/query]
+
+### END [time]%F %T[/time] ###
+#
+

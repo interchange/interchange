@@ -1,0 +1,6 @@
+### BEGIN [time]%F %T[/time] ###
+
+Calling load for __TAXSERVICE__: [load-tax-averages service=__TAXSERVICE__]
+
+### END [time]%F %T[/time] ###
+

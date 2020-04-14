@@ -17,6 +17,7 @@ Database  products  INDEX         category
 Database  products  COLUMN_DEF   "prod_group=varchar(64) NOT NULL DEFAULT ''"
 Database  products  INDEX         prod_group
 Database  products  COLUMN_DEF   "nontaxable=CHAR(3)"
+Database  products  COLUMN_DEF   "product_tax_code=VARCHAR(64) NOT NULL DEFAULT ''"
 Database  products  COLUMN_DEF   "weight=varchar(12) DEFAULT '0' NOT NULL"
 Database  products  COLUMN_DEF   "size=varchar(96)"
 Database  products  COLUMN_DEF   "color=varchar(96)"
