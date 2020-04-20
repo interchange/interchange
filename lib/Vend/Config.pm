@@ -517,6 +517,7 @@ sub global_directives {
 	['ErrorFile',		 'root_dir',   	     undef],
 	['SysLog',			 'hash',     	     undef],
 	['Logging',			 'integer',     	 0],
+	['LogTimeFormat',     undef,             '[%d/%B/%Y:%H:%M:%S %z]'],
 	['CheckHTML',		  undef,     	     ''],
 	['UrlSepChar',		 'url_sep_char',     '&'],
 	['Variable',	  	 'variable',     	 ''],

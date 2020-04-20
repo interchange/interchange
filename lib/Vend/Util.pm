@@ -220,7 +220,7 @@ sub tabbed {
 
 # Returns time in HTTP common log format
 sub logtime {
-    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S %z]", localtime());
+    return POSIX::strftime($Global::LogTimeFormat, localtime());
 }
 
 sub format_log_msg {
