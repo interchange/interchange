@@ -11,7 +11,7 @@ code	mgroup	msort	inactive	page	form	name	description	extended
 010		x010	0			<hr noshade size=1>		
 011		x011	0			Site Design		
 012		x012	0	admin/layout		Site Layout		
-013		x013	0	admin/page		Page Edit		[var COMPANY] [cgi foo] [time]%c[/time]
+013		x013	0	admin/content		Content Edit		
 014		x014	0	admin/menu_editor		Menu Builder	Create and edit quick menus with a graphical UI	
 015		x015	0	admin/build_related		Build related		
 016		x016	0	admin/search_wizard		Search Builder		
