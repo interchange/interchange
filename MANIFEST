@@ -491,7 +491,6 @@ dist/lib/UI/pages/admin/file_transfer.html
 dist/lib/UI/pages/admin/flex_editor.html
 dist/lib/UI/pages/admin/flex_group.html
 dist/lib/UI/pages/admin/flex_select.html
-dist/lib/UI/pages/admin/fr_index.html
 dist/lib/UI/pages/admin/genconfig.html
 dist/lib/UI/pages/admin/generic.html
 dist/lib/UI/pages/admin/genfunction.html
