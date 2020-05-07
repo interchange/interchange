@@ -1,4 +1,4 @@
-# Copyright 2005-2007 Interchange Development Group and others
+# Copyright 2005-2020 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -105,7 +105,6 @@ EOD
 CodeDef htmlarea Routine <<EOR
 sub {
 	my ($opt) = @_;
-#::logDebug("called kupu widget, value=$opt->{value}");
 	use vars qw/$Tag/;
 
 	my %flavours = (htmlarea => {path => '/htmlarea/',
@@ -152,14 +151,7 @@ addLoadEvent(function()
 	
 	my $flavour = $opt->{flavour} || $::Variable->{HTMLAREA_FLAVOUR} || 'htmlarea';
 
-	my $fname = $opt->{form_name} || 'editor';
-
-	my $callpage = $opt->{append} || 'special/kupu';
-
 	my $pname = $opt->{name};
-
-	my $wname = $opt->{window_name} || "ic_kupu_$pname";
-
 	$pname =~ s/\W/_/g;
 
 	unless(defined $opt->{close_window}) {
