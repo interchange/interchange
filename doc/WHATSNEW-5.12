@@ -264,6 +264,8 @@ Admin
 
 * Remove support for ancient browsers and unused variables.
 
+* Remove old help content.
+
 
 Strap Demo Catalog
 ------------------
