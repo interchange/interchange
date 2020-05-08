@@ -56,8 +56,9 @@ Updating
 Follow development discussions by joining the interchange-announce and
 interchange-users mailing lists.
 
-Keep track of ongoing code changes by joining the interchange-cvs mailing
-list, or watching the interchange/interchange repository in GitHub.
+Keep track of ongoing code changes by watching the repository in GitHub:
+
+https://github.com/interchange/interchange
 
 In many cases, the major differences in the distribution will be easily
 updateable. You can copy any changed files directly to these library
