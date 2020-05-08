@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2020 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 
 package Vend::UserDB;
 
-$VERSION = '2.67';
+$VERSION = '2.68';
 
 use vars qw!
 	$VERSION
@@ -1824,6 +1824,12 @@ sub login {
 				) {
 
 					my $newpass = $enc_subs{$cur_method}->($self, $pw, Vend::Util::random_string(2));
+					unless ($newpass) {
+						my $err_msg = "Error checking password. A required module may be missing for the configured password hash algorithm.\n";
+						::logError($err_msg);
+						die $err_msg;
+					}
+
 					my $db_newpass = eval {
 						$self->{DB}->set_field(
 							$self->{USERNAME},

@@ -247,6 +247,11 @@ UserDB
   modification, since the login_table will not be admin (the test which is
   used in most cases).
 
+* Fix bug causing passwords to be blanked in the database when promoting
+  to e.g. bcrypt hashing but required modules are missing. This caused the
+  user to be unable to log in thereafter until a new password was set, but
+  did not allow any unauthorized access. (GitHub pull request #90)
+
 
 Admin
 -----
