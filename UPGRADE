@@ -306,7 +306,8 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
   options, and assigned them arbitrary part numbers, or you hand-edited
   the options table, you may find that your product options don't work. 
   You should post the question to the user mail list or contact a
-  competent Interchange consultant at: interchange-biz@interchangecommerce.org
+  competent Interchange consultant at:
+  https://www.interchangecommerce.org/i/dev/support/index
 
 * You will probably receive a message about "history-scan tag overrides global
   definition". See the section "PROBLEMS WITH USERTAGS" below.
@@ -322,7 +323,8 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 
   If you use the static page build facility, there are other means of
   accomplishing the same thing with scripts. Contact a competent
-  Interchange consultant at interchange-biz@interchangecommerce.org to get help.
+  Interchange consultant to get help:
+  https://www.interchangecommerce.org/i/dev/support/index
 
 * See the section "PROBLEMS WITH USERTAGS" below.
 
@@ -447,7 +449,9 @@ You should be able to update a catalog from 4.6.x if you are reasonably
 proficient in Perl and/or Interchange. If you expect to rely on the
 backend admin UI, it is sometimes better to build a new catalog from
 scratch, and integrate your look and feel with that. Contact a competent
-Interchange consultant to help: interchange-biz@interchangecommerce.org
+Interchange consultant to help:
+
+https://www.interchangecommerce.org/i/dev/support/index
 
 That being said, here are some of the issues.
 

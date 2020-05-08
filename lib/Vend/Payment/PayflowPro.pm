@@ -363,8 +363,9 @@ That should show what happened.
 =item *
 
 If all else fails, consultants are available to help with
-integration for a fee. You can find consultants by asking on the
-C<interchange-biz@interchangecommerce.org> mailing list.
+integration for a fee. You can find consultants here:
+
+https://www.interchangecommerce.org/i/dev/support/index
 
 =back
 
