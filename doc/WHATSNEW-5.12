@@ -311,6 +311,9 @@ Other
 
 * Remove old mod_perl artifacts.
 
+* Add support for {NEWLINE} token in [error] templates, by René Hertell
+  from GitHub issue #40.
+
 
 Gateway Log
 -----------
