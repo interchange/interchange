@@ -1117,7 +1117,6 @@ lib/Vend/Data.pm
 lib/Vend/DbSearch.pm
 lib/Vend/Dispatch.pm
 lib/Vend/Document.pm
-lib/Vend/Email.pm
 lib/Vend/Error.pm
 lib/Vend/External.pm
 lib/Vend/File.pm

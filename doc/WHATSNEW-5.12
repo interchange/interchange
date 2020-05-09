@@ -314,6 +314,9 @@ Other
 * Add support for {NEWLINE} token in [error] templates, by René Hertell
   from GitHub issue #40.
 
+* Removed Vend::Email module that was added but never integrated
+  (GitHub issue #58).
+
 
 Gateway Log
 -----------
