@@ -54,6 +54,18 @@ Password for PostgreSQL (if any)
 Timestamp for PostgreSQL (if any)
 2000-01-01
 
+{MAILORDERTO and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__'}SQLITE
+Set to 1 if you want to use SQLite
+	1	0
+
+{SQLITE}!SQLDB
+Database to use (will be created)
+__MVC_CATALOGNAME__	interch
+
+{SQLITE}SQLDSN
+DBI DSN to use
+dbi:SQLite:dbname=products/__MVC_SQLDB__.sqlite
+
 SUPERUSER
 Account name that will control this catalog
 __MVC_CATUSER__	interchange	admin	interch

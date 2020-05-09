@@ -24,9 +24,15 @@ This is often the user "root".
 PGSQL
 .
 You can select this to use PostgreSQL in your test catalog.
-This requires the ability to create a database named e.g. "test_standard",
+This requires the ability to create a database named e.g. "standard",
 and is highly dependent on your Perl and system configuration. Don't
 be too surprised if this doesn't work.
+
+SQLITE
+.
+You can select this to use SQLite in your test catalog.
+If you have SQLite and Perl module DBD::SQLite installed,
+this will usually work without further setup.
 
 SUPERUSER
 .
