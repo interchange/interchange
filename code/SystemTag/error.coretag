@@ -142,6 +142,7 @@ sub tag_error {
 EOF
 		}
 		$text =~ s/{LABEL}/$opt->{std_label}/g;
+		$text =~ s/{NEWLINE}/<br$Vend::Xtrailer>/g;
 		$text =~ s/{REQUIRED\s+([^}]*)}/$opt->{required} ? $1 : ''/ge;
 		$err =~ s/\s+$//;
 	}
