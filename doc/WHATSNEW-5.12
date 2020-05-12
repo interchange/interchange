@@ -298,6 +298,8 @@ Strap Demo Catalog
 * Add base configuration and settings to delegate [salestax] to 3rd-party tax
   APIs generally, and use of Tax Jar specifically.
 
+* Support easy use of SQLite in makecat.
+
 
 Other
 -----
