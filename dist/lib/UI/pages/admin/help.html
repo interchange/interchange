@@ -1,3 +1,7 @@
+[if-mm !logged_in]
+	[bounce page="__UI_BASE__/login"]
+[/if-mm]
+
 [comment]
 	There are 3 special help keys: home, faq, and 404. They have editable
 	database entries like any other, but the keys get special handling here.
@@ -7,27 +11,30 @@
 	three listed above and whatever the current topic is.
 [/comment]
 
-[tmp fontface]Verdana, Arial, Helvetica, sans-serif[/tmp]
+[tmpn fontface]Verdana, Arial, Helvetica, sans-serif[/tmpn]
 
-[comment]
-	This is a grievous hack made necessary by Apache mod_rewrite, which
-	re-urlencodes query strings on a rewrite.
-[/comment]
-[tmp help_key][/tmp]
-[calc]
-    my $topic = $CGI->{topic}; 
-	$topic =~ s/\%(\w\w)/chr( hex($1))/eg;
-	$Scratch->{help_orig} = $Scratch->{help_key}=$topic;
+[calcn]
+	my $topic = $CGI->{topic};
+
+	# This is a grievous hack made necessary by Apache mod_rewrite, which
+	# re-urlencodes query strings on a rewrite.
+	$topic =~ s/\%([0-9a-f]{2})/chr(hex($1))/aieg;
+
+	# Scrub user-supplied help topic once for whole page to prevent XSS (CVE-2020-12685)
+	$topic =~ s/[^\w.]//ag;
+
+	$Scratch->{help_orig} = $topic;
+	$Tag->tmpn(help_key => $topic);
 	return;
-[/calc]
+[/calcn]
 
 
-[if scratch help_key =~ /^\s*$/]
-	[tmp help_key]home[/tmp]
+[if !scratch help_key]
+	[tmpn help_key]home[/tmpn]
 [/if]
 
 [if type=data term="@_UI_HELP_TABLE_@::code::[scratch help_key]" op=eq compare=""]
-	[tmp help_key]404[/tmp]
+	[tmpn help_key]404[/tmpn]
 [/if]
 
 [tmp help_title]
@@ -88,7 +95,7 @@
 	[page href="@@MV_PAGE@@" form="topic=faq"]<font face="[scratch fontface]" size=2>FAQ</font></a>
 [/if]
 	<img src="bg.gif" height=1 width=12>
-[if scratch help_orig =~ /\S/]
+[if scratch help_orig]
 [page href=admin/flex_editor
 	  form="
 	  	mv_data_table=ichelp
@@ -100,7 +107,7 @@
 [/if]
 </td>
 <td align=right valign=center>
-<input name=topic type=hidden value="[cgi topic]">
+<input name=topic type=hidden value="[cgi name=topic filter=entities keep=1]">
 <input name=help_search size=10 class=s3>
 <input type=submit value="[L]Search Help[/L]" class=s3>
 &nbsp;
@@ -123,7 +130,7 @@
 [loop search="
 				fi=ichelp.txt
 				st=text
-				se=[cgi help_search]
+				se=[cgi name=help_search filter=oneline keep=1]
 				rf=code,title
 				ml=10
 			"
@@ -135,7 +142,7 @@
 [/list]
 </ol>
 [no-match]
-  No help found for [cgi name=help_search filter=entities].
+  No help found for [cgi name=help_search filter="oneline entities" keep=1].
 [/no-match]
 [more-list] [more] [/more-list]
 [/loop]

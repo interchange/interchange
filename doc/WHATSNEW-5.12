@@ -256,6 +256,8 @@ UserDB
 Admin
 -----
 
+* Fix XSS injection vulnerabilities in help and quicklinks (CVE-2020-12685).
+
 * Respect custom BACKUP_DIRECTORY in admin table downloads. This matches
   behavior expected by [export-database].
 
