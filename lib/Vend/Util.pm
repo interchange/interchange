@@ -664,11 +664,10 @@ sub unescape_full {
 
 ## UNEVAL
 
-# Returns a string representation of an anonymous array, hash, or scaler
+# Returns a string representation of an anonymous array, hash, or scalar
 # that can be eval'ed to produce the same value.
 # uneval([1, 2, 3, [4, 5]]) -> '[1,2,3,[4,5,],]'
-# Uses either Storable::freeze or Data::Dumper::DumperX or uneval 
-# in 
+# Uses either Storable::freeze or Data::Dumper::DumperX or uneval_it here
 
 sub uneval_it {
     my($o) = @_;		# recursive
