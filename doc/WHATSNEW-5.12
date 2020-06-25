@@ -158,6 +158,9 @@ Core
 
 * Allow setting cookies, even if no session is created.
 
+* Add new global directive LogTimeFormat which allows customizing the prefix of
+  log lines from the default [%d/%B/%Y:%H:%M:%S %z] using strftime(3) format.
+
 
 Payments
 --------
