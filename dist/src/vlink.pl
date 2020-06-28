@@ -24,9 +24,8 @@
 require 5.014_001;
 use strict;
 use Socket;
-my $LINK_FILE    = $ENV{MINIVEND_SOCKET} || '~@~INSTALLARCHLIB~@~/etc/socket';
+my $LINK_FILE    = '~@~INSTALLARCHLIB~@~/etc/socket';
 #my $LINK_FILE    = '~_~LINK_FILE~_~';
-$LINK_FILE =~ /(.*)/s and $LINK_FILE = $1; # Untaint
 my $LINK_TIMEOUT = 30;
 #my $LINK_TIMEOUT = ~_~LINK_TIMEOUT~_~;
 my $ERROR_ACTION = "-notify";
@@ -144,10 +143,12 @@ eval { alarm $LINK_TIMEOUT; };
 
 socket(SOCK, PF_UNIX, SOCK_STREAM, 0)	or die "socket: $!\n";
 
-my $ok;
+my $lsocket = $ENV{MINIVEND_SOCKET} || $LINK_FILE;
+$lsocket =~ /(.*)/s and $lsocket = $1; # Untaint
 
+my $ok;
 do {
-   $ok = connect(SOCK, sockaddr_un($LINK_FILE));
+   $ok = connect(SOCK, sockaddr_un($lsocket));
 } while ( ! defined $ok and $! =~ /interrupt|such file or dir/i);
 
 my $def = defined $ok;
