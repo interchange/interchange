@@ -37,6 +37,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <asm-generic/errno.h>
 
 #ifndef ENVIRON_DECLARED
 extern char** environ;
@@ -140,12 +141,20 @@ static void open_socket()
   int i;
   int e;
   int r;
+  char *lsocket;
   uid_t euid;
   gid_t egid;
 
+  lsocket = getenv("MINIVEND_SOCKET");
+  if(lsocket == NULL) {
+    lsocket = LINK_FILE;
+  }
+
+  if(strlen(lsocket) > sizeof(sa.sun_path) - 1)
+    die(ENAMETOOLONG, "Socket file name too long");
 
   sa.sun_family = AF_UNIX;
-  strcpy(sa.sun_path, LINK_FILE);
+  strncpy(sa.sun_path, lsocket, sizeof(sa.sun_path) - 1);
 #ifdef offsetof
   size = (offsetof (struct sockaddr_un, sun_path) + strlen (sa.sun_path) + 1);
 #else

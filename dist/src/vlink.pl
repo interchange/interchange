@@ -24,8 +24,9 @@
 require 5.014_001;
 use strict;
 use Socket;
-my $LINK_FILE    = '~@~INSTALLARCHLIB~@~/etc/socket';
+my $LINK_FILE    = $ENV{MINIVEND_SOCKET} || '~@~INSTALLARCHLIB~@~/etc/socket';
 #my $LINK_FILE    = '~_~LINK_FILE~_~';
+$LINK_FILE =~ /(.*)/s and $LINK_FILE = $1; # Untaint
 my $LINK_TIMEOUT = 30;
 #my $LINK_TIMEOUT = ~_~LINK_TIMEOUT~_~;
 my $ERROR_ACTION = "-notify";
