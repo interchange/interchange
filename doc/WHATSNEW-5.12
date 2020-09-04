@@ -324,6 +324,9 @@ Other
 * Removed Vend::Email module that was added but never integrated
   (GitHub issue #58).
 
+* Taught [email-raw] to properly handle Unicode via the MV_EMAIL_CHARSET
+  variable.
+
 
 Gateway Log
 -----------

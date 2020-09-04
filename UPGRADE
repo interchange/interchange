@@ -105,6 +105,10 @@ qualified URL as the href and used the form attribute then the protocol://domain
 portion of the URL would get overwritten by the one in VendUrl. If your code
 relies on this buggy behaviour you need to fix it.
 
+2.  The [email-raw] tag now recognizes/uses MV_EMAIL_CHARSET to convert any
+current Unicode data.  If you have already worked around how [email-raw] handles
+Unicode data and currently use MV_EMAIL_CHARSET, you will need to revisit/remove
+your own handling.
 
 KNOWN ISSUES UPGRADING FROM 5.6.x
 
