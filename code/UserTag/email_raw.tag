@@ -1,4 +1,4 @@
-# Copyright 2002-2007 Interchange Development Group and others
+# Copyright 2002-2020 Interchange Development Group and others
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -8,12 +8,16 @@
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
 UserTag email-raw Interpolate
-UserTag email-raw Version     1.8
+UserTag email-raw Version     1.9
 UserTag email-raw Routine     <<EOR
 sub {
     my($opt, $body) = @_;
     my($ok);
     $body =~ s/^\s+//;
+
+    if (my $charset = $::Variable->{MV_EMAIL_CHARSET} || $Global::Variable->{MV_EMAIL_CHARSET}) {
+        $body = Encode::encode($charset, $body);
+    }
 
 	# If configured, intercept all outgoing email and re-route
 	if (
