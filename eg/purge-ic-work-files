@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# purge-ic-work-files
+# Jon Jensen <jon@endpoint.com>
+#
+# Purges Interchange session, tmp, and timed build files. To be run once or
+# more daily from cron, with nice. Tries to avoid stomping on non-IC tmp files
+# by checking that catalog.cfg exists in the catalog directory.
+#
+# Customize this for your Interchange catalogs' location in the filesystem!
+
+for i in $HOME/catalogs/*
+do
+	[ -f $i/catalog.cfg ] || continue
+	for j in $i/{session,tmp,timed}
+	do
+		[ -d $j ] || continue
+		cd $j || exit 1
+		echo "Working in $j" >&2
+
+		echo "... Removing old files" >&2
+		find . -type f -follow -mtime +1 -a \! -name .gitignore -print0 | xargs -r -0 rm -f
+
+		echo "... Removing empty directories" >&2
+		find . -mindepth 2 -type d -follow -empty -print0 | xargs -r -0 rmdir --ignore-fail-on-non-empty
+	done
+done
