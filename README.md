@@ -22,7 +22,7 @@ Features include:
 Licensed under GPLv2. This program is offered without warranty of any kind.
 See file LICENSE for redistribution terms.
 
-Copyright © 2002-2020 Interchange Development Group \
+Copyright © 2002-2021 Interchange Development Group \
 Copyright © 1996-2002 Red Hat, Inc. \
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 

@@ -3,7 +3,7 @@
 #
 #-# Interchange version ~_~VERSION~_~
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # https://www.interchangecommerce.org/
 #
@@ -350,7 +350,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2020 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2021 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -964,7 +964,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2020 Interchange Development Group and others
+    Copyright (C) 2002-2021 Interchange Development Group and others
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 
@@ -976,11 +976,10 @@ Mike Heins is the primary author of Interchange.
 
 The Interchange Development Group is:
 
-    David Christensen
     Gert van der Spoel
     Greg Hanson
     Jon Jensen
-    Jure Kodzoman
+    Marco Pessotto
     Mark Johnson
     Mike Heins
     Peter Ajamian
@@ -1011,12 +1010,14 @@ Special thanks to Retired Core Team Members:
 
     Brev Patterson
     Daniel Browning
+    David Christensen
     David Kelly
     Davor Ocelic
     Ed LaFrance
     Ethan Rowe
     Jonathan Clark
     JT Justman
+    Jure Kodžoman
     Kevin Walsh
     Mark Lipscombe
     Paul Vinciguerra
