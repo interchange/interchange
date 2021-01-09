@@ -692,7 +692,7 @@ sub detect_vcs {
     my $realdir = shift;
 
     for my $dir ( qw(.git .svn CVS RCS) ) {
-        return 1 if -d "$realdir/$_" or -d "$realdir/../$_";
+        return 1 if -d "$realdir/$dir" or -d "$realdir/../$dir";
     }
     return 0;
 }
