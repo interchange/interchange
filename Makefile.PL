@@ -97,10 +97,10 @@ sub compare_file {
 
 sub get_rename {
 	my ($bn, $extra) = @_;
-	$bn =~ s:(.*/)::;
-	my $dn = $1;
-	$extra = '~' if ! $extra;
-	return $dn . "/.$extra." . $bn;
+	my $dn = '';
+	$bn =~ s:(.*)/:: and $dn = $1;
+	$extra ||= '~';
+	return "$dn/.$extra.$bn";
 }
 
 sub install_file {
