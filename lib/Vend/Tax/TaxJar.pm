@@ -509,7 +509,7 @@ sub _assemble_line_items {
         my $order_discount = $sum_of_discount_subtotals - $all_discounts_subtotal;
         for (@items) {
             my $delta = $discount_subtotals[ $_->{id} ] / $sum_of_items;
-            $_->{discount} += sprintf ('0.2f', $delta * $order_discount);
+            $_->{discount} += sprintf ('%0.2f', $delta * $order_discount);
         }
     }
 
