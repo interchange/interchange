@@ -161,6 +161,9 @@ Core
 * Add new global directive LogTimeFormat which allows customizing the prefix of
   log lines from the default [%d/%B/%Y:%H:%M:%S %z] using strftime(3) format.
 
+* Add new SMTPConfig hash directive for Net::SMTP configuration to support
+  SMTP AUTH user & password, alternate server port, SSL, and timeout options.
+
 
 Payments
 --------

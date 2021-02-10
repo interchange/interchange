@@ -533,6 +533,7 @@ sub global_directives {
 	['ExternalFile',	 'root_dir',	     "$Global::RunDir/external.structure"],
 	['ExternalExport',	 undef,				 'Global::Catalog=Catalog'],
 	['DowncaseVarname',   undef,           ''],
+	['SMTPConfig',		 'hash',			 ''],
 
 	];
 	return $directives;
@@ -742,6 +743,7 @@ sub catalog_directives {
 	['SourceCookie', sub { &parse_ordered_attributes(@_, [qw(name expire domain path secure)]) }, '' ],
 	['SuppressCachedCookies', 'yesno',       'no'],
 	['OutputCookieHook', undef,              ''],
+	['SMTPConfig',		 'hash',			 ''],
 
 	];
 

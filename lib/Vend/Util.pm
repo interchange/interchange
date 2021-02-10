@@ -2233,20 +2233,49 @@ sub send_mail {
 	}
 
 	SMTP: {
-		my $mhost = $::Variable->{MV_SMTPHOST} || $Global::Variable->{MV_SMTPHOST};
-		my $helo =  $Global::Variable->{MV_HELO} || $::Variable->{SERVER_NAME};
+		my $cc = $Vend::Cfg->{SMTPConfig};
+		my $gc = $Global::SMTPConfig;
+
+		my $mhost = $cc->{host} || $gc->{host} || $::Variable->{MV_SMTPHOST} || $Global::Variable->{MV_SMTPHOST};
 		last SMTP unless $none and $mhost;
+
 		eval {
 			require Net::SMTP;
 		};
-		last SMTP if $@;
+		logError("Unable to load Net::SMTP module: $@"), last SMTP if $@;
+
+		my $muser = $cc->{user} || $gc->{user};
+		my $mpass = $cc->{pass} || $gc->{pass};
+
 		$ok = 0;
-		$using = "Net::SMTP (mail server $mhost)";
-#::logDebug("using $using");
 		undef $none;
 
-		my $smtp = Net::SMTP->new($mhost, Debug => $Global::Variable->{DEBUG}, Hello => $helo) or last SMTP;
-#::logDebug("smtp object $smtp");
+		my %opt = (
+			Debug   => $Global::Variable->{DEBUG},
+			Hello   => $cc->{helo}    || $gc->{helo} || $Global::Variable->{MV_HELO} || $::Variable->{SERVER_NAME},
+			Port    => $cc->{port}    || $gc->{port},
+			Timeout => $cc->{timeout} || $gc->{timeout},
+			SSL     => length($cc->{ssl} // '') ? $cc->{ssl} : $gc->{ssl},  # allow 0 to disable, so can't use ||
+		);
+		%opt = map { $_ => $opt{$_} } grep { length($opt{$_} // '') } keys %opt;
+#::logDebug('%opt=' . ::uneval(\%opt));
+
+		my @using_parts = "mail server $mhost";
+		for (qw( SSL Port )) {
+			push @using_parts, "\L$_\E $opt{$_}" if exists $opt{$_};
+		}
+		push @using_parts, "user $muser" if $muser;
+		my $using_detail = join(', ', @using_parts);
+		$using = "Net::SMTP ($using_detail)";
+#::logDebug("using $using");
+
+		my $smtp = Net::SMTP->new($mhost, %opt) or last SMTP;
+#::logDebug("smtp object " . ::uneval($smtp));
+
+		$muser and $smtp->auth($muser, $mpass) or do {
+			logError("Unable to authenticate SMTP for user $muser: $@");
+			last SMTP;
+		};
 
 		my $from = $::Variable->{MV_MAILFROM}
 				|| $Global::Variable->{MV_MAILFROM}
