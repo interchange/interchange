@@ -56,7 +56,7 @@ use Config;
 no Config;
 
 BEGIN {
-	require 5.014_001;
+	require 5.016_003;
 
 	$ENV{PERL_SIGNALS} ||= 'unsafe';
 
@@ -379,7 +379,7 @@ its web site:
 
 		https://www.interchangecommerce.org/
 
-Interchange requires Perl 5.14.1 or higher; more information on Perl can
+Interchange requires Perl 5.16.3 or higher; more information on Perl can
 be seen at:
 
 		https://www.perl.org/

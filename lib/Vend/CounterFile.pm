@@ -74,7 +74,7 @@ systems.  Perhaps we should use the File::Lock module?
 
 Copyright (c) 1995-1998 Gisle Aas. All rights reserved.
 Modifications made by and copyright (C) 2002 Red Hat, Inc.
-and (c) 2002-2007 Interchange Development Group
+and (c) 2002-2021 Interchange Development Group
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
@@ -85,7 +85,7 @@ Gisle Aas <aas@sn.no>
 
 =cut
 
-require 5.014_001;
+require 5.016_003;
 use Carp   qw(croak);
 use Symbol qw(gensym);
 my $rewind_check;

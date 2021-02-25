@@ -27,8 +27,8 @@ Packager: Jon Jensen <jon@endpoint.com>
 Source0: https://ftp.interchangecommerce.org/interchange/5.12/tar/interchange-%{version}.tar.gz
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
-BuildPrereq: perl >= 5.14.1
-Requires: perl >= 5.14.1
+BuildPrereq: perl >= 5.16.3
+Requires: perl >= 5.16.3
 Requires: perl(Safe::Hole)
 Requires: perl(Set::Crontab)
 Requires: interchange = %{version}-%{release}
@@ -381,6 +381,9 @@ fi
 
 
 %changelog
+* Thu Feb 25 2021 Jon Jensen <jon@endpoint.com> 5.12.0-3
+- Increase minimum Perl version to 5.16.3.
+
 * Tue Sep 18 2018 Jon Jensen <jon@endpoint.com> 5.12.0-2
 - Increase minimum Perl version to 5.14.1.
 

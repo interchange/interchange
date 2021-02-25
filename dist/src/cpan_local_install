@@ -7,7 +7,7 @@ use Getopt::Std;
 
 getopts('cfd:h');
 
-require 5.014_001;
+require 5.016_003;
 
 use vars qw/$opt_c $opt_d $opt_h $VERSION/;
 

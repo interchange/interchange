@@ -100,7 +100,7 @@ The installation test script.
 
 ## Prerequisites
 
-Interchange requires Perl 5.14.1 or later, on a Unix-like operating
+Interchange requires Perl 5.16.3 or later, on a Unix-like operating
 system. It is primarily used on various Linux distributions, and has
 also been used on FreeBSD, OpenBSD, macOS, and other Unix variants.
 

@@ -10,7 +10,7 @@
 
 Interchange 5.12 not released yet
 
-Interchange now requires Perl 5.14.1 or newer.
+Interchange now requires Perl 5.16.3 or newer.
 
 Please note that the official Interchange project site has moved from
 icdevgroup.org to:
