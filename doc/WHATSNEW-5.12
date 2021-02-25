@@ -317,11 +317,11 @@ Other
 * Quickbooks integration: Fix typos so that removing stray trailing
   whitespace works.
 
-* Add tools for viewing/manipulating existing Storage sessions.
+* Added tools for viewing/manipulating existing Storage sessions.
 
-* Remove old mod_perl artifacts.
+* Removed old mod_perl artifacts.
 
-* Add support for {NEWLINE} token in [error] templates, by René Hertell
+* Added support for {NEWLINE} token in [error] templates, by René Hertell
   from GitHub issue #40.
 
 * Removed Vend::Email module that was added but never integrated
@@ -329,6 +329,8 @@ Other
 
 * Taught [email-raw] to properly handle Unicode via the MV_EMAIL_CHARSET
   variable.
+
+* Removed vestigial Windows support and defunct Irix support.
 
 
 Gateway Log

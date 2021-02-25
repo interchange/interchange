@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -407,13 +407,12 @@ sub global_directives {
 	['ConfigDatabase',	 'config_db',	     ''],
 	['ConfigAllBefore',	 'root_dir_array',	 'catalog_before.cfg'],
 	['ConfigAllAfter',	 'root_dir_array',	 'catalog_after.cfg'],
-	['Message',          'message',           ''],
+	['Message',          'message',          ''],
 	['Capability',		 'capability',		 ''],
 	['Require',			 'require',			 ''],
 	['Suggest',			 'suggest',			 ''],
-	['VarName',          'varname',           ''],
-	['Windows',          undef,               $Global::Windows || ''],
-	['LockType',         undef,           	  $Global::Windows ? 'none' : ''],
+	['VarName',          'varname',          ''],
+	['LockType',         undef,           	 ''],
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
@@ -4127,7 +4126,6 @@ sub parse_executable {
 		my $root = $value;
 		$root =~ s/\s.*//;
 
-		return $value if $Global::Windows;
 		if( ! defined $value or $value eq '') {
 			$x = '';
 		}

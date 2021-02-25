@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -927,7 +927,6 @@ sub import_database {
 		if(defined $database_dbm) {
 			$db->close_table() if defined $db;
 			undef $db;
-			unlink $database_dbm if $Global::Windows;
 			if($class_config->{FileExtensions}) {
 				open(TOUCH, ">>$database_dbm")
 					or die "Couldn't freshen $database_dbm: $_";

@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -80,9 +80,7 @@ my $Logfile = 'makecat.log';
 my $catalog_name;
 use vars qw( %Conf );
 my $Inetmode;
-my $Windows;
 my $pid;
-$Windows = 1 if $Config{osname} =~ /win32/i;
 
 
 my $USAGE = <<EOF;
@@ -286,7 +284,7 @@ if($Conf{'reference'}) {
 	$Conf{nocopy}         =
 	$Conf{norunning}      =
 	$Conf{nocfg}          = 1;
-	$Logfile = $Windows ?  'nul:'	: '/dev/null';
+	$Logfile = '/dev/null';
 }
 
 if ($Vend::MakeCat::Force) {
@@ -324,14 +322,6 @@ READCONFIG: {
 
 my $CgiDefault		= prefix('CGIDIR')			|| undef;
 my $DocrootDefault	= prefix('DOCUMENTROOT')	|| undef;
-
-if ($Windows) {
-	$ENV{HOME}		= $ENV{HOME} || $ENV{MINIVEND_ROOT}
-						|| prefix('VENDROOT') || '';
-	$CgiDefault		=  prefix('CGIDIR') || 'c:/webshare/scripts';
-	$CgiUrlDefault	=  prefix('CGIURL')  || '/scripts';
-	$DocrootDefault =  prefix('DOCUMENTROOT') || 'c:/webshare/wwwroot';
-}
 
 $ENV{MVC_ENCRYPTOR} = prefix('ENCRYPTOR') || 'none';
 
@@ -414,7 +404,7 @@ FINDCGIDIR: {
 
 my $isroot = 0;
 if ($< == 0) {
-	$isroot = 1 unless $Windows or $Conf{relocate};
+	$isroot = 1 unless $Conf{relocate};
 }
 
 $Conf{catalogname} = $catalog_name;
@@ -427,14 +417,11 @@ my %Prefix = (
 	vendroot     =>  $Global::VendRoot,
 	basedir      =>  sub {
 							return prefix('basedir', 1) if prefix('basedir', 1);
-							return "$Conf{vendroot}/catalogs"
-								if $Windows;
 							return "$ENV{HOME}/catalogs"
 								unless $isroot;
 							return "~/catalogs";
 							},
-	interchangeuser =>  sub {  return 'everybody' if $Windows;
-							get_id(); },
+	interchangeuser =>  sub { get_id() },
 	interchangegroup=>  '',
     servername => sub {
 						return Sys::Hostname::hostname() || $Config{myhostname};
@@ -449,14 +436,13 @@ my %Prefix = (
 							($isroot ? '' : $Conf{'interchangeuser'})
 						},
     mailorderto  => 
-						sub {  return 'webmaster' if $Windows;
+						sub {
 							if($Conf{servername} =~ s:(/~[^/]+)$:: ) {
 								$Tilde = $1;
 							}
     						$Conf{catuser} },
 	catroot      =>   sub {
 							my $dir = prefix('basedir') . "/" . $catalog_name;
-							return $dir if $Windows;
 							my $userdir = (getpwnam($Conf{catuser}))[7];
 							$dir =~ s/^\~/$userdir/;
 							return $dir;
@@ -686,7 +672,6 @@ my %History = (
 					},
 
 	catuser  =>   sub {
-						return 'everybody' if $Windows;
 						my @return = (@_);
 						my $u;
 						if(defined $Servers->{$Servername}) {
@@ -703,7 +688,6 @@ my %History = (
 					},
 
 	interchangeuser  =>   sub {
-						return 'everybody' if $Windows;
 						my @return = (@_);
 						my $u;
 						if(defined $Servers->{$Servername}) {
@@ -720,7 +704,6 @@ my %History = (
 					},
 
 	interchangegroup  =>   sub {
-						return 'nogroup' if $Windows;
 						my (@return) = @_;
 						my $u;
 						if(defined $Servers->{$Servername}) {
@@ -810,7 +793,6 @@ my @Servers;
 
 FINDCONF: {
 
-	last FINDCONF if $Windows;
 	last FINDCONF if $Vend::MakeCat::Force;
 	last FINDCONF if $ENV{MVC_SERVERNAME};
 	my $httpdconf;
@@ -916,7 +898,7 @@ SETDEFAULTS: {
 	PERMS: {
 
 		unless ($isroot) {
-			print <<EOF unless $Windows;
+			print <<EOF;
 
 This demo configuration sometimes requires root permissions,
 depending on your ISP. It needs to copy a few files to the CGI
@@ -1243,11 +1225,7 @@ EOF
 
 }
 
-if ($Windows) {
-	$mvuid = $catuid = 'everybody';
-	$mvgid = $catgid = 'nogroup';
-}
-elsif ($Conf{relocate}) {
+if ($Conf{relocate}) {
 	$mvuid = $catuid = $mvgid = $catgid = 'nobody';
 }
 else {
@@ -1309,11 +1287,6 @@ my ($lh, $lp);
 
 SETLINKMODE: {
 	if($prog = prefix('linkprogram')) {
-		last SETLINKMODE;
-	}
-	if ($Windows) {
-		$Conf{linkmode} = 'INET';
-		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink.pl";
 		last SETLINKMODE;
 	}
 	print <<EOF;
@@ -1815,23 +1788,17 @@ sub wanted {
 			or die "Couldn't rename $name.new to $name: $!\n";
 	}
 	my %Xfile;
-	if($Windows) {
-		# None of this stuff applies for Windows, I don't think.
-		# Put Win-specific stuff here.
+	set_owner($file);
+	$mode = (stat($file))[2];
+	if ($Xfile{$file}) {
+		$mode |= 0550;
 	}
 	else {
-		set_owner($file);
-		$mode = (stat($file))[2];
-		if ($Xfile{$file}) {
-			$mode |= 0550;
-		}
-		else {
-			$mode |= 060 if $gmode;
-			$mode |= 02010 if $gmode and -d $file;
-		}
-		chmod ($mode, $file)
-			or die "\nCouldn't set permissions on $name: $!\n";
+		$mode |= 060 if $gmode;
+		$mode |= 02010 if $gmode and -d $file;
 	}
+	chmod ($mode, $file)
+		or die "\nCouldn't set permissions on $name: $!\n";
 }
 	
 	$File::Find::dont_use_nlink = 1;
@@ -1870,7 +1837,7 @@ sub wanted {
 				or die "\nCouldn't set ownership of $cginame: $!\n";
 		}
 
-		unless ($Windows or $Inetmode or $CGIwrap) {
+		unless ($Inetmode or $CGIwrap) {
 			unless ($isroot or can_do_suid()) {
 				print <<EOF;
 
@@ -2013,10 +1980,8 @@ EOF
 		open(PID,"+<$pidfile") or last PID;
 
 		# If we get lock we are not running
-		unless($Windows) {
-			lockfile(\*PID,1,0)  and last PID;
-		}
-		
+		lockfile(\*PID,1,0)  and last PID;
+
 		$pid = <PID>;
 		$pid =~ /(\d+)/;
 		$pid = $1;
@@ -2215,10 +2180,8 @@ EOF
 			chown ($mvuid, $mvgid, $fn)
 				or warn "\nCouldn't set ownership of $fn: $!\n";
 		}
-		unless ($Windows) {
-			kill 'HUP', $pid;
-			sleep 1;
-		}
+		kill 'HUP', $pid;
+		sleep 1;
 		$fn = 'etc/reconfig';
 		open(RESTART, ">>$fn") or
 				die "Couldn't write $fn to add catalog: $!\n";
@@ -2230,9 +2193,7 @@ EOF
 		}
 		Vend::Util::unlockfile(\*RESTART) 		or die "unlock $fn: $!\n";
 		close RESTART;
-		unless ($Windows) {
-			kill 'HUP', $pid;
-		}
+		kill 'HUP', $pid;
 	}
 	
     my $start_string = $> == 0
@@ -2262,7 +2223,7 @@ EOF
 		eval { require GDBM_File; $dbm = 1; };
 		eval { require DB_File;   $dbm = 1; };
 
-		if(! $Windows and $dbm) {
+		if($dbm) {
 
 			print <<EOF;
 For session expiration, you might want to place a line like this in your
@@ -2302,7 +2263,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-2017-11-01
+2021-02-25
 
 =head1 INTRODUCTION
 

@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -25,7 +25,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = '2.32';
+$VERSION = '2.33';
 
 @ISA = qw(Exporter);
 
@@ -493,8 +493,6 @@ sub read_session {
 
 ## SESSIONS
 
-my $joiner = $Global::Windows ? '_' : ':';
-
 sub session_name {
     my($host, $user, $fn, $proxy);
 
@@ -511,7 +509,7 @@ sub session_name {
 		$host = escape_chars($host);
 	}
 #::logDebug ("name session user=$CGI::user host=$host ($CGI::host)\n");
-    $fn = $Vend::SessionID . $joiner . $host;
+    $fn = $Vend::SessionID . ':' . $host;
 #::logDebug ("name session id=$Vend::SessionID  name=$fn\n");
     $fn;
 }

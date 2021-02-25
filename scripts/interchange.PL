@@ -94,10 +94,6 @@ BEGIN {
 
 	$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
-	if($^O =~ /cygwin|win32/i) {
-		$Global::Windows = 1;
-	}
-
 	# Uncomment next line if you want to guarantee use of DB_File
 	#$ENV{MINIVEND_DBFILE} = 1;
 
@@ -166,7 +162,7 @@ use Fcntl;
 # we want to make sure the program is there. Insert the location
 # of you sendmail binary (the configure script should do this)
 $Global::SendMailLocation = '' if ! $Global::SendMailLocation;
-$Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
+$Global::SendMailLocation =
 	($Global::SendMailLocation and -x $Global::SendMailLocation and $Global::SendMailLocation) ||
 	(-x '/usr/sbin/sendmail' and '/usr/sbin/sendmail') ||
 	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
@@ -327,7 +323,7 @@ if($ENV{INTERCHANGE_REQUIRE}) {
 	}
 }
 
-if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
+if( $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
 	warn errmsg("\aYou probably don't want to run as nobody!\n");
 	sleep 1;
 	warn errmsg("The security problems are on your head, though. Continuing...\n");
@@ -450,7 +446,7 @@ Display help on command line options.
 =item -i, --inetmode
 
 Run with internet-domain socket only. Normally Interchange runs with
-both UNIX- and internet-domain sockets (except on Windows).
+both UNIX- and internet-domain sockets.
 
 =item --jobgroup=job
 
@@ -502,7 +498,7 @@ the Interchange server but no server start.
 =item -u, --unix
 
 Run with unix-domain socket only. Normally Interchange runs with
-both UNIX- and internet-domain sockets. This will not work on Windows.
+both UNIX- and internet-domain sockets.
 
 =item -v, --version
 
@@ -760,11 +756,9 @@ sub parse_options {
 #
 sub main_loop {
 	# Setup
-	unless ($Global::Windows) {
-		$ENV{'PATH'} = '/bin:/usr/bin';
-		$ENV{'SHELL'} = '/bin/sh';
-		$ENV{'IFS'} = '';
-	}
+	$ENV{'PATH'} = '/bin:/usr/bin';
+	$ENV{'SHELL'} = '/bin/sh';
+	$ENV{'IFS'} = '';
 	# Initially seed the random generator
 	srand;
 
@@ -786,7 +780,7 @@ sub main_loop {
 		or usage(), die "\n";
 
 	# Cannot run as root unless in 'make test'
-	if($> == 0 and ! $Global::Windows) {
+	if($> == 0) {
 		die errmsg("The Interchange server must not be run as root.\n")
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}

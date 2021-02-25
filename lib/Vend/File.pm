@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -64,7 +64,7 @@ use File::Temp;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
 
-$VERSION = '2.34';
+$VERSION = '2.35';
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -325,8 +325,6 @@ sub readfile {
 		return undef unless open(READIN, "< $file");
 		$Global::Variable->{MV_FILE} = $file;
 
-		binmode(READIN) if $Global::Windows;
-
         if ($encoding) {
             local $PerlIO::encoding::fallback = $PERLQQ;
             binmode(READIN, ":encoding($encoding)");
@@ -464,12 +462,8 @@ sub unlockfile {
     &$unlock_function(@_);
 }
 
-### Still necessary, sad to say.....
-if($Global::Windows) {
-	set_lock_type('none');
-}
-elsif($^O =~ /hpux/) {
-	set_lock_type('fcntl');
+if($^O =~ /hpux/) {
+   set_lock_type('fcntl');
 }
 
 # Return a quasi-hashed directory/file combo, creating if necessary
@@ -517,8 +511,8 @@ sub get_filename {
 # Can't use that because it INSISTS on object
 # calls without returning a blessed object
 
-my $abspat = $^O =~ /win32/i ? qr{^([a-zA-Z]:)?[\\/]} : qr{^/};
-my $relpat = qr{\.\.[\\/]};
+my $abspat = qr{^/};
+my $relpat = qr{\.\./};
 
 sub file_name_is_absolute {
     my($file) = @_;
@@ -541,24 +535,17 @@ sub make_absolute_file {
 	return catfile($prefix, $path);
 }
 
-sub win_catfile {
-    my $file = pop @_;
-    return $file unless @_;
-    my $dir = catdir(@_);
-    $dir =~ s/(\\\.)$//;
-    $dir .= "\\" unless substr($dir,length($dir)-1,1) eq "\\";
-    return $dir.$file;
-}
-
 sub unix_catfile {
     my $file = pop @_;
     return $file unless @_;
     my $dir = catdir(@_);
     for ($dir) {
-	$_ .= "/" unless substr($_,length($_)-1,1) eq "/";
+        $_ .= "/" unless substr($_, -1) eq "/";
     }
     return $dir.$file;
 }
+
+*catfile = \&unix_catfile;
 
 sub unix_path {
     my $path_sep = ":";
@@ -568,45 +555,18 @@ sub unix_path {
     @path;
 }
 
-sub win_path {
-    local $^W = 1;
-    my $path = $ENV{PATH} || $ENV{Path} || $ENV{'path'};
-    my @path = split(';',$path);
-    foreach(@path) { $_ = '.' if $_ eq '' }
-    @path;
-}
-
-sub win_catdir {
-    my @args = @_;
-    for (@args) {
-	# append a slash to each argument unless it has one there
-	$_ .= "\\" if $_ eq '' or substr($_,-1) ne "\\";
-    }
-    my $result = canonpath(join('', @args));
-    $result;
-}
-
-sub win_canonpath {
-    my($path) = @_;
-    $path =~ s/^([a-z]:)/\u$1/;
-    $path =~ s|/|\\|g;
-    $path =~ s|\\+|\\|g ;                          # xx////xx  -> xx/xx
-    $path =~ s|(\\\.)+\\|\\|g ;                    # xx/././xx -> xx/xx
-    $path =~ s|^(\.\\)+|| unless $path eq ".\\";   # ./xx      -> xx
-    $path =~ s|\\$|| 
-             unless $path =~ m#^([a-z]:)?\\#;      # xx/       -> xx
-    $path .= '.' if $path =~ m#\\$#;
-    $path;
-}
+*path = \&unix_path;
 
 sub unix_canonpath {
     my($path) = @_;
-    $path =~ s|/+|/|g ;                            # xx////xx  -> xx/xx
-    $path =~ s|(/\.)+/|/|g ;                       # xx/././xx -> xx/xx
-    $path =~ s|^(\./)+|| unless $path eq "./";     # ./xx      -> xx
+    $path =~ s|/+|/|g;                             # xx////xx  -> xx/xx
+    $path =~ s|(?:/\.)+/|/|g;                      # xx/././xx -> xx/xx
+    $path =~ s|^(?:\./)+|| unless $path eq "./";   # ./xx      -> xx
     $path =~ s|/$|| unless $path eq "/";           # xx/       -> xx
     $path;
 }
+
+*canonpath = \&unix_canonpath;
 
 sub unix_catdir {
     my @args = @_;
@@ -621,39 +581,7 @@ sub unix_catdir {
     $result;
 }
 
-my $catdir_routine;
-my $canonpath_routine;
-my $catfile_routine;
-my $path_routine;
-
-if($^O =~ /win32/i) {
-	$catdir_routine = \&win_catdir;
-	$catfile_routine = \&win_catfile;
-	$path_routine = \&win_path;
-	$canonpath_routine = \&win_canonpath;
-}
-else {
-	$catdir_routine = \&unix_catdir;
-	$catfile_routine = \&unix_catfile;
-	$path_routine = \&unix_path;
-	$canonpath_routine = \&unix_canonpath;
-}
-
-sub path {
-	return &{$path_routine}(@_);
-}
-
-sub catfile {
-	return &{$catfile_routine}(@_);
-}
-
-sub catdir {
-	return &{$catdir_routine}(@_);
-}
-
-sub canonpath {
-	return &{$canonpath_routine}(@_);
-}
+*catdir = \&unix_catdir;
 
 #print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
 #print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
