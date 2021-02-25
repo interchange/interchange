@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# Copyright (C) 2002-2015 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -109,7 +109,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 $Force = 0;
 $History = 0;
@@ -1568,7 +1568,6 @@ sub findexe {
 
 sub findfiles {
 	my($file) = @_;
-	return undef if $^O =~ /win32/i;
 	my $cmd;
 	my @files;
 	if($cmd = findexe('locate')) {
@@ -1612,7 +1611,6 @@ sub description {
 }
 
 sub can_do_suid {
-	return 0 if $^O =~ /win32/i;
 	my $file = "tmp$$.fil";
 	my $status;
 
@@ -1625,7 +1623,6 @@ sub can_do_suid {
 }
 
 sub get_id {
-	return 'everybody' if $^O =~ /win32/i;
 	my $file = -f "$Global::VendRoot/error.log"
 				? "$Global::VendRoot/error.log" : '';
 	return '' unless $file;
@@ -1637,7 +1634,6 @@ sub get_id {
 }
 
 sub get_ids {
-	return ('everybody', 'nogroup') if $^O =~ /win32/i;
 	my $file = "tmp$$.fil";
 	my ($name, $group);
 

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# Copyright (C) 2002-2017 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = '2.315';
+$VERSION = '2.316';
 
 @EXPORT = qw (
 
@@ -1691,8 +1691,6 @@ sub tag_perl {
 		return;
 	}
 
-	$body =~ tr/\r//d if $Global::Windows;
-
 	### Make calc/perl namespaces match
 	if($always_global) {
 		my $safepackage = $ready_safe->root();
@@ -2336,17 +2334,13 @@ sub tag_value_extended {
 		}
 
 		if($opt->{ascii}) {
-			my $replace = $^O =~ /win32/i ? "\r\n" : "\n";
 			if($CGI::file{$var} !~ /\n/) {
 				# Must be a mac file.
-				$CGI::file{$var} =~ s/\r/$replace/g;
+				$CGI::file{$var} =~ s/\r/\n/g;
 			}
 			elsif ( $CGI::file{$var} =~ /\r\n/) {
 				# Probably a PC file
-				$CGI::file{$var} =~ s/\r\n/$replace/g;
-			}
-			else {
-				$CGI::file{$var} =~ s/\n/$replace/g;
+				$CGI::file{$var} =~ s/\r\n/\n/g;
 			}
 		}
 		if($opt->{maxsize} and length($CGI::file{$var}) > $opt->{maxsize}) {

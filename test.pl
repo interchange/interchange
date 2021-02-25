@@ -1,6 +1,6 @@
 # test.pl - Interchange test script
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,13 +24,7 @@ use Errno;
 $cur_dir = cwd();
 $failed = 0;
 
-if($^O =~ /cygwin|win32/) {
-	print "no tests supported on Windows platform.\n";
-	exit;
-}
-
 die "Must be in build directory\n" unless -d 'blib';
-die "No tests defined for Windows\n" if $^O =~ /win32/i;
 
 $ENV{MINIVEND_ROOT} = "$cur_dir/blib";
 $ENV{MINIVEND_PORT} = 8786 unless defined $ENV{MINIVEND_PORT};

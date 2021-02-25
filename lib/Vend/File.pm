@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -64,7 +64,7 @@ use File::Temp;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
 
-$VERSION = '2.34';
+$VERSION = '2.35';
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -325,8 +325,6 @@ sub readfile {
 		return undef unless open(READIN, "< $file");
 		$Global::Variable->{MV_FILE} = $file;
 
-		binmode(READIN) if $Global::Windows;
-
         if ($encoding) {
             local $PerlIO::encoding::fallback = $PERLQQ;
             binmode(READIN, ":encoding($encoding)");
@@ -464,12 +462,8 @@ sub unlockfile {
     &$unlock_function(@_);
 }
 
-### Still necessary, sad to say.....
-if($Global::Windows) {
-	set_lock_type('none');
-}
-elsif($^O =~ /hpux/) {
-	set_lock_type('fcntl');
+if($^O =~ /hpux/) {
+   set_lock_type('fcntl');
 }
 
 # Return a quasi-hashed directory/file combo, creating if necessary
@@ -517,7 +511,7 @@ sub get_filename {
 # Can't use that because it INSISTS on object
 # calls without returning a blessed object
 
-my $abspat = $^O =~ /win32/i ? qr{^([a-zA-Z]:)?[\\/]} : qr{^/};
+my $abspat = qr{^/};
 my $relpat = qr{\.\.[\\/]};
 
 sub file_name_is_absolute {
@@ -621,23 +615,10 @@ sub unix_catdir {
     $result;
 }
 
-my $catdir_routine;
-my $canonpath_routine;
-my $catfile_routine;
-my $path_routine;
-
-if($^O =~ /win32/i) {
-	$catdir_routine = \&win_catdir;
-	$catfile_routine = \&win_catfile;
-	$path_routine = \&win_path;
-	$canonpath_routine = \&win_canonpath;
-}
-else {
-	$catdir_routine = \&unix_catdir;
-	$catfile_routine = \&unix_catfile;
-	$path_routine = \&unix_path;
-	$canonpath_routine = \&unix_canonpath;
-}
+my $catdir_routine = \&unix_catdir;
+my $catfile_routine = \&unix_catfile;
+my $path_routine = \&unix_path;
+my $canonpath_routine = \&unix_canonpath;
 
 sub path {
 	return &{$path_routine}(@_);

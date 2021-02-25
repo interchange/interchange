@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -24,7 +24,7 @@
 package Vend::Server;
 
 use vars qw($VERSION $Has_JSON $RUNDIR);
-$VERSION = '2.110';
+$VERSION = '2.111';
 
 use Cwd;
 use POSIX qw(setsid strftime);
@@ -1209,7 +1209,7 @@ sub connection {
 my $Signal_Terminate;
 my $Signal_Restart;
 my %orig_signal;
-my @trapped_signals = qw(INT TERM);
+my @trapped_signals = qw(INT TERM HUP USR1 USR2);
 
 
 my $ipc;
@@ -1282,10 +1282,6 @@ sub sig_hup {
     setup_debug_log(!$am_master);
 }
 
-unless ($Global::Windows) {
-	push @trapped_signals, qw(HUP USR1 USR2);
-}
-
 $Routine_TERM = sub { $SIG{TERM} = $Routine_TERM; $Signal_Terminate = 1 };
 $Routine_INT  = sub { $SIG{INT} = $Routine_INT; $Signal_Terminate = 1 };
 
@@ -1327,17 +1323,11 @@ sub setup_signals {
 	$SIG{CHLD} = 'IGNORE'
 		if $Global::PreFork && $Global::PreForkSingleFork;
 
-	if ($Global::Windows) {
-		$SIG{INT}  = \&sig_int_or_term;
-		$SIG{TERM} = \&sig_int_or_term;
-	}
-	else  {
-		$SIG{INT}  = \&sig_int_or_term;
-		$SIG{TERM} = \&sig_int_or_term;
-		$SIG{HUP}  = \&sig_hup;
-		$SIG{USR1} = sub { $Num_servers++; };
-		$SIG{USR2} = sub { $Num_servers--; };
-	}
+	$SIG{INT}  = \&sig_int_or_term;
+	$SIG{TERM} = \&sig_int_or_term;
+	$SIG{HUP}  = \&sig_hup;
+	$SIG{USR1} = sub { $Num_servers++; };
+	$SIG{USR2} = sub { $Num_servers--; };
 
 	if(! $Global::MaxServers) {
         $Sig_inc = sub { 1 };
@@ -1481,7 +1471,7 @@ sub housekeeping {
 		($reconfig) = grep $_ eq 'reconfig', @files
 			if $do->{reconfig};
 		($restart) = grep $_ eq 'restart', @files
-			if $Signal_Restart || $Global::Windows;
+			if $Signal_Restart;
 		($jobs) = grep $_ eq 'jobsqueue', @files
 			if $do->{jobs};
 
@@ -2557,7 +2547,7 @@ sub setup_debug_log {
 	elsif (!$Global::DEBUG) {
 		# May as well turn warnings off, not going anywhere
 		$^W = 0;
-		open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
+		open (Vend::DEBUG, ">/dev/null");
 	}
 
 	close(STDIN);
@@ -2735,7 +2725,7 @@ sub server_both {
 	) unless $Vend::Quiet;
 
 	my $no_fork;
-	if($Global::Windows or $Global::DEBUG ) {
+	if($Global::DEBUG) {
 		$no_fork = 1;
 		$Global::Foreground = 1;
 		::logGlobal({ level => 'info' }, "Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
@@ -3178,14 +3168,11 @@ sub run_server {
 		undef $Global::SOAP;
 		undef $Global::IPCsocket;
 	}
-	elsif ( $Global::Windows ) {
-		$Global::Inet_Mode = 1;
-	}
 	elsif (! $Global::Inet_Mode and ! $Global::Unix_Mode) {
 		$Global::Inet_Mode = $Global::Unix_Mode = 1;
 	}
 
-	if($Global::mod_perl || $Global::PreFork || $Global::DEBUG || $Global::Windows) {
+	if($Global::mod_perl || $Global::PreFork || $Global::DEBUG) {
 		eval {
 			require Tie::ShadowHash;
 		};
@@ -3194,7 +3181,6 @@ sub run_server {
 			if($Global::mod_perl)	{ $reason = 'under mod_perl' }
 			elsif($Global::PreFork)	{ $reason = 'in PreFork mode' }
 			elsif($Global::DEBUG)	{ $reason = 'in DEBUG mode' }
-			elsif($Global::Windows)	{ $reason = 'under Windows' }
 			die ::errmsg("Running $reason requires Tie::ShadowHash module.") . "\n";
 		}
 	}
@@ -3222,7 +3208,7 @@ sub run_server {
 		return;
 	}
 
-	if ($Global::Windows || $Global::DEBUG) {
+	if ($Global::DEBUG) {
         my $running = grab_pid($pidh);
         if ($running) {
 			print errmsg(

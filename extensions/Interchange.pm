@@ -1,6 +1,6 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# Copyright (C) 2002-2018 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ require 5.014_001;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '1.6';
+$VERSION = '1.7';
 
 BEGIN {
 	($Global::VendRoot = $ENV{INTERCHANGE_ROOT})
@@ -319,8 +319,7 @@ sub set_lock_function {
 		return ($self->{_config}{lock_type} = 'fcntl');
 	}
 	elsif ($arg eq 'none') {
-		warn "Using NO locking: I hope you know what you are doing!"
-			unless $^O =~ /win32/i;
+		warn "Using NO locking: I hope you know what you are doing!\n";
 		$lock_function = sub {1};
 		$unlock_function = sub {1};
 		return ($self->{_config}{lock_type} = 'none');
@@ -445,11 +444,9 @@ sub get_filename {
 # Can't use that because it INSISTS on object
 # calls without returning a blessed object
 
-my $abspat = $^O =~ /win32/i ? '^([a-z]:)?[\\\\/]' : '^/';
-
 sub file_name_is_absolute {
     my($file) = @_;
-    $file =~ m{$abspat}oi ;
+    $file =~ m{^/}oi;
 }
 
 sub win_catfile {
@@ -533,23 +530,10 @@ sub unix_catdir {
 }
 
 
-my $catdir_routine;
-my $canonpath_routine;
-my $catfile_routine;
-my $path_routine;
-
-if($^O =~ /win32/i) {
-	$catdir_routine = \&win_catdir;
-	$catfile_routine = \&win_catfile;
-	$path_routine = \&win_path;
-	$canonpath_routine = \&win_canonpath;
-}
-else {
-	$catdir_routine = \&unix_catdir;
-	$catfile_routine = \&unix_catfile;
-	$path_routine = \&unix_path;
-	$canonpath_routine = \&unix_canonpath;
-}
+my $catdir_routine = \&unix_catdir;
+my $catfile_routine = \&unix_catfile;
+my $path_routine = \&unix_path;
+my $canonpath_routine = \&unix_canonpath;
 
 sub path {
 	return &{$path_routine}(@_);

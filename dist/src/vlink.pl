@@ -3,7 +3,7 @@
 # vlink.pl: runs as a cgi program and passes request to Interchange server
 #           via a UNIX socket
 
-# Copyright (C) 2005-2020 Interchange Development Group, https://www.interchangecommerce.org/
+# Copyright (C) 2005-2021 Interchange Development Group, https://www.interchangecommerce.org/
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -87,12 +87,9 @@ sub get_entity {
   my $len = $ENV{CONTENT_LENGTH} || 0;
   return '' unless $len;
 
-  my $check;
-
-  # Can't hurt, helps Windows people
   binmode(STDIN);
 
-  $check = read(STDIN, $Entity, $len);
+  my $check = read(STDIN, $Entity, $len);
 
   die_page("Entity wrong length")
     unless $check == $len;
