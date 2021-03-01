@@ -3,7 +3,7 @@
 # mod_perl_tlink.pl: runs as a mod_perl program and passes request to
 #                    Interchange server via a TCP socket
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2021 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-require 5.014_001;
+require 5.016_003;
 use strict;
 use Apache::Registry;
 use Socket;

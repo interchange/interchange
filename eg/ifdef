@@ -4,6 +4,8 @@
 #
 # Small script to configure code based on comments
 
+require 5.016_003;
+
 use Getopt::Std;
 
 getopts('nyt:');
@@ -26,10 +28,6 @@ if(!$opt_n and !$opt_y) {
 }
 
 $string = $opt_t || 'DEBUG';
-
-unless($opt_t) {
-	require 5.003_93;
-}
 
 if(! @ARGV) {
 	my @args;

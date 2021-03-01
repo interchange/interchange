@@ -26,7 +26,7 @@ require Exporter;
 @EXPORT = qw();
 @EXPORT_OK = qw();
 
-require 5.014_001;
+require 5.016_003;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);

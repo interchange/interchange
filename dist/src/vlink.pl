@@ -21,7 +21,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA  02110-1301  USA.
 
-require 5.014_001;
+require 5.016_003;
 use strict;
 use Socket;
 my $LINK_FILE    = '~@~INSTALLARCHLIB~@~/etc/socket';
