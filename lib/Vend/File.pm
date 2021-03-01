@@ -583,13 +583,6 @@ sub unix_catdir {
 
 *catdir = \&unix_catdir;
 
-#print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
-#print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
-#print "canonpath a/b//../../c --> " . canonpath('a/b/../../c') . "\n";
-#print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
-#print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
-#print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
-
 my %intrinsic = (
 	ic_super => sub { return 1 if $Vend::superuser; },
 	ic_admin => sub { return 1 if $Vend::admin; },
