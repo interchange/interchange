@@ -512,7 +512,7 @@ sub get_filename {
 # calls without returning a blessed object
 
 my $abspat = qr{^/};
-my $relpat = qr{\.\.[\\/]};
+my $relpat = qr{\.\./};
 
 sub file_name_is_absolute {
     my($file) = @_;

@@ -446,7 +446,7 @@ sub get_filename {
 
 sub file_name_is_absolute {
     my($file) = @_;
-    $file =~ m{^/}oi;
+    $file =~ m{^/};
 }
 
 sub win_catfile {
