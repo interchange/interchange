@@ -449,24 +449,17 @@ sub file_name_is_absolute {
     $file =~ m{^/};
 }
 
-sub win_catfile {
-    my $file = pop @_;
-    return $file unless @_;
-    my $dir = catdir(@_);
-    $dir =~ s/(\\\.)$//;
-    $dir .= "\\" unless substr($dir,length($dir)-1,1) eq "\\";
-    return $dir.$file;
-}
-
 sub unix_catfile {
     my $file = pop @_;
     return $file unless @_;
     my $dir = catdir(@_);
     for ($dir) {
-	$_ .= "/" unless substr($_,length($_)-1,1) eq "/";
+	$_ .= "/" unless substr($_, -1) eq "/";
     }
     return $dir.$file;
 }
+
+*catfile = \&unix_catfile;
 
 sub unix_path {
     my $path_sep = ":";
@@ -476,45 +469,18 @@ sub unix_path {
     @path;
 }
 
-sub win_path {
-    local $^W = 1;
-    my $path = $ENV{PATH} || $ENV{Path} || $ENV{'path'};
-    my @path = split(';',$path);
-    foreach(@path) { $_ = '.' if $_ eq '' }
-    @path;
-}
-
-sub win_catdir {
-    my @args = @_;
-    for (@args) {
-	# append a slash to each argument unless it has one there
-	$_ .= "\\" if $_ eq '' or substr($_,-1) ne "\\";
-    }
-    my $result = canonpath(join('', @args));
-    $result;
-}
-
-sub win_canonpath {
-    my($path) = @_;
-    $path =~ s/^([a-z]:)/\u$1/;
-    $path =~ s|/|\\|g;
-    $path =~ s|\\+|\\|g ;                          # xx////xx  -> xx/xx
-    $path =~ s|(\\\.)+\\|\\|g ;                    # xx/././xx -> xx/xx
-    $path =~ s|^(\.\\)+|| unless $path eq ".\\";   # ./xx      -> xx
-    $path =~ s|\\$|| 
-             unless $path =~ m#^([a-z]:)?\\#;      # xx/       -> xx
-    $path .= '.' if $path =~ m#\\$#;
-    $path;
-}
+*path = \&unix_path;
 
 sub unix_canonpath {
     my($path) = @_;
-    $path =~ s|/+|/|g ;                            # xx////xx  -> xx/xx
-    $path =~ s|(/\.)+/|/|g ;                       # xx/././xx -> xx/xx
-    $path =~ s|^(\./)+|| unless $path eq "./";     # ./xx      -> xx
+    $path =~ s|/+|/|g;                             # xx////xx  -> xx/xx
+    $path =~ s|(?:/\.)+/|/|g;                      # xx/././xx -> xx/xx
+    $path =~ s|^(?:\./)+|| unless $path eq "./";   # ./xx      -> xx
     $path =~ s|/$|| unless $path eq "/";           # xx/       -> xx
     $path;
 }
+
+*canonpath = \&unix_canonpath;
 
 sub unix_catdir {
     my @args = @_;
@@ -529,34 +495,7 @@ sub unix_catdir {
     $result;
 }
 
-
-my $catdir_routine = \&unix_catdir;
-my $catfile_routine = \&unix_catfile;
-my $path_routine = \&unix_path;
-my $canonpath_routine = \&unix_canonpath;
-
-sub path {
-	return &{$path_routine}(@_);
-}
-
-sub catfile {
-	return &{$catfile_routine}(@_);
-}
-
-sub catdir {
-	return &{$catdir_routine}(@_);
-}
-
-sub canonpath {
-	return &{$canonpath_routine}(@_);
-}
-
-#print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
-#print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
-#print "canonpath a/b//../../c --> " . canonpath('a/b/../../c') . "\n";
-#print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
-#print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
-#print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
+*catdir = \&unix_catdir;
 
 1;
 __END__
