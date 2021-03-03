@@ -181,14 +181,6 @@ my %Label = (
 	servername		=> 'Server name',
 	sharedir		=> 'Share Directory',
 	shareurl		=> 'Share URL',
-	win_addcatalog	=> 'Add catalog to Interchange',
-	win_catinfo		=> 'Catalog Initialization Information',
-	win_greeting	=> 'Make an Interchange Catalog',
-	win_servername	=> 'HTTP ServerName',
-	win_server		=> 'HTTP Server Information',
-	win_serverconf	=> 'HTTP Server Configuration File',
-	win_linkinfo	=> 'Link Program Information',
-	win_urls		=> 'URL and Directory Information',
 );
 
 my %Desc = (
@@ -446,54 +438,6 @@ EOF
 	vendroot  =>  <<EOF,
 # The directory where the Interchange software is installed.
 #
-EOF
-
-	win_addcatalog		=> <<EOF,
-# You should add the catalog callout to interchange.cfg, and
-# optionally can add it into the running server.
-EOF
-
-	win_catinfo		=> <<EOF,
-# We need to set base template type and directory for your catalog.
-EOF
-
-	win_greeting		=> <<EOF,
-# Welcome to Interchange!
-#
-# You can now configure a working catalog.
-#
-# You can exit by selecting the "Cancel" button below, but your
-# catalog will not be built until you complete the configuration.
-EOF
-
-	win_linkinfo		=> <<EOF,
-# We need to get information necessary for compiling the link
-# program(s).
-EOF
-
-	win_server		=> <<EOF,
-# We need to know some basic HTTP Server configuration information.
-EOF
-
-	win_serverconf		=> <<EOF,
-# If you are using Apache or another HTTP server with the same
-# type of configuration file, we can read it and set some
-# defaults based on the server name you are using.
-EOF
-
-	win_servername		=> <<EOF,
-# Since you are running Apache, we can give you a choice of the
-# server names defined in the httpd.conf file you selected. This
-# will be used to pre-set items like DocumentRoot, ScriptAlias
-# (cgi-bin), etc.
-#
-# If you don't see your server, pick the empty option and go to
-# the next screen.
-EOF
-
-	win_urls		=> <<EOF,
-# We need to set the HTML, image, and executable paths for your
-# catalog.
 EOF
 
 );
