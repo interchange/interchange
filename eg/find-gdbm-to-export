@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Find any .gdbm files that are newer than or missing matching
+# .txt, .asc, or .csv equivalents, and thus need to be exported
+# before migrating to a system with incompatible .gdbm binary format.
+#
+# 2021-03-18 by Jon Jensen <jon@endpoint.com>
+
+set -euo pipefail
+IFS=$'\n\t'
+trap 'exit 1' INT
+
+for gdbm_file in $(find . -name \*.gdbm); do
+	base_name="${gdbm_file%.gdbm}"
+	source_file=
+
+	for suffix in txt asc csv; do
+		try_name="$base_name.$suffix"
+		[[ -e "$try_name" ]] && source_file="$try_name"
+	done
+
+	if [[ -z "$source_file" || ! -e "$source_file" ]]; then
+		echo "$gdbm_file has no matching source file"
+	elif [[ "$gdbm_file" -nt "$source_file" ]]; then
+		echo "$gdbm_file is newer than $source_file"
+	fi
+done
