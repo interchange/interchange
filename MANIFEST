@@ -288,6 +288,7 @@ code/UserTag/button.tag
 code/UserTag/capture_page.tag
 code/UserTag/child-process.tag
 code/UserTag/component.tag
+code/UserTag/config.tag
 code/UserTag/convert_date.tag
 code/UserTag/css.tag
 code/UserTag/db_date.tag
