@@ -164,6 +164,9 @@ Core
 * Add new SMTPConfig hash directive for Net::SMTP configuration to support
   SMTP AUTH user & password, alternate server port, SSL, and timeout options.
 
+* New usertag [config] to pull catalog config params, or with 2nd-arg flag
+  global config params. Supports dot-syntax for pulling from complex config
+  params.
 
 Payments
 --------
