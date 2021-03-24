@@ -13,10 +13,8 @@ sub {
 
     for (split (/[.]/, $key)) {
         $val // do {
-            local $@;
-            $val = eval (sprintf ('$Global::%s', $_)) // '';
-            ::logError(q{Global config key '%s' produced eval error: %s}, $_, $@)
-                if $@;
+            no strict 'refs';
+            $val = ${"Global::$_"};
             next if ref $val;
             last;
         };
@@ -24,7 +22,7 @@ sub {
         if ($test eq 'HASH') {
             $val = $val->{$_};
         }
-        elsif ($test eq 'ARRAY' && /^-?\d+$/) {
+        elsif ($test eq 'ARRAY' && /^-?\d+$/a) {
             $val = $val->[$_];
         }
         else {
