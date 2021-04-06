@@ -146,6 +146,13 @@ sub field_settor {
 sub set_row {
 	my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
+
+	if (	$s->[$CONFIG]{Clean_start}
+			and $s->record_exists($key)
+	) {
+		die "ERROR: duplicate '$key' violates primary key on table '$s->[$CONFIG]{name}'\n";
+	}
+
 	$s->[$CONFIG]{_Dirty} = 1;
 	$s->[$TIE_HASH]{$key} = [@fields];
 }

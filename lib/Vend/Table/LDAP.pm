@@ -411,7 +411,9 @@ sub set_row {
 	}
 	my $code;
 	my $op;
-	if($s->record_exists($key)) {
+	if (	!$s->[$CONFIG]{Clean_start}
+			and $s->record_exists($key)
+	) {
 		$op = 'modify';
 		my $m = $s->[$TIE_HASH]->modify(
 			dn => "$ki=$key, db=$n, $b",

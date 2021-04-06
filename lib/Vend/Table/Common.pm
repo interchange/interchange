@@ -524,6 +524,13 @@ sub stuff_row {
 #::logDebug("stuff key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
 		if ! length($key);
+
+	if (	$s->[$CONFIG]{Clean_start}
+			and $s->record_exists($key)
+	) {
+		die "ERROR: duplicate '$key' violates primary key on table '$s->[$CONFIG]{name}'\n";
+	}
+
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->lock_table();
@@ -540,6 +547,13 @@ sub freeze_row {
 #::logDebug("freeze key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
 		if ! length($key);
+
+	if (	$s->[$CONFIG]{Clean_start}
+			and $s->record_exists($key)
+	) {
+		die "ERROR: duplicate '$key' violates primary key on table '$s->[$CONFIG]{name}'\n";
+	}
+
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->lock_table();
@@ -1195,6 +1209,9 @@ access.
 					$table_name,
 					);
 	}
+	$out->[$CONFIG]{Clean_start} = 1
+		if $options->{insert};
+
 	my $fields;
     my (@fields, $key);
 	my @addl;
