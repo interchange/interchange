@@ -1195,6 +1195,9 @@ access.
 					$table_name,
 					);
 	}
+	$out->[$CONFIG]{Clean_start} = 1
+		if $options->{insert};
+
 	my $fields;
     my (@fields, $key);
 	my @addl;
