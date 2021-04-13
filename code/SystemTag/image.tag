@@ -222,7 +222,7 @@ sub {
 					}
 				}
 				last MOGIT unless $exec;
-				system qq{$exec -geometry "$siz" '$newpath'};
+				system qq{$exec -geometry "$siz" '$newpath' >/dev/null 2>/dev/null};
 				if($?) {
 					logError("%s: Unable to mogrify image '%s'", 'image tag', $newpath);
 					last MOGIT;
