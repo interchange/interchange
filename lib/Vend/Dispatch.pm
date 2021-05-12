@@ -432,6 +432,9 @@ my %form_action = (
 						($status,$final,$missing) =
 							check_order($CGI::values{mv_order_profile});
 					}
+					elsif ($::Pragma->{require_order_profile}) {
+						($status, $final, $missing) = (undef, 0, "Missing profile");
+					}
 					else {
 						$status = $final = 1;
 					}
