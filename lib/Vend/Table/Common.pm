@@ -228,6 +228,11 @@ sub quote {
 	return "'$value'";
 }
 
+# Identity function placeholder for Vend::Table::DBI method
+sub quote_identifier {
+	return pop;
+}
+
 sub config {
 	my ($s, $key, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];

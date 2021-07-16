@@ -297,7 +297,7 @@ sub spec_check {
 					push @{$s->{eq_specs}}, $spec;
 					last COLOP unless $s->{dbref};
 					$spec = $s->{dbref}->quote($spec, $s->{mv_search_field}[$i]);
-					$spec = $s->{mv_search_field}[$i] . " = $spec";
+					$spec = $s->{dbref}->quote_identifier($s->{mv_search_field}[$i]) . " = $spec";
 					push(@{$s->{eq_specs_sql}}, $spec);
 				}
 			}
