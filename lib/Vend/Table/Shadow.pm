@@ -126,6 +126,11 @@ sub quote {
 	return $s->[$OBJ]->quote($value, $field);
 }
 
+# Identity function placeholder for Vend::Table::DBI method
+sub quote_identifier {
+	return pop;
+}
+
 sub numeric {
 	my ($s, $column) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];

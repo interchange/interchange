@@ -4586,6 +4586,12 @@ sub query {
 			$db->quote($1)
 		:xisge;
 
+	$opt->{query} =~ s{
+			\[\Q$opt->{prefix}\E[_-]quote[-_](ident(?:ifier)?)\](.*?)\[/\Q$opt->{prefix}\E[_-]quote[_-]\1\]
+		}{
+			$db->quote_identifier($2)
+		}xisge;
+
 	if (! $opt->{wantarray} and ! defined $MVSAFE::Safe) {
 		my $result = $db->query($opt, $text);
 		return (ref $result) ? '' : $result;
