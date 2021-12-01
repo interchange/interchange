@@ -75,7 +75,7 @@ when it exists bounce to a page that will display the results.
 
 Ton Verhagen <tverhagen@alamerce.nl>
 
-Jon Jensen <jon@endpoint.com>
+Jon Jensen <jon@endpointdev.com>
 
 
 =cut

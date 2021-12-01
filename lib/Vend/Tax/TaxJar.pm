@@ -1149,7 +1149,7 @@ __END__
 
 =head1 AUTHOR
 
-Mark Johnson (mark@endpoint.com), End Point Corp.
+Mark Johnson (mark@endpointdev.com), End Point Corp.
 
 =head1 LICENSE AND COPYRIGHT
 

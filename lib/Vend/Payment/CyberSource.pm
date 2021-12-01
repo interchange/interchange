@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2009 Interchange Development Group and others
 #
-# Written by Mark Johnson <mark@endpoint.com>
+# Written by Mark Johnson <mark@endpointdev.com>
 # based on code by Sonny Cook <sonny@endpoint.com>
 # and Mike Heins <mike@perusion.com>
 #
@@ -802,7 +802,7 @@ user list or you can send them to the author directly.
 
 =head1 AUTHOR
 
-Mark Johnson <mark@endpoint.com>
+Mark Johnson <mark@endpointdev.com>
 (Based primarily off of Vend::Payment::ICS by Sonny Cook <sonny@endpoint.com>)
 
 =cut

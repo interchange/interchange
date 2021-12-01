@@ -4,7 +4,7 @@
 # .txt, .asc, or .csv equivalents, and thus need to be exported
 # before migrating to a system with incompatible .gdbm binary format.
 #
-# 2021-03-18 by Jon Jensen <jon@endpoint.com>
+# 2021-03-18 by Jon Jensen <jon@endpointdev.com>
 
 set -euo pipefail
 IFS=$'\n\t'

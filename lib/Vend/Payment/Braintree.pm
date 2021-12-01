@@ -277,8 +277,8 @@ See https://www.interchangecommerce.org/ for mailing lists and other information
 
 =head1 AUTHORS
 
-    Mark Johnson <mark@endpoint.com>
-    Jon Jensen <jon@endpoint.com>
+    Mark Johnson <mark@endpointdev.com>
+    Jon Jensen <jon@endpointdev.com>
 
 =cut
 

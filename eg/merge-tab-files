@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # merge-tab-files
-# by Jon Jensen <jon@endpoint.com>
+# by Jon Jensen <jon@endpointdev.com>
 # 2008-04-11
 #
 # A tool for merging multiple tab-delimited files.

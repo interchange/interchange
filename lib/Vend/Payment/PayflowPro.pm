@@ -384,12 +384,12 @@ It changes packages to Vend::Payment and places things there.
 
     Josh Lavin <josh@perusion.com>
     Tom Tucker <tom@ttucker.com>
-    Mark Johnson <mark@endpoint.com>
+    Mark Johnson <mark@endpointdev.com>
     Jordan Adler
     David Christensen <david@endpoint.com>
     Cameron Prince <cameronbprince@yahoo.com>
     Mike Heins <mike@perusion.com>
-    Jon Jensen <jon@endpoint.com>
+    Jon Jensen <jon@endpointdev.com>
 
 =cut
 

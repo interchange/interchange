@@ -23,7 +23,7 @@ Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 URL: https://www.interchangecommerce.org/
-Packager: Jon Jensen <jon@endpoint.com>
+Packager: Jon Jensen <jon@endpointdev.com>
 Source0: https://ftp.interchangecommerce.org/interchange/5.12/tar/interchange-%{version}.tar.gz
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd

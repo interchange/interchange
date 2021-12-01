@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # ic-session-ingest
-# Jon Jensen <jon@endpoint.com>
+# Jon Jensen <jon@endpointdev.com>
 # 2019-12-11
 
 use strict;
