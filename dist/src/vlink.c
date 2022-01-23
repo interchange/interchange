@@ -37,7 +37,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <asm-generic/errno.h>
 
 #ifndef ENVIRON_DECLARED
 extern char** environ;
