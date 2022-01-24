@@ -1,8 +1,8 @@
 /*
  * tlink.c: runs as a CGI program and passes request to Interchange
- *          server via TCP/IP
+ *          server via TCP socket
  *
- * Copyright (C) 2005-2020 Interchange Development Group,
+ * Copyright (C) 2005-2022 Interchange Development Group,
  * https://www.interchangecommerce.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -126,7 +126,6 @@ static char* entity_buf = 0;
 static void
 get_entity()
 {
-  int len;
   char* cl;
   int nr;
 
@@ -172,7 +171,6 @@ static void open_socket()
   struct hostent *hp;
   int i;
   int e;
-  int r;
   char* lhost;
   char* lpstring;
   int lport;
@@ -286,7 +284,8 @@ static void out(len, str)
       bufp += str_left;
       buf_left -= str_left;
       str_left = 0;
-    } else {			       /* only part fits */
+    }
+    else {			       /* only part fits */
       memcpy(bufp, strp, buf_left);    /* copy in as much as fits */
       str_left -= buf_left;
       strp += buf_left;
@@ -370,11 +369,6 @@ static void send_environment()
 static void
 send_entity()
 {
-  char* cl;
-  int len;
-  int left;
-  int tr;
-
   if (entity_len > 0) {
     outs("entity\n");
     outs(itoa(entity_len));

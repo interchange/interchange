@@ -2,7 +2,7 @@
  * vlink.c: runs as a CGI program and passes request to Interchange
  *          server via UNIX socket
  *
- * Copyright (C) 2005-2020 Interchange Development Group,
+ * Copyright (C) 2005-2022 Interchange Development Group,
  * https://www.interchangecommerce.org/
  * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -94,7 +94,6 @@ static char* entity_buf = 0;
 static void
 get_entity()
 {
-  int len;
   char* cl;
   int nr;
 
@@ -139,7 +138,6 @@ static void open_socket()
   int s;
   int i;
   int e;
-  int r;
   char *lsocket;
   uid_t euid;
   gid_t egid;
@@ -316,11 +314,6 @@ static void send_environment()
 static void
 send_entity()
 {
-  char* cl;
-  int len;
-  int left;
-  int tr;
-
   if (entity_len > 0) {
     outs("entity\n");
     outs(itoa(entity_len));
