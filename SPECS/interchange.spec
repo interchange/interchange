@@ -251,7 +251,7 @@ exit 0
 %doc LICENSE
 %doc README.md
 %doc README.rpm-dist
-%doc README-DEVELOPMENT
+%doc README-DEVELOPMENT.md
 %doc UPGRADE
 %doc WHATSNEW*
 %config(noreplace) %{_sysconfdir}/logrotate.d/interchange

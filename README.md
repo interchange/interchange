@@ -38,9 +38,9 @@ Notes on using Interchange when installed from RPM packages.
 
 Notes on using Interchange when installed from Debian packages.
 
-### README-DEVELOPMENT
+### README-DEVELOPMENT.md
 
-How to access the Git repository to track ongoing development.
+How to track ongoing development of Interchange.
 
 ### doc/WHATSNEW-\*
 
