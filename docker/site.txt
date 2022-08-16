@@ -1,0 +1,2 @@
+code	Variable	pref_group
+SQLITE	1	Database
