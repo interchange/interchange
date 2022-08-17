@@ -32,6 +32,10 @@ You can modify any of the files in the catalogs/ and server/ directories and you
 
 If you want to reset the files to default, remove all of the files in the catalogs/ and server/ directories and restart the container.
 
+## Restarting the Interchange server
+
+To restart the Interchange server you do not need to restart the container. Log into the container with `docker exec -it <new directory>_interchange_1 bash` and then run `interchange/bin/interchange -r`
+
 ## Add a new catalog
 
 To add a new catalog, log into the container with `docker exec -it <new directory>_interchange_1 bash` and run `cd interchange && bin/makecat`
@@ -47,4 +51,6 @@ Then modify the `catalogs/app.psgi` file:
 ```
 mount '/<new catalog>' => Plack::App::WrapCGI->new( script => '/home/interchange/catalogs/bin/<new catalog>', execute => 1 )->to_app;
 ```
+
+You will need to restart the container to access the new catalog at `http://localhost:4242/<new catalog>`
 
