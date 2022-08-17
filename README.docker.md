@@ -2,7 +2,16 @@
 
 1. Clone this repository into a new directory and create subdirectories for `catalogs` and `server`
 
-2. Copy interchange/docker/docker-compose.yml to the new directory
+2. Copy interchange/docker/docker-compose.yml to the new directory and modify the `host_uid` and `host_gid` variables
+
+```
+        # look up your host uid/gid for the cwd with "getfacl -n ."
+        ## need to set the uid and gid to match the ownership of the bind mount folder
+        host_uid: 1000
+        host_gid: 1000
+```
+
+The directory structure should look like the following with all directories owned by the uid:gid set in docker-compose.yml
 
 ```
 new directory
