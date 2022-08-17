@@ -20,13 +20,6 @@ USER interchange
 WORKDIR /home/interchange
 COPY --chown=interchange . interchange-src/
 
-WORKDIR interchange-src
-RUN cp docker/Makefile ./
-RUN cp docker/initp.pl ./scripts/
-RUN make && make install
-
-WORKDIR /home/interchange/interchange
-RUN bin/compile_link
 
 # make default catalog, start Interchange
 WORKDIR /home/interchange
