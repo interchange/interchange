@@ -1324,7 +1324,7 @@ sub dispatch {
 	  SESSION_COOKIE: {
 	      my $id = $1;
 	      my $host = $2;
-	      if (is_ipv4($host) || is_ipv6($host) || $host eq 'localhost') {
+	      if (is_ipv4($host) || is_ipv6($host)) {
 			  $CGI::cookiehost = $host;
 	      }
 	      else {
