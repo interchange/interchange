@@ -14,7 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y install build-essential curl li
 RUN curl -L https://cpanmin.us | perl - App::cpanminus
 RUN cpanm -n --configure-timeout="7200" Bundle::Interchange
 RUN cpanm -n --configure-timeout="7200" DBD::SQLite DBD::Pg DBD::mysql
-RUN cpanm -n --configure-timeout="7200" Plack Plack::Builder Plack::App::WrapCGI Plack::Middleware::Static Plack::Middleware::ForceEnv CGI::Emulate::PSGI CGI::Compile Starman
+RUN cpanm -n --configure-timeout="7200" Plack Plack::Builder Plack::App::WrapCGI Plack::Middleware::Static Plack::Middleware::ReviseEnv CGI::Emulate::PSGI CGI::Compile
 
 USER interchange
 WORKDIR /home/interchange

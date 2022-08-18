@@ -39,5 +39,5 @@ else
   cp interchange-src/docker/app.psgi catalogs/
 fi
 
-plackup -s Starman catalogs/app.psgi
+plackup catalogs/app.psgi
 
