@@ -23,7 +23,9 @@ sub {
 						  $adjust,
 						 );
 	}
-	if($value =~ /\0/) {
+	# accept dates that originated via a CGI param with year,month,day separated by null character
+	# also accept dates in format YYYY-MM-DD
+	if($value =~ /[\0-]/) {
 		$value = Vend::Interpolate::filter_value(
 												 'date_change',
 												 $value,
