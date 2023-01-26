@@ -192,6 +192,17 @@ sub _format {
 	return @return;
 }
 
+# Hook to call a single OrderCheck routine:
+#   reset_order_vars() loads check routines into $OrderCheck
+#   _format(@_) calls the OrderCheck routine
+# This enables an OrderCheck routine to be called with the following
+#   my ($valid, $var, $message) = Vend::Order::check_order_single($self, "$routine $variable_name $variable_value", "$routine_arg '$failure_message'");
+sub check_order_single {
+	reset_order_vars();
+	return _format(@_);
+}
+
+
 sub chain_checks {
 	my ($or, $ref, $checks, $err, $vref) = @_;
 	my ($var, $val, $mess, $message);
