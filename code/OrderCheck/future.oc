@@ -23,7 +23,7 @@ sub {
 						  $adjust,
 						 );
 	}
-	if($value =~ /\0/) {
+	if($value =~ /[\0-]/) {
 		$value = Vend::Interpolate::filter_value(
 												 'date_change',
 												 $value,

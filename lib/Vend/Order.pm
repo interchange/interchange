@@ -157,6 +157,11 @@ sub _return {
 	$Success = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
 }
 
+sub order_check {
+  reset_order_vars();
+  return _format(@_);
+}
+
 sub _format {
 	my($ref, $params, $message) = @_;
 	no strict 'refs';
