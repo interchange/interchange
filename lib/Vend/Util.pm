@@ -110,6 +110,7 @@ my $Eval_routine_file;
 my $Pretty_uneval;
 my $Fast_uneval;
 my $Fast_uneval_file;
+my $Dclone_routine;
 
 ### END CONFIGURABLE MODULES
 
@@ -734,6 +735,7 @@ eval {
 	$Fast_uneval_file  = \&Storable::store;
 	$Eval_routine    = \&Storable::thaw;
 	$Eval_routine_file = \&Storable::retrieve;
+	$Dclone_routine = \&Storable::dclone;
 };
 
 # See if Data::Dumper is installed with XSUB
@@ -759,6 +761,7 @@ eval {
 *eval_file   = defined $Eval_routine_file ? $Eval_routine_file : \&eval_it_file;
 *uneval_file = defined $Fast_uneval_file  ? $Fast_uneval_file  : \&uneval_it_file;
 *uneval      = defined $Pretty_uneval     ? $Pretty_uneval     : \&uneval_it;
+*dclone      = $Dclone_routine || sub { evalr(uneval_fast(shift)) };
 
 
 
