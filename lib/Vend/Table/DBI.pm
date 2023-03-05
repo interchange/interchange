@@ -46,6 +46,8 @@ $VERSION = '2.89';
 use strict;
 no warnings qw(uninitialized numeric);
 
+use Vend::Util;
+
 # 0: dummy open object
 # 1: table name
 # 2: key name
@@ -392,12 +394,12 @@ sub create_sql {
 }
 
 sub create {
-    my ($class, $config, $columns, $tablename) = @_;
+    my ($class, $orig_config, $columns, $tablename) = @_;
 #::logDebug("trying create table $tablename");
 
+	my $config = Vend::Util::dclone($orig_config);
 	local($config->{Transactions});
 	check_capability($config, $config->{DSN});
-	$config->{Transactions} = 1 if $config->{HAS_TRANSACTIONS};
 
 	my @call = find_dsn($config);
 	my $dattr = pop @call;
@@ -470,7 +472,6 @@ sub create {
 #::logDebug("Trying to create with specified CREATE_SQL:\n$config->{CREATE_SQL}");
 		eval {
 			$db->do($config->{CREATE_SQL});
-			$db->commit() if $config->{Transactions};
 		};
 		if($@) {
 			 die ::errmsg(
@@ -488,13 +489,11 @@ sub create {
 			$db->do("drop table $qtable")
 				and $config->{Clean_start} = 1
 				or warn "$DBI::errstr\n";
-			$db->commit() if $config->{Transactions};
 		};
 
 #::logDebug("Trying to create with:$query");
 		eval {
 			$db->do($query);
-			$db->commit() if $config->{Transactions};
 		};
 		if($@) {
 			warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
@@ -518,7 +517,6 @@ sub create {
 			eval {
 				$db->do($dq)
 					or warn("drop sequence failed: $dq");
-				$db->commit() if $config->{Transactions};
 			};
 		}
 
@@ -533,7 +531,6 @@ sub create {
 		eval {
 			$db->do($q)
 				or warn("create sequence failed: $q");
-			$db->commit() if $config->{Transactions};
 		};
 	}
 
@@ -580,7 +577,6 @@ sub create {
 								$_,
 								$DBI::errstr,
 					);
-			$db->commit() if $config->{Transactions};
 		}
 	}
 	elsif ($config->{AUTO_INDEX_PRIMARY_KEY}) {
@@ -592,7 +588,6 @@ sub create {
 	    $ind_name = $db->quote_identifier($ind_name) if $config->{QUOTE_IDENTIFIERS};
 		$db->do("create index $ind_name on $qtable ($qkey)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
-		$db->commit() if $config->{Transactions};
 	}
  
 	for(@index) {
@@ -603,50 +598,15 @@ sub create {
 							$_,
 							$DBI::errstr,
 				);
-		$db->commit() if $config->{Transactions};
 	}
 
-	if(! defined $config->{EXTENDED}) {
-		## side-effects here -- sets $config->{NUMERIC},
-		## $config->{_Numeric_ary}, reads GUESS_NUMERIC
+	# Throw away the special-purpose database object we used only to
+	# create the table, indexes, sequences, etc.
+	$db->disconnect;
 
-		$config->{_Auto_number} = $config->{AUTO_SEQUENCE} || $config->{AUTO_NUMBER};
-		
-		if(! $config->{NAME}) {
-			$config->{NAME} = list_fields($db, $tablename, $config);
-		}
-		else {
-			list_fields($db, $tablename, $config);
-		}
-
-		## side-effects here -- sets $config->{_Default_ary} if needed
-		$config->{COLUMN_INDEX} = fields_index($config->{NAME}, $config, $db)
-			if ! $config->{COLUMN_INDEX};
-
-		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
-							||	defined $config->{FILTER_FROM}
-							||	defined $config->{FILTER_TO}
-							||	$config->{UPPERCASE}
-							||	'';
-	}
-
-	$config->{NAME} = $columns;
-
-    # Quote identifiers
-    my $qnames;
-    if ($config->{QUOTE_IDENTIFIERS}) {
-	$qtable = $db->quote_identifier($tablename);
-	$qkey = $db->quote_identifier($key);
-	$qnames = [map {$db->quote_identifier($_)} @$columns];
-    }
-    else {
-	$qtable = $tablename;
-	$qkey = $key;
-	$qnames = $columns;
-    }
-
-    my $s = [$config, $tablename, $key, $columns, undef, $db, undef, $qtable, $qkey, $qnames];
-    bless $s, $class;
+	# Now re-connect to the new table via the normal code path that would
+	# be used during any other time in Interchange.
+	return __PACKAGE__->open_table($orig_config, $tablename);
 }
 
 sub new {
