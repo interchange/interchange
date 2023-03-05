@@ -1,6 +1,6 @@
 # Vend::Tax::TaxJar - 3rd-party subclass module for Tax Jar
 #
-# Copyright (C) 2002-2020 Interchange Development Group
+# Copyright (C) 2002-2023 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -977,7 +977,7 @@ Mark Johnson (mark@endpointdev.com), End Point Corp.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2002-2020 Interchange Development Group
+Copyright (C) 2002-2023 Interchange Development Group
 
 Copyright (C) 1996-2002 Red Hat, Inc.
 
