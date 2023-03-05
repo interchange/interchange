@@ -45,6 +45,7 @@ use constant {
         average_lookup_field => q{$::Variable->{TAXAVERAGES_LOOKUP_FIELD} || 'state'},
 
         use_billing => q{!$::Values->{zip}},
+        country => q{($self->use_billing ? $::Values->{b_country} : $::Values->{country}) || 'US'},
         fname => q{$self->use_billing ? $::Values->{b_fname} : $::Values->{fname}},
         lname => q{$self->use_billing ? $::Values->{b_lname} : $::Values->{lname}},
         company => q{$self->use_billing ? $::Values->{b_company} : $::Values->{company}},
@@ -53,11 +54,13 @@ use constant {
         city => q{$self->use_billing ? $::Values->{b_city} : $::Values->{city}},
         state => q{$self->use_billing ? $::Values->{b_state} : $::Values->{state}},
         zip => q{$self->use_billing ? $::Values->{b_zip} : $::Values->{zip}},
-        country => q{($self->use_billing ? $::Values->{b_country} : $::Values->{country}) || 'US'},
 
         estimate => q{$::Scratch->{tag_tax_lookup_estimate_mode}},
-        taxable_amount => q{Vend::Interpolate::taxable_amount()},
+        default_taxable_amount => q{Vend::Interpolate::taxable_amount()},
         shipping => q{Vend::Interpolate::tag_shipping()},
+
+        cache_timeout => q{120}, # In minutes
+        nontaxable_field => q{$Vend::Cfg->{NonTaxableField}},
 
         order_number => q{undef},
         order_date => q{$self->tag->time({},'%Y-%m-%d')},
@@ -88,14 +91,13 @@ use constant {
 
     sub new {
         my $self = bless ({}, shift);
-        my %p = @_;
 
-        return $self unless keys %p;
-
-        for (my $i = 0; $i < @acc; $i += 2) {
-            my $k = $acc[$i];
-            next unless exists $p{$k};
-            $self->$k($p{$k});
+        if (my %p = @_) {
+            for (my $i = 0; $i < @acc; $i += 2) {
+                my $k = $acc[$i];
+                next unless exists $p{$k};
+                $self->$k($p{$k});
+            }
         }
 
         # Allow subclasses to define any useful initializations
@@ -172,6 +174,7 @@ sub tag_tax_lookup {
         $class .= "::$opt->{service}"
             if $opt->{service};
         my $obj = $class->new(%$opt);
+        $obj->debug('Full $opt: %s', ::uneval($opt));
         return $obj->estimate ? $obj->estimated_tax : $obj->tax;
     };
 
@@ -188,39 +191,8 @@ sub estimated_tax {
 
     $self->debug('Tax is estimated, using table %s', $self->table);
 
-    my $lookup_field = $self->average_lookup_field;
-    unless ($self->can($lookup_field)) {
-        ::logError("Invalid average_lookup_field, no such accessor");
-        return 0;
-    }
+    my $row = $self->estimated_tax_record;
 
-    my $sql = q{
-        SELECT *
-        FROM %s
-        WHERE %s = ?
-            AND country = ?
-            AND has_nexus
-        LIMIT 1
-    };
-    my $row;
-    {
-        local $@;
-        eval {
-            my $sth = $self->dbh->prepare(
-                sprintf (
-                    $sql,
-                    $self->dbh->quote_identifier($self->table),
-                    $self->dbh->quote_identifier($self->average_lookup_field)
-                )
-            );
-            $sth->execute($self->$lookup_field, $self->country);
-            $row = $sth->fetchrow_hashref('NAME_lc');
-            $sth->finish;
-        };
-        if (my $err = $@) {
-            ::logError("estimated_tax() database lookup failed: $err");
-        }
-    }
     # Stop right here if we can't find a tax record with nexus.
     return 0 unless $row;
 
@@ -237,6 +209,48 @@ sub estimated_tax {
     return $amount * $rate;
 }
 
+sub estimated_tax_record {
+    my $self = shift;
+    $self->debug('Using default estimate_tax_record method to find tax row');
+
+    my $lookup_field = $self->average_lookup_field;
+    unless ($self->can($lookup_field)) {
+        ::logError("Invalid average_lookup_field, no such accessor");
+        return;
+    }
+
+    my $sql = q{
+        SELECT *
+        FROM %s
+        WHERE %s = ?
+            AND country = ?
+            AND has_nexus
+        LIMIT 1
+    };
+
+    my $row;
+    {
+        local $@;
+        eval {
+            my $sth = $self->dbh->prepare(
+                sprintf (
+                    $sql,
+                    $self->dbh->quote_identifier($self->table),
+                    $self->dbh->quote_identifier($self->average_lookup_field)
+                )
+            );
+            $sth->execute($self->$lookup_field, $self->country);
+            $row = $sth->fetchrow_hashref('NAME_lc');
+            $sth->finish;
+        };
+        if (my $err = $@) {
+            ::logError("estimated_tax_record() database lookup failed: $err");
+        }
+    }
+
+    return $row;
+}
+
 ### [load-tax-averages]
 sub tag_load_tax_averages {
     my $opt = shift;
@@ -247,6 +261,7 @@ sub tag_load_tax_averages {
         $opt->{service} or die 'Must specify which tax service to use';
         my $class = __PACKAGE__ . "::$opt->{service}";
         my $obj = $class->new(%$opt);
+        $obj->debug('Full $opt: %s', ::uneval($opt));
         $obj->load_tax_averages;
     };
 
@@ -268,6 +283,7 @@ sub tag_send_tax_transaction {
         $opt->{service} or die 'Must specify which tax service to use';
         my $class = __PACKAGE__ . "::$opt->{service}";
         my $obj = $class->new(%$opt);
+        $obj->debug('Full $opt: %s', ::uneval($opt));
         $obj->send_tax_transaction;
     };
 
@@ -277,6 +293,116 @@ sub tag_send_tax_transaction {
     }
 
     return 1;
+}
+
+sub taxable_amount {
+    my $self = shift;
+
+    # We only reliably know the taxable amount from provider.
+    # If we have it in cache, use it.
+    if (defined (my $cached_tax = $self->cache)) {
+        $self->debug('taxable_amount() found cached value of %s', $cached_tax->{taxable_amount});
+        return $cached_tax->{taxable_amount};
+    }
+
+    # We are asking for taxable amount but haven't called provider.
+    # Must make do with the Interchange taxable_amount() for now.
+    $self->debug('taxable_amount() no cache found. Defaulting to Interchange taxable_amount()');
+    return $self->default_taxable_amount;
+}
+
+sub current_tax_hash {
+    my $self = shift;
+
+    my $md5 = Digest::MD5->new;
+
+    $md5->add(
+        $self->address1,
+        $self->city,
+        $self->state,
+        $self->zip,
+        $self->country,
+        sprintf ('%0.2f', $self->shipping),
+        sprintf ('%0.2f', $self->handling),
+    );
+
+    for my $item ($self->cart) {
+        $md5->add(
+            sprintf ('%0.2f', $self->item_discount_price($item)),
+            $item->{quantity},
+            $self->_find_product_tax_code($item),
+            $self->_boolean_nontaxable($item),
+            $item->{salestax} || '',
+        );
+    }
+    my $hash = $md5->hexdigest;
+    $self->debug('MD5: %s', $hash);
+
+    return $hash;
+}
+
+sub _find_product_tax_code {
+    # Overridden when needed in per-service module
+    return '';
+}
+
+sub _boolean_nontaxable {
+    my $self = shift;
+    my $item = shift;
+
+    return 1 if Vend::Interpolate::is_yes( $item->{mv_nontaxable} );
+
+    my $k = $self->nontaxable_field;
+    # Check if field is an automodifier
+    return 1 if $k && Vend::Interpolate::is_yes( $item->{$k} );
+    # Finally check database
+    return 1 if $k && Vend::Interpolate::is_yes( Vend::Interpolate::item_field($item, $k) );
+
+    return 0;
+}
+
+sub cache {
+    my $self = shift;
+
+    my $cache = $self->tax_lookup_cache;
+
+    return undef unless @_ || keys (%$cache) > 1;
+
+    $self->debug('current tax_lookup_cache: %s', ::uneval($cache));
+
+    my $this_tax;
+
+    if (@_) {
+        $this_tax = shift;
+        $cache->{ $self->current_tax_hash } = $this_tax;
+    }
+    else {
+        $this_tax = $cache->{ $self->current_tax_hash };
+        $self->debug('$this_tax from hash lookup into tax_lookup_cache: %s', ::uneval($this_tax));
+    }
+
+    return $this_tax;
+}
+
+sub tax_lookup_cache {
+    my $self = shift;
+
+    my $tlc = $::Session->{tax_lookup_cache} ||= { _created => time, };
+
+    # Concerned about stale data on very long-lived sessions
+    %$tlc = ( _created => time, )
+        if time > $tlc->{_created} + 60 * $self->cache_timeout;
+
+    return $tlc;
+}
+
+sub item_discount_price {
+    my $self = shift;
+    my $item = shift;
+    my $qty = $item->{quantity};
+
+    my $full_price = Vend::Interpolate::item_price($item, $qty);
+    return Vend::Interpolate::discount_price($item, $full_price, $qty);
 }
 
 sub cart {
@@ -425,7 +551,7 @@ key in $Values is not set.
 Boolean to force tax estimates to be used. Will only function if data in
 B<table> are properly available.
 
-=item B<taxable_amount> - default: Vend::Interpolate::taxable_amount().
+=item B<default_taxable_amount> - wrapper for Vend::Interpolate::taxable_amount().
 
 Amount to use for determining tax liability.
 
@@ -457,6 +583,76 @@ Subtotal of B<order_number>.
 =item B<handling> - default: 0
 
 Handling charge for B<order_number>.
+
+=item B<cache_timeout> - default: 120 (in minutes)
+
+In order to minimize the overhead and expense of making live API calls, each
+call is cached in the user's session according to an assembly of impacting
+factors: address, cart composition, and shipping cost. Cache can be disabled
+by setting to 0. This is strongly discouraged except for possible need during
+troubleshooting.
+
+=item B<nontaxable_field> - default: $Config->{NonTaxableField}
+
+Field name in sku's source table holding flag for if a product is strictly
+non-taxable.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item C<taxable_amount>
+
+For tax estimates, Interchange cannot know with authority which items are
+taxable and which are not. Based on each item's product tax code, and whether
+the jurisdiction includes shipping in tax calculations, the taxable amount can
+change. If we have a matching cache, indicating the result of the taxable
+amount came from tax provider explicitly, we'll use that when running tax
+estimates. Otherwise, we fall back to B<default_taxable_amount>.
+
+=item C<current_tax_hash>
+
+Assemble address, cart, and shipping data to calculate an MD5 hash used to
+uniquely identify a specific cache entry used by C<cache()>.
+
+=item C<tax_lookup_cache>
+
+Manage the cache and associated timeout for tax-provider lookups in the user's
+session.
+
+=item C<item_discount_price>
+
+Local utility function to simplify the process of getting a line item's
+discounted price.
+
+=item C<_boolean_nontaxable>
+
+Return boolean indicating if the product is in any of 3 ways identified to
+Interchange as always nontaxable:
+
+=over 2
+
+=item *
+
+$item->{mv_nontaxable} passes C<is_yes()>
+
+=item *
+
+$item->{ B<nontaxable_field> } passes C<is_yes()>
+
+=item *
+C<item_field()> for attribute B<nontaxable_field> passes C<is_yes()>
+
+=back
+
+If all above tests fail, returns false.
+
+=item C<cache>
+
+Retrieve and optionally set a provider assessment in cache for taxable amount
+and tax liability.
 
 =back
 

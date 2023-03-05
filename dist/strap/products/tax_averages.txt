@@ -1,1 +1,1 @@
-tax_average_id	state	country	has_nexus	rate_percent	rate_adjust_percent	tax_shipping
+tax_average_id	state	zip	country	has_nexus	rate_percent	rate_adjust_percent	tax_shipping
