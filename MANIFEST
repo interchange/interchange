@@ -1044,11 +1044,13 @@ eg/cvv2.svg
 eg/dump_memory.cfg
 eg/emacs/itl.el
 eg/filter/calculated.filter
+eg/find-gdbm-to-export
 eg/gpg_display
 eg/ic-session-ingest
 eg/ic-session-print
 eg/iclint
 eg/ifdef
+eg/Interchange/Session.pm
 eg/jedit/catalog
 eg/jedit/interchange.xml
 eg/jedit/README
