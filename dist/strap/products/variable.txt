@@ -1,5 +1,7 @@
 code	Variable	pref_group
 ADDRESS	123 Main St.	Company
+AVALARA_PASSWORD	Set to Avalara API password	Tax
+AVALARA_USER	Set to Avalara API user	Tax
 CART_UPSELL	0	Cart/Checkout
 CGIWRAP	__MVC_CGIWRAP__	Admin Control
 CGI_DIR	__MVC_CGIDIR__	Admin Control

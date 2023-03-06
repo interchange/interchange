@@ -10,33 +10,38 @@ Finding all orders where tax_sent is false ...
             code,
             order_ymd,
             total_cost,
+            subtotal,
             shipping,
+            handling,
             salestax,
             city,
             state,
             zip,
             country,
-            address1 AS address
+            address1
         FROM transactions
-        WHERE NOT tax_sent
+        WHERE tax_sent = 0
         ORDER BY order_date
     "
 ]
 [sql-increment]: Creating tax transaction for [sql-code]: [send-tax-transaction
     service=__TAXSERVICE__
-    order_number=[sql-code]
-    order_date="[convert-date fmt='%F'][sql-param order_ymd][/convert-date]"
-    total_cost=[sql-param total_cost]
-    shipping=[sql-param shipping]
-    salestax=[sql-param salestax]
-    city='[sql-param city]'
-    state=[sql-param state]
-    zip='[sql-param zip]'
-    country=[sql-param country]
-    address='[sql-param address]'
+    order_number=|[sql-code]|
+    invoice_number=|[sql-code]|
+    order_date=|[convert-date fmt='%F'][sql-param order_ymd][/convert-date]|
+    total_cost=|[sql-param total_cost]|
+    subtotal=|[sql-param subtotal]|
+    shipping=|[sql-calc]$Row->{shipping} + $Row->{handling}[/sql-calc]|
+    salestax=|[sql-param salestax]|
+    city=|[sql-param city]|
+    state=|[sql-param state]|
+    zip=|[sql-param zip]|
+    country=|[sql-param country]|
+    address=|[sql-param address1]|
     load_line_items=1
     sent_field=tax_sent
     sent_success_value=1
+    no_nexus_required=1
 ][/query]
 
 ### END [time]%F %T[/time] ###

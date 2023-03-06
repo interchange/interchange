@@ -3,6 +3,7 @@ Database  tax_averages  tax_averages.txt  __SQLDSN__
 Database  tax_averages  AUTO_SEQUENCE   1
 Database  tax_averages  KEY             tax_average_id
 Database  tax_averages  COLUMN_DEF     "state=VARCHAR(128) NOT NULL"
+Database  tax_averages  COLUMN_DEF     "zip=VARCHAR(32) NOT NULL DEFAULT ''"
 Database  tax_averages  COLUMN_DEF     "country=CHAR(2) NOT NULL DEFAULT 'US'"
 Database  tax_averages  COLUMN_DEF     "has_nexus=ENUM('1') NOT NULL COMMENT 'Intentionally no ''0'' option. See table comment.'"
 Database  tax_averages  COLUMN_DEF     "rate_percent=DECIMAL(7,3) NOT NULL"
@@ -10,6 +11,6 @@ Database  tax_averages  COLUMN_DEF     "rate_adjust_percent=DECIMAL(6,3)"
 Database  tax_averages  COLUMN_DEF     "tax_shipping=ENUM('1') NOT NULL COMMENT 'Intentionally no ''0'' option. See table comment.'"
 Database  tax_averages  NUMERIC         rate_percent,rate_adjust_percent
 Database  tax_averages  PREFER_NULL     rate_adjust_percent
-Database  tax_averages  POSTCREATE     "CREATE UNIQUE INDEX unq_tax_averages_state_country ON tax_averages (state, country)"
+Database  tax_averages  POSTCREATE     "CREATE UNIQUE INDEX unq_tax_averages_zip_state_country ON tax_averages (zip, state, country)"
 Database  tax_averages  POSTCREATE     "ALTER TABLE tax_averages COMMENT 'Use of ENUM will not suppress the inclusion of any invalid data as a 0-index empty string. By excluding ''0'', this avoids inevitably having '''', ''0'', and ''1'' as values in the field, and also allows the field in numeric context to work as boolean. See https://dev.mysql.com/doc/refman/5.7/en/enum.html#enum-nulls'"
 Database  tax_averages  NO_ASCII_INDEX  1
