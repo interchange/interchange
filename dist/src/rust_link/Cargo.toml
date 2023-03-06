@@ -1,0 +1,20 @@
+[package]
+name = "rust_link"
+version = "1.0.0"
+authors = ["Jon Jensen <jon@endpointdev.com>"]
+edition = "2021"
+
+[dependencies]
+bytes = "1.4.0"
+const_format = "0.2.30"
+multisock = "1.0.0"
+
+[dev-dependencies]
+serial_test = "1.0.0"
+regex = "1.7"
+
+[profile.release]
+panic = "abort"
+opt-level = 'z'
+lto = true
+codegen-units = 1
