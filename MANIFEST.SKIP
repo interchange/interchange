@@ -47,6 +47,8 @@ _$
 ^dist/lib/MiniMate(/|$)
 ^dist/mvmall(/|$)
 ^dist/simple(/|$)
+^dist/src/rust_link/\.gitignore$
+^dist/src/rust_link/target(/|$)
 ^doc/.*[^d]
 ^\.git(/|$)
 ^\.gitignore$

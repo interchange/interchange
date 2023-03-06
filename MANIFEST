@@ -650,6 +650,12 @@ dist/src/mod_interchange/README
 dist/src/mod_perl2/Interchange/Link.pm
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
+dist/src/rust_link/.editorconfig
+dist/src/rust_link/Cargo.lock
+dist/src/rust_link/Cargo.toml
+dist/src/rust_link/README.md
+dist/src/rust_link/src/503.html
+dist/src/rust_link/src/main.rs
 dist/src/syscfg.in
 dist/src/testcgi
 dist/src/tlink.c
