@@ -247,9 +247,9 @@ in send_tax_transaction job).
             or /^\d{5}$/;
 
         my $v = $_;
-        s/\D+//g;
+        s/\D+//ag;
         $_ = substr ($_, 0, 5);
-        /^\d{5}$/ or return $v;
+        /^\d{5}$/a or return $v;
         return $self->{_zip} = $_;
     }
 
@@ -266,9 +266,6 @@ in send_tax_transaction job).
                 $self->$k($p{$k});
             }
         }
-
-        $self->debug('Calling ua->ssl_opts to disable host verification');
-        $self->ua->ssl_opts( verify_hostname => 0 , SSL_verify_mode => 0x00);
     }
 
     __PACKAGE__->has(@acc);
@@ -1297,7 +1294,7 @@ sub _thin_booleans {
         or return;
 
     if ( $type eq 'JSON::PP::Boolean' ) {
-        $$ref = $$ref + 0;
+        $$ref += 0;
         return;
     }
 
