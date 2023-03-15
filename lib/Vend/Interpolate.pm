@@ -873,6 +873,8 @@ sub tag_data {
 				);
 	}
 	elsif ($opt->{hash}) {
+		$key = $db->foreign($key, $opt->{foreign})
+			if $opt->{foreign};
 		return undef unless $db->record_exists($key);
 		return $db->row_hash($key);
 	}
