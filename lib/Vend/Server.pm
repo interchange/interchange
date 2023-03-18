@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# Copyright (C) 2002-2021 Interchange Development Group
+# Copyright (C) 2002-2023 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -586,14 +586,24 @@ sub create_cookie {
 		$sub->();
 	}
 
-	my $all_httponly;
-	my %httponly;
+	my ($all_httponly, $all_samesite, %httponly, %samesite);
 	if (my $p = $::Pragma->{set_httponly}) {
+		$p =~ s/\s+//g;
 		if ($p eq '1') {
 			$all_httponly = 1;
 		}
 		else {
-			$httponly{$_} = undef for split /\s*,\s*/, $p;
+			$httponly{$_} = undef for split /[;,]/, $p;
+		}
+	}
+
+	if (local $_ = $::Pragma->{set_samesite}) {
+		s/\s+//g;
+		if (/=/) {
+			%samesite = grep { /\S/ } split /[;,=]/;
+		}
+		else {
+			$all_samesite = $_;
 		}
 	}
 
@@ -634,6 +644,10 @@ sub create_cookie {
 			$expstring =~ s/^\s+//;
 			$expstring = "Expires=$expstring" if $expstring !~ /^expires=/i;
 			push @pieces, $expstring;
+		}
+		if (my $v = $all_samesite || $samesite{$name}) {
+			push @pieces, "SameSite=$v";
+			$secure = 1 if lc ($v) eq 'none';
 		}
 		push @pieces, 'Secure' if $secure;
 		push @pieces, 'HttpOnly' if $all_httponly or exists $httponly{$name};
