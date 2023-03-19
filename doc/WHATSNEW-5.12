@@ -78,7 +78,7 @@ Core
 
   Or for that plus another arbitrary cookie "cart":
 
-  Pragma set_httponly=MV_SESSION_ID,cart
+  Pragma set_httponly=MV_SESSION_ID;cart
 
   The old behavior of setting HttpOnly for all cookies still works as before, e.g.:
 
@@ -167,6 +167,26 @@ Core
 * New usertag [config] to pull catalog config params, or with 2nd-arg flag
   global config params. Supports dot-syntax for pulling from complex config
   params.
+
+* New Pragma set_samesite to control SameSite settings on cookies.
+
+  To set all cookies Strict:
+
+  Pragma set_samesite=Strict
+
+  To set only foo to Lax:
+
+  Pragma set_samesite=foo=Lax
+
+  To add bar as Strict:
+
+  Pragma set_samesite=foo=Lax;bar=Strict
+
+  And add baz as None:
+
+  Pragma set_samesite=foo=Lax;bar=Strict;baz=None
+
+  If None is used, that forces Secure on those cookies as well.
 
 Payments
 --------
