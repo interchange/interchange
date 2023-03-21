@@ -7,8 +7,7 @@ It uses the Bootstrap CSS and JavaScript files from the [Bootstrap CDN](https://
 Alternatively, you can [download a customized Bootstrap](https://getbootstrap.com/customize/), upload it to your
 Document Root, and then alter the templates to use it.
 
-[jQuery](https://jquery.com/) is also included. Both Bootstrap and
-jQuery as used support Internet Explorer 8 and above.
+[jQuery](https://jquery.com/) is also included.
 
 The Bootstrap and jQuery files are loaded from `variables/CSS` and
 `variables/JS`. You may update the versions used there.
@@ -30,7 +29,7 @@ Note: if you previously installed the "standard" template, you should
 
 ## Notes
 
-* **TURN OFF the MV_DEMO_MODE variable before using this in production!**
+* **TURN OFF the `MV_DEMO_MODE` variable before using this in production!**
 
 * User passwords are encrypted by default, using bcrypt. You *should*
   change the "pepper" to something unique and random for your catalog.
@@ -72,8 +71,8 @@ Note: if you previously installed the "standard" template, you should
 * Checkout pages have a ton of clean up, and improved with user-experience
   guidelines for Checkout from Baymard Institute. 
 
-* Multi-page checkout is the default. No more ord/multi.html. The
-  Shipping Address page (ord/shipping.html) now has a login prompt
+* Multi-page checkout is the default. No more `ord/multi.html`. The
+  Shipping Address page (`ord/shipping.html`) now has a login prompt
   at the top.
 
 * One-page checkout is still included and accessible from the top menu.
@@ -132,4 +131,4 @@ Note: if you previously installed the "standard" template, you should
 
 * All shipping files/databases moved to `products/ship`.
 
-* No more etc/after.cfg -- all configuration in catalog.cfg.
+* No more `etc/after.cfg` -- all configuration in `catalog.cfg`.

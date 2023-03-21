@@ -1011,7 +1011,7 @@ dist/strap/products/tree.txt
 dist/strap/products/userdb.txt
 dist/strap/products/variable.txt
 dist/strap/products/variants.txt
-dist/strap/README
+dist/strap/README.md
 dist/strap/special_pages/interact.html
 dist/strap/special_pages/missing.html
 dist/strap/special_pages/violation.html
@@ -1200,8 +1200,8 @@ lib/Vend/Table/SDBM.pm
 lib/Vend/Table/Shadow.pm
 lib/Vend/Tags.pm
 lib/Vend/Tax.pm
-lib/Vend/Tax/TaxJar.pm
 lib/Vend/Tax/Avalara.pm
+lib/Vend/Tax/TaxJar.pm
 lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserControl.pm
