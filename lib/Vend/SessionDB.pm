@@ -24,6 +24,7 @@ require Tie::Hash;
 
 use strict;
 use Vend::Util;
+use Vend::Util::Compress;
 
 use vars qw($VERSION);
 $VERSION = '2.11';
@@ -130,7 +131,17 @@ sub FETCH {
 
 		my $ary = $sth->fetchrow_arrayref
 			or return undef;
-		return $self->{SESSION_VALUE}{$key} = $ary->[0];
+
+		my $fetch = \$ary->[0];
+		if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
+			my ($ref, $time, $alert) = uncompress($fetch, $c_type);
+			::logError("$c_type uncompression response alert: $alert")
+				if $alert;
+			::logDebug('%s time to uncompress: %fs', $c_type, $time);
+			$fetch = $ref;
+		}
+
+		return $self->{SESSION_VALUE}{$key} = $$fetch;
 	}
 }
 
@@ -179,7 +190,16 @@ sub STORE {
 		return $self->{LOCK_VALUE}{$key};
 	}
 	else {
-		$self->{DB}->set_field( $key, 'session', $val);
+		my $store = \$val;
+		if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
+			my ($ref, $before, $after, $time, $alert) = compress($store, $c_type);
+			::logError("$c_type compression response alert: $alert")
+				if $alert;
+			::logDebug('%s compression impact - before: %dB; after: %dB; %%reduced: %s', $c_type, $before, $after, $before ? sprintf ('%.2f', (1-$after/$before)*100) : 'undefined');
+			::logDebug('%s time to compress: %fs', $c_type, $time);
+			$store = $ref;
+		}
+		$self->{DB}->set_field( $key, 'session', $$store);
 		undef $self->{SESSION_VALUE}{$key};
 		return 1;
 	}

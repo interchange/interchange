@@ -1207,6 +1207,7 @@ lib/Vend/Track.pm
 lib/Vend/UserControl.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
+lib/Vend/Util/Compress.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

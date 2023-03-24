@@ -743,6 +743,7 @@ sub catalog_directives {
 	['SuppressCachedCookies', 'yesno',       'no'],
 	['OutputCookieHook', undef,              ''],
 	['SMTPConfig',		 'hash',			 ''],
+	['SessionDBCompression', undef,            ''],
 
 	];
 
