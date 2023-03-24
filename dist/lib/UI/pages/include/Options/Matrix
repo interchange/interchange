@@ -163,39 +163,27 @@ Display type:
 	}
 
 	sub recurse_dim {
-			my $dim = $_[0] || 0;
-			return if $dim > $#dimensions;
-			for (0 .. @{$dimensions[$dim]}-1) {
-				$pointers[$dim] = $_;
-				if ($dim == $#dimensions) {
+		my $dim = $_[0] || 0;
+		return if $dim > $#dimensions;
+		for (0 .. @{$dimensions[$dim]}-1) {
+			$pointers[$dim] = $_;
+			if ($dim == $#dimensions) {
+				my $o = join('-', grep { defined } map { $dimensions[$_][$pointers[$_]][0] } (0..$#dimensions));
+				next unless length $o;
+				push @options, $o;
+				push @descriptions, join(', ', grep { defined } map { $dimensions[$_][$pointers[$_]][1] } (0..$#dimensions));
+				push @prices, dosum(map { $dimensions[$_][$pointers[$_]][2] } (0..$#dimensions));
 
-					my $o = join( '-',
-	grep { defined $_ } map { $dimensions[$_]->[$pointers[$_]]->[0] } (0..$#dimensions));
-					next unless length $o;
-					push @options, $o;
-					push @descriptions,
-					join( ', ',
-	grep { defined $_ } map { $dimensions[$_]->[$pointers[$_]]->[1] } (0..$#dimensions)
-						)
-					;
-					push @prices,
-					dosum(
-	map { $dimensions[$_]->[$pointers[$_]]->[2] } (0..$#dimensions)
-						)
-					;
-
-					my %opthash;
-					for (my $i = 0; $i < @optnames; $i++) {
-						$opthash{$optnames[$i]} =
-							$dimensions[$i]->[$pointers[$i]]->[0];
-					}
-					push @hashes, \%opthash;
-
+				my %opthash;
+				for (my $i = 0; $i < @optnames; $i++) {
+					$opthash{$optnames[$i]} = $dimensions[$i][$pointers[$i]][0];
 				}
-				else {
-					recurse_dim($dim + 1);
-				}
+				push @hashes, \%opthash;
 			}
+			else {
+				recurse_dim($dim + 1);
+			}
+		}
 	}
 
 	recurse_dim();
