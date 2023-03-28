@@ -26,7 +26,7 @@ use strict;
 no warnings qw(uninitialized numeric);
 
 use POSIX qw(LC_CTYPE);
-use Vend::Util::Compress;
+use Vend::Util::Compress qw(compress uncompress);
 
 use vars qw($VERSION);
 

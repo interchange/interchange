@@ -24,7 +24,7 @@ require Tie::Hash;
 
 use strict;
 use Vend::Util;
-use Vend::Util::Compress;
+use Vend::Util::Compress qw(compress uncompress);
 
 use vars qw($VERSION);
 $VERSION = '2.11';

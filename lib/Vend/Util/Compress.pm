@@ -25,12 +25,12 @@ package Vend::Util::Compress;
 require Exporter;
 
 use Time::HiRes qw();
-use vars qw($VERSION @EXPORT);
+use vars qw($VERSION @EXPORT_OK);
 $VERSION = '1.0';
 
 @ISA = qw(Exporter);
 
-@EXPORT = qw(
+@EXPORT_OK = qw(
     compress
     uncompress
 );
@@ -93,8 +93,12 @@ eval {
         },
         uncompress => sub {
             my $in = shift;
-            my $out = IO::Uncompress::Brotli::unbro($$in, 30_000_000)
+
+            # Assuming 90% reduction is highly optimistic
+            my ($size) = _byte_size($in);
+            my $out = IO::Uncompress::Brotli::unbro($$in, $size*10)
                 or die "unbro() failed: $!";
+
             return \$out;
         },
     };
