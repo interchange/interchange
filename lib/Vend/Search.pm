@@ -26,6 +26,7 @@ use strict;
 no warnings qw(uninitialized numeric);
 
 use POSIX qw(LC_CTYPE);
+use Vend::Util::Compress qw(compress uncompress);
 
 use vars qw($VERSION);
 
@@ -386,7 +387,15 @@ sub more_matches {
 #::logDebug("more_matches: $id from $Vend::Cfg->{SessionDB}");
 			eval {
 				my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
-				$obj = Vend::Util::evalr( $db->field($id,'session') );
+				my $out = \$db->field($id,'session');
+				if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
+					my ($ref, $time, $alert) = uncompress($out, $c_type);
+					::logError("$c_type uncompression response alert: $alert")
+						if $alert;
+					::logDebug('%s time to uncompress: %fs', $c_type, $time);
+					$out = $ref;
+				}
+				$obj = Vend::Util::evalr( $$out );
 			};
 			$@ and return $s->search_error(
 							"Object saved wrong in session DB for search ID %s.",
@@ -1244,7 +1253,16 @@ sub save_more {
 #::logDebug("save_more: $id to Session DB.");
 #::logDebug("save_more:object:" . ::uneval($new));
 		my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
-		my $key = $db->set_field($id, 'session', Vend::Util::uneval_fast($new));
+		my $out = \Vend::Util::uneval_fast($new);
+		if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
+			my ($ref, $before, $after, $time, $alert) = compress($out, $c_type);
+			::logError("$c_type compression response alert: $alert")
+				if $alert;
+			::logDebug('%s compression impact - before: %dB; after: %dB; %%reduced: %s', $c_type, $before, $after, $before ? sprintf ('%.2f', (1-$after/$before)*100) : 'undefined');
+			::logDebug('%s time to compress: %fs', $c_type, $time);
+			$out = $ref;
+		}
+		my $key = $db->set_field($id, 'session', $$out);
 		# explicitly set $@ for check below because some exits from set_field()
 		# never set $@, and it's safer in general not to rely its internals
 		$@ = defined($key) ? undef : 1;
