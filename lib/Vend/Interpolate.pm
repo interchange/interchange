@@ -4885,7 +4885,7 @@ sub tag_loop_list {
 		my $obj = $opt->{object};
 		# ensure that number of matches is always set
 		# so [on-match] / [no-match] works
-		$obj->{matches} = scalar(@{$obj->{mv_results}});
+		$obj->{matches} = scalar(@{$obj->{mv_results}}) if ref $obj->{mv_results} eq 'ARRAY';
 		return region($opt, $text);
 	}
 	
