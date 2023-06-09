@@ -4894,7 +4894,7 @@ sub tag_loop_list {
 			logError("loop was not passed an arrayref of hashrefs in object.mv_results=`...` argument. Got " . $obj->{mv_results}->[0] . " instead.");
 			return;
 		}
-		$obj->{matches} = scalar(@{$obj->{mv_results}}) if ref $obj->{mv_results} eq 'ARRAY';
+		$obj->{matches} = scalar(@{$obj->{mv_results}});
 		return region($opt, $text);
 	}
 	
