@@ -4885,6 +4885,15 @@ sub tag_loop_list {
 		my $obj = $opt->{object};
 		# ensure that number of matches is always set
 		# so [on-match] / [no-match] works
+		if (ref($obj->{mv_results}) ne 'ARRAY') {
+			logError("loop was not passed an arrayref in object.mv_results=`...` argument. Got " . ref($obj->{mv_results}) . " instead.");
+			return;
+		}
+		return unless scalar @{$obj->{mv_results}} > 0;
+		if (ref($obj->{mv_results}->[0]) ne 'HASH') {
+			logError("loop was not passed an arrayref of hashrefs in object.mv_results=`...` argument. Got " . $obj->{mv_results}->[0] . " instead.");
+			return;
+		}
 		$obj->{matches} = scalar(@{$obj->{mv_results}}) if ref $obj->{mv_results} eq 'ARRAY';
 		return region($opt, $text);
 	}
