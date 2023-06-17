@@ -4889,7 +4889,7 @@ sub tag_loop_list {
 			logError("loop was not passed an arrayref in object.mv_results=`...` argument. Got " . ref($obj->{mv_results}) . " instead.");
 			return;
 		}
-		return unless scalar @{$obj->{mv_results}} > 0;
+		return unless @{$obj->{mv_results}};
 		$obj->{matches} = scalar(@{$obj->{mv_results}});
 		return region($opt, $text);
 	}
