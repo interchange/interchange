@@ -49,13 +49,18 @@ sub {
 					@t = localtime($now) unless $adjust;
 	}
 
-	if ($adjust) {
+	if ($adjust || $opt->{gmt}) {
+		$adjust ||= '';
 		if ($#t < 8) {
 			$t[8] = -1;
 		}
 		$now ||= POSIX::mktime(@t);
 		$adjust .= ' days' if $adjust =~ /^[-\s\d]+$/;
-		@t = localtime(adjust_time($adjust, $now, $opt->{compensate_dst}));
+		my $ts = $adjust
+			? adjust_time($adjust, $now, $opt->{compensate_dst})
+			: $now
+		;
+		@t = $opt->{gmt} ? gmtime($ts) : localtime($ts);
 	}
 
 	if (defined $opt->{raw} and Vend::Util::is_yes($opt->{raw})) {
