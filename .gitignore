@@ -67,3 +67,5 @@ Vagrantfile
 *.swp
 *~
 _ic_version
+.DS_Store
+.idea
