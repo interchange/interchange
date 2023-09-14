@@ -186,7 +186,7 @@
 					<tr>
 						<td height="28" class="footer" colspan=2>
 							&nbsp;
-							<a href="@_INTERCHANGE_URL_@" class=footer>
+							<a href="@_INTERCHANGE_URL_@" class=footer target="_new">
 								Interchange
 							</a>
 							[version] &copy; [time]%Y[/time] Interchange Development Group&nbsp;&nbsp;&nbsp;
