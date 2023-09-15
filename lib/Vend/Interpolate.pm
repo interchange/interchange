@@ -4885,6 +4885,10 @@ sub tag_loop_list {
 		my $obj = $opt->{object};
 		# ensure that number of matches is always set
 		# so [on-match] / [no-match] works
+		if (ref($obj->{mv_results}) ne 'ARRAY') {
+			logError("loop was not passed an arrayref in object.mv_results=`...` argument. Got " . ref($obj->{mv_results}) . " instead.");
+			return;
+		}
 		$obj->{matches} = scalar(@{$obj->{mv_results}});
 		return region($opt, $text);
 	}
