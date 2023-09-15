@@ -1185,7 +1185,8 @@ sub connection {
 
     if($Global::ShowTimes) {
         @Vend::Times = times();
-        ::logDebug ("begin connection. Summary time set to zero");
+        $Vend::Diagnostic::Memory::loaded and Vend::Diagnostic::Memory::save_info();
+        ::logDebug("begin connection. Summary time set to zero");
     }
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
@@ -1203,13 +1204,26 @@ sub connection {
 
     show_times("begin dispatch") if $Global::ShowTimes;
     ::dispatch($http) if $http;
-    show_times("end connection") if $Global::ShowTimes;
+    if ($Global::ShowTimes) {
+        show_times("end connection");
+
+        $Vend::Diagnostic::Memory::loaded and do {
+            my $mem_info = Vend::Diagnostic::Memory::get_growth();
+            my $mem_keys = Vend::Diagnostic::Memory::MEM_KEYS();
+            ::logDebug("Memory final: "
+                . join(' ', map { "$_=$mem_info->{new}{$_}"  } @$mem_keys)
+                . ' kB; increase: '
+                . join(' ', map { "$_=$mem_info->{diff}{$_}" } @$mem_keys)
+                . ' kB; elapsed: '
+                . $mem_info->{diff}{time} . ' sec');
+        };
+    }
+
     close $http->{rfh} if $http->{rfh};
     undef $Vend::Cfg;
 
     my $display = 'done';
     $display .= "($show_in_ps)" if $show_in_ps;
-
     set_process_name($display);
 
     Sys::Syslog::closelog(), undef $Vend::SysLogReady

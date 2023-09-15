@@ -1124,6 +1124,7 @@ lib/Vend/CounterFile.pm
 lib/Vend/Cron.pm
 lib/Vend/Data.pm
 lib/Vend/DbSearch.pm
+lib/Vend/Diagnostic/Memory.pm
 lib/Vend/Dispatch.pm
 lib/Vend/Document.pm
 lib/Vend/Error.pm
