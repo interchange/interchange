@@ -387,11 +387,11 @@ sub lock_session {
 	$name ||= $Vend::SessionName;
 #::logDebug ("lock session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $lockname = "LOCK_$name";
-	my ($tried, $locktime, $sleepleft, $pid, $now, $left);
+	my ($tried, $sleepleft, $now, $left);
 	$tried = 0;
 
-	LOCKLOOP: {
-		my $lv;
+	LOCKLOOP: while(1) {
+		my ($lv, $locktime, $pid);
 		if (defined ($lv = $Vend::SessionDBM{$lockname}) ) {
 			($locktime, $pid) = split /:/, $lv, 2;
 		}
