@@ -442,7 +442,8 @@ EOF
 	} #LOCKLOOP
 
 	# Should never get here
-	return undef;
+	logError("lock_session: exited LOCKLOOP unexpectedly");
+	die errmsg("Locking error!\n", '');
 }
 
 sub read_session {
