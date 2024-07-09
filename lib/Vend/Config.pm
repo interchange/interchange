@@ -2265,15 +2265,15 @@ EOF
 		package Vend::Interpolate;
 		if($nostrict) {
 			no strict;
-			$c->{$name} = eval "#line 1 \"Action $name\"\n" . $sub;
+			$c->{$name} = eval qq(#line 1 "Action $name"\n$sub);
 		}
 		else {
-			$c->{$name} = eval "#line 1 \"Action $name\"\n" . $sub;
+			$c->{$name} = eval qq(#line 1 "Action $name"\n$sub);
 		}
 	}
 	else {
 		package Vend::Interpolate;
-		$c->{$name} = $c->{_mvsafe}->reval("#line 1 \"Action $name\"\n" . $sub);
+		$c->{$name} = $c->{_mvsafe}->reval(qq(#line 1 "Action $name"\n$sub));
 	}
 	if($@) {
 		config_warn("Action '%s' did not compile correctly (%s).", $name, $@);
@@ -5279,7 +5279,7 @@ sub parse_tag {
 		{
 			local $SIG{'__WARN__'} = sub {$fail .= "$_[0]\n";};
 			package Vend::Interpolate;
-			$sub = eval "#line 1 \"UserTag $tag\"\n" . $val;
+			$sub = eval qq(#line 1 "UserTag $tag"\n$val);
 		}
 		if($@) {
 			config_warn(
@@ -5445,16 +5445,16 @@ sub parse_subroutine {
 	$value = $1;
 
 	if(! defined $C) {
-		$c->{$name} = eval "#line 1 \"Sub $name\"\n" . $value;
+		$c->{$name} = eval qq(#line 1 "Sub $name"\n$value);
 	}
 	elsif($perlglobal) {
 		package Vend::Interpolate;
 		if($nostrict) {
 			no strict;
-			$c->{$name} = eval "#line 1 \"Sub $name\"\n" . $value;
+			$c->{$name} = eval qq(#line 1 "Sub $name"\n$value);
 		}
 		else {
-			$c->{$name} = eval "#line 1 \"Sub $name\"\n" . $value;
+			$c->{$name} = eval qq(#line 1 "Sub $name"\n$value);
 		}
 	}
 	else {
@@ -5463,7 +5463,7 @@ sub parse_subroutine {
 		package Vend::Config;
 		$C->{ActionMap} = { _mvsafe => $calc }
 			if ! defined $C->{ActionMap}{_mvsafe};
-		$c->{$name} = $C->{ActionMap}{_mvsafe}->reval("#line 1 \"Sub $name\"\n" . $value);
+		$c->{$name} = $C->{ActionMap}{_mvsafe}->reval(qq(#line 1 "Sub $name"\n$value));
 	}
 
 	config_error("Bad $var '$name': $@") if $@;
