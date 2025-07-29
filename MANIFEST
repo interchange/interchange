@@ -311,12 +311,14 @@ code/UserTag/rand.tag
 code/UserTag/report_table.tag
 code/UserTag/save_cart.tag
 code/UserTag/send_tax_transaction.tag
+code/UserTag/shipengine.tag
 code/UserTag/summary.tag
 code/UserTag/table_organize.tag
 code/UserTag/tax_lookup.tag
 code/UserTag/timed_display.tag
 code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
+code/UserTag/ups_rest_api.tag
 code/UserTag/usertrack.tag
 code/UserTag/usps_query.tag
 code/UserTag/values_space.tag
@@ -1184,6 +1186,8 @@ lib/Vend/SessionFile.pm
 lib/Vend/Ship.pm
 lib/Vend/Ship/Postal.pm
 lib/Vend/Ship/QueryUPS.pm
+lib/Vend/Ship/ShipEngine.pm
+lib/Vend/Ship/UPS/REST.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
 lib/Vend/SQL_Parser.pm
