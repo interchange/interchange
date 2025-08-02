@@ -80,6 +80,7 @@ sub {
     if (my $got = $::Session->{_shipengine_last_request}) {
         if ($got->{response} and $got->{request} eq $serialized) {
             if (time() < $got->{expire}) {
+                $se->logger->("Using cached response");
                 $res = $got->{response};
             }
             else {
@@ -92,12 +93,6 @@ sub {
     }
     else {
         $se->logger->("No cache found");
-    }
-    if (my $got = $::Session->{_shipengine_last_request}) {
-        $logger->("Found the cache in the session");
-        if ($got->{response} and $got->{request} eq $serialized and (time() < $got->{expire})) {
-            $res = $got->{response};
-        }
     }
     unless ($res) {
         $logger->("Doing query for $serialized");
@@ -187,8 +182,6 @@ Weight in pounds. (required)
 Any supported service code. Call [shipengine carrier_summary=1] to see
 them.
 
-to see them.
-
 =item output_debug
 
 If set to a true value, return all the rate informations collected
@@ -228,8 +221,8 @@ white space) you need to know the carrier codes. Call:
 
 [shipengine carrier_summary=1]
 
-to get check them and see which shipping modes are
-available for your account.
+to check them and see which shipping modes are available for your
+account.
 
 =head1 AUTHOR
 
