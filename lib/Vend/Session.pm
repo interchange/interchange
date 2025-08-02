@@ -466,7 +466,10 @@ sub read_session {
 		};
 		
 #::logDebug ("Session:\n$s\n");
-	return new_session($seed) unless $s;
+	if (!$s) {
+		undef $::Instance->{DB_sessions};
+		return new_session($seed);
+	}
 
     undef $@;
     $Vend::Session = ref $s ? $s : evalr($s);
