@@ -45,7 +45,7 @@ sub logger        { shift->{logger} };
 sub tracer        { shift->{tracer} };
 sub ua            { shift->{ua} };
 
-sub oath_token_endpoint {
+sub oauth_token_endpoint {
     my $self = shift;
     my $uri = URI->new($self->endpoint);
     $uri->path('/security/v1/oauth/token');
@@ -70,7 +70,7 @@ sub get_new_token {
     my $h = HTTP::Headers->new('Content-Type' => 'application/x-www-form-urlencoded');
     $self->logger->("Requiring new token");
     $h->authorization_basic($self->client_id, $self->client_secret);
-    my $req = HTTP::Request->new(POST => $self->oath_token_endpoint, $h,
+    my $req = HTTP::Request->new(POST => $self->oauth_token_endpoint, $h,
                                  'grant_type=client_credentials');
     # $self->logger->($req->as_string);
     my $res = $self->ua->request($req);
