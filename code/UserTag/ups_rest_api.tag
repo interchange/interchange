@@ -65,16 +65,6 @@ sub {
                         CountryCode => $to{country},
                     },
                 },
-                ShipFrom =>  {
-                    Name =>  $from{name},
-                    Address =>  {
-                        AddressLine =>  [ grep { $_ } ($from{address1}, $from{address2}) ],
-                        City =>  $from{city},
-                        StateProvinceCode =>  $from{state},
-                        PostalCode =>  $from{zip},
-                        CountryCode => $from{country},
-                    }
-                },
                 NumOfPieces =>  "1",
                 Package =>  {
                     PackagingType =>  {
