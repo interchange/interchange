@@ -117,7 +117,7 @@ sub {
         if ($res and $res->{data} and $res->{data}->{rate_response} and $res->{data}->{rate_response}->{rates}) {
             my @rates = @{$res->{data}->{rate_response}->{rates}};
             unless (@rates) {
-                @rates = @{$res->{data}->{rate_response}->{invalid_rates}};
+                @rates = @{$res->{data}->{rate_response}->{invalid_rates} || []};
                 $logger->("Using invalid rates");
             }
             foreach my $rate (grep { $_->{service_code} eq $service } @rates) {
