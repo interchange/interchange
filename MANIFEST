@@ -697,6 +697,7 @@ dist/strap/dbconf/mysql/pay_cert_redeem.mysql
 dist/strap/dbconf/mysql/pay_certs.mysql
 dist/strap/dbconf/mysql/pricing.mysql
 dist/strap/dbconf/mysql/products.mysql
+dist/strap/dbconf/mysql/sessions.mysql.sessiondb
 dist/strap/dbconf/mysql/state.mysql
 dist/strap/dbconf/mysql/stock_alert.mysql
 dist/strap/dbconf/mysql/tax_averages.mysql
@@ -722,6 +723,7 @@ dist/strap/dbconf/pgsql/pay_certs.pgsql
 dist/strap/dbconf/pgsql/pgsql.cfg
 dist/strap/dbconf/pgsql/pricing.pgsql
 dist/strap/dbconf/pgsql/products.pgsql
+dist/strap/dbconf/pgsql/sessions.pgsql.sessiondb
 dist/strap/dbconf/pgsql/state.pgsql
 dist/strap/dbconf/pgsql/stock_alert.pgsql
 dist/strap/dbconf/pgsql/tax_averages.pgsql
@@ -979,6 +981,7 @@ dist/strap/products/products.txt
 dist/strap/products/products_de_DE.txt
 dist/strap/products/products_nl_NL.txt
 dist/strap/products/salestax.asc
+dist/strap/products/sessions.txt
 dist/strap/products/ship/2ndDayAir.csv
 dist/strap/products/ship/2ndDayAirAM.csv
 dist/strap/products/ship/3DaySelect.csv
@@ -1181,6 +1184,7 @@ lib/Vend/Server.pm
 lib/Vend/Session.pm
 lib/Vend/SessionDB.pm
 lib/Vend/SessionFile.pm
+lib/Vend/SessionRedis.pm
 lib/Vend/Ship.pm
 lib/Vend/Ship/Postal.pm
 lib/Vend/Ship/QueryUPS.pm

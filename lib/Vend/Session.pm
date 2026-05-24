@@ -49,6 +49,8 @@ tie_static_dbm
 use strict;
 use Fcntl;
 use Vend::Util;
+use Time::HiRes qw/gettimeofday/;
+use POSIX qw/ceil/;
 
 require Vend::SessionFile;
 
@@ -64,17 +66,20 @@ BEGIN {
 	if($Global::DBI) {
 		require Vend::SessionDB;
 	}
+	if($Global::Redis) {
+		require Vend::SessionRedis;
+	}
 }
 
 my (%Session_class);
-my ($Session_open, $File_sessions, $Lock_sessions);
+my ($Session_open, $File_sessions, $Lock_sessions, $Transactions_lock);
 
 
 # Selects based on initial config
 
 %Session_class = (
-# $File_sessions, $Lock_sessions, &$Session_open
-GDBM => [ 0, 1, sub {
+# $File_sessions, $Lock_sessions, $Transactions_lock, &$Session_open
+GDBM => [ 0, 1, 0, sub {
 			$::Instance->{DB_object} =
 				tie(%Vend::SessionDBM,
 					'GDBM_File',
@@ -86,7 +91,7 @@ GDBM => [ 0, 1, sub {
 				unless defined $::Instance->{DB_object};
 		},
 	],
-DB_File => [ 0, 1, sub {
+DB_File => [ 0, 1, 0, sub {
 					tie(
 						%Vend::SessionDBM,
 						'DB_File',
@@ -98,7 +103,7 @@ DB_File => [ 0, 1, sub {
 				},
 ],
 
-DBI => [ 0, 0, sub {
+DBI => [ 0, 0, 1, sub {
 				return 1 if $::Instance->{DB_sessions};
 				tie (
 					%Vend::SessionDBM,
@@ -110,7 +115,19 @@ DBI => [ 0, 0, sub {
 			},
 		],
 
-File => [ 1, 0, sub {
+Redis => [ 0, 0, 0, sub {
+                return 1 if $::Instance->{DB_sessions};
+                tie (
+                    %Vend::SessionDBM,
+                    'Vend::SessionRedis',
+                    $Vend::Cfg->{SessionDB},
+                )
+                or die "Could not tie to Redis $Vend::Cfg->{SessionDB}: $!\n";
+				$::Instance->{DB_sessions} = 1;
+            },
+        ],
+
+File => [ 1, 0, 0, sub {
 				tie(
 					%Vend::SessionDBM,
 					'Vend::SessionFile',
@@ -121,7 +138,7 @@ File => [ 1, 0, sub {
 		],
 
 
-NFS => [ 1, 0, sub {
+NFS => [ 1, 0, 0, sub {
 				tie(
 					%Vend::SessionDBM,
 					'Vend::SessionFile',
@@ -133,6 +150,8 @@ NFS => [ 1, 0, sub {
 		],
 
 );
+
+chomp (my $Lock_host = `hostname -s`);
 
 # SESSIONS implemented using DBM
 
@@ -148,12 +167,10 @@ sub get_session {
 
 	$Vend::HaveSession = 0;
 	open_session();
+	lock_session($Vend::SessionName);
 	my $new;
 	$new = read_session($seed) unless $Vend::ExternalProgram;
-	unless($File_sessions) {
-		lock_session();
-		close_session();
-	}
+	close_session() unless $File_sessions || $::Instance->{DB_sessions};
 	$Vend::HaveSession = 1;
 	return ($new || 0);
 }
@@ -161,9 +178,9 @@ sub get_session {
 sub put_session {
 	return unless $Vend::HaveSession;
 	unless($File_sessions) {
-		open_session();
+		open_session() unless $::Instance->{DB_sessions};
 		write_session();
-		unlock_session();
+		unlock_session($Vend::SessionName);
 		close_session();
 	}
 	else {
@@ -174,10 +191,10 @@ sub put_session {
 
 sub open_session {
 	return 1 if defined $Vend::SessionOpen;
-	($File_sessions, $Lock_sessions, $Session_open) 
+	($File_sessions, $Lock_sessions, $Transactions_lock, $Session_open)
 		= @{$Session_class{ $Vend::Cfg->{SessionType} || 'File' }};
 	if (! defined $File_sessions) {
-		($File_sessions, $Lock_sessions, $Session_open) = @{$Session_class{File}};
+		($File_sessions, $Lock_sessions, $Transactions_lock, $Session_open) = @{$Session_class{File}};
 	}
 #::logDebug("open_session: File_sessions=$File_sessions Sub=$Session_open");
 	if($Lock_sessions) {
@@ -282,6 +299,7 @@ sub new_session {
     my($name);
 
 #::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName seed=$seed");
+	close_session();
 	open_session();
     for (;;) {
 		unless (defined $seed) {
@@ -375,18 +393,83 @@ sub write_session {
 
 sub unlock_session {
 #::logDebug ("unlock session id=$Vend::SessionID  name=$Vend::SessionName\n");
-	my $name = shift;
-	$name ||= $Vend::SessionName;
-	delete $Vend::SessionDBM{'LOCK_' . $Vend::SessionName}
-		unless $File_sessions;
+	return if $File_sessions || $Transactions_lock;
+	my $name = shift
+         or die 'No session name passed to unlock';
+	my $lockname = "LOCK_$name";
+
+	my $rv;
+	if ($Lock_sessions) {
+		$rv = delete $Vend::SessionDBM{$lockname};
+	}
+	else {
+		$rv = _has_lock_unlockhandler($lockname);
+	}
+
+	return $rv;
+}
+
+sub _has_lock_unlockhandler {
+	my $lockname = shift;
+	my $tied = tied %Vend::SessionDBM;
+
+	if ($tied->has_lock({ k => $lockname, })) {
+#::logDebug('unlock_session() called with $tied->has_lock true - $name: %s', $name);
+		delete $Vend::SessionDBM{$lockname};
+		return 1;
+	}
+	return;
 }
 
 sub lock_session {
-	return 1 if $File_sessions;
-	my $name = shift;
-	$name ||= $Vend::SessionName;
+	return 1 if $File_sessions || $Transactions_lock;
+	my $name = shift
+		or die 'No session name passed to lock';
 #::logDebug ("lock session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $lockname = "LOCK_$name";
+
+	my $rv;
+	if ($Lock_sessions) {
+		$rv = _lock_sessions_lockhandler($lockname);
+	}
+	else {
+		$rv = _has_lock_lockhandler($lockname);
+	}
+
+	return $rv;
+}
+
+sub _has_lock_lockhandler {
+	my $lockname = shift;
+	my $tied = tied %Vend::SessionDBM;
+	return 1 if $tied->has_lock({ k => $lockname, });
+
+	# Forcing max wait time on acquiring a lock at $Global::HammerLock seconds.
+	my $sleep = 0.5;
+	my $max = ceil($Global::HammerLock / $sleep);
+
+	my $sanity = -1;
+	LOCKLOOP: {
+		# Setting $rv and the tied hash in separate statements to ensure FETCH
+		# doesn't interfere with the value calculated from gettimeofday placed
+		# into $rv
+		my $rv = sprintf ('%d%06d:%s:%s', gettimeofday, $Lock_host, $$);
+		$Vend::SessionDBM{$lockname} = $rv;
+		$tied->race_delay;
+		my $locked = $tied->has_lock({ k => $lockname, v => $rv, });
+#::logDebug('LOCKLOOP setting for key/val %s/%s resulted in LOCK_VALUE: %s', $lockname, $rv, ::uneval($tied->{LOCK_VALUE}));
+#::logDebug('LOCKLOOP $rv=%s, $tied->has_lock({ v => $rv, })=%s', $rv, $locked);
+		return 1 if $locked;
+		last LOCKLOOP unless ++$sanity < $max;
+		select (undef, undef, undef, $sleep);
+		redo LOCKLOOP;
+	}
+	# Should never get here
+	die errmsg("Lock wait error after ${Global::HammerLock}s\n", '');
+}
+
+sub _lock_sessions_lockhandler {
+	my $lockname = shift;
 	my ($tried, $sleepleft, $now, $left);
 	$tried = 0;
 
@@ -466,10 +549,10 @@ sub read_session {
 		};
 		
 #::logDebug ("Session:\n$s\n");
-	if (!$s) {
-		undef $::Instance->{DB_sessions};
-		return new_session($seed);
-	}
+    if (!$s) {
+        unlock_session($Vend::SessionName);
+        return new_session($seed);
+    }
 
     undef $@;
     $Vend::Session = ref $s ? $s : evalr($s);
@@ -497,6 +580,8 @@ sub read_session {
 
 ## SESSIONS
 
+my $joiner = $Global::Windows ? '_' : ':';
+
 sub session_name {
     my($host, $user, $fn, $proxy);
 
@@ -513,7 +598,7 @@ sub session_name {
 		$host = escape_chars($host);
 	}
 #::logDebug ("name session user=$CGI::user host=$host ($CGI::host)\n");
-    $fn = $Vend::SessionID . ':' . $host;
+    $fn = $Vend::SessionID . $joiner . $host;
 #::logDebug ("name session id=$Vend::SessionID  name=$fn\n");
     $fn;
 }
@@ -601,7 +686,7 @@ sub expire_sessions {
 		# Lock records
 		if ($session_name =~ /^LOCK_/) {;
 			delete $Vend::SessionDBM{$session_name}
-				unless ($File_sessions or $s);
+				unless ($File_sessions or $s or $Transactions_lock);
 			next;
 		}
 
