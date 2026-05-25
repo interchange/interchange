@@ -46,6 +46,7 @@ else {
 }
 
 use Exporter;
+our @ISA = qw(Exporter);
 use vars qw($Storable $VERSION @EXPORT @EXPORT_OK);
 @EXPORT = qw(create_columns import_ascii_delimited import_csv config columns);
 @EXPORT_OK = qw(import_quoted read_quoted_fields);
