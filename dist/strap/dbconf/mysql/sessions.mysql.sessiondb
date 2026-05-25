@@ -1,0 +1,6 @@
+Database  sessions  sessions.txt  __SQLDSN__
+
+Database  sessions  KEY        code
+Database  sessions  COLUMN_DEF "code=VARCHAR(256) PRIMARY KEY NOT NULL"
+Database  sessions  COLUMN_DEF "session=LONGBLOB"
+Database  sessions  COLUMN_DEF "last_accessed=DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"

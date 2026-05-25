@@ -188,6 +188,19 @@ Core
 
   If None is used, that forces Secure on those cookies as well.
 
+* Redis sessions and transaction locks for RDBMS sessions
+
+  To use Redis for sessions, in catalog.cfg:
+  - Set SessionType to Redis
+  - Set Redis server address (with port) in SessionDB
+
+  If you're also using MoreDB, in catalog.cfg:
+  - New config param, MoreDBTable, to point to the RDBMS where you have the
+    table to hold more lists.
+  - In strap, the table, sessions, is created with the correct schema.
+  - Without MoreDBTable, MoreDB falls back to using SessionDB, same as
+    currently. But you must use MoreDBTable with Redis sessions.
+
 Payments
 --------
 

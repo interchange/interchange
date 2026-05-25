@@ -1,0 +1,8 @@
+Database  sessions  sessions.txt  __SQLDSN__
+
+Database  sessions  KEY        code
+Database  sessions  COLUMN_DEF "code=VARCHAR(256) PRIMARY KEY NOT NULL"
+Database  sessions  COLUMN_DEF "session=BYTEA"
+Database  sessions  COLUMN_DEF "last_accessed=TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP"
+Database  sessions  POSTCREATE "CREATE OR REPLACE FUNCTION sessions_update_last_accessed () RETURNS TRIGGER AS $$ BEGIN NEW.last_accessed := NOW(); RETURN NEW; END $$ LANGUAGE plpgsql"
+Database  sessions  POSTCREATE "CREATE TRIGGER sessions_before_update BEFORE UPDATE ON sessions FOR EACH ROW EXECUTE PROCEDURE sessions_update_last_accessed()"
