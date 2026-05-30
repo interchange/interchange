@@ -23,6 +23,7 @@ require Tie::Hash;
 @ISA = qw(Tie::Hash);
 
 use strict;
+use DBI::Const::GetInfoType;
 use Vend::Util;
 use Vend::Util::Compress qw(compress uncompress);
 
@@ -42,7 +43,7 @@ sub TIEHASH {
 
 	# SQLite doesn't support the necessary row-level locking to work
 	die 'SQLite has no row-level locking required for SessionType DBI - try MySQL or PostgreSQL'
-		if $self->{DBH}->get_info(17) eq 'SQLite';
+		if $self->{DBH}->get_info( $GetInfoType{SQL_DBMS_NAME} ) eq 'SQLite';
 
 	bless $self, $class;
 }

@@ -51,6 +51,7 @@ use Fcntl;
 use Vend::Util;
 use Time::HiRes qw/gettimeofday/;
 use POSIX qw/ceil/;
+use Sys::Hostname qw();
 
 require Vend::SessionFile;
 
@@ -151,7 +152,7 @@ NFS => [ 1, 0, 0, sub {
 
 );
 
-chomp (my $Lock_host = `hostname -s`);
+(my $Lock_host = Sys::Hostname::hostname()) =~ s/\..*//;
 
 # SESSIONS implemented using DBM
 
@@ -580,8 +581,6 @@ sub read_session {
 
 ## SESSIONS
 
-my $joiner = $Global::Windows ? '_' : ':';
-
 sub session_name {
     my($host, $user, $fn, $proxy);
 
@@ -598,7 +597,7 @@ sub session_name {
 		$host = escape_chars($host);
 	}
 #::logDebug ("name session user=$CGI::user host=$host ($CGI::host)\n");
-    $fn = $Vend::SessionID . $joiner . $host;
+    $fn = $Vend::SessionID . ':' . $host;
 #::logDebug ("name session id=$Vend::SessionID  name=$fn\n");
     $fn;
 }

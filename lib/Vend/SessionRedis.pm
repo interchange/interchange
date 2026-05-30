@@ -90,7 +90,7 @@ sub DESTROY {
         }
     };
     if (my $err = $@) {
-        #::logDebug('Caught sumt-in! %s', $err);
+        ::logError('eval error in Redis DESTROY: %s', $err);
     }
     return 1;
 }
