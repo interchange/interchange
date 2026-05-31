@@ -748,6 +748,7 @@ dist/strap/dbconf/sqlite/pay_cert_redeem.lite
 dist/strap/dbconf/sqlite/pay_certs.lite
 dist/strap/dbconf/sqlite/pricing.lite
 dist/strap/dbconf/sqlite/products.lite
+dist/strap/dbconf/sqlite/sessions.sqlite.moredb
 dist/strap/dbconf/sqlite/sqlite.cfg
 dist/strap/dbconf/sqlite/state.lite
 dist/strap/dbconf/sqlite/stock_alert.lite
