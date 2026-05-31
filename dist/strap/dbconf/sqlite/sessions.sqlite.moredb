@@ -1,0 +1,7 @@
+Database  sessions  sessions.txt  __SQLDSN__
+
+Database  sessions  KEY        code
+Database  sessions  COLUMN_DEF "code=TEXT PRIMARY KEY NOT NULL"
+Database  sessions  COLUMN_DEF "session=TEXT"
+Database  sessions  COLUMN_DEF "last_accessed=TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+Database  sessions  POSTCREATE "CREATE TRIGGER sessions_after_update AFTER UPDATE ON sessions WHEN OLD.last_accessed <> CURRENT_TIMESTAMP BEGIN UPDATE sessions SET last_accessed = CURRENT_TIMESTAMP WHERE code = OLD.code; END"
