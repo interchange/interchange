@@ -179,6 +179,9 @@ BEGIN {
 # SQL
 	$Global::DBI =
 # END SQL
+# Redis
+    $Global::Redis =
+# END Redis
     $Global::Shadow = 
 	0;
 
@@ -195,6 +198,13 @@ BEGIN {
 		require Net::LDAP and $Global::LDAP = 1
 	};
 # END LDAP
+
+# Redis
+	eval {
+		die if $ENV{MINIVEND_NOREDIS};
+		require Redis and $Global::Redis = 1
+	};
+# END Redis
 
 	# Now can use any type of database
 	AUTO: {

@@ -23,6 +23,7 @@ require Tie::Hash;
 @ISA = qw(Tie::Hash);
 
 use strict;
+use DBI::Const::GetInfoType;
 use Vend::Util;
 use Vend::Util::Compress qw(compress uncompress);
 
@@ -40,6 +41,10 @@ sub TIEHASH {
 		LOCK_VALUE => {},
 	};
 
+	# SQLite doesn't support the necessary row-level locking to work
+	die 'SQLite has no row-level locking required for SessionType DBI - try MySQL or PostgreSQL'
+		if $self->{DBH}->get_info( $GetInfoType{SQL_DBMS_NAME} ) eq 'SQLite';
+
 	bless $self, $class;
 }
 
@@ -52,84 +57,42 @@ sub FETCH {
 	my($self, $key) = @_;
 #::logDebug("$self fetch: $key (pid=$$)");
 	my $rc;
+	my $dbh = $self->{DBH};
 
-    if($key =~ /^LOCK_/) {
+	return $self->{SESSION_VALUE}{$key}
+		if $self->{SESSION_VALUE}{$key};
 
-		return $self->{LOCK_VALUE}{$key}
-			if $self->{LOCK_VALUE}{$key};
+	my $q_table = $dbh->quote_identifier($self->{TABLE});
+	my $q_session = $dbh->quote_identifier('session');
 
-		my $val = time() . ":$$";
-
-		$self->{DOLOCK} ||=
-			$self->{DBH}->prepare(
-					"insert into $self->{TABLE} (code,sessionlock) values(?,?)",
-				);
-
-		eval {
-			$rc = $self->{DOLOCK}->execute($key, $val);
-		};
-		if($@ or $rc < 1) {
-			if($@) {
-				::logDebug("Error on session execute: $@");
-			}
-			else {
-				::logDebug("Session insert returned rc=$rc");
-			}
-			## Session exists
-			my $sth;
-
-			eval {
-				$sth = $self->{DBH}->prepare(
-						"select code,sessionlock from $self->{TABLE} where code = ?",
-					);
-			};
-			if($@) {
-				my $msg = errmsg("Session lock fetch prepare failed: %s", $@);
-				::logDebug($msg);
-				::logGlobal($msg);
-			}
-
-			eval {
-				$sth->execute($key)
-					or do {
-						logError("DBI query error when fetching session lock $key");
-						return undef;
-					};
-			};
-			if($@) {
-				my $msg = errmsg("Session lock fetch execute failed: %s", $@);
-				::logDebug($msg);
-				::logGlobal($msg);
-			}
-
-			my $ary = $sth->fetchrow_arrayref
-				or return undef;
-			return $ary->[1];
-		}
-		else {
-			## No session there already
-			$self->{LOCK_VALUE}{$key} = $val;
-			return undef;
-		}
-	}
-	else {
-		return $self->{SESSION_VALUE}{$key}
-			if $self->{SESSION_VALUE}{$key};
+	my $retries = 0;
+	DEADLOCK: {
+		_handle_transaction($self, $dbh);
 		my $sth = $self->{FETCH} ||= $self->{DBH}->prepare(
-								"select session from $self->{TABLE} where code = ?"
+								"select $q_session from $q_table where code = ? for update"
 							);
+		local $@;
 		eval {
 			$rc = $sth->execute($key);
 		};
 
-		if($@) {
+		if (my $err = $@) {
 			## Session fetch error
-			logError("DBI error fetching session $key");
-			undef $@;
-			return undef;
+			if ($err =~ /deadlock/i && $retries < 3) {
+				::logError("Deadlock encountered fetching session $key - retry attempt %d", ++$retries);
+				$dbh->rollback;
+				redo DEADLOCK;
+			}
+			else {
+				::logError("DBI error fetching session $key: $err");
+				return undef;
+			}
 		}
 
 		my $ary = $sth->fetchrow_arrayref
+			or return undef;
+
+		defined $ary->[0]
 			or return undef;
 
 		my $fetch = \$ary->[0];
@@ -153,18 +116,12 @@ sub FIRSTKEY {
 	};
 	push @{$self->{DB}}, $tmp if $@;
 	my @pair = $self->{DB}->each_record();
-	while($pair[0] =~ /^LOCK_/) {
-		@pair = $self->{DB}->each_record();
-	}
 	return @pair;
 }
 
 sub NEXTKEY {
 	my $self = shift;
 	my @pair = $self->{DB}->each_record();
-	while($pair[0] =~ /^LOCK_/) {
-		@pair = $self->{DB}->each_record();
-	}
 	return @pair;
 }
 
@@ -178,32 +135,103 @@ sub EXISTS {
 sub DELETE {
 	my($self,$key) = @_;
 #::logDebug("$self delete: $key");
-	$self->{DELHANDLE} ||= $self->{DBH}->prepare(
-								"delete from $self->{TABLE} where code = ?",
+	my $dbh = $self->{DBH};
+	my $q_table = $dbh->quote_identifier($self->{TABLE});
+	$self->{DELHANDLE} ||= $dbh->prepare(
+								"delete from $q_table where code = ?",
 								);
-	$self->{DELHANDLE}->execute($key);
+	my $rv = $self->{DELHANDLE}->execute($key);
+	$dbh->commit unless $dbh->{AutoCommit};
+	return $rv;
 }
 
 sub STORE {
 	my($self, $key, $val) = @_;
-	if( $key =~ s/^LOCK_//) {
-		return $self->{LOCK_VALUE}{$key};
+
+	my $dbh = $self->{DBH};
+	my $in_trans = !$dbh->{AutoCommit};
+	my $q_table = $dbh->quote_identifier($self->{TABLE});
+	my $q_session = $dbh->quote_identifier('session');
+
+	my $store = \$val;
+	if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
+		my ($ref, $before, $after, $time, $alert) = compress($store, $c_type);
+		::logError("$c_type compression response alert: $alert")
+			if $alert;
+		::logDebug('%s compression impact - before: %dB; after: %dB; %%reduced: %s', $c_type, $before, $after, $before ? sprintf ('%.2f', (1-$after/$before)*100) : 'undefined');
+		::logDebug('%s time to compress: %fs', $c_type, $time);
+		$store = $ref;
 	}
-	else {
-		my $store = \$val;
-		if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
-			my ($ref, $before, $after, $time, $alert) = compress($store, $c_type);
-			::logError("$c_type compression response alert: $alert")
-				if $alert;
-			::logDebug('%s compression impact - before: %dB; after: %dB; %%reduced: %s', $c_type, $before, $after, $before ? sprintf ('%.2f', (1-$after/$before)*100) : 'undefined');
-			::logDebug('%s time to compress: %fs', $c_type, $time);
-			$store = $ref;
+
+    my %attr = _get_bind_attr();
+	local $@;
+	eval {
+		my $upd = $dbh->prepare("update $q_table set $q_session = ? where code = ?");
+		$upd->bind_param(1, $$store, \%attr);
+		$upd->bind_param(2, $key);
+		$upd->execute;
+
+		# Fallback to insert
+		if ($upd->rows == 0) {
+			my $ins = $dbh->prepare("insert into $q_table (code, $q_session) values (?,?)");
+			$ins->bind_param(1, $key);
+			$ins->bind_param(2, $$store, \%attr);
+			$ins->execute;
 		}
-		$self->{DB}->set_field( $key, 'session', $$store);
-		undef $self->{SESSION_VALUE}{$key};
-		return 1;
+	};
+
+	if (my $err = $@) {
+		::logError("DBI error storing session $key - CRITICAL: $err");
+		$dbh->rollback if $in_trans;
 	}
+	elsif ($in_trans) {
+		$dbh->commit;
+	}
+
+	$self->{SESSION_VALUE}{$key} = $val;
+	return 1;
 }
-	
+
+sub _get_bind_attr {
+    local $@;
+    my %hsh = eval { ( pg_type => DBD::Pg->PG_BYTEA ) };
+    return %hsh;
+}
+
+sub _handle_transaction {
+	my ($self, $dbh) = @_;
+	my $q_table = $dbh->quote_identifier($self->{TABLE});
+	my $once = 0;
+	LOOP: {
+		local $@;
+		eval {
+			# Trying to back out of any cached cxn in open transaction
+			unless ($dbh->{AutoCommit}) {
+				$dbh->rollback;
+				$dbh->{AutoCommit} = 1;
+			}
+			# Issue no-op select in autocommit to try to refresh the cxn
+			$dbh->selectrow_array("select 1 from $q_table where 2 = 1");
+			$dbh->begin_work;
+		};
+
+		if (my $err = $@) {
+			::logError('_handle_transaction() produced an error: %s', $err);
+			unless ($once++) {
+				::logError('Attempting to clone DBI handle and retry _handle_transaction() ...');
+				local $@;
+				eval {
+					$dbh = $self->{DBH} = $self->{DB}->ref->[$Vend::Table::DBI::DBI] = $dbh->clone({});
+				};
+				if (my $err = $@) {
+					::logError('Error on call to clone: %s', $err);
+				}
+				redo LOOP;
+			}
+		}
+	}
+	return;
+}
+
 1;
 __END__

@@ -188,6 +188,27 @@ Core
 
   If None is used, that forces Secure on those cookies as well.
 
+* Redis sessions and transaction locks for RDBMS sessions
+
+  To use Redis for sessions, in catalog.cfg:
+  - Set SessionType to Redis
+  - Set Redis server address (with port) in SessionDB
+
+  If you're also using MoreDB, in catalog.cfg:
+  - New config param, MoreDBTable, to point to the RDBMS where you have the
+    table to hold more lists.
+  - In strap, the table, sessions, is created with the correct schema.
+  - Without MoreDBTable, MoreDB falls back to using SessionDB, same as
+    currently. But you must use MoreDBTable with Redis sessions.
+
+  Note: Vend::SessionRedis maintains a fixed, 30-minute value applied to the
+  session expiration for any new session. Bots clog up the sessions with their
+  "hit and run" action. By limiting the first hit to a relatively small amount
+  of time, it keeps down the buildup of session records that will never be used
+  again. For human users, 30 minutes gives them ample time to make their first
+  request with the established session, at which point the session expiration is
+  extended to the duration configured with the SessionExpire directive.
+
 Payments
 --------
 

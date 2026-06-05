@@ -386,8 +386,8 @@ sub more_matches {
 		if($Vend::Cfg->{MoreDB}) {
 #::logDebug("more_matches: $id from $Vend::Cfg->{SessionDB}");
 			eval {
-				my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
-				my $out = \$db->field($id,'session');
+				my $db = Vend::Util::dbref($Vend::Cfg->{MoreDBTable} || $Vend::Cfg->{SessionDB});
+				my $out = \pack('H*', $db->field($id,'session'));
 				if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
 					my ($ref, $time, $alert) = uncompress($out, $c_type);
 					::logError("$c_type uncompression response alert: $alert")
@@ -397,10 +397,13 @@ sub more_matches {
 				}
 				$obj = Vend::Util::evalr( $$out );
 			};
-			$@ and return $s->search_error(
-							"Object saved wrong in session DB for search ID %s.",
-							$id,
-						);
+            if (my $err = $@) {
+			    return $s->search_error(
+                    "Object saved wrong in session DB for search ID %s. Error: %s",
+                    $id,
+                    $err,
+                );
+            }
 		}
 		else {
 			if($s->{mv_more_permanent}) {
@@ -1252,7 +1255,6 @@ sub save_more {
 	if($Vend::Cfg->{MoreDB}) {
 #::logDebug("save_more: $id to Session DB.");
 #::logDebug("save_more:object:" . ::uneval($new));
-		my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
 		my $out = \Vend::Util::uneval_fast($new);
 		if (my $c_type = $Vend::Cfg->{SessionDBCompression}) {
 			my ($ref, $before, $after, $time, $alert) = compress($out, $c_type);
@@ -1262,10 +1264,13 @@ sub save_more {
 			::logDebug('%s time to compress: %fs', $c_type, $time);
 			$out = $ref;
 		}
-		my $key = $db->set_field($id, 'session', $$out);
+		my $key = eval {
+			my $db = Vend::Util::dbref($Vend::Cfg->{MoreDBTable} || $Vend::Cfg->{SessionDB});
+			return $db->set_field($id, 'session', unpack('H*', $$out));
+		};
 		# explicitly set $@ for check below because some exits from set_field()
 		# never set $@, and it's safer in general not to rely its internals
-		$@ = defined($key) ? undef : 1;
+		$@ //= defined($key) ? undef : 1;
 	}
 	else {
 #::logDebug("save_more: $id to $file.");
@@ -1281,7 +1286,10 @@ sub save_more {
 			Vend::Util::uneval_file($new, $file);
 		};
 	}
-	$@ and return $s->search_error("failed to store more matches");
+    if (my $err = $@) {
+        ::logError('failed to store more matches: %s', $err);
+        return $s->search_error("failed to store more matches");
+    }
 	return 1;
 }
 
