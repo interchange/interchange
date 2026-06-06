@@ -62,10 +62,10 @@ my %transform = (
 		my $status;
 		for(@$fields) {
 			if(s/^!\s*//) {
-				$status = $status && ! $row->{$_};
+				$status &&= ! $row->{$_};
 			}
 			else {
-				$status = $status && $row->{$_};
+				$status &&= $row->{$_};
 			}
 		}
 		return $first_line = $status;
@@ -98,10 +98,10 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			if(s/^!\s*//) {
-				$status = $status && ! $row->{$_};
+				$status &&= ! $row->{$_};
 			}
 			else {
-				$status = $status && $row->{$_};
+				$status &&= $row->{$_};
 			}
 		}
 		return $status;
@@ -112,10 +112,10 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			if(s/^!\s*//) {
-				$status = $status && $row->{$_};
+				$status &&= $row->{$_};
 			}
 			else {
-				$status = $status && ! $row->{$_};
+				$status &&= ! $row->{$_};
 			}
 		}
 		return $status;
@@ -126,10 +126,10 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			if(s/^!\s*//) {
-				$status = $status && ! $row->{$_};
+				$status &&= ! $row->{$_};
 			}
 			else {
-				$status = $status && $row->{$_};
+				$status &&= $row->{$_};
 			}
 		}
 		return $status;
@@ -140,7 +140,7 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			next if ! length($row->{$_});
-			$status = $status && Vend::Tags->if_mm('advanced', $row->{$_});
+			$status &&= Vend::Tags->if_mm('advanced', $row->{$_});
 		}
 		return $status;
 	},
@@ -176,7 +176,7 @@ my %transform = (
 			for(@$fields) {
 				my($f, $c) = split /[=~]+/, $_;
 				$c ||= $f;
-				$status = $status && (
+				$status &&= (
 								!  $row->{$f}
 								or $CGI::values{$c} =~ /$row->{$f}/i
 								);
@@ -189,7 +189,7 @@ my %transform = (
 		return 1 if ref($fields) ne 'ARRAY';
 		my $status = 1;
 		for(@$fields) {
-			$status = $status && (! $row->{$_} or Vend::Tags->if_mm('super'));
+			$status &&= (! $row->{$_} or Vend::Tags->if_mm('super'));
 		}
 		return $status;
 	},
@@ -200,7 +200,7 @@ my %transform = (
 		my $nitems = scalar(@{$Vend::Items}) ? 1 : 0;
 		for(@$fields) {
 			next if ! length($row->{$_});
-			$status = $status && (! $nitems ^ $row->{$_});
+			$status &&= (! $nitems ^ $row->{$_});
 		}
 		return $status;
 	},
@@ -210,7 +210,7 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			next if ! length($row->{$_});
-			$status = $status && (! $::Vend::Session->{logged_in} ^ $row->{$_});
+			$status &&= (! $::Vend::Session->{logged_in} ^ $row->{$_});
 		}
 		return $status;
 	},
@@ -220,7 +220,7 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			next if ! $row->{$_};
-			$status = $status && $CGI::values{$row->{$_}};
+			$status &&= $CGI::values{$row->{$_}};
 		}
 		return $status;
 	},
@@ -229,7 +229,7 @@ my %transform = (
 		return 1 if ref($fields) ne 'ARRAY';
 		my $status = 1;
 		for(@$fields) {
-			$status = $status && (! $CGI::values{$row->{$_}});
+			$status &&= (! $CGI::values{$row->{$_}});
 		}
 		return $status;
 	},

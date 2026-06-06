@@ -460,7 +460,7 @@ sub build_cc_info {
 		$cardinfo->{MV_CREDIT_CARD_QUADS} = join "-", @quads;
 	}
 
-	$template = $template ||
+	$template ||=
 		$::Variable->{MV_CREDIT_CARD_INFO_TEMPLATE} ||
 		join("\t", qw(
 			{MV_CREDIT_CARD_TYPE}
@@ -852,7 +852,7 @@ sub pgp_encrypt {
 		my $errno = $?;
 		my $status = $errno;
 		if($status > 255) {
-			$status = $status >> 8;
+			$status >>= 8;
 			$! = $status;
 		}
 		logError("PGP failed with error level %s, status %s: $!", $?, $status);

@@ -1505,8 +1505,8 @@ sub parse_type {
 		}
 	}
 	elsif($type =~ /^combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
+		$opt->{rows} ||= $1 || 1;
+		$opt->{cols} ||= $2 || 16;
 		$opt->{type} = 'combo';
 	}
 	elsif($type =~ /^fillin_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
@@ -1518,8 +1518,8 @@ sub parse_type {
 		$opt->{conditional_text} = 1;
 	}
 	elsif($type =~ /^reverse_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $2 || 16;
+		$opt->{rows} ||= $1 || 1;
+		$opt->{cols} ||= $2 || 16;
 		$opt->{type} = 'combo';
 		$opt->{reverse} = 1;
 	}
@@ -1528,8 +1528,8 @@ sub parse_type {
 		$opt->{type} = 'links';
 	}
 	elsif($type =~ /^move_*combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
-		$opt->{rows} = $opt->{rows} || $opt->{height} || $1 || 1;
-		$opt->{cols} = $opt->{cols} || $opt->{width} || $2 || 16;
+		$opt->{rows} ||= $opt->{height} || $1 || 1;
+		$opt->{cols} ||= $opt->{width} || $2 || 16;
 		$opt->{type} = 'movecombo';
 		$opt->{replace} = 1 if $type =~ /replace/;
 	}

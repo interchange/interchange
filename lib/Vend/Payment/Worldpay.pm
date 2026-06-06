@@ -601,8 +601,8 @@ elsif ($worldpayrequest eq 'callback'){
 	my $new_order_no = $::Values->{mv_order_number} = $Vend::Session->{mv_order_number} = Vend::Interpolate::tag_counter("$ordernumber"); 
 #Check if transaction was in test mode
     if ($check_testmode > '0') { # Transaction was in test mode
-		$update_status = $update_status .'-TEST'; #Append Test to end of order status to show order was made in test mode
-		$charged = $charged .'-TEST'; #Variable we write to txtype
+		$update_status .= '-TEST'; #Append Test to end of order status to show order was made in test mode
+		$charged .= '-TEST'; #Variable we write to txtype
 		}    
 #::logDebug("WP:".__LINE__.": new on = $new_order_no;  Check testmode = $check_testmode Update Status = $update_status Set txtype = $charged");
 		
