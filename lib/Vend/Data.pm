@@ -501,7 +501,7 @@ my %Delimiter = (
 
 sub find_delimiter {
 	my ($type) = @_;
-	$type = $type || 1;
+	$type ||= 1;
 	return @{$Delimiter{$type}}
 		if defined $Delimiter{$type}; 
 	return;
@@ -1076,7 +1076,7 @@ sub index_database {
 	}
 
 	if(! $opt->{spec}) {
-		$opt->{fn} = $opt->{fn} || $opt->{fields} || $opt->{col} || $opt->{columns};
+		$opt->{fn} ||= $opt->{fields} || $opt->{col} || $opt->{columns};
 		my $key = $db->config('KEY');
 		my @fields = grep $_ ne $key, split /[\0,\s]+/, $opt->{fn};
 		my $sort = join ",", @fields;
@@ -1195,7 +1195,7 @@ sub export_database {
 	$delim or ($delim, $record_delim) = find_delimiter($db->config('DELIMITER'));
 	$delim or ($delim, $record_delim) = find_delimiter('TAB');
 
-	$file = $file || $db->config('file');
+	$file ||= $db->config('file');
 	my $dir = $db->config('DIR');
 
 	$file = Vend::Util::catfile( $dir, $file)
@@ -1737,7 +1737,7 @@ sub item_price {
 			);
 			$Vend::Cfg->{PriceDivide} = 1;
 		}
-		$price = $price / $Vend::Cfg->{PriceDivide};
+		$price /= $Vend::Cfg->{PriceDivide};
 
 		$item->{mv_cache_price} = $price
 			if ! $quantity and exists $item->{mv_cache_price};

@@ -485,7 +485,7 @@ sub ezic {
 	if ($result{'pop.cvv2_code'} eq 'N') {
 		my $msg = $opt->{message_cvv2} || 
 				qq{Your CVV2 Code was not correct: %s};
-				$result{MErrMsg} = $result{MErrMsg}.errmsg($msg,$result{'pop.error-message'});
+				$result{MErrMsg} .= errmsg($msg, $result{'pop.error-message'});
 	}
 	my $msg = $opt->{message_declined} ||
 		"Ezic error: %s. Please call in your order or try again.";

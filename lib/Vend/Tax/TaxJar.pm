@@ -950,7 +950,7 @@ sub _thin_booleans {
         or return;
 
     if ( $type eq 'JSON::PP::Boolean' ) {
-        $$ref = $$ref + 0;
+        $$ref += 0;
         return;
     }
 

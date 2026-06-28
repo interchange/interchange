@@ -727,7 +727,7 @@ sub check_save {
 	my($time) = (@_);
 	my $expire;
 
-	$time = $time || time();
+	$time ||= time();
 
 	if(defined $::Values->{mv_expire_time}) {
 		$expire = $::Values->{mv_expire_time};

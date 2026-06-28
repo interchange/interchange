@@ -670,7 +670,7 @@ sub shipping {
 #::logDebug("quantity selection");
     	for (@$Vend::Items) {
 			next unless $_->{quantity};
-			$total = $total + $_->{quantity};
+			$total += $_->{quantity};
     	}
 	}
 	elsif ( index($field, ':') != -1) {
@@ -1167,7 +1167,7 @@ sub tag_ups {
 
 	# here we can adapt for pounds/kg
 	if ($zref->{mult_factor}) {
-		$weight = $weight * $zref->{mult_factor};
+		$weight *= $zref->{mult_factor};
 	}
 	$weight = POSIX::ceil($weight);
 
@@ -1288,7 +1288,7 @@ sub tag_ups {
 sub tag_shipping_desc {
 	my $mode = 	shift;
 	my $key = shift || 'description';
-	$mode = $mode || $::Values->{mv_shipmode} || 'default';
+	$mode ||= $::Values->{mv_shipmode} || 'default';
 	return errmsg($Vend::Cfg->{Shipping_hash}{$mode}{$key});
 }
 

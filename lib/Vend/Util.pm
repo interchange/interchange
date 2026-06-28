@@ -477,7 +477,7 @@ sub currency {
 	}
 
 	if($pd and $convert) {
-		$amount = $amount / $pd;
+		$amount /= $pd;
 	}
 
 	my $hash;

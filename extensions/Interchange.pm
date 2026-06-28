@@ -38,10 +38,10 @@ BEGIN {
 	($Global::CatRoot = $ENV{INTERCHANGE_CATDIR})
 		if defined $ENV{INTERCHANGE_ROOT};
 	
-$Global::VendRoot = $Global::VendRoot || '/work/minivend';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
-$Global::CatRoot =   $Global::CatRoot || '/work/minivend';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+$Global::VendRoot ||= '/work/minivend';
+#$Global::VendRoot ||= '~_~INSTALLARCHLIB~_~';
+$Global::CatRoot ||= '/work/minivend';
+#$Global::VendRoot ||= '~_~INSTALLARCHLIB~_~';
 $Global::ConfigFile = 'minivend.structure';
 
 }

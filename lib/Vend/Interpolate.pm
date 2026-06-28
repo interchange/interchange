@@ -3509,7 +3509,7 @@ sub tag_more_list {
 
 	$hash{more_list} = join $more_joiner, @more_links;
 
-	$first = $first + 1;
+	$first++;
 	$last = $first + $chunk - 1;
 	$last = $last > $total ? $total : $last;
 	$m = $first . '-' . $last;
@@ -5523,7 +5523,7 @@ sub fly_tax {
 		my ($k,$v) = split /\s*=\s*/, $_, 2;
 		next unless "\U$k" eq "\U$area";
 		$rate = $v;
-		$rate = $rate / 100 if $rate > 1;
+		$rate /= 100 if $rate > 1;
 		last;
 	}
 #::logDebug("flytax rate=$rate");
@@ -5646,7 +5646,7 @@ sub tax_vat {
 		if($t =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
 			my $rate = $1;
 			$rate /= 100 if $2;
-            $rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+			$rate /= (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $amount = Vend::Interpolate::taxable_amount();
 			$total += ($rate * $amount);
 		}
@@ -5673,7 +5673,7 @@ sub tax_vat {
 #::logDebug("item $item->{code} cat=$cat rate=$rate");
 			$rate = percent_rate($rate);
 			next if $rate <= 0;
-			$rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+			$rate /= (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = discount_subtotal($item);
 #::logDebug("item $item->{code} subtotal=$sub");
 			$total += $sub * $rate;
@@ -5705,7 +5705,7 @@ sub tax_vat {
 		if ($tax->{mv_handling} > 0) {
 			my $rate = $tax->{mv_handling};
 			$rate =~ s/\s*%\s*$// and $rate /= 100;
-			$rate = $rate / (1 + $rate) if $Vend::Cfg->{TaxInclusive};
+			$rate /= (1 + $rate) if $Vend::Cfg->{TaxInclusive};
 			my $sub = tag_handling() * $rate;
 #::logDebug("applying handling tax rate of $rate, tax of $sub");
 			$total += $sub;
