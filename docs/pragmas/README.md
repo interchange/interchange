@@ -95,10 +95,10 @@ longer consulted by the current code. They are listed here only so upgraders can
 recognize them; setting them now has no effect.
 
 - `compatible_5_2` — kept table-editor error text (mistakenly) hidden, as it was
-  up to Interchange 5.2. Removed with the deprecated-feature cleanup in 5.12.
+  up to Interchange 5.2. Removed in the 5.5-series deprecated-feature cleanup (UPGRADE, "known issues upgrading from 5.4.x").
 - `no_html_parse` — disabled parsing of `MV=` arguments inside HTML tags. The
   underlying code was removed in the 4.9 development series and the pragma was
-  dropped in the 5.12 cleanup.
+  dropped in the 5.5-series cleanup (its code was already deleted during 4.9 development).
 - `substitute_table_image` — added in 4.6.2 to rewrite table `background=` image
   paths; superseded by [no_image_rewrite](no_image_rewrite.md) (added 4.7.0),
   which controls all image-path rewriting.
