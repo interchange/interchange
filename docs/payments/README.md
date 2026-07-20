@@ -14,8 +14,9 @@ number, so you can test checkout end to end without a real account.
 
 > **Documented code bugs.** Several modules have bugs that survive in the
 > current source — off-by-one field handling, response-parsing quirks, and
-> similar. Where one exists it is called out in that page's **Notes** section;
-> read it before you deploy the module.
+> similar. The [known issues](known-issues.md) page collects them all;
+> where one exists it is also called out in that module page's **Notes**
+> section. Read both before you deploy a module.
 
 ## Modules
 

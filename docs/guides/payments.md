@@ -366,6 +366,8 @@ same for MiniVend-era code.
 
 ## See also
 
+- [Known issues in the gateway modules](../payments/known-issues.md) —
+  read before choosing a gateway
 - [Carts and checkout](cart-and-checkout.md) — order profiles, `&credit_card`,
   routes, and the `log_transaction` report that calls `[charge]`
 - [charge](../tags/charge.md) — the tag reference
