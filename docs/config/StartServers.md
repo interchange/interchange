@@ -36,6 +36,12 @@ MaxServers   0
 
 ## Notes
 
+In PreFork mode this directive is the real concurrency control: size it
+to the actual number of pre-forked daemons you want. Do not rely on
+[MaxServers](MaxServers.md) to bound the pool — its signal-based
+accounting is unreliable and the shipped configuration disables it
+(`MaxServers 0`).
+
 For background on Interchange's run modes and their tradeoffs, see the
 [performance](../guides/performance.md) guide.
 

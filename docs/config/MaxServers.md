@@ -30,23 +30,35 @@ if ($Global::MaxServers and $Num_servers > $Global::MaxServers) {
 
 A value of `0` is special: the running-server accounting (the `USR1`/`USR2`
 increment/decrement signals) is turned off entirely and no limit is applied.
-The distributed `interchange.cfg` uses `MaxServers 0` in its traffic-tuning
-profiles, leaving process count unbounded and relying on other limits.
+
+> **Recommendation: leave this at `0`.** The running-server count is
+> maintained by Perl signal handlers (`USR1`/`USR2`), and Perl signal
+> delivery is not reliable enough for this accounting — the count drifts,
+> and with it the enforcement. This is why every traffic profile in the
+> shipped `interchange.cfg` sets `MaxServers 0` despite the directive
+> table's nominal default of `10`. In [PreFork](PreFork.md) mode,
+> compensate by sizing [StartServers](StartServers.md) to the actual
+> number of pre-forked daemons you want — that pool size, not
+> `MaxServers`, is the concurrency knob. In fork-per-request mode, shape
+> concurrency at the web server or load balancer.
 
 This is a global startup setting.
 
 ## Examples
 
-Allow at most 20 concurrent page servers:
-
-```
-MaxServers 20
-```
-
-Remove the limit (as the shipped traffic profiles do):
+The shipped configuration, and the recommended setting:
 
 ```
 MaxServers 0
+```
+
+In PreFork mode, size the pool with `StartServers` instead of capping
+with `MaxServers`:
+
+```
+PreFork      Yes
+StartServers 8
+MaxServers   0
 ```
 
 ## See also

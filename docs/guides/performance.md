@@ -90,16 +90,17 @@ traffic profile, selected by the `TRAFFIC` build variable:
 
 ### MaxServers: capping concurrency
 
-[MaxServers](../config/MaxServers.md) (default `10`) caps how many
-page-serving processes run at once. When the count is exceeded the master
-stops accepting new HTTP connections during housekeeping and requests queue
-in the operating-system listen backlog until a slot frees. `MaxServers 0` is
-special: it disables the running-server accounting altogether and imposes no
-limit — which is exactly what the shipped `low`, `high`, and `rpc` profiles
-do, relying on other limits and the machine's own capacity instead. Set a
-non-zero cap when you need to protect a memory- or CPU-bound box from
-overload; leave it at `0` when the front-end web server or a load balancer is
-already shaping concurrency.
+[MaxServers](../config/MaxServers.md) (nominal default `10`) was intended
+to cap how many page-serving processes run at once — but its
+running-server accounting rides on Perl `USR1`/`USR2` signal handlers,
+and Perl signal delivery is not reliable enough for it. The count drifts,
+so the cap misfires; **leave it at `0`** (which disables the accounting
+entirely), exactly as every shipped traffic profile (`low`, `high`,
+`rpc`) does. Control concurrency where it works instead: in PreFork mode,
+[StartServers](../config/StartServers.md) *is* the concurrency knob —
+set it to the actual number of pre-forked daemons you want running — and
+in fork-per-request mode, shape load at the front-end web server or load
+balancer.
 
 ### The housekeeping heartbeat
 

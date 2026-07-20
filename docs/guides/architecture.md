@@ -61,7 +61,9 @@ Two forking strategies serve requests (`lib/Vend/Server.pm`):
   requests before being recycled. This is the right choice for production
   traffic; see [Performance](performance.md).
 
-In either case [MaxServers](../config/MaxServers.md) caps concurrency. A
+([MaxServers](../config/MaxServers.md) nominally caps concurrency, but
+its signal-based accounting is unreliable and the shipped configuration
+disables it — in prefork mode, `StartServers` is the real sizing knob.) A
 periodic **housekeeping** pass (`housekeeping()` in `Server.pm`, every
 [HouseKeeping](../config/HouseKeeping.md) seconds) reaps dead children,
 restarts deficit prefork servers, expires sessions, and runs scheduled

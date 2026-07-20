@@ -16,9 +16,10 @@ A boolean (`yes`/`no`, `1`/`0`, `on`/`off`, `true`/`false`). Default: `No`.
 
 Without pre-forking, Interchange forks a fresh child to handle each incoming
 connection. With `PreFork Yes`, the master instead maintains a standing pool
-of idle children -- sized by [StartServers](StartServers.md), grown up to
-[MaxServers](MaxServers.md) as load demands -- that are ready to serve
-requests immediately. This removes per-request fork overhead and is the
+of idle children -- sized by [StartServers](StartServers.md), which is
+the pool's real concurrency knob ([MaxServers](MaxServers.md) should stay
+`0`; see its page for why) -- that are ready to serve requests
+immediately. This removes per-request fork overhead and is the
 recommended mode for high-traffic servers. The mode is driven from the main
 accept loop in `lib/Vend/Server.pm`.
 
