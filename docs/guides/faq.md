@@ -462,7 +462,8 @@ key through [Database](../config/Database.md) `COLUMN_DEF`:
 Then select only the columns you display, and drive links from them:
 
     [query sql="SELECT code, title, price FROM products WHERE category = 'Tools'"]
-      <a href="[area [sql-code]]">[sql-param title]</a> — [sql-param price]<br>
+      <a href="[area [sql-code]]">[sql-param title]</a> —
+      [currency][sql-param price][/currency]<br>
     [/query]
 
 See [Databases](databases.md) and [Search](search.md).

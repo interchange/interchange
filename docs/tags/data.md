@@ -66,9 +66,18 @@ columns — a maintenance operation, not page display.
 
 ## Examples
 
-Read the price of SKU `os28004` from the strap `products` table:
+Read the description of SKU `os28004` from the strap `products` table:
 
-    [data products price os28004]
+    [data products description os28004]
+
+produces:
+
+    Ergo Roller
+
+`[data]` returns the column exactly as stored. That makes it the wrong
+tool for displaying a price: use [price](price.md), or `[PREFIX-price]`
+inside a loop, so locale currency formatting and the pricing chain are
+applied.
 
 Read a value from the user's session:
 
@@ -84,7 +93,7 @@ which is equivalent to the named form:
 
 Look up a row by a non-key column:
 
-    [data table=products column=price foreign=description key="Mostly Sunny"]
+    [data table=products column=sku foreign=description key="Ergo Roller"]
 
 Fetch a whole row as a hash in embedded Perl:
 

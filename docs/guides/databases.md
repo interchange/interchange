@@ -90,8 +90,13 @@ Any DBI table takes real SQL, results looping like any list
 
     [query sql="select sku, price from products where price < 50"
            prefix=cheap]
-      [cheap-param sku]: $[cheap-param price]
+      [cheap-param sku]: [currency][cheap-param price][/currency]
     [/query]
+
+`[PREFIX-param col]` returns the column exactly as stored, so a money
+column needs [currency](../tags/currency.md) around it to pick up the
+locale's symbol, separators, and decimal places — the idiom strap uses
+in `pages/query/order_return.html`.
 
 Placeholders, hash/array return styles, and write statements are on the
 [query reference page](../tags/query.md). Catalogs restricted from raw SQL

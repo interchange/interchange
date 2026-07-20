@@ -184,12 +184,22 @@ back with `[PREFIX-param name]` or `[PREFIX-pos N]` (0-based). The second
 form below is much faster because the data is already in hand:
 
     [loop search="ra=yes/st=db"]
-      [loop-code] price: [loop-price]
+      [loop-code] desc: [loop-field description]
     [/loop]
 
-    [loop search="ra=yes/st=db/rf=sku,price"]
-      [loop-code] price: [loop-param price]
+    [loop search="ra=yes/st=db/rf=sku,description"]
+      [loop-code] desc: [loop-param description]
     [/loop]
+
+Prices are the one column not to convert this way. `[PREFIX-price]`
+does more than read a column — it runs the pricing chain
+([CommonAdjust](pricing.md), quantity breaks, discounts) and formats
+the result for the locale, so replacing it with `[PREFIX-param price]`
+is not an optimization but a change of meaning: you get the raw stored
+number, unformatted and un-adjusted. If a listing only ever shows base
+prices, selecting the column and wrapping it
+(`[currency][loop-param price][/currency]`) is legitimate and cheaper —
+just make it a deliberate choice, not a reflex.
 
 ### Let the loop do the row arithmetic
 
