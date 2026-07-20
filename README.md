@@ -28,6 +28,13 @@ Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
 ## Documentation
 
+Comprehensive developer documentation lives in [docs/](docs/): guides
+covering architecture, configuration, ITL templating, databases,
+ordering, payment, and administration, a catalog-building tutorial, and
+reference pages for every configuration directive, tag, filter, widget,
+order check, pragma, and payment module. Start at
+[docs/README.md](docs/README.md).
+
 More information is in the following files:
 
 ### README.rpm-dist
@@ -50,9 +57,10 @@ Changes per specified version family.
 
 Instructions on how to upgrade from an earlier Interchange version.
 
-A documentation package is available, with documentation in many different
-formats. This and other information is available at the Interchange home on
-the web:
+Older documentation sets (the Akopia-era manuals and the xmldocs
+project) predate `docs/` and are superseded by it; where they disagree
+with `docs/` or with the code, trust the code. Project news, mailing
+lists, and a live demo are at the Interchange home on the web:
 
 https://www.interchangecommerce.org/
 
@@ -107,7 +115,7 @@ also been used on FreeBSD, OpenBSD, macOS, and other Unix variants.
 Interchange requires some extra Perl modules to be installed on
 your system. Unless you are installing from distribution-specific packages
 (Red Hat, Debian, etc.) the quick way to install the necessary support is to
-run from the untarred Interchange directory:
+run from the Interchange source directory:
 
 ```
 cpanm --installdeps .
@@ -131,11 +139,17 @@ Perl with an absolute path to the perl binary, such as
 You can install Interchange as root for a multi-user system-wide setup, or
 as an unprivileged user who will be the only one modifying Interchange files.
 
+Get the source by cloning the Git repository. Versioned release tarballs
+are no longer produced regularly, so the repository is the authoritative
+source for current Interchange. Clone somewhere other than
+`~/interchange`, which is the default *install* directory — see
+`README-DEVELOPMENT.md` for notes on tracking development.
+
 Here is the quick installation summary:
 
 ```
-tar xvzf interchange-5.12.0.tar.gz
-cd interchange-5.12.0
+git clone https://github.com/interchange/interchange.git
+cd interchange
 perl Makefile.PL
 make
 make test
