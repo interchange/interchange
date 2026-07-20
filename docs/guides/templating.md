@@ -118,10 +118,8 @@ slots — `[page [loop-code]]` is the ordinary idiom inside a `[loop]` —
 because the enclosing looping tag interpolates its body once per row, so
 by the time `[page]` is parsed the sub-tag has already become a plain
 SKU. Neither case involves the tag parser interpolating an argument.
-- Tags may appear inside attribute values, but **only quoted named values
-  are interpolated**:
 
-      [page href="[scratch target_page]"]
+## Container and standalone tags
 
 **Container tags** enclose a body and end with `[/tagname]`:
 
@@ -233,7 +231,7 @@ characters with an ellipsis). Filters also run on *input* via form
 Never hand-write catalog URLs; generate them so the session id, base URL,
 and security are handled:
 
-    [page ord/basket]Your cart[/page]        full <a href=...> anchor
+    [page ord/basket]Your cart</a>          full <a href=...> anchor
     <a href="[area ord/basket]">Your cart</a>   URL only
 
 `[area]`/`[page]` accept `form=` to encode form submissions as links. See

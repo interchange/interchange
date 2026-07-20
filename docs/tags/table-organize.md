@@ -81,7 +81,7 @@ A Bootstrap-styled product grid, as used by the strap demo's upsell component:
 
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
     [item-list]
-      <td>[page href=[item-code]][item-field description][/page]</td>
+      <td>[page href="[item-code]"][item-field description]</a></td>
     [/item-list]
     [/table-organize]
 

@@ -32,7 +32,7 @@ and with the `HTMLsuffix` stripped. A visitor who moved from
 
 Offer a link back to the previous page:
 
-    [page @@MV_PREV_PAGE@@]Go back[/page]
+    [page @@MV_PREV_PAGE@@]Go back</a>
 
 Show both the current and previous page names:
 

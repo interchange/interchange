@@ -530,7 +530,7 @@ A UserDB row can also carry authorization data, checked by the same tag:
   page locations in the `acl` column, gating access to protected pages:
 
       [if type=explicit compare="[userdb function=check_acl location=cartcfg/editcart]"]
-        [page cartcfg/editcart]Edit cart config[/page]
+        [page cartcfg/editcart]Edit cart config</a>
       [/if]
 
 - **Complex ACLs** — `set_file_acl`/`check_file_acl` and

@@ -44,8 +44,17 @@ Because the tag emits only the opening anchor, a link reads naturally:
 
     [page index]Home</a>
 
-There is a `[/page]` macro that expands to `</a>`, but writing `</a>`
-directly is preferred and saves the parser work.
+Close the anchor with a literal `</a>`. **`[/page]` is not an end tag**
+— `page` is a standalone tag (its definition in
+`code/SystemTag/page.coretag` declares no `hasEndTag`, and `page` is
+absent from the parser's container list), so `[/page]` matches nothing
+and is emitted verbatim into your HTML:
+
+    [page index]Home[/page]        →   <a href="...">Home[/page]
+
+The idiom survives in old catalogs and in some older documentation
+(including the POD in `lib/Vend/UserDB.pm`). Wherever you meet it,
+replace it with `</a>`. The same applies to `[/order]`.
 
 ### Special targets
 

@@ -92,7 +92,7 @@ Loop sub-tags resolved by the enclosing list — `[item-code]`,
 because the list tag interpolates them before it runs its body:
 
     [item-list]
-      [page [item-field url]]details[/page] — [item-description]
+      [page [item-field url]]details</a> — [item-description]
     [/item-list]
 
 A general tag used as another tag's *value* does need quoting, because the

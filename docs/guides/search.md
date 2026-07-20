@@ -162,7 +162,7 @@ search** — the user clicks a link, not a form button. You never hand-build the
 URL; [page](../tags/page.md) and [area](../tags/area.md) generate it from a
 `search=` attribute, handling session id and escaping:
 
-    [page search="se=Paintbrushes/sf=category"]Paintbrushes[/page]
+    [page search="se=Paintbrushes/sf=category"]Paintbrushes</a>
 
     <a href="[area search='se=Hammers/sf=category/ml=20']">Hammers</a>
 
@@ -181,7 +181,7 @@ results page can display, say, a heading naming the category:
         se=Impressionists
         os=1
         va=category_name=Renaissance and Impressionist Paintings
-    "]Renaissance & Impressionist[/page]
+    "]Renaissance &amp; Impressionist</a>
 
 Note that the compact specification can be written one code per line (whitespace
 around the slashes/newlines is ignored), which is far more readable for anything

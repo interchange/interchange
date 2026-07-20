@@ -157,9 +157,12 @@ headline items:
 - **`[either]` no longer reparses its output.** Its body parts are still
   interpolated, but the tag's output is not re-run through the parser.
 - **`[fedex-query]` removed** (FedEx retired the web API it called).
-- **`[/page]` and `[/order]` removed.** These were never real container tags;
-  they were macros that expanded to `</a>`. Use a literal `</a>` in your HTML
-  instead — see [page](../tags/page.md) and [Templating](templating.md).
+- **`[/page]` and `[/order]` do nothing.** Neither `page` nor `order` is a
+  container tag in current Interchange, so these closing forms match no tag
+  and are copied straight into the delivered HTML, where they show up as
+  visible text. Old catalogs and some old documentation still use them;
+  replace each with a literal `</a>` — see [page](../tags/page.md) and
+  [Templating](templating.md).
 - **`*Robot*` directives moved to `robots.cfg`.** Remove any `Robot*`
   directives from `interchange.cfg` and add `include robots.cfg` in their
   place. A companion `subdomains.cfg` (for [DomainTail](../config/DomainTail.md)

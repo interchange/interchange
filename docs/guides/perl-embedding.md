@@ -76,7 +76,7 @@ Example — three of them together:
         my $qty = $Db{inventory}->field($sku, 'quantity');
         return $qty > 0
             ? "In stock: $qty"
-            : $Tag->page('backorder') . 'Backorder[/page]';
+            : $Tag->page('backorder') . 'Backorder</a>';
     [/perl]
 
 ## Calling tags from Perl: $Tag
