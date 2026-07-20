@@ -80,7 +80,6 @@ than on every page view.
 - [export](export.md)
 - [import](import.md)
 - [search](search.md)
-- [StaticIndex](../config/StaticIndex.md)
 - Concepts: [search](../guides/search.md),
   [databases](../guides/databases.md)
 

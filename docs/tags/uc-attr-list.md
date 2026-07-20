@@ -1,7 +1,7 @@
 # uc-attr-list
 
 Interpolate `{PLACEHOLDER}` markers in the tag body from a set of named
-attributes or a hash reference, exactly like [attr-list](attr-list.md) but
+attributes or a hash reference, exactly like [attr-list](attr_list.md) but
 with the placeholder names written in uppercase. Reach for it when you have
 a template fragment whose fill-in slots you would rather write as `{NAME}`
 than as Interchange Tag Language (ITL) tags.
@@ -30,7 +30,7 @@ through verbatim.
 ## Description
 
 `uc-attr-list` matches the same placeholder grammar as
-[attr-list](attr-list.md), but the marker names are written in uppercase and
+[attr-list](attr_list.md), but the marker names are written in uppercase and
 folded to lowercase before the lookup. So `{FIRST_NAME}` reads the
 `first_name` attribute (or the `first_name` key of the `hash` reference).
 
@@ -92,7 +92,7 @@ the two forms as opposites, as shown above.
 
 ## See also
 
-- [attr-list](attr-list.md) — the lowercase-placeholder equivalent
+- [attr-list](attr_list.md) — the lowercase-placeholder equivalent
 - [data](data.md) — the database lookup behind `{table::column::key}`
 - [Templating guide](../guides/templating.md)
 

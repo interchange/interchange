@@ -280,7 +280,7 @@ loop you give it a SKU; the return is currency-formatted through
 | `quantity` | quantity for break/discount math (default 1) |
 | `base` (alias `mv_ib`) | product table to read from |
 | `discount` | if true, run the result through session discounts |
-| `discount_space` (alias `space`) | evaluate in a named [discount space](../tags/discount-space.md) |
+| `discount_space` (alias `space`) | evaluate in a named [discount space](../tags/discount.md) |
 | `noformat` | return a bare number, no currency symbol |
 
 Inside a looping tag like [item-list](../tags/item-list.md), use the
@@ -357,7 +357,7 @@ a space to a variable:
     DiscountSpacesOn  Yes
     DiscountSpaceVar  mv_discount_space
 
-Then switch spaces with the [discount-space](../tags/discount-space.md) tag
+Then switch spaces with the [discount-space](../tags/discount.md) tag
 (or the `discount_space`/`space` attribute on
 [discount](../tags/discount.md) and [price](../tags/price.md)):
 
@@ -427,7 +427,7 @@ Interchange gives you two distinct mechanisms; pick per catalog:
   [DiscountSpaceVar](../config/DiscountSpaceVar.md),
   [Limit](../config/Limit.md) — discount spaces and the chain limit
 - [price](../tags/price.md), [discount](../tags/discount.md),
-  [discount-space](../tags/discount-space.md),
+  [discount-space](../tags/discount.md),
   [currency](../tags/currency.md), [item-list](../tags/item-list.md) — the tags
 - [Cart and checkout](cart-and-checkout.md), [Taxes](taxes.md),
   [Shipping](shipping.md) — where prices become an order total

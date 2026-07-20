@@ -19,7 +19,7 @@ Standalone tag. The returned HTML is not reparsed.
 |-------------|-------------|-------------|
 | `label`     |             | Text label shown with the element (first positional). |
 | `name`      |             | Form field name; also the value key read from `[value ...]`. |
-| `type`      | `text`      | `text`, `password`, `textarea`, `select`, `radio`, `checkbox`, `display`, or any type the [display](display.md) tag accepts. |
+| `type`      | `text`      | `text`, `password`, `textarea`, `select`, `radio`, `checkbox`, `display`, or any type the [display](../admin-tags/display.md) tag accepts. |
 | `size`      |             | Element size; for `textarea` a `cols,rows` (or `colsxrows`) pair. |
 | `choices`   |             | Comma-separated options for `select`/`radio`/`checkbox`; each may be `value=label`. |
 | `format`    | `%s %s %s`  | `sprintf` template combining label, element, and help. |
@@ -51,9 +51,9 @@ has a recorded [error](error.md), the label is wrapped in a
 variable) or formatted with `signal`, so failed fields stand out when a form is
 redisplayed. `cause` instead appends the stored error message to the label.
 
-`type=display` renders the field through the [display](display.md) tag using
+`type=display` renders the field through the [display](../admin-tags/display.md) tag using
 table metadata, and any unrecognized type is passed straight to
-[display](display.md) as a widget type.
+[display](../admin-tags/display.md) as a widget type.
 
 ## Examples
 
@@ -75,11 +75,11 @@ A textarea sized 40 columns by 5 rows:
 Because `formel` reads from `[value ...]` and consults the error table, it
 gives you redisplay-with-values and error highlighting without hand-writing the
 conditional markup. The exact HTML for `display` and pass-through widget types
-is produced by the [display](display.md) tag, not by `formel` itself.
+is produced by the [display](../admin-tags/display.md) tag, not by `formel` itself.
 
 ## See also
 
-[value](value.md), [display](display.md), [error](error.md),
+[value](value.md), [display](../admin-tags/display.md), [error](error.md),
 [../guides/forms.md](../guides/forms.md),
 [../widgets/](../widgets/README.md)
 

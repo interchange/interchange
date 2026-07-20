@@ -97,10 +97,10 @@ through the parser — you can override either as an attribute:
   reparse by default, so tags emitted by a loop body run normally. Set
   `reparse=0` when emitting literal `[`-containing text.
 
-Two tags exist purely to control this flow: [interpolate](../tags/interpolate.md)
-forces a region through the parser, and `[pragma no_html_parse]`-era
-constructs are covered on their reference pages. To emit a literal bracket,
-use `&#91;` or wrap the region in `[restrict] ... [/restrict]` (see
+(There is no standalone `[interpolate]` tag in current Interchange — the
+`interpolate` attribute, shorthand `int`, is the mechanism.) To emit a
+literal bracket, use `&#91;` or wrap the region in
+[restrict](../tags/restrict.md) with everything disabled (see
 [Security](security.md)).
 
 ## Accessing data: the everyday tags

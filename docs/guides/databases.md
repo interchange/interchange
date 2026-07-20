@@ -62,7 +62,7 @@ Bulk data movement, all usable from pages or jobs:
     [import table=products file=new_products.txt]  ... [/import]
     [export table=products file=products-backup.txt]
 
-plus the [offline](../config/Offline.md) build tool (`bin/offline`) for
+plus the [offline](../config/OfflineDir.md) build tool (`bin/offline`) for
 big DBM rebuilds and `bin/update` for single-record updates from the
 command line. See the [import](../tags/import.md)/[export](../tags/export.md)
 tag pages for formats and update-vs-replace semantics.

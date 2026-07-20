@@ -4,7 +4,7 @@ The lowercase `mv_*` namespace is a set of reserved CGI/form field names that
 control how Interchange processes a submitted form: which action to run, how to
 search, how to add items to the cart, and where to go next. You do not declare
 them in configuration — you place them in forms (usually with the
-[form](../tags/form.md) family of tags) or on links, and the server acts on
+[form](../guides/forms.md) family of tags) or on links, and the server acts on
 them when the request arrives.
 
 This page is a categorized index. The full behavior of each variable is

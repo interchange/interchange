@@ -36,7 +36,7 @@ TagInclude ALL !:crufty !get_url
 ```
 
 This compiles in all tags, drops the `crufty` group, and additionally drops the
-[get_url](../tags/get_url.md) tag.
+[get_url](../tags/get-url.md) tag.
 
 ## See also
 

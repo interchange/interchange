@@ -1,6 +1,6 @@
 # MV_SHIP_ADDRESS_TEMPLATE
 
-Overrides the template the [address](../tags/address.md) tag uses to format a
+Overrides the template the internal `Vend::Interpolate::tag_address` routine uses to format a
 shipping address. Reach for it to change the layout of formatted addresses
 across the catalog.
 
@@ -34,7 +34,7 @@ Use a one-line address format:
 
 ## See also
 
-[address](../tags/address.md), the [shipping](../guides/shipping.md) and
+`tag_address`, the [shipping](../guides/shipping.md) and
 [cart-and-checkout](../guides/cart-and-checkout.md) guides.
 
 ## Source

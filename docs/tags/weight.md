@@ -148,7 +148,7 @@ does):
 
 - [shipping](shipping.md) — the built-in shipping-mode calculator that
   normally consumes the cart weight.
-- [item-list](item-list.md) and [item-field](item-field.md) — iterate cart
+- [item-list](item-list.md) and [item-field](item-list.md) — iterate cart
   items and read individual item fields.
 - [scratch](scratch.md) — read back the `total_weight` value this tag sets.
 - The [shipping guide](../guides/shipping.md) for how weight feeds shipping

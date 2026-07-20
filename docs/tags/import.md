@@ -79,7 +79,7 @@ delimiter structure.
 ## See also
 
 - [export](export.md)
-- [import_fields](import_fields.md)
+- [import_fields](../admin-tags/import_fields.md)
 - [data](data.md)
 - [Database](../config/Database.md)
 - Concepts: [databases](../guides/databases.md)

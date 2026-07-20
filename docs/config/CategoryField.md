@@ -15,7 +15,7 @@ A single database field (column) name. Default: `category`.
 ## Description
 
 When Interchange needs a product's category -- for example through the
-[category](../tags/category.md) helper or user tracking -- it reads the column
+category helper or user tracking -- it reads the column
 named by `CategoryField` from the products table. Setting this directive lets a
 catalog whose schema calls the column something else point Interchange at the
 right field.

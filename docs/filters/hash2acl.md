@@ -26,7 +26,7 @@ Processing details, straight from the code:
 - Keys are output in sorted order.
 
 This filter is specific to the ACL widget and the
-[table-editor](../admin-tags/table-editor.md); it is marked `Visibility
+[table-editor](../admin-tags/table_editor.md); it is marked `Visibility
 private` and is not normally used by hand. It does not need to be selected
 explicitly for the widget to work.
 
@@ -44,7 +44,7 @@ produces (keys sorted):
 
 - [acl2hash](acl2hash.md)
 - [acl (widget)](../widgets/acl.md)
-- [table-editor](../admin-tags/table-editor.md)
+- [table-editor](../admin-tags/table_editor.md)
 
 ## Source
 

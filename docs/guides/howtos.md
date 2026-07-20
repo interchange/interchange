@@ -223,7 +223,7 @@ Sending mail from Interchange — the [email](../tags/email.md) and
 
 ### Validating an email address more strictly
 
-Interchange ships two order checks, [email](../order-checks/email.md) and
+Interchange ships two order checks, [email](../order-checks/email_only.md) and
 [email_only](../order-checks/email_only.md), that apply a pragmatic regex.
 To run either against an arbitrary value outside a form, use
 [run-profile](../admin-tags/run_profile.md), or test inline:
@@ -280,7 +280,7 @@ SendMailProgram /usr/local/bin/sendmail-bg
 ```
 
 The cleaner modern alternative is to hand mail to a local queue you already
-run: set [SMTPHost](../config/SMTPHost.md) so Interchange talks SMTP to a
+run: set [SMTPHost](../variables/MV_SMTPHOST.md) so Interchange talks SMTP to a
 listener (Postfix/Exim on `localhost`) that queues and delivers
 asynchronously. See [Email](email.md).
 

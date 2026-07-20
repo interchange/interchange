@@ -53,7 +53,7 @@ exist.
 
 Because the body is not interpolated by default, ITL in the content is
 written literally. If you need the content interpolated first, wrap it in
-[interpolate](../tags/interpolate.md) or build it with
+[interpolate](../guides/templating.md) or build it with
 [tmp](../tags/tmp.md)/[calc](../tags/calc.md) and pass the result.
 
 ## Examples

@@ -55,7 +55,7 @@ the value a cleartext comparison.
 ## See also
 
 [RemoteUser](RemoteUser.md), [MasterHost](MasterHost.md),
-[MV_NO_CRYPT](../variables/MV_NO_CRYPT.md), [crypt](../tags/crypt.md), the
+[MV_NO_CRYPT](../variables/MV_NO_CRYPT.md), [crypt](../filters/crypt.md), the
 [security](../guides/security.md) guide.
 
 ## Source

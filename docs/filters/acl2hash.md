@@ -31,7 +31,7 @@ literal `{}`.
 
 This filter is specific to the ACL widget and generally should not be used
 elsewhere. The widget does not require the filter to be selected in order
-to operate within the [table-editor](../admin-tags/table-editor.md).
+to operate within the [table-editor](../admin-tags/table_editor.md).
 
 ## Examples
 
