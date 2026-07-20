@@ -52,9 +52,11 @@ and is emitted verbatim into your HTML:
 
     [page index]Home[/page]        →   <a href="...">Home[/page]
 
-The idiom survives in old catalogs and in some older documentation
-(including the POD in `lib/Vend/UserDB.pm`). Wherever you meet it,
-replace it with `</a>`. The same applies to `[/order]`.
+The idiom survives in old catalogs and older documentation because
+`[/page]` was once a *macro* that expanded to `</a>` — later discouraged,
+and removed outright in the 5.5 series (see `UPGRADE` and
+[Upgrading](../guides/upgrading.md)). Wherever you meet it, replace it
+with `</a>`. The same applies to `[/order]`.
 
 ### Special targets
 

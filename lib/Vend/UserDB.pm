@@ -2907,7 +2907,7 @@ Checks the simple access control listing for a location, returning
                     function=check_acl
                     location=cartcfg/editcart]"
     ]
-    [page cartcfg/editcart]Edit your cart configuration[/page]
+    [page cartcfg/editcart]Edit your cart configuration</a>
     [/if]
 
 =item set_file_acl, set_db_acl
@@ -2945,7 +2945,7 @@ for that location. Example:
                     location=inventory]"
     ]
     [userdb function=set_acl location=cartcfg/edit_inventory]
-    [page cartcfg/edit_inventory]You may edit the inventory database[/page]
+    [page cartcfg/edit_inventory]You may edit the inventory database</a>
     [else]
     [userdb function=set_acl location=cartcfg/edit_inventory delete=1]
     Sorry, you can't edit inventory.
