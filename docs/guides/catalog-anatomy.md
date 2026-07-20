@@ -51,6 +51,26 @@ and [Profiles](../config/OrderProfile.md), pricing profiles and
 [Jobs](jobs.md). See [Configuration](configuration.md) for the syntax it
 uses.
 
+Among the inline UserTags, note three **extended aliases** — catalog-level
+`UserTag ... Alias` definitions whose expansion presets attributes on a
+core tag (the same mechanism as the built-in
+[evalue](../tags/evalue.md)):
+
+    UserTag ecgi     Alias cgi keep=1 filter=encode_entities name=
+    UserTag edisplay Alias error auto=1 class="alert alert-danger list-unstyled"
+    UserTag wdisplay Alias warnings auto=1 list_class="alert alert-success list-unstyled"
+
+`[ecgi foo]` expands to `[cgi name=foo filter=encode_entities keep=1]` —
+an entity-encoded, non-mutating read of a CGI variable, the safe way to
+echo request input (the trailing `name=` captures the positional).
+`[edisplay]` and `[wdisplay]` render [error](../tags/error.md) and
+[warnings](../tags/warnings.md) output pre-styled with strap's Bootstrap
+alert classes; strap's pages call them with further attributes
+(`[edisplay show_var=0 show_label=1]`), which combine with the presets.
+These exist only in strap-derived catalogs — they are `catalog.cfg`
+definitions, not core tags — but the pattern is worth stealing for your
+own catalogs.
+
 ## How a page is assembled
 
 strap composes every page from four layers:

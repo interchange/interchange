@@ -105,6 +105,11 @@ persist. The default `encode_entities` filter means literal HTML in a
 message is escaped — pass `filter=""` (empty) if you intentionally store
 markup.
 
+> **strap note:** strap-derived catalogs define `[edisplay]`, a
+> catalog-level extended alias for `[error auto=1 class="alert
+> alert-danger list-unstyled"]` (Bootstrap-styled error display). See
+> [Catalog anatomy](../guides/catalog-anatomy.md).
+
 ## See also
 
 [if](if.md), [value](value.md), the [forms](../guides/forms.md) guide and

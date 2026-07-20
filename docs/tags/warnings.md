@@ -72,6 +72,11 @@ Render the collected warnings as a styled list, kept for a later page too:
 - Displaying without `keep` is destructive: the warnings are removed from the
   session, so a second `[warnings]` on the same page shows nothing.
 
+> **strap note:** strap-derived catalogs define `[wdisplay]`, a
+> catalog-level extended alias for `[warnings auto=1 list_class="alert
+> alert-success list-unstyled"]`. See
+> [Catalog anatomy](../guides/catalog-anatomy.md).
+
 ## See also
 
 - [warning](warning.md) — singular alias

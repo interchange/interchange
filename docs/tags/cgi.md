@@ -81,6 +81,12 @@ the raw CGI value intact for later processing:
   values use [value](value.md), and for session fields use
   [data](data.md) with the `session` pseudo-table.
 
+> **strap note:** strap-derived catalogs define `[ecgi foo]`, a
+> catalog-level extended alias expanding to
+> `[cgi name=foo filter=encode_entities keep=1]` — the safe way to echo
+> request input. See
+> [Catalog anatomy](../guides/catalog-anatomy.md).
+
 ## See also
 
 - [value](value.md) — persistent form values
