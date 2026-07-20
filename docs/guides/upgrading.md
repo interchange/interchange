@@ -44,14 +44,22 @@ your catalogs too if you are crossing a major version.
 
     tar czvf ~/ic_backup.tar.gz /usr/local/interchange
 
-Then unpack the new release and install it over the top of the old one:
+Then build the new version from an up-to-date git working copy and
+install it over the top of the old one:
 
-    tar xzf interchange-5.12.0.tar.gz
-    cd interchange-5.12.0
+    git pull                  # or git clone, for a fresh working copy
     perl Makefile.PL          # create the makefile
     make
     make test                 # if this fails, don't panic — see below
     make install              # install to the same location
+
+Upgrading means moving to a newer commit, not to a newer release
+tarball: versioned tarballs are no longer produced regularly, so the git
+repository is the upgrade path (see
+[Installation](installation.md)). Note the commit you are coming from
+(`git rev-parse HEAD`) before pulling — it is what you roll back to if
+the new state misbehaves, and `git log --oneline <old>..HEAD` is the
+most accurate changelog for exactly the span you are crossing.
 
 Two things people expect to do and should not:
 

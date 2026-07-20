@@ -22,12 +22,16 @@ and the CPAN dependencies (`cpanm --installdeps .` in the source tree
 handles them). Install as an ordinary user — Interchange never needs to
 run as root:
 
-    tar xzf interchange-5.12.0.tar.gz
-    cd interchange-5.12.0
+    git clone https://github.com/interchange/interchange.git
+    cd interchange
     perl Makefile.PL
     make
     make test
     make install
+
+The git repository is how you get current Interchange — versioned
+release tarballs are no longer produced regularly. Clone somewhere other
+than `~/interchange`, which is the default *install* directory.
 
 `Makefile.PL` asks where to install (default `~/interchange`) and which
 user owns the installation. To script it, pass the answers instead:

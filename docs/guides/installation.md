@@ -1,8 +1,8 @@
 # Installation
 
-This chapter takes you from a source tarball (or a git checkout) to a
-running Interchange server behind a web server, with its first catalog
-live. It covers the prerequisites, the `perl Makefile.PL` build, the
+This chapter takes you from a git clone of the source to a running
+Interchange server behind a web server, with its first catalog live. It
+covers the prerequisites, the `perl Makefile.PL` build, the
 file-ownership model that keeps a store's data private, building a demo
 catalog with `bin/makecat`, wiring the web server to the daemon with a
 link program, and starting, stopping, and reconfiguring the server. It
@@ -23,8 +23,9 @@ Interchange runs on Unix-like systems (Linux, the BSDs, macOS). You need:
 - **Perl 5.16.3 or later.** Check with `perl -v`. To build against a
   specific Perl, invoke that interpreter by absolute path throughout
   (`/usr/local/bin/perl Makefile.PL`).
-- **The prerequisite CPAN modules.** The distribution ships a `cpanfile`;
-  from the unpacked source tree the quick way to satisfy it is:
+- **Git**, to obtain the source (see below).
+- **The prerequisite CPAN modules.** The source ships a `cpanfile`; from
+  the working copy the quick way to satisfy it is:
 
   ```sh
   cpanm --installdeps .
@@ -51,19 +52,50 @@ Interchange runs on Unix-like systems (Linux, the BSDs, macOS). You need:
   root; if you start it as root it makes you name a user to switch to.
   On a single-user machine your own login is fine.
 
+## Getting the source
+
+**Clone the git repository.** Versioned release tarballs are no longer
+produced with any regularity, so the repository is the authoritative
+source for current Interchange — don't go looking for an
+`interchange-x.y.z.tar.gz` to download:
+
+```sh
+git clone https://github.com/interchange/interchange.git
+cd interchange
+```
+
+That gives you the latest development state. Bear in mind what that
+means: changes land continuously and any of them may introduce bugs, so
+test thoroughly before putting a clone-built install into production, and
+pin yourself to a known-good commit (`git log`, then `git checkout
+<sha>`) if you need a stable base. Track changes by watching the
+[repository](https://github.com/interchange/interchange) and following
+the `interchange-users` mailing list.
+
+Do **not** clone into `~/interchange`: that is the default *install*
+directory, and installing on top of your working copy will tangle the two
+trees. Keep the clone somewhere else (`~/src/interchange`, say) and
+install to a separate path.
+
 ## Installing from source
 
 The build uses the standard Perl `ExtUtils::MakeMaker` sequence, driven
-by an interactive `Makefile.PL`:
+by an interactive `Makefile.PL`, run from the working copy:
 
 ```sh
-tar xzf interchange-5.12.0.tar.gz
-cd interchange-5.12.0
+cd interchange
 perl Makefile.PL
 make
 make test
 make install
 ```
+
+`README-DEVELOPMENT.md` in the repository suggests an alternative:
+`perl Makefile.PL nocopy && make tardist` builds a distribution tarball
+from your checkout, which you then unpack and install from. That keeps
+the installed tree free of git metadata and lets you archive exactly what
+you deployed. Installing directly from the working copy, as above, is
+simpler and works.
 
 `perl Makefile.PL` asks two questions that matter:
 
