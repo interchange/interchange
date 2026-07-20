@@ -271,7 +271,7 @@ loop you give it a SKU; the return is currency-formatted through
 
     [price code=os28005]                     $9.95
     [price code=os28005 quantity=10]         price at quantity 10
-    [price 99-102 noformat=1]                8.00  (unformatted)
+    [price code=99-102 noformat=1]                8.00  (unformatted)
     [price code=os28005 discount=1]          apply this session's discounts
 
 | Attribute | Purpose |

@@ -43,9 +43,15 @@ Get the description for SKU `os28004`:
 
     [field description os28004]
 
-Show the price of the current flypage item:
+Get the raw, unformatted price column — for arithmetic, not display:
 
-    Price: [field price [item-code]]
+    [field price os28004]
+
+To *show* a price, use [price](price.md) (or `[PREFIX-price]` inside a
+loop) instead, so the active locale's currency symbol, separators, and
+rounding are applied:
+
+    Price: [price code=os28004]
 
 Named form, equivalent to the first example:
 

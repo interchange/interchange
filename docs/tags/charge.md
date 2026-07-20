@@ -7,11 +7,14 @@ charge a payment against the current order.
 
 ## Syntax
 
-    [charge route attr=value ...]
+    [charge ROUTE]
+    [charge route=ROUTE attr=value ...]
 
-Standalone tag (no end tag). The first positional argument is the payment
-route name. Any additional named attributes are passed through to the
-payment module as options.
+Standalone tag (no end tag). The route name is the tag's one positional
+argument, or the `route` attribute. Positional and named arguments cannot be
+mixed: once any `name=value` attribute is present the bare token is silently
+discarded, so use the named form whenever you pass options. Any additional
+named attributes are passed through to the payment module as options.
 
 ## Attributes
 

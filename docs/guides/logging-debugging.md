@@ -157,9 +157,9 @@ render them later.
 by field name — the mechanism [order profiles](forms.md) use to report a
 failed check:
 
-    [if error all=1]
+    [if errors]
       Please fix: [error all=1 show_error=1 joiner="<br>"]
-    [/if error]
+    [/if]
 
 Both take the message text as data, not as ITL, and both integrate with locale
 translation ([msg](../tags/msg.md)/[loc](../tags/loc.md)); see

@@ -22,7 +22,11 @@ it as `[grep-mm ...]`; that is the same tag.
 | `function`|         | The access-control facet to check items against (for example `keys` or `fields`). |
 | `table`   | `mv_data_table` value | Table whose UI access list is consulted. |
 
-Positional order: `function` (the first parameter).
+Positional order: `function` (the first parameter). Named and positional
+parameters cannot be mixed: if any `name=value` attribute is present, the tag
+takes the named path and a bare positional token is silently discarded. So
+`[grep_mm fields]` is valid, but as soon as `table=` is added the function
+must be written as `function=fields`.
 
 ## Description
 
@@ -41,7 +45,7 @@ single item; `grep_mm` reduces a whole list in one call.
 Given a candidate list of row keys, keep only the ones the logged-in admin
 user may access in the `orders` table:
 
-    [grep_mm keys table=orders]
+    [grep_mm function=keys table=orders]
       1001 1002 1003 1004
     [/grep_mm]
 

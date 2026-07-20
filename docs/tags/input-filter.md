@@ -8,9 +8,9 @@ attribute everywhere the value is read.
 
 ## Syntax
 
-    [input-filter name op="filter1 filter2"] [/input-filter]
+    [input-filter name=field op="filter1 filter2"] [/input-filter]
     [input-filter name=field remove=1] [/input-filter]
-    [input-filter name] routine text [/input-filter]
+    [input-filter NAME] routine text [/input-filter]
 
 Container tag (has an end tag). It produces no output; the body, if any, is a
 Perl routine (see Description). Output is not interpolated.
@@ -24,8 +24,13 @@ Perl routine (see Description). Output is not interpolated.
 | `routine` | (none)  | Perl expression run on the value (also acceptable as the body). |
 | `remove`  | `0`     | Remove any registered filter for `name` instead of adding one. |
 
-Positional order: `name`. Aliases: `var` and `variable` for `name`, `ops` for
-`op`. The tag accepts arbitrary additional attributes (`addAttr`).
+Positional order: `name`. Positional and named arguments cannot be mixed: as
+soon as one `name=value` attribute appears, a bare positional token is
+silently discarded, so use `[input-filter name=email op=lower]` rather than
+`[input-filter email op=lower]`.
+
+Aliases: `var` and `variable` for `name`, `ops` for `op`. The tag accepts
+arbitrary additional attributes (`addAttr`).
 
 ## Description
 
@@ -49,7 +54,7 @@ you read it, it is already filtered.
 
 Force the `email` field to lowercase on every submission:
 
-    [input-filter email op=lower][/input-filter]
+    [input-filter name=email op=lower][/input-filter]
 
 Strip everything but digits from a phone field:
 

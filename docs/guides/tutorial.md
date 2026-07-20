@@ -208,7 +208,7 @@ while you're there:
     [loop search="ra=yes"]
     <tr>
       <td>[page [loop-code]][loop-field description]</a></td>
-      <td align="right">$[loop-field price]</td>
+      <td align="right">[loop-price]</td>
       <td>[order [loop-code]]Order</a></td>
     </tr>
     [/loop]
@@ -225,6 +225,16 @@ products table and repeats its body per row; `[loop-code]` and
 add-to-basket link. Restart (DirConfig is config) and fetch `/index`:
 five products, each row linking to its product page with an Order link.
 
+Note `[loop-price]` rather than `[loop-field price]`. Both reach the same
+column, but `[loop-price]` renders it as money — applying the active
+locale's decimal places, separators, and currency symbol, and the
+rounding the pricing system expects. Always display prices through
+`[PREFIX-price]` (or [`[price]`](../tags/price.md) outside a loop); reach
+for `[PREFIX-field price]` only when you need the raw number for
+arithmetic. This catalog defines no locale yet, so prices render bare
+(`8.99`); [Internationalization](internationalization.md) covers adding
+one.
+
 ## 5. The flypage
 
 Product detail pages need no per-product files. When a URL names a SKU
@@ -236,7 +246,7 @@ Product detail pages need no per-product files. When a URL names a SKU
     <h2>[item-field description]</h2>
 
     <p>SKU: [item-code]<br>
-    Price: $[item-field price]</p>
+    Price: [item-price]</p>
 
     <p>[order [item-code]]Add to basket</a></p>
 
@@ -483,7 +493,7 @@ URL's query string.) Results appear on the default search results page,
 
     [search-list]
     <p>[page [item-code]][item-field description]</a> &mdash;
-    $[item-field price] [order [item-code]]Order</a></p>
+    [item-price] [order [item-code]]Order</a></p>
     [/search-list]
 
     [no-match]

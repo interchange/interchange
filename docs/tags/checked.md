@@ -27,6 +27,12 @@ Standalone tag (no end tag). It returns either the literal string
 
 Positional order: `name`, `value`.
 
+Positional and named arguments cannot be mixed. Interchange takes the
+positional path only when the tag has no `name=value` attribute at all, so a
+bare token written alongside a named attribute is silently discarded — no
+error, just a missing value. Write an invocation either entirely positionally
+(`[checked gift_wrap 1]`) or, as below, entirely with named attributes.
+
 `multiple` and `default` may also be supplied bare (as
 `Implicit`/flag attributes). `[checked]` accepts arbitrary additional
 attributes (`addAttr`).
@@ -56,17 +62,17 @@ example with `[value name=foo set=""]` before the input.
 
 Give a checkbox memory across a refresh, reading the CGI namespace:
 
-    <input type="checkbox" name="gift_wrap" value="1"[checked gift_wrap 1 cgi=1]> Gift wrap
+    <input type="checkbox" name="gift_wrap" value="1"[checked name=gift_wrap value=1 cgi=1]> Gift wrap
 
 Two radio buttons where "No" is selected until the shopper chooses:
 
-    <input type="radio" name="factory_sealed" value="1"[checked factory_sealed 1]> Yes
-    <input type="radio" name="factory_sealed" value="0"[checked factory_sealed value=0 default=1]> No
+    <input type="radio" name="factory_sealed" value="1"[checked name=factory_sealed value=1]> Yes
+    <input type="radio" name="factory_sealed" value="0"[checked name=factory_sealed value=0 default=1]> No
 
 A checkbox in a group where several values may be stored together:
 
-    <input type="checkbox" name="colors" value="red"[checked colors red multiple=1]> Red
-    <input type="checkbox" name="colors" value="blue"[checked colors blue multiple=1]> Blue
+    <input type="checkbox" name="colors" value="red"[checked name=colors value=red multiple=1]> Red
+    <input type="checkbox" name="colors" value="blue"[checked name=colors value=blue multiple=1]> Blue
 
 ## Notes
 

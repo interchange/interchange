@@ -12,7 +12,7 @@ tag. It requires administrator privileges (see Description).
 ## Syntax
 
     [user_merge from=USERS to=TARGET table=userdb]
-    [user_merge FROM TO from_order=1]
+    [user_merge from=FROM to=TO from_order=1]
 
 Standalone tag (no end tag). It performs the merge as a side effect. By
 default it returns `1` on success; its output is reparsed as Interchange Tag
@@ -40,7 +40,10 @@ are the same tag.
 | `hide`         | none    | Return an empty string instead of `1` on success. |
 | `debug`        | none    | Also write the operation record to the debug log. |
 
-Positional order: `from`, `to`.
+Positional order: `from`, `to`. Named and positional parameters cannot be
+mixed: if any `name=value` attribute is present, the tag takes the named path
+and bare positional tokens are silently discarded. Since `table`, `from_user`,
+and `from_order` are named-only, `from=` and `to=` should be named too.
 
 The tag declares `addAttr`. `merge_tables` may list `table=keyfield` pairs
 (for example `orderline=username`) to override the key column per table.

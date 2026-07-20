@@ -12,16 +12,17 @@ Catalog-wide, in `catalog.cfg`:
 
     Pragma cache_control=no-cache
 
-Page-wide, anywhere in an Interchange page:
+Page-wide or block-wide, anywhere in an Interchange page, with the value in
+the tag body:
 
-    [pragma cache_control max-age=3600]
-
-Block-wide, around an Interchange Tag Language (ITL) block:
-
+    [tag pragma cache_control]max-age=3600[/tag]
     [tag pragma cache_control]private, max-age=60[/tag]
 
 The value is the literal header content (for example `no-cache`,
 `max-age=3600`, `private`).
+
+The short `[pragma NAME VALUE]` form cannot be used for most `Cache-Control`
+values; see Notes.
 
 ## Description
 
@@ -43,12 +44,31 @@ Mark pages as cacheable for an hour. In `catalog.cfg`:
 
 Prevent caching of a sensitive page:
 
-    [pragma cache_control no-cache]
+    [tag pragma cache_control]no-cache[/tag]
 
 ## Notes
 
 Because the value is passed through literally, mistakes in the header string are
 sent to the client as-is. There is no validation of the directive syntax.
+
+The short page-wide form `[pragma NAME VALUE]` does not work for most
+`Cache-Control` values. That form is extracted by `vars_and_comments()` in
+`lib/Vend/Interpolate.pm` with the regular expression
+`\[pragma\s+(\w+)(?:\s+(\w+))?\]`, so the value must be a single word of
+`\w` characters. Values containing `-` or `=` — which covers `no-cache`,
+`no-store`, `max-age=3600`, and `must-revalidate` — do not match, the pragma
+is left unset, and the tag text is not removed from the page. Only bare word
+values such as `private` or `public` can be set this way. Use the
+`[tag pragma cache_control]VALUE[/tag]` body form instead: it is handled at
+runtime by `Vend::Interpolate::pragma()`, which takes the value from the tag
+body verbatim.
+
+In `catalog.cfg`, `Pragma` settings are split on whitespace and commas by
+`parse_boolean_value()` before the `NAME=VALUE` pair is split on the first
+`=`. So `Pragma cache_control=max-age=3600` works, but a value containing a
+space or comma (such as `private, max-age=60`) does not — the remainder is
+read as a further pragma setting. Set multi-directive values from a page with
+the `[tag pragma]` body form.
 
 ## See also
 

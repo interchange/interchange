@@ -11,7 +11,7 @@ example writing an order record or loading a small lookup table.
     status: pending
     [/import]
 
-    [import table type=LINE continue=NOTES]...[/import]
+    [import table=TABLE type=LINE continue=NOTES]...[/import]
 
 Container tag (has an end tag). The body is interpolated as Interchange Tag
 Language (ITL) before import. The tag returns `1` on success.
@@ -26,7 +26,9 @@ Language (ITL) before import. The tag returns `1` on success.
 | `separator` | form feed (`^L`) | Record separator used with `continue=NOTES`. |
 | `file`      | none    | Import from this file instead of the tag body. |
 
-Positional order: `table`, `type`.
+Positional order: `table`, `type`. Positional and named arguments cannot be
+mixed — a bare token is silently discarded once any `name=value` attribute is
+present — so always name the table when you also pass `type` or `continue`.
 
 Aliases: `base` and `database` for `table`.
 

@@ -69,14 +69,19 @@ tag pages for formats and update-vs-replace semantics.
 
 ## Reading data in pages
 
-    [data products description os28005]      any table/column/key
-    [field description os28005]               products-table shorthand
-    [item-field description]                  inside cart/loop rows
-    [loop-field price] / [PREFIX-param ...]   inside loops (see Templating)
+    [data products description os28005]         any table/column/key
+    [field description os28005]                  products-table shorthand
+    [item-field description]                     inside cart/loop rows
+    [loop-field description] / [PREFIX-param ...]  inside loops (see Templating)
 
-`[data ...]` also exposes metadata (`[data products:description meta=1]`)
-and increments counters (`increment=1`). Missing keys yield empty strings,
-not errors — plan page logic accordingly (`[if data ...]`).
+`[data ...]` also writes (`value=` with `set=1`) and increments counters
+(`increment=1`). Missing keys yield empty strings, not errors — plan page
+logic accordingly (`[if data ...]`).
+
+Prices are the exception to reading columns directly: `[PREFIX-field
+price]` prints the raw stored number, so use `[PREFIX-price]`
+(`[item-price]`, `[loop-price]`) instead — it applies the active locale's
+currency formatting, symbol, and rounding. See [Pricing](pricing.md).
 
 ## SQL directly: [query]
 

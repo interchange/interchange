@@ -79,7 +79,7 @@ A two-panel display driven by the body:
         [item-field description]
         [/tabbed-panel]
         [tabbed-panel Pricing]
-        Price: [item-field price]
+        Price: [item-price]
         [/tabbed-panel]
     [/tabbed_display]
 

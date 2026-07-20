@@ -16,7 +16,7 @@ table:
 
     [search-region search="se=Brush/sf=description/ml=10"]
     [search-list]
-    [item-code]: [item-field description] — $[item-field price]<br>
+    [item-code]: [item-field description] — [item-price]<br>
     [/search-list]
     [/search-region]
 
@@ -279,7 +279,7 @@ index from 0); `to` gives a sort style per field:
         tf=price
         to=n
     "]
-    [search-list][item-field description]: $[item-field price]<br>[/search-list]
+    [search-list][item-field description]: [item-price]<br>[/search-list]
     [/search-region]
 
 A shorthand attaches the option to the field name with a colon: `tf=price:n` is

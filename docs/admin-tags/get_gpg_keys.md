@@ -8,7 +8,7 @@ uses it to let a user pick the GPG key for encrypting order data.
 ## Syntax
 
     [get_gpg_keys]
-    [get_gpg_keys dir long=1 none=1]
+    [get_gpg_keys dir=DIRECTORY long=1 none=1]
 
 Standalone tag. Interchange treats `-` and `_` as equivalent in tag names,
 so the shipped admin writes it as `[get-gpg-keys ...]`; that is the same tag.
@@ -22,7 +22,11 @@ so the shipped admin writes it as `[get-gpg-keys ...]`; that is the same tag.
 | `none`    |         | Prepend an empty `=none` entry (a "no key" choice). |
 | `joiner`  | `,\n`   | Separator between entries. |
 
-Positional order: `dir` (the first parameter).
+Positional order: `dir` (the first parameter). Named and positional
+parameters cannot be mixed: if any `name=value` attribute is present, the tag
+takes the named path and a bare positional token is silently discarded. So
+`[get_gpg_keys /path/to/keyring]` is valid, but alongside `long=1` or `none=1`
+the directory must be written as `dir=/path/to/keyring`.
 
 ## Description
 

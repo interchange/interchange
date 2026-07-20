@@ -184,7 +184,7 @@ back with `[PREFIX-param name]` or `[PREFIX-pos N]` (0-based). The second
 form below is much faster because the data is already in hand:
 
     [loop search="ra=yes/st=db"]
-      [loop-code] price: [loop-field price]
+      [loop-code] price: [loop-price]
     [/loop]
 
     [loop search="ra=yes/st=db/rf=sku,price"]

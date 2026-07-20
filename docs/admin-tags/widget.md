@@ -13,7 +13,7 @@ table, see [accessories](../tags/accessories.md).
 ## Syntax
 
     [widget name=fieldname type=select passed="a=A, b=B"]
-    [widget name type=select]OPTION STRING[/widget]
+    [widget name=fieldname type=select]OPTION STRING[/widget]
 
 Container tag (it has an end tag). The body is interpolated as Interchange Tag
 Language (ITL) before use, and becomes the option definition string when
@@ -44,7 +44,10 @@ The tag name is registered as `widget`.
 | `js`         | none          | Alias source for `extra`. |
 | `filter`     | none          | When set, appends a hidden `ui_filter:NAME` input carrying this filter, so a submit-time filter is applied to the field. |
 
-Positional order: `name`.
+Positional order: `name`. Named and positional parameters cannot be mixed: if
+any `name=value` attribute is present, the tag takes the named path and any
+bare positional token is silently discarded. Since `[widget]` almost always
+needs `type` or other attributes, write `name=` explicitly.
 
 Aliases: `db` for `table`; `column` for `field`; `outboard` for `key`.
 

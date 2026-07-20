@@ -27,7 +27,12 @@ text. Output is interpolated by default. The shipped admin invokes it as
 | `safe_data` |         | Pull database data raw, without escaping `[` to `&#91;`. |
 | `result`    |         | Name of a scratch variable to receive the `diff3` exit code (non-zero means a conflict was detected). |
 
-Positional order: `yours`, `older`, `mine`.
+Positional order: `yours`, `older`, `mine` — note that this is not the order
+the `diff3` command line uses. Named and positional parameters cannot be
+mixed: if any `name=value` attribute is present, the tag takes the named path
+and every bare positional token is silently discarded. Because `result`,
+`ascii`, and `safe_data` are all named-only, real invocations should name all
+three inputs as well.
 Aliases: `current` and `curr` for `mine`; `previous` and `prev` for `yours`;
 `old` for `older`.
 
@@ -57,7 +62,7 @@ whether the merge needs human review. Flags are validated against
 
 Merge three files, capturing the outcome:
 
-    [diffmerge /tmp/mine /tmp/older /tmp/yours result=merge_status]
+    [diffmerge mine=/tmp/mine older=/tmp/older yours=/tmp/yours result=merge_status]
     [if scratch merge_status]Conflicts were found.[/if]
 
 Merge a newly edited page body (in the tag body) against the current stored

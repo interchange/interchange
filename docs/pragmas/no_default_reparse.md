@@ -46,13 +46,19 @@ Disable default reparsing catalog-wide. In `catalog.cfg`:
 Then request reparsing only where needed:
 
     [seti foo][area href=index][/seti]
-    [tmp bar reparse=1][scratch foo][/tmp]
+    [tmp name=bar reparse=1][scratch foo][/tmp]
 
 ## Notes
 
 Turning this on can be a performance win on pages with heavy container-tag output
 that does not need a second parsing pass, at the cost of having to add
 `reparse=1` where nested tags in output must still be interpolated.
+
+Note the `name=` in `[tmp name=bar reparse=1]`. Interchange tags accept either
+all-positional or all-named parameters, never a mix: once a `name=value`
+attribute such as `reparse=1` is present, the tag takes the named path and a
+bare positional token is silently discarded. `[tmp bar reparse=1]` would set
+an unnamed scratch variable rather than `bar`, with no error.
 
 ## See also
 

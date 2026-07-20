@@ -8,7 +8,7 @@ to read a setting rather than hard-code it.
 ## Syntax
 
     [config KEY]
-    [config KEY global=1]
+    [config key=KEY global=1]
 
 Standalone tag. The returned value is not reparsed.
 
@@ -19,7 +19,10 @@ Standalone tag. The returned value is not reparsed.
 | `key`     |         | Configuration key to look up (first positional). |
 | `global`  | `0`     | When true, read from the global configuration instead of the catalog's. |
 
-Positional order: `key`, `global`.
+Positional order: `key`, `global`. Positional and named arguments cannot be
+mixed: if any `name=value` attribute is present the tag takes the named path
+and bare tokens are silently discarded, so `[config key=PIDfile global=1]` is
+correct where `[config global=1 PIDfile]` would return nothing.
 
 ## Description
 
@@ -46,7 +49,7 @@ Read a simple catalog directive:
 
 Read a global directive:
 
-    [config global=1 PIDfile]
+    [config key=PIDfile global=1]
 
 Walk a dotted path into a structured directive (the `products` entry of the
 `Database` hash, then its `type`):

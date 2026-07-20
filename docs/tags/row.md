@@ -9,7 +9,7 @@ receipts, and other non-HTML reports.
 
     [row WIDTH]
     [col WIDTH]left column[/col]
-    [col WIDTH align=right]right column[/col]
+    [col width=WIDTH align=right]right column[/col]
     [/row]
 
 Container tag (has an end tag). Its body is interpolated first, then scanned for
@@ -44,6 +44,11 @@ The usable text width of a column is its `width` minus its `gutter`; a column
 whose usable width falls below 1 renders `BAD_WIDTH`. If the columns' widths add
 up to more than the row `width`, the row returns a "columns too wide" message.
 
+`[col]` is parsed by `[row]`'s own routine rather than by the main tag parser,
+so — unlike ordinary tags, where positional and named arguments cannot be
+mixed — it does accept a bare leading width next to named options
+(`[col 16 align=right]`). The fully named form is used here for clarity.
+
 ## Description
 
 `[row]` computes each `[col]`'s lines independently — wrapping or truncating to
@@ -69,7 +74,7 @@ A right-aligned price column, driving each cell from ITL:
 
     [row 40]
     [col 24][item-field description][/col]
-    [col 16 align=right][currency][item-price][/currency][/col]
+    [col width=16 align=right][item-price][/col]
     [/row]
 
 ## Notes

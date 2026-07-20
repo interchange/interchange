@@ -471,7 +471,7 @@ A minimal recipe for adding German to an English catalog:
    directives) with translations of your interface strings.
 2. **Make it selectable** — leave `en_US` as
    [DefaultLocale](../config/DefaultLocale.md); offer a switcher of
-   `[setlocale de_DE persist=1]` / `[setlocale en_US persist=1]` links.
+   `[setlocale locale=de_DE persist=1]` / `[setlocale locale=en_US persist=1]` links.
 3. **Format prices** — give `de_DE` its `mon_decimal_point`,
    `mon_thousands_sep`, `currency_symbol`, and (if converting) `PriceDivide`.
 4. **Translate content** — for interface text, wrap it in

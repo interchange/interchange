@@ -22,7 +22,10 @@ Standalone tag (no end tag). By default it returns nothing.
 | `status`  | (none)  | Message format returned when `show` is set. |
 | `show`    | `0`     | Return a status message instead of nothing. |
 
-Positional order: `type`. Aliases: `tables`, `flag`, and `name` are all
+Positional order: `type`. Positional and named arguments cannot be mixed —
+once any `name=value` attribute is present the bare token is silently
+discarded — so write `[flag type=write table=userdb]`, not
+`[flag write table=userdb]`. Aliases: `tables`, `flag`, and `name` are all
 accepted for `type`/`table` (`tables` → `table`; `flag` and `name` → `type`).
 The tag accepts arbitrary additional attributes (`addAttr`).
 
@@ -52,9 +55,9 @@ table part is used. Unknown operations are logged and ignored.
 
 Allow the page to write to the `userdb` table:
 
-    [flag write table=userdb]
+    [flag type=write table=userdb]
 
-Enable writing to several tables at once (positional form):
+Enable writing to several tables at once (using the `tables` alias):
 
     [flag type=write tables="userdb transactions"]
 
