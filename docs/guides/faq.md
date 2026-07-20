@@ -103,7 +103,7 @@ outer tag's positional parser will not interpolate it first:
 
 When in doubt, use named attributes with quoted values; you cannot go wrong
 that way. The interpolation order is explained in
-[Templating with ITL](templating.md#tag-syntax).
+[Templating with ITL](templating.md#interpolation-inside-arguments).
 
 ## Installation and startup
 

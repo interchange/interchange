@@ -49,6 +49,11 @@ any `name=value` attribute is present, the tag takes the named path and any
 bare positional token is silently discarded. Since `[widget]` almost always
 needs `type` or other attributes, write `name=` explicitly.
 
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 Aliases: `db` for `table`; `column` for `field`; `outboard` for `key`.
 
 The tag declares `addAttr`, so any other attribute is forwarded to the

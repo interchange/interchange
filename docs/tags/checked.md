@@ -32,6 +32,10 @@ positional path only when the tag has no `name=value` attribute at all, so a
 bare token written alongside a named attribute is silently discarded — no
 error, just a missing value. Write an invocation either entirely positionally
 (`[checked gift_wrap 1]`) or, as below, entirely with named attributes.
+Positional arguments are also never interpolated — a `[tag]` in a
+positional slot arrives as literal text — so building a value from other
+data requires a named attribute with a quoted value. See
+[Tag syntax](../guides/templating.md#tag-syntax).
 
 `multiple` and `default` may also be supplied bare (as
 `Implicit`/flag attributes). `[checked]` accepts arbitrary additional

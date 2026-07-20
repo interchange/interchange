@@ -28,6 +28,11 @@ takes the named path and a bare positional token is silently discarded. So
 `[grep_mm fields]` is valid, but as soon as `table=` is added the function
 must be written as `function=fields`.
 
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 ## Description
 
 The tag looks up the UI access-control record for `table` (via

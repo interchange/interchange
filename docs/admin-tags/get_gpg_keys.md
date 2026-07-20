@@ -28,6 +28,11 @@ takes the named path and a bare positional token is silently discarded. So
 `[get_gpg_keys /path/to/keyring]` is valid, but alongside `long=1` or `none=1`
 the directory must be written as `dir=/path/to/keyring`.
 
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 ## Description
 
 The tag runs the GPG executable — `$Global::Variable->{GPG_PATH}` or `gpg`

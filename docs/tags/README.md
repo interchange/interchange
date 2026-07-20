@@ -11,6 +11,22 @@ See the [templating guide](../guides/templating.md) for how tags are
 interpolated, and the [glossary](../glossary.md) for terms such as ITL, scratch,
 and flypage.
 
+Two rules apply to every tag on this page, and getting either wrong fails
+*silently* rather than raising an error:
+
+- **Do not mix positional and named parameters.** Once one `name=value`
+  is present the parser discards every bare positional token. Write the
+  invocation all one way or all the other.
+- **Positional arguments are never interpolated.** A `[tag]` in a
+  positional slot arrives as literal text, as it does in an unquoted
+  named value. To build an argument from other data, use a named
+  attribute with a quoted value: `"` / `'` interpolate embedded tags and
+  variables, `|` does the same and trims whitespace, and `` ` ``
+  evaluates the value as Perl.
+
+Both are explained in full, with the reasons and the exceptions, under
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 ### Data access & display
 
 - [data](data.md) (S) — Reads (or sets) a single field of any database table by key, or a value in the user's session.

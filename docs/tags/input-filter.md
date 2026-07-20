@@ -29,6 +29,11 @@ soon as one `name=value` attribute appears, a bare positional token is
 silently discarded, so use `[input-filter name=email op=lower]` rather than
 `[input-filter email op=lower]`.
 
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 Aliases: `var` and `variable` for `name`, `ops` for `op`. The tag accepts
 arbitrary additional attributes (`addAttr`).
 

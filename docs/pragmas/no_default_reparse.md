@@ -60,6 +60,11 @@ attribute such as `reparse=1` is present, the tag takes the named path and a
 bare positional token is silently discarded. `[tmp bar reparse=1]` would set
 an unnamed scratch variable rather than `bar`, with no error.
 
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
+
 ## See also
 
 - [Pragma](../config/Pragma.md)

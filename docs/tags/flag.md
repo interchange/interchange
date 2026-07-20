@@ -27,6 +27,11 @@ once any `name=value` attribute is present the bare token is silently
 discarded — so write `[flag type=write table=userdb]`, not
 `[flag write table=userdb]`. Aliases: `tables`, `flag`, and `name` are all
 accepted for `type`/`table` (`tables` → `table`; `flag` and `name` → `type`).
+
+Positional arguments are also never interpolated: a `[tag]` written in a
+positional slot arrives as literal text. To build an argument from other
+data, use a named attribute with a quoted value — see
+[Tag syntax](../guides/templating.md#tag-syntax).
 The tag accepts arbitrary additional attributes (`addAttr`).
 
 ## Description

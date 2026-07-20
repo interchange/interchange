@@ -85,8 +85,41 @@ mixed:**
 > column, or key at all. Write it all named
 > (`[data table=products field=description key=os28005 increment=1]`) or
 > all positional. Once you need one named attribute, name them all.
-- Tags may appear inside attribute values; they are interpolated before the
-  enclosing tag runs:
+
+### Interpolation inside arguments
+
+This is the other reason to reach for named attributes: **a positional
+argument is never interpolated.** Whatever you write there is handed to
+the tag as literal text, so a `[tag]` sitting in a positional slot
+arrives as the characters `[tag]`, not as its output. The same is true
+of an *unquoted* named value. Interpolation happens only when a named
+value is **quoted**, and the quote character selects what kind:
+
+| Quoting | Effect on the value |
+|---------|---------------------|
+| `"..."` or `'...'` | Embedded `[tags]` and `__VARIABLES__` are interpolated first |
+| `\|...\|` | Same, and leading/trailing whitespace is stripped |
+| `` `...` `` | Evaluated as Perl through a [calc](../tags/calc.md) block (in the [Safe](perl-embedding.md) compartment); the result becomes the value |
+| unquoted | No interpolation — passed through as written |
+
+So to build an argument from other data, quote it:
+
+    [page href="[scratch target_page]"]          works
+    [page href=[scratch target_page]]            does NOT — literal text
+    [page [scratch target_page]]                 does NOT — positional
+
+    [price code=`$Scratch->{sku}`]               Perl, evaluated in Safe
+
+Two things that *look* like exceptions are not. `__VARIABLE__`
+substitution works anywhere, including positional slots, because it
+happens in the [pre-parse phase](#the-pre-parse-phase) across the whole
+page before any tag is parsed. And loop sub-tags work in positional
+slots — `[page [loop-code]]` is the ordinary idiom inside a `[loop]` —
+because the enclosing looping tag interpolates its body once per row, so
+by the time `[page]` is parsed the sub-tag has already become a plain
+SKU. Neither case involves the tag parser interpolating an argument.
+- Tags may appear inside attribute values, but **only quoted named values
+  are interpolated**:
 
       [page href="[scratch target_page]"]
 
