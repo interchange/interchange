@@ -16,11 +16,14 @@ is stored as-is. Default: empty (no tracking file; user tracking off).
 ## Description
 
 When `TrackFile` is set, Interchange writes a tracking record for qualifying
-requests to the named file. Each line carries a timestamp (formatted by
-[TrackDateFormat](TrackDateFormat.md)), the session id, the remote host, the
-epoch time, the viewed page, and any request variables selected with
-[TrackPageParam](TrackPageParam.md). This data drives traffic summaries in the
-administrative interface.
+requests to the named file (`std_log` in `lib/Vend/Track.pm`). Each line
+carries seven tab-separated fields: a timestamp (formatted by
+[TrackDateFormat](TrackDateFormat.md)), the session name, the logged-in
+username (empty when anonymous), the remote host, the epoch time, the
+session's traffic [source](SourcePriority.md), and the joined actions —
+the viewed page plus any request variables selected with
+[TrackPageParam](TrackPageParam.md). This data drives traffic summaries in
+the administrative interface.
 
 The Interchange server user must be able to create and append to the file.
 
@@ -35,7 +38,7 @@ TrackFile  logs/usertrack
 A typical logged line looks like:
 
 ```
-20050812  fft2VXwJ  127.0.0.1  1123868228  VIEWPAGE=index  var1=TEST var2=500
+20050812  fft2VXwJ:127.0.0.1  vincent  127.0.0.1  1123868228  google  VIEWPAGE=index&var1=TEST
 ```
 
 ## See also

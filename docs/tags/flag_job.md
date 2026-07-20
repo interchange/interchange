@@ -36,20 +36,21 @@ you are writing such a job page, you will not need this tag.
 
 ## Examples
 
-Set a job flag with a token from inside a job page:
+Raise a job flag with a numeric token from inside a job page:
 
-    [flag_job set [cgi jobs_token]]
+    [flag_job raise [cgi jobs_token]]
 
-Positional action only:
+Test whether a flag with that token is raised:
 
-    [flag_job check]
+    [flag_job check [cgi jobs_token]]
 
 ## Notes
 
-- The exact set of valid actions and their effects live in
-  `Vend::Server::flag_job`; consult that routine (and your Interchange server
-  configuration) before relying on specific behavior. This page documents the
-  tag interface, not the full job protocol.
+- `Vend::Server::flag_job` implements exactly three actions: `raise`
+  (create the flag file `flag.<catalog>.<token>` under `RunDir`), `check`
+  (test for it), and `furl` (remove it). The token must be numeric —
+  non-numeric tokens are ignored. See the
+  [jobs guide](../guides/jobs.md) for how flags fit the job subsystem.
 
 ## See also
 
