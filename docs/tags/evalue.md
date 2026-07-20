@@ -1,25 +1,42 @@
 # evalue
 
-`[evalue]` is an alias for [value](value.md) preset with `keep=1
-filter="encode_entities"`. It returns a form variable from the `$Values`
-space HTML-entity-encoded for safe display, without altering the stored value.
-Use it wherever you would use `[value name filter=encode_entities keep=1]`.
+`[evalue]` is an **extended alias** for [value](value.md): the alias
+definition carries attributes, so it is a drop-in expansion rather than a
+simple rename. It returns a form variable from the `$Values` space
+HTML-entity-encoded for safe display, without altering the stored value.
 
-Because the alias also presets `name=`, pass the variable name as an
-attribute:
+## Syntax
 
-    [evalue name=comments]
+    [evalue variable]
 
-is equivalent to:
+At parse time the alias text replaces the tag name in place and the tag
+is re-parsed, so:
 
-    [value name=comments filter=encode_entities keep=1]
+    [evalue comments]
+
+becomes, literally:
+
+    [value keep=1 filter="encode_entities" name= comments]
+
+which parses as `[value name=comments filter=encode_entities keep=1]` —
+the trailing `name=` in the alias definition exists to capture the
+positional argument.
+
+## Description
 
 See [value](value.md) for the full attribute list and behavior. Note that
 plain [value](value.md) already encodes `[` and `<` by default; `[evalue]`
-additionally runs the `encode_entities` filter, which also escapes `&`, `>`,
-and `"`.
+additionally runs the [encode_entities](../filters/encode_entities.md)
+filter, which also escapes `&`, `>`, and `"`, and `keep=1` prevents the
+`set=` clearing side effects.
+
+## See also
+
+[value](value.md), [getlocale](getlocale.md) and
+[process_search](process_search.md) — the other extended aliases
 
 ## Source
 
 Defined as an alias in `code/SystemTag/value.coretag`
-(`UserTag evalue Alias value keep=1 filter="encode_entities" name=`).
+(`UserTag evalue Alias value keep=1 filter="encode_entities" name=`);
+expansion mechanics in `start()`, `lib/Vend/Parse.pm` (~line 651).

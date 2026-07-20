@@ -63,6 +63,7 @@ and flypage.
 
 - [area](area.md) (S) — Build the URL to an Interchange page or action — the value that goes inside an `href="..."` attribute, without the surrounding `<a>` tag.
   - [href](href.md) — alias of [area](area.md)
+  - [process_search](process_search.md) — extended alias: expands to `[area href=search]`, the search-form action URL
 - [page](page.md) (S) — Produce an opening `<a href="...">` anchor tag whose URL points at an Interchange page, search, or order action, with session information preserved automatically.
 - [process](process.md) (S) — Return the URL that a completed order form or search form should submit to.
   - [process-order](process-order.md) — alias of [process](process.md) _(deprecated)_
@@ -76,7 +77,7 @@ and flypage.
 ### Forms & user input
 
 - [value](value.md) (S) — Return the value of a form variable from the `$Values` space — the persistent per-session store that form fields read from and write to.
-  - [evalue](evalue.md) — alias of [value](value.md)
+  - [evalue](evalue.md) — extended alias: expands to `[value keep=1 filter="encode_entities" name=...]` for entity-encoded display
 - [value-extended](value-extended.md) (S) — Return a form variable from the `$Values` space with extra handling that plain [value](value.md) does not offer: joining multiple values, selecting by index, testing presence, and reading or writing uploaded-file contents.
 - [default](default.md) (S) — Returns a user form value, substituting a fallback string when the value is empty.
 - [values-space](values-space.md) (S) — Switch the active `$Values` namespace, so a page can keep several independent sets of form values (for example a "billing" set and a separate "shipping" or "quote" set).
@@ -193,6 +194,7 @@ and flypage.
   - [l](l.md) — alias of [loc](loc.md)
 - [msg](msg.md) (C) — Return a localized message for a key, with optional `%s`-style argument substitution.
 - [parse_locale](parse_locale.md) (C) — Interpolate `[L]...[/L]` and `[LC]...[/LC]` localization markup in the tag's body, translating phrases against the active locale.
+- [getlocale](getlocale.md) (S) — Extended alias: expands to `[setlocale get=1]`, returning the active locale without changing it.
 - [setlocale](setlocale.md) (S) — Switch the active locale and/or currency.
 
 ### Utility & miscellaneous
@@ -221,12 +223,19 @@ and flypage.
 
 ### Deprecated & aliases
 
-These names all resolve to a canonical tag documented above.
+These names all resolve to a canonical tag documented above. Two kinds
+exist: *pure renames*, and **extended aliases** whose definition carries
+attributes — the parser substitutes the alias text into the tag source and
+re-parses it, so `[evalue foo]` literally becomes
+`[value keep=1 filter="encode_entities" name=foo]` (see `%Alias` and the
+`Alias` handling in `lib/Vend/Parse.pm`). Extended aliases are marked below.
 
-- [evalue](evalue.md) → [value](value.md)
+- [evalue](evalue.md) → [value](value.md) **(extended: presets `keep=1 filter=encode_entities`, positional → `name=`)**
 - [fcounter](fcounter.md) → [counter](counter.md)
 - [href](href.md) → [area](area.md)
+- [getlocale](getlocale.md) → [setlocale](setlocale.md) **(extended: presets `get=1`)**
 - [l](l.md) → [loc](loc.md)
+- [process_search](process_search.md) → [area](area.md) **(extended: presets `href=search`)**
 - [process-order](process-order.md) → [process](process.md) _(deprecated — use the canonical tag)_
 - [process-target](process-target.md) → [process](process.md) _(deprecated — use the canonical tag)_
 - [shipping-description](shipping-description.md) → [shipping-desc](shipping-desc.md)
