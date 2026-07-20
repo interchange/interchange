@@ -11,7 +11,7 @@ loops and their sub-tags, conditionals, and filters. The
 A first taste, using the strap demo's `products` table:
 
     <p>We stock [item-count] items.
-       Our featured hammer: [data table=products col=description key=os28005]</p>
+       Our featured hammer: [data table=products col=description key=os28044]</p>
 
 produces (with the demo data):
 

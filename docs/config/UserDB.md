@@ -38,8 +38,8 @@ The most commonly set parameters:
 | `md5`        | `0`            | Use MD5 instead of Unix `crypt`               |
 | `ignore_case`| `0`            | Case-insensitive username/password matching   |
 | `userminlen` | `2`            | Minimum username length                       |
-| `passminlen` | `2`            | Minimum password length                       |
-| `time_field` | `time`         | Column storing last-login time                |
+| `passminlen` | `4`            | Minimum password length                       |
+| `time_field` | `mod_time`     | Column storing last-login time                |
 | `expire_field`| `expiration`  | Column storing account expiration             |
 | `scratch`    | (none)         | Fields loaded into scratch instead of values  |
 | `outboard`   | (none)         | Fields that live in a separate table          |
