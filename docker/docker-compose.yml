@@ -1,0 +1,16 @@
+services:
+  interchange:
+    build:
+      context: ./interchange
+      dockerfile: Dockerfile
+      args:
+        # look up your host uid/gid for the cwd with "getfacl -n ."
+        ## need to set the uid and gid to match the ownership of the bind mount folder
+        host_uid: changeme
+        host_gid: changeme
+    ports:
+      - 4242:5000
+    volumes:
+      - ./catalogs:/home/interchange/catalogs
+      - ./server:/home/interchange/interchange
+
