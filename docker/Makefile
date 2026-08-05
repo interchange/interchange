@@ -358,6 +358,7 @@ TO_INST_PM = hints.pl \
 	lib/Vend/UserControl.pm \
 	lib/Vend/UserDB.pm \
 	lib/Vend/Util.pm \
+	lib/Vend/Util/Compress.pm \
 	relocate.pl
 
 
@@ -1441,6 +1442,7 @@ pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	  'lib/Vend/UserControl.pm' 'blib/lib/Vend/UserControl.pm' \
 	  'lib/Vend/UserDB.pm' 'blib/lib/Vend/UserDB.pm' \
 	  'lib/Vend/Util.pm' 'blib/lib/Vend/Util.pm' \
+	  'lib/Vend/Util/Compress.pm' 'blib/lib/Vend/Util/Compress.pm' \
 	  'relocate.pl' '$(INST_LIB)/relocate.pl' 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
