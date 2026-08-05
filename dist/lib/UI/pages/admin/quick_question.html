@@ -8,6 +8,7 @@ but the area tags needs them to separate the attributes. Below calc block
 separates out the attributes so they can be parsed later on.
 [/comment]
 
+[if-mm super]
 [calc]
   my $tempcgi = $CGI->{type};
   my @tempcgiarr = split(/\s{2,}/,$tempcgi);
@@ -28,9 +29,9 @@ separates out the attributes so they can be parsed later on.
 <title>Quick question</title>
 <body style="[cgi name=style filter=entities]" margintop="0" marginleft="0">
 [tmp litmus][if type="[cgi type]" term="[cgi term]"]1[/if][/tmp]
-[calc]
-        my $yes = $CGI->{yes} || errmsg('Yes');
-        my $no = $CGI->{no} || errmsg('No');
+[calc reparse=0]
+        my $yes = $Tag->filter('entities', $CGI->{yes}) || errmsg('Yes');
+        my $no = $Tag->filter('entities', $CGI->{no}) || errmsg('No');
         if($CGI->{yes_style}) {
                 $CGI->{yes_style} =~ $Tag->filter('entities', $CGI->{yes_style});
                 $yes = qq{<span style="$CGI->{yes_style}">$yes</span>};
@@ -45,4 +46,5 @@ separates out the attributes so they can be parsed later on.
 [/calc]
 </body>
 </html>
+[/if-mm]
 
