@@ -3,7 +3,7 @@
 #
 #-# Interchange version ~_~VERSION~_~
 #
-# Copyright (C) 2002-2021 Interchange Development Group
+# Copyright (C) 2002-2026 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # https://www.interchangecommerce.org/
 #
@@ -356,7 +356,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 2021 Interchange Development Group and others.\n";
+	print "Interchange version $VERSION copyright 2026 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -968,7 +968,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-    Copyright (C) 2002-2021 Interchange Development Group and others
+    Copyright (C) 2002-2026 Interchange Development Group and others
     Copyright (C) 1995-2002 Red Hat, Inc.
     All rights reserved except those granted in the license.
 

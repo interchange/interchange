@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# Copyright (C) 2002-2021 Interchange Development Group
+# Copyright (C) 2002-2026 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2645,7 +2645,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 2002-2008 Interchange Development Group.
+Copyright 2002-2026 Interchange Development Group.
 Copyright 1995-2002, Red Hat, Inc.
 All rights reserved except as in the license.
 
