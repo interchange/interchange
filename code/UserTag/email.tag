@@ -94,12 +94,12 @@ sub {
 
 		# encode values if utf8 is supported
 		if($utf8){
-			$to = utf8_to_other($to, 'MIME-Header');
-			$from = utf8_to_other($from, 'MIME-Header');
-			$subject = utf8_to_other($subject, 'MIME-Header');
-			$cc = utf8_to_other($cc, 'MIME-Header');
-			$bcc = utf8_to_other($bcc, 'MIME-Header');
-			$reply = utf8_to_other($reply, 'MIME-Header');
+			$to = utf8_to_other($to, 'utf8');
+			$from = utf8_to_other($from, 'utf8');
+			$subject = utf8_to_other($subject, 'utf8');
+			$cc = utf8_to_other($cc, 'utf8');
+			$bcc = utf8_to_other($bcc, 'utf8');
+			$reply = utf8_to_other($reply, 'utf8');
 		}
 
         my %msg_args = (To => $to,
