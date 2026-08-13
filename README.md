@@ -45,6 +45,10 @@ Notes on using Interchange when installed from RPM packages.
 
 Notes on using Interchange when installed from Debian packages.
 
+### README.docker.md
+
+How to run the demo catalog in a Docker container.
+
 ### README-DEVELOPMENT.md
 
 How to track ongoing development of Interchange.

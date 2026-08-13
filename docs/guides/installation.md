@@ -455,6 +455,21 @@ authority for exact paths and dependencies on your distribution, and use
 `rpm -qp --requires <pkg>` (or the Debian control file) for the real
 module list.
 
+## Running the demo in Docker
+
+The source tree also ships a Docker setup for running the strap demo in a
+container: a top-level `Dockerfile`, a `docker/` directory holding the
+compose file, PSGI wrapper, and entrypoint script, and step-by-step
+instructions in `README.docker.md`. After `docker-compose build` and
+`docker-compose up`, the demo answers at `http://localhost:4242/demo`
+(admin UI at `/demo/admin`, default login `interchange` / `pass`), with
+the `catalogs/` and `server/` trees bind-mounted on the host so your
+edits survive container restarts. It is a demo and development
+convenience, not a hardened production deployment. `README.docker.md`
+covers the required directory layout, uid/gid mapping for the bind
+mounts, watching logs, restarting the daemon inside the container, and
+adding further catalogs.
+
 ## Verifying and troubleshooting
 
 - **`make test` fails** — usually a missing prerequisite module; the

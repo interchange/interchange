@@ -54,6 +54,17 @@ clients (`mv_session_id`). Protections, all tunable per catalog:
   by probes and some AJAX); [CookieLogin](../config/CookieLogin.md) allows
   "remember me" logins.
 
+The client identity all of this binds to comes from the front end:
+`REMOTE_HOST` when the web server supplies it, falling back to
+`REMOTE_ADDR` (`lib/Vend/Server.pm`), and the session is stored under
+`id:host`. A front end that fills `REMOTE_HOST` with something other
+than the real client breaks session matching — Plack's built-in PSGI
+server, for example, sets it to `localhost`, and visitors lose their
+session on every request. Configure such a server to pass the client's
+address through; the shipped Docker demo does this by overwriting
+`REMOTE_HOST` with the value of `REMOTE_ADDR` via
+`Plack::Middleware::ReviseEnv` (`docker/app.psgi`).
+
 Session state is written back at request end; concurrent requests in the
 same session serialize on the session lock (file backends) or database
 transaction.
