@@ -77,9 +77,45 @@ sub signal_jobs {
 		$parmsstr = ' '. join (' ', @parms);
 	}
 	
-	Vend::Util::writefile("$Global::RunDir/jobsqueue", "jobs $cat $delay $job$parmsstr\n");
+	write_jobsqueue("jobs $cat $delay $job$parmsstr\n");
 #::logGlobal("signal_jobs: wrote file, ready to control_interchange");
 	control_interchange('jobs', 'HUP');
+}
+
+# Append to the jobsqueue file under lock. The server's housekeeping
+# consumes and unlinks the queue under the same lock; if that happens
+# while we wait for the lock, our handle points to a dead inode and the
+# line would be lost, so re-verify the path after locking and retry.
+sub write_jobsqueue {
+	my ($line) = @_;
+	my $file = "$Global::RunDir/jobsqueue";
+
+	for (;;) {
+		open(my $fh, '>>', $file)
+			or die errmsg("Couldn't open %s: %s\n", $file, $!);
+		lockfile($fh, 1, 1)
+			or die errmsg("Couldn't lock %s: %s\n", $file, $!);
+
+		my @fh_stat = stat($fh);
+		my @path_stat = stat($file);
+		if (! @path_stat
+			or $fh_stat[0] != $path_stat[0]
+			or $fh_stat[1] != $path_stat[1])
+		{
+			unlockfile($fh);
+			close $fh;
+			next;
+		}
+
+		seek($fh, 0, 2)
+			or die errmsg("Couldn't seek %s: %s\n", $file, $!);
+		print $fh $line
+			or die errmsg("Couldn't write %s: %s\n", $file, $!);
+		unlockfile($fh)
+			or die errmsg("Couldn't unlock %s: %s\n", $file, $!);
+		close $fh;
+		return 1;
+	}
 }
 
 sub signal_remove {
