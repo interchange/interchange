@@ -1236,6 +1236,7 @@ sub connection {
 
 my $Signal_Terminate;
 my $Signal_Restart;
+my $Signal_Reopen_Log;
 my %orig_signal;
 my @trapped_signals = qw(INT TERM HUP USR1 USR2);
 
@@ -1305,6 +1306,16 @@ sub sig_int_or_term {
 
 sub sig_hup {
     $Signal_Restart = 1;
+    $Signal_Reopen_Log = 1;
+}
+
+# Reopen the debug log at a safe point in the server loops rather than
+# in sig_hup itself: under PERL_SIGNALS=unsafe (the default), doing
+# filehandle operations inside the handler can corrupt or segfault
+# whatever the process was executing when the signal arrived.
+sub reopen_log_on_hup {
+    return unless $Signal_Reopen_Log;
+    undef $Signal_Reopen_Log;
     my $am_master = ($Vend::MasterProcess == $$);
     warn "Re-opening log...\n" if $am_master;
     setup_debug_log(!$am_master);
@@ -2199,6 +2210,7 @@ sub server_page {
 	  my ($ok, $p, $v);
 	  my $i = 0;
 	  $c++;
+	  reopen_log_on_hup();
 	  eval {
 		$rin = $p_vector;
 		
@@ -2365,6 +2377,7 @@ sub server_soap {
 	  my $n;
 	  $c++;
 	  my ($ok, $p, $v);
+	  reopen_log_on_hup();
 	  eval {
 		$rin = $s_vector;
 
@@ -2784,6 +2797,7 @@ sub server_both {
 
 	  my $i = 0;
 	  $c++;
+	  reopen_log_on_hup();
 	  eval {
         if($only_ipc) {
 			$rin = $ipc_vector;
