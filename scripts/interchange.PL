@@ -431,6 +431,17 @@ This will NOT work:
 
 	interchange --runjobs=foundation --jobgroup=weekly
 
+=item --queuejobs=catalog[=job]
+
+Same as --runjobs, except no signal is sent to the running Interchange
+server. The job is written to the job queue and the server picks it up
+on its next housekeeping pass, i.e. within the HouseKeeping interval.
+
+This is useful when jobs are scheduled frequently on a PreFork system:
+each --runjobs invocation signals the server with HUP, which the
+server relays to every pooled page server, while --queuejobs disturbs
+nothing. The signal is not needed for the jobs to run in either case.
+
 =item -d dir, --dir=dir
 
 Directory for VendRoot. This is where the Interchange configuration file
@@ -569,6 +580,9 @@ Command line options (first letter will usually work):
      --jobgroup=jobname    job group to run (hourly, daily, weekly, etc.)
      --kill [signal]       kill server ungracefully (9 or with optional signal)
      -q, --quiet           suppress informational messages on startup
+     --queuejobs=catalog[=job]  queue jobs like --runjobs, but without
+                           signaling the server; jobs start on the
+                           server's next housekeeping pass
      --reconfig=catalog    reconfig a particular catalog on the server
      --remove=catalog      remove a catalog from operation
      -r, --restart         restart server
@@ -661,6 +675,7 @@ sub parse_options {
 		flag			=> \$Vend::JobsFlag,
 		jobgroup		=> \$Vend::JobsJob,
 		runjobs			=> \&signal_jobs,
+		queuejobs		=> \&signal_jobs,
 		remove			=> \&signal_remove,
 		kill			=> \&control_interchange,
 		Ignore 			=> \$ignore,
@@ -733,6 +748,7 @@ sub parse_options {
         quiet|q
         rundir=s
 		runjobs=s
+		queuejobs=s
 		pidfile=s
 		reconfig=s
 		remove=s

@@ -50,7 +50,7 @@ sub signal_reconfig {
 }
 
 sub signal_jobs {
-	shift;
+	my $queue_only = shift eq 'queuejobs';
 	$Vend::mode = 'jobs';
 	my $arg = shift;
 	my ($cat, $job, $delay) = split /\s*=\s*/, $arg, 3;
@@ -77,9 +77,57 @@ sub signal_jobs {
 		$parmsstr = ' '. join (' ', @parms);
 	}
 	
-	Vend::Util::writefile("$Global::RunDir/jobsqueue", "jobs $cat $delay $job$parmsstr\n");
+	write_jobsqueue("jobs $cat $delay $job$parmsstr\n");
 #::logGlobal("signal_jobs: wrote file, ready to control_interchange");
+
+	if ($queue_only) {
+		my $pid = interchange_pid();
+		print errmsg(
+				"Queued jobs=%s for cat %s; Interchange server %s will run them on its next housekeeping pass.\n",
+				$Vend::JobsJob,
+				$Vend::JobsCat,
+				$pid,
+			) unless $Vend::Quiet;
+		exit 0;
+	}
+
 	control_interchange('jobs', 'HUP');
+}
+
+# Append to the jobsqueue file under lock. The server's housekeeping
+# consumes and unlinks the queue under the same lock; if that happens
+# while we wait for the lock, our handle points to a dead inode and the
+# line would be lost, so re-verify the path after locking and retry.
+sub write_jobsqueue {
+	my ($line) = @_;
+	my $file = "$Global::RunDir/jobsqueue";
+
+	for (;;) {
+		open(my $fh, '>>', $file)
+			or die errmsg("Couldn't open %s: %s\n", $file, $!);
+		lockfile($fh, 1, 1)
+			or die errmsg("Couldn't lock %s: %s\n", $file, $!);
+
+		my @fh_stat = stat($fh);
+		my @path_stat = stat($file);
+		if (! @path_stat
+			or $fh_stat[0] != $path_stat[0]
+			or $fh_stat[1] != $path_stat[1])
+		{
+			unlockfile($fh);
+			close $fh;
+			next;
+		}
+
+		seek($fh, 0, 2)
+			or die errmsg("Couldn't seek %s: %s\n", $file, $!);
+		print $fh $line
+			or die errmsg("Couldn't write %s: %s\n", $file, $!);
+		unlockfile($fh)
+			or die errmsg("Couldn't unlock %s: %s\n", $file, $!);
+		close $fh;
+		return 1;
+	}
 }
 
 sub signal_remove {
@@ -96,8 +144,11 @@ sub signal_add {
 	control_interchange('add', 'HUP');
 }
 
-sub control_interchange {
-	my ($mode, $sig, $restart) = @_;
+# Return the pid of the running Interchange server, determined the same
+# way control_interchange always has. Exits (or returns undef when
+# $restart is set) if the server is not running.
+sub interchange_pid {
+	my ($restart) = @_;
 
 	$Vend::ControllingInterchange = 1;
 	unless(-f $Global::PIDfile) {
@@ -123,6 +174,14 @@ EOF
 		exit 1 unless $restart;
 		return;
 	}
+	return $pid;
+}
+
+sub control_interchange {
+	my ($mode, $sig, $restart) = @_;
+
+	my $pid = interchange_pid($restart)
+		or return;
 	if(! $sig) {
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
 	}

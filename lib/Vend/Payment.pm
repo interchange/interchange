@@ -420,8 +420,14 @@ sub charge {
                     || 'Due to technical difficulties, your order could not be processed.';
                 local $SIG{ALRM} = sub { die "$to_msg\n" };
 
+                # waitpid the specific gateway child, retrying on EINTR
+                # with the alarm still armed: an unrelated signal must not
+                # cancel the timeout protection or reap the wrong process.
                 alarm $timeout;
-                wait;
+                my $reaped;
+                do {
+                    $reaped = waitpid($pid, 0);
+                } until $reaped == $pid or ($reaped == -1 and not $!{EINTR});
                 alarm 0;
 
                 $pid = undef;

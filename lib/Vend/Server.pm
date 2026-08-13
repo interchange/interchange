@@ -1236,6 +1236,7 @@ sub connection {
 
 my $Signal_Terminate;
 my $Signal_Restart;
+my $Signal_Reopen_Log;
 my %orig_signal;
 my @trapped_signals = qw(INT TERM HUP USR1 USR2);
 
@@ -1305,6 +1306,16 @@ sub sig_int_or_term {
 
 sub sig_hup {
     $Signal_Restart = 1;
+    $Signal_Reopen_Log = 1;
+}
+
+# Reopen the debug log at a safe point in the server loops rather than
+# in sig_hup itself: under PERL_SIGNALS=unsafe (the default), doing
+# filehandle operations inside the handler can corrupt or segfault
+# whatever the process was executing when the signal arrived.
+sub reopen_log_on_hup {
+    return unless $Signal_Reopen_Log;
+    undef $Signal_Reopen_Log;
     my $am_master = ($Vend::MasterProcess == $$);
     warn "Re-opening log...\n" if $am_master;
     setup_debug_log(!$am_master);
@@ -1416,8 +1427,8 @@ sub housekeeping {
 			for my $pid (@starting_pids) {
 				my $time_taken = $check_time - $Starting_pids{$pid};
 				if ($time_taken > $start_max_time) {
-					::logDebug("pid $pid took $time_taken seconds to start ($start_max_time allowed); scheduling for death");
-					$bad_pids{$pid} = undef;
+					$bad_pids{$pid} = ::errmsg('took %s seconds to start (%s allowed)', $time_taken, $start_max_time);
+					::logGlobal("page server pid %s %s; scheduling for termination", $pid, $bad_pids{$pid});
 					delete $Starting_pids{$pid};
 					--$starting_count;
 				}
@@ -1427,7 +1438,7 @@ sub housekeeping {
 #::logDebug("too many pids ($active_count)");
 				my $bad = shift @active_pids;
 #::logDebug("scheduling %s for death", $bad);
-				$bad_pids{$bad} = undef;
+				$bad_pids{$bad} = ::errmsg('excess server (%s active, StartServers %s)', $active_count, $Global::StartServers);
 				--$active_count;
 			}
 
@@ -1446,7 +1457,8 @@ sub housekeeping {
 					next unless $last_use > $Global::PIDcheck;
 #::logDebug('pid %s last used %d seconds ago', $pid, $last_use);
 					if ($pid_stats->[1]) {
-						$bad_pids{$pid} = undef;
+						$bad_pids{$pid} = ::errmsg('busy in one request for %s seconds (PIDcheck %s)', $last_use, $Global::PIDcheck);
+						::logGlobal("page server pid %s %s; scheduling for termination", $pid, $bad_pids{$pid});
 						delete $Page_pids{$pid};
 #::logDebug('scheduling %s for death', $pid);
 						--$active_count;
@@ -1466,12 +1478,13 @@ sub housekeeping {
 				start_page(undef, $Global::PreFork, $server_deficit);
 			}
 
-			for my $pid (@Termed_pids) {
+			for (@Termed_pids) {
+				my ($pid, $why) = @$_;
 				kill (KILL => $pid)
-					and ::logDebug("Sent $pid a KILL");
+					and ::logGlobal("page server pid %s ignored TERM (%s); sent KILL", $pid, $why);
 			}
-			::logGlobal("page server pid %s won't die!", $_)
-					for grep { kill (0, $_) } @Termed_pids;
+			::logGlobal("page server pid %s won't die!", $_->[0])
+					for grep { kill (0, $_->[0]) } @Termed_pids;
 			@Termed_pids = ();
 
 			if (%bad_pids) {
@@ -1485,8 +1498,8 @@ sub housekeeping {
 					)
 				{
 					kill (TERM => $pid);
-					::logDebug("Sent $pid a TERM");
-					push (@Termed_pids, $pid);
+					::logDebug("Sent %s a TERM: %s", $pid, $bad_pids{$pid});
+					push (@Termed_pids, [$pid, $bad_pids{$pid}]);
 				}
 			}
 		}
@@ -2199,6 +2212,7 @@ sub server_page {
 	  my ($ok, $p, $v);
 	  my $i = 0;
 	  $c++;
+	  reopen_log_on_hup();
 	  eval {
 		$rin = $p_vector;
 		
@@ -2365,6 +2379,7 @@ sub server_soap {
 	  my $n;
 	  $c++;
 	  my ($ok, $p, $v);
+	  reopen_log_on_hup();
 	  eval {
 		$rin = $s_vector;
 
@@ -2784,6 +2799,7 @@ sub server_both {
 
 	  my $i = 0;
 	  $c++;
+	  reopen_log_on_hup();
 	  eval {
         if($only_ipc) {
 			$rin = $ipc_vector;
