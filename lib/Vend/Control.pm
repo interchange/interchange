@@ -50,7 +50,7 @@ sub signal_reconfig {
 }
 
 sub signal_jobs {
-	shift;
+	my $queue_only = shift eq 'queuejobs';
 	$Vend::mode = 'jobs';
 	my $arg = shift;
 	my ($cat, $job, $delay) = split /\s*=\s*/, $arg, 3;
@@ -79,6 +79,18 @@ sub signal_jobs {
 	
 	write_jobsqueue("jobs $cat $delay $job$parmsstr\n");
 #::logGlobal("signal_jobs: wrote file, ready to control_interchange");
+
+	if ($queue_only) {
+		my $pid = interchange_pid();
+		print errmsg(
+				"Queued jobs=%s for cat %s; Interchange server %s will run them on its next housekeeping pass.\n",
+				$Vend::JobsJob,
+				$Vend::JobsCat,
+				$pid,
+			) unless $Vend::Quiet;
+		exit 0;
+	}
+
 	control_interchange('jobs', 'HUP');
 }
 
@@ -132,8 +144,11 @@ sub signal_add {
 	control_interchange('add', 'HUP');
 }
 
-sub control_interchange {
-	my ($mode, $sig, $restart) = @_;
+# Return the pid of the running Interchange server, determined the same
+# way control_interchange always has. Exits (or returns undef when
+# $restart is set) if the server is not running.
+sub interchange_pid {
+	my ($restart) = @_;
 
 	$Vend::ControllingInterchange = 1;
 	unless(-f $Global::PIDfile) {
@@ -159,6 +174,14 @@ EOF
 		exit 1 unless $restart;
 		return;
 	}
+	return $pid;
+}
+
+sub control_interchange {
+	my ($mode, $sig, $restart) = @_;
+
+	my $pid = interchange_pid($restart)
+		or return;
 	if(! $sig) {
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
 	}
