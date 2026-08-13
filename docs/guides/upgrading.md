@@ -274,6 +274,27 @@ password" pages used remote search and should be replaced with the current
 `lost_password.html`. See [Search](search.md) and [Security](security.md) for
 the full picture.
 
+## The 2026 admin quick_question fix
+
+A second cross-version callout: in August 2026 the shipped admin UI page
+`quick_question.html` (`dist/lib/UI/pages/admin/`, installed under the
+server's `lib/UI/pages/admin/`) was fixed to close an unauthenticated
+remote-code-execution hole. The page echoed CGI values from a `[calc]`
+block whose output was reparsed for ITL, so a request like
+
+    .../admin/quick_question?no=[perl]...[/perl]
+
+executed arbitrary Perl in the server. The fix adds `reparse=0` and the
+`entities` filter to the echoing block and gates the whole page behind
+`[if-mm super]`.
+
+An install whose admin UI predates the fix is exposed regardless of
+Interchange version. When upgrading, confirm the copy of
+`quick_question.html` your admin actually serves is the fixed one; if
+you cannot upgrade promptly, apply the same three changes by hand or
+delete the page. The [Security](security.md) guide's "Echoing user
+input" note covers the general pattern this exploit abused.
+
 ## Removed and renamed items: a cross-reference
 
 The reference sections of this documentation track what current code actually

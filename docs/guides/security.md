@@ -405,6 +405,21 @@ profile mandatory. Order profiles and checks are covered in
 [Carts and checkout](cart-and-checkout.md) and the
 [order-check reference](../order-checks/README.md).
 
+**Echoing user input.** Container-tag output is reparsed for ITL by
+default (`reparse=1` — see the
+[no_default_reparse](../pragmas/no_default_reparse.md) pragma), so a page
+that emits a CGI value from inside `[calc]` or `[perl]` hands the visitor
+an injection point: a submitted value of `[perl]...[/perl]` comes back
+out of the tag and is *executed* on the reparse pass. This is not
+hypothetical — the shipped admin page `quick_question.html` was
+exploitable exactly this way, giving unauthenticated remote code
+execution until it was fixed in August 2026 (see
+[Upgrading](upgrading.md)). When a tag must echo request data, disable
+the second pass and neutralize markup: `reparse=0` on the emitting tag,
+the `entities` filter on the value, and — for admin pages — an
+`[if-mm super]` gate. For longer untrusted text, use `[restrict]`
+(described earlier).
+
 **Header injection.** Any user data that could end up in an HTTP response
 header — a redirect target, a bounce URL — is passed through
 `header_data_scrub()` (`lib/Vend/Util.pm`), which strips CR/LF and their
