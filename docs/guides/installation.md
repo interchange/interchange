@@ -377,6 +377,7 @@ use most:
 | `bin/interchange --kill [sig]` | Stop ungracefully (`KILL`, or the given signal) |
 | `bin/interchange -t` | Parse all config and report problems, without starting |
 | `bin/interchange --reconfig=NAME` | Recompile one catalog, no restart |
+| `bin/interchange --queuejobs=NAME=GROUP` | Queue a job group for the running server (`--runjobs` also sends `HUP`; see [Jobs](jobs.md)) |
 | `bin/interchange -i` / `-u` | Start in Inet-only / Unix-only socket mode |
 | `bin/interchange -q` | Suppress informational startup messages |
 | `bin/interchange -v` | Print version |

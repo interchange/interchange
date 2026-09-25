@@ -20,7 +20,8 @@ several keys). The available keys differ by scope. Global default:
 A *job* is a catalog page (or set of pages) run by the Interchange daemon
 without a browser -- used for periodic tasks such as importing data,
 sending queued email, or rolling up reports. Jobs are launched from the
-command line (`interchange --runjobs=CATALOG=DIRECTORY`) or scheduled with
+command line (`interchange --queuejobs=CATALOG=DIRECTORY`, or `--runjobs`,
+which additionally sends the server a `HUP`) or scheduled with
 [HouseKeepingCron](HouseKeepingCron.md), and executed by the job runner.
 
 ### Global
@@ -90,7 +91,7 @@ Jobs MaxServers 2 MaxLifetime 900
 Run a catalog's jobs from a Unix crontab entry:
 
 ```
-12 2 * * * su -c '/path/to/interchange --quiet --runjobs=mycat=etc/jobs' ic
+12 2 * * * su -c '/path/to/interchange --quiet --queuejobs=mycat=etc/jobs' ic
 ```
 
 ## Notes

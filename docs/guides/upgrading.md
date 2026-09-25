@@ -252,6 +252,36 @@ The 5.12 WHATSNEW also documents the project's move from `icdevgroup.org` to
 `https://github.com/interchange/interchange`. Older documentation URLs and
 support links point at the retired site.
 
+### Tracking master after 5.12 (August 2026)
+
+Since releases are now cut from Git (see [Installation](installation.md)),
+these are the behavior changes on `master` after the 5.12 line that an
+upgrader may notice. None requires a configuration change.
+
+- **New `--queuejobs` option.** Queues a job group exactly like `--runjobs`
+  but without sending the server a `HUP`. On PreFork systems the master
+  relays every `HUP` to every pooled page server, so switch frequent
+  crontab entries from `--runjobs` to `--queuejobs`. See [Jobs](jobs.md).
+- **Queued jobs are no longer lost to a lock race.** A `--runjobs` request
+  written while housekeeping held the `jobsqueue` lock could previously be
+  dropped silently; the writer now re-verifies the file after locking.
+- **`HUP` no longer reopens the debug log inside the signal handler.** The
+  reopen is deferred to a safe point in the server loop (within one
+  [HouseKeeping](../config/HouseKeeping.md) tick). Previously, under the
+  default unsafe Perl signals, a busy PreFork page server taking a relayed
+  `HUP` mid-request could corrupt state or segfault, yielding a 500 with no
+  log trace. See [Logging and debugging](logging-debugging.md).
+- **Page-server kills are now logged.** PreFork housekeeping records in the
+  global error log why it terminated a page server (slow start,
+  [PIDcheck](../config/PIDcheck.md) overrun, or an ignored `TERM`); excess
+  servers retired to meet `StartServers` stay at debug level. If you grep
+  logs for the old `Sent N a KILL` debug line, look for
+  `page server pid N ... sent KILL` in the global log instead.
+- **Payment `global_timeout` survives interruption.** The gateway timeout is
+  no longer cancelled by an unrelated signal during the gateway
+  conversation, and the gateway child can no longer be left as a zombie.
+  See [Payments](payments.md).
+
 ## The 5.7.2 remote-search security fix
 
 Independently of which version you are on, one change deserves its own

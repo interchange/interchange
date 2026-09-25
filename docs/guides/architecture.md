@@ -69,13 +69,23 @@ periodic **housekeeping** pass (`housekeeping()` in `Server.pm`, every
 restarts deficit prefork servers, expires sessions, and runs scheduled
 [Jobs](jobs.md). Optional dedicated **SOAP servers**
 ([SOAP](../config/SOAP.md), `SOAP_StartServers`) listen separately for RPC
-requests, and `bin/interchange --runjobs=catalog=group` runs job groups in a
+requests, and `bin/interchange --queuejobs=catalog=group` (or `--runjobs`)
+queues a job group for the next housekeeping pass, which runs it in a
 one-shot process.
 
-Signals: `HUP` restarts the server (`bin/interchange -r` sends it for you),
-`TERM`/`INT` stop it; `bin/interchange --reconfig=catalog` triggers a
+Signals: `TERM`/`INT` stop the server, and `bin/interchange -r` restarts it
+by sending `TERM` and launching a fresh daemon. `HUP` does **not** restart
+anything: it tells the master to service the `restart` request file that
+`--add`/`--remove` write (catalog add/remove, handled during housekeeping)
+and makes each process reopen its [DebugFile](../config/DebugFile.md). The
+handler itself only sets a flag; the work runs at a safe point at the top
+of the server loop — within one housekeeping tick, or after the request in
+flight completes. `bin/interchange --reconfig=catalog` triggers a
 reconfiguration of one catalog without restarting the daemon (config is
-re-read during housekeeping — see [Configuration](configuration.md)).
+re-read during housekeeping — see [Configuration](configuration.md)). In
+PreFork mode the master relays every `HUP` it receives to all pooled page
+servers, which is why `--queuejobs` (no signal) is preferred over
+`--runjobs` (sends `HUP`) for scheduled jobs.
 
 ## Interpreter globals: the vocabulary of a request
 

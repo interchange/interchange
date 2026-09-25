@@ -46,6 +46,19 @@ Pair `PreFork` with [PreForkSingleFork](PreForkSingleFork.md), which uses a
 single fork per new server; turn the single-fork option off only if zombie
 processes accumulate on your platform.
 
+The master relays every `HUP` it receives to every pooled page server.
+`bin/interchange --runjobs` sends a `HUP` with each request, so on a PreFork
+system schedule jobs with `--queuejobs` instead, which queues the request
+without signaling anything; see the [jobs](../guides/jobs.md) guide.
+
+Housekeeping retires pooled servers that exceed [StartServers](StartServers.md),
+take too long to start, or stay busy in one request past
+[PIDcheck](PIDcheck.md): each is sent `TERM`, then `KILL` on the following
+pass if still alive. Slow starts, `PIDcheck` kills, and any `KILL`
+escalation are recorded in the global error log with the reason (see
+[PIDcheck](PIDcheck.md) for the messages); routine excess-server
+retirements appear only in the debug log.
+
 ## See also
 
 [PreForkSingleFork](PreForkSingleFork.md), [StartServers](StartServers.md),

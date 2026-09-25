@@ -148,7 +148,7 @@ At startup the server reads `interchange.cfg`, then every catalog's
 (`ConfigAllBefore`, `catalog.cfg`, `ConfigAllAfter`) sequence. After that,
 config is static in memory. To change it:
 
-    bin/interchange -r                    # full restart (HUP)
+    bin/interchange -r                    # full restart (TERM, then relaunch)
     bin/interchange --reconfig=strap      # recompile one catalog, no restart
     echo "Catalog test /path /test.cgi" | bin/interchange -a   # add catalog live
 

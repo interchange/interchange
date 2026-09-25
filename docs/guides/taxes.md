@@ -334,7 +334,7 @@ write the database. Strap ships both under `etc/jobs/`:
   state: `0`/empty means unreported, `1` reported successfully, `-1` an error
   needing manual attention.
 
-Run a job group directly with `bin/interchange --runjobs=strap=daily`, or let
+Queue a job group by hand with `bin/interchange --queuejobs=strap=daily`, or let
 housekeeping fire it on schedule (see [Jobs](jobs.md)).
 
 ### Writing your own service

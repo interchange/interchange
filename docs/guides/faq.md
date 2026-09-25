@@ -66,7 +66,7 @@ startup into memory. But you rarely need a full restart: reconfigure a single
 catalog in place instead.
 
     bin/interchange --reconfig=strap    # recompile one catalog, no restart
-    bin/interchange -r                  # full restart (HUP)
+    bin/interchange -r                  # full restart (TERM, then relaunch)
 
 The admin UI's "Apply Changes" does the same reconfigure. Reconfiguration is
 picked up during the next housekeeping cycle, so allow a few seconds. Page

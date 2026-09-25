@@ -84,12 +84,29 @@ concatenates them in the order they run.
 
 The argument is `catalog=job`. The command does not run the job itself — it
 writes a request to the `jobsqueue` file in [RunDir](../config/RunDir.md) and
-signals the daemon, then returns immediately (`signal_jobs` in
+sends the daemon a `HUP`, then returns immediately (`signal_jobs` in
 `lib/Vend/Control.pm`). The daemon picks the request up on its next
 **housekeeping** pass (see [Architecture](architecture.md) and
 [HouseKeeping](../config/HouseKeeping.md)), so there is a short delay of up to
 one housekeeping interval before the job actually runs. The daemon must be up;
-`--runjobs` against a stopped server has nothing to signal.
+`--runjobs` against a stopped server warns and exits nonzero.
+
+### `--queuejobs`: queue without the signal
+
+`--queuejobs` takes the same `catalog=job` argument and does everything
+`--runjobs` does *except* send the `HUP`:
+
+    bin/interchange --queuejobs=strap=daily
+
+The signal was never what made the job run — housekeeping scans `jobsqueue`
+on every pass whether or not it was signaled, and a `HUP` cannot make a pass
+happen sooner. But the signal is not free: in [PreFork](../config/PreFork.md)
+mode the master relays every `HUP` to every pooled page server, so a crontab
+that calls `--runjobs` frequently interrupts the whole pool each time. Use
+`--queuejobs` for scheduled jobs on PreFork systems (and anywhere else — it
+is the right default; `--runjobs` remains for compatibility). Like
+`--runjobs`, it checks that the server is running and warns and exits
+nonzero if not, so a cron job still reports a downed daemon.
 
 The job name can also be supplied separately with `--jobgroup`, which **must**
 come before `--runjobs` on the command line:
@@ -102,16 +119,17 @@ To have the results mailed instead of (or in addition to) logged, add
 
     bin/interchange --runjobs=strap=daily --email=ops@example.com
 
-Because `--runjobs` only queues, this is exactly what you put in a system
+Because these options only queue, this is exactly what you put in a system
 crontab when you want the OS `cron` to drive Interchange's jobs:
 
     # min hour dom mon dow   (standard 5-field Unix crontab)
-    12 2 * * *  su -c '/usr/local/interchange/bin/interchange --quiet --runjobs=strap=daily' interch
+    12 2 * * *  su -c '/usr/local/interchange/bin/interchange --quiet --queuejobs=strap=daily' interch
 
 The daemon keeps running; each crontab line just drops a request into the
-queue.
+queue. `--jobgroup` and `--email` work with `--queuejobs` exactly as with
+`--runjobs`, including the ordering rule for `--jobgroup`.
 
-> **Note — the third field.** `--runjobs` accepts an undocumented third
+> **Note — the third field.** `--runjobs` and `--queuejobs` accept an undocumented third
 > element, `catalog=job=N`, that `signal_jobs` turns into `now + N`. In the
 > housekeeping queue this value is treated as an **expiry deadline**, not a
 > start delay: if it has already passed when housekeeping runs, the request is
@@ -248,8 +266,8 @@ Targets come in several prefixes (decoded in `lib/Vend/Cron.pm`):
 
 The key distinction for jobs: `=strap daily` launches the `daily` group itself,
 directly. `:jobs` instead tells the daemon to service the `jobsqueue` file that
-`bin/interchange --runjobs` writes — leave `:jobs` out and command-line
-`--runjobs` requests are silently ignored. Interchange warns at startup if
+`bin/interchange --runjobs`/`--queuejobs` writes — leave `:jobs` out and
+command-line job requests are silently ignored. Interchange warns at startup if
 `:reconfig` or `:jobs` is absent:
 
     WARNING: suggested cron entry ':jobs' not present.
@@ -263,10 +281,12 @@ for the job exactly as `--runjobs` does. `HouseKeepingCron` requires the
 
 ### Which scheduler to use
 
-- **System cron + `--runjobs`** — familiar, visible in `crontab -l`, and the
-  requests survive if you are restarting the daemon around them. Runs through
-  the queue, so subject to `MaxServers` and up to a housekeeping interval of
-  latency.
+- **System cron + `--queuejobs`** (or `--runjobs`) — familiar, visible in
+  `crontab -l`, and the requests survive if you are restarting the daemon
+  around them. Runs through the queue, so subject to `MaxServers` and up to a
+  housekeeping interval of latency. Prefer `--queuejobs`, which does not
+  signal the server; `--runjobs` adds a `HUP` that PreFork relays to every
+  page server for no benefit.
 - **`HouseKeepingCron` with `=cat group`** — no external dependency, schedules
   live in `interchange.cfg`, second-level granularity. But it runs the job
   directly (bypassing the `jobsqueue`/`MaxServers` accounting), and if the
@@ -320,7 +340,7 @@ and — per the empty-output rule — nothing is logged at all.
 
 Run it by hand against a running strap daemon:
 
-    bin/interchange --runjobs=strap=daily
+    bin/interchange --queuejobs=strap=daily
 
 or schedule it to run at 2:15 every morning from `interchange.cfg`:
 
@@ -354,9 +374,12 @@ with an error). This is advanced and rarely needed; most jobs never touch it.
 
 ## Troubleshooting
 
-- **The job never runs.** `--runjobs` only queues; confirm the daemon is
-  running, that `:jobs` is present if you set `HouseKeepingCron`, and that you
-  waited a full [HouseKeeping](../config/HouseKeeping.md) interval.
+- **The job never runs.** `--runjobs`/`--queuejobs` only queue; confirm the
+  daemon is running, that `:jobs` is present if you set `HouseKeepingCron`,
+  and that you waited a full [HouseKeeping](../config/HouseKeeping.md)
+  interval. (Servers before August 2026 could also silently drop a request
+  that was written while housekeeping held the `jobsqueue` lock; that race is
+  fixed in current code.)
 - **No output appeared.** Empty output is intentionally dropped. Have the job
   emit at least one line while testing, and confirm `log` (or `email`) is set.
 - **A `.html` file in the group is skipped.** That is the

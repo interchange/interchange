@@ -311,7 +311,8 @@ own [usertags](#usertag). See the [templating guide](guides/templating.md).
 ## jobs
 
 Batch tasks run outside the normal page-request cycle, triggered from the
-command line (`interchange --runjobs=CATALOG=GROUP`) or a cron job. Jobs run
+command line (`interchange --queuejobs=CATALOG=GROUP`, or `--runjobs`, which
+also signals the server) or a cron job. Jobs run
 asynchronously — the launching command returns before the job finishes.
 See the [`Jobs`](config/Jobs.md) directive.
 

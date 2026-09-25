@@ -86,6 +86,17 @@ shutdown banners, config parse errors, catalog (re)configuration, and anything
 logged before a catalog context exists. The line format is the same as the
 catalog log.
 
+The global log is also where the master records child processes it has to
+kill. In [PreFork](../config/PreFork.md) mode, a pooled page server that is
+slow to start, or stuck in one request past [PIDcheck](../config/PIDcheck.md),
+is logged with the reason when it is scheduled for termination
+(`page server pid N busy in one request for S seconds (PIDcheck P);
+scheduling for termination`), and again if it ignores `TERM` and has to be
+sent `KILL`. Forked request handlers killed by `PIDcheck` appear as
+`hammered PID N running S seconds`. If a page server died abnormally and
+the debug log is off, these lines are the trace to look for; the
+[PIDcheck](../config/PIDcheck.md) page lists the messages.
+
 When the server runs in the foreground (see
 [Debug mode](#running-in-the-foreground), below) `logGlobal` and `logError`
 also echo their messages to the terminal, which is what makes `--DEBUG=1` and
@@ -197,7 +208,11 @@ tag, all write to one file named by [DebugFile](../config/DebugFile.md) in
 leaving the directive empty disables debug tracing at essentially no cost. The
 daemon opens the file once and redirects a dedicated `Vend::DEBUG` stream to
 it (`setup_debug_log()` in `lib/Vend/Server.pm`), writing a
-`Start DEBUG at ...` banner. When [SysLog](../config/SysLog.md) is configured,
+`Start DEBUG at ...` banner. A `HUP` makes each server process reopen the
+file, which is how to rotate it; the reopen is deferred from the signal
+handler to a safe point in the server loop, so expect it within one
+[HouseKeeping](../config/HouseKeeping.md) tick or after the request in
+flight finishes. When [SysLog](../config/SysLog.md) is configured,
 debug output goes to syslog at `debug` level instead of the file.
 
 Emit your own trace line from a page with [debug](../tags/debug.md) (its body

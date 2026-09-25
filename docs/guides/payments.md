@@ -259,6 +259,30 @@ one transactional route. Because the `log` route participates in the cascade's
 `transactions`, the card charge and the table writes commit together or not at
 all.
 
+### Gateway timeouts: `global_timeout`
+
+A gateway that stops answering would otherwise hold the request (and the
+shopper) indefinitely. The route option `global_timeout` (or `[charge]`
+option, or `MV_PAYMENT_GLOBAL_TIMEOUT`), in seconds, bounds the whole
+gateway conversation for any `Vend::Payment::*` module or GlobalSub gateway
+(everything except the legacy `custom` charge type). When it is set
+and positive, `Vend::Payment::charge` forks a child to run the gateway
+module, reads the result back over a pipe, and waits on that child under an
+`alarm`. If the alarm fires first the charge fails with `MStatus` `died`,
+the child is told to abandon the request (`USR2`), and the shopper sees
+`global_timeout_msg` (default "Due to technical difficulties, your order
+could not be processed."):
+
+    Route  mygateway  global_timeout      45
+    Route  mygateway  global_timeout_msg  "Our payment processor is not responding; please try again in a few minutes."
+
+Leave it unset (the default) and the gateway module runs in-process with no
+time limit beyond whatever the module's own HTTP client imposes. Before
+August 2026 an unrelated signal arriving mid-conversation — a `HUP` relayed
+to a PreFork page server, for instance — could silently cancel the timeout
+and leave the gateway child as a zombie; current code waits on the specific
+child and retries on interruption with the alarm still armed.
+
 ## PCI-conscious handling of card data
 
 Payment brings the one datum you most want to never mishandle: the primary
